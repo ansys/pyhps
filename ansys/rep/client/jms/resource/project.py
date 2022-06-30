@@ -13,7 +13,7 @@ import uuid
 import warnings
 
 import requests
-from ansys.rep.client.exceptions import DCSError
+from ansys.rep.client.exceptions import REPError
 from cachetools import TTLCache, cached
 from marshmallow.utils import missing
 
@@ -378,7 +378,7 @@ def copy_project(client, project_source_id, project_target_name, wait=True):
 
     op = _monitor_operation(client, operation_location, 1.0)
     if not op['succeeded']:
-        raise DCSError(f"Failed to copy project {project_source_id}.")
+        raise REPError(f"Failed to copy project {project_source_id}.")
     return op['result']
 
 def archive_project(client, project, target_path, include_job_files = True):
@@ -398,7 +398,7 @@ def archive_project(client, project, target_path, include_job_files = True):
     op = _monitor_operation(client, operation_location, 1.0)
 
     if not op['succeeded']:
-        raise DCSError(f"Failed to archive project {project.id}.")
+        raise REPError(f"Failed to archive project {project.id}.")
 
     download_link = op['result']['backend_path']
 
@@ -407,7 +407,7 @@ def archive_project(client, project, target_path, include_job_files = True):
     log.info(f"Project archive download link: {download_link}")
 
     if not os.path.isdir(target_path):
-        raise DCSError(f"Project archive: target path does not exist {target_path}")
+        raise REPError(f"Project archive: target path does not exist {target_path}")
 
     file_path = os.path.join(target_path, download_link.rsplit('/')[-1])
     log.info(f"Download archive to {file_path}") 
@@ -425,7 +425,7 @@ def archive_project(client, project, target_path, include_job_files = True):
 def restore_project(client, archive_path, project_name):
 
     if not os.path.exists(archive_path):
-        raise DCSError(f"Project archive: path does not exist {archive_path}")
+        raise REPError(f"Project archive: path does not exist {archive_path}")
 
     # Upload archive to FS API
     archive_name = os.path.basename(archive_path)
@@ -453,7 +453,7 @@ def restore_project(client, archive_path, project_name):
     op = _monitor_operation(client, operation_location, 1.0)
 
     if not op['succeeded']:
-        raise DCSError(f"Failed to restore project from archive {archive_path}.")
+        raise REPError(f"Failed to restore project from archive {archive_path}.")
 
     project_id = op['result']
     log.info("Done restoring project") 
@@ -483,13 +483,13 @@ def _monitor_operation(client, location, interval=1.0):
 @cached(cache=TTLCache(1024, 60), key=lambda project: project.id)
 def get_fs_url(project):
     if project.file_storages == missing:
-        raise DCSError(f"The project object has no file storages information.")
+        raise REPError(f"The project object has no file storages information.")
 
     rest_gateways = [fs for fs in project.file_storages if fs["obj_type"] == "RestGateway"]
     rest_gateways.sort(key=lambda fs: fs["priority"], reverse=True)
 
     if not rest_gateways:
-        raise DCSError(f"Project {project.display_name} (id={project.id}) has no Rest Gateway defined.")
+        raise REPError(f"Project {project.display_name} (id={project.id}) has no Rest Gateway defined.")
 
     for d in rest_gateways:
         url = d["url"]

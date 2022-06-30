@@ -13,7 +13,7 @@ import os
 import random
 import argparse
 
-from ansys.rep.client import DCSError
+from ansys.rep.client import REPError
 from ansys.rep.client import __external_version__ as ansys_version
 from ansys.rep.client.jms import (Client, File, FitnessDefinition,
                                   FloatParameterDefinition, Job, JobDefinition,
@@ -200,5 +200,5 @@ if __name__ == "__main__":
         client = Client(rep_url=args.url, username=args.username, password=args.password)
         proj=create_project(client=client, name=args.name, num_jobs=args.num_jobs)
 
-    except DCSError as e:
+    except REPError as e:
         log.error(str(e))

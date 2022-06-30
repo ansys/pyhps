@@ -10,7 +10,7 @@ import logging
 import os
 from pathlib import Path
 
-from ansys.rep.client.exceptions import DCSError
+from ansys.rep.client.exceptions import REPError
 from ..schema.file import FileSchema
 from .base import (Object, create_objects, get_objects,
                    update_objects)
@@ -126,7 +126,7 @@ def update_files(project, files, as_objects=True):
 def download_file(file, target_path, progress_handler=None, stream=True):
     
     if getattr(file, "hash", None) is None:
-        raise DCSError(f"No hash found. Failed to download file {file.name}")
+        raise REPError(f"No hash found. Failed to download file {file.name}")
 
     Path(target_path).mkdir(parents=True, exist_ok=True)
     download_link = f"{file.project.fs_bucket_url}/{file.storage_id}"

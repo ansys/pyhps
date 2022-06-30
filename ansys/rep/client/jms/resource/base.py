@@ -9,7 +9,7 @@ import json
 import logging
 
 from marshmallow.utils import missing
-from ansys.rep.client import DCSError
+from ansys.rep.client import REPError
 
 log = logging.getLogger(__name__)
 
@@ -88,7 +88,7 @@ def create_objects(project, objects, as_objects=True, **query_params):
 
     are_same = [o.__class__ == objects[0].__class__ for o in objects[1:]]
     if not all(are_same):
-        raise DCSError("Mixed object types")
+        raise REPError("Mixed object types")
         
     obj_type=objects[0].__class__
     rest_name=obj_type.Meta.rest_name
@@ -116,7 +116,7 @@ def update_objects(project, objects, as_objects=True, **query_params):
 
     are_same = [o.__class__ == objects[0].__class__ for o in objects[1:]]
     if not all(are_same):
-        raise DCSError("Mixed object types")
+        raise REPError("Mixed object types")
         
     obj_type=objects[0].__class__
     rest_name=obj_type.Meta.rest_name
@@ -147,7 +147,7 @@ def delete_objects(project, objects):
 
     are_same = [o.__class__ == objects[0].__class__ for o in objects[1:]]
     if not all(are_same):
-        raise DCSError("Mixed object types")
+        raise REPError("Mixed object types")
         
     obj_type=objects[0].__class__
     rest_name=obj_type.Meta.rest_name

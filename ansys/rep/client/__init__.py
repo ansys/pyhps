@@ -12,4 +12,4 @@ from .__version__ import (__version__,
                           __company__,
                           __company_short__,
                           __url__)
-from .exceptions import DCSError, APIError, ClientError
+from .exceptions import REPError, APIError, ClientError

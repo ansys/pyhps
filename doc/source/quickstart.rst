@@ -244,19 +244,19 @@ Users with admin rights (such as the default ``repadmin`` user) can create new u
 Exception handling
 ------------------------------------------
 
-All exceptions that the Ansys DCS clients explicitly raise inherit from :exc:`ansys.rep.client.DCSError`.
+All exceptions that the Ansys DCS clients explicitly raise inherit from :exc:`ansys.rep.client.REPError`.
 Client Errors are raised for 4xx HTTP status codes, while API Errors are raised for 5xx HTTP status codes (server side errors).
 
 For example, instantiating a client with invalid credentials will return a 400 Client Error.
 
 .. code-block:: python
 
-    from ansys.rep.client import DCSError
+    from ansys.rep.client import REPError
     from ansys.rep.client.jms import Client
 
     try:
         client = Client(rep_url="https://127.0.0.1/dcs/", username="repadmin",  password="wrong_psw")
-    except DCSError as e:
+    except REPError as e:
         print(e)
 
     #Output:
@@ -269,7 +269,7 @@ A *get* call  on a non-existing resource will return a 404 Client Error.
 
     try:
         client.get_project(id="non_existing_project")
-    except DCSError as e:
+    except REPError as e:
         print(e)
 
     #Output:

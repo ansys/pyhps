@@ -8,7 +8,7 @@ of a tubular steel trellis motorbike-frame.
 After creating the project job_definition, 10 design points with randomly 
 chosen parameter values are created and set to pending.
 
-.. image:: motorbike_frame.jpg
+.. image:: _static/motorbike_frame.jpg
     :scale: 50 %
     :align: center
     :alt: motorbike frame picture

@@ -12,7 +12,7 @@ import os
 import random
 import sys
 
-from ansys.rep.client import DCSError
+from ansys.rep.client import REPError
 from ansys.rep.client.jms import (Client, File, FitnessDefinition,
                                   FloatParameterDefinition, Job, JobDefinition,
                                   ParameterMapping, Project, SuccessCriteria, ResourceRequirements, Software,
@@ -167,5 +167,5 @@ if __name__ == "__main__":
             start=args.start, 
             inactive=args.inactive
         )
-    except DCSError as e:
+    except REPError as e:
         log.error(str(e))

@@ -10,7 +10,7 @@ import sys
 import unittest
 from test.rep_test import REPTestCase
 
-from ansys.rep.client import APIError, ClientError, DCSError
+from ansys.rep.client import APIError, ClientError, REPError
 from ansys.rep.client.jms import Client
 from marshmallow.utils import missing
 

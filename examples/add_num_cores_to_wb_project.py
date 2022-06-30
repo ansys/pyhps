@@ -12,7 +12,7 @@
 import logging
 import os
 
-from ansys.rep.client import DCSError
+from ansys.rep.client import REPError
 from ansys.rep.client.jms import Client
 
 log = logging.getLogger(__name__)
@@ -45,5 +45,5 @@ if __name__ == "__main__":
 
     try:
         main()
-    except DCSError as e:
+    except REPError as e:
         log.error(str(e))

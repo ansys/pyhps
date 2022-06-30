@@ -1,7 +1,7 @@
 Ansys DCS Python Client
 =============================
 
-.. image:: ansys_dcs_banner.jpg
+.. image:: _static/ansys_dcs_banner.jpg
 
 
 Ansys Distributed Compute Services (DCS) is a family of applications that enables you to distribute, 

@@ -8,30 +8,30 @@
 
 from requests.exceptions import RequestException
 
-class DCSError(RequestException):
+class REPError(RequestException):
     def __init__(self, *args, **kwargs):
-        """Base class for all ansys-dcs-client related errors. Derives from :class:`requests.exceptions.RequestException`.
+        """Base class for all rep related errors. Derives from :class:`requests.exceptions.RequestException`.
         
         Example:
-            >>> from ansys.rep.client import DCSError
+            >>> from ansys.rep.client import REPError
             >>> from ansys.rep.client.jms import Client
             >>> try:
             >>>     client = Client(rep_url="https://127.0.0.1/dcs/", username="repadmin",  password="wrong_psw")
-            >>> except DCSError as e:
+            >>> except REPError as e:
             >>>     print(e)
             400 Client Error: invalid_grant for: POST https://127.0.0.1/dcs/auth/api/oauth/token
             Invalid "username" or "password" in request.
         """
         self.reason = kwargs.pop('reason', None)
         self.description = kwargs.pop('description', None)
-        super(DCSError, self).__init__(*args, **kwargs)
+        super(REPError, self).__init__(*args, **kwargs)
 
-class APIError(DCSError):
+class APIError(REPError):
     def __init__(self, *args, **kwargs):
         """Indicate server side related errors."""
         super(APIError, self).__init__(*args, **kwargs)
 
-class ClientError(DCSError):
+class ClientError(REPError):
     def __init__(self, *args, **kwargs):
         """Indicate client side related errors."""
         super(ClientError, self).__init__(*args, **kwargs)
