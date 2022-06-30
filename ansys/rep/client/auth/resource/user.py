@@ -5,7 +5,6 @@
 #
 # Author(s): F.Negri
 # ----------------------------------------------------------
-import json
 import logging
 
 from ..schema.user import UserSchema
@@ -14,6 +13,7 @@ from keycloak import KeycloakAdmin
 
 log = logging.getLogger(__name__)
 
+
 class User(Object):
     """User resource
 
@@ -21,7 +21,7 @@ class User(Object):
         **kwargs: Arbitrary keyword arguments, see the User schema below.
 
     Example:
-        
+
         >>> new_user = User(username='test_user', password='dummy',
         >>>         email='test_user@test.com', fullname='Test User',
         >>>         is_admin=False)
@@ -31,14 +31,16 @@ class User(Object):
     .. jsonschema:: schemas/User.json
 
     """
-    
+
     class Meta:
         schema = UserSchema
 
     def __init__(self, **kwargs):
         super(User, self).__init__(**kwargs)
 
+
 UserSchema.Meta.object_class = User
+
 
 def _admin_client(client):
     keycloak_admin = KeycloakAdmin(
@@ -48,24 +50,26 @@ def _admin_client(client):
         realm_name=client.realm,
         client_secret_key=client.client_secret,
         client_id=client.client_id,
-        verify=False
+        verify=False,
     )
     return keycloak_admin
+
 
 def get_users(client, as_objects=True):
     admin = _admin_client(client)
     data = admin.get_users({})
     for d in data:
-        uid = d['id']
+        uid = d["id"]
         groups = admin.get_user_groups(uid)
-        d['groups'] = [g['name'] for g in groups]
+        d["groups"] = [g["name"] for g in groups]
         realm_roles = admin.get_realm_roles_of_user(uid)
-        d['realm_roles'] = [r['name'] for r in realm_roles]
-        d['is_admin'] = d # Force admin check
+        d["realm_roles"] = [r["name"] for r in realm_roles]
+        d["is_admin"] = d  # Force admin check
 
     schema = UserSchema(many=True)
-    users = schema.load( data )
+    users = schema.load(data)
     return users
+
 
 def create_user(client, user, as_objects=True):
     schema = UserSchema(many=False)
@@ -73,13 +77,13 @@ def create_user(client, user, as_objects=True):
 
     pwd = data.pop("password", None)
     if pwd is not None:
-        data['credentials'] = [
+        data["credentials"] = [
             {
-                "type" : "password",
-                "value" : pwd,
+                "type": "password",
+                "value": pwd,
             }
         ]
-    data['enabled'] = True
+    data["enabled"] = True
 
     admin = _admin_client(client)
     uid = admin.create_user(data)
@@ -87,16 +91,17 @@ def create_user(client, user, as_objects=True):
     user = schema.load(data)
     return user
 
+
 def update_user(client, user, as_objects=True):
     schema = UserSchema(many=False)
     data = schema.dump(user)
 
     pwd = data.pop("password", None)
     if pwd is not None:
-        data['credentials'] = [
+        data["credentials"] = [
             {
-                "type" : "password",
-                "value" : pwd,
+                "type": "password",
+                "value": pwd,
             }
         ]
 
@@ -104,6 +109,7 @@ def update_user(client, user, as_objects=True):
     data = admin.update_user(user.id, data)
     user = schema.load(data)
     return user
+
 
 def delete_user(client, user):
     admin = _admin_client(client)
