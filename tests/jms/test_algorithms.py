@@ -13,7 +13,7 @@ from marshmallow.utils import missing
 
 from ansys.rep.client.jms import Client
 from ansys.rep.client.jms.resource import Job, Project, Selection, Algorithm, JobDefinition
-from test.rep_test import REPTestCase
+from tests.rep_test import REPTestCase
 
 log = logging.getLogger(__name__)
 

@@ -9,7 +9,7 @@ import logging
 import time
 import unittest
 import uuid
-from test.rep_test import REPTestCase
+from tests.rep_test import REPTestCase
 
 import pytest
 from ansys.rep.client.auth import Client as AuthClient

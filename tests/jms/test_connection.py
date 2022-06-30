@@ -12,7 +12,7 @@ import urllib.parse
 
 from ansys.rep.client.auth import authenticate
 from ansys.rep.client.connection import create_session, ping
-from test.rep_test import REPTestCase
+from tests.rep_test import REPTestCase
 
 log = logging.getLogger(__name__)
 

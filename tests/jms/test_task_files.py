@@ -14,7 +14,7 @@ import time
 
 from ansys.rep.client.jms import Client
 from ansys.rep.client.jms.resource import Task, File
-from test.rep_test import REPTestCase
+from tests.rep_test import REPTestCase
 from examples.mapdl_motorbike_frame.project_setup import create_project
 
 log = logging.getLogger(__name__)

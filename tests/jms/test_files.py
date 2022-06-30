@@ -13,7 +13,7 @@ import tempfile
 from marshmallow.utils import missing
 
 from ansys.rep.client.jms.resource import File, Project
-from test.rep_test import REPTestCase
+from tests.rep_test import REPTestCase
 
 log = logging.getLogger(__name__)
 

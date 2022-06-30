@@ -10,7 +10,7 @@ import sys
 import unittest
 
 from ansys.rep.client.auth import authenticate
-from test.rep_test import REPTestCase
+from tests.rep_test import REPTestCase
 
 log = logging.getLogger(__name__)
 

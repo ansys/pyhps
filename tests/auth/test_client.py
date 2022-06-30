@@ -11,7 +11,7 @@ import unittest
 import pytest
 
 from ansys.rep.client.auth import Client, User
-from test.rep_test import REPTestCase
+from tests.rep_test import REPTestCase
 
 log = logging.getLogger(__name__)
 

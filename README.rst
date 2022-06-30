@@ -56,7 +56,7 @@ Then, you can simply execute:
 
 .. code:: bash
 
-    python -m pip install ansys-rep-rep
+    python -m pip install ansys-rep
 
 For developers
 ^^^^^^^^^^^^^^

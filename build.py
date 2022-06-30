@@ -82,14 +82,13 @@ def _do_venv(context):
     log.info("### Updating pip")
     subprocess.run(f"{context.python_binary} -m pip install --upgrade pip", shell=True, check=True)
 
-    base_modules = ["pytest", "pytest-cov", "wheel", "twine"]
-
-    # Install dependencies
+    # Install requirements
+    build_reqs = os.path.join(os.path.dirname(__file__), "requirements", "requirements_build.txt")
     subprocess.run(
-        f"{context.python_binary} -m pip install --upgrade {' '.join(base_modules)}",
-        shell=True,
-        check=True,
+        f"{context.python_binary} -m pip install -r {build_reqs}", shell=True, check=True
     )
+    test_reqs = os.path.join(os.path.dirname(__file__), "requirements", "requirements_tests.txt")
+    subprocess.run(f"{context.python_binary} -m pip install -r {test_reqs}", shell=True, check=True)
 
     # Install client
     subprocess.run(f"{context.python_binary} -m pip install -e .", shell=True, check=True)
@@ -120,7 +119,6 @@ def _do_documentation(context):
 def _run_tests(context):
     cmd = f"{context.python_binary} -m pytest -v --junitxml test_results.xml --cov=ansys --cov-report=xml --cov-report=html"
     subprocess.run(f"{cmd}", shell=True, check=True)
-
 
 steps = [
     ("venv", _do_venv),

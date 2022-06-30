@@ -15,7 +15,7 @@ from marshmallow.utils import missing
 from ansys.rep.client.jms import Client
 from ansys.rep.client.jms.resource import Project, LicenseContext, JobDefinition
 from ansys.rep.client.jms.schema.project import ProjectSchema
-from test.rep_test import REPTestCase
+from tests.rep_test import REPTestCase
 from examples.mapdl_motorbike_frame.project_setup import create_project
 
 log = logging.getLogger(__name__)

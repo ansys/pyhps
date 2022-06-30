@@ -9,7 +9,7 @@ import copy
 import logging
 import unittest
 import uuid
-from test.rep_test import REPTestCase
+from tests.rep_test import REPTestCase
 
 from ansys.rep.client.jms import Client
 from ansys.rep.client.jms.resource import Job, JobDefinition, Project

@@ -21,7 +21,7 @@ from ansys.rep.client.jms.schema.parameter_definition import (ParameterDefinitio
                                                               FloatParameterDefinitionSchema,
                                                               IntParameterDefinitionSchema,
                                                               StringParameterDefinitionSchema)
-from test.rep_test import REPTestCase
+from tests.rep_test import REPTestCase
 
 log = logging.getLogger(__name__)
 

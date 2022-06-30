@@ -58,7 +58,7 @@ def main():
   )
 
   replace_regex(
-    os.path.join(cwd, 'docs', 'conf.py'), 
+    os.path.join(cwd, 'doc', 'source', 'conf.py'), 
     internal_version_no_dot, 
     [r'corp/v(\d+)']
   )

@@ -9,7 +9,7 @@
 import json
 import logging
 import unittest
-from test.rep_test import REPTestCase
+from tests.rep_test import REPTestCase
 
 from ansys.rep.client.jms.schema.evaluator import EvaluatorSchema
 from marshmallow.utils import missing
