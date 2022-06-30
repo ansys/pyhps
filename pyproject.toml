@@ -1,0 +1,25 @@
+[build-system]
+requires = ["setuptools", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[tool.black]
+line-length = 100
+
+[tool.isort]
+profile = "black"
+force_sort_within_sections = true
+line_length = 100
+default_section = "THIRDPARTY"
+src_paths = ["doc", "ansys", "tests"]
+
+[tool.coverage.run]
+source = ["ansys.rep"]
+
+[tool.coverage.report]
+show_missing = true
+
+[tool.pytest.ini_options]
+log_cli = true
+log_cli_level = "INFO"
+log_cli_format = "%(asctime)s [%(levelname)8s] %(message)s (%(filename)s:%(lineno)s)"
+log_cli_date_format = "%Y-%m-%d %H:%M:%S"
