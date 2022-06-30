@@ -39,7 +39,7 @@ def custom_field_attributes(self, field, **kwargs):
 def generate_openapi_specs():
     """Auto-generate schemas documentation in JSON format."""
 
-    tgt_dir = os.path.join('docs', 'schemas')
+    tgt_dir = os.path.join('doc', 'schemas')
     if not os.path.exists(tgt_dir):
         os.makedirs(tgt_dir)
 
