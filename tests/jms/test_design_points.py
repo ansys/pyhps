@@ -189,7 +189,7 @@ class JobsTest(REPTestCase):
         proj_name = f"test_job_update_{uuid.uuid4().hex[:8]}"
         
         project = create_project(
-            client=client, name=proj_name, num_design_points=2)
+            client=client, name=proj_name, num_jobs=2)
         project.active = False
         project = client.update_project(project)
 
