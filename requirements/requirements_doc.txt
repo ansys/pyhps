@@ -3,7 +3,7 @@ numpydoc==1.4.0
 ansys-sphinx-theme==0.4.2
 sphinx-copybutton==0.5
 sphinx-rtd-theme
-apispec==3.0.0
+apispec==5.2.2
 sphinxcontrib-httpdomain
 sphinxcontrib-jsonschema
 sphinxcontrib-globalsubs
