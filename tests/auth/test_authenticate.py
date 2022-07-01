@@ -14,10 +14,10 @@ from tests.rep_test import REPTestCase
 
 log = logging.getLogger(__name__)
 
-class AuthenticationTest(REPTestCase):
 
+class AuthenticationTest(REPTestCase):
     def test_authenticate(self):
         resp = authenticate(url=self.rep_url, username=self.username, password=self.password)
-        
+
         self.assertIn("access_token", resp)
         self.assertIn("refresh_token", resp)

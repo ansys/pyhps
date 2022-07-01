@@ -6,10 +6,11 @@
 # Author(s): F.Negri, O.Koenig
 # ----------------------------------------------------------
 
-from .authenticate import authenticate
 from ansys.rep.client.connection import create_session
-from .resource.user import get_users, create_user, update_user, delete_user
+
 from ..exceptions import raise_for_status
+from .authenticate import authenticate
+from .resource.user import create_user, delete_user, get_users, update_user
 
 
 class Client(object):

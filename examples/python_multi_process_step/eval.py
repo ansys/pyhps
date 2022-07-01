@@ -6,7 +6,7 @@
 # Author(s): R.Walker
 # ----------------------------------------------------------
 
-'''
+"""
 Evaluation script for multi task definition testing
 run *python eval.py --help* for command line arguments
 The script has JSON-File as input and writes *text* and *json* as result files.
@@ -33,17 +33,16 @@ The support of json-file replacement is limited and therefore a string parameter
 "color": ,
 ```
 
-'''
+"""
+import argparse
+import datetime
+import json
 import logging
 import os
 import re
-import sys
-import json
-import time
-import datetime
-import argparse
 import subprocess
-
+import sys
+import time
 
 logging.basicConfig(stream=sys.stdout, level=logging.DEBUG)
 
@@ -57,23 +56,23 @@ CALL_SUBSCRIPT = False
 def main(input_file, task_definition, images, in_subscript):
 
     log = logging.getLogger()
-    log.info('== Start Evaluation Task Definition ==')
+    log.info("== Start Evaluation Task Definition ==")
 
     # Flag to mark files comming from subscript
-    subs = 'sub_' if in_subscript else ''
+    subs = "sub_" if in_subscript else ""
 
     # Read parameters
-    log.info(f'Input File: {input_file}')
-    log.info(f'Task Definition: {task_definition}')
+    log.info(f"Input File: {input_file}")
+    log.info(f"Task Definition: {task_definition}")
     input_file_path = os.path.abspath(input_file)
-    log.info(f'Open input file: {input_file_path}')
-    with open(input_file_path, 'r') as f:
+    log.info(f"Open input file: {input_file_path}")
+    with open(input_file_path, "r") as f:
         params = json.load(f)
 
-    log.info(f'Params read: {params}')
-    period = params['period']
-    duration = params['duration']
-    color = params['color']
+    log.info(f"Params read: {params}")
+    period = params["period"]
+    duration = params["duration"]
+    color = params["color"]
 
     # Calculate the Output: Number of steps
     steps = int(duration // period)
@@ -82,40 +81,41 @@ def main(input_file, task_definition, images, in_subscript):
 
     # create json-results file
     out_filename = f"{subs}td{task_definition}_results.json"
-    log.debug(f'Write JSON results file: {out_filename}')
-    with open(out_filename, 'w') as out_file:
+    log.debug(f"Write JSON results file: {out_filename}")
+    with open(out_filename, "w") as out_file:
         json.dump(output_parameters, out_file, indent=4)
 
     # create test-results file
     stamp = datetime.datetime.now()
     out_filename = f"{subs}td{task_definition}_results.txt"
-    log.debug(f'Write text results file: {out_filename}')
-    with open(out_filename, 'w') as out:
-        out.write(f'Script JobDefinition:\n')
-        out.write(f'  Task Definition: {task_definition}\n')
-        out.write(f'  Input File: {input_file}\n')
-        out.write(f'  Images: {images}\n')
-        out.write(f'Input:\n')
-        out.write(f'  Duration: {duration}\n')
-        out.write(f'  Period: {period}\n')
-        out.write(f'  Color: {color}\n')
-        out.write(f'Output:\n')
-        out.write(f'  Steps: {steps}\n')
+    log.debug(f"Write text results file: {out_filename}")
+    with open(out_filename, "w") as out:
+        out.write(f"Script JobDefinition:\n")
+        out.write(f"  Task Definition: {task_definition}\n")
+        out.write(f"  Input File: {input_file}\n")
+        out.write(f"  Images: {images}\n")
+        out.write(f"Input:\n")
+        out.write(f"  Duration: {duration}\n")
+        out.write(f"  Period: {period}\n")
+        out.write(f"  Color: {color}\n")
+        out.write(f"Output:\n")
+        out.write(f"  Steps: {steps}\n")
         out.flush()
 
-    for i in range(1, steps+1):
-        with open(out_filename, 'a+') as out:
+    for i in range(1, steps + 1):
+        with open(out_filename, "a+") as out:
             sec = (datetime.datetime.now() - stamp).seconds
-            i_step = '{}/{}'.format(i, steps)
-            msg = 'Task Definition: {}, Step: {:>8}, Time: {:>6}s'.format(
-                task_definition, i_step, sec)
+            i_step = "{}/{}".format(i, steps)
+            msg = "Task Definition: {}, Step: {:>8}, Time: {:>6}s".format(
+                task_definition, i_step, sec
+            )
             log.info(msg)
-            out.write(msg + '\n')
+            out.write(msg + "\n")
             out.flush()
         time.sleep(period)
 
-    with open(out_filename, 'a+') as out:
-        out.write('Finished.\n')
+    with open(out_filename, "a+") as out:
+        out.write("Finished.\n")
         out.flush()
 
     if images:
@@ -124,14 +124,13 @@ def main(input_file, task_definition, images, in_subscript):
         from PIL import Image, ImageDraw, ImageFont
 
         # create an image !!!
-        img = Image.new('RGB', (600, 400), color=color)
+        img = Image.new("RGB", (600, 400), color=color)
         d = ImageDraw.Draw(img)
         line_height = 36
         font = ImageFont.truetype("arial.ttf", 24)
 
         def text(i, txt):
-            d.text((line_height, line_height*i),
-                   txt, fill=(0, 0, 1), font=font)
+            d.text((line_height, line_height * i), txt, fill=(0, 0, 1), font=font)
 
         # write the task definition
         text(1, f"{subs}task_definition: {task_definition}")
@@ -142,29 +141,41 @@ def main(input_file, task_definition, images, in_subscript):
         text(i, "Have a lot of fun...")
 
         out_filename = f"{subs}td{task_definition}_results.jpg"
-        log.debug(f'Write Image Results File: {out_filename}')
+        log.debug(f"Write Image Results File: {out_filename}")
         img.save(out_filename)
 
     if CALL_SUBSCRIPT and not in_subscript:
-        cmd = ['python', 'eval.py',
-               f'sub_td{task_definition}_input.json', f'{task_definition}', '--in-subscript']
-        log.info('Run Subscript with: {cmd}')
+        cmd = [
+            "python",
+            "eval.py",
+            f"sub_td{task_definition}_input.json",
+            f"{task_definition}",
+            "--in-subscript",
+        ]
+        log.info("Run Subscript with: {cmd}")
         subprocess.run(cmd)
 
-    log.info('Finished.')
+    log.info("Finished.")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
 
     parser = argparse.ArgumentParser()
 
-    parser.add_argument('input_file')
+    parser.add_argument("input_file")
+    parser.add_argument("task_definition", help="The task definition number the script is used.")
     parser.add_argument(
-        'task_definition', help="The task definition number the script is used.")
-    parser.add_argument('--images', action='store_true',
-                        default=False, help="Enable if you want images to be generated. Needs PIL installed ( `pip install pillow` ) ")
-    parser.add_argument('--in-subscript', action='store_true', default=False,
-                        help="Flag to inform script that it's a subprocess of itself.")
+        "--images",
+        action="store_true",
+        default=False,
+        help="Enable if you want images to be generated. Needs PIL installed ( `pip install pillow` ) ",
+    )
+    parser.add_argument(
+        "--in-subscript",
+        action="store_true",
+        default=False,
+        help="Flag to inform script that it's a subprocess of itself.",
+    )
 
     args = parser.parse_args()
 
@@ -194,7 +205,6 @@ if __name__ == '__main__':
     # ])
     # param_mappings = proj.create_parameter_mappings(param_mappings)
     # job_def.parameter_mapping_ids = [o.id for o in param_mappings]
-
 
     # log.debug("=== Process Steps")
     # task_defs = []

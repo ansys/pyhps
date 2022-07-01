@@ -5,8 +5,8 @@
 #
 # Author(s): F.Negri
 # ----------------------------------------------------------
-import logging
 import json
+import logging
 
 from ..schema.project_permission import ProjectPermissionSchema
 from .base import Object

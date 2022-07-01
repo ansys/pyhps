@@ -1,11 +1,12 @@
-import httpx
-from authlib.integrations.httpx_client import AsyncOAuth2Client
-from authlib.jose import jwt
-import webbrowser
+import argparse
 import asyncio
 import threading
-import argparse
 import time
+import webbrowser
+
+from authlib.integrations.httpx_client import AsyncOAuth2Client
+from authlib.jose import jwt
+import httpx
 
 # Links:
 # - Setting up google auth: http://www.mastertheboss.com/keycloak/google-social-login-with-keycloak/

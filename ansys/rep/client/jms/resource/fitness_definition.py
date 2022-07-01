@@ -6,6 +6,7 @@
 # Author(s): O.Koenig
 # ----------------------------------------------------------
 import logging
+
 from marshmallow.utils import missing
 
 from ..schema.fitness_definition import FitnessDefinitionSchema, FitnessTermDefinitionSchema

@@ -9,6 +9,7 @@ import json
 import logging
 
 from marshmallow.utils import missing
+
 from ansys.rep.client import REPError
 
 log = logging.getLogger(__name__)

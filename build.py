@@ -116,9 +116,12 @@ def _do_documentation(context):
 
 
 def _run_tests(context):
-    cmd = (f"{context.python_binary} -m pytest -v --junitxml test_results.xml " +
-          "--cov=ansys --cov-report=xml --cov-report=html")
+    cmd = (
+        f"{context.python_binary} -m pytest -v --junitxml test_results.xml "
+        + "--cov=ansys --cov-report=xml --cov-report=html"
+    )
     subprocess.run(f"{cmd}", shell=True, check=True)
+
 
 steps = [
     ("venv", _do_venv),

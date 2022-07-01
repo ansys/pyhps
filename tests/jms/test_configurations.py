@@ -1,16 +1,17 @@
 import logging
 import unittest
+
 from marshmallow.utils import missing
 
 from ansys.rep.client.jms import Client
-from ansys.rep.client.jms.resource import Job, Project, JobDefinition
+from ansys.rep.client.jms.resource import Job, JobDefinition, Project
 from ansys.rep.client.jms.schema.job import JobSchema
 from tests.rep_test import REPTestCase
 
 log = logging.getLogger(__name__)
 
+
 class JobDefinitionsTest(REPTestCase):
-        
     def test_job_definition_delete(self):
         client = self.jms_client()
         proj_name = f"rep_client_test_jms_JobDefinitionTest_{self.run_id}"

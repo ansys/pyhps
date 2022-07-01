@@ -10,16 +10,17 @@ import sys
 import time
 import unittest
 import urllib.parse
+
 from marshmallow.utils import missing
 
 from ansys.rep.client.jms import Client
-from ansys.rep.client.jms.resource import Job, Project, JobDefinition
+from ansys.rep.client.jms.resource import Job, JobDefinition, Project
 from tests.rep_test import REPTestCase
 
 log = logging.getLogger(__name__)
 
+
 class REPClientTest(REPTestCase):
-    
     def test_authentication_workflows(self):
 
         client0 = Client(self.rep_url, self.username, self.password)
@@ -47,16 +48,16 @@ class REPClientTest(REPTestCase):
         client2.refresh_access_token()
 
     def test_client(self):
-        
+
         # This test assumes that the project mapdl_motorbike_frame already exists on the DCS server.
-        # In case, you can create such project running the script examples/mapdl_motorbike_frame/project_setup.py   
+        # In case, you can create such project running the script examples/mapdl_motorbike_frame/project_setup.py
 
         log.debug("=== Client ===")
         client = self.jms_client()
-        proj_name="mapdl_motorbike_frame"
+        proj_name = "mapdl_motorbike_frame"
 
         log.debug("=== Projects ===")
-        projects=client.get_projects()
+        projects = client.get_projects()
         log.debug(f"Projects: {[p.id for p in projects]}")
         project = None
         for p in projects:
@@ -67,14 +68,14 @@ class REPClientTest(REPTestCase):
             log.debug(f"Project: {project.id}")
             log.debug(f"project={project}")
 
-        new_proj=Project(name="New project", active=True)
-        new_proj=client.create_project(new_proj, replace=True)
+        new_proj = Project(name="New project", active=True)
+        new_proj = client.create_project(new_proj, replace=True)
         # Delete project again
         client.delete_project(new_proj)
 
         log.debug("=== JobDefinitions ===")
-        job_definitions=project.get_job_definitions(active=True)
-        job_def=job_definitions[0]
+        job_definitions = project.get_job_definitions(active=True)
+        job_def = job_definitions[0]
         log.debug(f"job_definition={job_def}")
 
         log.debug("=== Design Points ===")
@@ -88,20 +89,20 @@ class REPClientTest(REPTestCase):
 
         # Alternative access with manually instantiated project
         proj = client.get_projects(name=proj_name)[0]
-        evaluated_jobs=proj.get_jobs(eval_status="evaluated", fields="all")
+        evaluated_jobs = proj.get_jobs(eval_status="evaluated", fields="all")
         log.debug(f"Evaluated design points: {[j.id for j in evaluated_jobs]}")
 
         # Access design point data without objects
         dp_data = project.get_jobs(limit=3, as_objects=False)
         log.debug(f"dp_data={dp_data}")
-            
-        # Create some Jobs        
-        new_jobs=[ Job( name=f"new_dp_{i}", eval_status="pending" ) for i in range(10) ]
-        created_jobs=job_def.create_jobs(new_jobs)
+
+        # Create some Jobs
+        new_jobs = [Job(name=f"new_dp_{i}", eval_status="pending") for i in range(10)]
+        created_jobs = job_def.create_jobs(new_jobs)
 
         # Delete Jobs again
         job_def.delete_jobs(created_jobs)
 
-        
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     unittest.main()

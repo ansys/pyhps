@@ -10,20 +10,19 @@ import logging
 import time
 import unittest
 import uuid
-from tests.rep_test import REPTestCase
 
-from ansys.rep.client.jms import Client
-from ansys.rep.client.jms.resource import (Job, JobDefinition, Project, Task,
-                                           TaskDefinition)
-from ansys.rep.client.jms.schema.task import TaskSchema
 from examples.mapdl_motorbike_frame.project_setup import create_project
 from marshmallow.utils import missing
+
+from ansys.rep.client.jms import Client
+from ansys.rep.client.jms.resource import Job, JobDefinition, Project, Task, TaskDefinition
+from ansys.rep.client.jms.schema.task import TaskSchema
+from tests.rep_test import REPTestCase
 
 log = logging.getLogger(__name__)
 
 
 class TasksTest(REPTestCase):
-        
     def test_task_deserialization(self):
 
         task_dict = {
@@ -38,50 +37,79 @@ class TasksTest(REPTestCase):
             "eval_status": "evaluated",
             "trial_number": 1,
             "elapsed_time": 20.733581,
-            "task_definition_id": "02q3zCLSZjRkJhCzjVjyYn", 
+            "task_definition_id": "02q3zCLSZjRkJhCzjVjyYn",
             "job_id": "02q3zCLScqou7nbJBXFEfw",
             "evaluator_id": "9be2d91a-abb1-3b68-bc36-d23a990a9792",
             "license_context_id": None,
             "input_file_ids": ["02q3zEBtQFm0UcdNSLPvC9"],
-            "output_file_ids": ["02q3zEBtYSW3PYPwMOc6qu", "02q3zEBtV1yvNkLDw7PSWd", "02q3zEBtXIlsgj8Td92lzI", "02q3zEBtZ0oVfoCAEBDiP5", "02q3zEBtXfh5XvEnWc9c0w"],
+            "output_file_ids": [
+                "02q3zEBtYSW3PYPwMOc6qu",
+                "02q3zEBtV1yvNkLDw7PSWd",
+                "02q3zEBtXIlsgj8Td92lzI",
+                "02q3zEBtZ0oVfoCAEBDiP5",
+                "02q3zEBtXfh5XvEnWc9c0w",
+            ],
             "inherited_file_ids": ["02q3zEBtQFm0UcdNSLPvC9"],
-            "owned_file_ids": ["02q3zEBtYSW3PYPwMOc6qu", "02q3zEBtV1yvNkLDw7PSWd", "02q3zEBtXIlsgj8Td92lzI", "02q3zEBtZ0oVfoCAEBDiP5", "02q3zEBtXfh5XvEnWc9c0w"],
+            "owned_file_ids": [
+                "02q3zEBtYSW3PYPwMOc6qu",
+                "02q3zEBtV1yvNkLDw7PSWd",
+                "02q3zEBtXIlsgj8Td92lzI",
+                "02q3zEBtZ0oVfoCAEBDiP5",
+                "02q3zEBtXfh5XvEnWc9c0w",
+            ],
         }
-        
-        task = TaskSchema().load( task_dict )
 
-        self.assertEqual( task.id, "02q3zCLSbavqZAeO3VjChL" )    
+        task = TaskSchema().load(task_dict)
+
+        self.assertEqual(task.id, "02q3zCLSbavqZAeO3VjChL")
         self.assertEqual(task.__class__.__name__, "Task")
         self.assertEqual(task.eval_status, "evaluated")
         self.assertEqual(task.trial_number, 1)
-        self.assertAlmostEqual(task.elapsed_time, 20.733581 )
-        self.assertEqual( task.task_definition_id, "02q3zCLSZjRkJhCzjVjyYn" )
-        self.assertEqual( task.job_id, "02q3zCLScqou7nbJBXFEfw" )
-        self.assertEqual( task.evaluator_id, "9be2d91a-abb1-3b68-bc36-d23a990a9792" )
-        #self.assertEqual( task.uuid, "f6775a29-d98b-4048-a14d-ea86669e55d0")
-        #self.assertEqual( task.license_context_id, None)
-        self.assertEqual( task.input_file_ids, ["02q3zEBtQFm0UcdNSLPvC9"] )
-        self.assertEqual( task.output_file_ids, ["02q3zEBtYSW3PYPwMOc6qu", "02q3zEBtV1yvNkLDw7PSWd", "02q3zEBtXIlsgj8Td92lzI", "02q3zEBtZ0oVfoCAEBDiP5", "02q3zEBtXfh5XvEnWc9c0w"] )
-        self.assertEqual( task.inherited_file_ids, ["02q3zEBtQFm0UcdNSLPvC9"] )
-        self.assertEqual( task.owned_file_ids, ["02q3zEBtYSW3PYPwMOc6qu", "02q3zEBtV1yvNkLDw7PSWd", "02q3zEBtXIlsgj8Td92lzI", "02q3zEBtZ0oVfoCAEBDiP5", "02q3zEBtXfh5XvEnWc9c0w"] )
-
+        self.assertAlmostEqual(task.elapsed_time, 20.733581)
+        self.assertEqual(task.task_definition_id, "02q3zCLSZjRkJhCzjVjyYn")
+        self.assertEqual(task.job_id, "02q3zCLScqou7nbJBXFEfw")
+        self.assertEqual(task.evaluator_id, "9be2d91a-abb1-3b68-bc36-d23a990a9792")
+        # self.assertEqual( task.uuid, "f6775a29-d98b-4048-a14d-ea86669e55d0")
+        # self.assertEqual( task.license_context_id, None)
+        self.assertEqual(task.input_file_ids, ["02q3zEBtQFm0UcdNSLPvC9"])
+        self.assertEqual(
+            task.output_file_ids,
+            [
+                "02q3zEBtYSW3PYPwMOc6qu",
+                "02q3zEBtV1yvNkLDw7PSWd",
+                "02q3zEBtXIlsgj8Td92lzI",
+                "02q3zEBtZ0oVfoCAEBDiP5",
+                "02q3zEBtXfh5XvEnWc9c0w",
+            ],
+        )
+        self.assertEqual(task.inherited_file_ids, ["02q3zEBtQFm0UcdNSLPvC9"])
+        self.assertEqual(
+            task.owned_file_ids,
+            [
+                "02q3zEBtYSW3PYPwMOc6qu",
+                "02q3zEBtV1yvNkLDw7PSWd",
+                "02q3zEBtXIlsgj8Td92lzI",
+                "02q3zEBtZ0oVfoCAEBDiP5",
+                "02q3zEBtXfh5XvEnWc9c0w",
+            ],
+        )
 
     def test_task_integration(self):
-        
+
         # This test assumes that the project mapdl_motorbike_frame already exists on the DCS server.
-        # In case, you can create such project running the script examples/mapdl_motorbike_frame/project_setup.py   
+        # In case, you can create such project running the script examples/mapdl_motorbike_frame/project_setup.py
 
         client = self.jms_client()
         proj_name = "mapdl_motorbike_frame"
 
         project = client.get_projects(name=proj_name, sort="-creation_time")[0]
         tasks = project.get_tasks(limit=5)
-        self.assertEqual( len(tasks), 5 )
-        
+        self.assertEqual(len(tasks), 5)
+
         jobs = project.get_jobs(limit=5)
         for job in jobs:
             tasks = job.get_tasks()
-            self.assertEqual( tasks[0].job_id, job.id )
+            self.assertEqual(tasks[0].job_id, job.id)
 
     def test_job_sync(self):
 
@@ -90,48 +118,52 @@ class TasksTest(REPTestCase):
         client = self.jms_client()
         proj_name = f"test_desing_point_sync_{uuid.uuid4().hex[:8]}"
 
-        project = Project(name=proj_name, active=False, priority=10, display_name="test_desing_point_sync")
+        project = Project(
+            name=proj_name, active=False, priority=10, display_name="test_desing_point_sync"
+        )
         project = client.create_project(project, replace=True)
 
         task_def_1 = TaskDefinition(
-            name="Task.1", 
+            name="Task.1",
             application_name="NonExistingApp",
             application_version="1.0.0",
             execution_command="%executable%",
             max_execution_time=10.0,
             execution_level=0,
-            num_trials=1
+            num_trials=1,
         )
         task_def_1 = project.create_task_definitions([task_def_1])[0]
-        job_def = JobDefinition(name="JobDefinition.1", active=True, task_definition_ids=[task_def_1.id])
+        job_def = JobDefinition(
+            name="JobDefinition.1", active=True, task_definition_ids=[task_def_1.id]
+        )
         job_def = project.create_job_definitions([job_def])[0]
-        
+
         jobs = []
         for i in range(num_jobs):
-            jobs.append( Job( name=f"Job.{i}", eval_status="pending") )
+            jobs.append(Job(name=f"Job.{i}", eval_status="pending"))
         jobs = job_def.create_jobs(jobs)
 
         for job in jobs:
             tasks = job.get_tasks()
-            self.assertEqual( len(tasks), 1 )
-            self.assertEqual( tasks[0].eval_status, "pending" )
+            self.assertEqual(len(tasks), 1)
+            self.assertEqual(tasks[0].eval_status, "pending")
 
         # add a second process step
         task_def_2 = TaskDefinition(
-            name="Task.2", 
+            name="Task.2",
             application_name="NonExistingApp",
             application_version="1.0.0",
             execution_command="%executable%",
             max_execution_time=10.0,
             execution_level=1,
-            num_trials=1
+            num_trials=1,
         )
         task_def_2 = project.create_task_definitions([task_def_2])[0]
         job_def = project.get_job_definitions()[0]
         job_def.task_definition_ids.append(task_def_2.id)
         job_def = project.update_job_definitions([job_def])[0]
 
-        # sync design points individually 
+        # sync design points individually
         jobs = project.get_jobs()
         for job in jobs:
             job._sync()
@@ -139,11 +171,11 @@ class TasksTest(REPTestCase):
         # verify that tasks were added and they're inactive
         for job in jobs:
             tasks = job.get_tasks()
-            self.assertEqual( len(tasks), 2 )
-            self.assertEqual( tasks[0].eval_status, "pending" )
-            self.assertEqual( tasks[0].task_definition_snapshot.name, "Task.1" )
-            self.assertEqual( tasks[1].eval_status, "inactive" )
-        
+            self.assertEqual(len(tasks), 2)
+            self.assertEqual(tasks[0].eval_status, "pending")
+            self.assertEqual(tasks[0].task_definition_snapshot.name, "Task.1")
+            self.assertEqual(tasks[1].eval_status, "inactive")
+
         # set new tasks to pending
         tasks = project.get_tasks(eval_status="inactive")
         for task in tasks:
@@ -153,42 +185,42 @@ class TasksTest(REPTestCase):
         # verify that tasks are pending and that task_definition_snapshots were created
         for job in jobs:
             tasks = job.get_tasks()
-            self.assertEqual( len(tasks), 2 )
-            self.assertEqual( tasks[0].eval_status, "pending" )
-            self.assertEqual( tasks[0].task_definition_snapshot.name, "Task.1" )
-            self.assertEqual( tasks[1].eval_status, "pending" )
-            self.assertEqual( tasks[1].task_definition_snapshot.name, "Task.2" )
+            self.assertEqual(len(tasks), 2)
+            self.assertEqual(tasks[0].eval_status, "pending")
+            self.assertEqual(tasks[0].task_definition_snapshot.name, "Task.1")
+            self.assertEqual(tasks[1].eval_status, "pending")
+            self.assertEqual(tasks[1].task_definition_snapshot.name, "Task.2")
 
         # add a third process step
         task_def_3 = TaskDefinition(
-            name="Task.3", 
+            name="Task.3",
             application_name="NonExistingApp",
             application_version="1.0.0",
             execution_command="%executable%",
             max_execution_time=10.0,
             execution_level=0,
-            num_trials=1
+            num_trials=1,
         )
         task_def_3 = project.create_task_definitions([task_def_3])[0]
         job_def.task_definition_ids.append(task_def_3.id)
         job_def = project.update_job_definitions([job_def])[0]
-        
+
         # sync the first 2 design points in bulk
         project._sync_jobs(jobs[:2])
 
         # verify that tasks were added and they're inactive
         for job in jobs[:2]:
             tasks = job.get_tasks()
-            self.assertEqual( len(tasks), 3 )
-            self.assertEqual( tasks[0].eval_status, "pending" )
-            self.assertEqual( tasks[1].eval_status, "pending" )
-            self.assertEqual( tasks[2].eval_status, "inactive" )
+            self.assertEqual(len(tasks), 3)
+            self.assertEqual(tasks[0].eval_status, "pending")
+            self.assertEqual(tasks[1].eval_status, "pending")
+            self.assertEqual(tasks[2].eval_status, "inactive")
 
         # verify that the third task wasn't added for DP2
         tasks = jobs[2].get_tasks()
-        self.assertEqual( len(tasks), 2 )
-        self.assertEqual( tasks[0].eval_status, "pending" )
-        self.assertEqual( tasks[1].eval_status, "pending" )
+        self.assertEqual(len(tasks), 2)
+        self.assertEqual(tasks[0].eval_status, "pending")
+        self.assertEqual(tasks[1].eval_status, "pending")
 
         client.delete_project(project)
 
@@ -196,12 +228,15 @@ class TasksTest(REPTestCase):
         job = project.get_jobs(id=job_id)[0]
         t1 = datetime.datetime.now()
         dt = 0.0
-        while job.eval_status not in ["evaluated", "timeout", "failed", "aborted"] and dt < max_eval_time:
+        while (
+            job.eval_status not in ["evaluated", "timeout", "failed", "aborted"]
+            and dt < max_eval_time
+        ):
             time.sleep(2)
             log.info(f"   Waiting for job '{job.name}' to complete ... ")
             job = project.get_jobs(id=job_id)[0]
-            dt = (datetime.datetime.now()-t1).total_seconds()
-        
+            dt = (datetime.datetime.now() - t1).total_seconds()
+
         return job
 
     def test_sync_task_definition_snapshot(self):
@@ -211,19 +246,20 @@ class TasksTest(REPTestCase):
         client = self.jms_client()
         proj_name = f"test_sync_task_definition_snapshot_{uuid.uuid4().hex[:8]}"
 
-        project = create_project(
-            client=client, name=proj_name, num_jobs=1)
+        project = create_project(client=client, name=proj_name, num_jobs=1)
 
         job = project.get_jobs()[0]
         tasks = job.get_tasks()
-        self.assertEqual( len(tasks), 1 )
-        self.assertEqual( tasks[0].task_definition_snapshot.software_requirements[0].name, "ANSYS Mechanical APDL" )
+        self.assertEqual(len(tasks), 1)
+        self.assertEqual(
+            tasks[0].task_definition_snapshot.software_requirements[0].name, "ANSYS Mechanical APDL"
+        )
 
         job_def = project.get_job_definitions(id=job.job_definition_id)[0]
         task_def = project.get_task_definitions(id=job_def.task_definition_ids[0])[0]
-        max_eval_time = task_def.max_execution_time*4
+        max_eval_time = task_def.max_execution_time * 4
         job = self.wait_for_evaluation_of_job(project, job.id, max_eval_time)
-        self.assertEqual( job.eval_status, "evaluated" )
+        self.assertEqual(job.eval_status, "evaluated")
 
         # modify application of the process step
         task_def = project.get_task_definitions(id=job_def.task_definition_ids[0])[0]
@@ -233,11 +269,14 @@ class TasksTest(REPTestCase):
         # the application in the task.task_definition_snapshot should not be modified
         job._sync()
         tasks = job.get_tasks()
-        self.assertEqual( len(tasks), 1 )
-        self.assertEqual( tasks[0].eval_status, "evaluated" )
-        self.assertEqual( tasks[0].task_definition_snapshot.software_requirements[0].name, "ANSYS Mechanical APDL" )
-        
+        self.assertEqual(len(tasks), 1)
+        self.assertEqual(tasks[0].eval_status, "evaluated")
+        self.assertEqual(
+            tasks[0].task_definition_snapshot.software_requirements[0].name, "ANSYS Mechanical APDL"
+        )
+
         client.delete_project(project)
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     unittest.main()

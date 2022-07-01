@@ -6,23 +6,40 @@
 # Author(s): F.Negri
 # ----------------------------------------------------------
 
-import os
 import json
+import os
 from zipfile import ZipFile
 
 from apispec import APISpec
 from apispec.ext.marshmallow import MarshmallowPlugin
 
 from ansys.rep.client import __version__
-from ansys.rep.client.jms.schema.object_reference import (IdReference, IdReferenceList)
-from ansys.rep.client.jms.resource import (Project, ProjectPermission, LicenseContext,
-    Job, Algorithm, Selection, JobDefinition, 
-    ParameterMapping, FloatParameterDefinition, BoolParameterDefinition, IntParameterDefinition, StringParameterDefinition,
-    Task, Evaluator,
-    File, FitnessDefinition, FitnessTermDefinition,
-    TaskDefinition, SuccessCriteria, Licensing, TaskDefinitionTemplate)
-
 from ansys.rep.client.auth.resource import User
+from ansys.rep.client.jms.resource import (
+    Algorithm,
+    BoolParameterDefinition,
+    Evaluator,
+    File,
+    FitnessDefinition,
+    FitnessTermDefinition,
+    FloatParameterDefinition,
+    IntParameterDefinition,
+    Job,
+    JobDefinition,
+    LicenseContext,
+    Licensing,
+    ParameterMapping,
+    Project,
+    ProjectPermission,
+    Selection,
+    StringParameterDefinition,
+    SuccessCriteria,
+    Task,
+    TaskDefinition,
+    TaskDefinitionTemplate,
+)
+from ansys.rep.client.jms.schema.object_reference import IdReference, IdReferenceList
+
 
 def custom_field_attributes(self, field, **kwargs):
     ret = {}
@@ -36,24 +53,40 @@ def custom_field_attributes(self, field, **kwargs):
 
     return ret
 
+
 def generate_openapi_specs():
     """Auto-generate schemas documentation in JSON format."""
 
-    tgt_dir = os.path.join('doc', 'schemas')
+    tgt_dir = os.path.join("doc", "schemas")
     if not os.path.exists(tgt_dir):
         os.makedirs(tgt_dir)
 
-    for resource in [Project, ProjectPermission, LicenseContext,
-                      Job, Algorithm, Selection, JobDefinition, 
-                      ParameterMapping, 
-                      FloatParameterDefinition, BoolParameterDefinition, 
-                      IntParameterDefinition, StringParameterDefinition,
-                      Task, Evaluator, File, FitnessDefinition, FitnessTermDefinition,
-                      TaskDefinition, SuccessCriteria, Licensing, TaskDefinitionTemplate,
-                      User
-                   ]:
+    for resource in [
+        Project,
+        ProjectPermission,
+        LicenseContext,
+        Job,
+        Algorithm,
+        Selection,
+        JobDefinition,
+        ParameterMapping,
+        FloatParameterDefinition,
+        BoolParameterDefinition,
+        IntParameterDefinition,
+        StringParameterDefinition,
+        Task,
+        Evaluator,
+        File,
+        FitnessDefinition,
+        FitnessTermDefinition,
+        TaskDefinition,
+        SuccessCriteria,
+        Licensing,
+        TaskDefinitionTemplate,
+        User,
+    ]:
 
-        ma_plugin = MarshmallowPlugin() 
+        ma_plugin = MarshmallowPlugin()
         spec = APISpec(
             title="pyrep",
             version=__version__,
@@ -61,16 +94,16 @@ def generate_openapi_specs():
             plugins=[ma_plugin],
         )
 
-        ma_plugin.converter.add_attribute_function(custom_field_attributes)  
+        ma_plugin.converter.add_attribute_function(custom_field_attributes)
         object_name = resource.__name__
-        spec.components.schema(object_name, schema=resource.Meta.schema)    
-        prop_dict = spec.to_dict()['components']['schemas'][object_name]["properties"]
+        spec.components.schema(object_name, schema=resource.Meta.schema)
+        prop_dict = spec.to_dict()["components"]["schemas"][object_name]["properties"]
 
         modified_prop_dict = {}
         for k, v in prop_dict.items():
             if k == "obj_type":
                 continue
-            v.pop('additionalProperties', None)
+            v.pop("additionalProperties", None)
 
             if "custom_type" in v:
                 v["type"] = v["custom_type"]
@@ -80,21 +113,27 @@ def generate_openapi_specs():
             else:
                 modified_prop_dict[k] = v
 
-        with open(f'{os.path.join(tgt_dir, object_name)}.json', 'w') as outfile:
-           outfile.write( json.dumps( {"properties": modified_prop_dict}, indent=4) )
+        with open(f"{os.path.join(tgt_dir, object_name)}.json", "w") as outfile:
+            outfile.write(json.dumps({"properties": modified_prop_dict}, indent=4))
+
 
 def archive_examples(examples):
     """Create a zip archive for each listed example included in the examples folder."""
 
     examples = {
-        "mapdl_motorbike_frame" : ["project_setup.py", "motorbike_frame_results.txt", "motorbike_frame.mac"]
+        "mapdl_motorbike_frame": [
+            "project_setup.py",
+            "motorbike_frame_results.txt",
+            "motorbike_frame.mac",
+        ]
     }
 
     for name, files in examples.items():
-        with ZipFile(f'{name}.zip', 'w') as zip_archive:
+        with ZipFile(f"{name}.zip", "w") as zip_archive:
             for file in files:
-                zip_archive.write(os.path.join('examples', name, file), file)
+                zip_archive.write(os.path.join("examples", name, file), file)
+
 
 if __name__ == "__main__":
     generate_openapi_specs()
-    archive_examples(['mapdl_motorbike_frame'])
+    archive_examples(["mapdl_motorbike_frame"])

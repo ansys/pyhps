@@ -8,11 +8,11 @@
 import logging
 
 from ..schema.task_definition import (
-    TaskDefinitionSchema,
-    SuccessCriteriaSchema,
     LicensingSchema,
     ResourceRequirementsSchema,
     SoftwareSchema,
+    SuccessCriteriaSchema,
+    TaskDefinitionSchema,
 )
 from .base import Object
 

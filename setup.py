@@ -6,15 +6,15 @@ from setuptools import find_namespace_packages, setup
 # to get the package version.
 root = os.path.abspath(os.path.dirname(__file__))
 about = {}
-with open(os.path.join(root, 'ansys', 'rep', 'client', '__version__.py'), 'r') as f:
+with open(os.path.join(root, "ansys", "rep", "client", "__version__.py"), "r") as f:
     exec(f.read(), about)
 
 setup(
-    name='ansys-rep',
+    name="ansys-rep",
     version=about["__version__"],
     url=about["__url__"],
     author="ANSYS, Inc.",
-    author_email='pyansys.support@ansys.com',
+    author_email="pyansys.support@ansys.com",
     maintainer="PyAnsys developers",
     maintainer_email="pyansys.maintainers@ansys.com",
     classifiers=[
@@ -28,9 +28,9 @@ setup(
     description="A python client for Ansys REP - Remote Execution Platform",
     long_description=open("README.rst").read(),
     install_requires=[
-        'requests>=2.21.0',
-        'marshmallow>=3.0.0',
-        'marshmallow_oneofschema>=2.0.1',
+        "requests>=2.21.0",
+        "marshmallow>=3.0.0",
+        "marshmallow_oneofschema>=2.0.1",
         "cachetools>=4.0.0",
         "python-keycloak>=1.5.0",
     ],

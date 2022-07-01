@@ -9,31 +9,38 @@ import logging
 import time
 import unittest
 import uuid
-from tests.rep_test import REPTestCase
 
 import pytest
+
 from ansys.rep.client.auth import Client as AuthClient
 from ansys.rep.client.auth import User
 from ansys.rep.client.exceptions import ClientError
 from ansys.rep.client.jms import Client
-from ansys.rep.client.jms.resource import (JobDefinition, Project,
-                                           ProjectPermission)
+from ansys.rep.client.jms.resource import JobDefinition, Project, ProjectPermission
+from tests.rep_test import REPTestCase
 
 log = logging.getLogger(__name__)
 
+
 def add_job_definition_to_project(project, config_name):
-    log.info( f"=== Add job_definition {config_name} to project {project.id}")
+    log.info(f"=== Add job_definition {config_name} to project {project.id}")
     job_def = JobDefinition(name=config_name, active=True)
     project.create_job_definitions([job_def])
+
 
 def grant_permissions(proj, user):
     log.info(f"=== Granting permissions to {user.username}")
     permissions = proj.get_permissions()
     log.info(f"Permissions before: {permissions}")
-    permissions.append(ProjectPermission(permission_type='user', value_name=user.username, role='writer', value_id=user.id))
+    permissions.append(
+        ProjectPermission(
+            permission_type="user", value_name=user.username, role="writer", value_id=user.id
+        )
+    )
     proj.update_permissions(permissions)
     permissions = proj.get_permissions()
     log.info(f"Permissions after: {permissions}")
+
 
 def remove_permissions(proj, user):
     log.info(f"=== Removing permissions to {user.username}")
@@ -44,8 +51,8 @@ def remove_permissions(proj, user):
     permissions = proj.get_permissions()
     log.info(f"Permissions after: {permissions}")
 
+
 class ProjectPermissionsTest(REPTestCase):
-        
     def test_get_project_permissions(self):
 
         client = self.jms_client()
@@ -55,10 +62,10 @@ class ProjectPermissionsTest(REPTestCase):
         proj = client.create_project(proj, replace=True)
 
         perms = proj.get_permissions()
-        self.assertEqual( len(perms), 1 )
-        self.assertEqual( perms[0].value_name, self.username )
-        self.assertEqual( perms[0].role, "admin" )
-        self.assertEqual( perms[0].permission_type, "user" )
+        self.assertEqual(len(perms), 1)
+        self.assertEqual(perms[0].value_name, self.username)
+        self.assertEqual(perms[0].role, "admin")
+        self.assertEqual(perms[0].permission_type, "user")
 
         # Delete project
         client.delete_project(proj)
@@ -74,21 +81,45 @@ class ProjectPermissionsTest(REPTestCase):
         existing_users = [u.username for u in auth_client.get_users()]
 
         if user_credentials["user1"]["username"] not in existing_users:
-            user1 = auth_client.create_user(User(username=user_credentials["user1"]["username"], password=user_credentials["user1"]["password"], is_admin=False))
+            user1 = auth_client.create_user(
+                User(
+                    username=user_credentials["user1"]["username"],
+                    password=user_credentials["user1"]["password"],
+                    is_admin=False,
+                )
+            )
         else:
-            user1 = [u for u in auth_client.get_users() if u.username == user_credentials["user1"]["username"]][0]
+            user1 = [
+                u
+                for u in auth_client.get_users()
+                if u.username == user_credentials["user1"]["username"]
+            ][0]
 
         log.info(f"User 1: {user1}")
 
         if user_credentials["user2"]["username"] not in existing_users:
-            user2 = auth_client.create_user(User(username=user_credentials["user2"]["username"], password=user_credentials["user2"]["password"], is_admin=False))
+            user2 = auth_client.create_user(
+                User(
+                    username=user_credentials["user2"]["username"],
+                    password=user_credentials["user2"]["password"],
+                    is_admin=False,
+                )
+            )
         else:
-            user2 = [u for u in auth_client.get_users() if u.username == user_credentials["user2"]["username"]][0]
+            user2 = [
+                u
+                for u in auth_client.get_users()
+                if u.username == user_credentials["user2"]["username"]
+            ][0]
 
         log.info(f"User 2: {user2}")
 
         # user1 creates a project and a config
-        client1 = Client(rep_url=self.rep_url, username=user1.username, password=user_credentials["user1"]["password"])       
+        client1 = Client(
+            rep_url=self.rep_url,
+            username=user1.username,
+            password=user_credentials["user1"]["password"],
+        )
         log.info(f"Client connected at {client1.rep_url} with user {user1.username}")
 
         proj = Project(name=proj_name, priority=1, active=True)
@@ -98,7 +129,7 @@ class ProjectPermissionsTest(REPTestCase):
         add_job_definition_to_project(proj, f"Config 1 - {user1.username}")
         self.assertEqual(len(proj.get_job_definitions()), 1)
 
-        # user1 shares the project with user2 
+        # user1 shares the project with user2
         grant_permissions(proj, user2)
         permissions = proj.get_permissions()
         self.assertEqual(len(permissions), 2)
@@ -106,7 +137,11 @@ class ProjectPermissionsTest(REPTestCase):
         self.assertIn(user2.username, [x.value_name for x in permissions])
 
         # user1 appends a config to the project
-        client2 = Client(rep_url=self.rep_url, username=user2.username, password=user_credentials["user2"]["password"])       
+        client2 = Client(
+            rep_url=self.rep_url,
+            username=user2.username,
+            password=user_credentials["user2"]["password"],
+        )
         log.info(f"Client connected at {client2.rep_url} with user {user2.username}")
 
         proj_user2 = client2.get_project(name=proj_name)
@@ -122,7 +157,11 @@ class ProjectPermissionsTest(REPTestCase):
         self.assertNotIn(user2.username, [x.value_name for x in permissions])
 
         # user2 reconnects and tries to get the project
-        client2 = Client(rep_url=self.rep_url, username=user2.username, password=user_credentials["user2"]["password"])   
+        client2 = Client(
+            rep_url=self.rep_url,
+            username=user2.username,
+            password=user_credentials["user2"]["password"],
+        )
 
         time.sleep(5)
 
@@ -131,13 +170,14 @@ class ProjectPermissionsTest(REPTestCase):
         try:
             proj_user2 = client2.get_project(id=proj_user2.id)
         except ClientError as e:
-            except_obj = e  
+            except_obj = e
             log.error(str(e))
 
         self.assertIsNotNone(except_obj)
         self.assertTrue(except_obj.response.status_code, 403)
-        
+
         client1.delete_project(proj)
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     unittest.main()

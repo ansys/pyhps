@@ -11,10 +11,11 @@ import os
 import time
 import uuid
 
-import requests
-from ansys.rep.client.exceptions import REPError
 from cachetools import TTLCache, cached
 from marshmallow.utils import missing
+import requests
+
+from ansys.rep.client.exceptions import REPError
 
 from ..schema.project import ProjectSchema
 from .algorithm import Algorithm
@@ -26,12 +27,7 @@ from .license_context import LicenseContext
 from .parameter_definition import ParameterDefinition
 from .parameter_mapping import ParameterMapping
 from .project_permission import ProjectPermission, update_permissions
-from .selection import (
-    create_selections,
-    delete_selections,
-    get_selections,
-    update_selections,
-)
+from .selection import create_selections, delete_selections, get_selections, update_selections
 from .task import Task
 from .task_definition import TaskDefinition
 

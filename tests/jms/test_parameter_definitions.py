@@ -9,27 +9,30 @@ import logging
 import sys
 import unittest
 import urllib.parse
+
 from marshmallow.utils import missing
 
-from ansys.rep.client.jms.resource import Project, JobDefinition
-from ansys.rep.client.jms.resource.parameter_definition import (BoolParameterDefinition,
-                                                                FloatParameterDefinition,
-                                                                IntParameterDefinition,
-                                                                StringParameterDefinition)
-from ansys.rep.client.jms.schema.parameter_definition import (ParameterDefinitionSchema,
-                                                              BoolParameterDefinitionSchema,
-                                                              FloatParameterDefinitionSchema,
-                                                              IntParameterDefinitionSchema,
-                                                              StringParameterDefinitionSchema)
+from ansys.rep.client.jms.resource import JobDefinition, Project
+from ansys.rep.client.jms.resource.parameter_definition import (
+    BoolParameterDefinition,
+    FloatParameterDefinition,
+    IntParameterDefinition,
+    StringParameterDefinition,
+)
+from ansys.rep.client.jms.schema.parameter_definition import (
+    BoolParameterDefinitionSchema,
+    FloatParameterDefinitionSchema,
+    IntParameterDefinitionSchema,
+    ParameterDefinitionSchema,
+    StringParameterDefinitionSchema,
+)
 from tests.rep_test import REPTestCase
 
 log = logging.getLogger(__name__)
 
 
 class ParameterDefitionTest(REPTestCase):
-        
     def test_parameter_definition_deserialization(self):
-        
 
         int_parameter = {
             "default": 4,
@@ -46,7 +49,7 @@ class ParameterDefitionTest(REPTestCase):
             "type": "int",
         }
 
-        ip = IntParameterDefinitionSchema().load( int_parameter )
+        ip = IntParameterDefinitionSchema().load(int_parameter)
         self.assertEqual(ip.__class__.__name__, "IntParameterDefinition")
         self.assertEqual(ip.type, "int")
         self.assertEqual(ip.id, int_parameter["id"])
@@ -55,7 +58,6 @@ class ParameterDefitionTest(REPTestCase):
         self.assertEqual(ip.cyclic, False)
         self.assertEqual(ip.upper_limit, 40)
         self.assertEqual(ip.quantity_name, int_parameter["quantity_name"])
-
 
         float_parameter = {
             "default": 1.0,
@@ -72,7 +74,7 @@ class ParameterDefitionTest(REPTestCase):
             "type": "float",
         }
 
-        fp = FloatParameterDefinitionSchema().load( float_parameter )
+        fp = FloatParameterDefinitionSchema().load(float_parameter)
         self.assertEqual(fp.__class__.__name__, "FloatParameterDefinition")
         self.assertEqual(fp.type, "float")
         self.assertEqual(fp.id, float_parameter["id"])
@@ -90,16 +92,12 @@ class ParameterDefitionTest(REPTestCase):
             "display_text": None,
             "mode": "input",
             "name": "tube4",
-            "value_list": [
-              "steel",
-              "carbon",
-              "resin"
-            ],
+            "value_list": ["steel", "carbon", "resin"],
             "id": "02q3Tt7pUwBe1GcX3WMYvs",
             "type": "string",
         }
 
-        sp = StringParameterDefinitionSchema().load( string_parameter )
+        sp = StringParameterDefinitionSchema().load(string_parameter)
         self.assertEqual(sp.__class__.__name__, "StringParameterDefinition")
         self.assertEqual(sp.type, "string")
         self.assertEqual(sp.id, string_parameter["id"])
@@ -118,7 +116,7 @@ class ParameterDefitionTest(REPTestCase):
             "type": "bool",
         }
 
-        bp = BoolParameterDefinitionSchema().load( bool_parameter )
+        bp = BoolParameterDefinitionSchema().load(bool_parameter)
         self.assertEqual(bp.__class__.__name__, "BoolParameterDefinition")
         self.assertEqual(bp.type, "bool")
         self.assertEqual(bp.id, bool_parameter["id"])
@@ -144,28 +142,27 @@ class ParameterDefitionTest(REPTestCase):
 
         serialized_ip = IntParameterDefinitionSchema().dump(ip)
 
-        self.assertFalse( "display_text" in serialized_ip.keys() )
-        self.assertFalse( "lower_limit" in serialized_ip.keys() )
-        self.assertEqual( serialized_ip["type"], "int" )
-        self.assertEqual( serialized_ip["name"], "int_param" )
-        self.assertEqual( serialized_ip["upper_limit"], 27 )
-        self.assertFalse( "mode" in serialized_ip.keys() )
+        self.assertFalse("display_text" in serialized_ip.keys())
+        self.assertFalse("lower_limit" in serialized_ip.keys())
+        self.assertEqual(serialized_ip["type"], "int")
+        self.assertEqual(serialized_ip["name"], "int_param")
+        self.assertEqual(serialized_ip["upper_limit"], 27)
+        self.assertFalse("mode" in serialized_ip.keys())
 
         sp = StringParameterDefinition(name="s_param", value_list=["l1", "l2"])
         serialized_sp = StringParameterDefinitionSchema().dump(sp)
-        self.assertEqual( serialized_sp["type"], "string" )
-        self.assertEqual( serialized_sp["value_list"], ["l1", "l2"] )
+        self.assertEqual(serialized_sp["type"], "string")
+        self.assertEqual(serialized_sp["value_list"], ["l1", "l2"])
 
         serialized_param_defs = ParameterDefinitionSchema().dump([ip, sp], many=True)
 
-        self.assertEqual( len(serialized_param_defs), 2 )
-        self.assertFalse( "id" in serialized_param_defs[0].keys() )
-        self.assertEqual( serialized_param_defs[0]["type"], "int" )
-        self.assertEqual( serialized_param_defs[1]["type"], "string" )
-        self.assertFalse( "display_text" in serialized_param_defs[0].keys() )
-        self.assertEqual( serialized_param_defs[1]["name"], "s_param" )
-        
-        
+        self.assertEqual(len(serialized_param_defs), 2)
+        self.assertFalse("id" in serialized_param_defs[0].keys())
+        self.assertEqual(serialized_param_defs[0]["type"], "int")
+        self.assertEqual(serialized_param_defs[1]["type"], "string")
+        self.assertFalse("display_text" in serialized_param_defs[0].keys())
+        self.assertEqual(serialized_param_defs[1]["name"], "s_param")
+
     def test_parameter_definition_integration(self):
 
         client = self.jms_client()
@@ -183,9 +180,9 @@ class ParameterDefitionTest(REPTestCase):
         job_def.parameter_definition_ids = [ip.id, sp.id]
         job_def = proj.create_job_definitions([job_def])[0]
         self.assertEqual(len(job_def.parameter_definition_ids), 2)
-        
-        fp = FloatParameterDefinition(  name="f_param", display_name="A Float Parameter" )
-        bp = BoolParameterDefinition(  name="b_param", display_name="A Bool Parameter", default=False )
+
+        fp = FloatParameterDefinition(name="f_param", display_name="A Float Parameter")
+        bp = BoolParameterDefinition(name="b_param", display_name="A Bool Parameter", default=False)
         fp = proj.create_parameter_definitions([fp])[0]
         bp = proj.create_parameter_definitions([bp])[0]
         job_def.parameter_definition_ids.extend([p.id for p in [bp, fp]])
@@ -205,5 +202,6 @@ class ParameterDefitionTest(REPTestCase):
         # Delete project
         client.delete_project(proj)
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     unittest.main()

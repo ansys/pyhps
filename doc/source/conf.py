@@ -1,13 +1,13 @@
 # -*- coding: utf-8 -*-
 #
 # Sphinx documentation configuration file
-import sys
-import os
-
-from ansys.rep.client import __version__, __company__, __external_version__, __version_no_dots__
 from datetime import datetime
+import os
+import sys
 
 from ansys_sphinx_theme import pyansys_logo_black as logo
+
+from ansys.rep.client import __company__, __external_version__, __version__, __version_no_dots__
 
 sys.path.append(os.path.abspath(os.path.dirname(__file__)))
 

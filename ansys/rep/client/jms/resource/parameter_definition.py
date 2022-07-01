@@ -11,8 +11,8 @@ from ..schema.parameter_definition import (
     BoolParameterDefinitionSchema,
     FloatParameterDefinitionSchema,
     IntParameterDefinitionSchema,
-    StringParameterDefinitionSchema,
     ParameterDefinitionSchema,
+    StringParameterDefinitionSchema,
 )
 from .base import Object
 

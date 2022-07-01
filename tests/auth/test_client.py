@@ -8,6 +8,7 @@
 import logging
 import sys
 import unittest
+
 import pytest
 
 from ansys.rep.client.auth import Client, User
@@ -15,8 +16,8 @@ from tests.rep_test import REPTestCase
 
 log = logging.getLogger(__name__)
 
-class AuthClientTest(REPTestCase):
 
+class AuthClientTest(REPTestCase):
     def test_auth_client(self):
 
         cl = Client(self.rep_url, username=self.username, password=self.password)
@@ -28,24 +29,28 @@ class AuthClientTest(REPTestCase):
                 return
 
         username = f"test_user_{self.run_id}"
-        new_user = User(username=username, password='test_auth_client', 
-                    email='test_auth_client@test.com', first_name='Test', last_name='User', 
-                    )
+        new_user = User(
+            username=username,
+            password="test_auth_client",
+            email="test_auth_client@test.com",
+            first_name="Test",
+            last_name="User",
+        )
         new_user = cl.create_user(new_user)
 
         self.assertEqual(new_user.username, username)
-        self.assertEqual(new_user.first_name, 'Test')
-        self.assertEqual(new_user.last_name, 'User')
-        self.assertEqual(new_user.email, 'test_auth_client@test.com')
+        self.assertEqual(new_user.first_name, "Test")
+        self.assertEqual(new_user.last_name, "User")
+        self.assertEqual(new_user.email, "test_auth_client@test.com")
 
-        new_user.email = 'update_email@test.com'
+        new_user.email = "update_email@test.com"
         new_user.last_name = "Smith"
         cl.update_user(new_user)
 
         self.assertEqual(new_user.username, username)
-        self.assertEqual(new_user.first_name, 'Test')
-        self.assertEqual(new_user.last_name, 'Smith')
-        self.assertEqual(new_user.email, 'update_email@test.com')
+        self.assertEqual(new_user.first_name, "Test")
+        self.assertEqual(new_user.last_name, "Smith")
+        self.assertEqual(new_user.email, "update_email@test.com")
 
         cl.delete_user(new_user)
 

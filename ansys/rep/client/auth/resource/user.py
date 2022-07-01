@@ -7,9 +7,11 @@
 # ----------------------------------------------------------
 import logging
 
-from ..schema.user import UserSchema
-from ansys.rep.client.jms.resource.base import Object
 from keycloak import KeycloakAdmin
+
+from ansys.rep.client.jms.resource.base import Object
+
+from ..schema.user import UserSchema
 
 log = logging.getLogger(__name__)
 

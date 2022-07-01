@@ -11,20 +11,20 @@ from ..connection import create_session
 from ..exceptions import raise_for_status
 from .resource.evaluator import get_evaluators, update_evaluators
 from .resource.project import (
+    archive_project,
     copy_project,
     create_project,
     delete_project,
     get_project,
     get_projects,
-    update_project,
-    archive_project,
     restore_project,
+    update_project,
 )
 from .resource.task_definition_template import (
-    get_task_definition_templates,
-    update_task_definition_templates,
     create_task_definition_templates,
     delete_task_definition_templates,
+    get_task_definition_templates,
+    update_task_definition_templates,
 )
 
 

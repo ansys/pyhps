@@ -7,6 +7,7 @@
 # ----------------------------------------------------------
 
 import json
+
 from ..schema.task_definition_template import TaskDefinitionTemplateSchema
 from .base import Object
 

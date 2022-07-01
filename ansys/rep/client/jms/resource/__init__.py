@@ -7,11 +7,11 @@
 # ----------------------------------------------------------
 
 from .algorithm import Algorithm
-from .job_definition import JobDefinition
-from .job_definition import Job
 from .evaluator import Evaluator
 from .file import File
 from .fitness_definition import FitnessDefinition, FitnessTermDefinition
+from .job_definition import Job, JobDefinition
+from .license_context import LicenseContext
 from .parameter_definition import (
     BoolParameterDefinition,
     FloatParameterDefinition,
@@ -19,16 +19,15 @@ from .parameter_definition import (
     StringParameterDefinition,
 )
 from .parameter_mapping import ParameterMapping
-from .task_definition import (
-    TaskDefinition,
-    SuccessCriteria,
-    Licensing,
-    Software,
-    ResourceRequirements,
-)
 from .project import Project
 from .project_permission import ProjectPermission
 from .selection import Selection
 from .task import Task
-from .license_context import LicenseContext
+from .task_definition import (
+    Licensing,
+    ResourceRequirements,
+    Software,
+    SuccessCriteria,
+    TaskDefinition,
+)
 from .task_definition_template import TaskDefinitionTemplate
