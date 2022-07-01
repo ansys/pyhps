@@ -12,7 +12,6 @@ from .base import BaseSchema
 
 
 class ProjectPermissionSchema(BaseSchema):
-
     class Meta(BaseSchema.Meta):
         pass
 

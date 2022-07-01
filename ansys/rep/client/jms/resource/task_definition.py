@@ -7,8 +7,14 @@
 # ----------------------------------------------------------
 import logging
 
-from ..schema.task_definition import TaskDefinitionSchema, SuccessCriteriaSchema, LicensingSchema, ResourceRequirementsSchema, SoftwareSchema
-from .base import Object, create_objects, delete_objects, get_objects
+from ..schema.task_definition import (
+    TaskDefinitionSchema,
+    SuccessCriteriaSchema,
+    LicensingSchema,
+    ResourceRequirementsSchema,
+    SoftwareSchema,
+)
+from .base import Object
 
 log = logging.getLogger(__name__)
 
@@ -18,18 +24,22 @@ class Software(Object):
         schema = SoftwareSchema
 
     def __init__(self, **kwargs):
-        super(Software, self).__init__(**kwargs) 
+        super(Software, self).__init__(**kwargs)
+
 
 SoftwareSchema.Meta.object_class = Software
+
 
 class ResourceRequirements(Object):
     class Meta:
         schema = ResourceRequirementsSchema
 
     def __init__(self, **kwargs):
-        super(ResourceRequirements, self).__init__(**kwargs) 
+        super(ResourceRequirements, self).__init__(**kwargs)
+
 
 ResourceRequirementsSchema.Meta.object_class = ResourceRequirements
+
 
 class SuccessCriteria(Object):
     """SuccessCriteria resource.
@@ -52,14 +62,17 @@ class SuccessCriteria(Object):
 
     .. jsonschema:: schemas/SuccessCriteria.json
 
-    """ 
+    """
+
     class Meta:
         schema = SuccessCriteriaSchema
 
     def __init__(self, **kwargs):
-        super(SuccessCriteria, self).__init__(**kwargs) 
+        super(SuccessCriteria, self).__init__(**kwargs)
+
 
 SuccessCriteriaSchema.Meta.object_class = SuccessCriteria
+
 
 class Licensing(Object):
     """Licensing resource.
@@ -75,14 +88,17 @@ class Licensing(Object):
 
     .. jsonschema:: schemas/Licensing.json
 
-    """ 
+    """
+
     class Meta:
         schema = LicensingSchema
 
     def __init__(self, **kwargs):
-        super(Licensing, self).__init__(**kwargs) 
+        super(Licensing, self).__init__(**kwargs)
+
 
 LicensingSchema.Meta.object_class = Licensing
+
 
 class TaskDefinition(Object):
     """TaskDefinition resource.
@@ -92,8 +108,8 @@ class TaskDefinition(Object):
 
     Example:
 
-        >>> ps = TaskDefinition( 
-                    name="MAPDL_run", 
+        >>> ps = TaskDefinition(
+                    name="MAPDL_run",
                     application_name="ANSYS Mechanical APDL",
                     application_version="20.1",
                     execution_command="%executable% -b -i %file:mac% -o file.out -np %num_cores%",
@@ -108,12 +124,14 @@ class TaskDefinition(Object):
 
     .. jsonschema:: schemas/TaskDefinition.json
 
-    """ 
+    """
+
     class Meta:
         schema = TaskDefinitionSchema
         rest_name = "task_definitions"
 
     def __init__(self, **kwargs):
-        super(TaskDefinition, self).__init__(**kwargs) 
+        super(TaskDefinition, self).__init__(**kwargs)
+
 
 TaskDefinitionSchema.Meta.object_class = TaskDefinition

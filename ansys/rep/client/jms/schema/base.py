@@ -10,7 +10,6 @@ from marshmallow import INCLUDE, Schema, fields, post_load
 
 
 class BaseSchema(Schema):
- 
     class Meta:
         ordered = True
         unknown = INCLUDE
@@ -20,6 +19,11 @@ class BaseSchema(Schema):
     def make_object(self, data, **kwargs):
         return self.Meta.object_class(**data)
 
+
 class ObjectSchema(BaseSchema):
- 
-    id = fields.String(allow_none=True, attribute="id", description="Unique ID to access the resource, generated internally by the server on creation.")
+
+    id = fields.String(
+        allow_none=True,
+        attribute="id",
+        description="Unique ID to access the resource, generated internally by the server on creation.",
+    )

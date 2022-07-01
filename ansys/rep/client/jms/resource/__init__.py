@@ -12,12 +12,20 @@ from .job_definition import Job
 from .evaluator import Evaluator
 from .file import File
 from .fitness_definition import FitnessDefinition, FitnessTermDefinition
-from .parameter_definition import (BoolParameterDefinition,
-                                   FloatParameterDefinition,
-                                   IntParameterDefinition,
-                                   StringParameterDefinition)
+from .parameter_definition import (
+    BoolParameterDefinition,
+    FloatParameterDefinition,
+    IntParameterDefinition,
+    StringParameterDefinition,
+)
 from .parameter_mapping import ParameterMapping
-from .task_definition import TaskDefinition, SuccessCriteria, Licensing, Software, ResourceRequirements
+from .task_definition import (
+    TaskDefinition,
+    SuccessCriteria,
+    Licensing,
+    Software,
+    ResourceRequirements,
+)
 from .project import Project
 from .project_permission import ProjectPermission
 from .selection import Selection

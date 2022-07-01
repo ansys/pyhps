@@ -5,13 +5,13 @@
 #
 # Author(s): F.Negri
 # ----------------------------------------------------------
-import json
 import logging
 
 from ..schema.task import TaskSchema
 from .base import Object
 
 log = logging.getLogger(__name__)
+
 
 class Task(Object):
     """Task resource.
@@ -25,12 +25,14 @@ class Task(Object):
     .. jsonschema:: schemas/Task.json
 
     """
+
     class Meta:
         schema = TaskSchema
         rest_name = "tasks"
 
     def __init__(self, project=None, **kwargs):
-        self.project=project
+        self.project = project
         super(Task, self).__init__(**kwargs)
+
 
 TaskSchema.Meta.object_class = Task

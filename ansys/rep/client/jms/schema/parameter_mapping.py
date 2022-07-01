@@ -14,8 +14,8 @@ from .object_reference import IdReference
 
 log = logging.getLogger(__name__)
 
-class ParameterMappingSchema(ObjectSchema):
 
+class ParameterMappingSchema(ObjectSchema):
     class Meta(ObjectSchema.Meta):
         pass
 
@@ -31,6 +31,16 @@ class ParameterMappingSchema(ObjectSchema):
     string_quote = fields.String(allow_none=True)
     true_string = fields.String(allow_none=True)
     false_string = fields.String(allow_none=True)
-    parameter_definition_id = IdReference(allow_none=True, attribute='parameter_definition_id', referenced_class="ParameterDefinition", description="ID of the linked parameter definition, see :class:`ansys.rep.client.jms.ParameterDefinition`.")
+    parameter_definition_id = IdReference(
+        allow_none=True,
+        attribute="parameter_definition_id",
+        referenced_class="ParameterDefinition",
+        description="ID of the linked parameter definition, see :class:`ansys.rep.client.jms.ParameterDefinition`.",
+    )
     task_definition_property = fields.String(allow_none=True)
-    file_id = IdReference(allow_none=True, attribute='file_id', referenced_class="File", description="ID of the file resource.")
+    file_id = IdReference(
+        allow_none=True,
+        attribute="file_id",
+        referenced_class="File",
+        description="ID of the file resource.",
+    )

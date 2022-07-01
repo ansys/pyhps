@@ -5,13 +5,13 @@
 #
 # Author(s): O.Koenig
 # ----------------------------------------------------------
-import json
 import logging
 
 from ..schema.license_context import LicenseContextSchema
 from .base import Object
 
 log = logging.getLogger(__name__)
+
 
 class LicenseContext(Object):
     """
@@ -35,5 +35,6 @@ class LicenseContext(Object):
 
     def __init__(self, **kwargs):
         super(LicenseContext, self).__init__(**kwargs)
+
 
 LicenseContextSchema.Meta.object_class = LicenseContext

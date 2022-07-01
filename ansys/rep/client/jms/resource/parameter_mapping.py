@@ -8,7 +8,7 @@
 import logging
 
 from ..schema.parameter_mapping import ParameterMappingSchema
-from .base import Object, create_objects, delete_objects, get_objects
+from .base import Object
 
 log = logging.getLogger(__name__)
 
@@ -27,12 +27,14 @@ class ParameterMapping(Object):
 
     .. jsonschema:: schemas/ParameterMapping.json
 
-    """ 
+    """
+
     class Meta:
         schema = ParameterMappingSchema
         rest_name = "parameter_mappings"
 
     def __init__(self, **kwargs):
-        super(ParameterMapping, self).__init__(**kwargs) 
+        super(ParameterMapping, self).__init__(**kwargs)
+
 
 ParameterMappingSchema.Meta.object_class = ParameterMapping

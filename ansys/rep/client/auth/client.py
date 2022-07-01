@@ -9,13 +9,14 @@
 from .authenticate import authenticate
 from ansys.rep.client.connection import create_session
 from .resource.user import get_users, create_user, update_user, delete_user
-from ..exceptions import APIError, ClientError, raise_for_status
+from ..exceptions import raise_for_status
+
 
 class Client(object):
     """A python interface to the Authorization Service API.
 
-    Users with admin rights (such as the default ``repadmin`` user) can create new 
-    users as well as modify or delete existing ones. Non-admin users are only allowed 
+    Users with admin rights (such as the default ``repadmin`` user) can create new
+    users as well as modify or delete existing ones. Non-admin users are only allowed
     to query the list of exisiting users.
 
     Args:
@@ -28,18 +29,24 @@ class Client(object):
         >>> from ansys.rep.client.auth import Client, User
         >>> cl = Client(rep_url="https://127.0.0.1/dcs/", username="repadmin", password="repadmin")
         >>> existing_users = cl.get_users()
-        >>> new_user = User(username='test_user', password='dummy', 
-        >>>                 email='test_user@test.com', fullname='Test User', 
+        >>> new_user = User(username='test_user', password='dummy',
+        >>>                 email='test_user@test.com', fullname='Test User',
         >>>                 is_admin=False)
         >>> cl.create_user(new_user)
 
     """
-    
-    def __init__(self, rep_url, *,
-        realm:str="rep", 
-        username:str='repadmin', password:str='repadmin', 
-        grant_type:str='password', scope='openid',
-        client_id:str='rep-cli', client_secret:str=None,
+
+    def __init__(
+        self,
+        rep_url,
+        *,
+        realm: str = "rep",
+        username: str = "repadmin",
+        password: str = "repadmin",
+        grant_type: str = "password",
+        scope="openid",
+        client_id: str = "rep-cli",
+        client_secret: str = None,
     ):
 
         self.rep_url = rep_url
@@ -53,23 +60,24 @@ class Client(object):
         self.client_id = client_id
         self.client_secret = client_secret
 
-        tokens = authenticate(url=self.rep_url,
+        tokens = authenticate(
+            url=self.rep_url,
             realm=realm,
             grant_type=grant_type,
             scope=scope,
             client_id=client_id,
             client_secret=client_secret,
-            username=username, 
-            password=password, 
-            )
+            username=username,
+            password=password,
+        )
         self.access_token = tokens["access_token"]
 
         self.session = create_session(self.access_token)
-        self.session.headers['content-type']  = 'application/json'
-        
+        self.session.headers["content-type"] = "application/json"
+
         # register hook to handle expiring of the refresh token
-        self.session.hooks['response'] = [raise_for_status]
-    
+        self.session.hooks["response"] = [raise_for_status]
+
     # def get_api_info(self):
     #     """Return info like version, build date etc of the Auth API the client is connected to."""
     #     r = self.session.get(self.auth_api_url)
@@ -81,7 +89,7 @@ class Client(object):
 
     def create_user(self, user, as_objects=True):
         """Create a new user.
-        
+
         Args:
             user (:class:`ansys.rep.client.auth.User`): A User object. Defaults to None.
             as_objects (bool, optional): Defaults to True.
@@ -90,7 +98,7 @@ class Client(object):
 
     def update_user(self, user, as_objects=True):
         """Modify an existing user.
-        
+
         Args:
             user (:class:`ansys.rep.client.auth.User`): A User object. Defaults to None.
             as_objects (bool, optional): Defaults to True.
@@ -99,7 +107,7 @@ class Client(object):
 
     def delete_user(self, user):
         """Delete an existing user.
-        
+
         Args:
             user (:class:`ansys.rep.client.auth.User`): A User object. Defaults to None.
         """

@@ -6,14 +6,12 @@
 # Author(s): O.Koenig
 # ----------------------------------------------------------
 
-from marshmallow import Schema, fields
-from marshmallow.validate import OneOf
+from marshmallow import fields
 
 from .base import BaseSchema
-from .object_reference import IdReference, IdReferenceList
+
 
 class LicenseContextSchema(BaseSchema):
-
     class Meta(BaseSchema.Meta):
         pass
 

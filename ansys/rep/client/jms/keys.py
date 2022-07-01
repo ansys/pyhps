@@ -6,4 +6,4 @@
 # Author(s): M.Pawlik
 # ----------------------------------------------------------
 
-OBJECT_ID_KEY      = "id"
+OBJECT_ID_KEY = "id"

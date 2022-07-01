@@ -6,11 +6,10 @@
 # Author(s): M.Pawlik, O.Koenig
 # ----------------------------------------------------------
 import logging
-import sys
 
-from marshmallow import ValidationError, fields
+from marshmallow import fields
 
-from ..keys import OBJECT_ID_KEY
+#from ..keys import OBJECT_ID_KEY
 
 log = logging.getLogger(__name__)
 
@@ -22,7 +21,8 @@ def id_from_ref(ref):
     # ref_dict = ref.get(OBJECT_REF_KEY)
     # if ref_dict is None:
     #     return None
-    # return ref_dict[OBJECT_ID_KEY] 
+    # return ref_dict[OBJECT_ID_KEY]
+
 
 def id_to_ref(cls_name, id):
     return id
@@ -33,7 +33,8 @@ def id_to_ref(cls_name, id):
     #             OBJECT_ID_KEY : int(id)
     #         }
     #     }
-        
+
+
 def id_list_to_ref(cls_name, ids):
     return ids
     # return {OBJECT_REF_LIST_KEY : {
@@ -42,6 +43,7 @@ def id_list_to_ref(cls_name, ids):
     #         }
     #     }
 
+
 def id_list_from_ref(ref):
     return ref
     # if ref is None:
@@ -49,7 +51,8 @@ def id_list_from_ref(ref):
     # ref_dict = ref.get(OBJECT_REF_LIST_KEY)
     # if ref_dict is None:
     #     return None
-    # return ref_dict[OBJECT_ID_LIST_KEY] 
+    # return ref_dict[OBJECT_ID_LIST_KEY]
+
 
 class IdReference(fields.Field):
     def __init__(self, referenced_class, *args, **kwargs):
@@ -66,6 +69,7 @@ class IdReference(fields.Field):
     #     if not isinstance(value, int):
     #         raise ValidationError("Not an object reference: %s" % value)
 
+
 class IdReferenceList(fields.Field):
     def __init__(self, referenced_class, *args, **kwargs):
         super(IdReferenceList, self).__init__(*args, **kwargs)
@@ -80,4 +84,3 @@ class IdReferenceList(fields.Field):
     # def _validate(self, value):
     #     if not isinstance(value, list):
     #         raise ValidationError("Not an object reference list: %s" % value)
-

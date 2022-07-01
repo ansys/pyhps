@@ -19,8 +19,8 @@ class TaskDefinitionTemplate(Object):
 
     Example:
 
-        >>> template = TaskDefinitionTemplate( 
-                    name="MAPDL_run", 
+        >>> template = TaskDefinitionTemplate(
+                    name="MAPDL_run",
                     application_name="ANSYS Mechanical APDL",
                     application_version="2022 R2",
                     data = {
@@ -42,14 +42,17 @@ class TaskDefinitionTemplate(Object):
 
     .. jsonschema:: schemas/TaskDefinitionTemplate.json
 
-    """ 
+    """
+
     class Meta:
         schema = TaskDefinitionTemplateSchema
 
     def __init__(self, **kwargs):
-        super(TaskDefinitionTemplate, self).__init__(**kwargs) 
+        super(TaskDefinitionTemplate, self).__init__(**kwargs)
+
 
 TaskDefinitionTemplateSchema.Meta.object_class = TaskDefinitionTemplate
+
 
 def get_task_definition_templates(client, as_objects=True, **query_params):
     """
@@ -58,38 +61,40 @@ def get_task_definition_templates(client, as_objects=True, **query_params):
 
     url = f"{client.jms_api_url}/task_definition_templates"
     r = client.session.get(url, params=query_params)
-    
-    data = r.json()['task_definition_templates'] 
+
+    data = r.json()["task_definition_templates"]
     if not as_objects:
         return data
 
-    templates  = TaskDefinitionTemplateSchema(many=True).load( data )
+    templates = TaskDefinitionTemplateSchema(many=True).load(data)
     return templates
+
 
 def update_task_definition_templates(client, templates):
     """
     Update task definition templates
     """
     url = f"{client.jms_api_url}/task_definition_templates"
-    
-    schema =  TaskDefinitionTemplateSchema(many=True)
+
+    schema = TaskDefinitionTemplateSchema(many=True)
     serialized_data = schema.dump(templates)
     json_data = json.dumps({"task_definition_templates": serialized_data})
 
     r = client.session.put(f"{url}", data=json_data)
 
-    data =  r.json()['task_definition_templates']
+    data = r.json()["task_definition_templates"]
 
-    objects = schema.load( data )
+    objects = schema.load(data)
     return objects
+
 
 def create_task_definition_templates(client, templates):
     """
     Create task definition templates
     """
     url = f"{client.jms_api_url}/task_definition_templates"
-    
-    schema =  TaskDefinitionTemplateSchema(many=True)
+
+    schema = TaskDefinitionTemplateSchema(many=True)
     serialized_data = schema.dump(templates)
     json_data = json.dumps({"task_definition_templates": serialized_data})
 
@@ -97,16 +102,17 @@ def create_task_definition_templates(client, templates):
 
     r = client.session.post(f"{url}", data=json_data)
 
-    data =  r.json()['task_definition_templates']
+    data = r.json()["task_definition_templates"]
 
-    objects = schema.load( data )
+    objects = schema.load(data)
     return objects
+
 
 def delete_task_definition_templates(client, templates):
     """
     Delete task definition templates
     """
     url = f"{client.jms_api_url}/task_definition_templates"
-    
-    json_data = json.dumps( {"source_ids" : [obj.id for obj in templates] } )
+
+    json_data = json.dumps({"source_ids": [obj.id for obj in templates]})
     r = client.session.delete(f"{url}", data=json_data)
