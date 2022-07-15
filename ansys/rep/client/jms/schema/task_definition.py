@@ -56,7 +56,7 @@ class SuccessCriteriaSchema(BaseSchema):
 
     required_output_parameters = IdReferenceList(
         "ParameterDefinition",
-        attribute="required_output_parameters",
+        attribute="required_output_parameter_ids",
         allow_none=True,
         description="List of names of required output parameters.",
     )

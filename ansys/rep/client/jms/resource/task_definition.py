@@ -54,7 +54,7 @@ class SuccessCriteria(Object):
                 expressions= ["values['tube1_radius']>=4.0", "values['tube1_thickness']>=0.5"],
                 required_output_file_ids=[ f.id for f in files[2:] ],
                 require_all_output_files=False,
-                required_output_parameter_names=["weight", "torsion_stiffness", "max_stress"],
+                required_output_parameter_ids=[...],
                 require_all_output_parameters=False
             )
 
