@@ -10,7 +10,7 @@ pyrep
    :target: https://pypi.org/project/ansys-rep/
    :alt: Python
 
-.. |pypi| image:: https://img.shields.io/pypi/v/pyrep.svg?logo=python&logoColor=white
+.. |pypi| image:: https://img.shields.io/pypi/v/ansys-rep.svg?logo=python&logoColor=white
    :target: https://pypi.org/project/ansys-rep
    :alt: PyPI
 
@@ -52,7 +52,7 @@ have the latest version of `pip`_. To do so, run:
 
     python -m pip install -U pip
 
-Then, you can simply execute:
+Then, as long as pyrep is a private pyAnsys module not published to pypi yet, you can execute:
 
 .. code:: bash
 
