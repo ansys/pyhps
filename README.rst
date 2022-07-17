@@ -105,7 +105,7 @@ need to follow these steps:
 
     .. code:: bash
     
-        python -m pip install --editable ansys-rep
+        python -m pip install --editable .
     
     #. Finally, verify your development installation by running:
 
