@@ -7,11 +7,11 @@ pyrep
    :alt: PyAnsys
 
 .. |python| image:: https://img.shields.io/badge/Python-%3E%3D3.7-blue
-   :target: https://pypi.org/project/pyrep/
+   :target: https://pypi.org/project/ansys-rep/
    :alt: Python
 
 .. |pypi| image:: https://img.shields.io/pypi/v/pyrep.svg?logo=python&logoColor=white
-   :target: https://pypi.org/project/pyrep
+   :target: https://pypi.org/project/ansys-rep
    :alt: PyPI
 
 .. |codecov| image:: https://codecov.io/gh/pyansys/pyrep/branch/main/graph/badge.svg
@@ -36,7 +36,7 @@ A Python client for Ansys REP - Remote Execution Platform
 How to install
 --------------
 
-.. TODO: Add a teaser for what can be done with PyACP.
+.. TODO: Update installation instructions, try to follow this general scheme as much as possible.
 
 At least two installation modes are provided: user and developer.
 
@@ -59,7 +59,7 @@ Then, you can simply execute:
 For developers
 ^^^^^^^^^^^^^^
 
-Installing Pyrep rep in developer mode allows
+Installing pyrep in developer mode allows
 you to modify the source and enhance it.
 
 Before contributing to the project, please refer to the `PyAnsys Developer's guide`_. You will 
@@ -69,7 +69,7 @@ need to follow these steps:
 
     .. code:: bash
 
-        git clone [https://github.com/pyansys/pyrep
+        git clone https://github.com/pyansys/pyrep
 
 #. Create a fresh-clean Python environment and activate it:
 
@@ -101,7 +101,7 @@ need to follow these steps:
 
     .. code:: bash
     
-        python -m pip install --editable ansys-rep-rep
+        python -m pip install --editable ansys-rep
     
     #. Finally, verify your development installation by running:
 
