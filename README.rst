@@ -33,6 +33,8 @@ pyrep
 
 A Python client for Ansys REP - Remote Execution Platform
 
+Note: The following README instructions are yet generic, not yet tested and updated for pyrep.
+
 How to install
 --------------
 
@@ -54,7 +56,9 @@ Then, you can simply execute:
 
 .. code:: bash
 
-    python -m pip install ansys-rep
+    python -m pip install git+https://github.com/pyansys/pyrep
+
+.. TODO: Enable this once pyrep is published:  python -m pip install ansys-rep
 
 For developers
 ^^^^^^^^^^^^^^
