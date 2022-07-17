@@ -1,10 +1,5 @@
 # Ansys pyrep - REP Python client #
 
-Todo: Merge README.rst from pyansys template with README.md from dcs python client
-
-[![Build Status](https://tfs.ansys.com:8443/tfs/ANSYS_Development/ANSYS-CH/_apis/build/status/DCS/DCS%20Python%20Client%20Win64)](https://tfs.ansys.com:8443/tfs/ANSYS_Development/ANSYS-CH/_build/latest?definitionId=5619)
-
-
 Python clients for Ansys Distributed Compute Services (DCS).
 
 ## Installation
