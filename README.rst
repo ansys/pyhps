@@ -33,7 +33,7 @@ pyrep
 
 A Python client for Ansys REP - Remote Execution Platform
 
-Note: The following README instructions are yet generic, not yet tested and updated for pyrep.
+Note: The following README instructions are not yet fully tested and adapted for pyrep.
 
 How to install
 --------------
