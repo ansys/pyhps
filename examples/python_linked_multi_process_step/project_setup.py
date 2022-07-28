@@ -1,22 +1,17 @@
-# ----------------------------------------------------------
-# Copyright (C) 2021 by
-# ANSYS Switzerland GmbH
-# www.ansys.com
-#
-# Author(s): R.Walker
-# ----------------------------------------------------------
+"""
+Python example with multiple dependent tasks and linked files in between.
 
+Author(s): R.Walker
+"""
 import argparse
 import logging
 import os
 import random
-import sys
 
 from ansys.rep.client import REPError
 from ansys.rep.client.jms import (
     Client,
     File,
-    FitnessDefinition,
     FloatParameterDefinition,
     Job,
     JobDefinition,
@@ -32,8 +27,7 @@ log = logging.getLogger(__name__)
 
 
 def main(client, num_task_definitions, num_jobs, start, inactive):
-    """Python project implementing multiple process steps and linkage of files between process steps"""
-
+    """Create project with multiple dependent Python tasks and linked files in between."""
     log.debug("=== Project")
     proj = Project(
         name=f"py_linked_{num_task_definitions}td",
