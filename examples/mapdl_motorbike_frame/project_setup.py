@@ -1,12 +1,8 @@
-# ----------------------------------------------------------
-# Copyright (C) 2019 by
-# ANSYS Switzerland GmbH
-# www.ansys.com
-#
-# Author(s): O.Koenig
-# ----------------------------------------------------------
-#
-# Example script to setup a DCS project with Python
+"""
+Example script to setup a simple MAPDL project with parameters in pyrep.
+
+Author(s): O.Koenig
+"""
 
 import argparse
 import logging
@@ -36,8 +32,8 @@ log = logging.getLogger(__name__)
 
 
 def create_project(client, name, num_jobs=20):
-    """Create a DCS project consisting of an ANSYS APDL beam model
-    of a tubular steel trellis motorbike-frame.
+    """
+    Create a DCS project consisting of an ANSYS APDL beam model of a motorbike-frame.
 
     After creating the project job_definition, 10 design points with randomly
     chosen parameter values are created and set to pending.
@@ -47,7 +43,6 @@ def create_project(client, name, num_jobs=20):
     for Design Optimization of a Tubular Steel Trellis Motorbike-Frame", 2003
     by U. M. Fasel, O. Koenig, M. Wintermantel and P. Ermanni.
     """
-
     log.debug("=== Project")
     proj = Project(name=name, priority=1, active=True)
     proj = client.create_project(proj, replace=True)
@@ -190,7 +185,8 @@ def create_project(client, name, num_jobs=20):
         )
     )
 
-    # For demonstration purpose we also define some parameter replacements that refer to task definition properties
+    # For demonstration purpose we also define some parameter replacements
+    # that refer to task definition properties
     param_mappings.append(
         ParameterMapping(
             key_string="name",
@@ -312,23 +308,18 @@ def create_project(client, name, num_jobs=20):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("-n", "--name", type=str, default="mapdl_motorbike_frame")
-    parser.add_argument("-j", "--num-jobs", type=int, default=500)
     parser.add_argument("-U", "--url", default="https://127.0.0.1:8443/rep")
     parser.add_argument("-u", "--username", default="repadmin")
     parser.add_argument("-p", "--password", default="repadmin")
-
     args = parser.parse_args()
 
     logger = logging.getLogger()
-    logging.basicConfig(
-        # format='[%(asctime)s | %(levelname)s] %(message)s',
-        format="%(message)s",
-        level=logging.DEBUG,
-    )
+    logging.basicConfig(format="%(message)s", level=logging.DEBUG)
 
     try:
-        log.debug("=== DCS connection")
+        log.info("Connect to REP JMS")
         client = Client(rep_url=args.url, username=args.username, password=args.password)
+        log.info(f"REP URL: {client.rep_url}")
         proj = create_project(client=client, name=args.name, num_jobs=args.num_jobs)
 
     except REPError as e:
