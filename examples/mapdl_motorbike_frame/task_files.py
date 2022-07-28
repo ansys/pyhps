@@ -52,7 +52,7 @@ def modify_task_files(client, project_name):
 
     # Add specific task files to tasks
     tasks = proj.get_tasks(limit=5)
-    for t in tasks:
+    for i, t in enumerate(tasks):
         log.debug(f"Modify task {t.id}")
         files = []
 
@@ -66,7 +66,7 @@ def modify_task_files(client, project_name):
         # Add an extra task input file
         mac2_fpath = os.path.join(cwd, f"task_input_file_{t.id}.mac")
         with open(mac2_fpath, "w") as f:
-            f.write(f"task_var={t.id}")
+            f.write(f"task_var={i}")
         files.append(
             File(
                 name="mac2",
