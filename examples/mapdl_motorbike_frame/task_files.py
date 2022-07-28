@@ -1,31 +1,34 @@
+"""Example to modify task files in a simple rep task definition."""
+import argparse
 import logging
 import os
 
 from ansys.rep.client import REPError
-from ansys.rep.client.jms import (
-    Client,
-    File,
-    FitnessDefinition,
-    Job,
-    JobDefinition,
-    Licensing,
-    Project,
-    SuccessCriteria,
-)
+from ansys.rep.client.jms import Client, File
 
 log = logging.getLogger(__name__)
 
 
-def main():
-
-    log.debug("=== Task files example script ===")
+def modify_task_files(client, project_name):
+    """Modify task files mapdl_motorbike_frame project."""
     cwd = os.path.dirname(__file__)
 
-    client = Client(rep_url="https://127.0.0.1/dcs", username="repadmin", password="repadmin")
-    proj = client.get_project("mapdl_motorbike_frame")
+    proj = client.get_project(name=project_name)
+    log.info(f"proj={proj}")
 
-    # Create a modified MAPDL input file that reads an extra task file and writes out an extra result file
-    mac_file = proj.get_files(id=1, content=True)[0]
+    # Identify mac input file in task definition
+    # We have only 1 task definition
+    task_def = proj.get_task_definitions()[0]
+    # We have only 1 input file
+    mac_file_id = task_def.input_file_ids[0]
+    log.info(f"mac_file_id={mac_file_id}")
+
+    # Todo: Fixme: The rest of the example does not yet work,
+    # the proj object seems to miss file storage information
+
+    # Create a modified MAPDL input file that reads an extra task file
+    # and writes out an extra result file
+    mac_file = proj.get_files(id=mac_file_id, content=True)[0]
     content = mac_file.content.decode("utf-8")
     lines = content.splitlines()
     for i, l in enumerate(lines):
@@ -99,23 +102,33 @@ def main():
 
     log.debug("=== Modified tasks and design points:")
     for t, dp in zip(tasks, dps):
-        log.debug(
-            f"Task: id={t.id} eval_status={t.eval_status} input_file_ids={t.input_file_ids} ouptut_file_ids={t.output_file_ids} Design point: id={dp.id} eval_status={dp.eval_status}"
-        )
+        msg = f"Task: id={t.id} eval_status={t.eval_status} "
+        msg += "input_file_ids={t.input_file_ids} ouptut_file_ids={t.output_file_ids} "
+        msg += "Job: id={dp.id} eval_status={dp.eval_status}"
+        log.debug(msg)
+
         # log.debug(f'{t}')
         # log.debug(f'{dp}')
 
 
 if __name__ == "__main__":
 
+    parser = argparse.ArgumentParser()
+    parser.add_argument("-n", "--name", type=str, default="mapdl_motorbike_frame")
+    parser.add_argument("-j", "--num-jobs", type=int, default=500)
+    parser.add_argument("-U", "--url", default="https://127.0.0.1:8443/rep")
+    parser.add_argument("-u", "--username", default="repadmin")
+    parser.add_argument("-p", "--password", default="repadmin")
+    args = parser.parse_args()
+
     logger = logging.getLogger()
-    logging.basicConfig(
-        # format='[%(asctime)s | %(levelname)s] %(message)s',
-        format="%(message)s",
-        level=logging.DEBUG,
-    )
+    logging.basicConfig(format="%(message)s", level=logging.DEBUG)
 
     try:
-        main()
+        log.info("Connect to REP JMS")
+        client = Client(rep_url=args.url, username=args.username, password=args.password)
+        log.info(f"REP URL: {client.rep_url}")
+
+        modify_task_files(client=client, project_name=args.name)
     except REPError as e:
         log.error(str(e))
