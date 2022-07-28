@@ -14,6 +14,10 @@ def modify_task_files(client, project_name):
     cwd = os.path.dirname(__file__)
 
     proj = client.get_project(name=project_name)
+    # Todo: Fix needed in the backend:
+    # Currently only the get_project() called with id returns all fields of project.
+    proj = client.get_project(id=proj.id)
+
     log.info(f"proj={proj}")
 
     # Identify mac input file in task definition
