@@ -1,16 +1,11 @@
-# ----------------------------------------------------------
-# Copyright (C) 2021 by
-# ANSYS Switzerland GmbH
-# www.ansys.com
-#
-# Author(s): R.Walker
-# ----------------------------------------------------------
 """
 Project setup script for multi process step and task file replacement testing.
 
+Author(s): R.Walker
+
 Run *python eval.py --help* for command line arguments.
 
-The project id is generated as 
+The project id is generated as
 "py_{NUM_PROCESS_STEPS}_ps" and the `_img` is appended if result image is written.
 
 Per default the project is inactive. You can activate the project with the `-a` flag
@@ -20,18 +15,15 @@ Example:
 ```
 python project_setup.py -n 100 -c 10 --no-images
 ```
-Create 100 design points 
-  and change the first 10 design points 
+Create 100 design points
+  and change the first 10 design points
   and do not write an result image.
-
-
 
 """
 import argparse
 import logging
 import os
 import random
-import sys
 
 from task_files import update_task_files
 
@@ -39,7 +31,6 @@ from ansys.rep.client import REPError
 from ansys.rep.client.jms import (
     Client,
     File,
-    FitnessDefinition,
     IntParameterDefinition,
     Job,
     JobDefinition,
@@ -66,13 +57,16 @@ def main(
     inactive,
     sequential,
 ):
-    """
-    Python project implementing multiple process steps and optional image generation
-    """
+    """Python project implementing multiple process steps and optional image generation."""
     log.debug("=== Project")
+    name = (
+        f"py_{num_task_definitions}ps{'_img' if images else ''}{'_seq' if sequential else '_par'}"
+    )
+    display_name = f"Python - {num_task_definitions} Task Defs {' - Img' if images else ''}"
+    display_name += f"{' - Sequential' if sequential else ' - Parallel'}"
     proj = Project(
-        name=f"py_{num_task_definitions}ps{'_img' if images else ''}{'_seq' if sequential else '_para'}",
-        display_name=f"Python - {num_task_definitions} Task Defs {' - Img' if images else ''}{' - Sequential' if sequential else ' - Parallel'}",
+        name=name,
+        display_name=display_name,
         priority=1,
         active=not inactive,
     )
@@ -293,13 +287,13 @@ if __name__ == "__main__":
         "--images",
         action="store_true",
         default=False,
-        help="Enable if you want images to be generated. Needs PIL installed ( `pip install pillow` ) ",
+        help="Enable if you want images generated. Needs PIL installed ( `pip install pillow` ) ",
     )
     parser.add_argument(
         "--sequential",
         action="store_true",
         default=False,
-        help="Whether to evaluate all process steps of a design point sequentially or in parallel (same execution level)",
+        help="Whether to evaluate all tasks of same exec level per job sequentially or in parallel",
     )
 
     args = parser.parse_args()
