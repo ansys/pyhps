@@ -1,23 +1,19 @@
-# ----------------------------------------------------------
-# Copyright (C) 2019 by
-# ANSYS Switzerland GmbH
-# www.ansys.com
-#
-# Author(s): F.Negri
-# ----------------------------------------------------------
+"""
+Example to setup a nonlinear tyre analysis job in REP.
+
+Author(s): F.Negri
+"""
 
 import argparse
 import logging
 import os
 import random
-import sys
 
 from ansys.rep.client import REPError
 from ansys.rep.client import __external_version__ as ansys_version
 from ansys.rep.client.jms import (
     Client,
     File,
-    FitnessDefinition,
     FloatParameterDefinition,
     Job,
     JobDefinition,
@@ -25,7 +21,6 @@ from ansys.rep.client.jms import (
     Project,
     ResourceRequirements,
     Software,
-    SuccessCriteria,
     TaskDefinition,
 )
 
@@ -33,10 +28,12 @@ log = logging.getLogger(__name__)
 
 
 def main(client, name, num_jobs):
-    """Create a DCS project consisting of the ANSYS APDL Tire-Performance Simulation
-    example included in the technology demonstration guide (td-57).
     """
+    Create project with Ansys MAPDL tire simulation.
 
+    ANSYS APDL Tire-Performance Simulation example as included
+    in the technology demonstration guide (td-57).
+    """
     log.debug("=== Project")
     proj = Project(name=name, display_name="MAPDL Tyre Performance", priority=1, active=True)
     proj = client.create_project(proj, replace=True)
