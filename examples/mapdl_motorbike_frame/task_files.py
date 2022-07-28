@@ -14,6 +14,10 @@ def modify_task_files(client, project_name):
     cwd = os.path.dirname(__file__)
 
     proj = client.get_project(name=project_name)
+    # Todo: Fix needed in the backend:
+    # Currently only the get_project() called with id returns all fields of project.
+    proj = client.get_project(id=proj.id)
+
     log.info(f"proj={proj}")
 
     # Identify mac input file in task definition
@@ -48,7 +52,7 @@ def modify_task_files(client, project_name):
 
     # Add specific task files to tasks
     tasks = proj.get_tasks(limit=5)
-    for t in tasks:
+    for i, t in enumerate(tasks):
         log.debug(f"Modify task {t.id}")
         files = []
 
@@ -62,7 +66,7 @@ def modify_task_files(client, project_name):
         # Add an extra task input file
         mac2_fpath = os.path.join(cwd, f"task_input_file_{t.id}.mac")
         with open(mac2_fpath, "w") as f:
-            f.write(f"task_var={t.id}")
+            f.write(f"task_var={i}")
         files.append(
             File(
                 name="mac2",
