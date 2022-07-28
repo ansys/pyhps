@@ -1,15 +1,12 @@
-# ----------------------------------------------------------
-# Copyright (C) 2019 by
-# ANSYS Switzerland GmbH
-# www.ansys.com
-#
-# Author(s): F.Negri
-# ----------------------------------------------------------
+"""
+Python tow-bar truss example.
+
+Author(s): F.Negri
+"""
 import argparse
 import logging
 import os
 import random
-import sys
 
 from ansys.rep.client import REPError
 from ansys.rep.client.jms import (
@@ -30,11 +27,12 @@ log = logging.getLogger(__name__)
 
 
 def main(client, num_jobs):
-    """Example of Python project implementing the Two-Bar Truss example
+    """
+    Create project solving a Two-Bar Truss problem with Python.
+
     from  R.L. Fox, Optimization Methods in Engineering Design, Addison Wesley, 1971
     See e.g. https://static1.squarespace.com/static/53eacd17e4b0588f78eb723c/t/586ea636d482e91c7a76bd61/1483646550748/Optimization+Methods+in+Engineering+Design.pdf
-    """
-
+    """  # noqa
     log.debug("=== Project")
     proj = Project(
         name="two_bar_truss_problem", display_name="Two-bar Truss Problem", priority=1, active=True
