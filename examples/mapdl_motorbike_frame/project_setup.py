@@ -308,6 +308,7 @@ def create_project(client, name, num_jobs=20):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("-n", "--name", type=str, default="mapdl_motorbike_frame")
+    parser.add_argument("-j", "--num-jobs", type=int, default=500)
     parser.add_argument("-U", "--url", default="https://127.0.0.1:8443/rep")
     parser.add_argument("-u", "--username", default="repadmin")
     parser.add_argument("-p", "--password", default="repadmin")
