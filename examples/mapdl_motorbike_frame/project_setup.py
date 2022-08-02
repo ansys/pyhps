@@ -146,7 +146,7 @@ def create_project(client, name, num_jobs=20):
     for pd in output_params:
         param_mappings.append(
             ParameterMapping(
-                key_string=pname,
+                key_string=pd.name,
                 tokenizer="=",
                 parameter_definition_id=pd.id,
                 file_id=file_ids["results"],
