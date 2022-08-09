@@ -112,7 +112,7 @@ class TaskDefinition(Object):
                     name="MAPDL_run",
                     application_name="ANSYS Mechanical APDL",
                     application_version="20.1",
-                    execution_command="%executable% -b -i %file:mac% -o file.out -np %num_cores%",
+                    execution_command="%executable% -b -i %file:mac% -o file.out -np %resource:num_cores%",
                     max_execution_time=20.0,
                     cpu_core_usage=1,
                     execution_level=0,
