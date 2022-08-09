@@ -229,7 +229,7 @@ def create_project(client, name, num_jobs=20):
             software_requirements=[
                 Software(name="ANSYS Mechanical APDL", version=ansys_version),
             ],
-            execution_command="%executable% -b -i %file:mac% -o file.out -np %num_cores%",
+            execution_command="%executable% -b -i %file:mac% -o file.out -np %resource:num_cores%",
             resource_requirements=ResourceRequirements(
                 cpu_core_usage=1.0,
                 memory=250,

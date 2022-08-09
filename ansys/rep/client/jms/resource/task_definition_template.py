@@ -25,7 +25,7 @@ class TaskDefinitionTemplate(Object):
                     application_name="ANSYS Mechanical APDL",
                     application_version="2022 R2",
                     data = {
-                        "execution_command": "%executable% -b -i %file:mac% -o file.out -np %num_cores%",
+                        "execution_command": "%executable% -b -i %file:mac% -o file.out -np %resource:num_cores%",
                         "output_files": [
                             {
                               "name": "out",

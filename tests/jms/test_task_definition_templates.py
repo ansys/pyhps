@@ -27,7 +27,7 @@ class TaskDefinitionTemplateTest(REPTestCase):
             "creation_time": "2021-09-16T12:27:44.771067+00:00",
             "name": "ANSYS Mechanical APDL 2021 R1 Default",
             "data": {
-                "execution_command": "%executable% -b nolist -i %file:dat% -o %file:out% -np %num_cores% -dis -s noread -p ansys",
+                "execution_command": "%executable% -b nolist -i %file:dat% -o %file:out% -np %resource:num_cores% -dis -s noread -p ansys",
                 "software_requirements": [
                     {
                         "name": "ANSYS Mechanical APDL",
