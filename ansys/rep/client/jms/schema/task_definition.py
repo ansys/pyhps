@@ -9,7 +9,7 @@
 from marshmallow import fields
 
 from .base import BaseSchema, ObjectSchema
-from .object_reference import IdReferenceList
+from .object_reference import IdReferenceList, IdReference
 
 
 class SoftwareSchema(BaseSchema):
@@ -84,10 +84,13 @@ class TaskDefinitionSchema(ObjectSchema):
     execution_command = fields.String(
         allow_none=True, description="Command to execute the process step."
     )
+    execution_script_id = IdReference(referenced_class="File", attribute=None, description="Application script to use")
 
     execution_level = fields.Int(
         description="Defines when this process step is executed if a sequence with multiple process steps is defined."
     )
+    execution_context = fields.Dict(allow_none=True, description="Additional arguments to pass to the executing command")
+    environment = fields.Dict(allow_none=True, description="Environment variables to set for the executed process")
     max_execution_time = fields.Float(
         allow_none=True, description="Maximum time in seconds for executing the process step."
     )
