@@ -31,7 +31,7 @@ from ansys.rep.client.jms import (
 log = logging.getLogger(__name__)
 
 
-def create_project(client, name, num_jobs=20):
+def create_project(client, name, num_jobs=20, use_exec_script=False):
     """
     Create a DCS project consisting of an ANSYS APDL beam model of a motorbike-frame.
 
@@ -76,6 +76,17 @@ def create_project(client, name, num_jobs=20):
 
     # Alternative, not recommended way, will collect ALL files matching file.*
     # files.append( File( name="all_files", evaluation_path="file.*", type="text/plain") )
+
+    if use_exec_script:
+        # Define and upload an exemplary exec script to run MAPDL
+        files.append(
+            File(
+                name="exec_mapdl",
+                evaluation_path="exec_mapdl.py",
+                type="application/x-python-code",
+                src=os.path.join(cwd, "exec_mapdl.py"),
+            )
+        )
 
     files = proj.create_files(files)
     file_ids = {f.name: f.id for f in files}
@@ -223,35 +234,37 @@ def create_project(client, name, num_jobs=20):
     )
 
     # Task definition
-    task_defs = [
-        TaskDefinition(
-            name="MAPDL_run",
-            software_requirements=[
-                Software(name="ANSYS Mechanical APDL", version=ansys_version),
-            ],
-            execution_command="%executable% -b -i %file:mac% -o file.out -np %resource:num_cores%",
-            resource_requirements=ResourceRequirements(
-                cpu_core_usage=1.0,
-                memory=250,
-                disk_space=5,
-            ),
-            execution_level=0,
-            max_execution_time=50.0,
-            num_trials=1,
-            input_file_ids=[f.id for f in files[:1]],
-            output_file_ids=[f.id for f in files[1:]],
-            success_criteria=SuccessCriteria(
-                return_code=0,
-                expressions=["values['tube1_radius']>=4.0", "values['tube1_thickness']>=0.5"],
-                required_output_file_ids=[file_ids["results"]],
-                require_all_output_files=False,
-                require_all_output_parameters=True,
-            ),
-            licensing=Licensing(
-                enable_shared_licensing=False
-            ),  # Shared licensing disabled by default
-        )
-    ]
+    task_def = TaskDefinition(
+        name="MAPDL_run",
+        software_requirements=[
+            Software(name="ANSYS Mechanical APDL", version=ansys_version),
+        ],
+        execution_command="%executable% -b -i %file:mac% -o file.out -np %resource:num_cores%",
+        resource_requirements=ResourceRequirements(
+            cpu_core_usage=1.0,
+            memory=250,
+            disk_space=5,
+        ),
+        execution_level=0,
+        max_execution_time=50.0,
+        num_trials=1,
+        input_file_ids=[f.id for f in files[:1]],
+        output_file_ids=[f.id for f in files[1:]],
+        success_criteria=SuccessCriteria(
+            return_code=0,
+            expressions=["values['tube1_radius']>=4.0", "values['tube1_thickness']>=0.5"],
+            required_output_file_ids=[file_ids["results"]],
+            require_all_output_files=False,
+            require_all_output_parameters=True,
+        ),
+        licensing=Licensing(enable_shared_licensing=False),  # Shared licensing disabled by default
+    )
+
+    if use_exec_script:
+        task_def.execution_command = None
+        task_def.execution_script_id = file_ids["exec_mapdl"]
+
+    task_defs = [task_def]
 
     # # Fitness definition
     fd = FitnessDefinition(error_fitness=10.0)
@@ -309,6 +322,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("-n", "--name", type=str, default="mapdl_motorbike_frame")
     parser.add_argument("-j", "--num-jobs", type=int, default=500)
+    parser.add_argument("-es", "--use-exec-script", default=False, action="store_true")
     parser.add_argument("-U", "--url", default="https://127.0.0.1:8443/rep")
     parser.add_argument("-u", "--username", default="repadmin")
     parser.add_argument("-p", "--password", default="repadmin")
@@ -321,7 +335,12 @@ if __name__ == "__main__":
         log.info("Connect to REP JMS")
         client = Client(rep_url=args.url, username=args.username, password=args.password)
         log.info(f"REP URL: {client.rep_url}")
-        proj = create_project(client=client, name=args.name, num_jobs=args.num_jobs)
+        proj = create_project(
+            client=client,
+            name=args.name,
+            num_jobs=args.num_jobs,
+            use_exec_script=args.use_exec_script,
+        )
 
     except REPError as e:
         log.error(str(e))
