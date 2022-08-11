@@ -9,7 +9,7 @@
 from marshmallow import fields
 
 from .base import BaseSchema, ObjectSchema
-from .object_reference import IdReferenceList, IdReference
+from .object_reference import IdReference, IdReferenceList
 
 
 class SoftwareSchema(BaseSchema):
@@ -79,27 +79,33 @@ class TaskDefinitionSchema(ObjectSchema):
     class Meta(ObjectSchema.Meta):
         pass
 
-    name = fields.String(allow_none=True, description="Name of the process step.")
+    name = fields.String(allow_none=True, description="Name.")
 
     execution_command = fields.String(
-        allow_none=True, description="Command to execute the process step."
+        allow_none=True, description="Command to execute (command or execution script is required)."
     )
-    execution_script_id = IdReference(referenced_class="File", attribute=None, description="Application script to use")
+    execution_script_id = IdReference(
+        referenced_class="File",
+        allow_none=True,
+        description="Script to execute (command or execution script is required).",
+    )
 
-    execution_level = fields.Int(
-        description="Defines when this process step is executed if a sequence with multiple process steps is defined."
+    execution_level = fields.Int(description="Define execution level for this task.")
+    execution_context = fields.Dict(
+        allow_none=True, description="Additional arguments to pass to the executing command"
     )
-    execution_context = fields.Dict(allow_none=True, description="Additional arguments to pass to the executing command")
-    environment = fields.Dict(allow_none=True, description="Environment variables to set for the executed process")
+    environment = fields.Dict(
+        allow_none=True, description="Environment variables to set for the executed process"
+    )
     max_execution_time = fields.Float(
-        allow_none=True, description="Maximum time in seconds for executing the process step."
+        allow_none=True, description="Maximum time in seconds for executing the task."
     )
     num_trials = fields.Int(
-        allow_none=True, description="Maximum number of attempts to execute the process step."
+        allow_none=True, description="Maximum number of attempts to execute the task."
     )
     store_output = fields.Bool(
         allow_none=True,
-        description="Specify whether to store the standard output of the process step.",
+        description="Specify whether to store the standard output of the task.",
     )
 
     input_file_ids = IdReferenceList(
