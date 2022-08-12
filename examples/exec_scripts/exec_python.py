@@ -21,7 +21,7 @@ class PythonExecution(ApplicationExecution):
 
         # Identify files
         script_file = next((f for f in self.context.input_files if f["name"] == "script"), None)
-        assert inp_file, "Python script file script missing"
+        assert script_file, "Python script file script missing"
         inp_file = next((f for f in self.context.input_files if f["name"] == "inp"), None)
         assert inp_file, "Input file inp missing"
 
