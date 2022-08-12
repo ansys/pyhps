@@ -1,3 +1,10 @@
+"""
+Basic execution script for MAPDL.
+
+Command formed: ansys.exe -b -i <inp_file> -o <out_file> -np 4
+
+"""
+
 import json
 import subprocess
 
@@ -14,8 +21,8 @@ class MAPDLExecution(ApplicationExecution):
             f.write(context_d)
 
         # Identify files
-        inp_file = next((f for f in self.context.input_files if f["name"] == "mac"), None)
-        assert inp_file, "Input file mac missing"
+        inp_file = next((f for f in self.context.input_files if f["name"] == "inp"), None)
+        assert inp_file, "Input file inp missing"
         out_file = next((f for f in self.context.output_files if f["name"] == "out"), None)
         assert out_file, "Output file out missing"
 
@@ -32,6 +39,9 @@ class MAPDLExecution(ApplicationExecution):
         # Use properties from resource requirements
         num_cores = self.context.resource_requirements["num_cores"]
 
+        # Form command
         cmd = f"{exe} -b -i {inp_file['path']} -o {out_file['path']} -np {num_cores}"
+
+        # Execute command
         log.info(f"Executing: {cmd}")
         subprocess.run(cmd, shell=True, check=True)

@@ -52,7 +52,7 @@ def create_project(client, name, num_jobs=20, use_exec_script=False):
     files = []
     files.append(
         File(
-            name="mac",
+            name="inp",
             evaluation_path="motorbike_frame.mac",
             type="text/plain",
             src=os.path.join(cwd, "motorbike_frame.mac"),
@@ -84,7 +84,7 @@ def create_project(client, name, num_jobs=20, use_exec_script=False):
                 name="exec_mapdl",
                 evaluation_path="exec_mapdl.py",
                 type="application/x-python-code",
-                src=os.path.join(cwd, "exec_mapdl.py"),
+                src=os.path.join(cwd, "..", "exec_scripts", "exec_mapdl.py"),
             )
         )
 
@@ -117,7 +117,7 @@ def create_project(client, name, num_jobs=20, use_exec_script=False):
                 key_string="radius(%i)" % i,
                 tokenizer="=",
                 parameter_definition_id=float_input_params[pi].id,
-                file_id=file_ids["mac"],
+                file_id=file_ids["inp"],
             )
         )
         pi += 1
@@ -126,7 +126,7 @@ def create_project(client, name, num_jobs=20, use_exec_script=False):
                 key_string="thickness(%i)" % i,
                 tokenizer="=",
                 parameter_definition_id=float_input_params[pi].id,
-                file_id=file_ids["mac"],
+                file_id=file_ids["inp"],
             )
         )
         pi += 1
@@ -145,7 +145,7 @@ def create_project(client, name, num_jobs=20, use_exec_script=False):
                 key_string="tubes(%i)" % i,
                 tokenizer="=",
                 parameter_definition_id=str_input_params[i - 1].id,
-                file_id=file_ids["mac"],
+                file_id=file_ids["inp"],
             )
         )
 
@@ -204,7 +204,7 @@ def create_project(client, name, num_jobs=20, use_exec_script=False):
             tokenizer="=",
             string_quote="'",
             task_definition_property="name",
-            file_id=file_ids["mac"],
+            file_id=file_ids["inp"],
         )
     )
     param_mappings.append(
@@ -213,7 +213,7 @@ def create_project(client, name, num_jobs=20, use_exec_script=False):
             tokenizer="=",
             string_quote="'",
             task_definition_property="software_requirements[0].name",
-            file_id=file_ids["mac"],
+            file_id=file_ids["inp"],
         )
     )
     param_mappings.append(
@@ -221,7 +221,7 @@ def create_project(client, name, num_jobs=20, use_exec_script=False):
             key_string="num_cores",
             tokenizer="=",
             task_definition_property="num_cores",
-            file_id=file_ids["mac"],
+            file_id=file_ids["inp"],
         )
     )
     param_mappings.append(
@@ -229,7 +229,7 @@ def create_project(client, name, num_jobs=20, use_exec_script=False):
             key_string="cpu_core_usage",
             tokenizer="=",
             task_definition_property="resource_requirements.cpu_core_usage",
-            file_id=file_ids["mac"],
+            file_id=file_ids["inp"],
         )
     )
 
@@ -239,7 +239,7 @@ def create_project(client, name, num_jobs=20, use_exec_script=False):
         software_requirements=[
             Software(name="ANSYS Mechanical APDL", version=ansys_version),
         ],
-        execution_command="%executable% -b -i %file:mac% -o file.out -np %resource:num_cores%",
+        execution_command="%executable% -b -i %file:inp% -o file.out -np %resource:num_cores%",
         resource_requirements=ResourceRequirements(
             cpu_core_usage=1.0,
             memory=250,

@@ -26,7 +26,7 @@ from ansys.rep.client.jms import (
 log = logging.getLogger(__name__)
 
 
-def main(client, num_jobs):
+def main(client, num_jobs, use_exec_script):
     """
     Create project solving a Two-Bar Truss problem with Python.
 
@@ -45,7 +45,7 @@ def main(client, num_jobs):
     files = []
     files.append(
         File(
-            name="input_params",
+            name="inp",
             evaluation_path="input_parameters.json",
             type="text/plain",
             src=os.path.join(cwd, "input_parameters.json"),
@@ -53,7 +53,7 @@ def main(client, num_jobs):
     )
     files.append(
         File(
-            name="pyscript",
+            name="script",
             evaluation_path="evaluate.py",
             type="text/plain",
             src=os.path.join(cwd, "evaluate.py"),
@@ -61,21 +61,30 @@ def main(client, num_jobs):
     )
     files.append(
         File(
-            name="results",
+            name="result",
             evaluation_path="output_parameters.json",
             type="text/plain",
             collect=True,
         )
     )
 
-    files = proj.create_files(files)
+    if use_exec_script:
+        # Define and upload an exemplary exec script to run MAPDL
+        files.append(
+            File(
+                name="exec_python",
+                evaluation_path="exec_python.py",
+                type="application/x-python-code",
+                src=os.path.join(cwd, "..", "exec_scripts", "exec_python.py"),
+            )
+        )
 
-    input_file = files[0]
-    result_file = files[2]
+    files = proj.create_files(files)
+    file_ids = {f.name: f.id for f in files}
 
     log.debug("=== JobDefinition with simulation workflow and parameters")
     job_def = JobDefinition(
-        name="job_definition.1",
+        name="JobDefinition.1",
         active=True,
     )
 
@@ -110,43 +119,43 @@ def main(client, num_jobs):
             key_string='"H"',
             tokenizer=":",
             parameter_definition_id=input_params[0].id,
-            file_id=input_file.id,
+            file_id=file_ids["inp"],
         ),
         ParameterMapping(
             key_string='"d"',
             tokenizer=":",
             parameter_definition_id=input_params[1].id,
-            file_id=input_file.id,
+            file_id=file_ids["inp"],
         ),
         ParameterMapping(
             key_string='"t"',
             tokenizer=":",
             parameter_definition_id=input_params[2].id,
-            file_id=input_file.id,
+            file_id=file_ids["inp"],
         ),
         ParameterMapping(
             key_string='"B"',
             tokenizer=":",
             parameter_definition_id=input_params[3].id,
-            file_id=input_file.id,
+            file_id=file_ids["inp"],
         ),
         ParameterMapping(
             key_string='"E"',
             tokenizer=":",
             parameter_definition_id=input_params[4].id,
-            file_id=input_file.id,
+            file_id=file_ids["inp"],
         ),
         ParameterMapping(
             key_string='"rho"',
             tokenizer=":",
             parameter_definition_id=input_params[5].id,
-            file_id=input_file.id,
+            file_id=file_ids["inp"],
         ),
         ParameterMapping(
             key_string='"P"',
             tokenizer=":",
             parameter_definition_id=input_params[6].id,
-            file_id=input_file.id,
+            file_id=file_ids["inp"],
         ),
     ]
 
@@ -164,25 +173,25 @@ def main(client, num_jobs):
                 key_string='"weight"',
                 tokenizer=":",
                 parameter_definition_id=output_params[0].id,
-                file_id=result_file.id,
+                file_id=file_ids["result"],
             ),
             ParameterMapping(
                 key_string='"stress"',
                 tokenizer=":",
                 parameter_definition_id=output_params[1].id,
-                file_id=result_file.id,
+                file_id=file_ids["result"],
             ),
             ParameterMapping(
                 key_string='"buckling_stress"',
                 tokenizer=":",
                 parameter_definition_id=output_params[2].id,
-                file_id=result_file.id,
+                file_id=file_ids["result"],
             ),
             ParameterMapping(
                 key_string='"deflection"',
                 tokenizer=":",
                 parameter_definition_id=output_params[3].id,
-                file_id=result_file.id,
+                file_id=file_ids["result"],
             ),
         ]
     )
@@ -192,11 +201,10 @@ def main(client, num_jobs):
     job_def.parameter_definition_ids = [o.id for o in input_params + output_params]
     job_def.parameter_mapping_ids = [o.id for o in mappings]
 
-    # Process step
     task_def = TaskDefinition(
         name="python_evaluation",
         software_requirements=[Software(name="Python", version="3.10")],
-        execution_command="%executable% %file:pyscript% %file:input_params%",
+        execution_command="%executable% %file:script% %file:inp%",
         resource_requirements=ResourceRequirements(
             cpu_core_usage=0.5,
             memory=100,
@@ -204,9 +212,14 @@ def main(client, num_jobs):
         ),
         execution_level=0,
         max_execution_time=30.0,
-        input_file_ids=[f.id for f in files[:2]],
-        output_file_ids=[f.id for f in files[2:]],
+        input_file_ids=[file_ids["script"], file_ids["inp"]],
+        output_file_ids=[file_ids["result"]],
     )
+
+    if use_exec_script:
+        task_def.execution_command = None
+        task_def.execution_script_id = file_ids["exec_python"]
+
     task_def = proj.create_task_definitions([task_def])[0]
     job_def.task_definition_ids = [task_def.id]
 
@@ -257,16 +270,16 @@ if __name__ == "__main__":
     parser.add_argument("-u", "--username", default="repadmin")
     parser.add_argument("-p", "--password", default="repadmin")
     parser.add_argument("-n", "--num-jobs", type=int, default=1000)
+    parser.add_argument("-es", "--use-exec-script", default=False, action="store_true")
 
     args = parser.parse_args()
 
     logger = logging.getLogger()
     logging.basicConfig(format="[%(asctime)s | %(levelname)s] %(message)s", level=logging.DEBUG)
 
-    log.debug("=== DCS connection")
     client = Client(rep_url=args.url, username=args.username, password=args.password)
 
     try:
-        main(client, num_jobs=args.num_jobs)
+        main(client, num_jobs=args.num_jobs, use_exec_script=args.use_exec_script)
     except REPError as e:
         log.error(str(e))
