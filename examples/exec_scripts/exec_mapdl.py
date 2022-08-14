@@ -6,6 +6,7 @@ Command formed: ansys.exe -b -i <inp_file> -o <out_file> -np 4
 """
 
 import json
+import os
 import subprocess
 
 from ansys.rep.common.logging import log
@@ -39,9 +40,13 @@ class MAPDLExecution(ApplicationExecution):
         # Use properties from resource requirements
         num_cores = self.context.resource_requirements["num_cores"]
 
+        # Pass env vars correctly
+        env = dict(os.environ)
+        env.update(self.context.environment)
+
         # Form command
         cmd = f"{exe} -b -i {inp_file['path']} -o {out_file['path']} -np {num_cores}"
 
         # Execute command
         log.info(f"Executing: {cmd}")
-        subprocess.run(cmd, shell=True, check=True)
+        subprocess.run(cmd, shell=True, check=True, env=env)
