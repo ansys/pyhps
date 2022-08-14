@@ -5,6 +5,7 @@ Command formed: python <script_file> <input_file>
 """
 
 import json
+import os
 import subprocess
 
 from ansys.rep.common.logging import log
@@ -38,9 +39,13 @@ class PythonExecution(ApplicationExecution):
         # Use properties from resource requirements
         # None currently
 
+        # Pass env vars correctly
+        env = dict(os.environ)
+        env.update(self.context.environment)
+
         # Form command
         cmd = f"{exe} {script_file['path']} {inp_file['path']}"
 
         # Execute
         log.info(f"Executing: {cmd}")
-        subprocess.run(cmd, shell=True, check=True)
+        subprocess.run(cmd, shell=True, check=True, env=env)
