@@ -60,7 +60,8 @@ def get_oidc_response(
 
     if r.status_code != 200:
         raise RuntimeError(
-            f"Failed to retrieve access token for client {client_id} from {token_url} using {grant_type} grant, status code {r.status_code}: {r.content.decode()}"
+            f"""Failed to retrieve access token for client {client_id} from {token_url}
+            using {grant_type} grant, status code {r.status_code}: {r.content.decode()}"""
         )
 
     return r.json()
@@ -88,7 +89,8 @@ def authenticate(
         password (str): Password
         refresh_token (str, optional): Refresh token.
         timeout (float, optional): Timeout in seconds. Defaults to 10.
-        scope (str, optional): String containing one or more requested scopes. Defaults to 'dps dpdb ansft monitor'.
+        scope (str, optional): String containing one or more requested scopes.
+                               Defaults to 'dps dpdb ansft monitor'.
         client_id (str, optional): The client type. Defaults to 'external'.
 
     Returns:
@@ -129,7 +131,8 @@ def authenticate(
 
     raise_for_status(r)
     # if r.status_code != 200:
-    #     # raise ClientError(f"Failed to retrieve access token for client {client_id} from {token_url} using {grant_type} grant, status code {r.status_code}: {r.content.decode()}", **d)
+    # raise ClientError(f"Failed to retrieve access token for client {client_id} from
+    # {token_url} using {grant_type} grant, status code {r.status_code}: {r.content.decode()}", **d)
 
     return r.json()
 
@@ -151,7 +154,9 @@ def authenticate(
     # with requests.Session() as session:
     #     # Disable SSL certificate verification and warnings about it
     #     session.verify = False
-    #     requests.packages.urllib3.disable_warnings(requests.packages.urllib3.exceptions.InsecureRequestWarning)
+    #     requests.packages.urllib3.disable_warnings(
+    #       requests.packages.urllib3.exceptions.InsecureRequestWarning
+    #     )
 
     #     # Set basic content type
     #     session.headers.update({'content-type': 'application/x-www-form-urlencoded'})

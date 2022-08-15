@@ -12,10 +12,8 @@ import unittest
 import uuid
 
 from examples.mapdl_motorbike_frame.project_setup import create_project
-from marshmallow.utils import missing
 
-from ansys.rep.client.jms import Client
-from ansys.rep.client.jms.resource import Job, JobDefinition, Project, Task, TaskDefinition
+from ansys.rep.client.jms.resource import Job, JobDefinition, Project, TaskDefinition
 from ansys.rep.client.jms.schema.task import TaskSchema
 from tests.rep_test import REPTestCase
 
@@ -96,8 +94,10 @@ class TasksTest(REPTestCase):
 
     def test_task_integration(self):
 
-        # This test assumes that the project mapdl_motorbike_frame already exists on the DCS server.
-        # In case, you can create such project running the script examples/mapdl_motorbike_frame/project_setup.py
+        # This test assumes that the project mapdl_motorbike_frame
+        # already exists on the DCS server.
+        # In case, you can create such project running the script
+        # examples/mapdl_motorbike_frame/project_setup.py
 
         client = self.jms_client()
         proj_name = "mapdl_motorbike_frame"

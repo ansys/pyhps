@@ -6,7 +6,6 @@
 # Author(s): F.Negri
 # ----------------------------------------------------------
 
-import json
 import logging
 import unittest
 

@@ -6,10 +6,8 @@
 # Author(s): F.Negri
 # ----------------------------------------------------------
 
-import datetime
 import logging
 import os
-import sys
 import unittest
 
 from ansys.rep.client.jms import Client
@@ -31,9 +29,11 @@ class REPTestCase(unittest.TestCase):
         self.username = os.environ.get("REP_TEST_USERNAME") or "repadmin"
         self.password = os.environ.get("REP_TEST_PASSWORD") or "repadmin"
 
-        # Create a unique run_id (to be used when creating new projects) to avoid conflicts in case of
+        # Create a unique run_id (to be used when creating new projects)
+        # to avoid conflicts in case of
         # multiple builds testing against the same REP server.
-        # If tests are run on TFS we create this run_id combining the Agent.Id and Build.BuildId env variables.
+        # If tests are run on TFS we create this run_id combining the Agent.Id
+        # and Build.BuildId env variables.
         agent_id = os.environ.get("Agent.Id")
         if agent_id is None:
             if os.name == "nt":

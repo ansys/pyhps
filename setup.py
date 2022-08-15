@@ -2,7 +2,8 @@ import os
 
 from setuptools import find_namespace_packages, setup
 
-# We follow option 3 suggested by PyPA https://packaging.python.org/guides/single-sourcing-package-version/
+# We follow option 3 suggested by PyPA
+# https://packaging.python.org/guides/single-sourcing-package-version/
 # to get the package version.
 root = os.path.abspath(os.path.dirname(__file__))
 about = {}

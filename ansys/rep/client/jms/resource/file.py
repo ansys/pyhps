@@ -21,7 +21,8 @@ class File(Object):
     """File resource.
 
     Args:
-        project (:class:`ansys.rep.client.jms.Project`, optional): A project resource. Defaults to None.
+        project (:class:`ansys.rep.client.jms.Project`, optional): Project resource.
+                                                                   Defaults to None.
         src (str, optional): Path to the local file. Defaults to None.
         **kwargs: Arbitrary keyword arguments, see the File schema below.
 

@@ -479,7 +479,8 @@ def _monitor_operation(client, location, interval=1.0):
             op = r.json()["operations"][0]
             done = op["finished"]
             log.info(
-                f"Operation {op['name']} - progress={op['progress'] * 100.0}%, succeded={op['succeeded']}, finished={op['finished']}"
+                f"""Operation {op['name']} - progress={op['progress'] * 100.0}%,
+                  succeeded={op['succeeded']}, finished={op['finished']}"""
             )
         time.sleep(interval)
 

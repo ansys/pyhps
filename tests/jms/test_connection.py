@@ -6,9 +6,6 @@
 # Author(s): O.Koenig
 # ----------------------------------------------------------
 import logging
-import sys
-import unittest
-import urllib.parse
 
 from ansys.rep.client.auth import authenticate
 from ansys.rep.client.connection import create_session, ping

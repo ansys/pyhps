@@ -20,7 +20,9 @@ class LicenseContext(Object):
     Example:
 
         >>> lc = LicenseContext(
-            environment={"ANSYS_HPC_PARAMETRIC_ID": "my_id", "ANSYS_HPC_PARAMETRIC_SERVER":"my_server" })
+            environment={"ANSYS_HPC_PARAMETRIC_ID": "my_id",
+                         "ANSYS_HPC_PARAMETRIC_SERVER":"my_server" }
+            )
             )
 
     The LicenseContext schema has the following fields:

@@ -13,7 +13,6 @@ import uuid
 from examples.mapdl_motorbike_frame.project_setup import create_project
 from marshmallow.utils import missing
 
-from ansys.rep.client.jms import Client
 from ansys.rep.client.jms.resource import Job, JobDefinition, Project
 from ansys.rep.client.jms.schema.job import JobSchema
 from tests.rep_test import REPTestCase

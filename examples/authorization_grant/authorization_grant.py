@@ -8,9 +8,14 @@ from authlib.integrations.httpx_client import AsyncOAuth2Client
 from authlib.jose import jwt
 import httpx
 
-# Links:
-# - Setting up google auth: http://www.mastertheboss.com/keycloak/google-social-login-with-keycloak/
-# - Setting up MS auth: https://www.grebintegration.dk/2021/03/07/microsoft-azure-active-directory-as-keycloak-identity-provider/
+"""
+Links:
+- Setting up google auth:
+http://www.mastertheboss.com/keycloak/google-social-login-with-keycloak/
+- Setting up MS auth:
+https://www.grebintegration.dk/2021/03/07/
+microsoft-azure-active-directory-as-keycloak-identity-provider/
+"""
 
 client_id = "rep-cli"
 scope = "openid"

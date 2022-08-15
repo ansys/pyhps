@@ -14,7 +14,6 @@ import unittest
 from examples.mapdl_motorbike_frame.project_setup import create_project
 from marshmallow.utils import missing
 
-from ansys.rep.client.jms import Client
 from ansys.rep.client.jms.resource import JobDefinition, LicenseContext, Project
 from ansys.rep.client.jms.schema.project import ProjectSchema
 from tests.rep_test import REPTestCase

@@ -338,11 +338,13 @@ numpydoc_validation_checks = {
 
 extlinks = {
     "ansys_dcs_help": (
-        "https://ansyshelp.ansys.com/account/secured?returnurl=/Views/Secured/corp/v231/en/dps_ug/%s.html",
+        """https://ansyshelp.ansys.com/account/
+        secured?returnurl=/Views/Secured/corp/v231/en/dps_ug/%s.html""",
         "ANSYS Help - ",
     ),
     "ansys_dcs_tutorial": (
-        "https://ansyshelp.ansys.com/account/secured?returnurl=/Views/Secured/corp/v231/en/dcs_tut/%s.html",
+        """https://ansyshelp.ansys.com/account/
+        secured?returnurl=/Views/Secured/corp/v231/en/dcs_tut/%s.html""",
         "DCS Tutorial - ",
     ),
 }

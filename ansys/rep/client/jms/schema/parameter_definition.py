@@ -45,7 +45,9 @@ class FloatParameterDefinitionSchema(ParameterDefinitionBaseSchema):
     upper_limit = fields.Float(allow_none=True, description="Upper bound for the parameter value.")
     step = fields.Float(
         allow_none=True,
-        description="If provided, allowable values are given by: AllowableValue = lower_limit + n * step, where n is an integer and AllowableValue <= upper_limit.",
+        description="""If provided, allowable values are given by:
+                       AllowableValue = lower_limit + n * step,
+                       where n is an integer and AllowableValue <= upper_limit.""",
     )
     cyclic = fields.Bool(allow_none=True, description="Indicates if the parameter is cyclic.")
     value_list = fields.List(

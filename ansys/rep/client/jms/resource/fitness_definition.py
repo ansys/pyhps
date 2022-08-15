@@ -28,14 +28,25 @@ class FitnessTermDefinition(Object):
     Example:
 
         >>> # A fitness term of type objective
-        >>> ft1 = FitnessTermDefinition(name="weight", type="design_objective", weighting_factor=1.0,
-                        expression="map_design_objective( values['weight'], 7.5, 5.5)")
+        >>> ft1 = FitnessTermDefinition(name="weight",
+                                        type="design_objective",
+                                        weighting_factor=1.0,
+                                        expression="map_design_objective(values['weight'],7.5,5.5)"
+                                        )
         >>> # A fitness term of type target constraint
-        >>> ft2 = FitnessTermDefinition(name="torsional_stiffness", type="target_constraint", weighting_factor=0.8,
-                    expression="map_target_constraint( values['torsion_stiffness'], 1313.0, 5.0, 30.0 )" )
+        >>> ft2 = FitnessTermDefinition(name="torsional_stiffness",
+                                        type="target_constraint",
+                                        weighting_factor=0.8,
+                                        expression="map_target_constraint(
+                                            values['torsion_stiffness'], 1313.0, 5.0, 30.0)"
+                                        )
         >>> # A fitness term of type limit constraint
-        >>> ft3 = FitnessTermDefinition(name="max_stress", type="limit_constraint", weighting_factor=0.6,
-                    expression="map_limit_constraint( values['max_stress'], 451.0, 50.0 )")
+        >>> ft3 = FitnessTermDefinition(name="max_stress",
+                                        type="limit_constraint",
+                                        weighting_factor=0.6,
+                                        expression="map_limit_constraint(
+                                            values['max_stress'], 451.0, 50.0 )"
+                                        )
     """
 
     class Meta:
@@ -59,8 +70,14 @@ class FitnessDefinition(Object):
         >>> fd = FitnessDefinition(error_fitness=10.0)
         >>> fd.add_fitness_term(name="weight", type="design_objective", weighting_factor=1.0,
                     expression="map_design_objective( values['weight'], 7.5, 5.5)")
-        >>> fd.add_fitness_term(name="torsional_stiffness", type="target_constraint", weighting_factor=1.0,
-                    expression="map_target_constraint( values['torsion_stiffness'], 1313.0, 5.0, 30.0 )" )
+        >>> fd.add_fitness_term(name="torsional_stiffness",
+                                type="target_constraint",
+                                weighting_factor=1.0,
+                                expression="map_target_constraint(
+                                    values['torsion_stiffness'],
+                                    1313.0,
+                                    5.0,
+                                    30.0 )" )
 
     The FitnessDefinition schema has the following fields:
 

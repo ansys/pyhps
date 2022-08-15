@@ -10,7 +10,6 @@ from __future__ import division
 import json
 import math
 import os
-import re
 import sys
 
 

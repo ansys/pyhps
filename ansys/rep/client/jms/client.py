@@ -31,7 +31,8 @@ from .resource.task_definition_template import (
 class Client(object):
     """A python interface to the Design Point Service API.
 
-    Uses the provided credentials to create and store an authorized :class:`requests.Session` object.
+    Uses the provided credentials to create and store
+    an authorized :class:`requests.Session` object.
 
     The following authentication workflows are supported:
 
@@ -42,7 +43,8 @@ class Client(object):
         - Access token: no authentication needed.
 
     Args:
-        rep_url (str): The base path for the server to call, e.g. "https://127.0.0.1/dcs".
+        rep_url (str): The base path for the server to call,
+                       e.g. "https://127.0.0.1/dcs".
         username (str): Username (Optional)
         password (str): Password (Optional)
         refresh_token (str): Refresh Token (Optional)
@@ -105,7 +107,8 @@ class Client(object):
         self._unauthorized_max_retry = 1
 
     def _auto_refresh_token(self, response, *args, **kwargs):
-        """Hook function to automatically refresh the access token and re-send the request in case of unauthorized error"""
+        """Hook function to automatically refresh the access token and
+        re-send the request in case of unauthorized error"""
         if (
             response.status_code == 401
             and self.unauthorized_num_retry < self._unauthorized_max_retry
@@ -160,9 +163,11 @@ class Client(object):
         """Archive an existing project and save it to disk
 
         Args:
-            project (:class:`ansys.rep.client.jms.Project`): A Project object (only the id field is needed).
+            project (:class:`ansys.rep.client.jms.Project`): A Project object
+                                                            (only the id field is needed).
             path (str): Where to save the archive locally.
-            include_job_files (bool, optional): Whether to include design point files in the archive. True by default.
+            include_job_files (bool, optional): Whether to include design point files in the
+                                                archive. True by default.
 
         Returns:
             str: The path to the archive.
@@ -190,14 +195,16 @@ class Client(object):
         return update_evaluators(self, evaluators, as_objects=as_objects)
 
     def get_task_definition_templates(self, as_objects=True, **query_params):
-        """Return a list of task definition templates, optionally filtered by given query parameters"""
+        """Return a list of task definition templates,
+        optionally filtered by given query parameters"""
         return get_task_definition_templates(self, as_objects=as_objects, **query_params)
 
     def create_task_definition_templates(self, templates):
         """Create new task definition templates
 
         Args:
-            templates (list of :class:`ansys.rep.client.jms.TaskDefinitionTemplate`): A list of task definition templates
+            templates (list of :class:`ansys.rep.client.jms.TaskDefinitionTemplate`):
+                A list of task definition templates
         """
         return create_task_definition_templates(self, templates)
 
@@ -205,7 +212,8 @@ class Client(object):
         """Update existing task definition templates
 
         Args:
-            templates (list of :class:`ansys.rep.client.jms.TaskDefinitionTemplate`): A list of task definition templates
+            templates (list of :class:`ansys.rep.client.jms.TaskDefinitionTemplate`):
+                A list of task definition templates
         """
         return update_task_definition_templates(self, templates)
 
@@ -213,6 +221,7 @@ class Client(object):
         """Delete existing task definition templates
 
         Args:
-            templates (list of :class:`ansys.rep.client.jms.TaskDefinitionTemplate`): A list of task definition templates
+            templates (list of :class:`ansys.rep.client.jms.TaskDefinitionTemplate`):
+                A list of task definition templates
         """
         return delete_task_definition_templates(self, templates)

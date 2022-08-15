@@ -56,12 +56,15 @@ class TaskSchema(ObjectSchema):
         allow_none=False,
         attribute="task_definition_id",
         referenced_class="TaskDefinition",
-        description="ID of the :class:`ansys.rep.client.jms.TaskDefinition` the task is linked to.",
+        description=(
+            "ID of the :class:`ansys.rep.client.jms.TaskDefinition` the task is linked to.",
+        ),
     )
     task_definition_snapshot = fields.Nested(
         TaskDefinitionSchema,
         allow_none=True,
-        description="Snapshot of :class:`ansys.rep.client.jms.TaskDefinition` created when task status changes to prolog, before evaluation.",
+        description="""Snapshot of :class:`ansys.rep.client.jms.TaskDefinition`
+                       created when task status changes to prolog, before evaluation.""",
     )
 
     job_id = IdReference(
