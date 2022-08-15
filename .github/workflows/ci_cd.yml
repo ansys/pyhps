@@ -86,14 +86,14 @@ jobs:
           python build.py venv
           source dev_env/bin/activate
           python build.py documentation
-          touch doc/build/html/.nojekyll
-          echo "dev.rep.docs.pyansys.com" >> doc/build/html/CNAME
+          touch build/sphinx/html/.nojekyll
+          echo "dev.rep.docs.pyansys.com" >> build/sphinx/html/CNAME
       - name: Deploy Documentation
         if: github.ref == 'refs/heads/main'
         uses: JamesIves/github-pages-deploy-action@4.1.4
         with:
           branch: gh-pages
-          folder: doc/build/html
+          folder: build/sphinx/html
           clean: true
 
   build:
