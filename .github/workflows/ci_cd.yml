@@ -83,6 +83,8 @@ jobs:
           python-version: ${{ env.MAIN_PYTHON_VERSION }}
       - name: Generate the documentation with sphinx
         run: | 
+          python build.py venv
+          source dev_env/bin/activate
           python build.py documentation
           touch doc/build/html/.nojekyll
           echo "dev.rep.docs.pyansys.com" >> doc/build/html/CNAME
