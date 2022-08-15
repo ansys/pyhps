@@ -21,7 +21,9 @@ class ParameterMapping(Object):
 
     Example:
 
-        >>> pl = ParameterMapping(key_string='radius(0)', tokenizer="=", parameter_definition_name="tube_radius")
+        >>> pl = ParameterMapping(key_string='radius(0)',
+                                  tokenizer="=",
+                                  parameter_definition_name="tube_radius")
 
     The ParameterMapping schema has the following fields:
 

@@ -25,5 +25,6 @@ class ObjectSchema(BaseSchema):
     id = fields.String(
         allow_none=True,
         attribute="id",
-        description="Unique ID to access the resource, generated internally by the server on creation.",
+        description="""Unique ID to access the resource, generated
+                       internally by the server on creation.""",
     )

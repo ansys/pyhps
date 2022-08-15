@@ -19,7 +19,7 @@ class Selection(Object):
     """Selection resource.
 
     Args:
-        project (:class:`ansys.rep.client.jms.Project`, optional): A Project object. Defaults to None.
+        project (:class:`ansys.rep.client.jms.Project`, optional): Project object. Defaults to None.
         **kwargs: Arbitrary keyword arguments, see the Selection schema below.
 
     Example:

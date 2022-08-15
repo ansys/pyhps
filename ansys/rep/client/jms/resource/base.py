@@ -45,7 +45,8 @@ class Object(object):
             # If property k is provided as init parameter
             if k in kwargs.keys():
                 setattr(self, k, kwargs[k])
-            # Else we set it this value as missing. That way marshmallow will ignore it on serialization
+            # Else we set it this value as missing.
+            # That way marshmallow will ignore it on serialization
             elif not hasattr(self, k):
                 setattr(self, k, missing)
 
@@ -54,7 +55,8 @@ class Object(object):
             self.__class__.__name__,
             ",".join(["%s=%r" % (k, getattr(self, k)) for k in self.declared_fields()]),
         )
-        # return "%s(%s)" % (self.__class__.__name__, ",".join(["%s=%r" %(k,v) for k,v in self.__dict__.items()]) )
+        # return "%s(%s)" % (self.__class__.__name__,
+        # ",".join(["%s=%r" %(k,v) for k,v in self.__dict__.items()]) )
 
     def __str__(self):
         return "%s(\n%s\n)" % (

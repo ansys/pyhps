@@ -21,7 +21,7 @@ Input file has 3 parameters
 color: color of the image to be written
 period [s]: period to wait before sending next log message
 duration [s]: the duration of the eval script in seconds
-The ouput of the script is the number of steps (log-calls) calculated with:
+The output of the script is the number of steps (log-calls) calculated with:
 ```
 steps = duration // period
 ```
@@ -39,7 +39,6 @@ import datetime
 import json
 import logging
 import os
-import re
 import subprocess
 import sys
 import time
@@ -58,7 +57,7 @@ def main(input_file, task_definition, images, in_subscript):
     log = logging.getLogger()
     log.info("== Start Evaluation Task Definition ==")
 
-    # Flag to mark files comming from subscript
+    # Flag to mark files coming from subscript
     subs = "sub_" if in_subscript else ""
 
     # Read parameters
@@ -168,7 +167,8 @@ if __name__ == "__main__":
         "--images",
         action="store_true",
         default=False,
-        help="Enable if you want images to be generated. Needs PIL installed ( `pip install pillow` ) ",
+        help="""Enable if you want images to be generated.
+                Needs PIL installed ( `pip install pillow` ) """,
     )
     parser.add_argument(
         "--in-subscript",
@@ -197,10 +197,12 @@ if __name__ == "__main__":
     # job_def.parameter_definition_ids = [o.id for o in params]
 
     # param_mappings = [
-    #     ParameterMapping(key_string='"start"', tokenizer=":", parameter_definition_id=params[0].id, file_id=file_ids['input'])
+    #     ParameterMapping(key_string='"start"', tokenizer=":",
+    #     parameter_definition_id=params[0].id, file_id=file_ids['input'])
     # ]
     # param_mappings.extend([
-    #     ParameterMapping(key_string='"product"', tokenizer=":", parameter_definition_id=params[i+1].id, file_id=file_ids[f'td{i}_result'])
+    #     ParameterMapping(key_string='"product"', tokenizer=":",
+    #     parameter_definition_id=params[i+1].id, file_id=file_ids[f'td{i}_result'])
     #     for i in range(num_task_definitions)
     # ])
     # param_mappings = proj.create_parameter_mappings(param_mappings)

@@ -12,10 +12,8 @@ import time
 import unittest
 
 from examples.mapdl_motorbike_frame.project_setup import create_project
-from marshmallow.utils import missing
 
-from ansys.rep.client.jms import Client
-from ansys.rep.client.jms.resource import File, Task
+from ansys.rep.client.jms.resource import File
 from tests.rep_test import REPTestCase
 
 log = logging.getLogger(__name__)
@@ -36,7 +34,8 @@ class TaskFilesTest(REPTestCase):
         ex_dir = os.path.join(cwd, "..", "..", "examples", "mapdl_motorbike_frame")
         log.info(f"example_dir: {ex_dir}")
 
-        # Create a modified MAPDL input file that reads an extra task file and writes out an extra result file
+        # Create a modified MAPDL input file that reads an extra task file
+        # and writes out an extra result file
         mac_file = proj.get_files(limit=1, content=True)[0]
         content = mac_file.content.decode("utf-8")
         lines = content.splitlines()

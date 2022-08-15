@@ -17,7 +17,7 @@ class Task(Object):
     """Task resource.
 
     Args:
-        project (:class:`ansys.rep.client.jms.Project`, optional): A Project object. Defaults to None.
+        project (:class:`ansys.rep.client.jms.Project`, optional): Project object. Defaults to None.
         **kwargs: Arbitrary keyword arguments, see the Task schema below.
 
     The Task schema has the following fields:

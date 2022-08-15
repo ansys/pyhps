@@ -6,13 +6,10 @@
 # Author(s): F.Negri
 # ----------------------------------------------------------
 import logging
-import sys
 import unittest
-import urllib.parse
 
 from marshmallow.utils import missing
 
-from ansys.rep.client.jms import Client
 from ansys.rep.client.jms.resource import Algorithm, Job, JobDefinition, Project, Selection
 from tests.rep_test import REPTestCase
 

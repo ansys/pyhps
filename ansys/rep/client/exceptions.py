@@ -11,13 +11,16 @@ from requests.exceptions import RequestException
 
 class REPError(RequestException):
     def __init__(self, *args, **kwargs):
-        """Base class for all rep related errors. Derives from :class:`requests.exceptions.RequestException`.
+        """Base class for all rep related errors.
+           Derives from :class:`requests.exceptions.RequestException`.
 
         Example:
             >>> from ansys.rep.client import REPError
             >>> from ansys.rep.client.jms import Client
             >>> try:
-            >>>     client = Client(rep_url="https://127.0.0.1/dcs/", username="repadmin",  password="wrong_psw")
+            >>>     client = Client(rep_url="https://127.0.0.1/dcs/",
+                                    username="repadmin",
+                                    password="wrong_psw")
             >>> except REPError as e:
             >>>     print(e)
             400 Client Error: invalid_grant for: POST https://127.0.0.1/dcs/auth/api/oauth/token
@@ -41,7 +44,8 @@ class ClientError(REPError):
 
 
 def raise_for_status(response, *args, **kwargs):
-    """Hook function to automatically check HTTP errors. Mimics requests.Response.raise_for_status()"""
+    """Hook function to automatically check HTTP errors.
+    Mimics requests.Response.raise_for_status()"""
     if 400 <= response.status_code < 600:
 
         r_content = {}

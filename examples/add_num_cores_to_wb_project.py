@@ -6,11 +6,12 @@
 # Author(s): O.Koenig
 # ----------------------------------------------------------
 #
-# Exemplary utility script that connects to a WB project and then adds a number_of_cores parameter location to to propagate the number to the input script.
+# Exemplary utility script that connects to a WB project and then
+# adds a number_of_cores parameter location to to propagate the
+# number to the input script.
 #
 
 import logging
-import os
 
 from ansys.rep.client import REPError
 from ansys.rep.client.jms import Client

@@ -18,13 +18,17 @@ class JobDefinition(Object):
     """JobDefinition resource.
 
     Args:
-        project (:class:`ansys.rep.client.jms.Project`, optional): A Project object. Defaults to None.
+        project (:class:`ansys.rep.client.jms.Project`, optional): A Project object.
+                                                                   Defaults to None.
         **kwargs: Arbitrary keyword arguments, see the JobDefinition schema below.
 
     Example:
 
         >>> job_def = JobDefinition(name="JobDefinition.1", active=True)
-        >>> job_def.add_float_parameter_definition(name='tube_radius', lower_limit=4.0, upper_limit=20.0,default=12.0 )
+        >>> job_def.add_float_parameter_definition(name='tube_radius',
+                                                   lower_limit=4.0,
+                                                   upper_limit=20.0,
+                                                   default=12.0 )
 
     The JobDefinition schema has the following fields:
 
@@ -41,7 +45,7 @@ class JobDefinition(Object):
         super(JobDefinition, self).__init__(**kwargs)
 
     def get_jobs(self, **query_params):
-        """Return a list of desing points, optionally filtered by given query parameters"""
+        """Return a list of design points, optionally filtered by given query parameters"""
         return get_objects(self.project, Job, job_definition=self, **query_params)
 
     def create_jobs(self, jobs):

@@ -6,15 +6,11 @@
 # Author(s): O.Koenig
 # ----------------------------------------------------------
 import logging
-import sys
 import time
 import unittest
-import urllib.parse
-
-from marshmallow.utils import missing
 
 from ansys.rep.client.jms import Client
-from ansys.rep.client.jms.resource import Job, JobDefinition, Project
+from ansys.rep.client.jms.resource import Job, Project
 from tests.rep_test import REPTestCase
 
 log = logging.getLogger(__name__)
@@ -50,7 +46,8 @@ class REPClientTest(REPTestCase):
     def test_client(self):
 
         # This test assumes that the project mapdl_motorbike_frame already exists on the DCS server.
-        # In case, you can create such project running the script examples/mapdl_motorbike_frame/project_setup.py
+        # In case, you can create such project running the script
+        # examples/mapdl_motorbike_frame/project_setup.py
 
         log.debug("=== Client ===")
         client = self.jms_client()

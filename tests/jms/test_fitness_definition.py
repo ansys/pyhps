@@ -6,9 +6,7 @@
 # Author(s): F.Negri
 # ----------------------------------------------------------
 import logging
-import sys
 import unittest
-import urllib.parse
 
 from marshmallow.utils import missing
 

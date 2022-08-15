@@ -35,7 +35,8 @@ class ParameterMappingSchema(ObjectSchema):
         allow_none=True,
         attribute="parameter_definition_id",
         referenced_class="ParameterDefinition",
-        description="ID of the linked parameter definition, see :class:`ansys.rep.client.jms.ParameterDefinition`.",
+        description="""ID of the linked parameter definition,
+                       see :class:`ansys.rep.client.jms.ParameterDefinition`.""",
     )
     task_definition_property = fields.String(allow_none=True)
     file_id = IdReference(

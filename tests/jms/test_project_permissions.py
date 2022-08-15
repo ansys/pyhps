@@ -10,8 +10,6 @@ import time
 import unittest
 import uuid
 
-import pytest
-
 from ansys.rep.client.auth import Client as AuthClient
 from ansys.rep.client.auth import User
 from ansys.rep.client.exceptions import ClientError

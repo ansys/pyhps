@@ -6,10 +6,6 @@
 # Author(s): O.Koenig
 # ----------------------------------------------------------
 import logging
-import sys
-import unittest
-
-import pytest
 
 from ansys.rep.client.auth import Client, User
 from tests.rep_test import REPTestCase

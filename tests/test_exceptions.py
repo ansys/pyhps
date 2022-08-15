@@ -6,12 +6,9 @@
 # Author(s): F.Negri
 # ----------------------------------------------------------
 import logging
-import sys
 import unittest
 
-from marshmallow.utils import missing
-
-from ansys.rep.client import APIError, ClientError, REPError
+from ansys.rep.client import APIError, ClientError
 from ansys.rep.client.jms import Client
 from tests.rep_test import REPTestCase
 

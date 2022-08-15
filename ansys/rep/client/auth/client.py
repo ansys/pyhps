@@ -18,7 +18,7 @@ class Client(object):
 
     Users with admin rights (such as the default ``repadmin`` user) can create new
     users as well as modify or delete existing ones. Non-admin users are only allowed
-    to query the list of exisiting users.
+    to query the list of existing users.
 
     Args:
         rep_url (str): The base path for the server to call, e.g. "https://127.0.0.1/dcs".
