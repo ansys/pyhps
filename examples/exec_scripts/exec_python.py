@@ -28,7 +28,7 @@ class PythonExecution(ApplicationExecution):
 
         # Identify application
         app_name = "Python"
-        app = next((a for a in self.context.applications if a["name"] == app_name), None)
+        app = next((a for a in self.context.software if a["name"] == app_name), None)
         assert app, f"Cannot find app {app_name}"
 
         # Add " around exe if needed for Windows
