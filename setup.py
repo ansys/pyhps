@@ -28,6 +28,7 @@ setup(
     license_file="LICENSE",
     description="A python client for Ansys REP - Remote Execution Platform",
     long_description=open("README.rst").read(),
+    long_description_content_type="text/x-rst",
     install_requires=[
         "requests>=2.21.0",
         "marshmallow>=3.0.0",
