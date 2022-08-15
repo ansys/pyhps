@@ -64,7 +64,7 @@ class TaskFilesTest(REPTestCase):
             # Overwrite modified mac file per task
             files.append(
                 File(
-                    name="mac",
+                    name="inp",
                     evaluation_path="motorbike_frame.mac",
                     type="text/plain",
                     src=mac_fpath,
@@ -77,7 +77,7 @@ class TaskFilesTest(REPTestCase):
                 f.write(f"task_var='{t.id}'")
             files.append(
                 File(
-                    name="mac2",
+                    name="inp2",
                     evaluation_path="task_input_file.mac",
                     type="text/plain",
                     src=mac2_fpath,
@@ -98,7 +98,7 @@ class TaskFilesTest(REPTestCase):
             file_ids = {f.name: f.id for f in files}
             log.info(f"Add files: {file_ids}")
 
-            t.input_file_ids = [file_ids["mac"], file_ids["mac2"]]
+            t.input_file_ids = [file_ids["inp"], file_ids["inp2"]]
             t.output_file_ids.append(file_ids["task_result"])
             # Not yet supported: t.eval_status = 'pending'
 
@@ -160,7 +160,7 @@ class TaskFilesTest(REPTestCase):
                 self.assertEqual(len(set(t.input_file_ids).intersection(t.owned_file_ids)), 2)
                 input_files = proj.get_files(id=t.input_file_ids)
                 self.assertEqual(
-                    set([f.name for f in input_files]), set(["mac", "mac2"])
+                    set([f.name for f in input_files]), set(["inp", "inp2"])
                 )  # Check input file names
 
                 owned_output_file_ids = set(t.output_file_ids).intersection(t.owned_file_ids)
