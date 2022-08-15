@@ -106,7 +106,7 @@ jobs:
           python -m twine check dist/*
       - name: Upload to private PyPi
         run: |
-          python -m twine upload --verbose --skip-existing dist/**/*.whl
+          python -m twine upload --verbose --skip-existing dist/*.whl
         env:
           TWINE_USERNAME: __token__
           TWINE_PASSWORD: ${{ secrets.PYANSYS_PYPI_PRIVATE_PAT }}
