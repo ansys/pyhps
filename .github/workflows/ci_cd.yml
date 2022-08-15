@@ -86,6 +86,10 @@ jobs:
           python -m pip install --upgrade pip setuptools tox
       - name: Generate the documentation with tox
         run: tox -e doc
+      - name: Add gh-pages parameters
+        run: |
+          touch build/sphinx/html/.nojekyll
+          echo "dev.rep.docs.pyansys.com" >> build/sphinx/html/CNAME
       - name: Deploy Documentation
         if: github.ref == 'refs/heads/main'
         uses: JamesIves/github-pages-deploy-action@4.1.4
