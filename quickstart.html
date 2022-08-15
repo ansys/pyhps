@@ -1,0 +1,556 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+
+    <title>Quickstart &#8212; pyrep</title>
+    
+<script>
+  document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+  document.documentElement.dataset.theme = localStorage.getItem("theme") || "light"
+</script>
+
+  <!-- Loaded before other Sphinx assets -->
+  <link href="_static/styles/theme.css?digest=92025949c220c2e29695" rel="stylesheet">
+<link href="_static/styles/pydata-sphinx-theme.css?digest=92025949c220c2e29695" rel="stylesheet">
+
+
+  <link rel="stylesheet"
+    href="_static/vendor/fontawesome/5.13.0/css/all.min.css">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
+
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="_static/css/ansys_sphinx_theme.css" />
+
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=92025949c220c2e29695">
+
+    
+        <link href="_static/css/breadcrumbs.css" rel="stylesheet">
+    
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/clipboard.min.js"></script>
+    <script src="_static/copybutton.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Examples" href="examples.html" />
+    <link rel="prev" title="Installation" href="install.html" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="docsearch:language" content="en">
+  </head>
+  
+  
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="180" data-default-mode="">
+    <div class="bd-header-announcement container-fluid" id="banner">
+      
+
+    </div>
+
+    
+    
+    <nav class="bd-header navbar navbar-light navbar-expand-lg bg-light fixed-top bd-navbar" id="navbar-main"><div class="bd-header__inner container-xl">
+
+  <div id="navbar-start">
+    
+    
+  
+
+
+<a class="navbar-brand logo" href="index.html">
+  
+  
+  
+  
+    <img src="_static/pyansys-logo-black-cropped.png" class="logo__image only-light" alt="Logo image">
+    <img src="_static/pyansys-logo-black-cropped.png" class="logo__image only-dark" alt="Logo image">
+  
+  
+</a>
+    
+  </div>
+
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar-collapsible" aria-controls="navbar-collapsible" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="fas fa-bars"></span>
+  </button>
+
+  
+  <div id="navbar-collapsible" class="col-lg-9 collapse navbar-collapse">
+    <div id="navbar-center" class="mr-auto">
+      
+      <div class="navbar-center-item">
+        <ul id="navbar-main-elements" class="navbar-nav">
+    <li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="install.html">
+  Installation
+ </a>
+</li>
+
+<li class="toctree-l1 current active nav-item">
+ <a class="current reference internal nav-link" href="#">
+  Quickstart
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="examples.html">
+  Examples
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="api_reference.html">
+  Code Documentation
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="changelog.html">
+  Changelog
+ </a>
+</li>
+
+    
+</ul>
+      </div>
+      
+    </div>
+
+    <div id="navbar-end">
+      
+      <div class="navbar-end-item">
+        <span id="theme-switch" class="btn btn-sm btn-outline-primary navbar-btn rounded-circle">
+    <a class="theme-switch" data-mode="light"><i class="fas fa-sun"></i></a>
+    <a class="theme-switch" data-mode="dark"><i class="far fa-moon"></i></a>
+    <a class="theme-switch" data-mode="auto"><i class="fas fa-adjust"></i></a>
+</span>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
+        <li class="nav-item">
+          <a class="nav-link" href="[https://github.com/pyansys/pyrep" rel="noopener" target="_blank" title="GitHub"><span><i class="fab fa-github-square"></i></span>
+            <label class="sr-only">GitHub</label></a>
+        </li>
+      </ul>
+      </div>
+      
+    </div>
+  </div>
+</div>
+    </nav>
+    
+    
+        <div class="container-xl">
+    <div class="row">
+        <div class="col-12 col-md-3" id="breadcrumbs-spacer"></div>
+        <div class="col-12 col-md-11 col-xl-9" id="breadcrumbs">
+          
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+    
+        <li class="nav-item nav-item-additional-breadcrumb"><a href="https://docs.pyansys.com/">PyAnsys</a> » </li>
+    
+    
+        <li class="nav-item nav-item-0"><a href="index.html">pyrep</a> » </li>
+    
+
+        <li class="nav-item nav-item-this"><a href="">Quickstart</a></li> 
+      </ul>
+    </div>
+        </div>
+  </div>
+</div>
+    
+
+
+    <div class="bd-container container-xl">
+      <div class="bd-container__inner row">
+          
+
+<!-- Only show if we have sidebars configured, else just a small margin  -->
+<div class="bd-sidebar-primary col-12 col-md-3 bd-sidebar">
+  <div class="sidebar-start-items"><form class="bd-search d-flex align-items-center" action="search.html" method="get">
+  <i class="icon fas fa-search"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" >
+</form><nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
+  <div class="bd-toc-item active">
+    
+    
+    
+    
+  </div>
+</nav>
+  </div>
+  <div class="sidebar-end-items">
+  </div>
+</div>
+
+
+          
+
+
+<div class="bd-sidebar-secondary d-none d-xl-block col-xl-2 bd-toc">
+  
+    
+    <div class="toc-item">
+      
+<div class="tocsection onthispage mt-5 pt-1 pb-3">
+    <i class="fas fa-list"></i> On this page
+</div>
+
+<nav id="bd-toc-nav">
+    <ul class="visible nav section-nav flex-column">
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#connect-to-a-dcs-server">
+   Connect to a DCS Server
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#create-a-demo-project-the-mapdl-motorbike-frame-example">
+   Create a demo project: the MAPDL motorbike frame example
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#query-parameters">
+   Query parameters
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#objects-vs-dictionaries">
+   Objects vs dictionaries
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#set-failed-design-points-to-pending">
+   Set failed design points to pending
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#modify-a-project-job-definition">
+   Modify a project job_definition
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#delete-some-design-points">
+   Delete some design points
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#query-the-number-of-evaluators">
+   Query the number of evaluators
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#replace-a-file-in-a-project">
+   Replace a file in a project
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#modify-and-create-users">
+   Modify and create users
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#exception-handling">
+   Exception handling
+  </a>
+ </li>
+</ul>
+
+</nav>
+    </div>
+    
+    <div class="toc-item">
+      
+    </div>
+    
+  
+</div>
+
+
+          
+          
+          <div class="bd-content col-12 col-md-9 col-xl-7">
+              
+              <article class="bd-article" role="main">
+                
+  <section id="quickstart">
+<span id="id1"></span><h1>Quickstart<a class="headerlink" href="#quickstart" title="Permalink to this heading">#</a></h1>
+<p>This guide will walk you through the basics of interacting with a DCS server. More elaborated examples are available in the <a class="reference internal" href="examples.html#examples"><span class="std std-ref">Examples</span></a> chapter,
+while detailed documentation can be found in the <a class="reference internal" href="api_reference.html#api-reference"><span class="std std-ref">Code Documentation</span></a>.</p>
+<p>To reproduce the code samples provided below, you will need:</p>
+<ul class="simple">
+<li><p>A running DCS server, see the <a class="reference external" href="https://ansyshelp.ansys.com/account/         secured?returnurl=/Views/Secured/corp/v231/en/dps_ug/dc_server_startup.html">DPS Startup</a> page in the ANSYS Help for detailed instructions.</p></li>
+<li><p>A Python shell with <code class="docutils literal notranslate"><span class="pre">ansys-dcs-client</span></code> installed. If you haven’t installed it yet, please refer to the <a class="reference internal" href="install.html#installation"><span class="std std-ref">Installation</span></a> guide.</p></li>
+</ul>
+<section id="connect-to-a-dcs-server">
+<h2>Connect to a DCS Server<a class="headerlink" href="#connect-to-a-dcs-server" title="Permalink to this heading">#</a></h2>
+<p>Let’s start by connecting to a DCS server running on the localhost with default username and password.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">ansys.rep.client.jms</span> <span class="kn">import</span> <span class="n">Client</span>
+
+<span class="n">client</span> <span class="o">=</span> <span class="n">Client</span><span class="p">(</span><span class="n">rep_url</span><span class="o">=</span><span class="s2">&quot;https://127.0.0.1/dcs&quot;</span><span class="p">,</span> <span class="n">username</span><span class="o">=</span><span class="s2">&quot;repadmin&quot;</span><span class="p">,</span> <span class="n">password</span><span class="o">=</span><span class="s2">&quot;repadmin&quot;</span><span class="p">)</span>
+
+<span class="c1"># check which DCS version the server is running</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">client</span><span class="o">.</span><span class="n">get_api_info</span><span class="p">()[</span><span class="s1">&#39;build&#39;</span><span class="p">][</span><span class="s1">&#39;external_version&#39;</span><span class="p">])</span>
+
+<span class="c1"># get all projects</span>
+<span class="n">projects</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">get_projects</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Query projects statistics to find out how many design points are currently running</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">projects</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">get_projects</span><span class="p">(</span><span class="n">statistics</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">num_running_dps</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">statistics</span><span class="p">[</span><span class="s2">&quot;eval_status&quot;</span><span class="p">][</span><span class="s2">&quot;running&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">projects</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="create-a-demo-project-the-mapdl-motorbike-frame-example">
+<h2>Create a demo project: the MAPDL motorbike frame example<a class="headerlink" href="#create-a-demo-project-the-mapdl-motorbike-frame-example" title="Permalink to this heading">#</a></h2>
+<p>Create a project consisting of an Ansys APDL beam model
+of a tubular steel trellis motorbike-frame.</p>
+<p>The project setup script as well as the data files can be downloaded here <code class="xref download docutils literal notranslate"><span class="pre">MAPDL</span> <span class="pre">Motorbike</span> <span class="pre">Frame</span> <span class="pre">Project</span></code>.
+To create the project you only need to run the <cite>project_setup</cite> script:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ python path_to_download_folder\mapdl_motorbike_frame\project_setup.py
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>By default, the script tries to connect to the DCS server running on the localhost with default username and password.
+If your DCS server is hosted at a different URL or you want to specify different credentials,
+please adjust the script before running it.</p>
+</div>
+<p>See <a class="reference internal" href="ex_motorbike_frame.html#example-mapdl-motorbike-frame"><span class="std std-ref">Creating A Project</span></a> for a detailed description of this example.</p>
+</section>
+<section id="query-parameters">
+<h2>Query parameters<a class="headerlink" href="#query-parameters" title="Permalink to this heading">#</a></h2>
+<p>Most <code class="docutils literal notranslate"><span class="pre">get</span></code> functions support filtering by query parameters.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">project</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">get_project</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="s2">&quot;mapdl_motorbike_frame&quot;</span><span class="p">)</span>
+
+<span class="c1"># Get all design points with all fields</span>
+<span class="n">jobs</span> <span class="o">=</span> <span class="n">project</span><span class="o">.</span><span class="n">get_jobs</span><span class="p">()</span>
+
+<span class="c1"># Get id and parameter values for all evaluated design points</span>
+<span class="n">jobs</span> <span class="o">=</span> <span class="n">project</span><span class="o">.</span><span class="n">get_jobs</span><span class="p">(</span><span class="n">fields</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;id&quot;</span><span class="p">,</span> <span class="s2">&quot;values&quot;</span><span class="p">],</span> <span class="n">eval_status</span><span class="o">=</span><span class="s2">&quot;evaluated&quot;</span><span class="p">)</span>
+
+<span class="c1"># Get name and elapsed time of max 5 evaluated design points</span>
+<span class="n">jobs</span> <span class="o">=</span> <span class="n">project</span><span class="o">.</span><span class="n">get_jobs</span><span class="p">(</span><span class="n">fields</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">,</span> <span class="s2">&quot;elapsed_time&quot;</span><span class="p">],</span>
+                    <span class="n">eval_status</span><span class="o">=</span><span class="s2">&quot;evaluated&quot;</span><span class="p">,</span> <span class="n">limit</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+
+<span class="c1"># Get all design points sorted by fitness value in ascending order</span>
+<span class="n">jobs</span> <span class="o">=</span> <span class="n">project</span><span class="o">.</span><span class="n">get_jobs</span><span class="p">(</span><span class="n">sort</span><span class="o">=</span><span class="s2">&quot;fitness&quot;</span><span class="p">)</span>
+
+<span class="c1"># Get all design points sorted by fitness value in descending order</span>
+<span class="n">jobs</span> <span class="o">=</span> <span class="n">project</span><span class="o">.</span><span class="n">get_jobs</span><span class="p">(</span><span class="n">sort</span><span class="o">=</span><span class="s2">&quot;-fitness&quot;</span><span class="p">)</span>
+
+<span class="c1"># Get all design points sorted by the parameters tube1 and weight</span>
+<span class="n">jobs</span> <span class="o">=</span> <span class="n">project</span><span class="o">.</span><span class="n">get_jobs</span><span class="p">(</span><span class="n">sort</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;values.tube1&quot;</span><span class="p">,</span> <span class="s2">&quot;values.weight&quot;</span><span class="p">])</span>
+<span class="nb">print</span><span class="p">([(</span><span class="n">dp</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="s2">&quot;tube1&quot;</span><span class="p">],</span> <span class="n">dp</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="s2">&quot;weight&quot;</span><span class="p">])</span> <span class="k">for</span> <span class="n">dp</span> <span class="ow">in</span> <span class="n">jobs</span><span class="p">])</span>
+</pre></div>
+</div>
+<p>In general, query parameters support the following operators: <code class="docutils literal notranslate"><span class="pre">lt</span></code> (less than), <code class="docutils literal notranslate"><span class="pre">le</span></code> (less or equal),
+<code class="docutils literal notranslate"><span class="pre">=</span></code> (equal), <code class="docutils literal notranslate"><span class="pre">ne</span></code> (not equal), <code class="docutils literal notranslate"><span class="pre">ge</span></code> (greater or equal), <code class="docutils literal notranslate"><span class="pre">gt</span></code> (greater than),  <code class="docutils literal notranslate"><span class="pre">in</span></code> (value found in list) and
+<code class="docutils literal notranslate"><span class="pre">contains</span></code> (property contains the given string).</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Equal</span>
+<span class="n">jobs</span> <span class="o">=</span> <span class="n">project</span><span class="o">.</span><span class="n">get_jobs</span><span class="p">(</span><span class="n">eval_status</span><span class="o">=</span><span class="s2">&quot;evaluated&quot;</span><span class="p">)</span>
+
+<span class="c1"># In</span>
+<span class="n">jobs</span> <span class="o">=</span> <span class="n">project</span><span class="o">.</span><span class="n">get_jobs</span><span class="p">(</span><span class="n">eval_status</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;prolog&quot;</span><span class="p">,</span> <span class="s2">&quot;running&quot;</span><span class="p">])</span>
+
+<span class="c1"># Contains</span>
+<span class="n">query_params</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;note.contains&quot;</span><span class="p">:</span> <span class="s2">&quot;search_string&quot;</span><span class="p">}</span>
+<span class="n">jobs</span> <span class="o">=</span> <span class="n">project</span><span class="o">.</span><span class="n">get_jobs</span><span class="p">(</span><span class="o">**</span><span class="n">query_params</span><span class="p">)</span>
+
+<span class="c1"># Less than</span>
+<span class="n">query_params</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;fitness.lt&quot;</span><span class="p">:</span> <span class="mf">1.8</span><span class="p">}</span>
+<span class="n">jobs</span> <span class="o">=</span> <span class="n">project</span><span class="o">.</span><span class="n">get_jobs</span><span class="p">(</span><span class="o">**</span><span class="n">query_params</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="objects-vs-dictionaries">
+<h2>Objects vs dictionaries<a class="headerlink" href="#objects-vs-dictionaries" title="Permalink to this heading">#</a></h2>
+<p>Most <code class="docutils literal notranslate"><span class="pre">get</span></code>, <code class="docutils literal notranslate"><span class="pre">create</span></code> and <code class="docutils literal notranslate"><span class="pre">update</span></code> functions can optionally return dictionaries rather than class objects by setting <code class="docutils literal notranslate"><span class="pre">as_objects=True</span></code>.
+This is especially useful when the returned data needs to be further manipulated by popular packages
+such as <code class="docutils literal notranslate"><span class="pre">Numpy</span></code>, <code class="docutils literal notranslate"><span class="pre">Pandas</span></code>, etc.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">pandas</span>
+
+<span class="n">project</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">get_project</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="s2">&quot;mapdl_motorbike_frame&quot;</span><span class="p">)</span>
+
+<span class="c1"># Get parameter values for all evaluated design points</span>
+<span class="n">jobs</span> <span class="o">=</span> <span class="n">project</span><span class="o">.</span><span class="n">get_jobs</span><span class="p">(</span><span class="n">fields</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;id&quot;</span><span class="p">,</span> <span class="s2">&quot;values&quot;</span><span class="p">],</span> <span class="n">eval_status</span><span class="o">=</span><span class="s2">&quot;evaluated&quot;</span><span class="p">,</span> <span class="n">as_objects</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+<span class="c1"># Import jobs data into a flat DataFrame</span>
+<span class="n">df</span> <span class="o">=</span> <span class="n">pandas</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">json</span><span class="o">.</span><span class="n">json_normalize</span><span class="p">(</span><span class="n">jobs</span><span class="p">)</span>
+
+<span class="c1"># Output</span>
+<span class="c1">#    id  values.tube1_radius  values.tube1_thickness  values.tube2_radius  values.tube2_thickness  values.tube3_radius  values.tube3_thickness  ... values.tube15 values.tube16 values.tube17 values.tube18 values.tube19 values.tube20 values.tube21</span>
+<span class="c1"># 0      1             7.055903                0.728247            17.677894                0.512761            13.342691                0.718970  ...             1             3             2             3             1             1             1</span>
+<span class="c1"># 1      2            18.172368                2.407453             9.216933                0.818597            11.789593                1.439845  ...             3             1             3             2             3             3             2</span>
+<span class="c1"># 2      3            14.832407                2.380437             7.484620                1.601617            19.742424                0.816099  ...             2             1             1             1             2             2             3</span>
+<span class="c1"># 3      4            10.254875                2.420485            10.429973                2.241802            14.647943                0.501836  ...             1             3             2             1             3             3             3</span>
+<span class="c1"># 4      5            14.601405                1.657524            10.056457                1.743385             8.821876                2.200616  ...             1             2             3             3             2             1             2</span>
+<span class="c1"># 5      6            10.393178                2.155777             8.043999                2.036772            11.605410                2.426192  ...             3             1             1             1             2             1             1</span>
+<span class="c1"># 6      7            10.415530                1.675479             4.570576                1.461735            16.915658                1.822555  ...             3             3             3             2             1             1             2</span>
+<span class="c1"># 7      8            12.841433                1.322097             6.142197                1.659299             6.275559                2.312346  ...             3             2             2             3             1             1             3</span>
+<span class="c1"># 8      9            18.394536                2.446091            12.882719                0.939273            15.167834                1.683604  ...             3             1             2             3             2             2             1</span>
+<span class="c1"># 9     10            12.414343                1.699816             6.128372                1.314386            18.783781                1.736996  ...             1             3             2             1             3             1             2</span>
+</pre></div>
+</div>
+</section>
+<section id="set-failed-design-points-to-pending">
+<h2>Set failed design points to pending<a class="headerlink" href="#set-failed-design-points-to-pending" title="Permalink to this heading">#</a></h2>
+<p>Query a specific project and set its failed design points (if any) to pending.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">project</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">get_project</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="s2">&quot;mapdl_motorbike_frame&quot;</span><span class="p">)</span>
+<span class="n">jobs</span> <span class="o">=</span> <span class="n">project</span><span class="o">.</span><span class="n">get_jobs</span><span class="p">()</span>
+
+<span class="n">failed_dps</span> <span class="o">=</span> <span class="p">[</span><span class="n">dp</span> <span class="k">for</span> <span class="n">dp</span> <span class="ow">in</span> <span class="n">jobs</span> <span class="k">if</span> <span class="n">dp</span><span class="o">.</span><span class="n">eval_status</span> <span class="o">==</span> <span class="s2">&quot;failed&quot;</span><span class="p">]</span>
+
+<span class="k">for</span> <span class="n">dp</span> <span class="ow">in</span> <span class="n">failed_dps</span><span class="p">:</span>
+    <span class="n">dp</span><span class="o">.</span><span class="n">eval_status</span> <span class="o">=</span> <span class="s2">&quot;pending&quot;</span>
+<span class="n">failed_dps</span> <span class="o">=</span> <span class="n">project</span><span class="o">.</span><span class="n">update_jobs</span><span class="p">(</span><span class="n">failed_dps</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="modify-a-project-job-definition">
+<h2>Modify a project job_definition<a class="headerlink" href="#modify-a-project-job-definition" title="Permalink to this heading">#</a></h2>
+<p>Query an existing project job_definition, modify it and send it back to the server.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">project</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">get_project</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="s2">&quot;mapdl_motorbike_frame&quot;</span><span class="p">)</span>
+
+<span class="c1"># get currently active job_definition</span>
+<span class="n">job_def</span> <span class="o">=</span> <span class="n">project</span><span class="o">.</span><span class="n">get_job_definitions</span><span class="p">(</span><span class="n">active</span><span class="o">=</span><span class="kc">True</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+
+<span class="c1"># Update the lower limit of a parameter</span>
+<span class="n">parameter</span> <span class="o">=</span> <span class="n">job_def</span><span class="o">.</span><span class="n">parameter_definitions</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+<span class="n">parameter</span><span class="o">.</span><span class="n">lower_limit</span> <span class="o">=</span> <span class="mf">2.5</span>
+
+<span class="c1"># send the updated job_definition to the server</span>
+<span class="n">job_def</span> <span class="o">=</span> <span class="n">project</span><span class="o">.</span><span class="n">update_job_definitions</span><span class="p">([</span><span class="n">job_def</span><span class="p">])[</span><span class="mi">0</span><span class="p">]</span>
+</pre></div>
+</div>
+</section>
+<section id="delete-some-design-points">
+<h2>Delete some design points<a class="headerlink" href="#delete-some-design-points" title="Permalink to this heading">#</a></h2>
+<p>Query and then delete all design points that timed out.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">project</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">get_project</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="s2">&quot;mapdl_motorbike_frame&quot;</span><span class="p">)</span>
+
+<span class="n">jobs</span> <span class="o">=</span> <span class="n">project</span><span class="o">.</span><span class="n">get_jobs</span><span class="p">(</span><span class="n">fields</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">],</span> <span class="n">eval_status</span><span class="o">=</span><span class="s2">&quot;timeout&quot;</span><span class="p">)</span>
+<span class="n">project</span><span class="o">.</span><span class="n">delete_jobs</span><span class="p">(</span><span class="n">jobs</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="query-the-number-of-evaluators">
+<h2>Query the number of evaluators<a class="headerlink" href="#query-the-number-of-evaluators" title="Permalink to this heading">#</a></h2>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">evaluators</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">get_evaluators</span><span class="p">()</span>
+
+<span class="c1"># print number of Windows and Linux evaluators connected to the DCS server</span>
+<span class="nb">print</span><span class="p">(</span> <span class="nb">len</span><span class="p">([</span><span class="n">e</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">evaluators</span> <span class="k">if</span> <span class="n">e</span><span class="o">.</span><span class="n">platform</span> <span class="o">==</span> <span class="s2">&quot;Windows&quot;</span> <span class="p">])</span> <span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span> <span class="nb">len</span><span class="p">([</span><span class="n">e</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">evaluators</span> <span class="k">if</span> <span class="n">e</span><span class="o">.</span><span class="n">platform</span> <span class="o">==</span> <span class="s2">&quot;Linux&quot;</span> <span class="p">])</span> <span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="replace-a-file-in-a-project">
+<h2>Replace a file in a project<a class="headerlink" href="#replace-a-file-in-a-project" title="Permalink to this heading">#</a></h2>
+<p>Get file definitions from an existing project job_definition and replace the first one.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">job_def</span> <span class="o">=</span> <span class="n">project</span><span class="o">.</span><span class="n">get_job_definitions</span><span class="p">(</span><span class="n">active</span><span class="o">=</span><span class="kc">True</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+<span class="n">files</span> <span class="o">=</span> <span class="n">project</span><span class="o">.</span><span class="n">get_files</span><span class="p">()</span>
+<span class="n">file</span> <span class="o">=</span> <span class="n">files</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+<span class="n">file</span><span class="o">.</span><span class="n">src</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;D:\local_folder\my_project\workbench_archive.wbpz&quot;</span>
+<span class="n">files</span> <span class="o">=</span> <span class="n">project</span><span class="o">.</span><span class="n">update_files</span><span class="p">([</span><span class="n">file</span><span class="p">])</span>
+</pre></div>
+</div>
+<p>For instructions on how to add a new file to an existing project job_definition, see <a class="reference internal" href="ex_adding_file.html#example-adding-files"><span class="std std-ref">Adding a file to a project</span></a>.</p>
+</section>
+<section id="modify-and-create-users">
+<h2>Modify and create users<a class="headerlink" href="#modify-and-create-users" title="Permalink to this heading">#</a></h2>
+<p>Users with admin rights (such as the default <code class="docutils literal notranslate"><span class="pre">repadmin</span></code> user) can create new users as well as modify or delete existing ones.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">ansys.rep.client.auth</span> <span class="kn">import</span> <span class="n">Client</span><span class="p">,</span> <span class="n">User</span>
+
+<span class="n">auth_client</span> <span class="o">=</span> <span class="n">Client</span><span class="p">(</span><span class="n">rep_url</span><span class="o">=</span><span class="s2">&quot;https://127.0.0.1/dcs/&quot;</span><span class="p">,</span> <span class="n">username</span><span class="o">=</span><span class="s2">&quot;repadmin&quot;</span><span class="p">,</span> <span class="n">password</span><span class="o">=</span><span class="s2">&quot;repadmin&quot;</span><span class="p">)</span>
+
+<span class="c1"># modify the default password of the repadmin user</span>
+<span class="n">default_user</span> <span class="o">=</span> <span class="n">auth_client</span><span class="o">.</span><span class="n">get_users</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
+<span class="n">default_user</span><span class="o">.</span><span class="n">password</span> <span class="o">=</span> <span class="s1">&#39;new_password&#39;</span>
+<span class="n">auth_client</span><span class="o">.</span><span class="n">update_user</span><span class="p">(</span><span class="n">default_user</span><span class="p">)</span>
+
+<span class="c1"># create a new non-admin user</span>
+<span class="n">new_user</span> <span class="o">=</span> <span class="n">User</span><span class="p">(</span><span class="n">username</span><span class="o">=</span><span class="s1">&#39;test_user&#39;</span><span class="p">,</span> <span class="n">password</span><span class="o">=</span><span class="s1">&#39;dummy&#39;</span><span class="p">,</span>
+                <span class="n">email</span><span class="o">=</span><span class="s1">&#39;test_user@test.com&#39;</span><span class="p">,</span> <span class="n">fullname</span><span class="o">=</span><span class="s1">&#39;Test User&#39;</span><span class="p">,</span>
+                <span class="n">is_admin</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="n">new_user</span> <span class="o">=</span> <span class="n">auth_client</span><span class="o">.</span><span class="n">create_user</span><span class="p">(</span><span class="n">new_user</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="exception-handling">
+<h2>Exception handling<a class="headerlink" href="#exception-handling" title="Permalink to this heading">#</a></h2>
+<p>All exceptions that the Ansys DCS clients explicitly raise inherit from <a class="reference internal" href="exceptions.html#ansys.rep.client.REPError" title="ansys.rep.client.REPError"><code class="xref py py-exc docutils literal notranslate"><span class="pre">ansys.rep.client.REPError</span></code></a>.
+Client Errors are raised for 4xx HTTP status codes, while API Errors are raised for 5xx HTTP status codes (server side errors).</p>
+<p>For example, instantiating a client with invalid credentials will return a 400 Client Error.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">ansys.rep.client</span> <span class="kn">import</span> <span class="n">REPError</span>
+<span class="kn">from</span> <span class="nn">ansys.rep.client.jms</span> <span class="kn">import</span> <span class="n">Client</span>
+
+<span class="k">try</span><span class="p">:</span>
+    <span class="n">client</span> <span class="o">=</span> <span class="n">Client</span><span class="p">(</span><span class="n">rep_url</span><span class="o">=</span><span class="s2">&quot;https://127.0.0.1/dcs/&quot;</span><span class="p">,</span> <span class="n">username</span><span class="o">=</span><span class="s2">&quot;repadmin&quot;</span><span class="p">,</span>  <span class="n">password</span><span class="o">=</span><span class="s2">&quot;wrong_psw&quot;</span><span class="p">)</span>
+<span class="k">except</span> <span class="n">REPError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+
+<span class="c1">#Output:</span>
+<span class="c1">#400 Client Error: invalid_grant for: POST https://127.0.0.1/dcs/auth/api/oauth/token</span>
+<span class="c1">#Invalid &quot;username&quot; or &quot;password&quot; in request.</span>
+</pre></div>
+</div>
+<p>A <em>get</em> call  on a non-existing resource will return a 404 Client Error.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">try</span><span class="p">:</span>
+    <span class="n">client</span><span class="o">.</span><span class="n">get_project</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="s2">&quot;non_existing_project&quot;</span><span class="p">)</span>
+<span class="k">except</span> <span class="n">REPError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+
+<span class="c1">#Output:</span>
+<span class="c1">#404 Client Error: Not Found for: GET https://127.0.0.1/dcs/dps/api//projects/non_existing_project</span>
+</pre></div>
+</div>
+</section>
+</section>
+
+
+              </article>
+              
+
+              
+          </div>
+          
+      </div>
+    </div>
+
+  
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="_static/scripts/pydata-sphinx-theme.js?digest=92025949c220c2e29695"></script>
+
+<footer class="bd-footer"><div class="bd-footer__inner container">
+  
+  <div class="footer-item">
+    <p class="copyright">
+    &copy; Copyright (c) 2022 ANSYS, Inc.. All rights reserved.<br>
+</p>
+  </div>
+  
+  <div class="footer-item">
+    <p class="sphinx-version">
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 5.1.1.<br>
+</p>
+  </div>
+  
+</div>
+</footer>
+  </body>
+</html>

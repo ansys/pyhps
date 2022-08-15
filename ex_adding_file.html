@@ -1,0 +1,320 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+
+    <title>Adding a file to a project &#8212; pyrep</title>
+    
+<script>
+  document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+  document.documentElement.dataset.theme = localStorage.getItem("theme") || "light"
+</script>
+
+  <!-- Loaded before other Sphinx assets -->
+  <link href="_static/styles/theme.css?digest=92025949c220c2e29695" rel="stylesheet">
+<link href="_static/styles/pydata-sphinx-theme.css?digest=92025949c220c2e29695" rel="stylesheet">
+
+
+  <link rel="stylesheet"
+    href="_static/vendor/fontawesome/5.13.0/css/all.min.css">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
+
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="_static/css/ansys_sphinx_theme.css" />
+
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=92025949c220c2e29695">
+
+    
+        <link href="_static/css/breadcrumbs.css" rel="stylesheet">
+    
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/clipboard.min.js"></script>
+    <script src="_static/copybutton.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Code Documentation" href="api_reference.html" />
+    <link rel="prev" title="Download of output files" href="ex_download.html" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="docsearch:language" content="en">
+  </head>
+  
+  
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="180" data-default-mode="">
+    <div class="bd-header-announcement container-fluid" id="banner">
+      
+
+    </div>
+
+    
+    
+    <nav class="bd-header navbar navbar-light navbar-expand-lg bg-light fixed-top bd-navbar" id="navbar-main"><div class="bd-header__inner container-xl">
+
+  <div id="navbar-start">
+    
+    
+  
+
+
+<a class="navbar-brand logo" href="index.html">
+  
+  
+  
+  
+    <img src="_static/pyansys-logo-black-cropped.png" class="logo__image only-light" alt="Logo image">
+    <img src="_static/pyansys-logo-black-cropped.png" class="logo__image only-dark" alt="Logo image">
+  
+  
+</a>
+    
+  </div>
+
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar-collapsible" aria-controls="navbar-collapsible" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="fas fa-bars"></span>
+  </button>
+
+  
+  <div id="navbar-collapsible" class="col-lg-9 collapse navbar-collapse">
+    <div id="navbar-center" class="mr-auto">
+      
+      <div class="navbar-center-item">
+        <ul id="navbar-main-elements" class="navbar-nav">
+    <li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="install.html">
+  Installation
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="quickstart.html">
+  Quickstart
+ </a>
+</li>
+
+<li class="toctree-l1 current active nav-item">
+ <a class="reference internal nav-link" href="examples.html">
+  Examples
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="api_reference.html">
+  Code Documentation
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="changelog.html">
+  Changelog
+ </a>
+</li>
+
+    
+</ul>
+      </div>
+      
+    </div>
+
+    <div id="navbar-end">
+      
+      <div class="navbar-end-item">
+        <span id="theme-switch" class="btn btn-sm btn-outline-primary navbar-btn rounded-circle">
+    <a class="theme-switch" data-mode="light"><i class="fas fa-sun"></i></a>
+    <a class="theme-switch" data-mode="dark"><i class="far fa-moon"></i></a>
+    <a class="theme-switch" data-mode="auto"><i class="fas fa-adjust"></i></a>
+</span>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
+        <li class="nav-item">
+          <a class="nav-link" href="[https://github.com/pyansys/pyrep" rel="noopener" target="_blank" title="GitHub"><span><i class="fab fa-github-square"></i></span>
+            <label class="sr-only">GitHub</label></a>
+        </li>
+      </ul>
+      </div>
+      
+    </div>
+  </div>
+</div>
+    </nav>
+    
+    
+        <div class="container-xl">
+    <div class="row">
+        <div class="col-12 col-md-3" id="breadcrumbs-spacer"></div>
+        <div class="col-12 col-md-11 col-xl-9" id="breadcrumbs">
+          
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+    
+        <li class="nav-item nav-item-additional-breadcrumb"><a href="https://docs.pyansys.com/">PyAnsys</a> » </li>
+    
+    
+        <li class="nav-item nav-item-0"><a href="index.html">pyrep</a> » </li>
+    
+
+          <li class="nav-item nav-item-1"><a href="examples.html" accesskey="U">Examples</a> » </li>
+        <li class="nav-item nav-item-this"><a href="">Adding a file to a project</a></li> 
+      </ul>
+    </div>
+        </div>
+  </div>
+</div>
+    
+
+
+    <div class="bd-container container-xl">
+      <div class="bd-container__inner row">
+          
+
+<!-- Only show if we have sidebars configured, else just a small margin  -->
+<div class="bd-sidebar-primary col-12 col-md-3 bd-sidebar">
+  <div class="sidebar-start-items"><form class="bd-search d-flex align-items-center" action="search.html" method="get">
+  <i class="icon fas fa-search"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" >
+</form><nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
+  <div class="bd-toc-item active">
+    
+    <ul class="current nav bd-sidenav">
+ <li class="toctree-l1">
+  <a class="reference internal" href="ex_motorbike_frame.html">
+   Creating A Project
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ex_download.html">
+   Download of output files
+  </a>
+ </li>
+ <li class="toctree-l1 current active">
+  <a class="current reference internal" href="#">
+   Adding a file to a project
+  </a>
+ </li>
+</ul>
+
+    
+    
+  </div>
+</nav>
+  </div>
+  <div class="sidebar-end-items">
+  </div>
+</div>
+
+
+          
+
+
+<div class="bd-sidebar-secondary d-none d-xl-block col-xl-2 bd-toc">
+  
+    
+    <div class="toc-item">
+      
+
+<nav id="bd-toc-nav">
+    
+</nav>
+    </div>
+    
+    <div class="toc-item">
+      
+    </div>
+    
+  
+</div>
+
+
+          
+          
+          <div class="bd-content col-12 col-md-9 col-xl-7">
+              
+              <article class="bd-article" role="main">
+                
+  <section id="adding-a-file-to-a-project">
+<span id="example-adding-files"></span><h1>Adding a file to a project<a class="headerlink" href="#adding-a-file-to-a-project" title="Permalink to this heading">#</a></h1>
+<p>This example shows how to add one or more output files to an existing project job_definition.
+This is a typical scenario when the DCS project is automatically generated by Ansys Workbench and you would like to further customize it.</p>
+<p>As a starting point, we consider the project included in the DCS tutorial <a class="reference external" href="https://ansyshelp.ansys.com/account/         secured?returnurl=/Views/Secured/corp/v231/en/dcs_tut/dcs_tut_workshop1.html">Bicycle Wheel – Parameter Study</a>.
+The project consists of a parametric model of a bicycle wheel and uses Ansys Mechanical for the structural simulation.</p>
+<p>Here we show you how to modify the project in order to pick up the Mechanical <code class="docutils literal notranslate"><span class="pre">solve.out</span></code> file for every design point.
+To begin with, you need to copy the <code class="docutils literal notranslate"><span class="pre">solve.out</span></code> file to the directory of the project.
+To this end, we create two simple APDL command snippets as shown in the screenshot (the same is done for the radial local case).</p>
+<img alt="bicycle project command snippet" src="_images/bicycle_command_snippet.png" />
+<p>Then, once the project is sent to the DCS server via Workbench, we can add the <code class="docutils literal notranslate"><span class="pre">solve.out</span></code> files to the list of collected output files using the Python client.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">ansys.rep.client.jms</span> <span class="kn">import</span> <span class="n">Client</span><span class="p">,</span> <span class="n">File</span>
+<span class="n">client</span> <span class="o">=</span> <span class="n">Client</span><span class="p">(</span><span class="n">rep_url</span><span class="o">=</span><span class="s2">&quot;https://127.0.0.1/dcs&quot;</span><span class="p">,</span> <span class="n">username</span><span class="o">=</span><span class="s2">&quot;repadmin&quot;</span><span class="p">,</span> <span class="n">password</span><span class="o">=</span><span class="s2">&quot;repadmin&quot;</span><span class="p">)</span>
+
+<span class="c1"># Get the project and its current job_definition</span>
+<span class="n">proj</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">get_project</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="s2">&quot;DPS_Mechanical_Bicycle_Wheel_2019R3&quot;</span><span class="p">)</span>
+<span class="n">job_def</span> <span class="o">=</span> <span class="n">proj</span><span class="o">.</span><span class="n">get_job_definitions</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="mi">1</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+
+<span class="c1"># Define new file objects</span>
+<span class="n">additional_files</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="n">additional_files</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">File</span><span class="p">(</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;solve_lateral_force_out&quot;</span><span class="p">,</span> <span class="n">evaluation_path</span><span class="o">=</span><span class="s2">&quot;lateral_force.out&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="s2">&quot;text/plain&quot;</span><span class="p">,</span> <span class="n">collect</span><span class="o">=</span><span class="kc">True</span> <span class="p">)</span> <span class="p">)</span>
+<span class="n">additional_files</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">File</span><span class="p">(</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;solve_radial_force_out&quot;</span><span class="p">,</span> <span class="n">evaluation_path</span><span class="o">=</span><span class="s2">&quot;radial_force.out&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="s2">&quot;text/plain&quot;</span><span class="p">,</span> <span class="n">collect</span><span class="o">=</span><span class="kc">True</span> <span class="p">)</span> <span class="p">)</span>
+
+<span class="c1"># Add new files to the list of project files</span>
+<span class="n">files</span> <span class="o">=</span> <span class="n">proj</span><span class="o">.</span><span class="n">create_files</span><span class="p">(</span><span class="n">additional_files</span><span class="p">)</span>
+
+<span class="c1"># Get file IDs</span>
+<span class="n">solve_1_out</span> <span class="o">=</span> <span class="n">files</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+<span class="n">solve_2_out</span> <span class="o">=</span> <span class="n">files</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+
+<span class="c1"># Add the new files to the list of existing output files</span>
+<span class="n">job_def</span><span class="o">.</span><span class="n">task_definitions</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">output_file_ids</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="n">solve_1_out</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">solve_2_out</span><span class="o">.</span><span class="n">id</span><span class="p">])</span>
+
+<span class="c1"># Send the modified project job_definition to the server</span>
+<span class="n">job_def</span> <span class="o">=</span> <span class="n">proj</span><span class="o">.</span><span class="n">update_job_definitions</span><span class="p">([</span><span class="n">job_def</span><span class="p">])</span>
+</pre></div>
+</div>
+<p>Once the design points are evaluated, you will be able to view the solve output files in the DPS Web APP
+as well as to download them using the Python client as shown in the <a class="reference internal" href="ex_download.html#example-download-files"><span class="std std-ref">previous example</span></a>.</p>
+</section>
+
+
+              </article>
+              
+
+              
+          </div>
+          
+      </div>
+    </div>
+
+  
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="_static/scripts/pydata-sphinx-theme.js?digest=92025949c220c2e29695"></script>
+
+<footer class="bd-footer"><div class="bd-footer__inner container">
+  
+  <div class="footer-item">
+    <p class="copyright">
+    &copy; Copyright (c) 2022 ANSYS, Inc.. All rights reserved.<br>
+</p>
+  </div>
+  
+  <div class="footer-item">
+    <p class="sphinx-version">
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 5.1.1.<br>
+</p>
+  </div>
+  
+</div>
+</footer>
+  </body>
+</html>
