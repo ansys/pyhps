@@ -90,7 +90,7 @@ jobs:
 
 
   build:
-    name: Build library
+    name: Build and publish library
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -104,3 +104,10 @@ jobs:
           python -m pip install -r requirements/requirements_build.txt
           python -m build
           python -m twine check dist/*
+      - name: Upload to private PyPi
+        run: |
+          python -m twine upload --verbose --skip-existing dist/**/*.whl
+        env:
+          TWINE_USERNAME: __token__
+          TWINE_PASSWORD: ${{ secrets.PYANSYS_PYPI_PRIVATE_PAT }}
+          TWINE_REPOSITORY_URL: https://pkgs.dev.azure.com/pyansys/_packaging/pyansys/pypi/upload
