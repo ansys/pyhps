@@ -19,6 +19,7 @@ repos:
   rev: v2.1.0
   hooks:
   - id: codespell
+    exclude: .mac
 
 # For now we disable some of these checks, can be reenabled later
 # - repo: https://github.com/pycqa/pydocstyle
