@@ -222,21 +222,21 @@ class JobsTest(REPTestCase):
         jobs = project.get_jobs(fields=["id", "eval_status"])
         for job in jobs:
             job.eval_status = "pending"
-        jobs = project.update_design_points(jobs)
+        jobs = project.update_jobs(jobs)
 
         for job in jobs:
             for p_name in input_parameters:
                 self.assertEqual(job.values[p_name], ref_values[job.id][p_name])
 
         # change eval status with partial DP object including config id
-        jobs = project.get_design_points(fields=["id", "job_definition_id", "eval_status"])
-        for dp in dps:
-            dp.eval_status = "pending"
-        dps = project.update_design_points(dps)
+        jobs = project.get_jobs(fields=["id", "job_definition_id", "eval_status"])
+        for job in jobs:
+            job.eval_status = "pending"
+        jobs = project.update_jobs(jobs)
 
-        for dp in dps:
+        for job in jobs:
             for p_name in input_parameters:
-                self.assertEqual(dp.values[p_name], ref_values[dp.id][p_name], p_name)
+                self.assertEqual(job.values[p_name], ref_values[job.id][p_name], p_name)
 
         client.delete_project(project)
 
