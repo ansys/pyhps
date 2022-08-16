@@ -224,7 +224,7 @@ class ProjectApi:
         return self._update_objects(tasks, as_objects=as_objects)
 
     ################################################################
-    # Selections
+    # Selections #TODO
     def get_selections(self, as_objects=True, **query_params):
         return get_selections(self, as_objects=as_objects, **query_params)
 

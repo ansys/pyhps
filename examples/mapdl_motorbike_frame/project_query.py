@@ -11,7 +11,7 @@ import os
 from statistics import mean, stdev
 
 from ansys.rep.client import REPError
-from ansys.rep.client.jms import Client
+from ansys.rep.client.jms import Client, ProjectApi
 
 log = logging.getLogger(__name__)
 
@@ -32,27 +32,29 @@ def query_stats(client, project_name):
     log.info(f"ID: {project.id}")
     log.info(f"Created on: {project.creation_time}")
 
+    project_api = ProjectApi(client, project.id)
+
     log.info("=== Query jobs")
-    jobs = project.get_jobs(eval_status="evaluated", fields=["id", "values", "elapsed_time"])
+    jobs = project_api.get_jobs(eval_status="evaluated", fields=["id", "values", "elapsed_time"])
     if not jobs:
         log.info("No evaluated jobs found to compute statistics from, exiting")
         return
 
     log.info(f"Statistics across {len(jobs)} jobs")
 
-    values = [dp.values["mapdl_elapsed_time_obtain_license"] for dp in jobs]
+    values = [job.values["mapdl_elapsed_time_obtain_license"] for job in jobs]
     print_value_stats(
         values, "=== License checkoput (parameter: mapdl_elapsed_time_obtain_license)"
     )
 
-    values = [dp.values["mapdl_elapsed_time"] for dp in jobs]
+    values = [job.values["mapdl_elapsed_time"] for job in jobs]
     print_value_stats(values, "=== Elapsed time MAPDL (mapdl_elapsed_time)")
 
-    values = [dp.elapsed_time for dp in jobs]
+    values = [job.elapsed_time for job in jobs]
     print_value_stats(values, "=== Elapsed time REP (elapsed_time)")
 
     log.info("=== Query tasks")
-    tasks = project.get_tasks(
+    tasks = project_api.get_tasks(
         eval_status="evaluated", fields=["id", "prolog_time", "running_time", "finished_time"]
     )
     log.info("Statistics across tasks")
@@ -75,24 +77,27 @@ def download_files(client, project_name):
     project = client.get_project(id=project.id)
 
     log.info(f"Project id: {project.id}")
+    project_api = ProjectApi(client, project.id)
 
-    jobs = project.get_jobs(eval_status="evaluated", fields=["id", "values", "elapsed_time"])
+    jobs = project_api.get_jobs(eval_status="evaluated", fields=["id", "values", "elapsed_time"])
     log.info(f"# evaluated jobs: {len(jobs)}")
     num = min(len(jobs), 10)
 
-    log.info(f"=== Example 1: Downloading output files of {num} jobs using File.download()")
+    log.info(
+        f"=== Example 1: Downloading output files of {num} jobs using ProjectApi.download_file()"
+    )
     for job in jobs[0:num]:
         log.info(f"Job {job.id}")
-        for task in job.get_tasks():
+        for task in project_api.get_tasks(job_id=job.id):
             log.info(f"Task {task.id}")
-            files = project.get_files(id=task.output_file_ids)
+            files = project_api.get_files(id=task.output_file_ids)
             for f in files:
                 fpath = os.path.join(out_path, f"task_{task.id}")
                 log.info(f"Download output file {f.evaluation_path} to {fpath}")
-                f.download(target_path=fpath)
+                project_api.download_file(file=f, target_path=fpath)
 
     num = 10
-    files = project.get_files(type="image/jpeg", limit=num, content=True)
+    files = project_api.get_files(type="image/jpeg", limit=num, content=True)
     num = len(jobs)
     log.info(f"=== Example 2: Global download of {num} jpeg images in project using content=True")
     for f in files:
