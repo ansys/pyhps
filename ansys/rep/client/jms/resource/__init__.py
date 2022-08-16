@@ -10,7 +10,8 @@ from .algorithm import Algorithm
 from .evaluator import Evaluator
 from .file import File
 from .fitness_definition import FitnessDefinition, FitnessTermDefinition
-from .job_definition import Job, JobDefinition
+from .job import Job
+from .job_definition import JobDefinition
 from .license_context import LicenseContext
 from .parameter_definition import (
     BoolParameterDefinition,

@@ -157,3 +157,7 @@ cython_debug/
 #.idea/
 
 # End of https://www.toptal.com/developers/gitignore/api/python
+
+doc/schemas
+test_results.xml
+mapdl_motorbike_frame.zip

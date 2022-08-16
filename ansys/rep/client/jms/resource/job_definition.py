@@ -8,8 +8,7 @@
 import logging
 
 from ..schema.job_definition import JobDefinitionSchema
-from .base import Object, create_objects, delete_objects, get_objects
-from .job import Job, copy_jobs
+from .base import Object
 
 log = logging.getLogger(__name__)
 
@@ -18,8 +17,6 @@ class JobDefinition(Object):
     """JobDefinition resource.
 
     Args:
-        project (:class:`ansys.rep.client.jms.Project`, optional): A Project object.
-                                                                   Defaults to None.
         **kwargs: Arbitrary keyword arguments, see the JobDefinition schema below.
 
     Example:
@@ -40,24 +37,8 @@ class JobDefinition(Object):
         schema = JobDefinitionSchema
         rest_name = "job_definitions"
 
-    def __init__(self, project=None, **kwargs):
-        self.project = project
+    def __init__(self, **kwargs):
         super(JobDefinition, self).__init__(**kwargs)
-
-    def get_jobs(self, **query_params):
-        """Return a list of design points, optionally filtered by given query parameters"""
-        return get_objects(self.project, Job, job_definition=self, **query_params)
-
-    def create_jobs(self, jobs):
-        for j in jobs:
-            j.job_definition_id = self.id
-        return create_objects(self.project, jobs)
-
-    def copy_jobs(self, jobs):
-        return copy_jobs(self.project, jobs, job_definition=self)
-
-    def delete_jobs(self, jobs):
-        return delete_objects(self.project, jobs)
 
 
 JobDefinitionSchema.Meta.object_class = JobDefinition

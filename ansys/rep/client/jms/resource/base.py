@@ -5,12 +5,9 @@
 #
 # Author(s): O.Koenig
 # ----------------------------------------------------------
-import json
 import logging
 
 from marshmallow.utils import missing
-
-from ansys.rep.client import REPError
 
 log = logging.getLogger(__name__)
 
@@ -66,105 +63,105 @@ class Object(object):
         # return "{%s\n}" % ("\n".join(["%s: %s" %(k,str(v)) for k,v in self.__dict__.items()]) )
 
 
-def get_objects(project, obj_type, job_definition=None, as_objects=True, **query_params):
-    """Reusable function to get objects in a project"""
-    rest_name = obj_type.Meta.rest_name
-    url = f"{project.client.jms_api_url}/projects/{project.id}"
-    if job_definition is not None:
-        url += f"/job_definitions/{job_definition.id}"
-    url += f"/{rest_name}"
+# def get_objects(project, obj_type, job_definition=None, as_objects=True, **query_params):
+#     """Reusable function to get objects in a project"""
+#     rest_name = obj_type.Meta.rest_name
+#     url = f"{project.client.jms_api_url}/projects/{project.id}"
+#     if job_definition is not None:
+#         url += f"/job_definitions/{job_definition.id}"
+#     url += f"/{rest_name}"
 
-    query_params.setdefault("fields", "all")
+#     query_params.setdefault("fields", "all")
 
-    r = project.client.session.get(url, params=query_params)
+#     r = project.client.session.get(url, params=query_params)
 
-    if query_params.get("count"):
-        return r.json()[f"num_{rest_name}"]
+#     if query_params.get("count"):
+#         return r.json()[f"num_{rest_name}"]
 
-    data = r.json()[rest_name]
-    if not as_objects:
-        return data
+#     data = r.json()[rest_name]
+#     if not as_objects:
+#         return data
 
-    schema = obj_type.Meta.schema(many=True)
-    objects = schema.load(data)
-    for o in objects:
-        o.project = project
-    return objects
-
-
-def create_objects(project, objects, as_objects=True, **query_params):
-
-    if not objects:
-        return []
-
-    are_same = [o.__class__ == objects[0].__class__ for o in objects[1:]]
-    if not all(are_same):
-        raise REPError("Mixed object types")
-
-    obj_type = objects[0].__class__
-    rest_name = obj_type.Meta.rest_name
-    url = f"{project.client.jms_api_url}/projects/{project.id}/{rest_name}"
-
-    query_params.setdefault("fields", "all")
-
-    schema = obj_type.Meta.schema(many=True)
-    serialized_data = schema.dump(objects)
-    json_data = json.dumps({rest_name: serialized_data})
-    r = project.client.session.post(f"{url}", data=json_data, params=query_params)
-
-    data = r.json()[rest_name]
-    if not as_objects:
-        return data
-
-    objects = schema.load(data)
-    for o in objects:
-        o.project = project
-    return objects
+#     schema = obj_type.Meta.schema(many=True)
+#     objects = schema.load(data)
+#     for o in objects:
+#         o.project = project
+#     return objects
 
 
-def update_objects(project, objects, as_objects=True, **query_params):
+# def create_objects(project, objects, as_objects=True, **query_params):
 
-    if not objects:
-        return []
+#     if not objects:
+#         return []
 
-    are_same = [o.__class__ == objects[0].__class__ for o in objects[1:]]
-    if not all(are_same):
-        raise REPError("Mixed object types")
+#     are_same = [o.__class__ == objects[0].__class__ for o in objects[1:]]
+#     if not all(are_same):
+#         raise REPError("Mixed object types")
 
-    obj_type = objects[0].__class__
-    rest_name = obj_type.Meta.rest_name
-    url = f"{project.client.jms_api_url}/projects/{project.id}/{rest_name}"
+#     obj_type = objects[0].__class__
+#     rest_name = obj_type.Meta.rest_name
+#     url = f"{project.client.jms_api_url}/projects/{project.id}/{rest_name}"
 
-    query_params.setdefault("fields", "all")
+#     query_params.setdefault("fields", "all")
 
-    schema = obj_type.Meta.schema(many=True)
-    serialized_data = schema.dump(objects)
-    json_data = json.dumps({rest_name: serialized_data})
-    r = project.client.session.put(f"{url}", data=json_data, params=query_params)
+#     schema = obj_type.Meta.schema(many=True)
+#     serialized_data = schema.dump(objects)
+#     json_data = json.dumps({rest_name: serialized_data})
+#     r = project.client.session.post(f"{url}", data=json_data, params=query_params)
 
-    data = r.json()[rest_name]
-    if not as_objects:
-        return data
+#     data = r.json()[rest_name]
+#     if not as_objects:
+#         return data
 
-    objects = schema.load(data)
-    for o in objects:
-        o.project = project
-    return objects
+#     objects = schema.load(data)
+#     for o in objects:
+#         o.project = project
+#     return objects
 
 
-def delete_objects(project, objects):
-    """Reusable delete function"""
+# def update_objects(project, objects, as_objects=True, **query_params):
 
-    if not objects:
-        return
+#     if not objects:
+#         return []
 
-    are_same = [o.__class__ == objects[0].__class__ for o in objects[1:]]
-    if not all(are_same):
-        raise REPError("Mixed object types")
+#     are_same = [o.__class__ == objects[0].__class__ for o in objects[1:]]
+#     if not all(are_same):
+#         raise REPError("Mixed object types")
 
-    obj_type = objects[0].__class__
-    rest_name = obj_type.Meta.rest_name
-    url = f"{project.client.jms_api_url}/projects/{project.id}/{rest_name}"
+#     obj_type = objects[0].__class__
+#     rest_name = obj_type.Meta.rest_name
+#     url = f"{project.client.jms_api_url}/projects/{project.id}/{rest_name}"
 
-    data = json.dumps({"source_ids": [obj.id for obj in objects]})
-    r = project.client.session.delete(url, data=data)
+#     query_params.setdefault("fields", "all")
+
+#     schema = obj_type.Meta.schema(many=True)
+#     serialized_data = schema.dump(objects)
+#     json_data = json.dumps({rest_name: serialized_data})
+#     r = project.client.session.put(f"{url}", data=json_data, params=query_params)
+
+#     data = r.json()[rest_name]
+#     if not as_objects:
+#         return data
+
+#     objects = schema.load(data)
+#     for o in objects:
+#         o.project = project
+#     return objects
+
+
+# def delete_objects(project, objects):
+#     """Reusable delete function"""
+
+#     if not objects:
+#         return
+
+#     are_same = [o.__class__ == objects[0].__class__ for o in objects[1:]]
+#     if not all(are_same):
+#         raise REPError("Mixed object types")
+
+#     obj_type = objects[0].__class__
+#     rest_name = obj_type.Meta.rest_name
+#     url = f"{project.client.jms_api_url}/projects/{project.id}/{rest_name}"
+
+#     data = json.dumps({"source_ids": [obj.id for obj in objects]})
+#     r = project.client.session.delete(url, data=data)

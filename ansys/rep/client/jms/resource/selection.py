@@ -9,8 +9,7 @@ import json
 import logging
 
 from ..schema.selection import SelectionSchema
-from .base import Object, get_objects
-from .job_definition import Job
+from .base import Object
 
 log = logging.getLogger(__name__)
 
@@ -35,19 +34,8 @@ class Selection(Object):
     class Meta:
         schema = SelectionSchema
 
-    def __init__(self, project=None, **kwargs):
-        self.project = project
+    def __init__(self, **kwargs):
         super(Selection, self).__init__(**kwargs)
-
-    def get_jobs(self, as_objects=True, **query_params):
-        """Return a list of design points, optionally filtered by given query parameters
-
-        Returns:
-            List of :class:`ansys.rep.client.jms.Job` or list of dict if as_objects is True
-        """
-        return get_objects(
-            self.project, Job, as_objects=as_objects, selection=self.name, **query_params
-        )
 
 
 SelectionSchema.Meta.object_class = Selection

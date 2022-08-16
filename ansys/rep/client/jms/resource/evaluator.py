@@ -30,10 +30,6 @@ class Evaluator(Object):
     def __init__(self, **kwargs):
         super(Evaluator, self).__init__(**kwargs)
 
-    # def __init__(self, project=None, **kwargs):
-    #     self.project=project
-    #     super(Evaluator, self).__init__(**kwargs)
-
 
 EvaluatorSchema.Meta.object_class = Evaluator
 

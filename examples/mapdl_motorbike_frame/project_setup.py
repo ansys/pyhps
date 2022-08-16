@@ -21,6 +21,7 @@ from ansys.rep.client.jms import (
     Licensing,
     ParameterMapping,
     Project,
+    ProjectApi,
     ResourceRequirements,
     Software,
     StringParameterDefinition,
@@ -46,6 +47,8 @@ def create_project(client, name, num_jobs=20, use_exec_script=False):
     log.debug("=== Project")
     proj = Project(name=name, priority=1, active=True)
     proj = client.create_project(proj, replace=True)
+
+    project_api = ProjectApi(client, proj.id)
 
     log.debug("=== Files")
     cwd = os.path.dirname(__file__)
@@ -88,7 +91,7 @@ def create_project(client, name, num_jobs=20, use_exec_script=False):
             )
         )
 
-    files = proj.create_files(files)
+    files = project_api.create_files(files)
     file_ids = {f.name: f.id for f in files}
 
     log.debug("=== JobDefinition with simulation workflow and parameters")
@@ -108,7 +111,7 @@ def create_project(client, name, num_jobs=20, use_exec_script=False):
             ]
         )
 
-    float_input_params = proj.create_parameter_definitions(float_input_params)
+    float_input_params = project_api.create_parameter_definitions(float_input_params)
     param_mappings = []
     pi = 0
     for i in range(1, 4):
@@ -137,7 +140,7 @@ def create_project(client, name, num_jobs=20, use_exec_script=False):
         str_input_params.append(
             StringParameterDefinition(name="tube%s" % i, default="1", value_list=["1", "2", "3"])
         )
-    str_input_params = proj.create_parameter_definitions(str_input_params)
+    str_input_params = project_api.create_parameter_definitions(str_input_params)
 
     for i in range(1, 22):
         param_mappings.append(
@@ -153,7 +156,7 @@ def create_project(client, name, num_jobs=20, use_exec_script=False):
     output_params = []
     for pname in ["weight", "torsion_stiffness", "max_stress"]:
         output_params.append(FloatParameterDefinition(name=pname))
-    output_params = proj.create_parameter_definitions(output_params)
+    output_params = project_api.create_parameter_definitions(output_params)
     for pd in output_params:
         param_mappings.append(
             ParameterMapping(
@@ -169,7 +172,7 @@ def create_project(client, name, num_jobs=20, use_exec_script=False):
     stat_params.append(FloatParameterDefinition(name="mapdl_elapsed_time_obtain_license"))
     stat_params.append(FloatParameterDefinition(name="mapdl_cp_time"))
     stat_params.append(FloatParameterDefinition(name="mapdl_elapsed_time"))
-    stat_params = proj.create_parameter_definitions(stat_params)
+    stat_params = project_api.create_parameter_definitions(stat_params)
 
     param_mappings.append(
         ParameterMapping(
@@ -288,8 +291,8 @@ def create_project(client, name, num_jobs=20, use_exec_script=False):
     )
     job_def.fitness_definition = fd
 
-    task_defs = proj.create_task_definitions(task_defs)
-    param_mappings = proj.create_parameter_mappings(param_mappings)
+    task_defs = project_api.create_task_definitions(task_defs)
+    param_mappings = project_api.create_parameter_mappings(param_mappings)
 
     job_def.parameter_definition_ids = [
         pd.id for pd in float_input_params + str_input_params + output_params + stat_params
@@ -298,9 +301,9 @@ def create_project(client, name, num_jobs=20, use_exec_script=False):
     job_def.task_definition_ids = [td.id for td in task_defs]
 
     # Create job_definition in project
-    job_def = proj.create_job_definitions([job_def])[0]
+    job_def = project_api.create_job_definitions([job_def])[0]
 
-    job_def = proj.get_job_definitions()[0]
+    job_def = project_api.get_job_definitions()[0]
 
     log.debug(f"=== Create {num_jobs} jobs")
     jobs = []
@@ -310,8 +313,10 @@ def create_project(client, name, num_jobs=20, use_exec_script=False):
             for p in float_input_params
         }
         values.update({p.name: random.choice(p.value_list) for p in str_input_params})
-        jobs.append(Job(name=f"Job.{i}", values=values, eval_status="pending"))
-    jobs = job_def.create_jobs(jobs)
+        jobs.append(
+            Job(name=f"Job.{i}", values=values, eval_status="pending", job_definition_id=job_def.id)
+        )
+    jobs = project_api.create_jobs(jobs)
 
     log.info(f"Created project '{proj.name}', ID='{proj.id}'")
 

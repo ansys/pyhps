@@ -19,6 +19,7 @@ from ansys.rep.client.jms import (
     JobDefinition,
     ParameterMapping,
     Project,
+    ProjectApi,
     ResourceRequirements,
     Software,
     TaskDefinition,
@@ -27,7 +28,7 @@ from ansys.rep.client.jms import (
 log = logging.getLogger(__name__)
 
 
-def main(client, name, num_jobs):
+def main(client: Client, name: str, num_jobs: int):
     """
     Create project with Ansys MAPDL tire simulation.
 
@@ -37,6 +38,8 @@ def main(client, name, num_jobs):
     log.debug("=== Project")
     proj = Project(name=name, display_name="MAPDL Tyre Performance", priority=1, active=True)
     proj = client.create_project(proj, replace=True)
+
+    project_api = ProjectApi(client, proj.id)
 
     log.debug("=== Files")
     cwd = os.path.dirname(__file__)
@@ -73,7 +76,7 @@ def main(client, name, num_jobs):
         File(name="err", evaluation_path="file*.err", type="text/plain", collect=True, monitor=True)
     )
 
-    files = proj.create_files(files)
+    files = project_api.create_files(files)
     file_ids = {f.name: f.id for f in files}
 
     log.debug("=== JobDefinition with simulation workflow and parameters")
@@ -109,7 +112,7 @@ def main(client, name, num_jobs):
             default=20.0,
         ),
     ]
-    input_params = proj.create_parameter_definitions(input_params)
+    input_params = project_api.create_parameter_definitions(input_params)
 
     param_mappings = [
         ParameterMapping(
@@ -145,7 +148,7 @@ def main(client, name, num_jobs):
         FloatParameterDefinition(name="mapdl_cp_time", display_text="MAPDL CP Time"),
         FloatParameterDefinition(name="mapdl_elapsed_time", display_text="MAPDL Elapsed Time"),
     ]
-    output_params = proj.create_parameter_definitions(output_params)
+    output_params = project_api.create_parameter_definitions(output_params)
 
     param_mappings.extend(
         [
@@ -163,7 +166,7 @@ def main(client, name, num_jobs):
             ),
         ]
     )
-    param_mappings = proj.create_parameter_mappings(param_mappings)
+    param_mappings = project_api.create_parameter_mappings(param_mappings)
 
     # TODO, add more
 
@@ -183,7 +186,7 @@ def main(client, name, num_jobs):
         input_file_ids=[f.id for f in files[:2]],
         output_file_ids=[f.id for f in files[2:]],
     )
-    task_def = proj.create_task_definitions([task_def])[0]
+    task_def = project_api.create_task_definitions([task_def])[0]
 
     # Create job_definition in project
     job_def = JobDefinition(name="JobDefinition.1", active=True)
@@ -191,10 +194,10 @@ def main(client, name, num_jobs):
     job_def.task_definition_ids = [task_def.id]
     job_def.parameter_definition_ids = [pd.id for pd in params]
     job_def.parameter_mapping_ids = [pm.id for pm in param_mappings]
-    job_def = proj.create_job_definitions([job_def])[0]
+    job_def = project_api.create_job_definitions([job_def])[0]
 
     # Refresh the parameters
-    params = proj.get_parameter_definitions(id=job_def.parameter_definition_ids)
+    params = project_api.get_parameter_definitions(id=job_def.parameter_definition_ids)
 
     log.debug("=== Jobs")
     jobs = []
@@ -204,8 +207,10 @@ def main(client, name, num_jobs):
             for p in params
             if p.mode == "input"
         }
-        jobs.append(Job(name=f"Job.{i}", values=values, eval_status="pending"))
-    jobs = job_def.create_jobs(jobs)
+        jobs.append(
+            Job(name=f"Job.{i}", values=values, eval_status="pending", job_definition_id=job_def.id)
+        )
+    jobs = project_api.create_jobs(jobs)
 
     log.info(f"Created project '{proj.name}', ID='{proj.id}'")
 

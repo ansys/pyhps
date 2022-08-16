@@ -19,8 +19,7 @@ class ProjectPermission(Object):
         schema = ProjectPermissionSchema
         rest_name = "permissions"
 
-    def __init__(self, project=None, **kwargs):
-        self.project = project
+    def __init__(self, **kwargs):
         super(ProjectPermission, self).__init__(**kwargs)
 
 
