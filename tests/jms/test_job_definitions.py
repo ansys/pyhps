@@ -1,5 +1,6 @@
 import logging
 
+from ansys.rep.client.jms import ProjectApi, RootApi
 from ansys.rep.client.jms.resource import JobDefinition, Project
 from tests.rep_test import REPTestCase
 
@@ -12,15 +13,17 @@ class JobDefinitionsTest(REPTestCase):
         proj_name = f"rep_client_test_jms_JobDefinitionTest_{self.run_id}"
 
         proj = Project(name=proj_name, active=True)
-        proj = client.create_project(proj, replace=True)
+        root_api = RootApi(client)
+        proj = root_api.create_project(proj, replace=True)
+        project_api = ProjectApi(client, proj.id)
 
         job_def = JobDefinition(name="New Config", active=True)
-        job_def = proj.create_job_definitions([job_def])[0]
+        job_def = project_api.create_job_definitions([job_def])[0]
 
-        assert len(proj.get_job_definitions()) == 1
+        assert len(project_api.get_job_definitions()) == 1
 
-        proj.delete_job_definitions([JobDefinition(id=job_def.id)])
+        project_api.delete_job_definitions([JobDefinition(id=job_def.id)])
 
-        assert len(proj.get_job_definitions()) == 0
+        assert len(project_api.get_job_definitions()) == 0
 
-        client.delete_project(proj)
+        root_api.delete_project(proj)

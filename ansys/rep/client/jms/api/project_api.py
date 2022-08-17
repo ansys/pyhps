@@ -271,11 +271,11 @@ class ProjectApi:
     ################################################################
     # Permissions
     def get_permissions(self, as_objects=True):
-        return self._get_objects(self, ProjectPermission, as_objects=as_objects)
+        return self._get_objects(ProjectPermission, as_objects=as_objects)
 
     def update_permissions(self, permissions):
         # the rest api currently doesn't return anything on permissions update
-        update_permissions(self, permissions)
+        update_permissions(self.client, self.project_id, permissions)
 
     ################################################################
     # License contexts
