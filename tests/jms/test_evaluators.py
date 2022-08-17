@@ -11,6 +11,7 @@ import unittest
 
 from marshmallow.utils import missing
 
+from ansys.rep.client.jms import RootApi
 from ansys.rep.client.jms.schema.evaluator import EvaluatorSchema
 from tests.rep_test import REPTestCase
 
@@ -54,16 +55,17 @@ class EvaluatorTest(REPTestCase):
     def test_evaluator_integration(self):
 
         client = self.jms_client()
-        evaluators = client.get_evaluators()
+        root_api = RootApi(client)
+        evaluators = root_api.get_evaluators()
 
         if evaluators:
             self.assertTrue(evaluators[0].id is not None)
 
-        evaluators = client.get_evaluators(as_objects=False)
+        evaluators = root_api.get_evaluators(as_objects=False)
         if evaluators:
             self.assertTrue(evaluators[0]["id"] is not None)
 
-        evaluators = client.get_evaluators(as_objects=False, fields=["hostname", "platform"])
+        evaluators = root_api.get_evaluators(as_objects=False, fields=["hostname", "platform"])
         log.info(f"evaluators={evaluators}")
         if evaluators:
             self.assertTrue("hostname" in evaluators[0].keys())
@@ -71,7 +73,7 @@ class EvaluatorTest(REPTestCase):
             self.assertTrue("project_server_select" not in evaluators[0].keys())
             # self.assertEqual(len(evaluators[0].keys()), 2)
 
-        evaluators = client.get_evaluators(fields=["hostname", "platform", "configuration"])
+        evaluators = root_api.get_evaluators(fields=["hostname", "platform", "configuration"])
 
         if evaluators:
             i = next(i for i, e in enumerate(evaluators) if e.configuration)

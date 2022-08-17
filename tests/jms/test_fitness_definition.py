@@ -10,6 +10,7 @@ import unittest
 
 from marshmallow.utils import missing
 
+from ansys.rep.client.jms import ProjectApi, RootApi
 from ansys.rep.client.jms.resource import JobDefinition, Project
 from ansys.rep.client.jms.resource.fitness_definition import (
     FitnessDefinition,
@@ -126,18 +127,20 @@ class FitnessDefitionTest(REPTestCase):
         proj_name = f"test_dps_FitnessDefinitionTest_{self.run_id}"
 
         proj = Project(name=proj_name, active=True)
-        proj = client.create_project(proj, replace=True)
+        root_api = RootApi(client)
+        proj = root_api.create_project(proj, replace=True)
+        project_api = ProjectApi(client, proj.id)
 
         fd = FitnessDefinition(error_fitness=3.14)
         job_def = JobDefinition(name="New Config", active=True)
         job_def.fitness_definition = fd
-        job_def = proj.create_job_definitions([job_def])[0]
+        job_def = project_api.create_job_definitions([job_def])[0]
         self.assertEqual(job_def.fitness_definition.error_fitness, 3.14)
 
         job_def.fitness_definition.add_fitness_term(
             name="test_ftd", type="design_objective", expression="0.0", weighting_factor=1.0
         )
-        job_def = proj.update_job_definitions([job_def])[0]
+        job_def = project_api.update_job_definitions([job_def])[0]
         self.assertEqual(job_def.fitness_definition.fitness_term_definitions[0].name, "test_ftd")
         self.assertEqual(
             job_def.fitness_definition.fitness_term_definitions[0].type, "design_objective"
@@ -147,7 +150,7 @@ class FitnessDefitionTest(REPTestCase):
         job_def.fitness_definition.add_fitness_term(
             name="another_term", type="target_constraint", weighting_factor=0.2, expression="2.0"
         )
-        job_def = proj.update_job_definitions([job_def])[0]
+        job_def = project_api.update_job_definitions([job_def])[0]
         self.assertEqual(len(job_def.fitness_definition.fitness_term_definitions), 2)
         self.assertEqual(
             job_def.fitness_definition.fitness_term_definitions[1].name, "another_term"
@@ -161,7 +164,7 @@ class FitnessDefitionTest(REPTestCase):
         )
 
         # Delete project
-        client.delete_project(proj)
+        root_api.delete_project(proj)
 
 
 if __name__ == "__main__":

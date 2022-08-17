@@ -6,7 +6,7 @@
 # Author(s): O.Koenig
 # ----------------------------------------------------------
 
-from .api import ProjectApi
+from .api import ProjectApi, RootApi
 from .client import Client
 from .resource import (
     Algorithm,

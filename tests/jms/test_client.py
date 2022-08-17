@@ -9,7 +9,7 @@ import logging
 import time
 import unittest
 
-from ansys.rep.client.jms import Client, ProjectApi
+from ansys.rep.client.jms import Client, ProjectApi, RootApi
 from ansys.rep.client.jms.resource import Job, Project
 from tests.rep_test import REPTestCase
 
@@ -54,7 +54,8 @@ class REPClientTest(REPTestCase):
         proj_name = "mapdl_motorbike_frame"
 
         log.debug("=== Projects ===")
-        projects = client.get_projects()
+        root_api = RootApi(client)
+        projects = root_api.get_projects()
         log.debug(f"Projects: {[p.id for p in projects]}")
         project = None
         for p in projects:
@@ -66,9 +67,9 @@ class REPClientTest(REPTestCase):
             log.debug(f"project={project}")
 
         new_proj = Project(name="New project", active=True)
-        new_proj = client.create_project(new_proj, replace=True)
+        new_proj = root_api.create_project(new_proj, replace=True)
         # Delete project again
-        client.delete_project(new_proj)
+        root_api.delete_project(new_proj)
 
         log.debug("=== JobDefinitions ===")
         project_api = ProjectApi(client, project.id)
@@ -86,7 +87,7 @@ class REPClientTest(REPTestCase):
         log.debug(f"Pending jobs: {[j.id for j in pending_jobs]}")
 
         # Alternative access with manually instantiated project
-        proj = client.get_projects(name=proj_name)[0]
+        proj = root_api.get_projects(name=proj_name)[0]
         project_api = ProjectApi(client, proj.id)
         evaluated_jobs = project_api.get_jobs(eval_status="evaluated", fields="all")
         log.debug(f"Evaluated jobs: {[j.id for j in evaluated_jobs]}")

@@ -10,6 +10,7 @@ import unittest
 
 from marshmallow.utils import missing
 
+from ansys.rep.client.jms import ProjectApi, RootApi
 from ansys.rep.client.jms.resource import JobDefinition, Project
 from ansys.rep.client.jms.resource.parameter_definition import (
     BoolParameterDefinition,
@@ -167,24 +168,26 @@ class ParameterDefitionTest(REPTestCase):
         proj_name = f"test_jms_ParameterDefinitionTest_{self.run_id}"
 
         proj = Project(name=proj_name, active=True)
-        proj = client.create_project(proj, replace=True)
+        root_api = RootApi(client)
+        proj = root_api.create_project(proj, replace=True)
+        project_api = ProjectApi(client, proj.id)
 
         ip = IntParameterDefinition(name="int_param", upper_limit=27)
         sp = StringParameterDefinition(name="s_param", value_list=["l1", "l2"])
-        ip = proj.create_parameter_definitions([ip])[0]
-        sp = proj.create_parameter_definitions([sp])[0]
+        ip = project_api.create_parameter_definitions([ip])[0]
+        sp = project_api.create_parameter_definitions([sp])[0]
 
         job_def = JobDefinition(name="New Config", active=True)
         job_def.parameter_definition_ids = [ip.id, sp.id]
-        job_def = proj.create_job_definitions([job_def])[0]
+        job_def = project_api.create_job_definitions([job_def])[0]
         self.assertEqual(len(job_def.parameter_definition_ids), 2)
 
         fp = FloatParameterDefinition(name="f_param", display_name="A Float Parameter")
         bp = BoolParameterDefinition(name="b_param", display_name="A Bool Parameter", default=False)
-        fp = proj.create_parameter_definitions([fp])[0]
-        bp = proj.create_parameter_definitions([bp])[0]
+        fp = project_api.create_parameter_definitions([fp])[0]
+        bp = project_api.create_parameter_definitions([bp])[0]
         job_def.parameter_definition_ids.extend([p.id for p in [bp, fp]])
-        job_def = proj.update_job_definitions([job_def])[0]
+        job_def = project_api.update_job_definitions([job_def])[0]
         self.assertEqual(len(job_def.parameter_definition_ids), 4)
         self.assertTrue(fp.id in job_def.parameter_definition_ids)
         self.assertTrue(bp.id in job_def.parameter_definition_ids)
@@ -198,7 +201,7 @@ class ParameterDefitionTest(REPTestCase):
         # self.assertEqual(job_def.parameter_definitions[2].lower_limit, 4.5)
 
         # Delete project
-        client.delete_project(proj)
+        root_api.delete_project(proj)
 
 
 if __name__ == "__main__":

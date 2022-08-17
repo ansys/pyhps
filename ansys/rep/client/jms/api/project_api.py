@@ -1,9 +1,11 @@
 import logging
 import os
 from pathlib import Path
+import time
 from typing import Callable, List
+import uuid
 
-from ansys.rep.client.exceptions import ClientError
+from ansys.rep.client.exceptions import ClientError, REPError
 
 from ..client import Client
 from ..resource.algorithm import Algorithm
@@ -14,12 +16,13 @@ from ..resource.job_definition import JobDefinition
 from ..resource.license_context import LicenseContext
 from ..resource.parameter_definition import ParameterDefinition
 from ..resource.parameter_mapping import ParameterMapping
-from ..resource.project import get_fs_url, get_project
+from ..resource.project import get_fs_url
 from ..resource.project_permission import ProjectPermission, update_permissions
 from ..resource.selection import Selection
 from ..resource.task import Task
 from ..resource.task_definition import TaskDefinition
 from .base import create_objects, delete_objects, get_objects, update_objects
+from .root_api import get_project
 
 log = logging.getLogger(__name__)
 
@@ -58,6 +61,25 @@ class ProjectApi:
     def fs_bucket_url(self):
         """URL of the project's bucket in the file storage gateway"""
         return f"{self.fs_url}/{self.project_id}"
+
+    ################################################################
+    # Project operations (copy, archive)
+    def copy_project(self, project_target_name, wait=True):
+        """Duplicate project"""
+        return copy_project(self.client, self.project_id, project_target_name, wait)
+
+    def archive_project(self, path, include_job_files=True):
+        """Archive an existing project and save it to disk
+
+        Args:
+            path (str): Where to save the archive locally.
+            include_job_files (bool, optional): Whether to include design point files in the
+                                                archive. True by default.
+
+        Returns:
+            str: The path to the archive.
+        """
+        return archive_project(self, path, include_job_files)
 
     ################################################################
     # Files
@@ -392,3 +414,123 @@ def _download_file(
                 progress_handler(len(chunk))
 
     return download_path
+
+
+def copy_project(client, project_source_id, project_target_name, wait=True) -> str:
+
+    url = f"{client.jms_api_url}/projects/{project_source_id}/copy"
+    r = client.session.put(url, params={"project_name": project_target_name})
+
+    operation_location = r.headers["location"]
+
+    if not wait:
+        return operation_location
+
+    op = _monitor_operation(client, operation_location, 1.0)
+    if not op["succeeded"]:
+        raise REPError(f"Failed to copy project {project_source_id}.")
+    return op["result"]
+
+
+def restore_project(client, archive_path, project_name):
+    # TODO: rework and move to root_api
+
+    if not os.path.exists(archive_path):
+        raise REPError(f"Project archive: path does not exist {archive_path}")
+
+    # Upload archive to FS API
+    archive_name = os.path.basename(archive_path)
+
+    bucket = f"rep-client-restore-{uuid.uuid4()}"
+    fs_file_url = f"{client.rep_url}/fs/api/v1/{bucket}/{archive_name}"
+    ansfs_file_url = f"ansfs://{bucket}/{archive_name}"
+
+    fs_headers = {"content-type": "application/octet-stream"}
+
+    log.info(f"Uploading archive to {fs_file_url}")
+    with open(archive_path, "rb") as file_content:
+        r = client.session.post(fs_file_url, data=file_content, headers=fs_headers)
+
+    # POST restore request
+    log.info(f"Restoring archive from {ansfs_file_url}")
+    url = f"{client.jms_api_url}/projects/restore"
+    query_params = {"backend_path": ansfs_file_url}
+    r = client.session.post(url, params=query_params)
+
+    # Monitor restore operation
+    operation_location = r.headers["location"]
+    log.debug(f"Operation location: {operation_location}")
+
+    op = _monitor_operation(client, operation_location, 1.0)
+
+    if not op["succeeded"]:
+        raise REPError(f"Failed to restore project from archive {archive_path}.")
+
+    project_id = op["result"]
+    log.info("Done restoring project")
+
+    # Delete archive file on server
+    log.info(f"Delete file bucket {fs_file_url}")
+    r = client.session.put(f"{client.rep_url}/fs/api/v1/remove/{bucket}")
+
+    return get_project(client, project_id)
+
+
+def _monitor_operation(client, location, interval=1.0):
+
+    done = False
+    op = None
+
+    while not done:
+        r = client.session.get(f"{client.jms_api_url}{location}")
+        if len(r.json()["operations"]) > 0:
+            op = r.json()["operations"][0]
+            done = op["finished"]
+            log.info(
+                f"""Operation {op['name']} - progress={op['progress'] * 100.0}%,
+                  succeeded={op['succeeded']}, finished={op['finished']}"""
+            )
+        time.sleep(interval)
+
+    return op
+
+
+def archive_project(project_api: ProjectApi, target_path, include_job_files=True) -> str:
+
+    # PUT archive request
+    url = f"{project_api.client.jms_api_url}/projects/{project_api.project_id}/archive"
+    query_params = {}
+    if not include_job_files:
+        query_params["download_files"] = "job_definition"
+
+    r = project_api.client.session.put(url, params=query_params)
+
+    # Monitor archive operation
+    operation_location = r.headers["location"]
+    log.debug(f"Operation location: {operation_location}")
+
+    op = _monitor_operation(project_api.client, operation_location, 1.0)
+
+    if not op["succeeded"]:
+        raise REPError(f"Failed to archive project {project_api.project_id}.")
+
+    download_link = op["result"]["backend_path"]
+
+    # Download archive
+    download_link = download_link.replace("ansfs://", project_api.fs_url + "/")
+    log.info(f"Project archive download link: {download_link}")
+
+    if not os.path.isdir(target_path):
+        raise REPError(f"Project archive: target path does not exist {target_path}")
+
+    file_path = os.path.join(target_path, download_link.rsplit("/")[-1])
+    log.info(f"Download archive to {file_path}")
+
+    with project_api.client.session.get(download_link, stream=True) as r:
+        with open(file_path, "wb") as f:
+            for chunk in r.iter_content(chunk_size=1024 * 1024):
+                if chunk:
+                    f.write(chunk)
+
+    log.info(f"Done saving project archive to disk")
+    return file_path

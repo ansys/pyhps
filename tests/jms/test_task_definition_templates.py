@@ -12,6 +12,7 @@ import unittest
 
 from marshmallow.utils import missing
 
+from ansys.rep.client.jms import RootApi
 from ansys.rep.client.jms.resource.task_definition_template import TaskDefinitionTemplate
 from ansys.rep.client.jms.schema.task_definition_template import TaskDefinitionTemplateSchema
 from tests.rep_test import REPTestCase
@@ -77,17 +78,20 @@ class TaskDefinitionTemplateTest(REPTestCase):
     def test_template_integration(self):
 
         client = self.jms_client()
+        root_api = RootApi(client)
 
         # Test get queries
-        templates = client.get_task_definition_templates()
+        templates = root_api.get_task_definition_templates()
         self.assertGreater(len(templates), 0)
         self.assertTrue(templates[0].id is not None)
 
-        templates = client.get_task_definition_templates(as_objects=False)
+        templates = root_api.get_task_definition_templates(as_objects=False)
         self.assertGreater(len(templates), 0)
         self.assertTrue(templates[0]["id"] is not None)
 
-        templates = client.get_task_definition_templates(as_objects=False, fields=["name", "data"])
+        templates = root_api.get_task_definition_templates(
+            as_objects=False, fields=["name", "data"]
+        )
         self.assertGreater(len(templates), 0)
         log.info(f"templates={json.dumps(templates, indent=4)}")
         if templates:
@@ -95,33 +99,33 @@ class TaskDefinitionTemplateTest(REPTestCase):
             self.assertTrue("name" in templates[0]["data"]["software_requirements"][0].keys())
             self.assertTrue("version" in templates[0]["data"]["software_requirements"][0].keys())
 
-        templates = client.get_task_definition_templates(fields=["name"])
+        templates = root_api.get_task_definition_templates(fields=["name"])
         if templates:
             self.assertTrue(templates[0].data == missing)
 
         # Copy template
         template_name = f"copied_template_{self.run_id}"
-        templates = client.get_task_definition_templates(limit=1)
+        templates = root_api.get_task_definition_templates(limit=1)
         self.assertEqual(len(templates), 1)
 
         template = TaskDefinitionTemplate(name=template_name, data=templates[0].data)
-        templates = client.create_task_definition_templates([template])
+        templates = root_api.create_task_definition_templates([template])
         self.assertEqual(len(templates), 1)
         template = templates[0]
         self.assertEqual(template.name, template_name)
 
         # Modify copied template
         template.data["software_requirements"][0]["version"] = "2.0.1"
-        templates = client.update_task_definition_templates([template])
+        templates = root_api.update_task_definition_templates([template])
         self.assertEqual(len(templates), 1)
         template = templates[0]
         self.assertEqual(template.data["software_requirements"][0]["version"], "2.0.1")
         self.assertEqual(template.name, template_name)
 
         # Delete copied template
-        client.delete_task_definition_templates([template])
+        root_api.delete_task_definition_templates([template])
 
-        templates = client.get_task_definition_templates(name=template_name)
+        templates = root_api.get_task_definition_templates(name=template_name)
         self.assertEqual(len(templates), 0)
 
 
