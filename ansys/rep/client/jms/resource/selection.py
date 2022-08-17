@@ -5,7 +5,6 @@
 #
 # Author(s): O.Koenig
 # ----------------------------------------------------------
-import json
 import logging
 
 from ..schema.selection import SelectionSchema
@@ -39,71 +38,3 @@ class Selection(Object):
 
 
 SelectionSchema.Meta.object_class = Selection
-
-
-def get_selections(project, job_definition=None, as_objects=True, **query_params):
-    url = f"{project.client.jms_api_url}/projects/{project.id}"
-    if job_definition:
-        url += f"/job_definitions/{job_definition.id}"
-    url += f"/jobs/selections"
-
-    query_params.setdefault("fields", "all")
-    r = project.client.session.get(url, params=query_params)
-
-    if query_params.get("count"):
-        return r.json()["num_selections"]
-
-    data = r.json()["selections"]
-    if not as_objects:
-        return data
-
-    schema = SelectionSchema(many=True)
-    objects = schema.load(data)
-    for o in objects:
-        o.project = project
-    return objects
-
-
-def create_selections(project, objects, as_objects=True, **query_params):
-    url = f"{project.client.jms_api_url}/projects/{project.id}/jobs/selections"
-
-    schema = SelectionSchema(many=True)
-    serialized_data = schema.dump(objects)
-    json_data = json.dumps({"selections": serialized_data})
-    query_params.setdefault("fields", "all")
-    r = project.client.session.post(f"{url}", data=json_data, params=query_params)
-
-    data = r.json()["selections"]
-    if not as_objects:
-        return data
-
-    objects = schema.load(data)
-    for o in objects:
-        o.project = project
-    return objects
-
-
-def update_selections(project, objects, as_objects=True, **query_params):
-    url = f"{project.client.jms_api_url}/projects/{project.id}/jobs/selections"
-
-    schema = SelectionSchema(many=True)
-    serialized_data = schema.dump(objects)
-    json_data = json.dumps({"selections": serialized_data})
-    query_params.setdefault("fields", "all")
-    r = project.client.session.put(f"{url}", data=json_data, params=query_params)
-
-    data = r.json()["selections"]
-    if not as_objects:
-        return data
-
-    objects = schema.load(data)
-    for o in objects:
-        o.project = project
-    return objects
-
-
-def delete_selections(project, objects):
-    url = f"{project.client.jms_api_url}/projects/{project.id}/jobs/selections"
-
-    data = json.dumps({"source_ids": [obj.id for obj in objects]})
-    r = project.client.session.delete(url, data=data)

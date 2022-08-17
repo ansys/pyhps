@@ -16,12 +16,7 @@ from ..resource.parameter_definition import ParameterDefinition
 from ..resource.parameter_mapping import ParameterMapping
 from ..resource.project import get_fs_url, get_project
 from ..resource.project_permission import ProjectPermission, update_permissions
-from ..resource.selection import (
-    create_selections,
-    delete_selections,
-    get_selections,
-    update_selections,
-)
+from ..resource.selection import Selection
 from ..resource.task import Task
 from ..resource.task_definition import TaskDefinition
 from .base import create_objects, delete_objects, get_objects, update_objects
@@ -159,11 +154,11 @@ class ProjectApi:
         return self._get_objects(Job, as_objects=as_objects, **query_params)
 
     def create_jobs(self, jobs, as_objects=True):
-        """Create new design points
+        """Create new jobs
 
         Args:
-            jobs (list of :class:`ansys.rep.client.jms.Job`): A list of design point objects
-            as_objects (bool): Whether to return design points as objects or dictionaries
+            jobs (list of :class:`ansys.rep.client.jms.Job`): A list of Job objects
+            as_objects (bool): Whether to return jobs as objects or dictionaries
 
         Returns:
             List of :class:`ansys.rep.client.jms.Job` or list of dict if `as_objects` is False
@@ -171,22 +166,22 @@ class ProjectApi:
         return self._create_objects(jobs, as_objects=as_objects)
 
     def copy_jobs(self, jobs, as_objects=True):
-        """Create new design points by copying existing ones
+        """Create new jobs by copying existing ones
 
         Args:
-            jobs (list of :class:`ansys.rep.client.jms.Job`): A list of design point objects
+            jobs (list of :class:`ansys.rep.client.jms.Job`): A list of job objects
 
-        Note that only the ``id`` field of the design point objects need to be filled;
+        Note that only the ``id`` field of the Job objects need to be filled;
         the other fields can be empty.
         """
         return copy_jobs(self, jobs, as_objects=as_objects)
 
     def update_jobs(self, jobs, as_objects=True):
-        """Update existing design points
+        """Update existing jobs
 
         Args:
-            jobs (list of :class:`ansys.rep.client.jms.Job`): A list of design point objects
-            as_objects (bool): Whether to return design points as objects or dictionaries
+            jobs (list of :class:`ansys.rep.client.jms.Job`): A list of job objects
+            as_objects (bool): Whether to return jobs as objects or dictionaries
 
         Returns:
             List of :class:`ansys.rep.client.jms.Job` or list of dict if `as_objects` is True
@@ -194,12 +189,12 @@ class ProjectApi:
         return self._update_objects(jobs, as_objects=as_objects)
 
     def delete_jobs(self, jobs):
-        """Delete existing design points
+        """Delete existing jobs
 
         Args:
-            jobs (list of :class:`ansys.rep.client.jms.Job`): A list of design point objects
+            jobs (list of :class:`ansys.rep.client.jms.Job`): A list of Job objects
 
-        Note that only the ``id`` field of the design point objects need to be filled;
+        Note that only the ``id`` field of the Job objects need to be filled;
         the other fields can be empty.
 
         Example:
@@ -207,7 +202,7 @@ class ProjectApi:
             >>> dps_to_delete = []
             >>> for id in [1,2,39,44]:
             >>>    dps_to_delete.append(Job(id=id))
-            >>> project.delete_jobs(dps_to_delete)
+            >>> project_api.delete_jobs(dps_to_delete)
 
         """
         return self._delete_objects(jobs)
@@ -224,18 +219,18 @@ class ProjectApi:
         return self._update_objects(tasks, as_objects=as_objects)
 
     ################################################################
-    # Selections #TODO
+    # Selections
     def get_selections(self, as_objects=True, **query_params):
-        return get_selections(self, as_objects=as_objects, **query_params)
+        return self._get_objects(Selection, as_objects=as_objects, **query_params)
 
     def create_selections(self, selections, as_objects=True):
-        return create_selections(self, selections, as_objects=as_objects)
+        return self._create_objects(self, selections, as_objects=as_objects)
 
     def update_selections(self, selections, as_objects=True):
-        return update_selections(self, selections, as_objects=as_objects)
+        return self._update_objects(selections, as_objects=as_objects)
 
     def delete_selections(self, selections):
-        return delete_selections(self, selections)
+        return self._delete_objects(self, selections)
 
     ################################################################
     # Algorithms

@@ -18,7 +18,6 @@ class Job(Object):
     """Job resource.
 
     Args:
-        project (:class:`ansys.rep.client.jms.Project`, optional): Project object. Defaults to None.
         **kwargs: Arbitrary keyword arguments, see the Job schema below.
 
     Example:

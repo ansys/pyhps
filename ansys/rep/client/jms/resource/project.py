@@ -27,7 +27,6 @@ class Project(Object):
     """Project resource
 
     Args:
-        client (:class:`ansys.rep.client.jms.Client`, optional): A client object. Defaults to None.
         **kwargs: Arbitrary keyword arguments, see the Project schema below.
 
     Example:
@@ -44,29 +43,8 @@ class Project(Object):
     class Meta:
         schema = ProjectSchema
 
-    def __init__(self, client=None, **kwargs):
-        self.client = client
+    def __init__(self, **kwargs):
         super(Project, self).__init__(**kwargs)
-
-    ################################################################
-    # Others
-    def copy(self, project_name):
-        """Create a copy of the project
-
-        Args:
-            project_id (str): ID of the new project.
-        """
-        return copy_project(self.client, self.id, project_name)
-
-    @property
-    def fs_url(self):
-        """URL of the file storage gateway"""
-        return get_fs_url(self)
-
-    @property
-    def fs_bucket_url(self):
-        """URL of the project's bucket in the file storage gateway"""
-        return f"{get_fs_url(self)}/{self.id}"
 
 
 ProjectSchema.Meta.object_class = Project
