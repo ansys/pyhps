@@ -3,8 +3,6 @@ Simplistic execution script for Python.
 
 Command formed: python <script_file> <input_file>
 """
-
-import json
 import os
 import subprocess
 
@@ -15,10 +13,7 @@ from ansys.rep.evaluator.task_manager import ApplicationExecution
 class PythonExecution(ApplicationExecution):
     def execute(self):
 
-        # Dump whole context to file for debugging
-        context_d = json.dumps(vars(self.context), indent=4, default=str)
-        with open("context.txt", "w") as f:
-            f.write(context_d)
+        log.info("Start Python execution script")
 
         # Identify files
         script_file = next((f for f in self.context.input_files if f["name"] == "script"), None)
@@ -49,3 +44,5 @@ class PythonExecution(ApplicationExecution):
         # Execute
         log.info(f"Executing: {cmd}")
         subprocess.run(cmd, shell=True, check=True, env=env)
+
+        log.info("End Python execution script")
