@@ -170,8 +170,8 @@ class JobsTest(REPTestCase):
             self.assertEqual(job.fitness, None)
             self.assertTrue(job.executed_task_definition_level is not None)
             # fill some of them
-            job.creator = "dcs-client"
-            job.note = f"test dp{job.id} update"
+            job.creator = "rep-client"
+            job.note = f"test job{job.id} update"
 
         jobs = project_api.update_jobs(jobs)
         for job in jobs:
@@ -186,13 +186,21 @@ class JobsTest(REPTestCase):
 
         self.assertEqual(len(jobs), 2)
         for job in jobs:
-            self.assertEqual(job.creator, "dcs-client")
-            self.assertEqual(job.note, f"test dp{job.id} update")
+            self.assertEqual(job.creator, "rep-client")
+            self.assertEqual(job.note, f"test job{job.id} update")
             self.assertEqual(job.job_definition_id, missing)
 
         project_api.delete_jobs([Job(id=job.id) for job in jobs])
         jobs = project_api.get_jobs()
         self.assertEqual(len(jobs), 8)
+
+        new_jobs = project_api.copy_jobs([Job(id=job.id) for job in jobs[:3]])
+        for i in range(3):
+            self.assertEqual(new_jobs[i].creator, jobs[i].creator)
+            self.assertEqual(new_jobs[i].note, jobs[i].note)
+            self.assertEqual(new_jobs[i].job_definition_id, jobs[i].job_definition_id)
+        all_jobs = project_api.get_jobs()
+        self.assertEqual(len(all_jobs), len(jobs) + len(new_jobs))
 
         # Delete project
         jms_api.delete_project(proj)

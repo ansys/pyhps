@@ -193,7 +193,7 @@ class ProjectApi:
         """
         return self._create_objects(jobs, as_objects=as_objects)
 
-    def copy_jobs(self, jobs, as_objects=True):
+    def copy_jobs(self, jobs, as_objects=True, **query_params):
         """Create new jobs by copying existing ones
 
         Args:
@@ -202,7 +202,7 @@ class ProjectApi:
         Note that only the ``id`` field of the Job objects need to be filled;
         the other fields can be empty.
         """
-        return copy_jobs(self, jobs, as_objects=as_objects)
+        return copy_jobs(self, jobs, as_objects=as_objects, **query_params)
 
     def update_jobs(self, jobs, as_objects=True):
         """Update existing jobs

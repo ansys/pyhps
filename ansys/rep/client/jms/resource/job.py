@@ -44,28 +44,21 @@ class Job(Object):
 JobSchema.Meta.object_class = Job
 
 
-def copy_jobs(project, jobs, job_definition=None, as_objects=True, **query_params):
-    # TODO
-    """Create new design points by copying existing ones"""
+def copy_jobs(project_api, jobs, as_objects=True, **query_params):
+    """Create new jobs by copying existing ones"""
 
-    url = f"{project.client.jms_api_url}/projects/{project.id}"
-    if job_definition:
-        url += f"/job_definitions/{job_definition.id}"
-    url += f"/jobs"
+    url = f"{project_api.url}/jobs"
 
     query_params.setdefault("fields", "all")
 
     json_data = json.dumps({"source_ids": [obj.id for obj in jobs]})
-    r = project.client.session.post(f"{url}", data=json_data, params=query_params)
+    r = project_api.client.session.post(f"{url}", data=json_data, params=query_params)
 
     data = r.json()["jobs"]
     if not as_objects:
         return data
 
-    objects = JobSchema(many=True).load(data)
-    for o in objects:
-        o.project = project
-    return objects
+    return JobSchema(many=True).load(data)
 
 
 def sync_jobs(project_api, jobs):
