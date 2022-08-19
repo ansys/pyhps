@@ -1,7 +1,11 @@
 import json
 import logging
+import os
 import time
 from typing import List
+import uuid
+
+from ansys.rep.client.exceptions import REPError
 
 from ..resource import Operation
 from ..resource.evaluator import Evaluator
@@ -58,17 +62,17 @@ class JmsApi(object):
         """Delete a project"""
         return delete_project(self.client, self.url, project)
 
-    def restore_project(self, path, project_name):
+    def restore_project(self, path: str) -> Project:
         """Restore a project from an archive
 
         Args:
             path (str): Path of the archive file to be restored.
-            project_id (str): ID of the restored project.
+            project_name (str): Name of the restored project. (optional)
 
         Returns:
             :class:`ansys.rep.client.jms.Project`: A Project object.
         """
-        raise NotImplementedError
+        return restore_project(self.client, self.url, path)
 
     ################################################################
     # Evaluators
@@ -216,45 +220,44 @@ def _monitor_operation(client, operation_url: str, interval: float = 1.0):
     return op
 
 
-# def restore_project(client, archive_path, project_name):
-#     # TODO: rework and move to jms_api
+def restore_project(client, jms_api_url, archive_path):
 
-#     if not os.path.exists(archive_path):
-#         raise REPError(f"Project archive: path does not exist {archive_path}")
+    if not os.path.exists(archive_path):
+        raise REPError(f"Project archive: path does not exist {archive_path}")
 
-#     # Upload archive to FS API
-#     archive_name = os.path.basename(archive_path)
+    # Upload archive to FS API
+    archive_name = os.path.basename(archive_path)
 
-#     bucket = f"rep-client-restore-{uuid.uuid4()}"
-#     fs_file_url = f"{client.rep_url}/fs/api/v1/{bucket}/{archive_name}"
-#     ansfs_file_url = f"ansfs://{bucket}/{archive_name}"
+    bucket = f"rep-client-restore-{uuid.uuid4()}"
+    fs_file_url = f"{client.rep_url}/fs/api/v1/{bucket}/{archive_name}"
+    ansfs_file_url = f"ansfs://{bucket}/{archive_name}"
 
-#     fs_headers = {"content-type": "application/octet-stream"}
+    fs_headers = {"content-type": "application/octet-stream"}
 
-#     log.info(f"Uploading archive to {fs_file_url}")
-#     with open(archive_path, "rb") as file_content:
-#         r = client.session.post(fs_file_url, data=file_content, headers=fs_headers)
+    log.info(f"Uploading archive to {fs_file_url}")
+    with open(archive_path, "rb") as file_content:
+        r = client.session.post(fs_file_url, data=file_content, headers=fs_headers)
 
-#     # POST restore request
-#     log.info(f"Restoring archive from {ansfs_file_url}")
-#     url = f"{client.jms_api_url}/projects/restore"
-#     query_params = {"backend_path": ansfs_file_url}
-#     r = client.session.post(url, params=query_params)
+    # POST restore request
+    log.info(f"Restoring archive from {ansfs_file_url}")
+    url = f"{jms_api_url}/projects/archive"
+    query_params = {"backend_path": ansfs_file_url}
+    r = client.session.post(url, params=query_params)
 
-#     # Monitor restore operation
-#     operation_location = r.headers["location"]
-#     log.debug(f"Operation location: {operation_location}")
+    # Monitor restore operation
+    operation_location = r.headers["location"]
+    log.debug(f"Operation location: {operation_location}")
 
-#     op = _monitor_operation(JmsApi(client), operation_location, 1.0)
+    op = _monitor_operation(client, f"{jms_api_url}{operation_location}", 1.0)
 
-#     if not op["succeeded"]:
-#         raise REPError(f"Failed to restore project from archive {archive_path}.")
+    if not op["succeeded"]:
+        raise REPError(f"Failed to restore project from archive {archive_path}.")
 
-#     project_id = op["result"]
-#     log.info("Done restoring project")
+    project_id = op["result"]["project_id"]
+    log.info(f"Done restoring project, project_id = '{project_id}'")
 
-#     # Delete archive file on server
-#     log.info(f"Delete file bucket {fs_file_url}")
-#     r = client.session.put(f"{client.rep_url}/fs/api/v1/remove/{bucket}")
+    # Delete archive file on server
+    log.info(f"Delete temporary bucket {bucket}")
+    r = client.session.put(f"{client.rep_url}/fs/api/v1/remove/{bucket}")
 
-#     return get_project(client, project_id)
+    return get_project(client, jms_api_url, project_id)

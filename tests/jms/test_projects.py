@@ -256,7 +256,6 @@ class ProjectsTest(REPTestCase):
         project.priority = 6
         project = jms_api.update_project(project)
 
-        restored_proj_name = f"{proj_name}-restored"
         restored_project = None
         project_api = ProjectApi(client, project.id)
         with tempfile.TemporaryDirectory() as tpath:
@@ -268,14 +267,16 @@ class ProjectsTest(REPTestCase):
             self.assertGreater(os.path.getsize(archive_path), 2e3)  # file larger than 2 KB size
 
             # Restore project
-            restored_project = jms_api.restore_project(archive_path, restored_proj_name)
+            restored_project = jms_api.restore_project(archive_path)
+            restored_project_api = ProjectApi(client, restored_project.id)
 
             self.assertEqual(restored_project.active, False)
             self.assertEqual(restored_project.priority, 6)
             self.assertEqual(
-                len(project.get_job_definitions()), len(restored_project.get_job_definitions())
+                len(project_api.get_job_definitions()),
+                len(restored_project_api.get_job_definitions()),
             )
-            self.assertEqual(len(project.get_jobs()), len(restored_project.get_jobs()))
+            self.assertEqual(len(project_api.get_jobs()), len(restored_project_api.get_jobs()))
 
         jms_api.delete_project(project)
         jms_api.delete_project(restored_project)

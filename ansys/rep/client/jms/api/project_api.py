@@ -446,7 +446,7 @@ def archive_project(project_api: ProjectApi, target_path, include_job_files=True
     url = f"{project_api.url}/archive"
     query_params = {}
     if not include_job_files:
-        query_params["download_files"] = "job_definition"
+        query_params["download_files"] = "configuration"
 
     r = project_api.client.session.put(url, params=query_params)
 
@@ -459,7 +459,7 @@ def archive_project(project_api: ProjectApi, target_path, include_job_files=True
     )
 
     if not op["succeeded"]:
-        raise REPError(f"Failed to archive project {project_api.project_id}.")
+        raise REPError(f"Failed to archive project {project_api.project_id}.\n{op}")
 
     download_link = op["result"]["backend_path"]
 
