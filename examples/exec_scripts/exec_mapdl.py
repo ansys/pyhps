@@ -4,8 +4,6 @@ Basic execution script for MAPDL.
 Command formed: ansys.exe -b -i <inp_file> -o <out_file> -np 4
 
 """
-
-import json
 import os
 import subprocess
 
@@ -16,10 +14,7 @@ from ansys.rep.evaluator.task_manager import ApplicationExecution
 class MAPDLExecution(ApplicationExecution):
     def execute(self):
 
-        # Dump whole context to file for debugging
-        context_d = json.dumps(vars(self.context), indent=4, default=str)
-        with open("context.txt", "w") as f:
-            f.write(context_d)
+        log.info("Start MAPDL execution script")
 
         # Identify files
         inp_file = next((f for f in self.context.input_files if f["name"] == "inp"), None)
@@ -50,3 +45,5 @@ class MAPDLExecution(ApplicationExecution):
         # Execute command
         log.info(f"Executing: {cmd}")
         subprocess.run(cmd, shell=True, check=True, env=env)
+
+        log.info("End MAPDL execution script")
