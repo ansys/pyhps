@@ -11,7 +11,7 @@ from ..resource import Operation
 from ..resource.evaluator import Evaluator
 from ..resource.project import Project, ProjectSchema
 from ..resource.task_definition_template import TaskDefinitionTemplate
-from .base import create_objects, delete_objects, get_objects, update_objects
+from .base import create_objects, delete_objects, get_object, get_objects, update_objects
 
 log = logging.getLogger(__name__)
 
@@ -72,7 +72,7 @@ class JmsApi(object):
         Returns:
             :class:`ansys.rep.client.jms.Project`: A Project object.
         """
-        return restore_project(self.client, self.url, path)
+        return restore_project(self, path)
 
     ################################################################
     # Evaluators
@@ -122,13 +122,16 @@ class JmsApi(object):
 
     ################################################################
     # Operations
-    def get_operations(self, as_objects=True):
+    def get_operations(self, as_objects=True, **query_params):
         return get_objects(
-            self.client.session,
-            self.url,
-            Operation,
-            as_objects=as_objects,
+            self.client.session, self.url, Operation, as_objects=as_objects, **query_params
         )
+
+    def get_operation(self, id, as_object=True):
+        return get_object(self.client.session, self.url, Operation, id, as_object=as_object)
+
+    def _monitor_operation(self, operation_id: str, interval: float = 1.0):
+        return _monitor_operation(self, operation_id, interval)
 
 
 def get_projects(client, api_url, as_objects=True, **query_params) -> List[Project]:
@@ -201,26 +204,23 @@ def delete_project(client, api_url, project):
     r = client.session.delete(url)
 
 
-def _monitor_operation(client, operation_url: str, interval: float = 1.0):
+def _monitor_operation(jms_api: JmsApi, operation_id: str, interval: float = 1.0):
 
     done = False
     op = None
-
     while not done:
-        r = client.session.get(operation_url)
-        if len(r.json()["operations"]) > 0:
-            op = r.json()["operations"][0]
-            done = op["finished"]
+        op = jms_api.get_operation(id=operation_id)
+        if op:
+            done = op.finished
             log.info(
-                f"Operation {op['name']} - progress={op['progress'] * 100.0}%, "
-                f"succeeded={op['succeeded']}, finished={op['finished']}"
+                f"Operation {op.name} - progress={op.progress * 100.0}%, "
+                f"succeeded={op.succeeded}, finished={op.finished}"
             )
         time.sleep(interval)
-
     return op
 
 
-def restore_project(client, jms_api_url, archive_path):
+def restore_project(jms_api, archive_path):
 
     if not os.path.exists(archive_path):
         raise REPError(f"Project archive: path does not exist {archive_path}")
@@ -229,35 +229,37 @@ def restore_project(client, jms_api_url, archive_path):
     archive_name = os.path.basename(archive_path)
 
     bucket = f"rep-client-restore-{uuid.uuid4()}"
-    fs_file_url = f"{client.rep_url}/fs/api/v1/{bucket}/{archive_name}"
+    fs_file_url = f"{jms_api.client.rep_url}/fs/api/v1/{bucket}/{archive_name}"
     ansfs_file_url = f"ansfs://{bucket}/{archive_name}"
 
     fs_headers = {"content-type": "application/octet-stream"}
 
     log.info(f"Uploading archive to {fs_file_url}")
     with open(archive_path, "rb") as file_content:
-        r = client.session.post(fs_file_url, data=file_content, headers=fs_headers)
+        r = jms_api.client.session.post(fs_file_url, data=file_content, headers=fs_headers)
 
     # POST restore request
     log.info(f"Restoring archive from {ansfs_file_url}")
-    url = f"{jms_api_url}/projects/archive"
+    url = f"{jms_api.url}/projects/archive"
     query_params = {"backend_path": ansfs_file_url}
-    r = client.session.post(url, params=query_params)
+    r = jms_api.client.session.post(url, params=query_params)
 
     # Monitor restore operation
     operation_location = r.headers["location"]
     log.debug(f"Operation location: {operation_location}")
+    operation_id = operation_location.rsplit("/", 1)[-1]
+    log.debug(f"Operation id: {operation_id}")
 
-    op = _monitor_operation(client, f"{jms_api_url}{operation_location}", 1.0)
+    op = _monitor_operation(jms_api, operation_id, 1.0)
 
-    if not op["succeeded"]:
+    if not op.succeeded:
         raise REPError(f"Failed to restore project from archive {archive_path}.")
 
-    project_id = op["result"]["project_id"]
+    project_id = op.result["project_id"]
     log.info(f"Done restoring project, project_id = '{project_id}'")
 
     # Delete archive file on server
     log.info(f"Delete temporary bucket {bucket}")
-    r = client.session.put(f"{client.rep_url}/fs/api/v1/remove/{bucket}")
+    r = jms_api.client.session.put(f"{jms_api.client.rep_url}/fs/api/v1/remove/{bucket}")
 
-    return get_project(client, jms_api_url, project_id)
+    return get_project(jms_api.client, jms_api.url, project_id)

@@ -29,6 +29,30 @@ def get_objects(session: Session, url: str, obj_type: Object, as_objects=True, *
     return schema.load(data)
 
 
+def get_object(
+    session: Session, url: str, obj_type: Object, id: str, as_object=True, **query_params
+):
+
+    rest_name = obj_type.Meta.rest_name
+    url = f"{url}/{rest_name}/{id}"
+    query_params.setdefault("fields", "all")
+    r = session.get(url, params=query_params)
+
+    data = r.json()[rest_name]
+    if not as_object:
+        return data
+
+    schema = obj_type.Meta.schema(many=True)
+    if len(data) == 0:
+        return None
+    elif len(data) == 1:
+        return schema.load(data)[0]
+    elif len(data) > 1:
+        raise ClientError(
+            f"Multiple {Object.__class__.__name__} objects with id={id}: {schema.load(data)}"
+        )
+
+
 def create_objects(
     session: Session, url: str, objects: List[Object], as_objects=True, **query_params
 ):

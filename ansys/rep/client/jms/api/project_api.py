@@ -19,7 +19,7 @@ from ..resource.selection import Selection
 from ..resource.task import Task
 from ..resource.task_definition import TaskDefinition
 from .base import create_objects, delete_objects, get_objects, update_objects
-from .jms_api import _monitor_operation, get_project
+from .jms_api import JmsApi, _monitor_operation, get_project
 
 log = logging.getLogger(__name__)
 
@@ -428,16 +428,15 @@ def copy_project(project_api: ProjectApi, project_source_id, project_target_name
     r = project_api.client.session.put(url, params={"project_name": project_target_name})
 
     operation_location = r.headers["location"]
+    operation_id = operation_location.rsplit("/", 1)[-1]
 
     if not wait:
         return operation_location
 
-    op = _monitor_operation(
-        project_api.client, f"{project_api.jms_api_url}{operation_location}", 1.0
-    )
-    if not op["succeeded"]:
+    op = _monitor_operation(JmsApi(project_api.client), operation_id, 1.0)
+    if not op.succeeded:
         raise REPError(f"Failed to copy project {project_source_id}.")
-    return op["result"]
+    return op.result
 
 
 def archive_project(project_api: ProjectApi, target_path, include_job_files=True) -> str:
@@ -453,15 +452,14 @@ def archive_project(project_api: ProjectApi, target_path, include_job_files=True
     # Monitor archive operation
     operation_location = r.headers["location"]
     log.debug(f"Operation location: {operation_location}")
+    operation_id = operation_location.rsplit("/", 1)[-1]
 
-    op = _monitor_operation(
-        project_api.client, f"{project_api.jms_api_url}{operation_location}", 1.0
-    )
+    op = _monitor_operation(JmsApi(project_api.client), operation_id, 1.0)
 
-    if not op["succeeded"]:
+    if not op.succeeded:
         raise REPError(f"Failed to archive project {project_api.project_id}.\n{op}")
 
-    download_link = op["result"]["backend_path"]
+    download_link = op.result["backend_path"]
 
     # Download archive
     download_link = download_link.replace("ansfs://", project_api.fs_url + "/")
