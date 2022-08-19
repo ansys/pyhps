@@ -1,8 +1,9 @@
 import json
 import logging
+import time
 from typing import List
 
-from ..client import Client
+from ..resource import Operation
 from ..resource.evaluator import Evaluator
 from ..resource.project import Project, ProjectSchema
 from ..resource.task_definition_template import TaskDefinitionTemplate
@@ -11,7 +12,7 @@ from .base import create_objects, delete_objects, get_objects, update_objects
 log = logging.getLogger(__name__)
 
 
-class RootApi(object):
+class JmsApi(object):
     """Root API
 
     Args:
@@ -28,32 +29,34 @@ class RootApi(object):
 
     """
 
-    def __init__(self, client: Client):
+    def __init__(self, client):
         self.client = client
 
     @property
     def url(self):
-        return self.client.jms_api_url
+        return f"{self.client.rep_url}/jms/api/v1"
 
+    ################################################################
+    # Projects
     def get_projects(self, **query_params):
         """Return a list of projects, optionally filtered by given query parameters"""
-        return get_projects(self.client, **query_params)
+        return get_projects(self.client, self.url, **query_params)
 
     def get_project(self, id=None, name=None):
         """Return a single project for given project id"""
-        return get_project(self.client, id, name)
+        return get_project(self.client, self.url, id, name)
 
     def create_project(self, project, replace=False, as_objects=True):
         """Create a new project"""
-        return create_project(self.client, project, replace, as_objects)
+        return create_project(self.client, self.url, project, replace, as_objects)
 
     def update_project(self, project, as_objects=True):
         """Update an existing project"""
-        return update_project(self.client, project, as_objects)
+        return update_project(self.client, self.url, project, as_objects)
 
     def delete_project(self, project):
         """Delete a project"""
-        return delete_project(self.client, project)
+        return delete_project(self.client, self.url, project)
 
     def restore_project(self, path, project_name):
         """Restore a project from an archive
@@ -67,6 +70,8 @@ class RootApi(object):
         """
         raise NotImplementedError
 
+    ################################################################
+    # Evaluators
     def get_evaluators(self, as_objects=True, **query_params):
         """Return a list of evaluators, optionally filtered by given query parameters"""
         return get_objects(self.client.session, self.url, Evaluator, as_objects, **query_params)
@@ -75,6 +80,8 @@ class RootApi(object):
         """Update evaluators configuration"""
         return update_objects(self.client.session, self.url, evaluators, as_objects, **query_params)
 
+    ################################################################
+    # Task Definition Templates
     def get_task_definition_templates(self, as_objects=True, **query_params):
         """Return a list of task definition templates,
         optionally filtered by given query parameters"""
@@ -109,12 +116,22 @@ class RootApi(object):
         """
         return delete_objects(self.client.session, self.url, templates)
 
+    ################################################################
+    # Operations
+    def get_operations(self, as_objects=True):
+        return get_objects(
+            self.client.session,
+            self.url,
+            Operation,
+            as_objects=as_objects,
+        )
 
-def get_projects(client, as_objects=True, **query_params) -> List[Project]:
+
+def get_projects(client, api_url, as_objects=True, **query_params) -> List[Project]:
     """
     Returns list of projects
     """
-    url = f"{client.jms_api_url}/projects"
+    url = f"{api_url}/projects"
     r = client.session.get(url, params=query_params)
 
     data = r.json()["projects"]
@@ -122,35 +139,30 @@ def get_projects(client, as_objects=True, **query_params) -> List[Project]:
         return data
 
     schema = ProjectSchema(many=True)
-    projects = schema.load(data)
-    for p in projects:
-        p.client = client
-    return projects
+    return schema.load(data)
 
 
-def get_project(client, id=None, name=None) -> Project:
+def get_project(client, api_url, id=None, name=None) -> Project:
     """
     Return a single project
     """
     params = {}
     if name:
-        url = f"{client.jms_api_url}/projects/"
+        url = f"{api_url}/projects/"
         params["name"] = name
     else:
-        url = f"{client.jms_api_url}/projects/{id}"
+        url = f"{api_url}/projects/{id}"
 
     r = client.session.get(url, params=params)
 
     if len(r.json()["projects"]):
         schema = ProjectSchema()
-        project = schema.load(r.json()["projects"][0])
-        project.client = client
-        return project
+        return schema.load(r.json()["projects"][0])
     return None
 
 
-def create_project(client, project, replace=False, as_objects=True) -> Project:
-    url = f"{client.jms_api_url}/projects/"
+def create_project(client, api_url, project, replace=False, as_objects=True) -> Project:
+    url = f"{api_url}/projects/"
 
     schema = ProjectSchema()
     serialized_data = schema.dump(project)
@@ -161,13 +173,11 @@ def create_project(client, project, replace=False, as_objects=True) -> Project:
     if not as_objects:
         return data
 
-    project = schema.load(data)
-    project.client = client
-    return project
+    return schema.load(data)
 
 
-def update_project(client, project, as_objects=True) -> Project:
-    url = f"{client.jms_api_url}/projects/{project.id}"
+def update_project(client, api_url, project, as_objects=True) -> Project:
+    url = f"{api_url}/projects/{project.id}"
 
     schema = ProjectSchema()
     serialized_data = schema.dump(project)
@@ -178,12 +188,73 @@ def update_project(client, project, as_objects=True) -> Project:
     if not as_objects:
         return data
 
-    project = schema.load(data)
-    project.client = client
-    return project
+    return schema.load(data)
 
 
-def delete_project(client, project):
+def delete_project(client, api_url, project):
 
-    url = f"{client.jms_api_url}/projects/{project.id}"
+    url = f"{api_url}/projects/{project.id}"
     r = client.session.delete(url)
+
+
+def _monitor_operation(client, operation_url: str, interval: float = 1.0):
+
+    done = False
+    op = None
+
+    while not done:
+        r = client.session.get(operation_url)
+        if len(r.json()["operations"]) > 0:
+            op = r.json()["operations"][0]
+            done = op["finished"]
+            log.info(
+                f"Operation {op['name']} - progress={op['progress'] * 100.0}%, "
+                f"succeeded={op['succeeded']}, finished={op['finished']}"
+            )
+        time.sleep(interval)
+
+    return op
+
+
+# def restore_project(client, archive_path, project_name):
+#     # TODO: rework and move to jms_api
+
+#     if not os.path.exists(archive_path):
+#         raise REPError(f"Project archive: path does not exist {archive_path}")
+
+#     # Upload archive to FS API
+#     archive_name = os.path.basename(archive_path)
+
+#     bucket = f"rep-client-restore-{uuid.uuid4()}"
+#     fs_file_url = f"{client.rep_url}/fs/api/v1/{bucket}/{archive_name}"
+#     ansfs_file_url = f"ansfs://{bucket}/{archive_name}"
+
+#     fs_headers = {"content-type": "application/octet-stream"}
+
+#     log.info(f"Uploading archive to {fs_file_url}")
+#     with open(archive_path, "rb") as file_content:
+#         r = client.session.post(fs_file_url, data=file_content, headers=fs_headers)
+
+#     # POST restore request
+#     log.info(f"Restoring archive from {ansfs_file_url}")
+#     url = f"{client.jms_api_url}/projects/restore"
+#     query_params = {"backend_path": ansfs_file_url}
+#     r = client.session.post(url, params=query_params)
+
+#     # Monitor restore operation
+#     operation_location = r.headers["location"]
+#     log.debug(f"Operation location: {operation_location}")
+
+#     op = _monitor_operation(JmsApi(client), operation_location, 1.0)
+
+#     if not op["succeeded"]:
+#         raise REPError(f"Failed to restore project from archive {archive_path}.")
+
+#     project_id = op["result"]
+#     log.info("Done restoring project")
+
+#     # Delete archive file on server
+#     log.info(f"Delete file bucket {fs_file_url}")
+#     r = client.session.put(f"{client.rep_url}/fs/api/v1/remove/{bucket}")
+
+#     return get_project(client, project_id)

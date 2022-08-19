@@ -1,13 +1,10 @@
 import logging
 import os
 from pathlib import Path
-import time
 from typing import Callable, List
-import uuid
 
 from ansys.rep.client.exceptions import ClientError, REPError
 
-from ..client import Client
 from ..resource.algorithm import Algorithm
 from ..resource.base import Object
 from ..resource.file import File
@@ -22,7 +19,7 @@ from ..resource.selection import Selection
 from ..resource.task import Task
 from ..resource.task_definition import TaskDefinition
 from .base import create_objects, delete_objects, get_objects, update_objects
-from .root_api import get_project
+from .jms_api import _monitor_operation, get_project
 
 log = logging.getLogger(__name__)
 
@@ -43,19 +40,28 @@ class ProjectApi:
 
     """
 
-    def __init__(self, client: Client, project_id: str):
+    def __init__(self, client, project_id: str):
         self.client = client
         self.project_id = project_id
+        self._fs_url = None
+        self._fs_project_id = None
+
+    @property
+    def jms_api_url(self):
+        return f"{self.client.rep_url}/jms/api/v1"
 
     @property
     def url(self):
-        return f"{self.client.jms_api_url}/projects/{self.project_id}"
+        return f"{self.jms_api_url}/projects/{self.project_id}"
 
     @property
     def fs_url(self):
         """URL of the file storage gateway"""
-        project = get_project(self.client, id=self.project_id)
-        return get_fs_url(project)
+        if self._fs_url is None or self._fs_project_id != self.project_id:
+            self._fs_project_id = self.project_id
+            project = get_project(self.client, self.jms_api_url, id=self.project_id)
+            self._fs_url = get_fs_url(project)
+        return self._fs_url
 
     @property
     def fs_bucket_url(self):
@@ -66,7 +72,7 @@ class ProjectApi:
     # Project operations (copy, archive)
     def copy_project(self, project_target_name, wait=True):
         """Duplicate project"""
-        return copy_project(self.client, self.project_id, project_target_name, wait)
+        return copy_project(self, self.project_id, project_target_name, wait)
 
     def archive_project(self, path, include_job_files=True):
         """Archive an existing project and save it to disk
@@ -246,27 +252,27 @@ class ProjectApi:
         return self._get_objects(Selection, as_objects=as_objects, **query_params)
 
     def create_selections(self, selections, as_objects=True):
-        return self._create_objects(self, selections, as_objects=as_objects)
+        return self._create_objects(selections, as_objects=as_objects)
 
     def update_selections(self, selections, as_objects=True):
         return self._update_objects(selections, as_objects=as_objects)
 
     def delete_selections(self, selections):
-        return self._delete_objects(self, selections)
+        return self._delete_objects(selections)
 
     ################################################################
     # Algorithms
     def get_algorithms(self, as_objects=True, **query_params):
-        return self._get_objects(self, Algorithm, as_objects=as_objects, **query_params)
+        return self._get_objects(Algorithm, as_objects=as_objects, **query_params)
 
     def create_algorithms(self, algorithms, as_objects=True):
-        return self._create_objects(self, algorithms, as_objects=as_objects)
+        return self._create_objects(algorithms, as_objects=as_objects)
 
     def update_algorithms(self, algorithms, as_objects=True):
-        return self._update_objects(self, algorithms, as_objects=as_objects)
+        return self._update_objects(algorithms, as_objects=as_objects)
 
     def delete_algorithms(self, algorithms):
-        return self._delete_objects(self, algorithms)
+        return self._delete_objects(algorithms)
 
     ################################################################
     # Permissions
@@ -275,7 +281,7 @@ class ProjectApi:
 
     def update_permissions(self, permissions):
         # the rest api currently doesn't return anything on permissions update
-        update_permissions(self.client, self.project_id, permissions)
+        update_permissions(self.client, self.url, permissions)
 
     ################################################################
     # License contexts
@@ -284,7 +290,7 @@ class ProjectApi:
 
     def create_license_contexts(self, as_objects=True):
         rest_name = LicenseContext.Meta.rest_name
-        url = f"{self.client.jms_api_url}/projects/{self.id}/{rest_name}"
+        url = f"{self.jms_api_url}/projects/{self.id}/{rest_name}"
         r = self.client.session.post(f"{url}")
         data = r.json()[rest_name]
         if not as_objects:
@@ -298,7 +304,7 @@ class ProjectApi:
 
     def delete_license_contexts(self):
         rest_name = LicenseContext.Meta.rest_name
-        url = f"{self.client.jms_api_url}/projects/{self.id}/{rest_name}"
+        url = f"{self.jms_api_url}/projects/{self.id}/{rest_name}"
         r = self.client.session.delete(url)
 
     ################################################################
@@ -416,89 +422,28 @@ def _download_file(
     return download_path
 
 
-def copy_project(client, project_source_id, project_target_name, wait=True) -> str:
+def copy_project(project_api: ProjectApi, project_source_id, project_target_name, wait=True) -> str:
 
-    url = f"{client.jms_api_url}/projects/{project_source_id}/copy"
-    r = client.session.put(url, params={"project_name": project_target_name})
+    url = f"{project_api.url}/copy"
+    r = project_api.client.session.put(url, params={"project_name": project_target_name})
 
     operation_location = r.headers["location"]
 
     if not wait:
         return operation_location
 
-    op = _monitor_operation(client, operation_location, 1.0)
+    op = _monitor_operation(
+        project_api.client, f"{project_api.jms_api_url}{operation_location}", 1.0
+    )
     if not op["succeeded"]:
         raise REPError(f"Failed to copy project {project_source_id}.")
     return op["result"]
 
 
-def restore_project(client, archive_path, project_name):
-    # TODO: rework and move to root_api
-
-    if not os.path.exists(archive_path):
-        raise REPError(f"Project archive: path does not exist {archive_path}")
-
-    # Upload archive to FS API
-    archive_name = os.path.basename(archive_path)
-
-    bucket = f"rep-client-restore-{uuid.uuid4()}"
-    fs_file_url = f"{client.rep_url}/fs/api/v1/{bucket}/{archive_name}"
-    ansfs_file_url = f"ansfs://{bucket}/{archive_name}"
-
-    fs_headers = {"content-type": "application/octet-stream"}
-
-    log.info(f"Uploading archive to {fs_file_url}")
-    with open(archive_path, "rb") as file_content:
-        r = client.session.post(fs_file_url, data=file_content, headers=fs_headers)
-
-    # POST restore request
-    log.info(f"Restoring archive from {ansfs_file_url}")
-    url = f"{client.jms_api_url}/projects/restore"
-    query_params = {"backend_path": ansfs_file_url}
-    r = client.session.post(url, params=query_params)
-
-    # Monitor restore operation
-    operation_location = r.headers["location"]
-    log.debug(f"Operation location: {operation_location}")
-
-    op = _monitor_operation(client, operation_location, 1.0)
-
-    if not op["succeeded"]:
-        raise REPError(f"Failed to restore project from archive {archive_path}.")
-
-    project_id = op["result"]
-    log.info("Done restoring project")
-
-    # Delete archive file on server
-    log.info(f"Delete file bucket {fs_file_url}")
-    r = client.session.put(f"{client.rep_url}/fs/api/v1/remove/{bucket}")
-
-    return get_project(client, project_id)
-
-
-def _monitor_operation(client, location, interval=1.0):
-
-    done = False
-    op = None
-
-    while not done:
-        r = client.session.get(f"{client.jms_api_url}{location}")
-        if len(r.json()["operations"]) > 0:
-            op = r.json()["operations"][0]
-            done = op["finished"]
-            log.info(
-                f"""Operation {op['name']} - progress={op['progress'] * 100.0}%,
-                  succeeded={op['succeeded']}, finished={op['finished']}"""
-            )
-        time.sleep(interval)
-
-    return op
-
-
 def archive_project(project_api: ProjectApi, target_path, include_job_files=True) -> str:
 
     # PUT archive request
-    url = f"{project_api.client.jms_api_url}/projects/{project_api.project_id}/archive"
+    url = f"{project_api.url}/archive"
     query_params = {}
     if not include_job_files:
         query_params["download_files"] = "job_definition"
@@ -509,7 +454,9 @@ def archive_project(project_api: ProjectApi, target_path, include_job_files=True
     operation_location = r.headers["location"]
     log.debug(f"Operation location: {operation_location}")
 
-    op = _monitor_operation(project_api.client, operation_location, 1.0)
+    op = _monitor_operation(
+        project_api.client, f"{project_api.jms_api_url}{operation_location}", 1.0
+    )
 
     if not op["succeeded"]:
         raise REPError(f"Failed to archive project {project_api.project_id}.")

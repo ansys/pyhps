@@ -9,12 +9,12 @@ import logging
 import os
 import random
 
-from ansys.rep.client import REPError
+from ansys.rep.client import Client, REPError
 from ansys.rep.client import __external_version__ as ansys_version
 from ansys.rep.client.jms import (
-    Client,
     File,
     FloatParameterDefinition,
+    JmsApi,
     Job,
     JobDefinition,
     ParameterMapping,
@@ -36,8 +36,9 @@ def main(client: Client, name: str, num_jobs: int):
     in the technology demonstration guide (td-57).
     """
     log.debug("=== Project")
+    jms_api = JmsApi(client)
     proj = Project(name=name, display_name="MAPDL Tyre Performance", priority=1, active=True)
-    proj = client.create_project(proj, replace=True)
+    proj = jms_api.create_project(proj, replace=True)
 
     project_api = ProjectApi(client, proj.id)
 

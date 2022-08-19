@@ -13,6 +13,7 @@ import unittest
 
 from examples.mapdl_motorbike_frame.project_setup import create_project
 
+from ansys.rep.client.jms import JmsApi, ProjectApi
 from ansys.rep.client.jms.resource import File
 from tests.rep_test import REPTestCase
 
@@ -22,13 +23,16 @@ log = logging.getLogger(__name__)
 class TaskFilesTest(REPTestCase):
     def test_task_files_in_single_task_definition_project(self):
         num_jobs = 5
-        client = self.jms_client()
+        client = self.client()
         proj_name = f"test_jobs_TaskFilesTest_{self.run_id}"
 
         # Setup MAPDL motorbike frame project to work with
         proj = create_project(client=client, name=proj_name, num_jobs=num_jobs)
         proj.active = False
-        proj = client.update_project(proj)
+        jms_api = JmsApi(client)
+        proj = jms_api.update_project(proj)
+
+        project_api = ProjectApi(client, proj.id)
 
         cwd = os.path.dirname(__file__)
         ex_dir = os.path.join(cwd, "..", "..", "examples", "mapdl_motorbike_frame")
@@ -36,7 +40,7 @@ class TaskFilesTest(REPTestCase):
 
         # Create a modified MAPDL input file that reads an extra task file
         # and writes out an extra result file
-        mac_file = proj.get_files(limit=1, content=True)[0]
+        mac_file = project_api.get_files(limit=1, content=True)[0]
         content = mac_file.content.decode("utf-8")
         lines = content.splitlines()
         for i, l in enumerate(lines):
@@ -56,7 +60,7 @@ class TaskFilesTest(REPTestCase):
             f.write("\n".join(lines))
 
         # Add specific task files to tasks
-        tasks = proj.get_tasks()
+        tasks = project_api.get_tasks()
         for i, t in enumerate(tasks):
             log.info(f"Modify task {t.id}")
             files = []
@@ -94,7 +98,7 @@ class TaskFilesTest(REPTestCase):
                 )
             )
 
-            files = proj.create_files(files)
+            files = project_api.create_files(files)
             file_ids = {f.name: f.id for f in files}
             log.info(f"Add files: {file_ids}")
 
@@ -102,7 +106,7 @@ class TaskFilesTest(REPTestCase):
             t.output_file_ids.append(file_ids["task_result"])
             # Not yet supported: t.eval_status = 'pending'
 
-        tasks1 = proj.update_tasks(tasks)
+        tasks1 = project_api.update_tasks(tasks)
         self.assertEqual(len(tasks1), 5)
 
         # Check num files existing before evaluation
@@ -114,17 +118,17 @@ class TaskFilesTest(REPTestCase):
 
         # Wait for the evaluation of all Jobs
         proj.active = True
-        client.update_project(proj)
+        jms_api.update_project(proj)
 
-        def wait_for_evaluation_of_all_jobs(proj):
-            job_def = proj.get_job_definitions()[0]
+        def wait_for_evaluation_of_all_jobs(project_api):
+            job_def = project_api.get_job_definitions()[0]
             num_jobs_finished = 0
             t1 = datetime.datetime.now()
             dt = 0.0
-            task_def = proj.get_task_definitions(job_def.task_definition_ids[0])[0]
+            task_def = project_api.get_task_definitions(job_def.task_definition_ids[0])[0]
             max_eval_time = task_def.max_execution_time * 4
             while num_jobs_finished < num_jobs and dt < max_eval_time:
-                jobs = proj.get_jobs(fields=["id", "eval_status"])
+                jobs = project_api.get_jobs(fields=["id", "eval_status"])
                 num_jobs_finished = len(
                     [job for job in jobs if job.eval_status in ["evaluated", "timeout", "failed"]]
                 )
@@ -134,14 +138,14 @@ class TaskFilesTest(REPTestCase):
                 time.sleep(5)
                 dt = (datetime.datetime.now() - t1).total_seconds()
 
-        wait_for_evaluation_of_all_jobs(proj)
+        wait_for_evaluation_of_all_jobs(project_api)
 
         # Check evaluated design points, tasks and files
-        jobs = proj.get_jobs()
+        jobs = project_api.get_jobs()
         for job in jobs:
             self.assertEqual(job.eval_status, "evaluated")
 
-        def check_evaluated_tasks(proj, tasks):
+        def check_evaluated_tasks(project_api, tasks):
             for t in tasks:
                 log.info(f"=== Task ===")
                 log.info(f"id={t.id} eval_status={t.eval_status}")
@@ -158,14 +162,14 @@ class TaskFilesTest(REPTestCase):
 
                 # All input files are owned by task
                 self.assertEqual(len(set(t.input_file_ids).intersection(t.owned_file_ids)), 2)
-                input_files = proj.get_files(id=t.input_file_ids)
+                input_files = project_api.get_files(id=t.input_file_ids)
                 self.assertEqual(
                     set([f.name for f in input_files]), set(["inp", "inp2"])
                 )  # Check input file names
 
                 owned_output_file_ids = set(t.output_file_ids).intersection(t.owned_file_ids)
                 self.assertEqual(len(owned_output_file_ids), 1)  # 1 output file is owned
-                owned_output_files = proj.get_files(id=owned_output_file_ids)
+                owned_output_files = project_api.get_files(id=owned_output_file_ids)
                 self.assertEqual(owned_output_files[0].name, "task_result")
 
                 inherited_output_file_ids = set(t.output_file_ids).intersection(
@@ -173,7 +177,7 @@ class TaskFilesTest(REPTestCase):
                 )
                 # 5 output files are inherited
                 self.assertEqual(len(inherited_output_file_ids), 5)
-                inherited_output_files = proj.get_files(id=inherited_output_file_ids)
+                inherited_output_files = project_api.get_files(id=inherited_output_file_ids)
                 self.assertEqual(
                     set([f.name for f in inherited_output_files]),
                     set(["out", "img", "err", "console_output"]),
@@ -182,23 +186,23 @@ class TaskFilesTest(REPTestCase):
                 # Find the task output file and compare the contained variable task_var with task id
                 intersection = set(t.output_file_ids).intersection(t.owned_file_ids)
                 fid = intersection.pop()
-                file = proj.get_files(id=fid, content=True)[0]
+                file = project_api.get_files(id=fid, content=True)[0]
                 content = file.content.decode("utf-8")
                 log.info(f"Task output file id={fid} content={content} task_id={t.id}")
                 # Task id must show up in task output file
                 self.assertTrue(t.id in content)
 
-        tasks2 = proj.get_tasks()
-        check_evaluated_tasks(proj, tasks2)
+        tasks2 = project_api.get_tasks()
+        check_evaluated_tasks(project_api, tasks2)
 
         # Set project to inactive, reset design points and check what we have
         proj.active = False
-        proj = client.update_project(proj)
-        jobs = proj.get_jobs(fields=["id", "eval_status"])
+        proj = jms_api.update_project(proj)
+        jobs = project_api.get_jobs(fields=["id", "eval_status"])
         for job in jobs:
             job.eval_status = "pending"
-        proj.update_jobs(jobs)
-        tasks3 = proj.get_tasks()
+        project_api.update_jobs(jobs)
+        tasks3 = project_api.get_tasks()
         # Compare tasks with the ones created at the begin
         log.info(f"Tasks 1: {[t.id for t in tasks1]}")
         log.info(f"Tasks 3: {[t.id for t in tasks3]}")
@@ -214,15 +218,15 @@ class TaskFilesTest(REPTestCase):
 
         # Wait again for the evaluation of all Jobs
         proj.active = True
-        proj = client.update_project(proj)
-        wait_for_evaluation_of_all_jobs(proj)
+        proj = jms_api.update_project(proj)
+        wait_for_evaluation_of_all_jobs(project_api)
 
         # Check evaluated tasks
-        tasks4 = proj.get_tasks()
-        check_evaluated_tasks(proj, tasks4)
+        tasks4 = project_api.get_tasks()
+        check_evaluated_tasks(project_api, tasks4)
 
         # Cleanup
-        client.delete_project(proj)
+        jms_api.delete_project(proj)
 
     # TODO
     # def test_task_files_in_multi_task_definition_project(self):

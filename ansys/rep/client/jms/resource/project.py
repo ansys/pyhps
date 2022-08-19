@@ -50,7 +50,6 @@ ProjectSchema.Meta.object_class = Project
 def get_fs_url(project: Project):
     if project.file_storages == missing:
         raise REPError(f"The project object has no file storages information.")
-
     rest_gateways = [fs for fs in project.file_storages if fs["obj_type"] == "RestGateway"]
     rest_gateways.sort(key=lambda fs: fs["priority"], reverse=True)
 

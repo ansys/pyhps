@@ -13,6 +13,7 @@ from .fitness_definition import FitnessDefinition, FitnessTermDefinition
 from .job import Job
 from .job_definition import JobDefinition
 from .license_context import LicenseContext
+from .operation import Operation
 from .parameter_definition import (
     BoolParameterDefinition,
     FloatParameterDefinition,

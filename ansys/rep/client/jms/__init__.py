@@ -6,8 +6,7 @@
 # Author(s): O.Koenig
 # ----------------------------------------------------------
 
-from .api import ProjectApi, RootApi
-from .client import Client
+from .api import JmsApi, ProjectApi
 from .resource import (
     Algorithm,
     BoolParameterDefinition,

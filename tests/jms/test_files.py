@@ -12,7 +12,7 @@ import unittest
 
 from marshmallow.utils import missing
 
-from ansys.rep.client.jms import ProjectApi, RootApi
+from ansys.rep.client.jms import JmsApi, ProjectApi
 from ansys.rep.client.jms.resource import File, Project
 from tests.rep_test import REPTestCase
 
@@ -22,9 +22,9 @@ log = logging.getLogger(__name__)
 class FilesTest(REPTestCase):
     def test_files(self):
 
-        client = self.jms_client()
-        root_api = RootApi(client)
-        proj = root_api.create_project(
+        client = self.client()
+        jms_api = JmsApi(client)
+        proj = jms_api.create_project(
             Project(name=f"rep_client_test_jms_FilesTest_{self.run_id}", active=False), replace=True
         )
         project_api = ProjectApi(client, proj.id)
@@ -96,7 +96,7 @@ class FilesTest(REPTestCase):
                 self.assertEqual(f.read(), sf.read())
 
         # Delete project again
-        root_api.delete_project(proj)
+        jms_api.delete_project(proj)
 
 
 if __name__ == "__main__":

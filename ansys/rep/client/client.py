@@ -6,13 +6,13 @@
 # Author(s): F.Negri, O.Koenig
 # ----------------------------------------------------------
 
-from ..auth import authenticate
-from ..connection import create_session
-from ..exceptions import raise_for_status
+from .auth.authenticate import authenticate
+from .connection import create_session
+from .exceptions import raise_for_status
 
 
 class Client(object):
-    """A python interface to the Design Point Service API.
+    """A python interface to the Remote Execution Platform (REP) API.
 
     Uses the provided credentials to create and store
     an authorized :class:`requests.Session` object.
@@ -62,9 +62,15 @@ class Client(object):
     ):
 
         self.rep_url = rep_url
-        self.jms_api_url = self.rep_url + "/jms/api/v1"
         self.auth_url = auth_url
+        self.auth_api_url = (auth_url or rep_url) + f"/auth/"
         self.refresh_token = None
+        self.username = username
+        self.realm = realm
+        self.grant_type = grant_type
+        self.scope = scope
+        self.client_id = client_id
+        self.client_secret = client_secret
 
         if access_token:
             self.access_token = access_token
@@ -86,7 +92,7 @@ class Client(object):
         self.session = create_session(self.access_token)
         # register hook to handle expiring of the refresh token
         self.session.hooks["response"] = [self._auto_refresh_token, raise_for_status]
-        self.unauthorized_num_retry = 0
+        self._unauthorized_num_retry = 0
         self._unauthorized_max_retry = 1
 
     def _auto_refresh_token(self, response, *args, **kwargs):
@@ -94,16 +100,16 @@ class Client(object):
         re-send the request in case of unauthorized error"""
         if (
             response.status_code == 401
-            and self.unauthorized_num_retry < self._unauthorized_max_retry
+            and self._unauthorized_num_retry < self._unauthorized_max_retry
         ):
-            self.unauthorized_num_retry += 1
+            self._unauthorized_num_retry += 1
             self.refresh_access_token()
             response.request.headers.update(
                 {"Authorization": self.session.headers["Authorization"]}
             )
             return self.session.send(response.request)
 
-        self.unauthorized_num_retry = 0
+        self._unauthorized_num_retry = 0
         return response
 
     def refresh_access_token(self):
@@ -112,8 +118,3 @@ class Client(object):
         self.access_token = tokens["access_token"]
         self.refresh_token = tokens["refresh_token"]
         self.session.headers.update({"Authorization": "Bearer %s" % tokens["access_token"]})
-
-    def get_info(self):
-        """Return info like version, build date etc of the JMS API the client is connected to"""
-        r = self.session.get(self.jms_api_url)
-        return r.json()

@@ -13,6 +13,7 @@ import uuid
 from examples.mapdl_motorbike_frame.project_setup import create_project
 from marshmallow.utils import missing
 
+from ansys.rep.client.jms import JmsApi, ProjectApi
 from ansys.rep.client.jms.resource import Job, JobDefinition, Project
 from ansys.rep.client.jms.schema.job import JobSchema
 from tests.rep_test import REPTestCase
@@ -127,31 +128,33 @@ class JobsTest(REPTestCase):
 
     def test_job_integration(self):
 
-        client = self.jms_client()
+        client = self.client()
         proj_name = f"dcs_client_test_jobs_JobTest_{self.run_id}"
 
         proj = Project(name=proj_name, active=True)
-        proj = client.create_project(proj, replace=True)
+        jms_api = JmsApi(client)
+        proj = jms_api.create_project(proj, replace=True)
+        project_api = ProjectApi(client, proj.id)
 
         job_def = JobDefinition(name="New Config", active=True)
-        job_def = proj.create_job_definitions([job_def])[0]
+        job_def = project_api.create_job_definitions([job_def])[0]
 
         # test creating, update and delete with no jobs
-        jobs = proj.create_jobs([])
+        jobs = project_api.create_jobs([])
         self.assertEqual(len(jobs), 0)
-        jobs = proj.create_jobs([], as_objects=True)
+        jobs = project_api.create_jobs([], as_objects=True)
         self.assertEqual(len(jobs), 0)
-        jobs = proj.update_jobs([])
+        jobs = project_api.update_jobs([])
         self.assertEqual(len(jobs), 0)
-        jobs = proj.update_jobs([], as_objects=True)
+        jobs = project_api.update_jobs([], as_objects=True)
         self.assertEqual(len(jobs), 0)
-        proj.delete_jobs([])
+        project_api.delete_jobs([])
 
         jobs = [
             Job(name=f"dp_{i}", eval_status="inactive", job_definition_id=job_def.id)
             for i in range(10)
         ]
-        jobs = proj.create_jobs(jobs)
+        jobs = project_api.create_jobs(jobs)
         for job in jobs:
             # check that all fields are populated (i.e. request params include fields="all")
             self.assertEqual(job.creator, None)
@@ -159,7 +162,7 @@ class JobsTest(REPTestCase):
             self.assertEqual(job.fitness, None)
             self.assertTrue(job.executed_task_definition_level is not None)
 
-        jobs = proj.get_jobs()
+        jobs = project_api.get_jobs()
         for job in jobs:
             # check that all fields are populated (i.e. request params include fields="all")
             self.assertEqual(job.creator, None)
@@ -170,7 +173,7 @@ class JobsTest(REPTestCase):
             job.creator = "dcs-client"
             job.note = f"test dp{job.id} update"
 
-        jobs = proj.update_jobs(jobs)
+        jobs = project_api.update_jobs(jobs)
         for job in jobs:
             # check that all fields are populated (i.e. request params include fields="all")
             self.assertTrue(job.creator is not None)
@@ -179,7 +182,7 @@ class JobsTest(REPTestCase):
             self.assertEqual(job.fitness, None)
             self.assertTrue(job.executed_task_definition_level is not None)
 
-        jobs = proj.get_jobs(limit=2, fields=["id", "creator", "note"])
+        jobs = project_api.get_jobs(limit=2, fields=["id", "creator", "note"])
 
         self.assertEqual(len(jobs), 2)
         for job in jobs:
@@ -187,58 +190,60 @@ class JobsTest(REPTestCase):
             self.assertEqual(job.note, f"test dp{job.id} update")
             self.assertEqual(job.job_definition_id, missing)
 
-        proj.delete_jobs([Job(id=job.id) for job in jobs])
-        jobs = proj.get_jobs()
+        project_api.delete_jobs([Job(id=job.id) for job in jobs])
+        jobs = project_api.get_jobs()
         self.assertEqual(len(jobs), 8)
 
         # Delete project
-        client.delete_project(proj)
+        jms_api.delete_project(proj)
 
     def test_job_update(self):
-        client = self.jms_client()
+        client = self.client()
+        jms_api = JmsApi(client)
         proj_name = f"test_job_update_{uuid.uuid4().hex[:8]}"
 
         project = create_project(client=client, name=proj_name, num_jobs=2)
         project.active = False
-        project = client.update_project(project)
+        project = jms_api.update_project(project)
+        project_api = ProjectApi(client, project.id)
 
-        job_def = project.get_job_definitions()[0]
-        params = project.get_parameter_definitions(id=job_def.parameter_definition_ids)
+        job_def = project_api.get_job_definitions()[0]
+        params = project_api.get_parameter_definitions(id=job_def.parameter_definition_ids)
         input_parameters = [p.name for p in params if p.mode == "input"]
 
-        jobs = project.get_jobs(fields="all")
+        jobs = project_api.get_jobs(fields="all")
         ref_values = {job.id: copy.deepcopy(job.values) for job in jobs}
 
         # change eval status with full DP object
         for job in jobs:
             job.eval_status = "pending"
-        jobs = project.update_jobs(jobs)
+        jobs = project_api.update_jobs(jobs)
 
         for job in jobs:
             for p_name in input_parameters:
                 self.assertEqual(job.values[p_name], ref_values[job.id][p_name])
 
         # change eval status with minimal DP object
-        jobs = project.get_jobs(fields=["id", "eval_status"])
+        jobs = project_api.get_jobs(fields=["id", "eval_status"])
         for job in jobs:
             job.eval_status = "pending"
-        jobs = project.update_jobs(jobs)
+        jobs = project_api.update_jobs(jobs)
 
         for job in jobs:
             for p_name in input_parameters:
                 self.assertEqual(job.values[p_name], ref_values[job.id][p_name])
 
         # change eval status with partial DP object including config id
-        jobs = project.get_jobs(fields=["id", "job_definition_id", "eval_status"])
+        jobs = project_api.get_jobs(fields=["id", "job_definition_id", "eval_status"])
         for job in jobs:
             job.eval_status = "pending"
-        jobs = project.update_jobs(jobs)
+        jobs = project_api.update_jobs(jobs)
 
         for job in jobs:
             for p_name in input_parameters:
                 self.assertEqual(job.values[p_name], ref_values[job.id][p_name], p_name)
 
-        client.delete_project(project)
+        jms_api.delete_project(project)
 
 
 if __name__ == "__main__":

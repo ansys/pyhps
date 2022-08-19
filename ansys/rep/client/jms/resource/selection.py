@@ -32,6 +32,7 @@ class Selection(Object):
 
     class Meta:
         schema = SelectionSchema
+        rest_name = "selections"
 
     def __init__(self, **kwargs):
         super(Selection, self).__init__(**kwargs)

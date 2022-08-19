@@ -8,8 +8,8 @@
 import logging
 import unittest
 
-from ansys.rep.client import APIError, ClientError
-from ansys.rep.client.jms import Client, RootApi
+from ansys.rep.client import APIError, Client, ClientError
+from ansys.rep.client.jms import JmsApi
 from tests.rep_test import REPTestCase
 
 log = logging.getLogger(__name__)
@@ -18,11 +18,11 @@ log = logging.getLogger(__name__)
 class ExceptionTest(REPTestCase):
     def test_server_error(self):
 
-        client = self.jms_client()
-        root_api = RootApi(client)
+        client = self.client()
+        jms_api = JmsApi(client)
         except_obj = None
         try:
-            root_api.get_projects(wrong_query_param="value")
+            jms_api.get_projects(wrong_query_param="value")
         except APIError as e:
             except_obj = e
             log.error(str(e))
@@ -48,9 +48,9 @@ class ExceptionTest(REPTestCase):
 
         except_obj = None
         try:
-            client = self.jms_client()
-            root_api = RootApi(client)
-            root_api.get_project(id="02q4bg9PVO2OvvhsmClb0E")
+            client = self.client()
+            jms_api = JmsApi(client)
+            jms_api.get_project(id="02q4bg9PVO2OvvhsmClb0E")
         except ClientError as e:
             except_obj = e
             log.error(str(e))

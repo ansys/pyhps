@@ -5,6 +5,7 @@
 #
 # Author(s): O.Koenig
 # ----------------------------------------------------------
+import json
 import logging
 
 from marshmallow.utils import missing
@@ -52,12 +53,6 @@ class Object(object):
             self.__class__.__name__,
             ",".join(["%s=%r" % (k, getattr(self, k)) for k in self.declared_fields()]),
         )
-        # return "%s(%s)" % (self.__class__.__name__,
-        # ",".join(["%s=%r" %(k,v) for k,v in self.__dict__.items()]) )
 
     def __str__(self):
-        return "%s(\n%s\n)" % (
-            self.__class__.__name__,
-            ",\n".join(["%s=%r" % (k, getattr(self, k)) for k in self.declared_fields()]),
-        )
-        # return "{%s\n}" % ("\n".join(["%s: %s" %(k,str(v)) for k,v in self.__dict__.items()]) )
+        return json.dumps(self.Meta.schema(many=False).dump(self), indent=2)

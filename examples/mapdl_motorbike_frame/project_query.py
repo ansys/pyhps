@@ -10,8 +10,8 @@ import logging
 import os
 from statistics import mean, stdev
 
-from ansys.rep.client import REPError
-from ansys.rep.client.jms import Client, ProjectApi, RootApi
+from ansys.rep.client import Client, REPError
+from ansys.rep.client.jms import JmsApi, ProjectApi
 
 log = logging.getLogger(__name__)
 
@@ -27,9 +27,9 @@ def print_value_stats(values, title):
 def query_stats(client, project_name):
     """Query statistics."""
     log.info("=== Query values and compoute statistics ===")
-    root_api = RootApi(client)
+    jms_api = JmsApi(client)
     log.info("=== Project")
-    project = root_api.get_project(name=project_name)
+    project = jms_api.get_project(name=project_name)
     log.info(f"ID: {project.id}")
     log.info(f"Created on: {project.creation_time}")
 
@@ -72,11 +72,11 @@ def download_files(client, project_name):
     out_path = os.path.join(os.path.dirname(__file__), "downloads")
     log.info(f"Downloading files to {out_path}")
 
-    root_api = RootApi(client)
-    project = root_api.get_project(name=project_name)
+    jms_api = JmsApi(client)
+    project = jms_api.get_project(name=project_name)
     # Todo: Fix needed in the backend:
     # Currently only the get_project() called with id returns all fields of project.
-    project = root_api.get_project(id=project.id)
+    project = jms_api.get_project(id=project.id)
 
     log.info(f"Project id: {project.id}")
     project_api = ProjectApi(client, project.id)

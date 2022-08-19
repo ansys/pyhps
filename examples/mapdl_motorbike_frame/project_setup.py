@@ -9,13 +9,13 @@ import logging
 import os
 import random
 
-from ansys.rep.client import REPError
+from ansys.rep.client import Client, REPError
 from ansys.rep.client import __external_version__ as ansys_version
 from ansys.rep.client.jms import (
-    Client,
     File,
     FitnessDefinition,
     FloatParameterDefinition,
+    JmsApi,
     Job,
     JobDefinition,
     Licensing,
@@ -23,7 +23,6 @@ from ansys.rep.client.jms import (
     Project,
     ProjectApi,
     ResourceRequirements,
-    RootApi,
     Software,
     StringParameterDefinition,
     SuccessCriteria,
@@ -45,10 +44,10 @@ def create_project(client, name, num_jobs=20, use_exec_script=False):
     for Design Optimization of a Tubular Steel Trellis Motorbike-Frame", 2003
     by U. M. Fasel, O. Koenig, M. Wintermantel and P. Ermanni.
     """
-    root_api = RootApi(client)
+    jms_api = JmsApi(client)
     log.debug("=== Project")
     proj = Project(name=name, priority=1, active=True)
-    proj = root_api.create_project(proj, replace=True)
+    proj = jms_api.create_project(proj, replace=True)
 
     project_api = ProjectApi(client, proj.id)
 

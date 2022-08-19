@@ -10,7 +10,7 @@ import unittest
 
 from marshmallow.utils import missing
 
-from ansys.rep.client.jms import ProjectApi, RootApi
+from ansys.rep.client.jms import JmsApi, ProjectApi
 from ansys.rep.client.jms.resource import JobDefinition, Project
 from ansys.rep.client.jms.resource.parameter_definition import (
     BoolParameterDefinition,
@@ -164,12 +164,12 @@ class ParameterDefitionTest(REPTestCase):
 
     def test_parameter_definition_integration(self):
 
-        client = self.jms_client()
+        client = self.client()
         proj_name = f"test_jms_ParameterDefinitionTest_{self.run_id}"
 
         proj = Project(name=proj_name, active=True)
-        root_api = RootApi(client)
-        proj = root_api.create_project(proj, replace=True)
+        jms_api = JmsApi(client)
+        proj = jms_api.create_project(proj, replace=True)
         project_api = ProjectApi(client, proj.id)
 
         ip = IntParameterDefinition(name="int_param", upper_limit=27)
@@ -201,7 +201,7 @@ class ParameterDefitionTest(REPTestCase):
         # self.assertEqual(job_def.parameter_definitions[2].lower_limit, 4.5)
 
         # Delete project
-        root_api.delete_project(proj)
+        jms_api.delete_project(proj)
 
 
 if __name__ == "__main__":

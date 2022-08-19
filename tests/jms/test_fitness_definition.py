@@ -10,7 +10,7 @@ import unittest
 
 from marshmallow.utils import missing
 
-from ansys.rep.client.jms import ProjectApi, RootApi
+from ansys.rep.client.jms import JmsApi, ProjectApi
 from ansys.rep.client.jms.resource import JobDefinition, Project
 from ansys.rep.client.jms.resource.fitness_definition import (
     FitnessDefinition,
@@ -123,12 +123,12 @@ class FitnessDefitionTest(REPTestCase):
 
     def test_fitness_definition_integration(self):
 
-        client = self.jms_client()
+        client = self.client()
         proj_name = f"test_dps_FitnessDefinitionTest_{self.run_id}"
 
         proj = Project(name=proj_name, active=True)
-        root_api = RootApi(client)
-        proj = root_api.create_project(proj, replace=True)
+        jms_api = JmsApi(client)
+        proj = jms_api.create_project(proj, replace=True)
         project_api = ProjectApi(client, proj.id)
 
         fd = FitnessDefinition(error_fitness=3.14)
@@ -164,7 +164,7 @@ class FitnessDefitionTest(REPTestCase):
         )
 
         # Delete project
-        root_api.delete_project(proj)
+        jms_api.delete_project(proj)
 
 
 if __name__ == "__main__":

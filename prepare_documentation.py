@@ -28,6 +28,7 @@ from ansys.rep.client.jms.resource import (
     JobDefinition,
     LicenseContext,
     Licensing,
+    Operation,
     ParameterMapping,
     Project,
     ProjectPermission,
@@ -84,6 +85,7 @@ def generate_openapi_specs():
         Licensing,
         TaskDefinitionTemplate,
         User,
+        Operation,
     ]:
 
         ma_plugin = MarshmallowPlugin()

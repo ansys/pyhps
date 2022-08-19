@@ -45,12 +45,14 @@ UserSchema.Meta.object_class = User
 
 
 def _admin_client(client):
+    raise NotImplementedError("KeycloakAdmin currently doesn't support a token auth workflow. TODO")
     keycloak_admin = KeycloakAdmin(
         server_url=client.auth_api_url,
-        username=client.username,
-        password=client.password,
+        username=None,
+        password=None,
         realm_name=client.realm,
-        client_secret_key=client.client_secret,
+        # refresh_token=client.refresh_token,
+        # access_token=client.access_token,
         client_id=client.client_id,
         verify=False,
     )

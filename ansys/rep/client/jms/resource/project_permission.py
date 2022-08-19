@@ -26,12 +26,12 @@ class ProjectPermission(Object):
 ProjectPermissionSchema.Meta.object_class = ProjectPermission
 
 
-def update_permissions(client, project_id, permissions):
+def update_permissions(client, project_api_url, permissions):
 
     if not permissions:
         return
 
-    url = f"{client.jms_api_url}/projects/{project_id}/permissions"
+    url = f"{project_api_url}/permissions"
 
     schema = ProjectPermissionSchema(many=True)
     serialized_data = schema.dump(permissions)
