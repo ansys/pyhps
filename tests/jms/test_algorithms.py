@@ -11,7 +11,7 @@ import unittest
 from marshmallow.utils import missing
 
 from ansys.rep.client.jms import JmsApi, ProjectApi
-from ansys.rep.client.jms.resource import Algorithm, Job, JobDefinition, Project, Selection
+from ansys.rep.client.jms.resource import Algorithm, Job, JobDefinition, JobSelection, Project
 from tests.rep_test import REPTestCase
 
 log = logging.getLogger(__name__)
@@ -40,14 +40,14 @@ class AlgorithmsTest(REPTestCase):
         jobs = project_api.create_jobs(jobs)
 
         # Create selections with some jobs
-        sels = [Selection(name="selection_0", jobs=[dp.id for dp in jobs[0:5]])]
-        sels.append(Selection(name="selection_1", jobs=[dp.id for dp in jobs[5:]]))
+        sels = [JobSelection(name="selection_0", jobs=[dp.id for dp in jobs[0:5]])]
+        sels.append(JobSelection(name="selection_1", jobs=[dp.id for dp in jobs[5:]]))
         for sel in sels:
             self.assertEqual(len(sel.jobs), 5)
             self.assertEqual(sel.algorithm_id, missing)
 
-        project_api.create_selections(sels)
-        sels = project_api.get_selections(fields="all")
+        project_api.create_job_selections(sels)
+        sels = project_api.get_job_selections(fields="all")
         for sel in sels:
             self.assertEqual(len(sel.jobs), 5)
             self.assertEqual(sel.algorithm_id, None)
@@ -71,10 +71,10 @@ class AlgorithmsTest(REPTestCase):
         # Link selections to algorithm
         for sel in sels:
             sel.algorithm_id = algo.id
-        sels = project_api.update_selections(sels)
+        sels = project_api.update_job_selections(sels)
 
         # Query algorithm selections
-        sels = project_api.get_selections(algorithm_id=algo.id)
+        sels = project_api.get_job_selections(algorithm_id=algo.id)
         for sel in sels:
             self.assertEqual(len(sel.jobs), 5)
 

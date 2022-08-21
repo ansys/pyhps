@@ -34,22 +34,22 @@ class JobSchema(ObjectSchema):
         allow_none=False,
         attribute="job_definition_id",
         referenced_class="JobDefinition",
-        description="""ID of the linked job_definition,
-                    see :class:`ansys.rep.client.jms.JobDefinition`.""",
+        description="ID of the linked job_definition, "
+        "see :class:`ansys.rep.client.jms.JobDefinition`.",
     )
 
     priority = fields.Integer(
         allow_none=True,
         default=0,
-        description="""Priority with which design points are evaluated. The default is 0,
-                       which is the highest priority. Assigning a higher value to a design
-                       point makes it a lower priority.""",
+        description="Priority with which design points are evaluated. The default is 0, "
+        "which is the highest priority. Assigning a higher value to a design "
+        "point makes it a lower priority.",
     )
     values = fields.Dict(
         keys=fields.String(),
         allow_none=True,
-        description="""Dictionary with (name,value) pairs for all parameters defined in the
-                    linked job_definition.""",
+        description="Dictionary with (name,value) pairs for all parameters defined in the "
+        "linked job_definition.",
     )
     fitness = fields.Float(allow_none=True, description="Fitness value computed.")
     fitness_term_values = fields.Dict(
@@ -64,8 +64,8 @@ class JobSchema(ObjectSchema):
     )
     executed_task_definition_level = fields.Integer(
         allow_none=True,
-        description="""Execution level of the last executed
-                        process step (-1 if none has been executed yet).""",
+        description="Execution level of the last executed "
+        "process step (-1 if none has been executed yet).",
     )
 
     creation_time = fields.DateTime(

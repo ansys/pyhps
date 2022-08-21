@@ -15,7 +15,7 @@ from ..resource.parameter_definition import ParameterDefinition
 from ..resource.parameter_mapping import ParameterMapping
 from ..resource.project import get_fs_url
 from ..resource.project_permission import ProjectPermission, update_permissions
-from ..resource.selection import Selection
+from ..resource.selection import JobSelection
 from ..resource.task import Task
 from ..resource.task_definition import TaskDefinition
 from .base import create_objects, delete_objects, get_objects, update_objects
@@ -248,16 +248,16 @@ class ProjectApi:
 
     ################################################################
     # Selections
-    def get_selections(self, as_objects=True, **query_params):
-        return self._get_objects(Selection, as_objects=as_objects, **query_params)
+    def get_job_selections(self, as_objects=True, **query_params):
+        return self._get_objects(JobSelection, as_objects=as_objects, **query_params)
 
-    def create_selections(self, selections, as_objects=True):
+    def create_job_selections(self, selections, as_objects=True):
         return self._create_objects(selections, as_objects=as_objects)
 
-    def update_selections(self, selections, as_objects=True):
+    def update_job_selections(self, selections, as_objects=True):
         return self._update_objects(selections, as_objects=as_objects)
 
-    def delete_selections(self, selections):
+    def delete_job_selections(self, selections):
         return self._delete_objects(selections)
 
     ################################################################

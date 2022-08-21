@@ -19,8 +19,8 @@ class FileSchema(ObjectSchema):
     name = fields.String(description="Name of the file resource.")
     type = fields.String(
         allow_none=True,
-        description="""Type of the file. This can be any string but using a correct media
-                       type for the given resource is advisable.""",
+        description="Type of the file. This can be any string but using a correct media "
+        "type for the given resource is advisable.",
     )
     storage_id = fields.String(
         allow_none=True, description="File's identifier in the (orthogonal) file storage system"
@@ -43,8 +43,8 @@ class FileSchema(ObjectSchema):
     format = fields.String(allow_none=True)
     evaluation_path = fields.String(
         allow_none=True,
-        description="""Relative path under which the file instance for a
-                       design point evaluation will be stored.""",
+        description="Relative path under which the file instance for a "
+        "design point evaluation will be stored.",
     )
 
     monitor = fields.Bool(
@@ -55,10 +55,10 @@ class FileSchema(ObjectSchema):
     )
     collect_interval = fields.Int(
         allow_none=True,
-        description="""Collect frequency for a file with collect=True.
-                       Min value limited by the evaluator's settings.
-                       0/None - let the evaluator decide,
-                       other value - interval in seconds""",
+        description="Collect frequency for a file with collect=True."
+        " Min value limited by the evaluator's settings."
+        " 0/None - let the evaluator decide,"
+        " other value - interval in seconds",
     )
 
     reference_id = IdReference(

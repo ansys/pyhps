@@ -26,13 +26,13 @@ from ansys.rep.client.jms.resource import (
     IntParameterDefinition,
     Job,
     JobDefinition,
+    JobSelection,
     LicenseContext,
     Licensing,
     Operation,
     ParameterMapping,
     Project,
     ProjectPermission,
-    Selection,
     StringParameterDefinition,
     SuccessCriteria,
     Task,
@@ -58,7 +58,7 @@ def custom_field_attributes(self, field, **kwargs):
 def generate_openapi_specs():
     """Auto-generate schemas documentation in JSON format."""
 
-    tgt_dir = os.path.join("doc", "schemas")
+    tgt_dir = os.path.join("doc", "source", "api", "schemas")
     if not os.path.exists(tgt_dir):
         os.makedirs(tgt_dir)
 
@@ -68,7 +68,7 @@ def generate_openapi_specs():
         LicenseContext,
         Job,
         Algorithm,
-        Selection,
+        JobSelection,
         JobDefinition,
         ParameterMapping,
         FloatParameterDefinition,
@@ -114,6 +114,10 @@ def generate_openapi_specs():
                 modified_prop_dict[new_key] = v
             else:
                 modified_prop_dict[k] = v
+
+            # User.is_admin is Function field which doesn't get the type
+            if k == "is_admin":
+                v["type"] = "boolean"
 
         with open(f"{os.path.join(tgt_dir, object_name)}.json", "w") as outfile:
             outfile.write(json.dumps({"properties": modified_prop_dict}, indent=4))

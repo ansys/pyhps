@@ -40,6 +40,11 @@ class JmsApi(object):
     def url(self):
         return f"{self.client.rep_url}/jms/api/v1"
 
+    def get_api_info(self):
+        """Return info like version, build date etc of the JMS API the client is connected to"""
+        r = self.client.session.get(self.url)
+        return r.json()
+
     ################################################################
     # Projects
     def get_projects(self, **query_params):

@@ -7,35 +7,34 @@
 # ----------------------------------------------------------
 import logging
 
-from ..schema.selection import SelectionSchema
+from ..schema.selection import JobSelectionSchema
 from .base import Object
 
 log = logging.getLogger(__name__)
 
 
-class Selection(Object):
-    """Selection resource.
+class JobSelection(Object):
+    """JobSelection resource.
 
     Args:
-        project (:class:`ansys.rep.client.jms.Project`, optional): Project object. Defaults to None.
         **kwargs: Arbitrary keyword arguments, see the Selection schema below.
 
     Example:
 
-        >>> sel = Selection(name="selection_0", jobs=[1,2,15,28,45])
+        >>> sel = JobSelection(name="selection_0", jobs=[1,2,15,28,45])
 
-    The Selection schema has the following fields:
+    The JobSelection schema has the following fields:
 
-    .. jsonschema:: schemas/Selection.json
+    .. jsonschema:: schemas/JobSelection.json
 
     """
 
     class Meta:
-        schema = SelectionSchema
-        rest_name = "selections"
+        schema = JobSelectionSchema
+        rest_name = "job_selections"
 
     def __init__(self, **kwargs):
-        super(Selection, self).__init__(**kwargs)
+        super(JobSelection, self).__init__(**kwargs)
 
 
-SelectionSchema.Meta.object_class = Selection
+JobSelectionSchema.Meta.object_class = JobSelection

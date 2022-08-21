@@ -19,8 +19,8 @@ class EvaluatorSchema(ObjectSchema):
         ordered = True
 
     host_id = fields.String(
-        description="""Unique identifier built from hardware information and
-                       selected job_definition details of an evaluator."""
+        description="Unique identifier built from hardware information and "
+        "selected job_definition details of an evaluator."
     )
     name = fields.String(allow_none=True, description="Name of the evaluator.")
     hostname = fields.String(
@@ -34,8 +34,8 @@ class EvaluatorSchema(ObjectSchema):
     )
     project_server_select = fields.Bool(
         allow_none=True,
-        description="""Whether the evaluator allows server-driven assignment of projects or uses
-                    it's own local settings.""",
+        description="Whether the evaluator allows server-driven assignment of projects or uses "
+        "it's own local settings.",
     )
     alive_update_interval = fields.Int(
         allow_none=True,
@@ -44,8 +44,8 @@ class EvaluatorSchema(ObjectSchema):
     update_time = fields.DateTime(
         allow_none=True,
         load_only=True,
-        description="""Last time the evaluator updated it's registration details.
-                    Used to check which evaluators are alive.""",
+        description="Last time the evaluator updated it's registration details. "
+        "Used to check which evaluators are alive.",
     )
     external_access_port = fields.Integer(
         allow_none=True, description="Port number for external access to the evaluator."
@@ -60,6 +60,6 @@ class EvaluatorSchema(ObjectSchema):
     )
     configuration = fields.Dict(
         allow_none=True,
-        description="""Details of the evaluator configuration,
-                       including hardware info and available applications.""",
+        description="Details of the evaluator configuration, "
+        "including hardware info and available applications.",
     )

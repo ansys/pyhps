@@ -13,7 +13,7 @@ Here we show you how to modify the project in order to pick up the Mechanical ``
 To begin with, you need to copy the ``solve.out`` file to the directory of the project. 
 To this end, we create two simple APDL command snippets as shown in the screenshot (the same is done for the radial local case).
 
-.. image:: _static/bicycle_command_snippet.png
+.. image:: ../_static/bicycle_command_snippet.png
     :alt: bicycle project command snippet
 
 Then, once the project is sent to the DCS server via Workbench, we can add the ``solve.out`` files to the list of collected output files using the Python client.

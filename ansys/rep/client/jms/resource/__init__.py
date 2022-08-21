@@ -23,7 +23,7 @@ from .parameter_definition import (
 from .parameter_mapping import ParameterMapping
 from .project import Project
 from .project_permission import ProjectPermission
-from .selection import Selection
+from .selection import JobSelection
 from .task import Task
 from .task_definition import (
     Licensing,
