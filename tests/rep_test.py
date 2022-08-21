@@ -10,7 +10,7 @@ import logging
 import os
 import unittest
 
-from ansys.rep.client.jms import Client
+from ansys.rep.client import Client
 
 
 class REPTestCase(unittest.TestCase):
@@ -48,5 +48,5 @@ class REPTestCase(unittest.TestCase):
         # self.logger.removeHandler(self._stream_handler)
         pass
 
-    def jms_client(self):
+    def client(self):
         return Client(self.rep_url, self.username, self.password)

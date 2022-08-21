@@ -3,38 +3,40 @@
 Quickstart
 ===============
 
-This guide will walk you through the basics of interacting with a DCS server. More elaborated examples are available in the :ref:`Examples <examples>` chapter, 
+This guide will walk you through the basics of interacting with a REP server. More elaborated examples are available in the :ref:`Examples <examples>` chapter, 
 while detailed documentation can be found in the :ref:`Code Documentation <api_reference>`.
 
 To reproduce the code samples provided below, you will need:
 
-- A running DCS server, see the :ansys_dcs_help:`DPS Startup <dc_server_startup>` page in the ANSYS Help for detailed instructions.
-- A Python shell with ``ansys-dcs-client`` installed. If you haven't installed it yet, please refer to the :ref:`Installation <installation>` guide.
+- A running REP server, see TODO :strike:`the DPS Startup page in the ANSYS Help for detailed instructions`.
+- A Python shell with ``ansys-rep-client`` installed. If you haven't installed it yet, please refer to the :ref:`Installation <installation>` guide.
 
 
-Connect to a DCS Server 
+Connect to a REP Server 
 --------------------------
 
-Let's start by connecting to a DCS server running on the localhost with default username and password.
+Let's start by connecting to a REP server running on the localhost with default username and password.
 
 .. code-block:: python
 
-    from ansys.rep.client.jms import Client
+    from ansys.rep.client import Client
+    from ansys.rep.client.jms import JmsApi
     
-    client = Client(rep_url="https://127.0.0.1/dcs", username="repadmin", password="repadmin")  
+    client = Client(rep_url="https://localhost:8443/rep", username="repadmin", password="repadmin")  
 
-    # check which DCS version the server is running    
-    print(client.get_api_info()['build']['external_version'])
+    # check which JMS version the server is running    
+    jms_api = JmsApi(client)
+    print(jms_api.get_api_info()['build']['external_version'])
 
     # get all projects
-    projects = client.get_projects()
+    projects = jms_api.get_projects()
 
 Query projects statistics to find out how many design points are currently running
 
 .. code-block:: python
 
-    projects = client.get_projects(statistics=True)
-    num_running_dps = sum(p.statistics["eval_status"]["running"] for p in projects)
+    projects = jms_api.get_projects(statistics=True)
+    num_running_jobs = sum(p.statistics["eval_status"]["running"] for p in projects)
 
 Create a demo project: the MAPDL motorbike frame example
 ---------------------------------------------------------
@@ -44,7 +46,7 @@ of a tubular steel trellis motorbike-frame.
 
 .. only:: builder_html
 
-     The project setup script as well as the data files can be downloaded here :download:`MAPDL Motorbike Frame Project <../mapdl_motorbike_frame.zip>`.
+     The project setup script as well as the data files can be downloaded here :download:`MAPDL Motorbike Frame Project <../../mapdl_motorbike_frame.zip>`.
      To create the project you only need to run the `project_setup` script:
 
 ::
@@ -52,8 +54,8 @@ of a tubular steel trellis motorbike-frame.
     $ python path_to_download_folder\mapdl_motorbike_frame\project_setup.py
 
 .. note::
-    By default, the script tries to connect to the DCS server running on the localhost with default username and password.
-    If your DCS server is hosted at a different URL or you want to specify different credentials,
+    By default, the script tries to connect to the REP server running on the localhost with default username and password.
+    If your REP server is hosted at a different URL or you want to specify different credentials,
     please adjust the script before running it. 
 
 
@@ -66,7 +68,7 @@ Most ``get`` functions support filtering by query parameters.
 
 .. code-block:: python
     
-    project = client.get_project(id="mapdl_motorbike_frame") 
+    project = jms_api.get_project(id="mapdl_motorbike_frame") 
 
     # Get all design points with all fields
     jobs = project.get_jobs()
@@ -225,20 +227,22 @@ Users with admin rights (such as the default ``repadmin`` user) can create new u
 
 .. code-block:: python
 
-    from ansys.rep.client.auth import Client, User
+    from ansys.rep.client import Client
+    from ansys.rep.client.auth import AuthApi, User
     
-    auth_client = Client(rep_url="https://127.0.0.1/dcs/", username="repadmin", password="repadmin")
+    client = Client(rep_url="https://127.0.0.1/dcs/", username="repadmin", password="repadmin")
+    auth_api = AuthApi(client)
 
     # modify the default password of the repadmin user
-    default_user = auth_client.get_users()[0]
+    default_user = auth_api.get_users()[0]
     default_user.password = 'new_password'
-    auth_client.update_user(default_user)
+    auth_api.update_user(default_user)
 
     # create a new non-admin user
     new_user = User(username='test_user', password='dummy', 
                     email='test_user@test.com', fullname='Test User', 
                     is_admin=False)
-    new_user = auth_client.create_user(new_user)
+    new_user = auth_api.create_user(new_user)
 
 
 Exception handling

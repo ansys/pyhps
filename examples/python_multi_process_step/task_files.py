@@ -68,12 +68,12 @@ def update_eval_script(task):
     return file.name
 
 
-def update_task_files(proj, num_jobs, write_images):
+def update_task_files(project_api, num_jobs, write_images):
 
     log.debug("=== Update Task files ===")
     cwd = os.path.dirname(__file__)
 
-    config = proj.get_job_definitions()[0]
+    config = project_api.get_job_definitions()[0]
     jobs = config.get_jobs(limit=num_jobs)
 
     for dp in jobs:
@@ -139,7 +139,7 @@ def update_task_files(proj, num_jobs, write_images):
                     )
                 )
 
-            files = proj.create_files(files)
+            files = project_api.create_files(files)
             file_ids = {f.name: f.id for f in files}
 
             output_file_ids = [file_ids[new_out_name]]
@@ -149,7 +149,7 @@ def update_task_files(proj, num_jobs, write_images):
             task.output_file_ids = output_file_ids
             task.input_file_ids = [file_ids[new_input_name], file_ids[new_eval_name]]
 
-        proj.update_tasks(tasks)
+        project_api.update_tasks(tasks)
 
-    proj.update_jobs(jobs)
+    project_api.update_jobs(jobs)
     log.info("Updated {} design points".format(len(jobs)))

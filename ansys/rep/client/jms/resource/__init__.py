@@ -10,8 +10,10 @@ from .algorithm import Algorithm
 from .evaluator import Evaluator
 from .file import File
 from .fitness_definition import FitnessDefinition, FitnessTermDefinition
-from .job_definition import Job, JobDefinition
+from .job import Job
+from .job_definition import JobDefinition
 from .license_context import LicenseContext
+from .operation import Operation
 from .parameter_definition import (
     BoolParameterDefinition,
     FloatParameterDefinition,
@@ -21,7 +23,7 @@ from .parameter_definition import (
 from .parameter_mapping import ParameterMapping
 from .project import Project
 from .project_permission import ProjectPermission
-from .selection import Selection
+from .selection import JobSelection
 from .task import Task
 from .task_definition import (
     Licensing,

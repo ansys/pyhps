@@ -12,7 +12,7 @@ from .base import ObjectSchema
 from .object_reference import IdReference, IdReferenceList
 
 
-class SelectionSchema(ObjectSchema):
+class JobSelectionSchema(ObjectSchema):
     class Meta(ObjectSchema.Meta):
         pass
 
@@ -31,7 +31,7 @@ class SelectionSchema(ObjectSchema):
         allow_none=True,
         attribute="algorithm_id",
         referenced_class="DesignExplorationAlgorithm",
-        description="""ID of the :class:`ansys.rep.client.jms.Algorithm`
-                    the selection belongs to (optional).""",
+        description="ID of the :class:`ansys.rep.client.jms.Algorithm` "
+        "the selection belongs to (optional).",
     )
     object_ids = IdReferenceList("Job", attribute="jobs", description="List of design point IDs.")

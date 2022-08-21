@@ -22,8 +22,8 @@ class JobDefinitionSchema(ObjectSchema):
 
     name = fields.String(allow_none=True, description="Name of the job_definition")
     active = fields.Boolean(
-        description="""Defines whether this is the active job_definition in the
-            project where evaluators will evaluate pending design points"""
+        description="Defines whether this is the active job_definition in the "
+        "project where evaluators will evaluate pending design points"
     )
     creation_time = fields.DateTime(
         allow_none=True,

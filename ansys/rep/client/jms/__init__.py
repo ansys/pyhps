@@ -6,7 +6,7 @@
 # Author(s): O.Koenig
 # ----------------------------------------------------------
 
-from .client import Client
+from .api import JmsApi, ProjectApi
 from .resource import (
     Algorithm,
     BoolParameterDefinition,
@@ -18,12 +18,12 @@ from .resource import (
     IntParameterDefinition,
     Job,
     JobDefinition,
+    JobSelection,
     Licensing,
     ParameterMapping,
     Project,
     ProjectPermission,
     ResourceRequirements,
-    Selection,
     Software,
     StringParameterDefinition,
     SuccessCriteria,

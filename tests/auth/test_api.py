@@ -7,7 +7,8 @@
 # ----------------------------------------------------------
 import logging
 
-from ansys.rep.client.auth import Client, User
+from ansys.rep.client import Client
+from ansys.rep.client.auth import AuthApi, User
 from tests.rep_test import REPTestCase
 
 log = logging.getLogger(__name__)
@@ -16,8 +17,8 @@ log = logging.getLogger(__name__)
 class AuthClientTest(REPTestCase):
     def test_auth_client(self):
 
-        cl = Client(self.rep_url, username=self.username, password=self.password)
-        users = cl.get_users()
+        api = AuthApi(Client(self.rep_url, username=self.username, password=self.password))
+        users = api.get_users()
 
         # we run the test only if self.username is an admin user
         for user in users:
@@ -32,7 +33,7 @@ class AuthClientTest(REPTestCase):
             first_name="Test",
             last_name="User",
         )
-        new_user = cl.create_user(new_user)
+        new_user = api.create_user(new_user)
 
         self.assertEqual(new_user.username, username)
         self.assertEqual(new_user.first_name, "Test")
@@ -41,15 +42,15 @@ class AuthClientTest(REPTestCase):
 
         new_user.email = "update_email@test.com"
         new_user.last_name = "Smith"
-        cl.update_user(new_user)
+        api.update_user(new_user)
 
         self.assertEqual(new_user.username, username)
         self.assertEqual(new_user.first_name, "Test")
         self.assertEqual(new_user.last_name, "Smith")
         self.assertEqual(new_user.email, "update_email@test.com")
 
-        cl.delete_user(new_user)
+        api.delete_user(new_user)
 
-        users = cl.get_users()
+        users = api.get_users()
         usernames = [x.username for x in users]
         self.assertNotIn(new_user.username, usernames)

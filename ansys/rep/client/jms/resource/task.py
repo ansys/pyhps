@@ -17,7 +17,6 @@ class Task(Object):
     """Task resource.
 
     Args:
-        project (:class:`ansys.rep.client.jms.Project`, optional): Project object. Defaults to None.
         **kwargs: Arbitrary keyword arguments, see the Task schema below.
 
     The Task schema has the following fields:
@@ -30,8 +29,7 @@ class Task(Object):
         schema = TaskSchema
         rest_name = "tasks"
 
-    def __init__(self, project=None, **kwargs):
-        self.project = project
+    def __init__(self, **kwargs):
         super(Task, self).__init__(**kwargs)
 
 

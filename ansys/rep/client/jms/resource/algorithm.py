@@ -8,9 +8,7 @@
 import logging
 
 from ..schema.algorithm import AlgorithmSchema
-from .base import Object, get_objects
-from .job import Job
-from .selection import get_selections
+from .base import Object
 
 log = logging.getLogger(__name__)
 
@@ -19,7 +17,6 @@ class Algorithm(Object):
     """Algorithm resource.
 
     Args:
-        project (:class:`ansys.rep.client.jms.Project`, optional): Project object. Defaults to None.
         **kwargs: Arbitrary keyword arguments, see the Algorithm schema below.
 
     Example:
@@ -38,29 +35,8 @@ class Algorithm(Object):
         schema = AlgorithmSchema
         rest_name = "algorithms"
 
-    def __init__(self, project=None, **kwargs):
-        self.project = project
+    def __init__(self, **kwargs):
         super(Algorithm, self).__init__(**kwargs)
-
-    def get_jobs(self, as_objects=True, **query_params):
-        """Return a list of design points, optionally filtered by given query parameters
-
-        Returns:
-            List of :class:`ansys.rep.client.jms.Job` or list of dict if as_objects is False
-        """
-        return get_objects(
-            self.project, Job, as_objects=as_objects, algorithm_id=self.id, **query_params
-        )
-
-    def get_selections(self, as_objects=True, **query_params):
-        """Return a list of selections, optionally filtered by given query parameters
-
-        Returns:
-            List of :class:`ansys.rep.client.jms.Selection` or list of dict if as_objects is False
-        """
-        return get_selections(
-            self.project, as_objects=as_objects, algorithm_id=self.id, **query_params
-        )
 
 
 AlgorithmSchema.Meta.object_class = Algorithm

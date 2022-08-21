@@ -5,6 +5,6 @@
 #
 # Author(s): F.Negri O.Koenig
 # ----------------------------------------------------------
+from .api import AuthApi
 from .authenticate import authenticate
-from .client import Client
 from .resource import User

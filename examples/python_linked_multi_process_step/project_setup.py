@@ -8,15 +8,16 @@ import logging
 import os
 import random
 
-from ansys.rep.client import REPError
+from ansys.rep.client import Client, REPError
 from ansys.rep.client.jms import (
-    Client,
     File,
     FloatParameterDefinition,
+    JmsApi,
     Job,
     JobDefinition,
     ParameterMapping,
     Project,
+    ProjectApi,
     ResourceRequirements,
     Software,
     SuccessCriteria,
@@ -35,7 +36,9 @@ def main(client, num_task_definitions, num_jobs, start, inactive):
         priority=1,
         active=not inactive,
     )
-    proj = client.create_project(proj, replace=True)
+    jms_api = JmsApi(client)
+    proj = jms_api.create_project(proj, replace=True)
+    project_api = ProjectApi(client, proj.id)
 
     log.debug("=== Files")
     cwd = os.path.dirname(__file__)
@@ -70,7 +73,7 @@ def main(client, num_task_definitions, num_jobs, start, inactive):
             )
         )
 
-    files = proj.create_files(files)
+    files = project_api.create_files(files)
     file_ids = {f.name: f.id for f in files}
 
     log.debug("=== JobDefinition with simulation workflow and parameters")
@@ -83,7 +86,7 @@ def main(client, num_task_definitions, num_jobs, start, inactive):
     params.extend(
         [FloatParameterDefinition(name=f"product{i}") for i in range(num_task_definitions)]
     )
-    params = proj.create_parameter_definitions(params)
+    params = project_api.create_parameter_definitions(params)
     job_def.parameter_definition_ids = [o.id for o in params]
 
     param_mappings = [
@@ -105,7 +108,7 @@ def main(client, num_task_definitions, num_jobs, start, inactive):
             for i in range(num_task_definitions)
         ]
     )
-    param_mappings = proj.create_parameter_mappings(param_mappings)
+    param_mappings = project_api.create_parameter_mappings(param_mappings)
     job_def.parameter_mapping_ids = [o.id for o in param_mappings]
 
     log.debug("=== Process Steps")
@@ -145,14 +148,14 @@ def main(client, num_task_definitions, num_jobs, start, inactive):
                 success_criteria=SuccessCriteria(return_code=0, require_all_output_files=True),
             )
         )
-    task_defs = proj.create_task_definitions(task_defs)
+    task_defs = project_api.create_task_definitions(task_defs)
     job_def.task_definition_ids = [o.id for o in task_defs]
 
     # Create job_definition in project
-    job_def = proj.create_job_definitions([job_def])[0]
+    job_def = project_api.create_job_definitions([job_def])[0]
 
     # Refresh parameter definitions
-    params = proj.get_parameter_definitions(job_def.parameter_definition_ids)
+    params = project_api.get_parameter_definitions(job_def.parameter_definition_ids)
 
     log.debug("=== Design points")
     jobs = []
@@ -164,8 +167,10 @@ def main(client, num_task_definitions, num_jobs, start, inactive):
                     values[p.name] = float(
                         int(p.lower_limit + random.random() * (p.upper_limit - p.lower_limit))
                     )
-        jobs.append(Job(name=f"Job.{i}", values=values, eval_status="pending"))
-    jobs = job_def.create_jobs(jobs)
+        jobs.append(
+            Job(name=f"Job.{i}", values=values, eval_status="pending", job_definition_id=job_def.id)
+        )
+    jobs = project_api.create_jobs(jobs)
 
     log.info(f"Created project '{proj.name}', ID='{proj.id}'")
 

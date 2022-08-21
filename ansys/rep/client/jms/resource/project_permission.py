@@ -19,22 +19,21 @@ class ProjectPermission(Object):
         schema = ProjectPermissionSchema
         rest_name = "permissions"
 
-    def __init__(self, project=None, **kwargs):
-        self.project = project
+    def __init__(self, **kwargs):
         super(ProjectPermission, self).__init__(**kwargs)
 
 
 ProjectPermissionSchema.Meta.object_class = ProjectPermission
 
 
-def update_permissions(project, permissions):
+def update_permissions(client, project_api_url, permissions):
 
     if not permissions:
         return
 
-    url = f"{project.client.jms_api_url}/projects/{project.id}/permissions"
+    url = f"{project_api_url}/permissions"
 
     schema = ProjectPermissionSchema(many=True)
     serialized_data = schema.dump(permissions)
     json_data = json.dumps({"permissions": serialized_data})
-    r = project.client.session.put(f"{url}", data=json_data)
+    r = client.session.put(f"{url}", data=json_data)

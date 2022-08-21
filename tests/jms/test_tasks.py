@@ -13,6 +13,7 @@ import uuid
 
 from examples.mapdl_motorbike_frame.project_setup import create_project
 
+from ansys.rep.client.jms import JmsApi, ProjectApi
 from ansys.rep.client.jms.resource import Job, JobDefinition, Project, TaskDefinition
 from ansys.rep.client.jms.schema.task import TaskSchema
 from tests.rep_test import REPTestCase
@@ -99,29 +100,33 @@ class TasksTest(REPTestCase):
         # In case, you can create such project running the script
         # examples/mapdl_motorbike_frame/project_setup.py
 
-        client = self.jms_client()
+        client = self.client()
         proj_name = "mapdl_motorbike_frame"
 
-        project = client.get_projects(name=proj_name, sort="-creation_time")[0]
-        tasks = project.get_tasks(limit=5)
+        jms_api = JmsApi(client)
+        project = jms_api.get_projects(name=proj_name, sort="-creation_time")[0]
+        project_api = ProjectApi(client, project.id)
+        tasks = project_api.get_tasks(limit=5)
         self.assertEqual(len(tasks), 5)
 
-        jobs = project.get_jobs(limit=5)
+        jobs = project_api.get_jobs(limit=5)
         for job in jobs:
-            tasks = job.get_tasks()
+            tasks = project_api.get_tasks(job_id=job.id)
             self.assertEqual(tasks[0].job_id, job.id)
 
     def test_job_sync(self):
 
         # create base project with 1 process step and 3 design points
         num_jobs = 3
-        client = self.jms_client()
+        client = self.client()
+        jms_api = JmsApi(client)
         proj_name = f"test_desing_point_sync_{uuid.uuid4().hex[:8]}"
 
         project = Project(
             name=proj_name, active=False, priority=10, display_name="test_desing_point_sync"
         )
-        project = client.create_project(project, replace=True)
+        project = jms_api.create_project(project, replace=True)
+        project_api = ProjectApi(client, project.id)
 
         task_def_1 = TaskDefinition(
             name="Task.1",
@@ -132,19 +137,19 @@ class TasksTest(REPTestCase):
             execution_level=0,
             num_trials=1,
         )
-        task_def_1 = project.create_task_definitions([task_def_1])[0]
+        task_def_1 = project_api.create_task_definitions([task_def_1])[0]
         job_def = JobDefinition(
             name="JobDefinition.1", active=True, task_definition_ids=[task_def_1.id]
         )
-        job_def = project.create_job_definitions([job_def])[0]
+        job_def = project_api.create_job_definitions([job_def])[0]
 
         jobs = []
         for i in range(num_jobs):
-            jobs.append(Job(name=f"Job.{i}", eval_status="pending"))
-        jobs = job_def.create_jobs(jobs)
+            jobs.append(Job(name=f"Job.{i}", eval_status="pending", job_definition_id=job_def.id))
+        jobs = project_api.create_jobs(jobs)
 
         for job in jobs:
-            tasks = job.get_tasks()
+            tasks = project_api.get_tasks(job_id=job.id)
             self.assertEqual(len(tasks), 1)
             self.assertEqual(tasks[0].eval_status, "pending")
 
@@ -158,33 +163,32 @@ class TasksTest(REPTestCase):
             execution_level=1,
             num_trials=1,
         )
-        task_def_2 = project.create_task_definitions([task_def_2])[0]
-        job_def = project.get_job_definitions()[0]
+        task_def_2 = project_api.create_task_definitions([task_def_2])[0]
+        job_def = project_api.get_job_definitions()[0]
         job_def.task_definition_ids.append(task_def_2.id)
-        job_def = project.update_job_definitions([job_def])[0]
+        job_def = project_api.update_job_definitions([job_def])[0]
 
         # sync design points individually
-        jobs = project.get_jobs()
-        for job in jobs:
-            job._sync()
+        jobs = project_api.get_jobs()
+        project_api._sync_jobs(jobs)
 
         # verify that tasks were added and they're inactive
         for job in jobs:
-            tasks = job.get_tasks()
+            tasks = project_api.get_tasks(job_id=job.id)
             self.assertEqual(len(tasks), 2)
             self.assertEqual(tasks[0].eval_status, "pending")
             self.assertEqual(tasks[0].task_definition_snapshot.name, "Task.1")
             self.assertEqual(tasks[1].eval_status, "inactive")
 
         # set new tasks to pending
-        tasks = project.get_tasks(eval_status="inactive")
+        tasks = project_api.get_tasks(eval_status="inactive")
         for task in tasks:
             task.eval_status = "pending"
-        project.update_tasks(tasks)
+        project_api.update_tasks(tasks)
 
         # verify that tasks are pending and that task_definition_snapshots were created
         for job in jobs:
-            tasks = job.get_tasks()
+            tasks = project_api.get_tasks(job_id=job.id)
             self.assertEqual(len(tasks), 2)
             self.assertEqual(tasks[0].eval_status, "pending")
             self.assertEqual(tasks[0].task_definition_snapshot.name, "Task.1")
@@ -201,31 +205,31 @@ class TasksTest(REPTestCase):
             execution_level=0,
             num_trials=1,
         )
-        task_def_3 = project.create_task_definitions([task_def_3])[0]
+        task_def_3 = project_api.create_task_definitions([task_def_3])[0]
         job_def.task_definition_ids.append(task_def_3.id)
-        job_def = project.update_job_definitions([job_def])[0]
+        job_def = project_api.update_job_definitions([job_def])[0]
 
         # sync the first 2 design points in bulk
-        project._sync_jobs(jobs[:2])
+        project_api._sync_jobs(jobs[:2])
 
         # verify that tasks were added and they're inactive
         for job in jobs[:2]:
-            tasks = job.get_tasks()
+            tasks = project_api.get_tasks(job_id=job.id)
             self.assertEqual(len(tasks), 3)
             self.assertEqual(tasks[0].eval_status, "pending")
             self.assertEqual(tasks[1].eval_status, "pending")
             self.assertEqual(tasks[2].eval_status, "inactive")
 
         # verify that the third task wasn't added for DP2
-        tasks = jobs[2].get_tasks()
+        tasks = project_api.get_tasks(job_id=jobs[2].id)
         self.assertEqual(len(tasks), 2)
         self.assertEqual(tasks[0].eval_status, "pending")
         self.assertEqual(tasks[1].eval_status, "pending")
 
-        client.delete_project(project)
+        jms_api.delete_project(project)
 
-    def wait_for_evaluation_of_job(self, project, job_id, max_eval_time):
-        job = project.get_jobs(id=job_id)[0]
+    def wait_for_evaluation_of_job(self, project_api, job_id, max_eval_time):
+        job = project_api.get_jobs(id=job_id)[0]
         t1 = datetime.datetime.now()
         dt = 0.0
         while (
@@ -234,7 +238,7 @@ class TasksTest(REPTestCase):
         ):
             time.sleep(2)
             log.info(f"   Waiting for job '{job.name}' to complete ... ")
-            job = project.get_jobs(id=job_id)[0]
+            job = project_api.get_jobs(id=job_id)[0]
             dt = (datetime.datetime.now() - t1).total_seconds()
 
         return job
@@ -243,39 +247,40 @@ class TasksTest(REPTestCase):
         # verity that the process step snapshot of an evaluated task in not modified
         # on job:sync
 
-        client = self.jms_client()
+        client = self.client()
         proj_name = f"test_sync_task_definition_snapshot_{uuid.uuid4().hex[:8]}"
 
         project = create_project(client=client, name=proj_name, num_jobs=1)
+        project_api = ProjectApi(client, project.id)
 
-        job = project.get_jobs()[0]
-        tasks = job.get_tasks()
+        job = project_api.get_jobs()[0]
+        tasks = project_api.get_tasks(job_id=job.id)
         self.assertEqual(len(tasks), 1)
         self.assertEqual(
             tasks[0].task_definition_snapshot.software_requirements[0].name, "ANSYS Mechanical APDL"
         )
 
-        job_def = project.get_job_definitions(id=job.job_definition_id)[0]
-        task_def = project.get_task_definitions(id=job_def.task_definition_ids[0])[0]
+        job_def = project_api.get_job_definitions(id=job.job_definition_id)[0]
+        task_def = project_api.get_task_definitions(id=job_def.task_definition_ids[0])[0]
         max_eval_time = task_def.max_execution_time * 4
-        job = self.wait_for_evaluation_of_job(project, job.id, max_eval_time)
+        job = self.wait_for_evaluation_of_job(project_api, job.id, max_eval_time)
         self.assertEqual(job.eval_status, "evaluated")
 
         # modify application of the process step
-        task_def = project.get_task_definitions(id=job_def.task_definition_ids[0])[0]
+        task_def = project_api.get_task_definitions(id=job_def.task_definition_ids[0])[0]
         task_def.software_requirements[0].name = "NonExistingApp"
-        task_def = project.update_task_definitions([task_def])[0]
+        task_def = project_api.update_task_definitions([task_def])[0]
 
         # the application in the task.task_definition_snapshot should not be modified
-        job._sync()
-        tasks = job.get_tasks()
+        project_api._sync_jobs([job])
+        tasks = project_api.get_tasks(job_id=job.id)
         self.assertEqual(len(tasks), 1)
         self.assertEqual(tasks[0].eval_status, "evaluated")
         self.assertEqual(
             tasks[0].task_definition_snapshot.software_requirements[0].name, "ANSYS Mechanical APDL"
         )
 
-        client.delete_project(project)
+        JmsApi(client).delete_project(project)
 
 
 if __name__ == "__main__":

@@ -63,8 +63,8 @@ class TaskSchema(ObjectSchema):
     task_definition_snapshot = fields.Nested(
         TaskDefinitionSchema,
         allow_none=True,
-        description="""Snapshot of :class:`ansys.rep.client.jms.TaskDefinition`
-                       created when task status changes to prolog, before evaluation.""",
+        description="Snapshot of :class:`ansys.rep.client.jms.TaskDefinition` "
+        "created when task status changes to prolog, before evaluation.",
     )
 
     job_id = IdReference(
