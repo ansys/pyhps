@@ -26,6 +26,7 @@
 
     <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinxnotes-strike.css" />
     <link rel="stylesheet" type="text/css" href="_static/css/ansys_sphinx_theme.css" />
 
   <!-- Pre-loaded scripts that we'll load fully later -->
@@ -100,19 +101,19 @@
 </li>
 
 <li class="toctree-l1 nav-item">
- <a class="reference internal nav-link" href="examples.html">
+ <a class="reference internal nav-link" href="examples/index.html">
   Examples
  </a>
 </li>
 
 <li class="toctree-l1 nav-item">
- <a class="reference internal nav-link" href="api_reference.html">
+ <a class="reference internal nav-link" href="api/index.html">
   Code Documentation
  </a>
 </li>
 
 <li class="toctree-l1 nav-item">
- <a class="reference internal nav-link" href="changelog.html">
+ <a class="reference internal nav-link" href="changelog/index.html">
   Changelog
  </a>
 </li>
@@ -234,24 +235,26 @@
 <h2 id="A">A</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="dps.html#ansys.rep.client.jms.FitnessDefinition.add_fitness_term">add_fitness_term() (ansys.rep.client.jms.FitnessDefinition method)</a>
+      <li><a href="api/jms.html#ansys.rep.client.jms.FitnessDefinition.add_fitness_term">add_fitness_term() (ansys.rep.client.jms.FitnessDefinition method)</a>
 </li>
-      <li><a href="dps.html#ansys.rep.client.jms.Algorithm">Algorithm (class in ansys.rep.client.jms)</a>
+      <li><a href="api/jms.html#ansys.rep.client.jms.Algorithm">Algorithm (class in ansys.rep.client.jms)</a>
 </li>
       <li>
     ansys.rep.client.connection
 
       <ul>
-        <li><a href="dps.html#module-ansys.rep.client.connection">module</a>
+        <li><a href="api/jms.html#module-ansys.rep.client.connection">module</a>
 </li>
       </ul></li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="exceptions.html#ansys.rep.client.APIError">APIError</a>
+      <li><a href="api/exceptions.html#ansys.rep.client.APIError">APIError</a>
 </li>
-      <li><a href="dps.html#ansys.rep.client.jms.Client.archive_project">archive_project() (ansys.rep.client.jms.Client method)</a>
+      <li><a href="api/jms.html#ansys.rep.client.jms.ProjectApi.archive_project">archive_project() (ansys.rep.client.jms.ProjectApi method)</a>
 </li>
-      <li><a href="auth.html#ansys.rep.client.auth.authenticate">authenticate() (in module ansys.rep.client.auth)</a>
+      <li><a href="api/auth.html#ansys.rep.client.auth.AuthApi">AuthApi (class in ansys.rep.client.auth)</a>
+</li>
+      <li><a href="api/auth.html#ansys.rep.client.auth.authenticate">authenticate() (in module ansys.rep.client.auth)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -259,7 +262,7 @@
 <h2 id="B">B</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="dps.html#ansys.rep.client.jms.BoolParameterDefinition">BoolParameterDefinition (class in ansys.rep.client.jms)</a>
+      <li><a href="api/jms.html#ansys.rep.client.jms.BoolParameterDefinition">BoolParameterDefinition (class in ansys.rep.client.jms)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -267,55 +270,41 @@
 <h2 id="C">C</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="auth.html#ansys.rep.client.auth.Client">Client (class in ansys.rep.client.auth)</a>
-
-      <ul>
-        <li><a href="dps.html#ansys.rep.client.jms.Client">(class in ansys.rep.client.jms)</a>
+      <li><a href="api/jms.html#ansys.rep.client.Client">Client (class in ansys.rep.client)</a>
 </li>
-      </ul></li>
-      <li><a href="exceptions.html#ansys.rep.client.ClientError">ClientError</a>
+      <li><a href="api/exceptions.html#ansys.rep.client.ClientError">ClientError</a>
 </li>
-      <li><a href="dps.html#ansys.rep.client.jms.Project.copy">copy() (ansys.rep.client.jms.Project method)</a>
+      <li><a href="api/jms.html#ansys.rep.client.jms.ProjectApi.copy_jobs">copy_jobs() (ansys.rep.client.jms.ProjectApi method)</a>
 </li>
-      <li><a href="dps.html#ansys.rep.client.jms.JobDefinition.copy_jobs">copy_jobs() (ansys.rep.client.jms.JobDefinition method)</a>
-
-      <ul>
-        <li><a href="dps.html#ansys.rep.client.jms.Project.copy_jobs">(ansys.rep.client.jms.Project method)</a>
+      <li><a href="api/jms.html#ansys.rep.client.jms.ProjectApi.copy_project">copy_project() (ansys.rep.client.jms.ProjectApi method)</a>
 </li>
-      </ul></li>
-      <li><a href="dps.html#ansys.rep.client.jms.Client.copy_project">copy_project() (ansys.rep.client.jms.Client method)</a>
+      <li><a href="api/jms.html#ansys.rep.client.jms.ProjectApi.create_algorithms">create_algorithms() (ansys.rep.client.jms.ProjectApi method)</a>
 </li>
-      <li><a href="dps.html#ansys.rep.client.jms.Project.create_algorithms">create_algorithms() (ansys.rep.client.jms.Project method)</a>
+      <li><a href="api/jms.html#ansys.rep.client.jms.ProjectApi.create_files">create_files() (ansys.rep.client.jms.ProjectApi method)</a>
 </li>
-      <li><a href="dps.html#ansys.rep.client.jms.Project.create_files">create_files() (ansys.rep.client.jms.Project method)</a>
+      <li><a href="api/jms.html#ansys.rep.client.jms.ProjectApi.create_job_definitions">create_job_definitions() (ansys.rep.client.jms.ProjectApi method)</a>
 </li>
-      <li><a href="dps.html#ansys.rep.client.jms.Project.create_job_definitions">create_job_definitions() (ansys.rep.client.jms.Project method)</a>
+      <li><a href="api/jms.html#ansys.rep.client.jms.ProjectApi.create_job_selections">create_job_selections() (ansys.rep.client.jms.ProjectApi method)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="dps.html#ansys.rep.client.jms.JobDefinition.create_jobs">create_jobs() (ansys.rep.client.jms.JobDefinition method)</a>
-
-      <ul>
-        <li><a href="dps.html#ansys.rep.client.jms.Project.create_jobs">(ansys.rep.client.jms.Project method)</a>
+      <li><a href="api/jms.html#ansys.rep.client.jms.ProjectApi.create_jobs">create_jobs() (ansys.rep.client.jms.ProjectApi method)</a>
 </li>
-      </ul></li>
-      <li><a href="dps.html#ansys.rep.client.jms.Project.create_license_contexts">create_license_contexts() (ansys.rep.client.jms.Project method)</a>
+      <li><a href="api/jms.html#ansys.rep.client.jms.ProjectApi.create_license_contexts">create_license_contexts() (ansys.rep.client.jms.ProjectApi method)</a>
 </li>
-      <li><a href="dps.html#ansys.rep.client.jms.Project.create_parameter_definitions">create_parameter_definitions() (ansys.rep.client.jms.Project method)</a>
+      <li><a href="api/jms.html#ansys.rep.client.jms.ProjectApi.create_parameter_definitions">create_parameter_definitions() (ansys.rep.client.jms.ProjectApi method)</a>
 </li>
-      <li><a href="dps.html#ansys.rep.client.jms.Project.create_parameter_mappings">create_parameter_mappings() (ansys.rep.client.jms.Project method)</a>
+      <li><a href="api/jms.html#ansys.rep.client.jms.ProjectApi.create_parameter_mappings">create_parameter_mappings() (ansys.rep.client.jms.ProjectApi method)</a>
 </li>
-      <li><a href="dps.html#ansys.rep.client.jms.Client.create_project">create_project() (ansys.rep.client.jms.Client method)</a>
+      <li><a href="api/jms.html#ansys.rep.client.jms.JmsApi.create_project">create_project() (ansys.rep.client.jms.JmsApi method)</a>
 </li>
-      <li><a href="dps.html#ansys.rep.client.jms.Project.create_selections">create_selections() (ansys.rep.client.jms.Project method)</a>
+      <li><a href="api/jms.html#ansys.rep.client.connection.create_session">create_session() (in module ansys.rep.client.connection)</a>
 </li>
-      <li><a href="dps.html#ansys.rep.client.connection.create_session">create_session() (in module ansys.rep.client.connection)</a>
+      <li><a href="api/jms.html#ansys.rep.client.jms.JmsApi.create_task_definition_templates">create_task_definition_templates() (ansys.rep.client.jms.JmsApi method)</a>
 </li>
-      <li><a href="dps.html#ansys.rep.client.jms.Client.create_task_definition_templates">create_task_definition_templates() (ansys.rep.client.jms.Client method)</a>
+      <li><a href="api/jms.html#ansys.rep.client.jms.ProjectApi.create_task_definitions">create_task_definitions() (ansys.rep.client.jms.ProjectApi method)</a>
 </li>
-      <li><a href="dps.html#ansys.rep.client.jms.Project.create_task_definitions">create_task_definitions() (ansys.rep.client.jms.Project method)</a>
-</li>
-      <li><a href="auth.html#ansys.rep.client.auth.Client.create_user">create_user() (ansys.rep.client.auth.Client method)</a>
+      <li><a href="api/auth.html#ansys.rep.client.auth.AuthApi.create_user">create_user() (ansys.rep.client.auth.AuthApi method)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -323,37 +312,33 @@
 <h2 id="D">D</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="dps.html#ansys.rep.client.jms.Project.delete_algorithms">delete_algorithms() (ansys.rep.client.jms.Project method)</a>
+      <li><a href="api/jms.html#ansys.rep.client.jms.ProjectApi.delete_algorithms">delete_algorithms() (ansys.rep.client.jms.ProjectApi method)</a>
 </li>
-      <li><a href="dps.html#ansys.rep.client.jms.Project.delete_files">delete_files() (ansys.rep.client.jms.Project method)</a>
+      <li><a href="api/jms.html#ansys.rep.client.jms.ProjectApi.delete_files">delete_files() (ansys.rep.client.jms.ProjectApi method)</a>
 </li>
-      <li><a href="dps.html#ansys.rep.client.jms.Project.delete_job_definitions">delete_job_definitions() (ansys.rep.client.jms.Project method)</a>
+      <li><a href="api/jms.html#ansys.rep.client.jms.ProjectApi.delete_job_definitions">delete_job_definitions() (ansys.rep.client.jms.ProjectApi method)</a>
 </li>
-      <li><a href="dps.html#ansys.rep.client.jms.JobDefinition.delete_jobs">delete_jobs() (ansys.rep.client.jms.JobDefinition method)</a>
-
-      <ul>
-        <li><a href="dps.html#ansys.rep.client.jms.Project.delete_jobs">(ansys.rep.client.jms.Project method)</a>
+      <li><a href="api/jms.html#ansys.rep.client.jms.ProjectApi.delete_job_selections">delete_job_selections() (ansys.rep.client.jms.ProjectApi method)</a>
 </li>
-      </ul></li>
-      <li><a href="dps.html#ansys.rep.client.jms.Project.delete_license_contexts">delete_license_contexts() (ansys.rep.client.jms.Project method)</a>
+      <li><a href="api/jms.html#ansys.rep.client.jms.ProjectApi.delete_jobs">delete_jobs() (ansys.rep.client.jms.ProjectApi method)</a>
 </li>
-      <li><a href="dps.html#ansys.rep.client.jms.Project.delete_parameter_definitions">delete_parameter_definitions() (ansys.rep.client.jms.Project method)</a>
+      <li><a href="api/jms.html#ansys.rep.client.jms.ProjectApi.delete_license_contexts">delete_license_contexts() (ansys.rep.client.jms.ProjectApi method)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="dps.html#ansys.rep.client.jms.Project.delete_parameter_mappings">delete_parameter_mappings() (ansys.rep.client.jms.Project method)</a>
+      <li><a href="api/jms.html#ansys.rep.client.jms.ProjectApi.delete_parameter_definitions">delete_parameter_definitions() (ansys.rep.client.jms.ProjectApi method)</a>
 </li>
-      <li><a href="dps.html#ansys.rep.client.jms.Client.delete_project">delete_project() (ansys.rep.client.jms.Client method)</a>
+      <li><a href="api/jms.html#ansys.rep.client.jms.ProjectApi.delete_parameter_mappings">delete_parameter_mappings() (ansys.rep.client.jms.ProjectApi method)</a>
 </li>
-      <li><a href="dps.html#ansys.rep.client.jms.Project.delete_selections">delete_selections() (ansys.rep.client.jms.Project method)</a>
+      <li><a href="api/jms.html#ansys.rep.client.jms.JmsApi.delete_project">delete_project() (ansys.rep.client.jms.JmsApi method)</a>
 </li>
-      <li><a href="dps.html#ansys.rep.client.jms.Client.delete_task_definition_templates">delete_task_definition_templates() (ansys.rep.client.jms.Client method)</a>
+      <li><a href="api/jms.html#ansys.rep.client.jms.JmsApi.delete_task_definition_templates">delete_task_definition_templates() (ansys.rep.client.jms.JmsApi method)</a>
 </li>
-      <li><a href="dps.html#ansys.rep.client.jms.Project.delete_task_definitions">delete_task_definitions() (ansys.rep.client.jms.Project method)</a>
+      <li><a href="api/jms.html#ansys.rep.client.jms.ProjectApi.delete_task_definitions">delete_task_definitions() (ansys.rep.client.jms.ProjectApi method)</a>
 </li>
-      <li><a href="auth.html#ansys.rep.client.auth.Client.delete_user">delete_user() (ansys.rep.client.auth.Client method)</a>
+      <li><a href="api/auth.html#ansys.rep.client.auth.AuthApi.delete_user">delete_user() (ansys.rep.client.auth.AuthApi method)</a>
 </li>
-      <li><a href="dps.html#ansys.rep.client.jms.File.download">download() (ansys.rep.client.jms.File method)</a>
+      <li><a href="api/jms.html#ansys.rep.client.jms.ProjectApi.download_file">download_file() (ansys.rep.client.jms.ProjectApi method)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -361,7 +346,7 @@
 <h2 id="E">E</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="dps.html#ansys.rep.client.jms.Evaluator">Evaluator (class in ansys.rep.client.jms)</a>
+      <li><a href="api/jms.html#ansys.rep.client.jms.Evaluator">Evaluator (class in ansys.rep.client.jms)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -369,19 +354,19 @@
 <h2 id="F">F</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="dps.html#ansys.rep.client.jms.File">File (class in ansys.rep.client.jms)</a>
+      <li><a href="api/jms.html#ansys.rep.client.jms.File">File (class in ansys.rep.client.jms)</a>
 </li>
-      <li><a href="dps.html#ansys.rep.client.jms.FitnessDefinition">FitnessDefinition (class in ansys.rep.client.jms)</a>
+      <li><a href="api/jms.html#ansys.rep.client.jms.FitnessDefinition">FitnessDefinition (class in ansys.rep.client.jms)</a>
 </li>
-      <li><a href="dps.html#ansys.rep.client.jms.FitnessTermDefinition">FitnessTermDefinition (class in ansys.rep.client.jms)</a>
+      <li><a href="api/jms.html#ansys.rep.client.jms.FitnessTermDefinition">FitnessTermDefinition (class in ansys.rep.client.jms)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="dps.html#ansys.rep.client.jms.FloatParameterDefinition">FloatParameterDefinition (class in ansys.rep.client.jms)</a>
+      <li><a href="api/jms.html#ansys.rep.client.jms.FloatParameterDefinition">FloatParameterDefinition (class in ansys.rep.client.jms)</a>
 </li>
-      <li><a href="dps.html#ansys.rep.client.jms.Project.fs_bucket_url">fs_bucket_url (ansys.rep.client.jms.Project property)</a>
+      <li><a href="api/jms.html#ansys.rep.client.jms.ProjectApi.fs_bucket_url">fs_bucket_url (ansys.rep.client.jms.ProjectApi property)</a>
 </li>
-      <li><a href="dps.html#ansys.rep.client.jms.Project.fs_url">fs_url (ansys.rep.client.jms.Project property)</a>
+      <li><a href="api/jms.html#ansys.rep.client.jms.ProjectApi.fs_url">fs_url (ansys.rep.client.jms.ProjectApi property)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -389,57 +374,45 @@
 <h2 id="G">G</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="dps.html#ansys.rep.client.jms.Project.get_algorithms">get_algorithms() (ansys.rep.client.jms.Project method)</a>
+      <li><a href="api/jms.html#ansys.rep.client.jms.ProjectApi.get_algorithms">get_algorithms() (ansys.rep.client.jms.ProjectApi method)</a>
 </li>
-      <li><a href="dps.html#ansys.rep.client.jms.Client.get_api_info">get_api_info() (ansys.rep.client.jms.Client method)</a>
+      <li><a href="api/jms.html#ansys.rep.client.jms.JmsApi.get_api_info">get_api_info() (ansys.rep.client.jms.JmsApi method)</a>
 </li>
-      <li><a href="dps.html#ansys.rep.client.jms.Client.get_evaluators">get_evaluators() (ansys.rep.client.jms.Client method)</a>
+      <li><a href="api/jms.html#ansys.rep.client.jms.JmsApi.get_evaluators">get_evaluators() (ansys.rep.client.jms.JmsApi method)</a>
 </li>
-      <li><a href="dps.html#ansys.rep.client.jms.Project.get_files">get_files() (ansys.rep.client.jms.Project method)</a>
+      <li><a href="api/jms.html#ansys.rep.client.jms.ProjectApi.get_files">get_files() (ansys.rep.client.jms.ProjectApi method)</a>
 </li>
-      <li><a href="dps.html#ansys.rep.client.jms.Project.get_job_definitions">get_job_definitions() (ansys.rep.client.jms.Project method)</a>
+      <li><a href="api/jms.html#ansys.rep.client.jms.ProjectApi.get_job_definitions">get_job_definitions() (ansys.rep.client.jms.ProjectApi method)</a>
 </li>
-      <li><a href="dps.html#ansys.rep.client.jms.Algorithm.get_jobs">get_jobs() (ansys.rep.client.jms.Algorithm method)</a>
-
-      <ul>
-        <li><a href="dps.html#ansys.rep.client.jms.JobDefinition.get_jobs">(ansys.rep.client.jms.JobDefinition method)</a>
+      <li><a href="api/jms.html#ansys.rep.client.jms.ProjectApi.get_job_selections">get_job_selections() (ansys.rep.client.jms.ProjectApi method)</a>
 </li>
-        <li><a href="dps.html#ansys.rep.client.jms.Project.get_jobs">(ansys.rep.client.jms.Project method)</a>
+      <li><a href="api/jms.html#ansys.rep.client.jms.ProjectApi.get_jobs">get_jobs() (ansys.rep.client.jms.ProjectApi method)</a>
 </li>
-        <li><a href="dps.html#ansys.rep.client.jms.Selection.get_jobs">(ansys.rep.client.jms.Selection method)</a>
+      <li><a href="api/jms.html#ansys.rep.client.jms.ProjectApi.get_license_contexts">get_license_contexts() (ansys.rep.client.jms.ProjectApi method)</a>
 </li>
-      </ul></li>
-      <li><a href="dps.html#ansys.rep.client.jms.Project.get_license_contexts">get_license_contexts() (ansys.rep.client.jms.Project method)</a>
-</li>
-      <li><a href="dps.html#ansys.rep.client.jms.Project.get_parameter_definitions">get_parameter_definitions() (ansys.rep.client.jms.Project method)</a>
+      <li><a href="api/jms.html#ansys.rep.client.jms.JmsApi.get_operation">get_operation() (ansys.rep.client.jms.JmsApi method)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="dps.html#ansys.rep.client.jms.Project.get_parameter_mappings">get_parameter_mappings() (ansys.rep.client.jms.Project method)</a>
+      <li><a href="api/jms.html#ansys.rep.client.jms.JmsApi.get_operations">get_operations() (ansys.rep.client.jms.JmsApi method)</a>
 </li>
-      <li><a href="dps.html#ansys.rep.client.jms.Project.get_permissions">get_permissions() (ansys.rep.client.jms.Project method)</a>
+      <li><a href="api/jms.html#ansys.rep.client.jms.ProjectApi.get_parameter_definitions">get_parameter_definitions() (ansys.rep.client.jms.ProjectApi method)</a>
 </li>
-      <li><a href="dps.html#ansys.rep.client.jms.Client.get_project">get_project() (ansys.rep.client.jms.Client method)</a>
+      <li><a href="api/jms.html#ansys.rep.client.jms.ProjectApi.get_parameter_mappings">get_parameter_mappings() (ansys.rep.client.jms.ProjectApi method)</a>
 </li>
-      <li><a href="dps.html#ansys.rep.client.jms.Client.get_projects">get_projects() (ansys.rep.client.jms.Client method)</a>
+      <li><a href="api/jms.html#ansys.rep.client.jms.ProjectApi.get_permissions">get_permissions() (ansys.rep.client.jms.ProjectApi method)</a>
 </li>
-      <li><a href="dps.html#ansys.rep.client.jms.Algorithm.get_selections">get_selections() (ansys.rep.client.jms.Algorithm method)</a>
-
-      <ul>
-        <li><a href="dps.html#ansys.rep.client.jms.Project.get_selections">(ansys.rep.client.jms.Project method)</a>
+      <li><a href="api/jms.html#ansys.rep.client.jms.JmsApi.get_project">get_project() (ansys.rep.client.jms.JmsApi method)</a>
 </li>
-      </ul></li>
-      <li><a href="dps.html#ansys.rep.client.jms.Client.get_task_definition_templates">get_task_definition_templates() (ansys.rep.client.jms.Client method)</a>
+      <li><a href="api/jms.html#ansys.rep.client.jms.JmsApi.get_projects">get_projects() (ansys.rep.client.jms.JmsApi method)</a>
 </li>
-      <li><a href="dps.html#ansys.rep.client.jms.Project.get_task_definitions">get_task_definitions() (ansys.rep.client.jms.Project method)</a>
+      <li><a href="api/jms.html#ansys.rep.client.jms.JmsApi.get_task_definition_templates">get_task_definition_templates() (ansys.rep.client.jms.JmsApi method)</a>
 </li>
-      <li><a href="dps.html#ansys.rep.client.jms.Job.get_tasks">get_tasks() (ansys.rep.client.jms.Job method)</a>
-
-      <ul>
-        <li><a href="dps.html#ansys.rep.client.jms.Project.get_tasks">(ansys.rep.client.jms.Project method)</a>
+      <li><a href="api/jms.html#ansys.rep.client.jms.ProjectApi.get_task_definitions">get_task_definitions() (ansys.rep.client.jms.ProjectApi method)</a>
 </li>
-      </ul></li>
-      <li><a href="auth.html#ansys.rep.client.auth.Client.get_users">get_users() (ansys.rep.client.auth.Client method)</a>
+      <li><a href="api/jms.html#ansys.rep.client.jms.ProjectApi.get_tasks">get_tasks() (ansys.rep.client.jms.ProjectApi method)</a>
+</li>
+      <li><a href="api/auth.html#ansys.rep.client.auth.AuthApi.get_users">get_users() (ansys.rep.client.auth.AuthApi method)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -447,7 +420,7 @@
 <h2 id="I">I</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="dps.html#ansys.rep.client.jms.IntParameterDefinition">IntParameterDefinition (class in ansys.rep.client.jms)</a>
+      <li><a href="api/jms.html#ansys.rep.client.jms.IntParameterDefinition">IntParameterDefinition (class in ansys.rep.client.jms)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -455,11 +428,17 @@
 <h2 id="J">J</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="dps.html#ansys.rep.client.jms.Job">Job (class in ansys.rep.client.jms)</a>
+      <li><a href="api/jms.html#ansys.rep.client.jms.ProjectApi.jms_api_url">jms_api_url (ansys.rep.client.jms.ProjectApi property)</a>
+</li>
+      <li><a href="api/jms.html#ansys.rep.client.jms.JmsApi">JmsApi (class in ansys.rep.client.jms)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="dps.html#ansys.rep.client.jms.JobDefinition">JobDefinition (class in ansys.rep.client.jms)</a>
+      <li><a href="api/jms.html#ansys.rep.client.jms.Job">Job (class in ansys.rep.client.jms)</a>
+</li>
+      <li><a href="api/jms.html#ansys.rep.client.jms.JobDefinition">JobDefinition (class in ansys.rep.client.jms)</a>
+</li>
+      <li><a href="api/jms.html#ansys.rep.client.jms.JobSelection">JobSelection (class in ansys.rep.client.jms)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -467,7 +446,7 @@
 <h2 id="L">L</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="dps.html#ansys.rep.client.jms.Licensing">Licensing (class in ansys.rep.client.jms)</a>
+      <li><a href="api/jms.html#ansys.rep.client.jms.Licensing">Licensing (class in ansys.rep.client.jms)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -479,7 +458,7 @@
     module
 
       <ul>
-        <li><a href="dps.html#module-ansys.rep.client.connection">ansys.rep.client.connection</a>
+        <li><a href="api/jms.html#module-ansys.rep.client.connection">ansys.rep.client.connection</a>
 </li>
       </ul></li>
   </ul></td>
@@ -488,13 +467,15 @@
 <h2 id="P">P</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="dps.html#ansys.rep.client.jms.ParameterMapping">ParameterMapping (class in ansys.rep.client.jms)</a>
+      <li><a href="api/jms.html#ansys.rep.client.jms.ParameterMapping">ParameterMapping (class in ansys.rep.client.jms)</a>
+</li>
+      <li><a href="api/jms.html#ansys.rep.client.connection.ping">ping() (in module ansys.rep.client.connection)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="dps.html#ansys.rep.client.connection.ping">ping() (in module ansys.rep.client.connection)</a>
+      <li><a href="api/jms.html#ansys.rep.client.jms.Project">Project (class in ansys.rep.client.jms)</a>
 </li>
-      <li><a href="dps.html#ansys.rep.client.jms.Project">Project (class in ansys.rep.client.jms)</a>
+      <li><a href="api/jms.html#ansys.rep.client.jms.ProjectApi">ProjectApi (class in ansys.rep.client.jms)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -502,13 +483,13 @@
 <h2 id="R">R</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="dps.html#ansys.rep.client.jms.Client.refresh_access_token">refresh_access_token() (ansys.rep.client.jms.Client method)</a>
+      <li><a href="api/jms.html#ansys.rep.client.Client.refresh_access_token">refresh_access_token() (ansys.rep.client.Client method)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="exceptions.html#ansys.rep.client.REPError">REPError</a>
+      <li><a href="api/exceptions.html#ansys.rep.client.REPError">REPError</a>
 </li>
-      <li><a href="dps.html#ansys.rep.client.jms.Client.restore_project">restore_project() (ansys.rep.client.jms.Client method)</a>
+      <li><a href="api/jms.html#ansys.rep.client.jms.JmsApi.restore_project">restore_project() (ansys.rep.client.jms.JmsApi method)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -516,13 +497,11 @@
 <h2 id="S">S</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="dps.html#ansys.rep.client.jms.Selection">Selection (class in ansys.rep.client.jms)</a>
+      <li><a href="api/jms.html#ansys.rep.client.jms.StringParameterDefinition">StringParameterDefinition (class in ansys.rep.client.jms)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="dps.html#ansys.rep.client.jms.StringParameterDefinition">StringParameterDefinition (class in ansys.rep.client.jms)</a>
-</li>
-      <li><a href="dps.html#ansys.rep.client.jms.SuccessCriteria">SuccessCriteria (class in ansys.rep.client.jms)</a>
+      <li><a href="api/jms.html#ansys.rep.client.jms.SuccessCriteria">SuccessCriteria (class in ansys.rep.client.jms)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -530,13 +509,13 @@
 <h2 id="T">T</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="dps.html#ansys.rep.client.jms.Task">Task (class in ansys.rep.client.jms)</a>
+      <li><a href="api/jms.html#ansys.rep.client.jms.Task">Task (class in ansys.rep.client.jms)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="dps.html#ansys.rep.client.jms.TaskDefinition">TaskDefinition (class in ansys.rep.client.jms)</a>
+      <li><a href="api/jms.html#ansys.rep.client.jms.TaskDefinition">TaskDefinition (class in ansys.rep.client.jms)</a>
 </li>
-      <li><a href="dps.html#ansys.rep.client.jms.TaskDefinitionTemplate">TaskDefinitionTemplate (class in ansys.rep.client.jms)</a>
+      <li><a href="api/jms.html#ansys.rep.client.jms.TaskDefinitionTemplate">TaskDefinitionTemplate (class in ansys.rep.client.jms)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -544,43 +523,45 @@
 <h2 id="U">U</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="dps.html#ansys.rep.client.jms.Project.update_algorithms">update_algorithms() (ansys.rep.client.jms.Project method)</a>
+      <li><a href="api/jms.html#ansys.rep.client.jms.ProjectApi.update_algorithms">update_algorithms() (ansys.rep.client.jms.ProjectApi method)</a>
 </li>
-      <li><a href="dps.html#ansys.rep.client.jms.Client.update_evaluators">update_evaluators() (ansys.rep.client.jms.Client method)</a>
+      <li><a href="api/jms.html#ansys.rep.client.jms.JmsApi.update_evaluators">update_evaluators() (ansys.rep.client.jms.JmsApi method)</a>
 </li>
-      <li><a href="dps.html#ansys.rep.client.jms.Project.update_files">update_files() (ansys.rep.client.jms.Project method)</a>
+      <li><a href="api/jms.html#ansys.rep.client.jms.ProjectApi.update_files">update_files() (ansys.rep.client.jms.ProjectApi method)</a>
 </li>
-      <li><a href="dps.html#ansys.rep.client.jms.Project.update_job_definitions">update_job_definitions() (ansys.rep.client.jms.Project method)</a>
+      <li><a href="api/jms.html#ansys.rep.client.jms.ProjectApi.update_job_definitions">update_job_definitions() (ansys.rep.client.jms.ProjectApi method)</a>
 </li>
-      <li><a href="dps.html#ansys.rep.client.jms.Project.update_jobs">update_jobs() (ansys.rep.client.jms.Project method)</a>
+      <li><a href="api/jms.html#ansys.rep.client.jms.ProjectApi.update_job_selections">update_job_selections() (ansys.rep.client.jms.ProjectApi method)</a>
 </li>
-      <li><a href="dps.html#ansys.rep.client.jms.Project.update_license_contexts">update_license_contexts() (ansys.rep.client.jms.Project method)</a>
+      <li><a href="api/jms.html#ansys.rep.client.jms.ProjectApi.update_jobs">update_jobs() (ansys.rep.client.jms.ProjectApi method)</a>
 </li>
-      <li><a href="dps.html#ansys.rep.client.jms.Project.update_parameter_definitions">update_parameter_definitions() (ansys.rep.client.jms.Project method)</a>
+      <li><a href="api/jms.html#ansys.rep.client.jms.ProjectApi.update_license_contexts">update_license_contexts() (ansys.rep.client.jms.ProjectApi method)</a>
 </li>
-      <li><a href="dps.html#ansys.rep.client.jms.Project.update_parameter_mappings">update_parameter_mappings() (ansys.rep.client.jms.Project method)</a>
+      <li><a href="api/jms.html#ansys.rep.client.jms.ProjectApi.update_parameter_definitions">update_parameter_definitions() (ansys.rep.client.jms.ProjectApi method)</a>
+</li>
+      <li><a href="api/jms.html#ansys.rep.client.jms.ProjectApi.update_parameter_mappings">update_parameter_mappings() (ansys.rep.client.jms.ProjectApi method)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="dps.html#ansys.rep.client.jms.Project.update_permissions">update_permissions() (ansys.rep.client.jms.Project method)</a>
+      <li><a href="api/jms.html#ansys.rep.client.jms.ProjectApi.update_permissions">update_permissions() (ansys.rep.client.jms.ProjectApi method)</a>
 </li>
-      <li><a href="dps.html#ansys.rep.client.jms.Client.update_project">update_project() (ansys.rep.client.jms.Client method)</a>
+      <li><a href="api/jms.html#ansys.rep.client.jms.JmsApi.update_project">update_project() (ansys.rep.client.jms.JmsApi method)</a>
 </li>
-      <li><a href="dps.html#ansys.rep.client.jms.Project.update_selections">update_selections() (ansys.rep.client.jms.Project method)</a>
+      <li><a href="api/jms.html#ansys.rep.client.jms.JmsApi.update_task_definition_templates">update_task_definition_templates() (ansys.rep.client.jms.JmsApi method)</a>
 </li>
-      <li><a href="dps.html#ansys.rep.client.jms.Client.update_task_definition_templates">update_task_definition_templates() (ansys.rep.client.jms.Client method)</a>
+      <li><a href="api/jms.html#ansys.rep.client.jms.ProjectApi.update_task_definitions">update_task_definitions() (ansys.rep.client.jms.ProjectApi method)</a>
 </li>
-      <li><a href="dps.html#ansys.rep.client.jms.Project.update_task_definitions">update_task_definitions() (ansys.rep.client.jms.Project method)</a>
+      <li><a href="api/jms.html#ansys.rep.client.jms.ProjectApi.update_tasks">update_tasks() (ansys.rep.client.jms.ProjectApi method)</a>
 </li>
-      <li><a href="dps.html#ansys.rep.client.jms.Job.update_tasks">update_tasks() (ansys.rep.client.jms.Job method)</a>
+      <li><a href="api/auth.html#ansys.rep.client.auth.AuthApi.update_user">update_user() (ansys.rep.client.auth.AuthApi method)</a>
+</li>
+      <li><a href="api/jms.html#ansys.rep.client.jms.JmsApi.url">url (ansys.rep.client.jms.JmsApi property)</a>
 
       <ul>
-        <li><a href="dps.html#ansys.rep.client.jms.Project.update_tasks">(ansys.rep.client.jms.Project method)</a>
+        <li><a href="api/jms.html#ansys.rep.client.jms.ProjectApi.url">(ansys.rep.client.jms.ProjectApi property)</a>
 </li>
       </ul></li>
-      <li><a href="auth.html#ansys.rep.client.auth.Client.update_user">update_user() (ansys.rep.client.auth.Client method)</a>
-</li>
-      <li><a href="auth.html#ansys.rep.client.auth.User">User (class in ansys.rep.client.auth)</a>
+      <li><a href="api/auth.html#ansys.rep.client.auth.User">User (class in ansys.rep.client.auth)</a>
 </li>
   </ul></td>
 </tr></table>

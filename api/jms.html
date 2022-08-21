@@ -1,0 +1,2592 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+
+    <title>Job Management Service &#8212; pyrep</title>
+    
+<script>
+  document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+  document.documentElement.dataset.theme = localStorage.getItem("theme") || "light"
+</script>
+
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=92025949c220c2e29695" rel="stylesheet">
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=92025949c220c2e29695" rel="stylesheet">
+
+
+  <link rel="stylesheet"
+    href="../_static/vendor/fontawesome/5.13.0/css/all.min.css">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinxnotes-strike.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/ansys_sphinx_theme.css" />
+
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=92025949c220c2e29695">
+
+    
+        <link href="../_static/css/breadcrumbs.css" rel="stylesheet">
+    
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/clipboard.min.js"></script>
+    <script src="../_static/copybutton.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Exceptions" href="exceptions.html" />
+    <link rel="prev" title="Authentication Service" href="auth.html" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="docsearch:language" content="en">
+  </head>
+  
+  
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="180" data-default-mode="">
+    <div class="bd-header-announcement container-fluid" id="banner">
+      
+
+    </div>
+
+    
+    
+    <nav class="bd-header navbar navbar-light navbar-expand-lg bg-light fixed-top bd-navbar" id="navbar-main"><div class="bd-header__inner container-xl">
+
+  <div id="navbar-start">
+    
+    
+  
+
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+    <img src="../_static/pyansys-logo-black-cropped.png" class="logo__image only-light" alt="Logo image">
+    <img src="../_static/pyansys-logo-black-cropped.png" class="logo__image only-dark" alt="Logo image">
+  
+  
+</a>
+    
+  </div>
+
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar-collapsible" aria-controls="navbar-collapsible" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="fas fa-bars"></span>
+  </button>
+
+  
+  <div id="navbar-collapsible" class="col-lg-9 collapse navbar-collapse">
+    <div id="navbar-center" class="mr-auto">
+      
+      <div class="navbar-center-item">
+        <ul id="navbar-main-elements" class="navbar-nav">
+    <li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../install.html">
+  Installation
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../quickstart.html">
+  Quickstart
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../examples/index.html">
+  Examples
+ </a>
+</li>
+
+<li class="toctree-l1 current active nav-item">
+ <a class="reference internal nav-link" href="index.html">
+  Code Documentation
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../changelog/index.html">
+  Changelog
+ </a>
+</li>
+
+    
+</ul>
+      </div>
+      
+    </div>
+
+    <div id="navbar-end">
+      
+      <div class="navbar-end-item">
+        <span id="theme-switch" class="btn btn-sm btn-outline-primary navbar-btn rounded-circle">
+    <a class="theme-switch" data-mode="light"><i class="fas fa-sun"></i></a>
+    <a class="theme-switch" data-mode="dark"><i class="far fa-moon"></i></a>
+    <a class="theme-switch" data-mode="auto"><i class="fas fa-adjust"></i></a>
+</span>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
+        <li class="nav-item">
+          <a class="nav-link" href="[https://github.com/pyansys/pyrep" rel="noopener" target="_blank" title="GitHub"><span><i class="fab fa-github-square"></i></span>
+            <label class="sr-only">GitHub</label></a>
+        </li>
+      </ul>
+      </div>
+      
+    </div>
+  </div>
+</div>
+    </nav>
+    
+    
+        <div class="container-xl">
+    <div class="row">
+        <div class="col-12 col-md-3" id="breadcrumbs-spacer"></div>
+        <div class="col-12 col-md-11 col-xl-9" id="breadcrumbs">
+          
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+    
+        <li class="nav-item nav-item-additional-breadcrumb"><a href="https://docs.pyansys.com/">PyAnsys</a> » </li>
+    
+    
+        <li class="nav-item nav-item-0"><a href="../index.html">pyrep</a> » </li>
+    
+
+          <li class="nav-item nav-item-1"><a href="index.html" accesskey="U">Code Documentation</a> » </li>
+        <li class="nav-item nav-item-this"><a href="">Job Management Service</a></li> 
+      </ul>
+    </div>
+        </div>
+  </div>
+</div>
+    
+
+
+    <div class="bd-container container-xl">
+      <div class="bd-container__inner row">
+          
+
+<!-- Only show if we have sidebars configured, else just a small margin  -->
+<div class="bd-sidebar-primary col-12 col-md-3 bd-sidebar">
+  <div class="sidebar-start-items"><form class="bd-search d-flex align-items-center" action="../search.html" method="get">
+  <i class="icon fas fa-search"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" >
+</form><nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
+  <div class="bd-toc-item active">
+    
+    <ul class="current nav bd-sidenav">
+ <li class="toctree-l1">
+  <a class="reference internal" href="auth.html">
+   Authentication Service
+  </a>
+ </li>
+ <li class="toctree-l1 current active">
+  <a class="current reference internal" href="#">
+   Job Management Service
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="exceptions.html">
+   Exceptions
+  </a>
+ </li>
+</ul>
+
+    
+    
+  </div>
+</nav>
+  </div>
+  <div class="sidebar-end-items">
+  </div>
+</div>
+
+
+          
+
+
+<div class="bd-sidebar-secondary d-none d-xl-block col-xl-2 bd-toc">
+  
+    
+    <div class="toc-item">
+      
+<div class="tocsection onthispage mt-5 pt-1 pb-3">
+    <i class="fas fa-list"></i> On this page
+</div>
+
+<nav id="bd-toc-nav">
+    <ul class="visible nav section-nav flex-column">
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#module-ansys.rep.client.connection">
+   Connection module
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#client-object-tomove">
+   Client object (TOMOVE)
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#jms-api">
+   JMS Api
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#project-api">
+   Project Api
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#file">
+   File
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#project">
+   Project
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#fitness-definition">
+   Fitness Definition
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#parameters">
+   Parameters
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#task-definition">
+   Task Definition
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#job-definition">
+   Job Definition
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#task">
+   Task
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#job">
+   Job
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#job-selection">
+   Job Selection
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#design-exploration-algorithm">
+   Design Exploration Algorithm
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#evaluator">
+   Evaluator
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#task-definition-template">
+   Task Definition Template
+  </a>
+ </li>
+</ul>
+
+</nav>
+    </div>
+    
+    <div class="toc-item">
+      
+    </div>
+    
+  
+</div>
+
+
+          
+          
+          <div class="bd-content col-12 col-md-9 col-xl-7">
+              
+              <article class="bd-article" role="main">
+                
+  <section id="job-management-service">
+<h1>Job Management Service<a class="headerlink" href="#job-management-service" title="Permalink to this heading">#</a></h1>
+<p>Ansys REP includes Job Management Service (JMS), which is the main service for storing and evaluating jobs using multiple heterogeneous compute resources.</p>
+<p>The Python subpackage <cite>ansys.rep.client.jms</cite> wraps around the JMS service REST API available at <code class="docutils literal notranslate"><span class="pre">https://hostname/rep/jms/api</span></code>.</p>
+<section id="module-ansys.rep.client.connection">
+<span id="connection-module"></span><h2>Connection module<a class="headerlink" href="#module-ansys.rep.client.connection" title="Permalink to this heading">#</a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="ansys.rep.client.connection.create_session">
+<span class="sig-prename descclassname"><span class="pre">ansys.rep.client.connection.</span></span><span class="sig-name descname"><span class="pre">create_session</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">access_token</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ansys.rep.client.connection.create_session" title="Permalink to this definition">#</a></dt>
+<dd><p>Return a <code class="xref py py-class docutils literal notranslate"><span class="pre">requests.Session</span></code> object configured for DPS with given access token</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>access_token</strong> (<em>str</em>) – The access token provided by <a class="reference internal" href="auth.html#ansys.rep.client.auth.authenticate" title="ansys.rep.client.auth.authenticate"><code class="xref py py-meth docutils literal notranslate"><span class="pre">ansys.rep.client.auth.authenticate()</span></code></a></p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The session object.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">requests.Session</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="ansys.rep.client.connection.ping">
+<span class="sig-prename descclassname"><span class="pre">ansys.rep.client.connection.</span></span><span class="sig-name descname"><span class="pre">ping</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">session</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">url</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timeout</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10.0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ansys.rep.client.connection.ping" title="Permalink to this definition">#</a></dt>
+<dd><p>Ping the given URL, returning true on success</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>session</strong> – The <code class="xref py py-class docutils literal notranslate"><span class="pre">requests.Session</span></code> object.</p></li>
+<li><p><strong>url</strong> (<em>str</em>) – The URL address to ping.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>True on success.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="client-object-tomove">
+<h2>Client object (TOMOVE)<a class="headerlink" href="#client-object-tomove" title="Permalink to this heading">#</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="ansys.rep.client.Client">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ansys.rep.client.</span></span><span class="sig-name descname"><span class="pre">Client</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">rep_url</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'https://127.0.0.1:8443/rep'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">username</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'repadmin'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">password</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'repadmin'</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">realm</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'rep'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">grant_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'password'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scope</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'openid'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">client_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'rep-cli'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">client_secret</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">access_token</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">refresh_token</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">auth_url</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ansys.rep.client.Client" title="Permalink to this definition">#</a></dt>
+<dd><p>A python interface to the Remote Execution Platform (REP) API.</p>
+<p>Uses the provided credentials to create and store
+an authorized <code class="xref py py-class docutils literal notranslate"><span class="pre">requests.Session</span></code> object.</p>
+<p>The following authentication workflows are supported:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>Username and password: the client connects to the OAuth server and
+requests access and refresh tokens.</p></li>
+<li><p>Refresh token: the client connects to the OAuth server and
+requests a new access token.</p></li>
+<li><p>Access token: no authentication needed.</p></li>
+</ul>
+</div></blockquote>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>rep_url</strong> (<em>str</em>) – The base path for the server to call,
+e.g. “<a class="reference external" href="https://127.0.0.1/dcs">https://127.0.0.1/dcs</a>”.</p></li>
+<li><p><strong>username</strong> (<em>str</em>) – Username (Optional)</p></li>
+<li><p><strong>password</strong> (<em>str</em>) – Password (Optional)</p></li>
+<li><p><strong>refresh_token</strong> (<em>str</em>) – Refresh Token (Optional)</p></li>
+<li><p><strong>access_token</strong> (<em>str</em>) – Access Token (Optional)</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">ansys.rep.client.jms</span> <span class="kn">import</span> <span class="n">Client</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Create client object and connect to DCS with username &amp; password</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">cl</span> <span class="o">=</span> <span class="n">Client</span><span class="p">(</span><span class="n">rep_url</span><span class="o">=</span><span class="s2">&quot;https://127.0.0.1/dcs&quot;</span><span class="p">,</span> <span class="n">username</span><span class="o">=</span><span class="s2">&quot;dcadmin&quot;</span><span class="p">,</span> <span class="n">password</span><span class="o">=</span><span class="s2">&quot;dcadmin&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Extract refresh token to eventually store it</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">refresh_token</span> <span class="o">=</span> <span class="n">cl</span><span class="o">.</span><span class="n">refresh_token</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Alternative: Create client object and connect to DCS with refresh token</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">cl</span> <span class="o">=</span> <span class="n">Client</span><span class="p">(</span><span class="n">rep_url</span><span class="o">=</span><span class="s2">&quot;https://127.0.0.1/dcs&quot;</span><span class="p">,</span> <span class="n">refresh_token</span><span class="o">=</span><span class="n">refresh_token</span><span class="p">)</span>
+</pre></div>
+</div>
+<dl class="py method">
+<dt class="sig sig-object py" id="ansys.rep.client.Client.refresh_access_token">
+<span class="sig-name descname"><span class="pre">refresh_access_token</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ansys.rep.client.Client.refresh_access_token" title="Permalink to this definition">#</a></dt>
+<dd><p>Use the refresh token to obtain a new access token</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="jms-api">
+<h2>JMS Api<a class="headerlink" href="#jms-api" title="Permalink to this heading">#</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="ansys.rep.client.jms.JmsApi">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ansys.rep.client.jms.</span></span><span class="sig-name descname"><span class="pre">JmsApi</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">client</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ansys.rep.client.jms.JmsApi" title="Permalink to this definition">#</a></dt>
+<dd><p>Root API</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>client</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">ansys.rep.client.jms.Client</span></code>) – A client object.</p>
+</dd>
+</dl>
+<p class="rubric">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">ansys.rep.client.jms</span> <span class="kn">import</span> <span class="n">Client</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Create client object and connect to REP with username &amp; password</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">cl</span> <span class="o">=</span> <span class="n">Client</span><span class="p">(</span><span class="n">rep_url</span><span class="o">=</span><span class="s2">&quot;https://127.0.0.1/dcs&quot;</span><span class="p">,</span> <span class="n">username</span><span class="o">=</span><span class="s2">&quot;repadmin&quot;</span><span class="p">,</span> <span class="n">password</span><span class="o">=</span><span class="s2">&quot;repadmin&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Create a new project</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">root_api</span> <span class="o">=</span> <span class="n">RootApi</span><span class="p">(</span><span class="n">client</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">project</span> <span class="o">=</span> <span class="n">root_api</span><span class="o">.</span><span class="n">create_project</span><span class="p">(</span><span class="n">Project</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;Example Project&quot;</span><span class="p">))</span>
+</pre></div>
+</div>
+<dl class="py method">
+<dt class="sig sig-object py" id="ansys.rep.client.jms.JmsApi.create_project">
+<span class="sig-name descname"><span class="pre">create_project</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">project</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">replace</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">as_objects</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ansys.rep.client.jms.JmsApi.create_project" title="Permalink to this definition">#</a></dt>
+<dd><p>Create a new project</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ansys.rep.client.jms.JmsApi.create_task_definition_templates">
+<span class="sig-name descname"><span class="pre">create_task_definition_templates</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">templates</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">as_objects</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">query_params</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ansys.rep.client.jms.JmsApi.create_task_definition_templates" title="Permalink to this definition">#</a></dt>
+<dd><p>Create new task definition templates</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>templates</strong> (list of <a class="reference internal" href="#ansys.rep.client.jms.TaskDefinitionTemplate" title="ansys.rep.client.jms.TaskDefinitionTemplate"><code class="xref py py-class docutils literal notranslate"><span class="pre">ansys.rep.client.jms.TaskDefinitionTemplate</span></code></a>) – A list of task definition templates</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ansys.rep.client.jms.JmsApi.delete_project">
+<span class="sig-name descname"><span class="pre">delete_project</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">project</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ansys.rep.client.jms.JmsApi.delete_project" title="Permalink to this definition">#</a></dt>
+<dd><p>Delete a project</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ansys.rep.client.jms.JmsApi.delete_task_definition_templates">
+<span class="sig-name descname"><span class="pre">delete_task_definition_templates</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">templates</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ansys.rep.client.jms.JmsApi.delete_task_definition_templates" title="Permalink to this definition">#</a></dt>
+<dd><p>Delete existing task definition templates</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>templates</strong> (list of <a class="reference internal" href="#ansys.rep.client.jms.TaskDefinitionTemplate" title="ansys.rep.client.jms.TaskDefinitionTemplate"><code class="xref py py-class docutils literal notranslate"><span class="pre">ansys.rep.client.jms.TaskDefinitionTemplate</span></code></a>) – A list of task definition templates</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ansys.rep.client.jms.JmsApi.get_api_info">
+<span class="sig-name descname"><span class="pre">get_api_info</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ansys.rep.client.jms.JmsApi.get_api_info" title="Permalink to this definition">#</a></dt>
+<dd><p>Return info like version, build date etc of the JMS API the client is connected to</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ansys.rep.client.jms.JmsApi.get_evaluators">
+<span class="sig-name descname"><span class="pre">get_evaluators</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">as_objects</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">query_params</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ansys.rep.client.jms.JmsApi.get_evaluators" title="Permalink to this definition">#</a></dt>
+<dd><p>Return a list of evaluators, optionally filtered by given query parameters</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ansys.rep.client.jms.JmsApi.get_operation">
+<span class="sig-name descname"><span class="pre">get_operation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">as_object</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ansys.rep.client.jms.JmsApi.get_operation" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ansys.rep.client.jms.JmsApi.get_operations">
+<span class="sig-name descname"><span class="pre">get_operations</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">as_objects</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">query_params</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ansys.rep.client.jms.JmsApi.get_operations" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ansys.rep.client.jms.JmsApi.get_project">
+<span class="sig-name descname"><span class="pre">get_project</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ansys.rep.client.jms.JmsApi.get_project" title="Permalink to this definition">#</a></dt>
+<dd><p>Return a single project for given project id</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ansys.rep.client.jms.JmsApi.get_projects">
+<span class="sig-name descname"><span class="pre">get_projects</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">query_params</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ansys.rep.client.jms.JmsApi.get_projects" title="Permalink to this definition">#</a></dt>
+<dd><p>Return a list of projects, optionally filtered by given query parameters</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ansys.rep.client.jms.JmsApi.get_task_definition_templates">
+<span class="sig-name descname"><span class="pre">get_task_definition_templates</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">as_objects</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">query_params</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ansys.rep.client.jms.JmsApi.get_task_definition_templates" title="Permalink to this definition">#</a></dt>
+<dd><p>Return a list of task definition templates,
+optionally filtered by given query parameters</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ansys.rep.client.jms.JmsApi.restore_project">
+<span class="sig-name descname"><span class="pre">restore_project</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#ansys.rep.client.jms.Project" title="ansys.rep.client.jms.resource.project.Project"><span class="pre">Project</span></a></span></span><a class="headerlink" href="#ansys.rep.client.jms.JmsApi.restore_project" title="Permalink to this definition">#</a></dt>
+<dd><p>Restore a project from an archive</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>path</strong> (<em>str</em>) – Path of the archive file to be restored.</p></li>
+<li><p><strong>project_name</strong> (<em>str</em>) – Name of the restored project. (optional)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A Project object.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#ansys.rep.client.jms.Project" title="ansys.rep.client.jms.Project"><code class="xref py py-class docutils literal notranslate"><span class="pre">ansys.rep.client.jms.Project</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ansys.rep.client.jms.JmsApi.update_evaluators">
+<span class="sig-name descname"><span class="pre">update_evaluators</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">evaluators</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">as_objects</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">query_params</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ansys.rep.client.jms.JmsApi.update_evaluators" title="Permalink to this definition">#</a></dt>
+<dd><p>Update evaluators configuration</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ansys.rep.client.jms.JmsApi.update_project">
+<span class="sig-name descname"><span class="pre">update_project</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">project</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">as_objects</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ansys.rep.client.jms.JmsApi.update_project" title="Permalink to this definition">#</a></dt>
+<dd><p>Update an existing project</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ansys.rep.client.jms.JmsApi.update_task_definition_templates">
+<span class="sig-name descname"><span class="pre">update_task_definition_templates</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">templates</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">as_objects</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">query_params</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ansys.rep.client.jms.JmsApi.update_task_definition_templates" title="Permalink to this definition">#</a></dt>
+<dd><p>Update existing task definition templates</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>templates</strong> (list of <a class="reference internal" href="#ansys.rep.client.jms.TaskDefinitionTemplate" title="ansys.rep.client.jms.TaskDefinitionTemplate"><code class="xref py py-class docutils literal notranslate"><span class="pre">ansys.rep.client.jms.TaskDefinitionTemplate</span></code></a>) – A list of task definition templates</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="ansys.rep.client.jms.JmsApi.url">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">url</span></span><a class="headerlink" href="#ansys.rep.client.jms.JmsApi.url" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="project-api">
+<h2>Project Api<a class="headerlink" href="#project-api" title="Permalink to this heading">#</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="ansys.rep.client.jms.ProjectApi">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ansys.rep.client.jms.</span></span><span class="sig-name descname"><span class="pre">ProjectApi</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">client</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">project_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ansys.rep.client.jms.ProjectApi" title="Permalink to this definition">#</a></dt>
+<dd><p>Project API</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>client</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">ansys.rep.client.jms.Client</span></code>) – A client object.</p></li>
+<li><p><strong>project_id</strong> (<em>str</em>) – </p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">project</span> <span class="o">=</span> <span class="n">Project</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;Example Project&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">project</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">create_project</span><span class="p">(</span><span class="n">project</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">project_api</span> <span class="o">=</span> <span class="n">ProjectApi</span><span class="p">(</span><span class="n">client</span><span class="p">,</span> <span class="n">project</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">jobs</span> <span class="o">=</span> <span class="n">project_api</span><span class="o">.</span><span class="n">get_jobs</span><span class="p">()</span>
+</pre></div>
+</div>
+<dl class="py method">
+<dt class="sig sig-object py" id="ansys.rep.client.jms.ProjectApi.archive_project">
+<span class="sig-name descname"><span class="pre">archive_project</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">include_job_files</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ansys.rep.client.jms.ProjectApi.archive_project" title="Permalink to this definition">#</a></dt>
+<dd><p>Archive an existing project and save it to disk</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>path</strong> (<em>str</em>) – Where to save the archive locally.</p></li>
+<li><p><strong>include_job_files</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether to include design point files in the
+archive. True by default.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The path to the archive.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ansys.rep.client.jms.ProjectApi.copy_jobs">
+<span class="sig-name descname"><span class="pre">copy_jobs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">jobs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">as_objects</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">query_params</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ansys.rep.client.jms.ProjectApi.copy_jobs" title="Permalink to this definition">#</a></dt>
+<dd><p>Create new jobs by copying existing ones</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>jobs</strong> (list of <a class="reference internal" href="#ansys.rep.client.jms.Job" title="ansys.rep.client.jms.Job"><code class="xref py py-class docutils literal notranslate"><span class="pre">ansys.rep.client.jms.Job</span></code></a>) – A list of job objects</p>
+</dd>
+</dl>
+<p>Note that only the <code class="docutils literal notranslate"><span class="pre">id</span></code> field of the Job objects need to be filled;
+the other fields can be empty.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ansys.rep.client.jms.ProjectApi.copy_project">
+<span class="sig-name descname"><span class="pre">copy_project</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">project_target_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wait</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ansys.rep.client.jms.ProjectApi.copy_project" title="Permalink to this definition">#</a></dt>
+<dd><p>Duplicate project</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ansys.rep.client.jms.ProjectApi.create_algorithms">
+<span class="sig-name descname"><span class="pre">create_algorithms</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">algorithms</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">as_objects</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ansys.rep.client.jms.ProjectApi.create_algorithms" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ansys.rep.client.jms.ProjectApi.create_files">
+<span class="sig-name descname"><span class="pre">create_files</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">files</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">as_objects</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ansys.rep.client.jms.ProjectApi.create_files" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ansys.rep.client.jms.ProjectApi.create_job_definitions">
+<span class="sig-name descname"><span class="pre">create_job_definitions</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">job_definitions</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">as_objects</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ansys.rep.client.jms.ProjectApi.create_job_definitions" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ansys.rep.client.jms.ProjectApi.create_job_selections">
+<span class="sig-name descname"><span class="pre">create_job_selections</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">selections</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">as_objects</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ansys.rep.client.jms.ProjectApi.create_job_selections" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ansys.rep.client.jms.ProjectApi.create_jobs">
+<span class="sig-name descname"><span class="pre">create_jobs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">jobs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">as_objects</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ansys.rep.client.jms.ProjectApi.create_jobs" title="Permalink to this definition">#</a></dt>
+<dd><p>Create new jobs</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>jobs</strong> (list of <a class="reference internal" href="#ansys.rep.client.jms.Job" title="ansys.rep.client.jms.Job"><code class="xref py py-class docutils literal notranslate"><span class="pre">ansys.rep.client.jms.Job</span></code></a>) – A list of Job objects</p></li>
+<li><p><strong>as_objects</strong> (<em>bool</em>) – Whether to return jobs as objects or dictionaries</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>List of <a class="reference internal" href="#ansys.rep.client.jms.Job" title="ansys.rep.client.jms.Job"><code class="xref py py-class docutils literal notranslate"><span class="pre">ansys.rep.client.jms.Job</span></code></a> or list of dict if <cite>as_objects</cite> is False</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ansys.rep.client.jms.ProjectApi.create_license_contexts">
+<span class="sig-name descname"><span class="pre">create_license_contexts</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">as_objects</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ansys.rep.client.jms.ProjectApi.create_license_contexts" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ansys.rep.client.jms.ProjectApi.create_parameter_definitions">
+<span class="sig-name descname"><span class="pre">create_parameter_definitions</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">parameter_definitions</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">as_objects</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ansys.rep.client.jms.ProjectApi.create_parameter_definitions" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ansys.rep.client.jms.ProjectApi.create_parameter_mappings">
+<span class="sig-name descname"><span class="pre">create_parameter_mappings</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">parameter_mappings</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">as_objects</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ansys.rep.client.jms.ProjectApi.create_parameter_mappings" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ansys.rep.client.jms.ProjectApi.create_task_definitions">
+<span class="sig-name descname"><span class="pre">create_task_definitions</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">task_definitions</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">as_objects</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ansys.rep.client.jms.ProjectApi.create_task_definitions" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ansys.rep.client.jms.ProjectApi.delete_algorithms">
+<span class="sig-name descname"><span class="pre">delete_algorithms</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">algorithms</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ansys.rep.client.jms.ProjectApi.delete_algorithms" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ansys.rep.client.jms.ProjectApi.delete_files">
+<span class="sig-name descname"><span class="pre">delete_files</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">files</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ansys.rep.client.jms.ProjectApi.delete_files" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ansys.rep.client.jms.ProjectApi.delete_job_definitions">
+<span class="sig-name descname"><span class="pre">delete_job_definitions</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">job_definitions</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ansys.rep.client.jms.ProjectApi.delete_job_definitions" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ansys.rep.client.jms.ProjectApi.delete_job_selections">
+<span class="sig-name descname"><span class="pre">delete_job_selections</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">selections</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ansys.rep.client.jms.ProjectApi.delete_job_selections" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ansys.rep.client.jms.ProjectApi.delete_jobs">
+<span class="sig-name descname"><span class="pre">delete_jobs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">jobs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ansys.rep.client.jms.ProjectApi.delete_jobs" title="Permalink to this definition">#</a></dt>
+<dd><p>Delete existing jobs</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>jobs</strong> (list of <a class="reference internal" href="#ansys.rep.client.jms.Job" title="ansys.rep.client.jms.Job"><code class="xref py py-class docutils literal notranslate"><span class="pre">ansys.rep.client.jms.Job</span></code></a>) – A list of Job objects</p>
+</dd>
+</dl>
+<p>Note that only the <code class="docutils literal notranslate"><span class="pre">id</span></code> field of the Job objects need to be filled;
+the other fields can be empty.</p>
+<p class="rubric">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">dps_to_delete</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="nb">id</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">39</span><span class="p">,</span><span class="mi">44</span><span class="p">]:</span>
+<span class="gp">&gt;&gt;&gt; </span>   <span class="n">dps_to_delete</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Job</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="nb">id</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">project_api</span><span class="o">.</span><span class="n">delete_jobs</span><span class="p">(</span><span class="n">dps_to_delete</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ansys.rep.client.jms.ProjectApi.delete_license_contexts">
+<span class="sig-name descname"><span class="pre">delete_license_contexts</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ansys.rep.client.jms.ProjectApi.delete_license_contexts" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ansys.rep.client.jms.ProjectApi.delete_parameter_definitions">
+<span class="sig-name descname"><span class="pre">delete_parameter_definitions</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">parameter_definitions</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ansys.rep.client.jms.ProjectApi.delete_parameter_definitions" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ansys.rep.client.jms.ProjectApi.delete_parameter_mappings">
+<span class="sig-name descname"><span class="pre">delete_parameter_mappings</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">parameter_mappings</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ansys.rep.client.jms.ProjectApi.delete_parameter_mappings" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ansys.rep.client.jms.ProjectApi.delete_task_definitions">
+<span class="sig-name descname"><span class="pre">delete_task_definitions</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">task_definitions</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ansys.rep.client.jms.ProjectApi.delete_task_definitions" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ansys.rep.client.jms.ProjectApi.download_file">
+<span class="sig-name descname"><span class="pre">download_file</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#ansys.rep.client.jms.File" title="ansys.rep.client.jms.resource.file.File"><span class="pre">File</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stream</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">progress_handler</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Callable</span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">None</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#ansys.rep.client.jms.ProjectApi.download_file" title="Permalink to this definition">#</a></dt>
+<dd><p>Download file content and save it to disk. If stream=True,
+data is retrieved in chunks, avoiding storing the entire content
+in memory.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="ansys.rep.client.jms.ProjectApi.fs_bucket_url">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">fs_bucket_url</span></span><a class="headerlink" href="#ansys.rep.client.jms.ProjectApi.fs_bucket_url" title="Permalink to this definition">#</a></dt>
+<dd><p>URL of the project’s bucket in the file storage gateway</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="ansys.rep.client.jms.ProjectApi.fs_url">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">fs_url</span></span><a class="headerlink" href="#ansys.rep.client.jms.ProjectApi.fs_url" title="Permalink to this definition">#</a></dt>
+<dd><p>URL of the file storage gateway</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ansys.rep.client.jms.ProjectApi.get_algorithms">
+<span class="sig-name descname"><span class="pre">get_algorithms</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">as_objects</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">query_params</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ansys.rep.client.jms.ProjectApi.get_algorithms" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ansys.rep.client.jms.ProjectApi.get_files">
+<span class="sig-name descname"><span class="pre">get_files</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">as_objects</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">content</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">query_params</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ansys.rep.client.jms.ProjectApi.get_files" title="Permalink to this definition">#</a></dt>
+<dd><p>Return a list of file resources, optionally filtered by given query parameters.
+If content=True, each files content is downloaded as well and stored in memory
+as <code class="xref py py-attr docutils literal notranslate"><span class="pre">ansys.rep.client.jms.File.content</span></code>.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ansys.rep.client.jms.ProjectApi.get_job_definitions">
+<span class="sig-name descname"><span class="pre">get_job_definitions</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">as_objects</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">query_params</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ansys.rep.client.jms.ProjectApi.get_job_definitions" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ansys.rep.client.jms.ProjectApi.get_job_selections">
+<span class="sig-name descname"><span class="pre">get_job_selections</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">as_objects</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">query_params</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ansys.rep.client.jms.ProjectApi.get_job_selections" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ansys.rep.client.jms.ProjectApi.get_jobs">
+<span class="sig-name descname"><span class="pre">get_jobs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">as_objects</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">query_params</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ansys.rep.client.jms.ProjectApi.get_jobs" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ansys.rep.client.jms.ProjectApi.get_license_contexts">
+<span class="sig-name descname"><span class="pre">get_license_contexts</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">as_objects</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">query_params</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ansys.rep.client.jms.ProjectApi.get_license_contexts" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ansys.rep.client.jms.ProjectApi.get_parameter_definitions">
+<span class="sig-name descname"><span class="pre">get_parameter_definitions</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">as_objects</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">query_params</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ansys.rep.client.jms.ProjectApi.get_parameter_definitions" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ansys.rep.client.jms.ProjectApi.get_parameter_mappings">
+<span class="sig-name descname"><span class="pre">get_parameter_mappings</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">as_objects</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">query_params</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ansys.rep.client.jms.ProjectApi.get_parameter_mappings" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ansys.rep.client.jms.ProjectApi.get_permissions">
+<span class="sig-name descname"><span class="pre">get_permissions</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">as_objects</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ansys.rep.client.jms.ProjectApi.get_permissions" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ansys.rep.client.jms.ProjectApi.get_task_definitions">
+<span class="sig-name descname"><span class="pre">get_task_definitions</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">as_objects</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">query_params</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ansys.rep.client.jms.ProjectApi.get_task_definitions" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ansys.rep.client.jms.ProjectApi.get_tasks">
+<span class="sig-name descname"><span class="pre">get_tasks</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">as_objects</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">query_params</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ansys.rep.client.jms.ProjectApi.get_tasks" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="ansys.rep.client.jms.ProjectApi.jms_api_url">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">jms_api_url</span></span><a class="headerlink" href="#ansys.rep.client.jms.ProjectApi.jms_api_url" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ansys.rep.client.jms.ProjectApi.update_algorithms">
+<span class="sig-name descname"><span class="pre">update_algorithms</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">algorithms</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">as_objects</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ansys.rep.client.jms.ProjectApi.update_algorithms" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ansys.rep.client.jms.ProjectApi.update_files">
+<span class="sig-name descname"><span class="pre">update_files</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">files</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">as_objects</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ansys.rep.client.jms.ProjectApi.update_files" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ansys.rep.client.jms.ProjectApi.update_job_definitions">
+<span class="sig-name descname"><span class="pre">update_job_definitions</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">job_definitions</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">as_objects</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ansys.rep.client.jms.ProjectApi.update_job_definitions" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ansys.rep.client.jms.ProjectApi.update_job_selections">
+<span class="sig-name descname"><span class="pre">update_job_selections</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">selections</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">as_objects</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ansys.rep.client.jms.ProjectApi.update_job_selections" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ansys.rep.client.jms.ProjectApi.update_jobs">
+<span class="sig-name descname"><span class="pre">update_jobs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">jobs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">as_objects</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ansys.rep.client.jms.ProjectApi.update_jobs" title="Permalink to this definition">#</a></dt>
+<dd><p>Update existing jobs</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>jobs</strong> (list of <a class="reference internal" href="#ansys.rep.client.jms.Job" title="ansys.rep.client.jms.Job"><code class="xref py py-class docutils literal notranslate"><span class="pre">ansys.rep.client.jms.Job</span></code></a>) – A list of job objects</p></li>
+<li><p><strong>as_objects</strong> (<em>bool</em>) – Whether to return jobs as objects or dictionaries</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>List of <a class="reference internal" href="#ansys.rep.client.jms.Job" title="ansys.rep.client.jms.Job"><code class="xref py py-class docutils literal notranslate"><span class="pre">ansys.rep.client.jms.Job</span></code></a> or list of dict if <cite>as_objects</cite> is True</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ansys.rep.client.jms.ProjectApi.update_license_contexts">
+<span class="sig-name descname"><span class="pre">update_license_contexts</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">license_contexts</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">as_objects</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ansys.rep.client.jms.ProjectApi.update_license_contexts" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ansys.rep.client.jms.ProjectApi.update_parameter_definitions">
+<span class="sig-name descname"><span class="pre">update_parameter_definitions</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">parameter_definitions</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">as_objects</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ansys.rep.client.jms.ProjectApi.update_parameter_definitions" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ansys.rep.client.jms.ProjectApi.update_parameter_mappings">
+<span class="sig-name descname"><span class="pre">update_parameter_mappings</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">parameter_mappings</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">as_objects</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ansys.rep.client.jms.ProjectApi.update_parameter_mappings" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ansys.rep.client.jms.ProjectApi.update_permissions">
+<span class="sig-name descname"><span class="pre">update_permissions</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">permissions</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ansys.rep.client.jms.ProjectApi.update_permissions" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ansys.rep.client.jms.ProjectApi.update_task_definitions">
+<span class="sig-name descname"><span class="pre">update_task_definitions</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">task_definitions</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">as_objects</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ansys.rep.client.jms.ProjectApi.update_task_definitions" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ansys.rep.client.jms.ProjectApi.update_tasks">
+<span class="sig-name descname"><span class="pre">update_tasks</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tasks</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">as_objects</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ansys.rep.client.jms.ProjectApi.update_tasks" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="ansys.rep.client.jms.ProjectApi.url">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">url</span></span><a class="headerlink" href="#ansys.rep.client.jms.ProjectApi.url" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="file">
+<h2>File<a class="headerlink" href="#file" title="Permalink to this heading">#</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="ansys.rep.client.jms.File">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ansys.rep.client.jms.</span></span><span class="sig-name descname"><span class="pre">File</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">src</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ansys.rep.client.jms.File" title="Permalink to this definition">#</a></dt>
+<dd><p>File resource.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>src</strong> (<em>str</em><em>, </em><em>optional</em>) – Path to the local file. Defaults to None.</p></li>
+<li><p><strong>**kwargs</strong> – Arbitrary keyword arguments, see the File schema below.</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># input file</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">f1</span> <span class="o">=</span> <span class="n">File</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;mac&quot;</span><span class="p">,</span> <span class="n">evaluation_path</span><span class="o">=</span><span class="s2">&quot;demo_project.mac&quot;</span><span class="p">,</span>
+<span class="go">                type=&quot;text/plain&quot;, src=os.path.join(os.getcwd(), &quot;motorbike_frame.mac&quot;)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># output file</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">f2</span> <span class="o">=</span> <span class="n">File</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;img&quot;</span><span class="p">,</span> <span class="n">evaluation_path</span><span class="o">=</span><span class="s2">&quot;file000.jpg&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="s2">&quot;image/jpeg&quot;</span><span class="p">)</span> <span class="p">)</span>
+</pre></div>
+</div>
+<p>The File schema has the following fields:</p>
+<table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Name</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Description</p></th>
+<th class="head"><p>Validations</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>id</p></td>
+<td><p>string</p></td>
+<td><p>Unique ID to access the resource, generated internally by the server on creation.</p></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p>name</p></td>
+<td><p>string</p></td>
+<td><p>Name of the file resource.</p></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p>type</p></td>
+<td><p>string</p></td>
+<td><p>Type of the file. This can be any string but using a correct media type for the given resource is advisable.</p></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p>storage_id</p></td>
+<td><p>string</p></td>
+<td><p>File’s identifier in the (orthogonal) file storage system</p></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p>size</p></td>
+<td><p>integer</p></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p>hash</p></td>
+<td><p>string</p></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p>creation_time</p></td>
+<td><p>string</p></td>
+<td><p>The date and time the file resource was created.</p></td>
+<td><ul class="simple">
+<li><p>It must be formatted as date-time</p></li>
+</ul>
+</td>
+</tr>
+<tr class="row-odd"><td><p>modification_time</p></td>
+<td><p>string</p></td>
+<td><p>The date and time the file resource was last modified.</p></td>
+<td><ul class="simple">
+<li><p>It must be formatted as date-time</p></li>
+</ul>
+</td>
+</tr>
+<tr class="row-even"><td><p>format</p></td>
+<td><p>string</p></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p>evaluation_path</p></td>
+<td><p>string</p></td>
+<td><p>Relative path under which the file instance for a design point evaluation will be stored.</p></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p>monitor</p></td>
+<td><p>boolean</p></td>
+<td><p>Whether to live monitor the file’s content.</p></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p>collect</p></td>
+<td><p>boolean</p></td>
+<td><p>Whether file should be collected per design point</p></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p>collect_interval</p></td>
+<td><p>integer</p></td>
+<td><p>Collect frequency for a file with collect=True. Min value limited by the evaluator’s settings. 0/None - let the evaluator decide, other value - interval in seconds</p></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p>reference_id</p></td>
+<td><p>string</p></td>
+<td><p>Reference file from which this one was created</p></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</section>
+<section id="project">
+<h2>Project<a class="headerlink" href="#project" title="Permalink to this heading">#</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="ansys.rep.client.jms.Project">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ansys.rep.client.jms.</span></span><span class="sig-name descname"><span class="pre">Project</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ansys.rep.client.jms.Project" title="Permalink to this definition">#</a></dt>
+<dd><p>Project resource</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>**kwargs</strong> – Arbitrary keyword arguments, see the Project schema below.</p>
+</dd>
+</dl>
+<p class="rubric">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">proj</span> <span class="o">=</span> <span class="n">Project</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="s2">&quot;demo_project&quot;</span><span class="p">,</span> <span class="n">active</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">priority</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">proj</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">create_project</span><span class="p">(</span><span class="n">proj</span><span class="p">,</span> <span class="n">replace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The Project schema has the following fields:</p>
+<table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Name</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Description</p></th>
+<th class="head"><p>Validations</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>id</p></td>
+<td><p>string</p></td>
+<td><p>Unique ID to access the project, specified on creation of the project.</p></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p>name</p></td>
+<td><p>string</p></td>
+<td><p>Name of the project.</p></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p>active</p></td>
+<td><p>boolean</p></td>
+<td><p>Defines whether the project is active for evaluation.</p></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p>priority</p></td>
+<td><p>integer</p></td>
+<td><p>Priority to pick the project for evaluation.</p></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p>creation_time</p></td>
+<td><p>string</p></td>
+<td><p>The date and time the project was created.</p></td>
+<td><ul class="simple">
+<li><p>It must be formatted as date-time</p></li>
+</ul>
+</td>
+</tr>
+<tr class="row-odd"><td><p>modification_time</p></td>
+<td><p>string</p></td>
+<td><p>The date and time the project was last modified.</p></td>
+<td><ul class="simple">
+<li><p>It must be formatted as date-time</p></li>
+</ul>
+</td>
+</tr>
+<tr class="row-even"><td><p>file_storages[]</p></td>
+<td><p>array</p></td>
+<td><p>List of file storages defined for the project.</p></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p>statistics</p></td>
+<td><p>object</p></td>
+<td><p>Optional dictionary containing various project statistics.</p></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</section>
+<section id="fitness-definition">
+<h2>Fitness Definition<a class="headerlink" href="#fitness-definition" title="Permalink to this heading">#</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="ansys.rep.client.jms.FitnessTermDefinition">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ansys.rep.client.jms.</span></span><span class="sig-name descname"><span class="pre">FitnessTermDefinition</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ansys.rep.client.jms.FitnessTermDefinition" title="Permalink to this definition">#</a></dt>
+<dd><p>FitnessTermDefinition resource.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>**kwargs</strong> – Arbitrary keyword arguments, see the FitnessTermDefinition schema below.</p>
+</dd>
+</dl>
+<p>The FitnessTermDefinition schema has the following fields:</p>
+<table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Name</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Description</p></th>
+<th class="head"><p>Validations</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>id</p></td>
+<td><p>string</p></td>
+<td><p>Unique ID to access the resource, generated internally by the server on creation.</p></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p>name</p></td>
+<td><p>string</p></td>
+<td><p>Name of the fitness term.</p></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p>expression</p></td>
+<td><p>string</p></td>
+<td><p>The Python expression that defines the fitness term.</p></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p>type</p></td>
+<td><p>string</p></td>
+<td><p>Fitness term type.</p></td>
+<td><ul class="simple">
+<li><p>It must be equal to one of the elements in [“design_objective”, “limit_constraint”, “target_constraint”]</p></li>
+</ul>
+</td>
+</tr>
+<tr class="row-even"><td><p>weighting_factor</p></td>
+<td><p>number</p></td>
+<td><p>Relative importance of the fitness term in comparison to other fitness terms.</p></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># A fitness term of type objective</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ft1</span> <span class="o">=</span> <span class="n">FitnessTermDefinition</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;weight&quot;</span><span class="p">,</span>
+<span class="go">                                type=&quot;design_objective&quot;,</span>
+<span class="go">                                weighting_factor=1.0,</span>
+<span class="go">                                expression=&quot;map_design_objective(values[&#39;weight&#39;],7.5,5.5)&quot;</span>
+<span class="go">                                )</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># A fitness term of type target constraint</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ft2</span> <span class="o">=</span> <span class="n">FitnessTermDefinition</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;torsional_stiffness&quot;</span><span class="p">,</span>
+<span class="go">                                type=&quot;target_constraint&quot;,</span>
+<span class="go">                                weighting_factor=0.8,</span>
+<span class="go">                                expression=&quot;map_target_constraint(</span>
+<span class="go">                                    values[&#39;torsion_stiffness&#39;], 1313.0, 5.0, 30.0)&quot;</span>
+<span class="go">                                )</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># A fitness term of type limit constraint</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ft3</span> <span class="o">=</span> <span class="n">FitnessTermDefinition</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;max_stress&quot;</span><span class="p">,</span>
+<span class="go">                                type=&quot;limit_constraint&quot;,</span>
+<span class="go">                                weighting_factor=0.6,</span>
+<span class="go">                                expression=&quot;map_limit_constraint(</span>
+<span class="go">                                    values[&#39;max_stress&#39;], 451.0, 50.0 )&quot;</span>
+<span class="go">                                )</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="ansys.rep.client.jms.FitnessDefinition">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ansys.rep.client.jms.</span></span><span class="sig-name descname"><span class="pre">FitnessDefinition</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ansys.rep.client.jms.FitnessDefinition" title="Permalink to this definition">#</a></dt>
+<dd><p>FitnessDefinition resource.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>**kwargs</strong> – Arbitrary keyword arguments, see the Job schema below.</p>
+</dd>
+</dl>
+<p class="rubric">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">fd</span> <span class="o">=</span> <span class="n">FitnessDefinition</span><span class="p">(</span><span class="n">error_fitness</span><span class="o">=</span><span class="mf">10.0</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">fd</span><span class="o">.</span><span class="n">add_fitness_term</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;weight&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="s2">&quot;design_objective&quot;</span><span class="p">,</span> <span class="n">weighting_factor</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span>
+<span class="go">            expression=&quot;map_design_objective( values[&#39;weight&#39;], 7.5, 5.5)&quot;)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">fd</span><span class="o">.</span><span class="n">add_fitness_term</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;torsional_stiffness&quot;</span><span class="p">,</span>
+<span class="go">                        type=&quot;target_constraint&quot;,</span>
+<span class="go">                        weighting_factor=1.0,</span>
+<span class="go">                        expression=&quot;map_target_constraint(</span>
+<span class="go">                            values[&#39;torsion_stiffness&#39;],</span>
+<span class="go">                            1313.0,</span>
+<span class="go">                            5.0,</span>
+<span class="go">                            30.0 )&quot; )</span>
+</pre></div>
+</div>
+<p>The FitnessDefinition schema has the following fields:</p>
+<table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Name</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Description</p></th>
+<th class="head"><p>Validations</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>id</p></td>
+<td><p>string</p></td>
+<td><p>Unique ID to access the resource, generated internally by the server on creation.</p></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p>fitness_term_definitions[]</p></td>
+<td><p>array</p></td>
+<td><p>List of <a class="reference internal" href="#ansys.rep.client.jms.FitnessTermDefinition" title="ansys.rep.client.jms.FitnessTermDefinition"><code class="xref py py-class docutils literal notranslate"><span class="pre">ansys.rep.client.jms.FitnessTermDefinition</span></code></a>.</p></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p>error_fitness</p></td>
+<td><p>number</p></td>
+<td><p>The default fitness value assigned to failed design points.</p></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<dl class="py method">
+<dt class="sig sig-object py" id="ansys.rep.client.jms.FitnessDefinition.add_fitness_term">
+<span class="sig-name descname"><span class="pre">add_fitness_term</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ansys.rep.client.jms.FitnessDefinition.add_fitness_term" title="Permalink to this definition">#</a></dt>
+<dd><p>Helper function to easily add a fitness term</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="parameters">
+<h2>Parameters<a class="headerlink" href="#parameters" title="Permalink to this heading">#</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="ansys.rep.client.jms.FloatParameterDefinition">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ansys.rep.client.jms.</span></span><span class="sig-name descname"><span class="pre">FloatParameterDefinition</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ansys.rep.client.jms.FloatParameterDefinition" title="Permalink to this definition">#</a></dt>
+<dd><p>FloatParameterDefinition resource.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>**kwargs</strong> – Arbitrary keyword arguments, see the FloatParameterDefinition schema below.</p>
+</dd>
+</dl>
+<p class="rubric">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># A continuous parameter</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pd1</span> <span class="o">=</span> <span class="n">FloatParameterDefinition</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;param_1&#39;</span><span class="p">,</span> <span class="n">lower_limit</span><span class="o">=</span><span class="mf">4.0</span><span class="p">,</span>
+<span class="go">                                   upper_limit=20.0, default=12.0)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># In case of e.g. a manifacturing variable which can only take some values</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pd2</span> <span class="o">=</span> <span class="n">FloatParameterDefinition</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;param_2&#39;</span><span class="p">,</span>
+<span class="go">                                   value_list=[4.7, 12.0, 15.5, 20.0],</span>
+<span class="go">                                   default=12.0)</span>
+</pre></div>
+</div>
+<p>The FloatParameterDefinition schema has the following fields:</p>
+<table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Name</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Description</p></th>
+<th class="head"><p>Validations</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>id</p></td>
+<td><p>string</p></td>
+<td><p>Unique ID to access the resource, generated internally by the server on creation.</p></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p>name</p></td>
+<td><p>string</p></td>
+<td><p>Name (ID) of the parameter.</p></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p>quantity_name</p></td>
+<td><p>string</p></td>
+<td><p>Name of the quantity the parameter represents, e.g. Length.</p></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p>units</p></td>
+<td><p>string</p></td>
+<td><p>Units for the parameter.</p></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p>display_text</p></td>
+<td><p>string</p></td>
+<td><p>Text to display as the parameter name.</p></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p>mode</p></td>
+<td><p>string</p></td>
+<td><p>Indicates whether it’s an input or output parameter. Filled server side.</p></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p>type</p></td>
+<td><p>object</p></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p>default</p></td>
+<td><p>number</p></td>
+<td><p>Default parameter value.</p></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p>lower_limit</p></td>
+<td><p>number</p></td>
+<td><p>Lower bound for the parameter value.</p></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p>upper_limit</p></td>
+<td><p>number</p></td>
+<td><p>Upper bound for the parameter value.</p></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p>step</p></td>
+<td><p>number</p></td>
+<td><p>If provided, allowable values are given by: AllowableValue = lower_limit + n * step, where n is an integer and AllowableValue &lt;= upper_limit.</p></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p>cyclic</p></td>
+<td><p>boolean</p></td>
+<td><p>Indicates if the parameter is cyclic.</p></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p>value_list[]</p></td>
+<td><p>array</p></td>
+<td><p>A list of allowed values, alternative to providing upper and lower limits.</p></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="ansys.rep.client.jms.BoolParameterDefinition">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ansys.rep.client.jms.</span></span><span class="sig-name descname"><span class="pre">BoolParameterDefinition</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ansys.rep.client.jms.BoolParameterDefinition" title="Permalink to this definition">#</a></dt>
+<dd><p>BoolParameterDefinition resource.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>**kwargs</strong> – Arbitrary keyword arguments, see the BoolParameterDefinition schema below.</p>
+</dd>
+</dl>
+<p>The BoolParameterDefinition schema has the following fields:</p>
+<table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Name</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Description</p></th>
+<th class="head"><p>Validations</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>id</p></td>
+<td><p>string</p></td>
+<td><p>Unique ID to access the resource, generated internally by the server on creation.</p></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p>name</p></td>
+<td><p>string</p></td>
+<td><p>Name (ID) of the parameter.</p></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p>quantity_name</p></td>
+<td><p>string</p></td>
+<td><p>Name of the quantity the parameter represents, e.g. Length.</p></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p>units</p></td>
+<td><p>string</p></td>
+<td><p>Units for the parameter.</p></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p>display_text</p></td>
+<td><p>string</p></td>
+<td><p>Text to display as the parameter name.</p></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p>mode</p></td>
+<td><p>string</p></td>
+<td><p>Indicates whether it’s an input or output parameter. Filled server side.</p></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p>type</p></td>
+<td><p>object</p></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p>default</p></td>
+<td><p>boolean</p></td>
+<td><p>Default parameter value.</p></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="ansys.rep.client.jms.IntParameterDefinition">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ansys.rep.client.jms.</span></span><span class="sig-name descname"><span class="pre">IntParameterDefinition</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ansys.rep.client.jms.IntParameterDefinition" title="Permalink to this definition">#</a></dt>
+<dd><p>IntParameterDefinition resource.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>**kwargs</strong> – Arbitrary keyword arguments, see the IntParameterDefinition schema below.</p>
+</dd>
+</dl>
+<p class="rubric">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">pd1</span> <span class="o">=</span> <span class="n">IntParameterDefinition</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;ply_angle&#39;</span><span class="p">,</span>
+<span class="go">                                 value_list=[-60, -45, 0, 45, 60],</span>
+<span class="go">                                 default=0)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pd2</span> <span class="o">=</span> <span class="n">IntParameterDefinition</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;number_of_layers&#39;</span><span class="p">,</span>
+<span class="go">                                 lower_limit=1,</span>
+<span class="go">                                 upper_limit=5,</span>
+<span class="go">                                 default=2,</span>
+<span class="go">                                 step=1)</span>
+</pre></div>
+</div>
+<p>The IntParameterDefinition schema has the following fields:</p>
+<table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Name</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Description</p></th>
+<th class="head"><p>Validations</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>id</p></td>
+<td><p>string</p></td>
+<td><p>Unique ID to access the resource, generated internally by the server on creation.</p></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p>name</p></td>
+<td><p>string</p></td>
+<td><p>Name (ID) of the parameter.</p></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p>quantity_name</p></td>
+<td><p>string</p></td>
+<td><p>Name of the quantity the parameter represents, e.g. Length.</p></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p>units</p></td>
+<td><p>string</p></td>
+<td><p>Units for the parameter.</p></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p>display_text</p></td>
+<td><p>string</p></td>
+<td><p>Text to display as the parameter name.</p></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p>mode</p></td>
+<td><p>string</p></td>
+<td><p>Indicates whether it’s an input or output parameter. Filled server side.</p></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p>type</p></td>
+<td><p>object</p></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p>default</p></td>
+<td><p>integer</p></td>
+<td><p>Default parameter value.</p></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p>lower_limit</p></td>
+<td><p>integer</p></td>
+<td><p>Lower bound for the parameter value.</p></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p>upper_limit</p></td>
+<td><p>integer</p></td>
+<td><p>Upper bound for the parameter value.</p></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p>step</p></td>
+<td><p>integer</p></td>
+<td><p>Equal to 1 by default.</p></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p>cyclic</p></td>
+<td><p>boolean</p></td>
+<td><p>Indicates if the parameter is cyclic.</p></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="ansys.rep.client.jms.StringParameterDefinition">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ansys.rep.client.jms.</span></span><span class="sig-name descname"><span class="pre">StringParameterDefinition</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ansys.rep.client.jms.StringParameterDefinition" title="Permalink to this definition">#</a></dt>
+<dd><p>StringParameterDefinition resource.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>**kwargs</strong> – Arbitrary keyword arguments, see the StringParameterDefinition schema below.</p>
+</dd>
+</dl>
+<p class="rubric">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">pd</span> <span class="o">=</span> <span class="n">StringParameterDefinition</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;DiameterDistribution&#39;</span><span class="p">,</span>
+<span class="go">                                   value_list=[&#39;Constant&#39;, &#39;Uniform&#39;, &#39;Log-Normal&#39;],</span>
+<span class="go">                                   default=&#39;Constant&#39;)</span>
+</pre></div>
+</div>
+<p>The StringParameterDefinition schema has the following fields:</p>
+<table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Name</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Description</p></th>
+<th class="head"><p>Validations</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>id</p></td>
+<td><p>string</p></td>
+<td><p>Unique ID to access the resource, generated internally by the server on creation.</p></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p>name</p></td>
+<td><p>string</p></td>
+<td><p>Name (ID) of the parameter.</p></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p>quantity_name</p></td>
+<td><p>string</p></td>
+<td><p>Name of the quantity the parameter represents, e.g. Length.</p></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p>units</p></td>
+<td><p>string</p></td>
+<td><p>Units for the parameter.</p></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p>display_text</p></td>
+<td><p>string</p></td>
+<td><p>Text to display as the parameter name.</p></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p>mode</p></td>
+<td><p>string</p></td>
+<td><p>Indicates whether it’s an input or output parameter. Filled server side.</p></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p>type</p></td>
+<td><p>object</p></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p>default</p></td>
+<td><p>string</p></td>
+<td><p>Default parameter value.</p></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p>value_list[]</p></td>
+<td><p>array</p></td>
+<td><p>A list of allowed values.</p></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="ansys.rep.client.jms.ParameterMapping">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ansys.rep.client.jms.</span></span><span class="sig-name descname"><span class="pre">ParameterMapping</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ansys.rep.client.jms.ParameterMapping" title="Permalink to this definition">#</a></dt>
+<dd><p>ParameterMapping resource.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>**kwargs</strong> – Arbitrary keyword arguments, see the ParameterMapping schema below.</p>
+</dd>
+</dl>
+<p class="rubric">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">pl</span> <span class="o">=</span> <span class="n">ParameterMapping</span><span class="p">(</span><span class="n">key_string</span><span class="o">=</span><span class="s1">&#39;radius(0)&#39;</span><span class="p">,</span>
+<span class="go">                          tokenizer=&quot;=&quot;,</span>
+<span class="go">                          parameter_definition_name=&quot;tube_radius&quot;)</span>
+</pre></div>
+</div>
+<p>The ParameterMapping schema has the following fields:</p>
+<table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Name</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Description</p></th>
+<th class="head"><p>Validations</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>id</p></td>
+<td><p>string</p></td>
+<td><p>Unique ID to access the resource, generated internally by the server on creation.</p></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p>line</p></td>
+<td><p>integer</p></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p>column</p></td>
+<td><p>integer</p></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p>key_string</p></td>
+<td><p>string</p></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p>float_field</p></td>
+<td><p>string</p></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p>width</p></td>
+<td><p>integer</p></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p>precision</p></td>
+<td><p>integer</p></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p>tokenizer</p></td>
+<td><p>string</p></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p>decimal_symbol</p></td>
+<td><p>string</p></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p>digit_grouping_symbol</p></td>
+<td><p>string</p></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p>string_quote</p></td>
+<td><p>string</p></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p>true_string</p></td>
+<td><p>string</p></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p>false_string</p></td>
+<td><p>string</p></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p>parameter_definition_id</p></td>
+<td><p>string</p></td>
+<td><p>ID of the linked parameter definition, see <code class="xref py py-class docutils literal notranslate"><span class="pre">ansys.rep.client.jms.ParameterDefinition</span></code>.</p></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p>task_definition_property</p></td>
+<td><p>string</p></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p>file_id</p></td>
+<td><p>string</p></td>
+<td><p>ID of the file resource.</p></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</section>
+<section id="task-definition">
+<h2>Task Definition<a class="headerlink" href="#task-definition" title="Permalink to this heading">#</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="ansys.rep.client.jms.SuccessCriteria">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ansys.rep.client.jms.</span></span><span class="sig-name descname"><span class="pre">SuccessCriteria</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ansys.rep.client.jms.SuccessCriteria" title="Permalink to this definition">#</a></dt>
+<dd><p>SuccessCriteria resource.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>**kwargs</strong> – Arbitrary keyword arguments, see the SuccessCriteria schema below.</p>
+</dd>
+</dl>
+<p class="rubric">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">sc</span> <span class="o">=</span> <span class="n">SuccessCriteria</span><span class="p">(</span>
+<span class="go">        return_code=0,</span>
+<span class="go">        expressions= [&quot;values[&#39;tube1_radius&#39;]&gt;=4.0&quot;, &quot;values[&#39;tube1_thickness&#39;]&gt;=0.5&quot;],</span>
+<span class="go">        required_output_file_ids=[ f.id for f in files[2:] ],</span>
+<span class="go">        require_all_output_files=False,</span>
+<span class="go">        required_output_parameter_ids=[...],</span>
+<span class="go">        require_all_output_parameters=False</span>
+<span class="go">    )</span>
+</pre></div>
+</div>
+<p>The SuccessCriteria schema has the following fields:</p>
+<table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Name</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Description</p></th>
+<th class="head"><p>Validations</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>return_code</p></td>
+<td><p>integer</p></td>
+<td><p>The process exit code that must be returned by the executed command.</p></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p>expressions[]</p></td>
+<td><p>array</p></td>
+<td><p>A list of expressions to be evaluated.</p></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p>required_output_file_ids[]</p></td>
+<td><p>array</p></td>
+<td><p>List of IDs of required output files.</p></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p>require_all_output_files</p></td>
+<td><p>boolean</p></td>
+<td><p>Flag to require all output files.</p></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p>required_output_parameter_ids[]</p></td>
+<td><p>array</p></td>
+<td><p>List of names of required output parameters.</p></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p>require_all_output_parameters</p></td>
+<td><p>boolean</p></td>
+<td><p>Flag to require all output parameters.</p></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="ansys.rep.client.jms.Licensing">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ansys.rep.client.jms.</span></span><span class="sig-name descname"><span class="pre">Licensing</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ansys.rep.client.jms.Licensing" title="Permalink to this definition">#</a></dt>
+<dd><p>Licensing resource.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>**kwargs</strong> – Arbitrary keyword arguments, see the Licensing schema below.</p>
+</dd>
+</dl>
+<p class="rubric">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">lic</span> <span class="o">=</span> <span class="n">Licensing</span><span class="p">(</span><span class="n">enable_shared_licensing</span><span class="o">=</span><span class="n">true</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The Licensing schema has the following fields:</p>
+<table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Name</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Description</p></th>
+<th class="head"><p>Validations</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>enable_shared_licensing</p></td>
+<td><p>boolean</p></td>
+<td><p>Whether to enable shared licensing contexts for Ansys simulations</p></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="ansys.rep.client.jms.TaskDefinition">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ansys.rep.client.jms.</span></span><span class="sig-name descname"><span class="pre">TaskDefinition</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ansys.rep.client.jms.TaskDefinition" title="Permalink to this definition">#</a></dt>
+<dd><p>TaskDefinition resource.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>**kwargs</strong> – Arbitrary keyword arguments, see the TaskDefinition schema below.</p>
+</dd>
+</dl>
+<p class="rubric">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ps</span> <span class="o">=</span> <span class="n">TaskDefinition</span><span class="p">(</span>
+<span class="go">            name=&quot;MAPDL_run&quot;,</span>
+<span class="go">            application_name=&quot;ANSYS Mechanical APDL&quot;,</span>
+<span class="go">            application_version=&quot;20.1&quot;,</span>
+<span class="go">            execution_command=&quot;%executable% -b -i %file:mac%</span>
+<span class="go">                               -o file.out -np %resource:num_cores%&quot;,</span>
+<span class="go">            max_execution_time=20.0,</span>
+<span class="go">            cpu_core_usage=1,</span>
+<span class="go">            execution_level=0,</span>
+<span class="go">            memory=250,</span>
+<span class="go">            disk_space=5,</span>
+<span class="go">        )</span>
+</pre></div>
+</div>
+<p>The TaskDefinition schema has the following fields:</p>
+<table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Name</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Description</p></th>
+<th class="head"><p>Validations</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>id</p></td>
+<td><p>string</p></td>
+<td><p>Unique ID to access the resource, generated internally by the server on creation.</p></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p>name</p></td>
+<td><p>string</p></td>
+<td><p>Name.</p></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p>execution_command</p></td>
+<td><p>string</p></td>
+<td><p>Command to execute (command or execution script is required).</p></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p>execution_script_id</p></td>
+<td><p>string</p></td>
+<td><p>Script to execute (command or execution script is required).</p></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p>execution_level</p></td>
+<td><p>integer</p></td>
+<td><p>Define execution level for this task.</p></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p>execution_context</p></td>
+<td><p>object</p></td>
+<td><p>Additional arguments to pass to the executing command</p></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p>environment</p></td>
+<td><p>object</p></td>
+<td><p>Environment variables to set for the executed process</p></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p>max_execution_time</p></td>
+<td><p>number</p></td>
+<td><p>Maximum time in seconds for executing the task.</p></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p>num_trials</p></td>
+<td><p>integer</p></td>
+<td><p>Maximum number of attempts to execute the task.</p></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p>store_output</p></td>
+<td><p>boolean</p></td>
+<td><p>Specify whether to store the standard output of the task.</p></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p>input_file_ids[]</p></td>
+<td><p>array</p></td>
+<td><p>List of IDs of input files.</p></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p>output_file_ids[]</p></td>
+<td><p>array</p></td>
+<td><p>List of IDs of output files.</p></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p>success_criteria</p></td>
+<td><p>object</p></td>
+<td><p>A <a class="reference internal" href="#ansys.rep.client.jms.SuccessCriteria" title="ansys.rep.client.jms.SuccessCriteria"><code class="xref py py-class docutils literal notranslate"><span class="pre">ansys.rep.client.jms.SuccessCriteria</span></code></a> object.</p></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p>licensing</p></td>
+<td><p>object</p></td>
+<td><p>A <a class="reference internal" href="#ansys.rep.client.jms.Licensing" title="ansys.rep.client.jms.Licensing"><code class="xref py py-class docutils literal notranslate"><span class="pre">ansys.rep.client.jms.Licensing</span></code></a> object.</p></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p>software_requirements[]</p></td>
+<td><p>array</p></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p>resource_requirements</p></td>
+<td><p>object</p></td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</section>
+<section id="job-definition">
+<h2>Job Definition<a class="headerlink" href="#job-definition" title="Permalink to this heading">#</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="ansys.rep.client.jms.JobDefinition">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ansys.rep.client.jms.</span></span><span class="sig-name descname"><span class="pre">JobDefinition</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ansys.rep.client.jms.JobDefinition" title="Permalink to this definition">#</a></dt>
+<dd><p>JobDefinition resource.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>**kwargs</strong> – Arbitrary keyword arguments, see the JobDefinition schema below.</p>
+</dd>
+</dl>
+<p class="rubric">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">job_def</span> <span class="o">=</span> <span class="n">JobDefinition</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;JobDefinition.1&quot;</span><span class="p">,</span> <span class="n">active</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">job_def</span><span class="o">.</span><span class="n">add_float_parameter_definition</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;tube_radius&#39;</span><span class="p">,</span>
+<span class="go">                                           lower_limit=4.0,</span>
+<span class="go">                                           upper_limit=20.0,</span>
+<span class="go">                                           default=12.0 )</span>
+</pre></div>
+</div>
+<p>The JobDefinition schema has the following fields:</p>
+<table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Name</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Description</p></th>
+<th class="head"><p>Validations</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>id</p></td>
+<td><p>string</p></td>
+<td><p>Unique ID to access the resource, generated internally by the server on creation.</p></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p>name</p></td>
+<td><p>string</p></td>
+<td><p>Name of the job_definition</p></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p>active</p></td>
+<td><p>boolean</p></td>
+<td><p>Defines whether this is the active job_definition in the project where evaluators will evaluate pending design points</p></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p>creation_time</p></td>
+<td><p>string</p></td>
+<td><p>The date and time the job_definition was created.</p></td>
+<td><ul class="simple">
+<li><p>It must be formatted as date-time</p></li>
+</ul>
+</td>
+</tr>
+<tr class="row-even"><td><p>modification_time</p></td>
+<td><p>string</p></td>
+<td><p>The date and time the job_definition was last modified.</p></td>
+<td><ul class="simple">
+<li><p>It must be formatted as date-time</p></li>
+</ul>
+</td>
+</tr>
+<tr class="row-odd"><td><p>parameter_definition_ids[]</p></td>
+<td><p>array</p></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p>parameter_mapping_ids[]</p></td>
+<td><p>array</p></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p>task_definition_ids[]</p></td>
+<td><p>array</p></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p>fitness_definition</p></td>
+<td><p>object</p></td>
+<td><p>An <a class="reference internal" href="#ansys.rep.client.jms.FitnessDefinition" title="ansys.rep.client.jms.FitnessDefinition"><code class="xref py py-class docutils literal notranslate"><span class="pre">ansys.rep.client.jms.FitnessDefinition</span></code></a> object.</p></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</section>
+<section id="task">
+<h2>Task<a class="headerlink" href="#task" title="Permalink to this heading">#</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="ansys.rep.client.jms.Task">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ansys.rep.client.jms.</span></span><span class="sig-name descname"><span class="pre">Task</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ansys.rep.client.jms.Task" title="Permalink to this definition">#</a></dt>
+<dd><p>Task resource.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>**kwargs</strong> – Arbitrary keyword arguments, see the Task schema below.</p>
+</dd>
+</dl>
+<p>The Task schema has the following fields:</p>
+<table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Name</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Description</p></th>
+<th class="head"><p>Validations</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>id</p></td>
+<td><p>string</p></td>
+<td><p>Unique ID to access the resource, generated internally by the server on creation.</p></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p>modification_time</p></td>
+<td><p>string</p></td>
+<td><p>The date and time the task was last modified.</p></td>
+<td><ul class="simple">
+<li><p>It must be formatted as date-time</p></li>
+</ul>
+</td>
+</tr>
+<tr class="row-even"><td><p>creation_time</p></td>
+<td><p>string</p></td>
+<td><p>The date and time the task was created.</p></td>
+<td><ul class="simple">
+<li><p>It must be formatted as date-time</p></li>
+</ul>
+</td>
+</tr>
+<tr class="row-odd"><td><p>pending_time</p></td>
+<td><p>string</p></td>
+<td><p>The date and time the task was set to pending.</p></td>
+<td><ul class="simple">
+<li><p>It must be formatted as date-time</p></li>
+</ul>
+</td>
+</tr>
+<tr class="row-even"><td><p>prolog_time</p></td>
+<td><p>string</p></td>
+<td><p>The date and time the task was set to prolog.</p></td>
+<td><ul class="simple">
+<li><p>It must be formatted as date-time</p></li>
+</ul>
+</td>
+</tr>
+<tr class="row-odd"><td><p>running_time</p></td>
+<td><p>string</p></td>
+<td><p>The date and time the task was set to running.</p></td>
+<td><ul class="simple">
+<li><p>It must be formatted as date-time</p></li>
+</ul>
+</td>
+</tr>
+<tr class="row-even"><td><p>finished_time</p></td>
+<td><p>string</p></td>
+<td><p>The date and time the task was completed.</p></td>
+<td><ul class="simple">
+<li><p>It must be formatted as date-time</p></li>
+</ul>
+</td>
+</tr>
+<tr class="row-odd"><td><p>eval_status</p></td>
+<td><p>string</p></td>
+<td><p>Evaluation status.</p></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p>trial_number</p></td>
+<td><p>integer</p></td>
+<td><p>Which attempt to execute the process step this task represent.</p></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p>elapsed_time</p></td>
+<td><p>number</p></td>
+<td><p>Number of seconds it took the evaluator to execute the task.</p></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p>task_definition_id</p></td>
+<td><p>string</p></td>
+<td><p>[‘ID of the <a class="reference internal" href="#ansys.rep.client.jms.TaskDefinition" title="ansys.rep.client.jms.TaskDefinition"><code class="xref py py-class docutils literal notranslate"><span class="pre">ansys.rep.client.jms.TaskDefinition</span></code></a> the task is linked to.’]</p></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p>task_definition_snapshot</p></td>
+<td><p>object</p></td>
+<td><p>Snapshot of <a class="reference internal" href="#ansys.rep.client.jms.TaskDefinition" title="ansys.rep.client.jms.TaskDefinition"><code class="xref py py-class docutils literal notranslate"><span class="pre">ansys.rep.client.jms.TaskDefinition</span></code></a> created when task status changes to prolog, before evaluation.</p></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p>job_id</p></td>
+<td><p>string</p></td>
+<td><p>ID of the <a class="reference internal" href="#ansys.rep.client.jms.Job" title="ansys.rep.client.jms.Job"><code class="xref py py-class docutils literal notranslate"><span class="pre">ansys.rep.client.jms.Job</span></code></a> the task is linked to.</p></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p>evaluator_id</p></td>
+<td><p>string</p></td>
+<td><p>UUID of the <a class="reference internal" href="#ansys.rep.client.jms.Evaluator" title="ansys.rep.client.jms.Evaluator"><code class="xref py py-class docutils literal notranslate"><span class="pre">ansys.rep.client.jms.Evaluator</span></code></a> that updated the task.</p></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p>input_file_ids[]</p></td>
+<td><p>array</p></td>
+<td><p>List of IDs of input files of task.</p></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p>output_file_ids[]</p></td>
+<td><p>array</p></td>
+<td><p>List of IDs of output files of task.</p></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p>inherited_file_ids[]</p></td>
+<td><p>array</p></td>
+<td><p>List of IDs of inherited files of task.</p></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p>owned_file_ids[]</p></td>
+<td><p>array</p></td>
+<td><p>List of IDs of owned files of task.</p></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</section>
+<section id="job">
+<h2>Job<a class="headerlink" href="#job" title="Permalink to this heading">#</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="ansys.rep.client.jms.Job">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ansys.rep.client.jms.</span></span><span class="sig-name descname"><span class="pre">Job</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ansys.rep.client.jms.Job" title="Permalink to this definition">#</a></dt>
+<dd><p>Job resource.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>**kwargs</strong> – Arbitrary keyword arguments, see the Job schema below.</p>
+</dd>
+</dl>
+<p class="rubric">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">dps</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">dps</span><span class="o">.</span><span class="n">append</span><span class="p">(</span> <span class="n">Job</span><span class="p">(</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;dp_1&quot;</span><span class="p">,</span> <span class="n">eval_status</span><span class="o">=</span><span class="s2">&quot;pending&quot;</span><span class="p">)</span> <span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">dps</span><span class="o">.</span><span class="n">append</span><span class="p">(</span> <span class="n">Job</span><span class="p">(</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;dp_2&quot;</span><span class="p">,</span> <span class="n">eval_status</span><span class="o">=</span><span class="s2">&quot;pending&quot;</span><span class="p">)</span> <span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">project_job_definition</span><span class="o">.</span><span class="n">create_jobs</span><span class="p">(</span> <span class="n">dps</span> <span class="p">)</span>
+</pre></div>
+</div>
+<p>The Job schema has the following fields:</p>
+<table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Name</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Description</p></th>
+<th class="head"><p>Validations</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>id</p></td>
+<td><p>string</p></td>
+<td><p>Unique ID to access the resource, generated internally by the server on creation.</p></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p>name</p></td>
+<td><p>string</p></td>
+<td><p>Name of the design point.</p></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p>eval_status</p></td>
+<td><p>string</p></td>
+<td><p>Evaluation status.</p></td>
+<td><ul class="simple">
+<li><p>It must be equal to one of the elements in [“inactive”, “pending”, “prolog”, “running”, “evaluated”, “failed”, “aborted”, “timeout”]</p></li>
+</ul>
+</td>
+</tr>
+<tr class="row-odd"><td><p>job_definition_id</p></td>
+<td><p>string</p></td>
+<td><p>ID of the linked job_definition, see <a class="reference internal" href="#ansys.rep.client.jms.JobDefinition" title="ansys.rep.client.jms.JobDefinition"><code class="xref py py-class docutils literal notranslate"><span class="pre">ansys.rep.client.jms.JobDefinition</span></code></a>.</p></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p>priority</p></td>
+<td><p>integer</p></td>
+<td><p>Priority with which design points are evaluated. The default is 0, which is the highest priority. Assigning a higher value to a design point makes it a lower priority.</p></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p>values</p></td>
+<td><p>object</p></td>
+<td><p>Dictionary with (name,value) pairs for all parameters defined in the linked job_definition.</p></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p>fitness</p></td>
+<td><p>number</p></td>
+<td><p>Fitness value computed.</p></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p>fitness_term_values</p></td>
+<td><p>object</p></td>
+<td><p>Dictionary with (name,value) pairs for all fitness terms computed.</p></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p>note</p></td>
+<td><p>string</p></td>
+<td><p>Optional note for this design point.</p></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p>creator</p></td>
+<td><p>string</p></td>
+<td><p>Optional name/ID of the creator of this design point.</p></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p>executed_task_definition_level</p></td>
+<td><p>integer</p></td>
+<td><p>Execution level of the last executed process step (-1 if none has been executed yet).</p></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p>creation_time</p></td>
+<td><p>string</p></td>
+<td><p>The date and time the design point was created.</p></td>
+<td><ul class="simple">
+<li><p>It must be formatted as date-time</p></li>
+</ul>
+</td>
+</tr>
+<tr class="row-even"><td><p>modification_time</p></td>
+<td><p>string</p></td>
+<td><p>The date and time the design point was last modified.</p></td>
+<td><ul class="simple">
+<li><p>It must be formatted as date-time</p></li>
+</ul>
+</td>
+</tr>
+<tr class="row-odd"><td><p>elapsed_time</p></td>
+<td><p>number</p></td>
+<td><p>Number of seconds it took the evaluator(s) to update the design point.</p></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p>evaluators[]</p></td>
+<td><p>array</p></td>
+<td><p>List of UUID strings of the evaluators that updated the design point.</p></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p>file_ids[]</p></td>
+<td><p>array</p></td>
+<td><p>List of IDs of all files of this design point.</p></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</section>
+<section id="job-selection">
+<h2>Job Selection<a class="headerlink" href="#job-selection" title="Permalink to this heading">#</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="ansys.rep.client.jms.JobSelection">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ansys.rep.client.jms.</span></span><span class="sig-name descname"><span class="pre">JobSelection</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ansys.rep.client.jms.JobSelection" title="Permalink to this definition">#</a></dt>
+<dd><p>JobSelection resource.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>**kwargs</strong> – Arbitrary keyword arguments, see the Selection schema below.</p>
+</dd>
+</dl>
+<p class="rubric">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">sel</span> <span class="o">=</span> <span class="n">JobSelection</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;selection_0&quot;</span><span class="p">,</span> <span class="n">jobs</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">15</span><span class="p">,</span><span class="mi">28</span><span class="p">,</span><span class="mi">45</span><span class="p">])</span>
+</pre></div>
+</div>
+<p>The JobSelection schema has the following fields:</p>
+<table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Name</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Description</p></th>
+<th class="head"><p>Validations</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>id</p></td>
+<td><p>string</p></td>
+<td><p>Unique ID to access the resource, generated internally by the server on creation.</p></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p>name</p></td>
+<td><p>string</p></td>
+<td><p>Name of the selection.</p></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p>creation_time</p></td>
+<td><p>string</p></td>
+<td><p>The date and time the selection was created.</p></td>
+<td><ul class="simple">
+<li><p>It must be formatted as date-time</p></li>
+</ul>
+</td>
+</tr>
+<tr class="row-odd"><td><p>modification_time</p></td>
+<td><p>string</p></td>
+<td><p>The date and time the selection was last modified.</p></td>
+<td><ul class="simple">
+<li><p>It must be formatted as date-time</p></li>
+</ul>
+</td>
+</tr>
+<tr class="row-even"><td><p>algorithm_id</p></td>
+<td><p>string</p></td>
+<td><p>ID of the <a class="reference internal" href="#ansys.rep.client.jms.Algorithm" title="ansys.rep.client.jms.Algorithm"><code class="xref py py-class docutils literal notranslate"><span class="pre">ansys.rep.client.jms.Algorithm</span></code></a> the selection belongs to (optional).</p></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p>jobs[]</p></td>
+<td><p>array</p></td>
+<td><p>List of design point IDs.</p></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</section>
+<section id="design-exploration-algorithm">
+<h2>Design Exploration Algorithm<a class="headerlink" href="#design-exploration-algorithm" title="Permalink to this heading">#</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="ansys.rep.client.jms.Algorithm">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ansys.rep.client.jms.</span></span><span class="sig-name descname"><span class="pre">Algorithm</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ansys.rep.client.jms.Algorithm" title="Permalink to this definition">#</a></dt>
+<dd><p>Algorithm resource.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>**kwargs</strong> – Arbitrary keyword arguments, see the Algorithm schema below.</p>
+</dd>
+</dl>
+<p class="rubric">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">algo</span> <span class="o">=</span> <span class="n">Algorithm</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;gradient_descent&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">algo</span><span class="o">.</span><span class="n">description</span> <span class="o">=</span> <span class="s2">&quot;Gradient descent is an iterative optimization algorithm.&quot;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">algo</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="s2">&quot;{&quot;</span><span class="n">step_size</span><span class="s2">&quot;: 0.2,&quot;</span><span class="n">max_iterations</span><span class="s2">&quot;:10}&quot;</span>
+</pre></div>
+</div>
+<p>The Algorithm schema has the following fields:</p>
+<table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Name</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Description</p></th>
+<th class="head"><p>Validations</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>id</p></td>
+<td><p>string</p></td>
+<td><p>Unique ID to access the resource, generated internally by the server on creation.</p></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p>name</p></td>
+<td><p>string</p></td>
+<td><p>Name of the algorithm.</p></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p>description</p></td>
+<td><p>string</p></td>
+<td><p>Description of the algorithm.</p></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p>creation_time</p></td>
+<td><p>string</p></td>
+<td><p>The date and time the algorithm was created.</p></td>
+<td><ul class="simple">
+<li><p>It must be formatted as date-time</p></li>
+</ul>
+</td>
+</tr>
+<tr class="row-even"><td><p>modification_time</p></td>
+<td><p>string</p></td>
+<td><p>The date and time the algorithm was last modified.</p></td>
+<td><ul class="simple">
+<li><p>It must be formatted as date-time</p></li>
+</ul>
+</td>
+</tr>
+<tr class="row-odd"><td><p>data</p></td>
+<td><p>string</p></td>
+<td><p>Generic string field to hold arbitrary algorithm job_definition data, e.g. as JSON dict​ionary.</p></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p>jobs[]</p></td>
+<td><p>array</p></td>
+<td><p>List of design point IDs.</p></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</section>
+<section id="evaluator">
+<h2>Evaluator<a class="headerlink" href="#evaluator" title="Permalink to this heading">#</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="ansys.rep.client.jms.Evaluator">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ansys.rep.client.jms.</span></span><span class="sig-name descname"><span class="pre">Evaluator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ansys.rep.client.jms.Evaluator" title="Permalink to this definition">#</a></dt>
+<dd><p>Evaluator resource.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>**kwargs</strong> – Arbitrary keyword arguments, see the Evaluator schema below.</p>
+</dd>
+</dl>
+<p>The Evaluator schema has the following fields:</p>
+<table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Name</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Description</p></th>
+<th class="head"><p>Validations</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>id</p></td>
+<td><p>string</p></td>
+<td><p>Unique ID to access the resource, generated internally by the server on creation.</p></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p>host_id</p></td>
+<td><p>string</p></td>
+<td><p>Unique identifier built from hardware information and selected job_definition details of an evaluator.</p></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p>name</p></td>
+<td><p>string</p></td>
+<td><p>Name of the evaluator.</p></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p>hostname</p></td>
+<td><p>string</p></td>
+<td><p>Name of the host on which the evaluator is running.</p></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p>platform</p></td>
+<td><p>string</p></td>
+<td><p>Operating system on which the evaluator is running.</p></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p>task_manager_type</p></td>
+<td><p>string</p></td>
+<td><p>Type of the task manager used by the evaluator.</p></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p>project_server_select</p></td>
+<td><p>boolean</p></td>
+<td><p>Whether the evaluator allows server-driven assignment of projects or uses it’s own local settings.</p></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p>alive_update_interval</p></td>
+<td><p>integer</p></td>
+<td><p>Minimal time (in seconds) between evaluator registration updates.</p></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p>update_time</p></td>
+<td><p>string</p></td>
+<td><p>Last time the evaluator updated it’s registration details. Used to check which evaluators are alive.</p></td>
+<td><ul class="simple">
+<li><p>It must be formatted as date-time</p></li>
+</ul>
+</td>
+</tr>
+<tr class="row-odd"><td><p>external_access_port</p></td>
+<td><p>integer</p></td>
+<td><p>Port number for external access to the evaluator.</p></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p>project_assignment_mode</p></td>
+<td><p>string</p></td>
+<td><p>Which strategy to use for selecting projects to work on.</p></td>
+<td><ul class="simple">
+<li><p>It must be equal to one of the elements in [“disabled”, “all_active”, “project_list”]</p></li>
+</ul>
+</td>
+</tr>
+<tr class="row-odd"><td><p>project_list[]</p></td>
+<td><p>array</p></td>
+<td><p>List of projects on which this evaluator should be working.</p></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p>configuration</p></td>
+<td><p>object</p></td>
+<td><p>Details of the evaluator configuration, including hardware info and available applications.</p></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</section>
+<section id="task-definition-template">
+<h2>Task Definition Template<a class="headerlink" href="#task-definition-template" title="Permalink to this heading">#</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="ansys.rep.client.jms.TaskDefinitionTemplate">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ansys.rep.client.jms.</span></span><span class="sig-name descname"><span class="pre">TaskDefinitionTemplate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ansys.rep.client.jms.TaskDefinitionTemplate" title="Permalink to this definition">#</a></dt>
+<dd><p>TaskDefinitionTemplate resource.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>**kwargs</strong> – Arbitrary keyword arguments, see the TaskDefinitionTemplate schema below.</p>
+</dd>
+</dl>
+<p class="rubric">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">template</span> <span class="o">=</span> <span class="n">TaskDefinitionTemplate</span><span class="p">(</span>
+<span class="go">            name=&quot;MAPDL_run&quot;,</span>
+<span class="go">            application_name=&quot;ANSYS Mechanical APDL&quot;,</span>
+<span class="go">            application_version=&quot;2022 R2&quot;,</span>
+<span class="go">            data = {</span>
+<span class="go">                &quot;execution_command&quot;: &quot;%executable% -b</span>
+<span class="go">                                      -i %file:mac% -o file.out</span>
+<span class="go">                                      -np %resource:num_cores%&quot;,</span>
+<span class="go">                &quot;output_files&quot;: [</span>
+<span class="go">                    {</span>
+<span class="go">                      &quot;name&quot;: &quot;out&quot;,</span>
+<span class="go">                      &quot;obj_type&quot;: &quot;File&quot;,</span>
+<span class="go">                      &quot;evaluation_path&quot;: &quot;solve.out&quot;,</span>
+<span class="go">                      &quot;type&quot;: &quot;text/plain&quot;,</span>
+<span class="go">                      &quot;collect&quot;: true,</span>
+<span class="go">                      &quot;monitor&quot;: true</span>
+<span class="go">                    }</span>
+<span class="go">                ]</span>
+<span class="go">            }</span>
+<span class="go">        )</span>
+</pre></div>
+</div>
+<p>The TaskDefinitionTemplate schema has the following fields:</p>
+<table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Name</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Description</p></th>
+<th class="head"><p>Validations</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>id</p></td>
+<td><p>string</p></td>
+<td><p>Unique ID to access the resource, generated internally by the server on creation.</p></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p>modification_time</p></td>
+<td><p>string</p></td>
+<td><p>Last time the object was modified, in UTC</p></td>
+<td><ul class="simple">
+<li><p>It must be formatted as date-time</p></li>
+</ul>
+</td>
+</tr>
+<tr class="row-even"><td><p>creation_time</p></td>
+<td><p>string</p></td>
+<td><p>Time when the object was created, in UTC</p></td>
+<td><ul class="simple">
+<li><p>It must be formatted as date-time</p></li>
+</ul>
+</td>
+</tr>
+<tr class="row-odd"><td><p>name</p></td>
+<td><p>string</p></td>
+<td><p>Name of the template</p></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p>application_name</p></td>
+<td><p>string</p></td>
+<td><p>Name of the application to which the template applies</p></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p>application_version</p></td>
+<td><p>string</p></td>
+<td><p>Version of the application to which the template applies</p></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p>data</p></td>
+<td><p>object</p></td>
+<td><p>Template’s detailed data</p></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</section>
+</section>
+
+
+              </article>
+              
+
+              
+          </div>
+          
+      </div>
+    </div>
+
+  
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../_static/scripts/pydata-sphinx-theme.js?digest=92025949c220c2e29695"></script>
+
+<footer class="bd-footer"><div class="bd-footer__inner container">
+  
+  <div class="footer-item">
+    <p class="copyright">
+    &copy; Copyright (c) 2022 ANSYS, Inc.. All rights reserved.<br>
+</p>
+  </div>
+  
+  <div class="footer-item">
+    <p class="sphinx-version">
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 5.1.1.<br>
+</p>
+  </div>
+  
+</div>
+</footer>
+  </body>
+</html>

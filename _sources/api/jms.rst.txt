@@ -1,9 +1,9 @@
-Design Point Service
+Job Management Service
 ===========================
 
-Ansys DCS includes Ansys Design Point Service (DPS), which is the main service for storing and evaluating thousands of design points using multiple heterogeneous compute resources. 
+Ansys REP includes Job Management Service (JMS), which is the main service for storing and evaluating jobs using multiple heterogeneous compute resources. 
 
-The DPS Python client wraps around the DPS service REST API available at ``https://hostname/dcs/dps/api``.
+The Python subpackage `ansys.rep.client.jms` wraps around the JMS service REST API available at ``https://hostname/rep/jms/api``.
 
 Connection module
 ------------------------------------------
@@ -11,11 +11,22 @@ Connection module
   :members:
 
 
-Client object
+Client object (TOMOVE)
 ------------------------------------
-.. autoclass:: ansys.rep.client.jms.Client
+.. autoclass:: ansys.rep.client.Client
    :members:
 
+JMS Api
+------------------------------------
+.. autoclass:: ansys.rep.client.jms.JmsApi
+   :members:
+   :undoc-members:
+
+Project Api
+------------------------------------
+.. autoclass:: ansys.rep.client.jms.ProjectApi
+   :members:
+   :undoc-members:
 
 File
 --------------------------------------
@@ -59,7 +70,7 @@ Parameters
 .. autoclass:: ansys.rep.client.jms.ParameterMapping
    :members:
 
-Process Steps
+Task Definition
 --------------------------------------
 
 .. autoclass:: ansys.rep.client.jms.SuccessCriteria
@@ -72,7 +83,7 @@ Process Steps
    :members:
 
 
-JobDefinition
+Job Definition
 --------------------------------------
 
 .. autoclass:: ansys.rep.client.jms.JobDefinition
@@ -87,17 +98,17 @@ Task
    :members:
 
 
-Design Point
+Job
 -------------------------------------------
 
 .. autoclass:: ansys.rep.client.jms.Job
    :members:
 
 
-Design Point Selection
+Job Selection
 ----------------------------------------
 
-.. autoclass:: ansys.rep.client.jms.Selection
+.. autoclass:: ansys.rep.client.jms.JobSelection
    :members:
 
 

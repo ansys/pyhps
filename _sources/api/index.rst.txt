@@ -9,5 +9,5 @@ If you are looking for information on a specific function, class, or method, thi
   :maxdepth: 3
 
   auth
-  dps
+  jms
   exceptions

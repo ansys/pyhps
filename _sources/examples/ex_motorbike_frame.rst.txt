@@ -8,7 +8,7 @@ of a tubular steel trellis motorbike-frame.
 After creating the project job_definition, 10 design points with randomly 
 chosen parameter values are created and set to pending.
 
-.. image:: _static/motorbike_frame.jpg
+.. image:: ../_static/motorbike_frame.jpg
     :scale: 50 %
     :align: center
     :alt: motorbike frame picture
@@ -26,7 +26,7 @@ by U. M. Fasel, O. Koenig, M. Wintermantel and P. Ermanni.
 
 .. only:: builder_html
 
-     The project setup script as well as the data files can be downloaded here :download:`MAPDL Motorbike Frame Project <../mapdl_motorbike_frame.zip>`.
+     The project setup script as well as the data files can be downloaded here :download:`MAPDL Motorbike Frame Project <../../../mapdl_motorbike_frame.zip>`.
 
 We shall now dissect the project setup script in detail.
 
