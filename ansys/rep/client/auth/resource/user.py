@@ -7,7 +7,7 @@
 # ----------------------------------------------------------
 import logging
 
-from keycloak import ConnectionManager, KeycloakAdmin
+from keycloak import KeycloakAdmin
 
 from ansys.rep.client.jms.resource.base import Object
 
@@ -45,6 +45,11 @@ UserSchema.Meta.object_class = User
 
 
 def _admin_client(client):
+
+    custom_headers = {
+        "Authorization": "Bearer " + client.access_token,
+        "Content-Type": "application/json",
+    }
     keycloak_admin = KeycloakAdmin(
         server_url=client.auth_api_url,
         username=None,
@@ -52,20 +57,7 @@ def _admin_client(client):
         realm_name=client.realm,
         client_id=client.client_id,
         verify=False,
-    )
-    keycloak_admin.token = {
-        "refresh_token": client.refresh_token,
-        "access_token": client.access_token,
-    }
-    headers = {
-        "Authorization": "Bearer " + client.access_token,
-        "Content-Type": "application/json",
-    }
-    keycloak_admin.connection = ConnectionManager(
-        base_url=keycloak_admin.server_url,
-        headers=headers,
-        timeout=60,
-        verify=keycloak_admin.verify,
+        custom_headers=custom_headers,
     )
     return keycloak_admin
 

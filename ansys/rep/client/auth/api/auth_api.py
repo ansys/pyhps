@@ -40,53 +40,6 @@ class AuthApi:
     def url(self):
         return f"{self.client.rep_url}/auth/"
 
-    # def __init__(
-    #     self,
-    #     rep_url,
-    #     *,
-    #     realm: str = "rep",
-    #     username: str = "repadmin",
-    #     password: str = "repadmin",
-    #     grant_type: str = "password",
-    #     scope="openid",
-    #     client_id: str = "rep-cli",
-    #     client_secret: str = None,
-    # ):
-
-    #     self.rep_url = rep_url
-    #     self.auth_api_url = self.rep_url + f"/auth/"
-
-    #     self.username = username
-    #     self.password = password
-    #     self.realm = realm
-    #     self.grant_type = grant_type
-    #     self.scope = scope
-    #     self.client_id = client_id
-    #     self.client_secret = client_secret
-
-    #     tokens = authenticate(
-    #         url=self.rep_url,
-    #         realm=realm,
-    #         grant_type=grant_type,
-    #         scope=scope,
-    #         client_id=client_id,
-    #         client_secret=client_secret,
-    #         username=username,
-    #         password=password,
-    #     )
-    #     self.access_token = tokens["access_token"]
-
-    #     self.session = create_session(self.access_token)
-    #     self.session.headers["content-type"] = "application/json"
-
-    #     # register hook to handle expiring of the refresh token
-    #     self.session.hooks["response"] = [raise_for_status]
-
-    # def get_api_info(self):
-    #     """Return info like version, build date etc of the Auth API the client is connected to."""
-    #     r = self.session.get(self.auth_api_url)
-    #     return r.json()
-
     def get_users(self, as_objects=True):
         """Return a list of users."""
         return get_users(self.client, as_objects=as_objects)
