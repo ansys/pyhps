@@ -7,7 +7,7 @@
 # ----------------------------------------------------------
 import logging
 
-from keycloak import KeycloakAdmin
+from keycloak import ConnectionManager, KeycloakAdmin
 
 from ansys.rep.client.jms.resource.base import Object
 
@@ -45,16 +45,27 @@ UserSchema.Meta.object_class = User
 
 
 def _admin_client(client):
-    raise NotImplementedError("KeycloakAdmin currently doesn't support a token auth workflow. TODO")
     keycloak_admin = KeycloakAdmin(
         server_url=client.auth_api_url,
         username=None,
         password=None,
         realm_name=client.realm,
-        # refresh_token=client.refresh_token,
-        # access_token=client.access_token,
         client_id=client.client_id,
         verify=False,
+    )
+    keycloak_admin.token = {
+        "refresh_token": client.refresh_token,
+        "access_token": client.access_token,
+    }
+    headers = {
+        "Authorization": "Bearer " + client.access_token,
+        "Content-Type": "application/json",
+    }
+    keycloak_admin.connection = ConnectionManager(
+        base_url=keycloak_admin.server_url,
+        headers=headers,
+        timeout=60,
+        verify=keycloak_admin.verify,
     )
     return keycloak_admin
 

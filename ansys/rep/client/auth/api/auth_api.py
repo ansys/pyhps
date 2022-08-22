@@ -107,7 +107,7 @@ class AuthApi:
             user (:class:`ansys.rep.client.auth.User`): A User object. Defaults to None.
             as_objects (bool, optional): Defaults to True.
         """
-        return update_user(self, user, as_objects=as_objects)
+        return update_user(self.client, user, as_objects=as_objects)
 
     def delete_user(self, user):
         """Delete an existing user.
