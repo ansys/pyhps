@@ -6,6 +6,7 @@
 # Author(s): O.Koenig
 # ----------------------------------------------------------
 import logging
+import uuid
 
 from ansys.rep.client import Client
 from ansys.rep.client.auth import AuthApi, User
@@ -25,11 +26,11 @@ class AuthClientTest(REPTestCase):
             if user.username == self.username and not user.is_admin:
                 return
 
-        username = f"test_user_{self.run_id}"
+        username = f"test_user_{uuid.uuid4()}"
         new_user = User(
             username=username,
             password="test_auth_client",
-            email="test_auth_client@test.com",
+            email=f"{username}@test.com",
             first_name="Test",
             last_name="User",
         )
@@ -38,7 +39,7 @@ class AuthClientTest(REPTestCase):
         self.assertEqual(new_user.username, username)
         self.assertEqual(new_user.first_name, "Test")
         self.assertEqual(new_user.last_name, "User")
-        self.assertEqual(new_user.email, "test_auth_client@test.com")
+        self.assertEqual(new_user.email, f"{username}@test.com")
 
         new_user.email = "update_email@test.com"
         new_user.last_name = "Smith"
