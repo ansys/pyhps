@@ -86,7 +86,7 @@ class TaskDefinitionSchema(ObjectSchema):
     )
     use_execution_script = fields.Bool(
         allow_none=True,
-        description="Whether to run execution with the execution script or the execution script.",
+        description="Whether to run task with the execution command or the execution script.",
     )
     execution_script_id = IdReference(
         referenced_class="File",
