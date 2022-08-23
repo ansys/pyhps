@@ -220,7 +220,7 @@ def main(client, num_jobs, use_exec_script):
     )
 
     if use_exec_script:
-        task_def.execution_command = None
+        task_def.use_execution_script = True
         task_def.execution_script_id = file_ids["exec_python"]
 
     task_def = project_api.create_task_definitions([task_def])[0]
