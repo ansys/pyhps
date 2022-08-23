@@ -265,7 +265,7 @@ def create_project(client, name, num_jobs=20, use_exec_script=False):
     )
 
     if use_exec_script:
-        task_def.execution_command = None
+        task_def.use_execution_script = True
         task_def.execution_script_id = file_ids["exec_mapdl"]
 
     task_defs = [task_def]

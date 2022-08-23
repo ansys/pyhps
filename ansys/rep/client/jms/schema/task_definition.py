@@ -84,6 +84,10 @@ class TaskDefinitionSchema(ObjectSchema):
     execution_command = fields.String(
         allow_none=True, description="Command to execute (command or execution script is required)."
     )
+    use_execution_script = fields.Bool(
+        allow_none=True,
+        description="Whether to run execution with the execution script or the execution script.",
+    )
     execution_script_id = IdReference(
         referenced_class="File",
         allow_none=True,
