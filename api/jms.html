@@ -1818,67 +1818,72 @@ as <code class="xref py py-attr docutils literal notranslate"><span class="pre">
 <td><p>Command to execute (command or execution script is required).</p></td>
 <td></td>
 </tr>
-<tr class="row-odd"><td><p>execution_script_id</p></td>
+<tr class="row-odd"><td><p>use_execution_script</p></td>
+<td><p>boolean</p></td>
+<td><p>Whether to run task with the execution command or the execution script.</p></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p>execution_script_id</p></td>
 <td><p>string</p></td>
 <td><p>Script to execute (command or execution script is required).</p></td>
 <td></td>
 </tr>
-<tr class="row-even"><td><p>execution_level</p></td>
+<tr class="row-odd"><td><p>execution_level</p></td>
 <td><p>integer</p></td>
 <td><p>Define execution level for this task.</p></td>
 <td></td>
 </tr>
-<tr class="row-odd"><td><p>execution_context</p></td>
+<tr class="row-even"><td><p>execution_context</p></td>
 <td><p>object</p></td>
 <td><p>Additional arguments to pass to the executing command</p></td>
 <td></td>
 </tr>
-<tr class="row-even"><td><p>environment</p></td>
+<tr class="row-odd"><td><p>environment</p></td>
 <td><p>object</p></td>
 <td><p>Environment variables to set for the executed process</p></td>
 <td></td>
 </tr>
-<tr class="row-odd"><td><p>max_execution_time</p></td>
+<tr class="row-even"><td><p>max_execution_time</p></td>
 <td><p>number</p></td>
 <td><p>Maximum time in seconds for executing the task.</p></td>
 <td></td>
 </tr>
-<tr class="row-even"><td><p>num_trials</p></td>
+<tr class="row-odd"><td><p>num_trials</p></td>
 <td><p>integer</p></td>
 <td><p>Maximum number of attempts to execute the task.</p></td>
 <td></td>
 </tr>
-<tr class="row-odd"><td><p>store_output</p></td>
+<tr class="row-even"><td><p>store_output</p></td>
 <td><p>boolean</p></td>
 <td><p>Specify whether to store the standard output of the task.</p></td>
 <td></td>
 </tr>
-<tr class="row-even"><td><p>input_file_ids[]</p></td>
+<tr class="row-odd"><td><p>input_file_ids[]</p></td>
 <td><p>array</p></td>
 <td><p>List of IDs of input files.</p></td>
 <td></td>
 </tr>
-<tr class="row-odd"><td><p>output_file_ids[]</p></td>
+<tr class="row-even"><td><p>output_file_ids[]</p></td>
 <td><p>array</p></td>
 <td><p>List of IDs of output files.</p></td>
 <td></td>
 </tr>
-<tr class="row-even"><td><p>success_criteria</p></td>
+<tr class="row-odd"><td><p>success_criteria</p></td>
 <td><p>object</p></td>
 <td><p>A <a class="reference internal" href="#ansys.rep.client.jms.SuccessCriteria" title="ansys.rep.client.jms.SuccessCriteria"><code class="xref py py-class docutils literal notranslate"><span class="pre">ansys.rep.client.jms.SuccessCriteria</span></code></a> object.</p></td>
 <td></td>
 </tr>
-<tr class="row-odd"><td><p>licensing</p></td>
+<tr class="row-even"><td><p>licensing</p></td>
 <td><p>object</p></td>
 <td><p>A <a class="reference internal" href="#ansys.rep.client.jms.Licensing" title="ansys.rep.client.jms.Licensing"><code class="xref py py-class docutils literal notranslate"><span class="pre">ansys.rep.client.jms.Licensing</span></code></a> object.</p></td>
 <td></td>
 </tr>
-<tr class="row-even"><td><p>software_requirements[]</p></td>
+<tr class="row-odd"><td><p>software_requirements[]</p></td>
 <td><p>array</p></td>
 <td></td>
 <td></td>
 </tr>
-<tr class="row-odd"><td><p>resource_requirements</p></td>
+<tr class="row-even"><td><p>resource_requirements</p></td>
 <td><p>object</p></td>
 <td></td>
 <td></td>
