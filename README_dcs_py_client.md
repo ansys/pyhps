@@ -20,7 +20,7 @@ To install the latest development version add the `--pre` flag to the command ab
 ```python
 from ansys.rep.client.jms import Client
 
-client = Client(rep_url="https://127.0.0.1/dcs", username="repadmin", password="repadmin")
+client = Client(rep_url="https://127.0.0.1:8443/rep", username="repadmin", password="repadmin")
 
 # query a project
 project = client.get_project(id="demo_project")

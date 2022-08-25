@@ -33,11 +33,20 @@ class ProjectApi:
 
     Example:
 
+        >>> from ansys.rep.client Client
+        >>> from ansys.rep.client.jms import JmsApi, Project, ProjectApi
+        >>>
+        >>> cl = Client(
+                rep_url="https://127.0.0.1:8443/rep", username="repadmin", password="repadmin"
+            )
         >>> project = Project(name="Example Project")
-        >>> project = client.create_project(project)
+        >>> print(project)
+        >>>
+        >>> jms_api = JmsApi(client)
+        >>> project = jms_api.create_project(project)
+        >>>
         >>> project_api = ProjectApi(client, project.id)
         >>> jobs = project_api.get_jobs()
-
     """
 
     def __init__(self, client, project_id: str):
@@ -227,10 +236,10 @@ class ProjectApi:
 
         Example:
 
-            >>> dps_to_delete = []
+            >>> jobs_to_delete = []
             >>> for id in [1,2,39,44]:
-            >>>    dps_to_delete.append(Job(id=id))
-            >>> project_api.delete_jobs(dps_to_delete)
+            >>>    jobs_to_delete.append(Job(id=id))
+            >>> project_api.delete_jobs(jobs_to_delete)
 
         """
         return self._delete_objects(jobs)
@@ -290,7 +299,7 @@ class ProjectApi:
 
     def create_license_contexts(self, as_objects=True):
         rest_name = LicenseContext.Meta.rest_name
-        url = f"{self.jms_api_url}/projects/{self.id}/{rest_name}"
+        url = f"{self.jms_api_url}/projects/{self.project_id}/{rest_name}"
         r = self.client.session.post(f"{url}")
         data = r.json()[rest_name]
         if not as_objects:
@@ -364,7 +373,7 @@ def _upload_files(project_api: ProjectApi, files):
 
 
 def create_files(project_api: ProjectApi, files, as_objects=True) -> List[File]:
-    # (1) Create file resources in DPS
+    # (1) Create file resources in JMS
     created_files = create_objects(
         project_api.client.session, project_api.url, files, as_objects=as_objects
     )
@@ -381,7 +390,7 @@ def create_files(project_api: ProjectApi, files, as_objects=True) -> List[File]:
         # (3) Upload file contents
         _upload_files(project_api, created_files)
 
-        # (4) Update corresponding file resources in DPS with hashes of uploaded files
+        # (4) Update corresponding file resources in JMS with hashes of uploaded files
         created_files = update_objects(
             project_api.client.session, project_api.url, created_files, as_objects=as_objects
         )
@@ -392,7 +401,7 @@ def create_files(project_api: ProjectApi, files, as_objects=True) -> List[File]:
 def update_files(project_api: ProjectApi, files: List[File], as_objects=True) -> List[File]:
     # Upload files first if there are any src parameters
     _upload_files(project_api, files)
-    # Update file resources in DPS
+    # Update file resources in JMS
     return update_objects(project_api.client.session, project_api.url, files, as_objects=as_objects)
 
 

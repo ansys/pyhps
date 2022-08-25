@@ -96,7 +96,7 @@ class TasksTest(REPTestCase):
     def test_task_integration(self):
 
         # This test assumes that the project mapdl_motorbike_frame
-        # already exists on the DCS server.
+        # already exists on the REP server.
         # In case, you can create such project running the script
         # examples/mapdl_motorbike_frame/project_setup.py
 

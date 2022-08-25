@@ -28,7 +28,7 @@ from ansys.rep.client.jms import (
 log = logging.getLogger(__name__)
 
 
-def main(client: Client, name: str, num_jobs: int):
+def main(client: Client, name: str, num_jobs: int) -> Project:
     """
     Create project with Ansys MAPDL tire simulation.
 
@@ -38,44 +38,52 @@ def main(client: Client, name: str, num_jobs: int):
     log.debug("=== Project")
     jms_api = JmsApi(client)
     proj = Project(name=name, display_name="MAPDL Tyre Performance", priority=1, active=True)
-    proj = jms_api.create_project(proj, replace=True)
+    proj = jms_api.create_project(proj)
 
     project_api = ProjectApi(client, proj.id)
 
     log.debug("=== Files")
     cwd = os.path.dirname(__file__)
-    files = []
-    files.append(
+
+    files = [
         File(
             name="mac",
-            evaluation_path="dcs_tire_performance_simulation.mac",
+            evaluation_path="rep_tire_performance_simulation.mac",
             type="text/plain",
-            src=os.path.join(cwd, "dcs_tire_performance_simulation.mac"),
-        )
-    )
-    files.append(
+            src=os.path.join(cwd, "rep_tire_performance_simulation.mac"),
+        ),
         File(
             name="geom",
             evaluation_path="2d_tire_geometry.iges",
             type="text/plain",
             src=os.path.join(cwd, "2d_tire_geometry.iges"),
-        )
-    )
-    files.append(
-        File(name="results", evaluation_path="tire_performance_results.txt", type="text/plain")
-    )
-    files.append(File(name="img", evaluation_path="**.png", type="image/png", collect=True))
-    files.append(
-        File(name="out", evaluation_path="file.out", type="text/plain", collect=True, monitor=True)
-    )
-    files.append(
+        ),
+        File(name="results", evaluation_path="tire_performance_results.txt", type="text/plain"),
+        File(name="img", evaluation_path="**.png", type="image/png", collect=True),
+        File(name="out", evaluation_path="file.out", type="text/plain", collect=True, monitor=True),
         File(
             name="mntr", evaluation_path="file.mntr", type="text/plain", collect=True, monitor=True
-        )
-    )
-    files.append(
-        File(name="err", evaluation_path="file*.err", type="text/plain", collect=True, monitor=True)
-    )
+        ),
+        File(
+            name="cnd",
+            evaluation_path="file.cnd",
+            type="text/plain",
+            collect=True,
+            monitor=True,
+            collect_interval=30,
+        ),
+        File(
+            name="gst",
+            evaluation_path="file.gst",
+            type="text/plain",
+            collect=True,
+            monitor=True,
+            collect_interval=30,
+        ),
+        File(
+            name="err", evaluation_path="file*.err", type="text/plain", collect=True, monitor=True
+        ),
+    ]
 
     files = project_api.create_files(files)
     file_ids = {f.name: f.id for f in files}
@@ -215,11 +223,13 @@ def main(client: Client, name: str, num_jobs: int):
 
     log.info(f"Created project '{proj.name}', ID='{proj.id}'")
 
+    return proj
+
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("-n", "--name", type=str, default="mapdl_tyre_performance")
-    parser.add_argument("-j", "--num-jobs", type=int, default=1000)
+    parser.add_argument("-j", "--num-jobs", type=int, default=10)
     parser.add_argument("-U", "--url", default="https://127.0.0.1:8443/rep")
     parser.add_argument("-u", "--username", default="repadmin")
     parser.add_argument("-p", "--password", default="repadmin")
@@ -229,7 +239,7 @@ if __name__ == "__main__":
     logger = logging.getLogger()
     logging.basicConfig(format="[%(asctime)s | %(levelname)s] %(message)s", level=logging.DEBUG)
 
-    log.debug("=== DCS connection")
+    log.debug("=== REP connection")
     client = Client(rep_url=args.url, username=args.username, password=args.password)
 
     try:

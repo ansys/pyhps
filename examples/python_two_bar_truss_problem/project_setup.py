@@ -1,8 +1,7 @@
 """
-Python tow-bar truss example.
-
-Author(s): F.Negri
+Python two-bar truss example.
 """
+
 import argparse
 import logging
 import os
@@ -27,12 +26,12 @@ from ansys.rep.client.jms import (
 log = logging.getLogger(__name__)
 
 
-def main(client, num_jobs, use_exec_script):
+def main(client, num_jobs, use_exec_script) -> Project:
     """
     Create project solving a Two-Bar Truss problem with Python.
 
     from  R.L. Fox, Optimization Methods in Engineering Design, Addison Wesley, 1971
-    See e.g. https://static1.squarespace.com/static/53eacd17e4b0588f78eb723c/t/586ea636d482e91c7a76bd61/1483646550748/Optimization+Methods+in+Engineering+Design.pdf
+    See e.g. https://apmonitor.com/me575/uploads/Main/optimization_book.pdf
     """  # noqa
     log.debug("=== Project")
     proj = Project(
@@ -45,34 +44,29 @@ def main(client, num_jobs, use_exec_script):
     log.debug("=== Files")
     cwd = os.path.dirname(__file__)
 
-    files = []
-    files.append(
+    files = [
         File(
             name="inp",
             evaluation_path="input_parameters.json",
             type="text/plain",
             src=os.path.join(cwd, "input_parameters.json"),
-        )
-    )
-    files.append(
+        ),
         File(
             name="script",
             evaluation_path="evaluate.py",
             type="text/plain",
             src=os.path.join(cwd, "evaluate.py"),
-        )
-    )
-    files.append(
+        ),
         File(
             name="result",
             evaluation_path="output_parameters.json",
             type="text/plain",
             collect=True,
-        )
-    )
+        ),
+    ]
 
     if use_exec_script:
-        # Define and upload an exemplary exec script to run MAPDL
+        # Define and upload an exemplary exec script to run Python
         files.append(
             File(
                 name="exec_python",
@@ -85,7 +79,7 @@ def main(client, num_jobs, use_exec_script):
     files = project_api.create_files(files)
     file_ids = {f.name: f.id for f in files}
 
-    log.debug("=== JobDefinition with simulation workflow and parameters")
+    log.debug("=== Job Definition with simulation workflow and parameters")
     job_def = JobDefinition(
         name="JobDefinition.1",
         active=True,
@@ -268,13 +262,15 @@ def main(client, num_jobs, use_exec_script):
 
     log.info(f"Created project '{proj.name}', ID='{proj.id}'")
 
+    return proj
+
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("-U", "--url", default="https://127.0.0.1:8443/rep")
     parser.add_argument("-u", "--username", default="repadmin")
     parser.add_argument("-p", "--password", default="repadmin")
-    parser.add_argument("-n", "--num-jobs", type=int, default=1000)
+    parser.add_argument("-n", "--num-jobs", type=int, default=50)
     parser.add_argument("-es", "--use-exec-script", default=False, action="store_true")
 
     args = parser.parse_args()

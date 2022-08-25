@@ -220,7 +220,7 @@ html_show_sourcelink = False
 # html_file_suffix = None
 
 # Output file base name for HTML help builder.
-htmlhelp_basename = "DCSclientdoc"
+htmlhelp_basename = "REPclientdoc"
 
 
 # -- Options for LaTeX output ---------------------------------------------
@@ -240,8 +240,8 @@ latex_elements = {
 latex_documents = [
     (
         "index",
-        "ansys-dcs-client.tex",
-        "DCS Python Client Documentation",
+        "ansys-rep-client.tex",
+        "REP Python Client Documentation",
         "ANSYS Switzerland Gmbh",
         "manual",
     ),
@@ -273,7 +273,7 @@ latex_documents = [
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    ("index", "ansys-dcs-client", "DCS Python Client Documentation", ["ANSYS Switzerland Gmbh"], 1)
+    ("index", "ansys-rep-client", "REP Python Client Documentation", ["ANSYS Switzerland Gmbh"], 1)
 ]
 
 # If true, show URL addresses after external links.
@@ -288,8 +288,8 @@ man_pages = [
 texinfo_documents = [
     (
         "index",
-        "ansys-dcs-client",
-        "DCS Python Client Documentation",
+        "ansys-rep-client",
+        "REP Python Client Documentation",
         "ANSYS Switzerland Gmbh",
         "DCP",
         "One line description of project.",
@@ -338,14 +338,14 @@ numpydoc_validation_checks = {
 }
 
 extlinks = {
-    "ansys_dcs_help": (
+    "ansys_rep_help": (
         """https://ansyshelp.ansys.com/account/
-        secured?returnurl=/Views/Secured/corp/v231/en/dps_ug/%s.html""",
+        secured?returnurl=/Views/Secured/corp/v231/en/rep_ug/%s.html""",
         "ANSYS Help - ",
     ),
-    "ansys_dcs_tutorial": (
+    "ansys_rep_tutorial": (
         """https://ansyshelp.ansys.com/account/
-        secured?returnurl=/Views/Secured/corp/v231/en/dcs_tut/%s.html""",
-        "DCS Tutorial - ",
+        secured?returnurl=/Views/Secured/corp/v231/en/rep_tut/%s.html""",
+        "REP Tutorial - ",
     ),
 }

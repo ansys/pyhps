@@ -22,10 +22,10 @@ class Job(Object):
 
     Example:
 
-        >>> dps = []
-        >>> dps.append( Job( name="dp_1", eval_status="pending") )
-        >>> dps.append( Job( name="dp_2", eval_status="pending") )
-        >>> project_job_definition.create_jobs( dps )
+        >>> jobs = []
+        >>> jobs.append( Job( name="job_1", eval_status="pending", job_definition_id=job_def.id) )
+        >>> jobs.append( Job( name="job_2", eval_status="pending", job_definition_id=job_def.id) )
+        >>> project_api.create_jobs( jobs )
 
     The Job schema has the following fields:
 

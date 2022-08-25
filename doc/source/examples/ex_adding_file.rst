@@ -21,7 +21,7 @@ Then, once the project is sent to the DCS server via Workbench, we can add the `
 .. code-block:: python
 
     from ansys.rep.client.jms import Client, File
-    client = Client(rep_url="https://127.0.0.1/dcs", username="repadmin", password="repadmin")
+    client = Client(rep_url="https://127.0.0.1:8443/rep", username="repadmin", password="repadmin")
 
     # Get the project and its current job_definition 
     proj = client.get_project(id="DPS_Mechanical_Bicycle_Wheel_2019R3")

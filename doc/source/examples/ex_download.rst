@@ -18,7 +18,7 @@ and specify the local path where the files are going to be saved.
     from ansys.rep.client.jms import Client
 
     # Connect to the DCS server and query the project
-    client = Client(rep_url="https://127.0.0.1/dcs", username="repadmin", password="repadmin")
+    client = Client(rep_url="https://127.0.0.1:8443/rep", username="repadmin", password="repadmin")
     proj = client.get_project(id="mapdl_motorbike_frame") 
 
     # Specify the base path where to download files
@@ -109,7 +109,7 @@ used in the ``get_files`` function.
     from ansys.rep.client.jms import Client
 
     # Connect to the DCS server and query the project
-    client = Client(rep_url="https://127.0.0.1/dcs", username="repadmin", password="repadmin")
+    client = Client(rep_url="https://127.0.0.1:8443/rep", username="repadmin", password="repadmin")
     proj = client.get_project(id="project_id") 
 
     # Specify the base path where to download files

@@ -55,7 +55,7 @@ class ProjectPermissionsTest(REPTestCase):
 
         client = self.client()
         jms_api = JmsApi(client)
-        proj_name = f"test_dps_get_permissions_test_{self.run_id}"
+        proj_name = f"test_jms_get_permissions_test_{self.run_id}"
 
         proj = Project(name=proj_name, active=True, priority=10)
         proj = jms_api.create_project(proj, replace=True)
@@ -75,7 +75,7 @@ class ProjectPermissionsTest(REPTestCase):
             "user1": {"username": "testuser1", "password": "test"},
             "user2": {"username": "testuser2", "password": "test"},
         }
-        proj_name = f"test_dps_get_permissions_test_{uuid.uuid4().hex[:8]}"
+        proj_name = f"test_jms_get_permissions_test_{uuid.uuid4().hex[:8]}"
 
         client = self.client()
         auth_api = AuthApi(client)

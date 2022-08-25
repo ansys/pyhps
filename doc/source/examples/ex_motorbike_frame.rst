@@ -46,7 +46,7 @@ Next we connect to a DCS server running on the localhost with default username a
                                                FitnessDefinition, Project,
                                                SuccessCriteria)
 
-    client = Client(rep_url="https://127.0.0.1/dcs", username="repadmin", password="repadmin")
+    client = Client(rep_url="https://127.0.0.1:8443/rep", username="repadmin", password="repadmin")
 
 Create an empty project and a job_definition
 ----------------------------------------------------
