@@ -1,0 +1,17 @@
+open d3plot ".\d3plot"
+ac
+left
+rz 10
+rx 20
+print png ".\image_model_with_mesh.png" enlisted "OGL1x1"
+mesh
+print png ".\image_model.png" enlisted "OGL1x1"
+mesh
+gtime 1
+print png ".\kinematic_energy.png" enlisted "PlotWindow-1" 
+gtime 2
+print png ".\internal_energy.png" enlisted "PlotWindow-1" 
+gtime 3
+print png ".\total_energy.png" enlisted "PlotWindow-1"
+movie WMV/WMV 1852x908 ".\movie_000" 10
+exit

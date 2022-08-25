@@ -20,6 +20,7 @@ repos:
   hooks:
   - id: codespell
     exclude: .mac
+    args: [-I, .codespellignore]
 
 # For now we disable some of these checks, can be reenabled later
 # - repo: https://github.com/pycqa/pydocstyle
