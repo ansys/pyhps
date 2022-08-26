@@ -21,7 +21,9 @@ repos:
   - id: codespell
     exclude: >
             (?x)^(
-                .*\.dat
+                .*\.dat|
+                .*\.mac|
+                .*\.k
             )$
     args: [-I, .codespellignore]
 
