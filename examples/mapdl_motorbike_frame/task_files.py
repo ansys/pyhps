@@ -99,13 +99,13 @@ def modify_task_files(client, project_name):
     # Set affected design points back to pending
     # (directly setting tasks back to pending is not yet supported)
     dp_ids = [t.job_id for t in tasks]
-    dps = proj.get_jobs(id=dp_ids)
-    for dp in dps:
-        dp.eval_status = "pending"
-    proj.update_jobs(dps)
+    jobs = proj.get_jobs(id=dp_ids)
+    for job in jobs:
+        job.eval_status = "pending"
+    proj.update_jobs(jobs)
 
     log.debug("=== Modified tasks and design points:")
-    for t, dp in zip(tasks, dps):
+    for t, job in zip(tasks, jobs):
         msg = f"Task: id={t.id} eval_status={t.eval_status} "
         msg += "input_file_ids={t.input_file_ids} ouptut_file_ids={t.output_file_ids} "
         msg += "Job: id={dp.id} eval_status={dp.eval_status}"

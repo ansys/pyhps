@@ -32,9 +32,9 @@ from ansys.rep.client.jms import (
 log = logging.getLogger(__name__)
 
 
-def create_project(client, name, num_jobs=20, use_exec_script=False):
+def create_project(client, name, num_jobs=20, use_exec_script=False) -> Project:
     """
-    Create a DCS project consisting of an ANSYS APDL beam model of a motorbike-frame.
+    Create a REP project consisting of an ANSYS APDL beam model of a motorbike-frame.
 
     After creating the project job_definition, 10 design points with randomly
     chosen parameter values are created and set to pending.
@@ -327,7 +327,7 @@ def create_project(client, name, num_jobs=20, use_exec_script=False):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("-n", "--name", type=str, default="mapdl_motorbike_frame")
-    parser.add_argument("-j", "--num-jobs", type=int, default=500)
+    parser.add_argument("-j", "--num-jobs", type=int, default=50)
     parser.add_argument("-es", "--use-exec-script", default=False, action="store_true")
     parser.add_argument("-U", "--url", default="https://127.0.0.1:8443/rep")
     parser.add_argument("-u", "--username", default="repadmin")

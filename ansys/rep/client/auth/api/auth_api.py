@@ -17,14 +17,16 @@ class AuthApi:
     to query the list of existing users.
 
     Args:
-        rep_url (str): The base path for the server to call, e.g. "https://127.0.0.1/dcs".
+        rep_url (str): The base path for the server to call, e.g. "https://127.0.0.1:8443/rep".
         username (str): Username
         password (str): Password
 
     Example:
 
         >>> from ansys.rep.client.auth import Client, User
-        >>> cl = Client(rep_url="https://127.0.0.1/dcs/", username="repadmin", password="repadmin")
+        >>> cl = Client(
+                rep_url="https://127.0.0.1:8443/rep/", username="repadmin", password="repadmin"
+            )
         >>> existing_users = cl.get_users()
         >>> new_user = User(username='test_user', password='dummy',
         >>>                 email='test_user@test.com', fullname='Test User',

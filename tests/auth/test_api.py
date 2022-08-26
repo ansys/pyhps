@@ -8,6 +8,8 @@
 import logging
 import uuid
 
+from keycloak.exceptions import KeycloakError
+
 from ansys.rep.client import Client
 from ansys.rep.client.auth import AuthApi, User
 from tests.rep_test import REPTestCase
@@ -55,3 +57,36 @@ class AuthClientTest(REPTestCase):
         users = api.get_users()
         usernames = [x.username for x in users]
         self.assertNotIn(new_user.username, usernames)
+
+    def test_auth_api_exceptions(self):
+
+        api = AuthApi(Client(self.rep_url, username=self.username, password=self.password))
+        users = api.get_users()
+
+        # we run the test only if self.username is an admin user
+        for user in users:
+            if user.username == self.username and not user.is_admin:
+                return
+
+        # create a new non-admin user
+        username = f"test_user_{uuid.uuid4()}"
+        new_user = User(
+            username=username,
+            password="test_auth_client",
+            email=f"{username}@test.com",
+            first_name="Test",
+            last_name="User",
+        )
+        new_user = api.create_user(new_user)
+
+        # use non-admin user to get users
+        api_non_admin = AuthApi(
+            Client(self.rep_url, username=username, password="test_auth_client")
+        )
+        except_obj = None
+        try:
+            users = api_non_admin.get_users()
+        except KeycloakError as e:
+            except_obj = e
+
+        self.assertEqual(except_obj.response_code, 403)

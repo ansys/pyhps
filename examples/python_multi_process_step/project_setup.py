@@ -60,14 +60,10 @@ def main(
 ):
     """Python project implementing multiple process steps and optional image generation."""
     log.debug("=== Project")
-    name = (
-        f"py_{num_task_definitions}ps{'_img' if images else ''}{'_seq' if sequential else '_par'}"
-    )
-    display_name = f"Python - {num_task_definitions} Task Defs {' - Img' if images else ''}"
-    display_name += f"{' - Sequential' if sequential else ' - Parallel'}"
+    name = f"Python - {num_task_definitions} Task Defs {' - Img' if images else ''}"
+    name += f"{' - Sequential' if sequential else ' - Parallel'}"
     proj = Project(
         name=name,
-        display_name=display_name,
         priority=1,
         active=not inactive,
     )

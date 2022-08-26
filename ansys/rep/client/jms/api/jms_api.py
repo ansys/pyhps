@@ -26,7 +26,9 @@ class JmsApi(object):
 
         >>> from ansys.rep.client.jms import Client
         >>> # Create client object and connect to REP with username & password
-        >>> cl = Client(rep_url="https://127.0.0.1/dcs", username="repadmin", password="repadmin")
+        >>> cl = Client(
+                rep_url="https://127.0.0.1:8443/rep", username="repadmin", password="repadmin"
+            )
         >>> # Create a new project
         >>> root_api = RootApi(client)
         >>> project = root_api.create_project(Project(name="Example Project"))
@@ -180,6 +182,9 @@ def create_project(client, api_url, project, replace=False, as_objects=True) -> 
     serialized_data = schema.dump(project)
     json_data = json.dumps({"projects": [serialized_data], "replace": replace})
     r = client.session.post(f"{url}", data=json_data)
+
+    if not r.json()["projects"]:
+        raise REPError(f"Failed to create the project. Request response: {r.json()}")
 
     data = r.json()["projects"][0]
     if not as_objects:

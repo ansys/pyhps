@@ -44,9 +44,13 @@ class REPTestCase(unittest.TestCase):
         build_id = os.environ.get("Build.BuildId", "1")
         self.run_id = f"{agent_id}_{build_id}".lower()
 
+        self._client = None
+
     def tearDown(self):
         # self.logger.removeHandler(self._stream_handler)
         pass
 
     def client(self):
-        return Client(self.rep_url, self.username, self.password)
+        if self._client is None:
+            self._client = Client(self.rep_url, self.username, self.password)
+        return self._client

@@ -18,13 +18,13 @@ class REPError(RequestException):
             >>> from ansys.rep.client import REPError
             >>> from ansys.rep.client.jms import Client
             >>> try:
-            >>>     client = Client(rep_url="https://127.0.0.1/dcs/",
+            >>>     client = Client(rep_url="https://127.0.0.1:8443/rep/",
                                     username="repadmin",
                                     password="wrong_psw")
             >>> except REPError as e:
             >>>     print(e)
-            400 Client Error: invalid_grant for: POST https://127.0.0.1/dcs/auth/api/oauth/token
-            Invalid "username" or "password" in request.
+            401 Client Error: invalid_grant for: POST https://127.0.0.1:8443/rep/auth...
+            Invalid user credentials
         """
         self.reason = kwargs.pop("reason", None)
         self.description = kwargs.pop("description", None)
@@ -54,13 +54,13 @@ def raise_for_status(response, *args, **kwargs):
         except ValueError:
             pass
 
-        reason = r_content.get("title", None)  # dps api
+        reason = r_content.get("title", None)  # jms api
         if not reason:
             reason = r_content.get("error", None)  # auth api
         if not reason:
             reason = response.reason
 
-        description = r_content.get("description", None)  # dps api
+        description = r_content.get("description", None)  # jms api
         if not description:
             description = r_content.get("error_description", None)  # auth api
 

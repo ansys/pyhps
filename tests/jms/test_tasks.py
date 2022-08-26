@@ -96,7 +96,7 @@ class TasksTest(REPTestCase):
     def test_task_integration(self):
 
         # This test assumes that the project mapdl_motorbike_frame
-        # already exists on the DCS server.
+        # already exists on the REP server.
         # In case, you can create such project running the script
         # examples/mapdl_motorbike_frame/project_setup.py
 
@@ -122,9 +122,7 @@ class TasksTest(REPTestCase):
         jms_api = JmsApi(client)
         proj_name = f"test_desing_point_sync_{uuid.uuid4().hex[:8]}"
 
-        project = Project(
-            name=proj_name, active=False, priority=10, display_name="test_desing_point_sync"
-        )
+        project = Project(name=proj_name, active=False, priority=10)
         project = jms_api.create_project(project, replace=True)
         project_api = ProjectApi(client, project.id)
 

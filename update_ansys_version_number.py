@@ -40,7 +40,7 @@ def main():
 
     cwd = os.getcwd()
 
-    version_file_path = os.path.join(cwd, "ansys", "dcs", "client", "__version__.py")
+    version_file_path = os.path.join(cwd, "ansys", "rep", "client", "__version__.py")
     replace_regex(version_file_path, internal_version, [r"(\d+.\d+).0"])
 
     replace_regex(version_file_path, internal_version_no_dot, [r'__version_no_dots__ = "(\d+)"'])

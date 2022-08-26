@@ -14,7 +14,7 @@ log = logging.getLogger(__name__)
 
 
 def create_session(access_token=None):
-    """Return a :class:`requests.Session` object configured for DPS with given access token
+    """Return a :class:`requests.Session` object configured for REP with given access token
 
     Args:
         access_token (str): The access token provided by :meth:`ansys.rep.client.auth.authenticate`

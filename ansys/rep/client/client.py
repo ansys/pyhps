@@ -27,7 +27,7 @@ class Client(object):
 
     Args:
         rep_url (str): The base path for the server to call,
-                       e.g. "https://127.0.0.1/dcs".
+                       e.g. "https://127.0.0.1:8443/rep".
         username (str): Username (Optional)
         password (str): Password (Optional)
         refresh_token (str): Refresh Token (Optional)
@@ -35,13 +35,15 @@ class Client(object):
 
     Example:
 
-        >>> from ansys.rep.client.jms import Client
-        >>> # Create client object and connect to DCS with username & password
-        >>> cl = Client(rep_url="https://127.0.0.1/dcs", username="dcadmin", password="dcadmin")
+        >>> from ansys.rep.client import Client
+        >>> # Create client object and connect to REP with username & password
+        >>> cl = Client(
+                rep_url="https://127.0.0.1:8443/rep", username="repadmin", password="repadmin"
+            )
         >>> # Extract refresh token to eventually store it
         >>> refresh_token = cl.refresh_token
-        >>> # Alternative: Create client object and connect to DCS with refresh token
-        >>> cl = Client(rep_url="https://127.0.0.1/dcs", refresh_token=refresh_token)
+        >>> # Alternative: Create client object and connect to REP with refresh token
+        >>> cl = Client(rep_url="https://127.0.0.1:8443/rep", refresh_token=refresh_token)
 
     """
 

@@ -110,7 +110,7 @@ class ProjectsTest(REPTestCase):
 
         client = self.client()
         jms_api = JmsApi(client)
-        proj_name = f"test_dps_ProjectTest_{self.run_id}"
+        proj_name = f"test_jms_ProjectTest_{self.run_id}"
 
         proj = Project(name=proj_name, active=True, priority=10)
         proj = jms_api.create_project(proj, replace=True)
@@ -139,11 +139,25 @@ class ProjectsTest(REPTestCase):
         # Delete project
         jms_api.delete_project(proj)
 
+    def test_project_replace(self):
+
+        client = self.client()
+        jms_api = JmsApi(client)
+
+        p = Project(name="Original Project")
+        p = jms_api.create_project(p)
+        project_id = p.id
+        p.name = "Replaced Project"
+        p = jms_api.create_project(p, replace=True)
+
+        self.assertEqual(p.id, project_id)
+        self.assertEqual(p.name, "Replaced Project")
+
     def test_project_copy(self):
 
         client = self.client()
         jms_api = JmsApi(client)
-        proj_name = f"test_dps_ProjectCopyTest_{self.run_id}"
+        proj_name = f"test_jms_ProjectCopyTest_{self.run_id}"
 
         proj = Project(name=proj_name, active=True, priority=10)
         proj = jms_api.create_project(proj, replace=True)
@@ -169,13 +183,13 @@ class ProjectsTest(REPTestCase):
 
         client = self.client()
         jms_api = JmsApi(client)
-        proj_name = f"test_dps_ProjectTest_license_context_{self.run_id}"
+        proj_name = f"test_jms_ProjectTest_license_context_{self.run_id}"
 
         proj = Project(id=proj_name, active=True, priority=10)
         proj = jms_api.create_project(proj, replace=True)
         project_api = ProjectApi(client, proj.id)
 
-        # Create new license context in DPS
+        # Create new license context in JMS
         license_contexts = project_api.create_license_contexts()
         self.assertEqual(len(license_contexts), 1)
         self.assertGreater(len(license_contexts[0].context_id), 0)
@@ -228,7 +242,7 @@ class ProjectsTest(REPTestCase):
 
         client = self.client()
         jms_api = JmsApi(client)
-        proj_name = f"test_dps_ProjectTest_delete_config_{self.run_id}"
+        proj_name = f"test_jms_ProjectTest_delete_config_{self.run_id}"
 
         proj = Project(name=proj_name, active=True, priority=10)
         proj = jms_api.create_project(proj, replace=True)
@@ -248,7 +262,7 @@ class ProjectsTest(REPTestCase):
         num_jobs = 2
         client = self.client()
         jms_api = JmsApi(client)
-        proj_name = f"test_dps_project_archive_restore_{self.run_id}"
+        proj_name = f"test_jms_project_archive_restore_{self.run_id}"
 
         # Setup project to work with
         project = motorbike_create_project(client=client, name=proj_name, num_jobs=num_jobs)

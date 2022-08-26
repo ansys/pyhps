@@ -29,7 +29,7 @@ class ResourceRequirementsSchema(BaseSchema):
     cpu_core_usage = fields.Float(allow_none=True)
     disk_space = fields.Int(allow_none=True)
 
-    user_data = fields.Dict(allow_none=True)
+    custom = fields.Dict(allow_none=True)
 
 
 class SuccessCriteriaSchema(BaseSchema):

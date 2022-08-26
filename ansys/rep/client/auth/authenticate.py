@@ -80,18 +80,18 @@ def authenticate(
     timeout: float = 10.0,
 ):
     """
-    Authenticate user with either password or refresh token against DCS authentication service.
+    Authenticate user with either password or refresh token against REP authentication service.
     If successful, the response includes access and refresh tokens.
 
     Args:
-        url (str): The base path for the server to call, e.g. "https://127.0.0.1/dcs".
+        url (str): The base path for the server to call, e.g. "https://127.0.0.1:8443/rep".
         username (str): Username
         password (str): Password
         refresh_token (str, optional): Refresh token.
         timeout (float, optional): Timeout in seconds. Defaults to 10.
         scope (str, optional): String containing one or more requested scopes.
-                               Defaults to 'dps dpdb ansft monitor'.
-        client_id (str, optional): The client type. Defaults to 'external'.
+                               Defaults to 'openid'.
+        client_id (str, optional): The client type. Defaults to 'rep-cli'.
 
     Returns:
         dict: JSON-encoded content of a :class:`requests.Response`
