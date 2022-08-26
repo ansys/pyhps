@@ -478,7 +478,7 @@ such as <code class="docutils literal notranslate"><span class="pre">Numpy</span
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">ansys.rep.client</span> <span class="kn">import</span> <span class="n">Client</span>
 <span class="kn">from</span> <span class="nn">ansys.rep.client.auth</span> <span class="kn">import</span> <span class="n">AuthApi</span><span class="p">,</span> <span class="n">User</span>
 
-<span class="n">client</span> <span class="o">=</span> <span class="n">Client</span><span class="p">(</span><span class="n">rep_url</span><span class="o">=</span><span class="s2">&quot;https://127.0.0.1/dcs/&quot;</span><span class="p">,</span> <span class="n">username</span><span class="o">=</span><span class="s2">&quot;repadmin&quot;</span><span class="p">,</span> <span class="n">password</span><span class="o">=</span><span class="s2">&quot;repadmin&quot;</span><span class="p">)</span>
+<span class="n">client</span> <span class="o">=</span> <span class="n">Client</span><span class="p">(</span><span class="n">rep_url</span><span class="o">=</span><span class="s2">&quot;https://127.0.0.1:8443/rep/&quot;</span><span class="p">,</span> <span class="n">username</span><span class="o">=</span><span class="s2">&quot;repadmin&quot;</span><span class="p">,</span> <span class="n">password</span><span class="o">=</span><span class="s2">&quot;repadmin&quot;</span><span class="p">)</span>
 <span class="n">auth_api</span> <span class="o">=</span> <span class="n">AuthApi</span><span class="p">(</span><span class="n">client</span><span class="p">)</span>
 
 <span class="c1"># modify the default password of the repadmin user</span>
@@ -503,12 +503,12 @@ Client Errors are raised for 4xx HTTP status codes, while API Errors are raised 
 <span class="kn">from</span> <span class="nn">ansys.rep.client.jms</span> <span class="kn">import</span> <span class="n">Client</span>
 
 <span class="k">try</span><span class="p">:</span>
-    <span class="n">client</span> <span class="o">=</span> <span class="n">Client</span><span class="p">(</span><span class="n">rep_url</span><span class="o">=</span><span class="s2">&quot;https://127.0.0.1/dcs/&quot;</span><span class="p">,</span> <span class="n">username</span><span class="o">=</span><span class="s2">&quot;repadmin&quot;</span><span class="p">,</span>  <span class="n">password</span><span class="o">=</span><span class="s2">&quot;wrong_psw&quot;</span><span class="p">)</span>
+    <span class="n">client</span> <span class="o">=</span> <span class="n">Client</span><span class="p">(</span><span class="n">rep_url</span><span class="o">=</span><span class="s2">&quot;https://127.0.0.1:8443/rep/&quot;</span><span class="p">,</span> <span class="n">username</span><span class="o">=</span><span class="s2">&quot;repadmin&quot;</span><span class="p">,</span>  <span class="n">password</span><span class="o">=</span><span class="s2">&quot;wrong_psw&quot;</span><span class="p">)</span>
 <span class="k">except</span> <span class="n">REPError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
     <span class="nb">print</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
 
 <span class="c1">#Output:</span>
-<span class="c1">#400 Client Error: invalid_grant for: POST https://127.0.0.1/dcs/auth/api/oauth/token</span>
+<span class="c1">#400 Client Error: invalid_grant for: POST https://127.0.0.1:8443/rep/auth/api/oauth/token</span>
 <span class="c1">#Invalid &quot;username&quot; or &quot;password&quot; in request.</span>
 </pre></div>
 </div>
@@ -519,7 +519,7 @@ Client Errors are raised for 4xx HTTP status codes, while API Errors are raised 
     <span class="nb">print</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
 
 <span class="c1">#Output:</span>
-<span class="c1">#404 Client Error: Not Found for: GET https://127.0.0.1/dcs/dps/api//projects/non_existing_project</span>
+<span class="c1">#404 Client Error: Not Found for: GET https://127.0.0.1:8443/rep/dps/api//projects/non_existing_project</span>
 </pre></div>
 </div>
 </section>

@@ -338,7 +338,7 @@
 <dl class="py function">
 <dt class="sig sig-object py" id="ansys.rep.client.connection.create_session">
 <span class="sig-prename descclassname"><span class="pre">ansys.rep.client.connection.</span></span><span class="sig-name descname"><span class="pre">create_session</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">access_token</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ansys.rep.client.connection.create_session" title="Permalink to this definition">#</a></dt>
-<dd><p>Return a <code class="xref py py-class docutils literal notranslate"><span class="pre">requests.Session</span></code> object configured for DPS with given access token</p>
+<dd><p>Return a <code class="xref py py-class docutils literal notranslate"><span class="pre">requests.Session</span></code> object configured for REP with given access token</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>access_token</strong> (<em>str</em>) – The access token provided by <a class="reference internal" href="auth.html#ansys.rep.client.auth.authenticate" title="ansys.rep.client.auth.authenticate"><code class="xref py py-meth docutils literal notranslate"><span class="pre">ansys.rep.client.auth.authenticate()</span></code></a></p>
@@ -395,7 +395,7 @@ requests a new access token.</p></li>
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>rep_url</strong> (<em>str</em>) – The base path for the server to call,
-e.g. “<a class="reference external" href="https://127.0.0.1/dcs">https://127.0.0.1/dcs</a>”.</p></li>
+e.g. “<a class="reference external" href="https://127.0.0.1:8443/rep">https://127.0.0.1:8443/rep</a>”.</p></li>
 <li><p><strong>username</strong> (<em>str</em>) – Username (Optional)</p></li>
 <li><p><strong>password</strong> (<em>str</em>) – Password (Optional)</p></li>
 <li><p><strong>refresh_token</strong> (<em>str</em>) – Refresh Token (Optional)</p></li>
@@ -404,13 +404,15 @@ e.g. “<a class="reference external" href="https://127.0.0.1/dcs">https://127.0
 </dd>
 </dl>
 <p class="rubric">Example</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">ansys.rep.client.jms</span> <span class="kn">import</span> <span class="n">Client</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Create client object and connect to DCS with username &amp; password</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">cl</span> <span class="o">=</span> <span class="n">Client</span><span class="p">(</span><span class="n">rep_url</span><span class="o">=</span><span class="s2">&quot;https://127.0.0.1/dcs&quot;</span><span class="p">,</span> <span class="n">username</span><span class="o">=</span><span class="s2">&quot;dcadmin&quot;</span><span class="p">,</span> <span class="n">password</span><span class="o">=</span><span class="s2">&quot;dcadmin&quot;</span><span class="p">)</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">ansys.rep.client</span> <span class="kn">import</span> <span class="n">Client</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Create client object and connect to REP with username &amp; password</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">cl</span> <span class="o">=</span> <span class="n">Client</span><span class="p">(</span>
+<span class="go">        rep_url=&quot;https://127.0.0.1:8443/rep&quot;, username=&quot;repadmin&quot;, password=&quot;repadmin&quot;</span>
+<span class="go">    )</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="c1"># Extract refresh token to eventually store it</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">refresh_token</span> <span class="o">=</span> <span class="n">cl</span><span class="o">.</span><span class="n">refresh_token</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Alternative: Create client object and connect to DCS with refresh token</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">cl</span> <span class="o">=</span> <span class="n">Client</span><span class="p">(</span><span class="n">rep_url</span><span class="o">=</span><span class="s2">&quot;https://127.0.0.1/dcs&quot;</span><span class="p">,</span> <span class="n">refresh_token</span><span class="o">=</span><span class="n">refresh_token</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Alternative: Create client object and connect to REP with refresh token</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">cl</span> <span class="o">=</span> <span class="n">Client</span><span class="p">(</span><span class="n">rep_url</span><span class="o">=</span><span class="s2">&quot;https://127.0.0.1:8443/rep&quot;</span><span class="p">,</span> <span class="n">refresh_token</span><span class="o">=</span><span class="n">refresh_token</span><span class="p">)</span>
 </pre></div>
 </div>
 <dl class="py method">
@@ -436,7 +438,9 @@ e.g. “<a class="reference external" href="https://127.0.0.1/dcs">https://127.0
 <p class="rubric">Example</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">ansys.rep.client.jms</span> <span class="kn">import</span> <span class="n">Client</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="c1"># Create client object and connect to REP with username &amp; password</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">cl</span> <span class="o">=</span> <span class="n">Client</span><span class="p">(</span><span class="n">rep_url</span><span class="o">=</span><span class="s2">&quot;https://127.0.0.1/dcs&quot;</span><span class="p">,</span> <span class="n">username</span><span class="o">=</span><span class="s2">&quot;repadmin&quot;</span><span class="p">,</span> <span class="n">password</span><span class="o">=</span><span class="s2">&quot;repadmin&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">cl</span> <span class="o">=</span> <span class="n">Client</span><span class="p">(</span>
+<span class="go">        rep_url=&quot;https://127.0.0.1:8443/rep&quot;, username=&quot;repadmin&quot;, password=&quot;repadmin&quot;</span>
+<span class="go">    )</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="c1"># Create a new project</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">root_api</span> <span class="o">=</span> <span class="n">RootApi</span><span class="p">(</span><span class="n">client</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">project</span> <span class="o">=</span> <span class="n">root_api</span><span class="o">.</span><span class="n">create_project</span><span class="p">(</span><span class="n">Project</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;Example Project&quot;</span><span class="p">))</span>
@@ -583,8 +587,18 @@ optionally filtered by given query parameters</p>
 </dd>
 </dl>
 <p class="rubric">Example</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">project</span> <span class="o">=</span> <span class="n">Project</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;Example Project&quot;</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">project</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">create_project</span><span class="p">(</span><span class="n">project</span><span class="p">)</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">ansys.rep.client</span> <span class="n">Client</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">ansys.rep.client.jms</span> <span class="kn">import</span> <span class="n">JmsApi</span><span class="p">,</span> <span class="n">Project</span><span class="p">,</span> <span class="n">ProjectApi</span>
+<span class="go">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">cl</span> <span class="o">=</span> <span class="n">Client</span><span class="p">(</span>
+<span class="go">        rep_url=&quot;https://127.0.0.1:8443/rep&quot;, username=&quot;repadmin&quot;, password=&quot;repadmin&quot;</span>
+<span class="go">    )</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">project</span> <span class="o">=</span> <span class="n">Project</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;Example Project&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">project</span><span class="p">)</span>
+<span class="go">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">jms_api</span> <span class="o">=</span> <span class="n">JmsApi</span><span class="p">(</span><span class="n">client</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">project</span> <span class="o">=</span> <span class="n">jms_api</span><span class="o">.</span><span class="n">create_project</span><span class="p">(</span><span class="n">project</span><span class="p">)</span>
+<span class="go">&gt;&gt;&gt;</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">project_api</span> <span class="o">=</span> <span class="n">ProjectApi</span><span class="p">(</span><span class="n">client</span><span class="p">,</span> <span class="n">project</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">jobs</span> <span class="o">=</span> <span class="n">project_api</span><span class="o">.</span><span class="n">get_jobs</span><span class="p">()</span>
 </pre></div>
@@ -718,10 +732,10 @@ the other fields can be empty.</p>
 <p>Note that only the <code class="docutils literal notranslate"><span class="pre">id</span></code> field of the Job objects need to be filled;
 the other fields can be empty.</p>
 <p class="rubric">Example</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">dps_to_delete</span> <span class="o">=</span> <span class="p">[]</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">jobs_to_delete</span> <span class="o">=</span> <span class="p">[]</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="nb">id</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">39</span><span class="p">,</span><span class="mi">44</span><span class="p">]:</span>
-<span class="gp">&gt;&gt;&gt; </span>   <span class="n">dps_to_delete</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Job</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="nb">id</span><span class="p">))</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">project_api</span><span class="o">.</span><span class="n">delete_jobs</span><span class="p">(</span><span class="n">dps_to_delete</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span>   <span class="n">jobs_to_delete</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Job</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="nb">id</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">project_api</span><span class="o">.</span><span class="n">delete_jobs</span><span class="p">(</span><span class="n">jobs_to_delete</span><span class="p">)</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -2123,10 +2137,10 @@ as <code class="xref py py-attr docutils literal notranslate"><span class="pre">
 </dd>
 </dl>
 <p class="rubric">Example</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">dps</span> <span class="o">=</span> <span class="p">[]</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">dps</span><span class="o">.</span><span class="n">append</span><span class="p">(</span> <span class="n">Job</span><span class="p">(</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;dp_1&quot;</span><span class="p">,</span> <span class="n">eval_status</span><span class="o">=</span><span class="s2">&quot;pending&quot;</span><span class="p">)</span> <span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">dps</span><span class="o">.</span><span class="n">append</span><span class="p">(</span> <span class="n">Job</span><span class="p">(</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;dp_2&quot;</span><span class="p">,</span> <span class="n">eval_status</span><span class="o">=</span><span class="s2">&quot;pending&quot;</span><span class="p">)</span> <span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">project_job_definition</span><span class="o">.</span><span class="n">create_jobs</span><span class="p">(</span> <span class="n">dps</span> <span class="p">)</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">jobs</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">jobs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span> <span class="n">Job</span><span class="p">(</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;job_1&quot;</span><span class="p">,</span> <span class="n">eval_status</span><span class="o">=</span><span class="s2">&quot;pending&quot;</span><span class="p">,</span> <span class="n">job_definition_id</span><span class="o">=</span><span class="n">job_def</span><span class="o">.</span><span class="n">id</span><span class="p">)</span> <span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">jobs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span> <span class="n">Job</span><span class="p">(</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;job_2&quot;</span><span class="p">,</span> <span class="n">eval_status</span><span class="o">=</span><span class="s2">&quot;pending&quot;</span><span class="p">,</span> <span class="n">job_definition_id</span><span class="o">=</span><span class="n">job_def</span><span class="o">.</span><span class="n">id</span><span class="p">)</span> <span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">project_api</span><span class="o">.</span><span class="n">create_jobs</span><span class="p">(</span> <span class="n">jobs</span> <span class="p">)</span>
 </pre></div>
 </div>
 <p>The Job schema has the following fields:</p>

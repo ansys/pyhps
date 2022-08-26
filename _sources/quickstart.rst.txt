@@ -230,7 +230,7 @@ Users with admin rights (such as the default ``repadmin`` user) can create new u
     from ansys.rep.client import Client
     from ansys.rep.client.auth import AuthApi, User
     
-    client = Client(rep_url="https://127.0.0.1/dcs/", username="repadmin", password="repadmin")
+    client = Client(rep_url="https://127.0.0.1:8443/rep/", username="repadmin", password="repadmin")
     auth_api = AuthApi(client)
 
     # modify the default password of the repadmin user
@@ -259,12 +259,12 @@ For example, instantiating a client with invalid credentials will return a 400 C
     from ansys.rep.client.jms import Client
 
     try:
-        client = Client(rep_url="https://127.0.0.1/dcs/", username="repadmin",  password="wrong_psw")
+        client = Client(rep_url="https://127.0.0.1:8443/rep/", username="repadmin",  password="wrong_psw")
     except REPError as e:
         print(e)
 
     #Output:
-    #400 Client Error: invalid_grant for: POST https://127.0.0.1/dcs/auth/api/oauth/token
+    #400 Client Error: invalid_grant for: POST https://127.0.0.1:8443/rep/auth/api/oauth/token
     #Invalid "username" or "password" in request.
 
 A *get* call  on a non-existing resource will return a 404 Client Error.
@@ -277,4 +277,4 @@ A *get* call  on a non-existing resource will return a 404 Client Error.
         print(e)
 
     #Output:
-    #404 Client Error: Not Found for: GET https://127.0.0.1/dcs/dps/api//projects/non_existing_project
+    #404 Client Error: Not Found for: GET https://127.0.0.1:8443/rep/dps/api//projects/non_existing_project
