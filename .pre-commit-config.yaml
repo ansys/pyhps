@@ -20,11 +20,11 @@ repos:
   hooks:
   - id: codespell
     exclude: >
-            (?x)^(
-                .*\.dat|
-                .*\.mac|
-                .*\.k
-            )$
+      (?x)^(
+          .*\.dat|
+          .*\.mac|
+          .*\.k
+      )$
     args: [-I, .codespellignore]
 
 # For now we disable some of these checks, can be reenabled later
