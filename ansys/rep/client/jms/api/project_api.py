@@ -245,6 +245,7 @@ class ProjectApi:
         return self._delete_objects(jobs)
 
     def _sync_jobs(self, jobs):
+        log.warning("ProjectApi._sync_jobs is a beta feature. Use with care.")
         return sync_jobs(self, jobs)
 
     ################################################################

@@ -87,6 +87,26 @@ class REPClientTest(REPTestCase):
 
         jms_api.delete_project(project)
 
+    def test_mapdl_linked_analyses(self):
+
+        from examples.mapdl_linked_analyses.project_setup import create_project
+
+        client = self.client()
+
+        for incremental_version in [True, False]:
+            project = create_project(
+                client, name="Test Linked Analyses", incremental=incremental_version
+            )
+            self.assertIsNotNone(project)
+
+            jms_api = JmsApi(client)
+            project_api = ProjectApi(client, project.id)
+
+            self.assertEqual(len(project_api.get_jobs()), 1)
+            self.assertEqual(len(project_api.get_tasks()), 3)
+
+            jms_api.delete_project(project)
+
 
 if __name__ == "__main__":
     unittest.main()
