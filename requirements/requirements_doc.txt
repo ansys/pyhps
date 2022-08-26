@@ -6,4 +6,4 @@ apispec==5.2.2
 sphinxcontrib-httpdomain==1.8.0
 sphinxcontrib-jsonschema==0.9.3
 sphinxcontrib-globalsubs==0.1.0
-sphinxnotes-strike==1.1
+sphinxnotes-strike==1.2
