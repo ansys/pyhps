@@ -34,9 +34,7 @@ def main(client, num_jobs, use_exec_script) -> Project:
     See e.g. https://apmonitor.com/me575/uploads/Main/optimization_book.pdf
     """  # noqa
     log.debug("=== Project")
-    proj = Project(
-        name="two_bar_truss_problem", display_name="Two-bar Truss Problem", priority=1, active=True
-    )
+    proj = Project(name="Two-bar Truss Problem", priority=1, active=True)
     jms_api = JmsApi(client)
     proj = jms_api.create_project(proj, replace=True)
     project_api = ProjectApi(client, proj.id)

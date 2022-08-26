@@ -122,9 +122,7 @@ class TasksTest(REPTestCase):
         jms_api = JmsApi(client)
         proj_name = f"test_desing_point_sync_{uuid.uuid4().hex[:8]}"
 
-        project = Project(
-            name=proj_name, active=False, priority=10, display_name="test_desing_point_sync"
-        )
+        project = Project(name=proj_name, active=False, priority=10)
         project = jms_api.create_project(project, replace=True)
         project_api = ProjectApi(client, project.id)
 

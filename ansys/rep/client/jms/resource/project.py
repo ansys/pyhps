@@ -54,9 +54,7 @@ def get_fs_url(project: Project):
     rest_gateways.sort(key=lambda fs: fs["priority"], reverse=True)
 
     if not rest_gateways:
-        raise REPError(
-            f"Project {project.display_name} (id={project.id}) has no Rest Gateway defined."
-        )
+        raise REPError(f"Project {project.name} (id={project.id}) has no Rest Gateway defined.")
 
     for d in rest_gateways:
         url = d["url"]

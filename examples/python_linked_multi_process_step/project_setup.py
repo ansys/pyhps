@@ -31,8 +31,7 @@ def main(client, num_task_definitions, num_jobs, start, inactive):
     """Create project with multiple dependent Python tasks and linked files in between."""
     log.debug("=== Project")
     proj = Project(
-        name=f"py_linked_{num_task_definitions}td",
-        display_name=f"Python - Linked Files - {num_task_definitions} Process Steps",
+        name=f"Python - Linked Files - {num_task_definitions} Tasks",
         priority=1,
         active=not inactive,
     )

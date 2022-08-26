@@ -37,7 +37,7 @@ def main(client: Client, name: str, num_jobs: int) -> Project:
     """
     log.debug("=== Project")
     jms_api = JmsApi(client)
-    proj = Project(name=name, display_name="MAPDL Tyre Performance", priority=1, active=True)
+    proj = Project(name=name, priority=1, active=True)
     proj = jms_api.create_project(proj)
 
     project_api = ProjectApi(client, proj.id)
@@ -228,7 +228,7 @@ def main(client: Client, name: str, num_jobs: int) -> Project:
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("-n", "--name", type=str, default="mapdl_tyre_performance")
+    parser.add_argument("-n", "--name", type=str, default="Mapdl Tyre Performance")
     parser.add_argument("-j", "--num-jobs", type=int, default=10)
     parser.add_argument("-U", "--url", default="https://127.0.0.1:8443/rep")
     parser.add_argument("-u", "--username", default="repadmin")
