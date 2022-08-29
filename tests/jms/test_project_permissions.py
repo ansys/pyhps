@@ -148,7 +148,7 @@ class ProjectPermissionsTest(REPTestCase):
         root_api2 = JmsApi(client2)
         log.info(f"Client connected at {client2.rep_url} with user {user2.username}")
 
-        proj_user2 = root_api2.get_project(name=proj_name)
+        proj_user2 = root_api2.get_project_by_name(name=proj_name)
         project_api2 = ProjectApi(client2, proj_user2.id)
         add_job_definition_to_project(project_api2, f"Config 2 - {user2.username}")
 
