@@ -1,7 +1,7 @@
 .. _quickstart:
 
 Quickstart
-===============
+==========
 
 This guide will walk you through the basics of interacting with a REP server. More elaborated examples are available in the :ref:`Examples <examples>` chapter, 
 while detailed documentation can be found in the :ref:`Code Documentation <api_reference>`.
@@ -20,7 +20,7 @@ Let's start by connecting to a REP server running on the localhost with default 
 .. code-block:: python
 
     from ansys.rep.client import Client
-    from ansys.rep.client.jms import JmsApi
+    from ansys.rep.client.jms import JmsApi, ProjectApi
     
     client = Client(rep_url="https://localhost:8443/rep", username="repadmin", password="repadmin")  
 
@@ -41,7 +41,7 @@ Query projects statistics to find out how many design points are currently runni
 Create a demo project: the MAPDL motorbike frame example
 ---------------------------------------------------------
 
-Create a project consisting of an Ansys APDL beam model 
+Create a project consisting of an Ansys Mechanical APDL beam model 
 of a tubular steel trellis motorbike-frame. 
 
 .. only:: builder_html
@@ -68,27 +68,43 @@ Most ``get`` functions support filtering by query parameters.
 
 .. code-block:: python
     
-    project = jms_api.get_project(id="mapdl_motorbike_frame") 
+    project = jms_api.get_project_by_name(name="Mapdl Motorbike Frame") 
+    project_api = ProjectApi(client, project.id)
 
     # Get all design points with all fields
-    jobs = project.get_jobs()
+    jobs = project_api.get_jobs()
 
     # Get id and parameter values for all evaluated design points
-    jobs = project.get_jobs(fields=["id", "values"], eval_status="evaluated")
+    jobs = project_api.get_jobs(fields=["id", "values"], eval_status="evaluated")
 
     # Get name and elapsed time of max 5 evaluated design points
-    jobs = project.get_jobs(fields=["name", "elapsed_time"], 
+    jobs = project_api.get_jobs(fields=["name", "elapsed_time"], 
                         eval_status="evaluated", limit=5)
+    for job in jobs:
+        print(job)
+    # {
+    #   "id": "02qoqedl8QCjkuLcqCi10Q",
+    #   "name": "Job.0",
+    #   "priority": 0,
+    #   "elapsed_time": 35.275044
+    # }
+    # {
+    #   "id": "02qoqedlDMO1LrSGoHQqnT",
+    #   "name": "Job.1",
+    #   "priority": 0,
+    #   "elapsed_time": 34.840801
+    # }
+    # ...
 
     # Get all design points sorted by fitness value in ascending order
-    jobs = project.get_jobs(sort="fitness")
+    jobs = project_api.get_jobs(sort="fitness")
 
     # Get all design points sorted by fitness value in descending order
-    jobs = project.get_jobs(sort="-fitness")
+    jobs = project_api.get_jobs(sort="-fitness")
 
     # Get all design points sorted by the parameters tube1 and weight
-    jobs = project.get_jobs(sort=["values.tube1", "values.weight"])
-    print([(dp.values["tube1"], dp.values["weight"]) for dp in jobs])
+    jobs = project_api.get_jobs(sort=["values.tube1", "values.weight"])
+    print([(job.values["tube1"], job.values["weight"]) for job in jobs])
 
 In general, query parameters support the following operators: ``lt`` (less than), ``le`` (less or equal), 
 ``=`` (equal), ``ne`` (not equal), ``ge`` (greater or equal), ``gt`` (greater than),  ``in`` (value found in list) and
@@ -97,18 +113,18 @@ In general, query parameters support the following operators: ``lt`` (less than)
 .. code-block:: python
     
     # Equal
-    jobs = project.get_jobs(eval_status="evaluated")
+    jobs = project_api.get_jobs(eval_status="evaluated")
 
     # In
-    jobs = project.get_jobs(eval_status=["prolog", "running"])
+    jobs = project_api.get_jobs(eval_status=["prolog", "running"])
 
     # Contains
     query_params = {"note.contains": "search_string"}
-    jobs = project.get_jobs(**query_params)
+    jobs = project_api.get_jobs(**query_params)
 
     # Less than
     query_params = {"fitness.lt": 1.8}
-    jobs = project.get_jobs(**query_params)
+    jobs = project_api.get_jobs(**query_params)
 
 Objects vs dictionaries
 -----------------------------------
@@ -121,26 +137,27 @@ such as ``Numpy``, ``Pandas``, etc.
     
     import pandas
 
-    project = client.get_project(id="mapdl_motorbike_frame") 
+    project = jms_api.get_project_by_name(name="Mapdl Motorbike Frame") 
 
     # Get parameter values for all evaluated design points
-    jobs = project.get_jobs(fields=["id", "values"], eval_status="evaluated", as_objects=False)
+    jobs = project_api.get_jobs(fields=["id", "values"], eval_status="evaluated", as_objects=False)
 
     # Import jobs data into a flat DataFrame
-    df = pandas.io.json.json_normalize(jobs)
+    df = pandas.json_normalize(jobs)
 
     # Output
-    #    id  values.tube1_radius  values.tube1_thickness  values.tube2_radius  values.tube2_thickness  values.tube3_radius  values.tube3_thickness  ... values.tube15 values.tube16 values.tube17 values.tube18 values.tube19 values.tube20 values.tube21
-    # 0      1             7.055903                0.728247            17.677894                0.512761            13.342691                0.718970  ...             1             3             2             3             1             1             1
-    # 1      2            18.172368                2.407453             9.216933                0.818597            11.789593                1.439845  ...             3             1             3             2             3             3             2
-    # 2      3            14.832407                2.380437             7.484620                1.601617            19.742424                0.816099  ...             2             1             1             1             2             2             3
-    # 3      4            10.254875                2.420485            10.429973                2.241802            14.647943                0.501836  ...             1             3             2             1             3             3             3
-    # 4      5            14.601405                1.657524            10.056457                1.743385             8.821876                2.200616  ...             1             2             3             3             2             1             2
-    # 5      6            10.393178                2.155777             8.043999                2.036772            11.605410                2.426192  ...             3             1             1             1             2             1             1
-    # 6      7            10.415530                1.675479             4.570576                1.461735            16.915658                1.822555  ...             3             3             3             2             1             1             2
-    # 7      8            12.841433                1.322097             6.142197                1.659299             6.275559                2.312346  ...             3             2             2             3             1             1             3
-    # 8      9            18.394536                2.446091            12.882719                0.939273            15.167834                1.683604  ...             3             1             2             3             2             2             1
-    # 9     10            12.414343                1.699816             6.128372                1.314386            18.783781                1.736996  ...             1             3             2             1             3             1             2
+    #                         id  values.mapdl_cp_time  values.mapdl_elapsed_time  values.mapdl_elapsed_time_obtain_license  values.max_stress  ...  values.tube6 values.tube7 values.tube8 values.tube9 values.weight
+    # 0   02qoqedl8QCjkuLcqCi10Q                 0.500                       24.0                                      21.9        1010.256091  ...             3            1            1            2      3.027799
+    # 1   02qoqedlDMO1LrSGoHQqnT                 0.406                       23.0                                      21.5         227.249112  ...             2            3            3            2     11.257201
+    # 2   02qoqedlApzJZd7fQSQIJg                 0.438                       24.0                                      21.2         553.839050  ...             3            2            1            2      6.358393
+    # 3   02qoqedlGMYZi7YBive78D                 0.469                       25.0                                      22.9         162.944726  ...             1            1            1            3      9.919099
+    # 4   02qoqedlKBzRz939iDCCex                 0.391                       25.0                                      22.6         218.976121  ...             3            2            2            2      6.884490
+    # 5   02qoqedlLfvwuA4uaf5GKR                 0.406                       24.0                                      22.4         455.888101  ...             1            3            1            2      7.346944
+    # 6   02qoqedlLvoSgPoLxla8F9                 0.391                       27.0                                      25.2         292.885562  ...             1            1            1            3      6.759635
+    # 7   02qoqedlOKg8Vg5AlTrji6                 0.484                       28.0                                      26.2         377.721100  ...             1            1            3            2      5.952097
+    # 8   02qoqedlRtDwuw2uTQ99Vq                 0.469                       28.0                                      25.9         332.336753  ...             1            3            2            2      7.463696
+    # 9   02qoqedlPYyGRTivqB5vxf                 0.453                       27.0                                      25.5         340.147675  ...             3            2            2            3      6.631538
+    # 10  02qoqedlN1ebRV77zuUVYd                 0.453                       28.0                                      25.5         270.691391  ...             2            2            1            3      8.077236
 
 
 Set failed design points to pending 
@@ -150,14 +167,14 @@ Query a specific project and set its failed design points (if any) to pending.
 
 .. code-block:: python
     
-    project = client.get_project(id="mapdl_motorbike_frame") 
-    jobs = project.get_jobs() 
+    project = jms_api.get_project_by_name(name="Mapdl Motorbike Frame") 
+    jobs = project_api.get_jobs() 
 
-    failed_dps = [dp for dp in jobs if dp.eval_status == "failed"]
+    failed_jobs = [job for job in jobs if job.eval_status == "failed"]
     
-    for dp in failed_dps:
-        dp.eval_status = "pending"
-    failed_dps = project.update_jobs(failed_dps)
+    for job in failed_jobs:
+        job.eval_status = "pending"
+    failed_jobs = project_api.update_jobs(failed_jobs)
   
 
 Modify a project job_definition  
@@ -167,17 +184,29 @@ Query an existing project job_definition, modify it and send it back to the serv
 
 .. code-block:: python
 
-    project = client.get_project(id="mapdl_motorbike_frame") 
+    project = jms_api.get_project_by_name(name="Mapdl Motorbike Frame") 
 
     # get currently active job_definition
-    job_def = project.get_job_definitions(active=True)[0]
+    job_def = project_api.get_job_definitions(active=True)[0]
     
     # Update the lower limit of a parameter
-    parameter = job_def.parameter_definitions[0]
-    parameter.lower_limit = 2.5
+    parameter_id = job_def.parameter_definition_ids[0]
+    parameter_def = project_api.get_parameter_definitions(id=parameter_id)[0]
+    print(parameter_def)
+    # {
+    #   "id": "02qoqeciKZxk3Ua4QjPwue",
+    #   "name": "tube1_radius",
+    #   "mode": "input",
+    #   "type": "float",
+    #   "default": 12.0,
+    #   "lower_limit": 4.0,
+    #   "upper_limit": 20.0,
+    #   "cyclic": false
+    # }
+    parameter_def.lower_limit = 2.5
 
     # send the updated job_definition to the server
-    job_def = project.update_job_definitions([job_def])[0]
+    project_api.update_parameter_definitions([parameter_def])
 
 
 Delete some design points  
@@ -187,10 +216,10 @@ Query and then delete all design points that timed out.
 
 .. code-block:: python
 
-    project = client.get_project(id="mapdl_motorbike_frame") 
+    project = jms_api.get_project_by_name(name="Mapdl Motorbike Frame") 
 
-    jobs = project.get_jobs(fields=['id'], eval_status="timeout") 
-    project.delete_jobs(jobs)
+    jobs = project_api.get_jobs(fields=['id'], eval_status="timeout") 
+    project_api.delete_jobs(jobs)
 
 
 Query the number of evaluators
@@ -198,7 +227,7 @@ Query the number of evaluators
 
 .. code-block:: python
     
-    evaluators = client.get_evaluators()
+    evaluators = jms_api.get_evaluators()
 
     # print number of Windows and Linux evaluators connected to the DCS server
     print( len([e for e in evaluators if e.platform == "Windows" ]) )
@@ -208,15 +237,15 @@ Query the number of evaluators
 Replace a file in a project
 ------------------------------------------
 
-Get file definitions from an existing project job_definition and replace the first one.
+Get file definitions from an existing project Job Definition and replace the first one.
 
 .. code-block:: python
 
-  job_def = project.get_job_definitions(active=True)[0]
-  files = project.get_files()
+  job_def = project_api.get_job_definitions(active=True)[0]
+  files = project_api.get_files()
   file = files[0]
-  file.src = r"D:\local_folder\my_project\workbench_archive.wbpz"
-  files = project.update_files([file])
+  file.src = r"D:\local_folder\my_project\input_file.xyz"
+  project.update_files([file])
 
 For instructions on how to add a new file to an existing project job_definition, see :ref:`Adding a file to a project <example_adding_files>`.
 
@@ -230,7 +259,7 @@ Users with admin rights (such as the default ``repadmin`` user) can create new u
     from ansys.rep.client import Client
     from ansys.rep.client.auth import AuthApi, User
     
-    client = Client(rep_url="https://127.0.0.1:8443/rep/", username="repadmin", password="repadmin")
+    client = Client(rep_url="https://localhost:8443/rep/", username="repadmin", password="repadmin")
     auth_api = AuthApi(client)
 
     # modify the default password of the repadmin user
@@ -243,38 +272,48 @@ Users with admin rights (such as the default ``repadmin`` user) can create new u
                     email='test_user@test.com', fullname='Test User', 
                     is_admin=False)
     new_user = auth_api.create_user(new_user)
+    print(new_user)
+    # {
+    #   "id": "f9e068d7-4962-45dc-92a4-2273246039da",
+    #   "username": "test_user",
+    #   "email": "test_user@test.com"
+    # }
 
+    new_user.password = "new_password"
+    auth_api.update_user(new_user)
 
 Exception handling
 ------------------------------------------
 
-All exceptions that the Ansys DCS clients explicitly raise inherit from :exc:`ansys.rep.client.REPError`.
+All exceptions that the Ansys REP client explicitly raise inherit from :exc:`ansys.rep.client.REPError`.
 Client Errors are raised for 4xx HTTP status codes, while API Errors are raised for 5xx HTTP status codes (server side errors).
 
-For example, instantiating a client with invalid credentials will return a 400 Client Error.
+For example, instantiating a client with invalid credentials will return a 401 Client Error.
 
 .. code-block:: python
 
-    from ansys.rep.client import REPError
-    from ansys.rep.client.jms import Client
+    from ansys.rep.client import Client, REPError
 
     try:
-        client = Client(rep_url="https://127.0.0.1:8443/rep/", username="repadmin",  password="wrong_psw")
+        client = Client(rep_url="https://localhost:8443/rep/", username="repadmin",  password="wrong_psw")
     except REPError as e:
         print(e)
 
     #Output:
-    #400 Client Error: invalid_grant for: POST https://127.0.0.1:8443/rep/auth/api/oauth/token
-    #Invalid "username" or "password" in request.
+    # 401 Client Error: invalid_grant for: POST https://localhost:8443/rep/auth/realms/rep/protocol/openid-connect/token
+    # Invalid user credentials
 
-A *get* call  on a non-existing resource will return a 404 Client Error.
+A *get* call on a non-existing resource will return a 404 Client Error.
 
 .. code-block:: python
 
+    from ansys.rep.client.jms import JmsApi
+
+    jms_api = JmsApi(client)
     try:
-        client.get_project(id="non_existing_project")
+        jms_api.get_project(id="non_existing_project")
     except REPError as e:
         print(e)
 
     #Output:
-    #404 Client Error: Not Found for: GET https://127.0.0.1:8443/rep/dps/api//projects/non_existing_project
+    #404 Client Error: Not Found for: GET https://localhost:8443/rep//jms/api/v1/projects/non_existing_project
