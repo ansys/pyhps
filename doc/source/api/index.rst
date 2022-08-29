@@ -8,6 +8,7 @@ If you are looking for information on a specific function, class, or method, thi
 .. toctree::
   :maxdepth: 3
 
+  client
   auth
   jms
   exceptions
