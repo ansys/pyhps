@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
-    <title>Quickstart &#8212; pyrep</title>
+    <title>Quickstart &#8212; PyREP</title>
     
 <script>
   document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
@@ -42,6 +42,7 @@
     <script src="_static/doctools.js"></script>
     <script src="_static/clipboard.min.js"></script>
     <script src="_static/copybutton.js"></script>
+    <link rel="shortcut icon" href="_static/favicon.png"/>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Examples" href="examples/index.html" />
@@ -114,12 +115,6 @@
  </a>
 </li>
 
-<li class="toctree-l1 nav-item">
- <a class="reference internal nav-link" href="changelog/index.html">
-  Changelog
- </a>
-</li>
-
     
 </ul>
       </div>
@@ -139,7 +134,7 @@
       <div class="navbar-end-item">
         <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
         <li class="nav-item">
-          <a class="nav-link" href="[https://github.com/pyansys/pyrep" rel="noopener" target="_blank" title="GitHub"><span><i class="fab fa-github-square"></i></span>
+          <a class="nav-link" href="https://github.com/pyansys/pyrep" rel="noopener" target="_blank" title="GitHub"><span><i class="fab fa-github-square"></i></span>
             <label class="sr-only">GitHub</label></a>
         </li>
       </ul>
@@ -163,7 +158,7 @@
         <li class="nav-item nav-item-additional-breadcrumb"><a href="https://docs.pyansys.com/">PyAnsys</a> » </li>
     
     
-        <li class="nav-item nav-item-0"><a href="index.html">pyrep</a> » </li>
+        <li class="nav-item nav-item-0"><a href="index.html">PyREP</a> » </li>
     
 
         <li class="nav-item nav-item-this"><a href="">Quickstart</a></li> 
@@ -299,7 +294,7 @@ while detailed documentation can be found in the <a class="reference internal" h
 <h2>Connect to a REP Server<a class="headerlink" href="#connect-to-a-rep-server" title="Permalink to this heading">#</a></h2>
 <p>Let’s start by connecting to a REP server running on the localhost with default username and password.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">ansys.rep.client</span> <span class="kn">import</span> <span class="n">Client</span>
-<span class="kn">from</span> <span class="nn">ansys.rep.client.jms</span> <span class="kn">import</span> <span class="n">JmsApi</span>
+<span class="kn">from</span> <span class="nn">ansys.rep.client.jms</span> <span class="kn">import</span> <span class="n">JmsApi</span><span class="p">,</span> <span class="n">ProjectApi</span>
 
 <span class="n">client</span> <span class="o">=</span> <span class="n">Client</span><span class="p">(</span><span class="n">rep_url</span><span class="o">=</span><span class="s2">&quot;https://localhost:8443/rep&quot;</span><span class="p">,</span> <span class="n">username</span><span class="o">=</span><span class="s2">&quot;repadmin&quot;</span><span class="p">,</span> <span class="n">password</span><span class="o">=</span><span class="s2">&quot;repadmin&quot;</span><span class="p">)</span>
 
@@ -319,7 +314,7 @@ while detailed documentation can be found in the <a class="reference internal" h
 </section>
 <section id="create-a-demo-project-the-mapdl-motorbike-frame-example">
 <h2>Create a demo project: the MAPDL motorbike frame example<a class="headerlink" href="#create-a-demo-project-the-mapdl-motorbike-frame-example" title="Permalink to this heading">#</a></h2>
-<p>Create a project consisting of an Ansys APDL beam model
+<p>Create a project consisting of an Ansys Mechanical APDL beam model
 of a tubular steel trellis motorbike-frame.</p>
 <p>The project setup script as well as the data files can be downloaded here <a class="reference download internal" download="" href="_downloads/85f405c045419850de8267799ac6b388/mapdl_motorbike_frame.zip"><code class="xref download docutils literal notranslate"><span class="pre">MAPDL</span> <span class="pre">Motorbike</span> <span class="pre">Frame</span> <span class="pre">Project</span></code></a>.
 To create the project you only need to run the <cite>project_setup</cite> script:</p>
@@ -337,45 +332,61 @@ please adjust the script before running it.</p>
 <section id="query-parameters">
 <h2>Query parameters<a class="headerlink" href="#query-parameters" title="Permalink to this heading">#</a></h2>
 <p>Most <code class="docutils literal notranslate"><span class="pre">get</span></code> functions support filtering by query parameters.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">project</span> <span class="o">=</span> <span class="n">jms_api</span><span class="o">.</span><span class="n">get_project</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="s2">&quot;mapdl_motorbike_frame&quot;</span><span class="p">)</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">project</span> <span class="o">=</span> <span class="n">jms_api</span><span class="o">.</span><span class="n">get_project_by_name</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;Mapdl Motorbike Frame&quot;</span><span class="p">)</span>
+<span class="n">project_api</span> <span class="o">=</span> <span class="n">ProjectApi</span><span class="p">(</span><span class="n">client</span><span class="p">,</span> <span class="n">project</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
 
 <span class="c1"># Get all design points with all fields</span>
-<span class="n">jobs</span> <span class="o">=</span> <span class="n">project</span><span class="o">.</span><span class="n">get_jobs</span><span class="p">()</span>
+<span class="n">jobs</span> <span class="o">=</span> <span class="n">project_api</span><span class="o">.</span><span class="n">get_jobs</span><span class="p">()</span>
 
 <span class="c1"># Get id and parameter values for all evaluated design points</span>
-<span class="n">jobs</span> <span class="o">=</span> <span class="n">project</span><span class="o">.</span><span class="n">get_jobs</span><span class="p">(</span><span class="n">fields</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;id&quot;</span><span class="p">,</span> <span class="s2">&quot;values&quot;</span><span class="p">],</span> <span class="n">eval_status</span><span class="o">=</span><span class="s2">&quot;evaluated&quot;</span><span class="p">)</span>
+<span class="n">jobs</span> <span class="o">=</span> <span class="n">project_api</span><span class="o">.</span><span class="n">get_jobs</span><span class="p">(</span><span class="n">fields</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;id&quot;</span><span class="p">,</span> <span class="s2">&quot;values&quot;</span><span class="p">],</span> <span class="n">eval_status</span><span class="o">=</span><span class="s2">&quot;evaluated&quot;</span><span class="p">)</span>
 
 <span class="c1"># Get name and elapsed time of max 5 evaluated design points</span>
-<span class="n">jobs</span> <span class="o">=</span> <span class="n">project</span><span class="o">.</span><span class="n">get_jobs</span><span class="p">(</span><span class="n">fields</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">,</span> <span class="s2">&quot;elapsed_time&quot;</span><span class="p">],</span>
+<span class="n">jobs</span> <span class="o">=</span> <span class="n">project_api</span><span class="o">.</span><span class="n">get_jobs</span><span class="p">(</span><span class="n">fields</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">,</span> <span class="s2">&quot;elapsed_time&quot;</span><span class="p">],</span>
                     <span class="n">eval_status</span><span class="o">=</span><span class="s2">&quot;evaluated&quot;</span><span class="p">,</span> <span class="n">limit</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">job</span> <span class="ow">in</span> <span class="n">jobs</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">job</span><span class="p">)</span>
+<span class="c1"># {</span>
+<span class="c1">#   &quot;id&quot;: &quot;02qoqedl8QCjkuLcqCi10Q&quot;,</span>
+<span class="c1">#   &quot;name&quot;: &quot;Job.0&quot;,</span>
+<span class="c1">#   &quot;priority&quot;: 0,</span>
+<span class="c1">#   &quot;elapsed_time&quot;: 35.275044</span>
+<span class="c1"># }</span>
+<span class="c1"># {</span>
+<span class="c1">#   &quot;id&quot;: &quot;02qoqedlDMO1LrSGoHQqnT&quot;,</span>
+<span class="c1">#   &quot;name&quot;: &quot;Job.1&quot;,</span>
+<span class="c1">#   &quot;priority&quot;: 0,</span>
+<span class="c1">#   &quot;elapsed_time&quot;: 34.840801</span>
+<span class="c1"># }</span>
+<span class="c1"># ...</span>
 
 <span class="c1"># Get all design points sorted by fitness value in ascending order</span>
-<span class="n">jobs</span> <span class="o">=</span> <span class="n">project</span><span class="o">.</span><span class="n">get_jobs</span><span class="p">(</span><span class="n">sort</span><span class="o">=</span><span class="s2">&quot;fitness&quot;</span><span class="p">)</span>
+<span class="n">jobs</span> <span class="o">=</span> <span class="n">project_api</span><span class="o">.</span><span class="n">get_jobs</span><span class="p">(</span><span class="n">sort</span><span class="o">=</span><span class="s2">&quot;fitness&quot;</span><span class="p">)</span>
 
 <span class="c1"># Get all design points sorted by fitness value in descending order</span>
-<span class="n">jobs</span> <span class="o">=</span> <span class="n">project</span><span class="o">.</span><span class="n">get_jobs</span><span class="p">(</span><span class="n">sort</span><span class="o">=</span><span class="s2">&quot;-fitness&quot;</span><span class="p">)</span>
+<span class="n">jobs</span> <span class="o">=</span> <span class="n">project_api</span><span class="o">.</span><span class="n">get_jobs</span><span class="p">(</span><span class="n">sort</span><span class="o">=</span><span class="s2">&quot;-fitness&quot;</span><span class="p">)</span>
 
 <span class="c1"># Get all design points sorted by the parameters tube1 and weight</span>
-<span class="n">jobs</span> <span class="o">=</span> <span class="n">project</span><span class="o">.</span><span class="n">get_jobs</span><span class="p">(</span><span class="n">sort</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;values.tube1&quot;</span><span class="p">,</span> <span class="s2">&quot;values.weight&quot;</span><span class="p">])</span>
-<span class="nb">print</span><span class="p">([(</span><span class="n">dp</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="s2">&quot;tube1&quot;</span><span class="p">],</span> <span class="n">dp</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="s2">&quot;weight&quot;</span><span class="p">])</span> <span class="k">for</span> <span class="n">dp</span> <span class="ow">in</span> <span class="n">jobs</span><span class="p">])</span>
+<span class="n">jobs</span> <span class="o">=</span> <span class="n">project_api</span><span class="o">.</span><span class="n">get_jobs</span><span class="p">(</span><span class="n">sort</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;values.tube1&quot;</span><span class="p">,</span> <span class="s2">&quot;values.weight&quot;</span><span class="p">])</span>
+<span class="nb">print</span><span class="p">([(</span><span class="n">job</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="s2">&quot;tube1&quot;</span><span class="p">],</span> <span class="n">job</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="s2">&quot;weight&quot;</span><span class="p">])</span> <span class="k">for</span> <span class="n">job</span> <span class="ow">in</span> <span class="n">jobs</span><span class="p">])</span>
 </pre></div>
 </div>
 <p>In general, query parameters support the following operators: <code class="docutils literal notranslate"><span class="pre">lt</span></code> (less than), <code class="docutils literal notranslate"><span class="pre">le</span></code> (less or equal),
 <code class="docutils literal notranslate"><span class="pre">=</span></code> (equal), <code class="docutils literal notranslate"><span class="pre">ne</span></code> (not equal), <code class="docutils literal notranslate"><span class="pre">ge</span></code> (greater or equal), <code class="docutils literal notranslate"><span class="pre">gt</span></code> (greater than),  <code class="docutils literal notranslate"><span class="pre">in</span></code> (value found in list) and
 <code class="docutils literal notranslate"><span class="pre">contains</span></code> (property contains the given string).</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Equal</span>
-<span class="n">jobs</span> <span class="o">=</span> <span class="n">project</span><span class="o">.</span><span class="n">get_jobs</span><span class="p">(</span><span class="n">eval_status</span><span class="o">=</span><span class="s2">&quot;evaluated&quot;</span><span class="p">)</span>
+<span class="n">jobs</span> <span class="o">=</span> <span class="n">project_api</span><span class="o">.</span><span class="n">get_jobs</span><span class="p">(</span><span class="n">eval_status</span><span class="o">=</span><span class="s2">&quot;evaluated&quot;</span><span class="p">)</span>
 
 <span class="c1"># In</span>
-<span class="n">jobs</span> <span class="o">=</span> <span class="n">project</span><span class="o">.</span><span class="n">get_jobs</span><span class="p">(</span><span class="n">eval_status</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;prolog&quot;</span><span class="p">,</span> <span class="s2">&quot;running&quot;</span><span class="p">])</span>
+<span class="n">jobs</span> <span class="o">=</span> <span class="n">project_api</span><span class="o">.</span><span class="n">get_jobs</span><span class="p">(</span><span class="n">eval_status</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;prolog&quot;</span><span class="p">,</span> <span class="s2">&quot;running&quot;</span><span class="p">])</span>
 
 <span class="c1"># Contains</span>
 <span class="n">query_params</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;note.contains&quot;</span><span class="p">:</span> <span class="s2">&quot;search_string&quot;</span><span class="p">}</span>
-<span class="n">jobs</span> <span class="o">=</span> <span class="n">project</span><span class="o">.</span><span class="n">get_jobs</span><span class="p">(</span><span class="o">**</span><span class="n">query_params</span><span class="p">)</span>
+<span class="n">jobs</span> <span class="o">=</span> <span class="n">project_api</span><span class="o">.</span><span class="n">get_jobs</span><span class="p">(</span><span class="o">**</span><span class="n">query_params</span><span class="p">)</span>
 
 <span class="c1"># Less than</span>
 <span class="n">query_params</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;fitness.lt&quot;</span><span class="p">:</span> <span class="mf">1.8</span><span class="p">}</span>
-<span class="n">jobs</span> <span class="o">=</span> <span class="n">project</span><span class="o">.</span><span class="n">get_jobs</span><span class="p">(</span><span class="o">**</span><span class="n">query_params</span><span class="p">)</span>
+<span class="n">jobs</span> <span class="o">=</span> <span class="n">project_api</span><span class="o">.</span><span class="n">get_jobs</span><span class="p">(</span><span class="o">**</span><span class="n">query_params</span><span class="p">)</span>
 </pre></div>
 </div>
 </section>
@@ -386,73 +397,86 @@ This is especially useful when the returned data needs to be further manipulated
 such as <code class="docutils literal notranslate"><span class="pre">Numpy</span></code>, <code class="docutils literal notranslate"><span class="pre">Pandas</span></code>, etc.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">pandas</span>
 
-<span class="n">project</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">get_project</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="s2">&quot;mapdl_motorbike_frame&quot;</span><span class="p">)</span>
+<span class="n">project</span> <span class="o">=</span> <span class="n">jms_api</span><span class="o">.</span><span class="n">get_project_by_name</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;Mapdl Motorbike Frame&quot;</span><span class="p">)</span>
 
 <span class="c1"># Get parameter values for all evaluated design points</span>
-<span class="n">jobs</span> <span class="o">=</span> <span class="n">project</span><span class="o">.</span><span class="n">get_jobs</span><span class="p">(</span><span class="n">fields</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;id&quot;</span><span class="p">,</span> <span class="s2">&quot;values&quot;</span><span class="p">],</span> <span class="n">eval_status</span><span class="o">=</span><span class="s2">&quot;evaluated&quot;</span><span class="p">,</span> <span class="n">as_objects</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="n">jobs</span> <span class="o">=</span> <span class="n">project_api</span><span class="o">.</span><span class="n">get_jobs</span><span class="p">(</span><span class="n">fields</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;id&quot;</span><span class="p">,</span> <span class="s2">&quot;values&quot;</span><span class="p">],</span> <span class="n">eval_status</span><span class="o">=</span><span class="s2">&quot;evaluated&quot;</span><span class="p">,</span> <span class="n">as_objects</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 
 <span class="c1"># Import jobs data into a flat DataFrame</span>
-<span class="n">df</span> <span class="o">=</span> <span class="n">pandas</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">json</span><span class="o">.</span><span class="n">json_normalize</span><span class="p">(</span><span class="n">jobs</span><span class="p">)</span>
+<span class="n">df</span> <span class="o">=</span> <span class="n">pandas</span><span class="o">.</span><span class="n">json_normalize</span><span class="p">(</span><span class="n">jobs</span><span class="p">)</span>
 
 <span class="c1"># Output</span>
-<span class="c1">#    id  values.tube1_radius  values.tube1_thickness  values.tube2_radius  values.tube2_thickness  values.tube3_radius  values.tube3_thickness  ... values.tube15 values.tube16 values.tube17 values.tube18 values.tube19 values.tube20 values.tube21</span>
-<span class="c1"># 0      1             7.055903                0.728247            17.677894                0.512761            13.342691                0.718970  ...             1             3             2             3             1             1             1</span>
-<span class="c1"># 1      2            18.172368                2.407453             9.216933                0.818597            11.789593                1.439845  ...             3             1             3             2             3             3             2</span>
-<span class="c1"># 2      3            14.832407                2.380437             7.484620                1.601617            19.742424                0.816099  ...             2             1             1             1             2             2             3</span>
-<span class="c1"># 3      4            10.254875                2.420485            10.429973                2.241802            14.647943                0.501836  ...             1             3             2             1             3             3             3</span>
-<span class="c1"># 4      5            14.601405                1.657524            10.056457                1.743385             8.821876                2.200616  ...             1             2             3             3             2             1             2</span>
-<span class="c1"># 5      6            10.393178                2.155777             8.043999                2.036772            11.605410                2.426192  ...             3             1             1             1             2             1             1</span>
-<span class="c1"># 6      7            10.415530                1.675479             4.570576                1.461735            16.915658                1.822555  ...             3             3             3             2             1             1             2</span>
-<span class="c1"># 7      8            12.841433                1.322097             6.142197                1.659299             6.275559                2.312346  ...             3             2             2             3             1             1             3</span>
-<span class="c1"># 8      9            18.394536                2.446091            12.882719                0.939273            15.167834                1.683604  ...             3             1             2             3             2             2             1</span>
-<span class="c1"># 9     10            12.414343                1.699816             6.128372                1.314386            18.783781                1.736996  ...             1             3             2             1             3             1             2</span>
+<span class="c1">#                         id  values.mapdl_cp_time  values.mapdl_elapsed_time  values.mapdl_elapsed_time_obtain_license  values.max_stress  ...  values.tube6 values.tube7 values.tube8 values.tube9 values.weight</span>
+<span class="c1"># 0   02qoqedl8QCjkuLcqCi10Q                 0.500                       24.0                                      21.9        1010.256091  ...             3            1            1            2      3.027799</span>
+<span class="c1"># 1   02qoqedlDMO1LrSGoHQqnT                 0.406                       23.0                                      21.5         227.249112  ...             2            3            3            2     11.257201</span>
+<span class="c1"># 2   02qoqedlApzJZd7fQSQIJg                 0.438                       24.0                                      21.2         553.839050  ...             3            2            1            2      6.358393</span>
+<span class="c1"># 3   02qoqedlGMYZi7YBive78D                 0.469                       25.0                                      22.9         162.944726  ...             1            1            1            3      9.919099</span>
+<span class="c1"># 4   02qoqedlKBzRz939iDCCex                 0.391                       25.0                                      22.6         218.976121  ...             3            2            2            2      6.884490</span>
+<span class="c1"># 5   02qoqedlLfvwuA4uaf5GKR                 0.406                       24.0                                      22.4         455.888101  ...             1            3            1            2      7.346944</span>
+<span class="c1"># 6   02qoqedlLvoSgPoLxla8F9                 0.391                       27.0                                      25.2         292.885562  ...             1            1            1            3      6.759635</span>
+<span class="c1"># 7   02qoqedlOKg8Vg5AlTrji6                 0.484                       28.0                                      26.2         377.721100  ...             1            1            3            2      5.952097</span>
+<span class="c1"># 8   02qoqedlRtDwuw2uTQ99Vq                 0.469                       28.0                                      25.9         332.336753  ...             1            3            2            2      7.463696</span>
+<span class="c1"># 9   02qoqedlPYyGRTivqB5vxf                 0.453                       27.0                                      25.5         340.147675  ...             3            2            2            3      6.631538</span>
+<span class="c1"># 10  02qoqedlN1ebRV77zuUVYd                 0.453                       28.0                                      25.5         270.691391  ...             2            2            1            3      8.077236</span>
 </pre></div>
 </div>
 </section>
 <section id="set-failed-design-points-to-pending">
 <h2>Set failed design points to pending<a class="headerlink" href="#set-failed-design-points-to-pending" title="Permalink to this heading">#</a></h2>
 <p>Query a specific project and set its failed design points (if any) to pending.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">project</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">get_project</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="s2">&quot;mapdl_motorbike_frame&quot;</span><span class="p">)</span>
-<span class="n">jobs</span> <span class="o">=</span> <span class="n">project</span><span class="o">.</span><span class="n">get_jobs</span><span class="p">()</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">project</span> <span class="o">=</span> <span class="n">jms_api</span><span class="o">.</span><span class="n">get_project_by_name</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;Mapdl Motorbike Frame&quot;</span><span class="p">)</span>
+<span class="n">jobs</span> <span class="o">=</span> <span class="n">project_api</span><span class="o">.</span><span class="n">get_jobs</span><span class="p">()</span>
 
-<span class="n">failed_dps</span> <span class="o">=</span> <span class="p">[</span><span class="n">dp</span> <span class="k">for</span> <span class="n">dp</span> <span class="ow">in</span> <span class="n">jobs</span> <span class="k">if</span> <span class="n">dp</span><span class="o">.</span><span class="n">eval_status</span> <span class="o">==</span> <span class="s2">&quot;failed&quot;</span><span class="p">]</span>
+<span class="n">failed_jobs</span> <span class="o">=</span> <span class="p">[</span><span class="n">job</span> <span class="k">for</span> <span class="n">job</span> <span class="ow">in</span> <span class="n">jobs</span> <span class="k">if</span> <span class="n">job</span><span class="o">.</span><span class="n">eval_status</span> <span class="o">==</span> <span class="s2">&quot;failed&quot;</span><span class="p">]</span>
 
-<span class="k">for</span> <span class="n">dp</span> <span class="ow">in</span> <span class="n">failed_dps</span><span class="p">:</span>
-    <span class="n">dp</span><span class="o">.</span><span class="n">eval_status</span> <span class="o">=</span> <span class="s2">&quot;pending&quot;</span>
-<span class="n">failed_dps</span> <span class="o">=</span> <span class="n">project</span><span class="o">.</span><span class="n">update_jobs</span><span class="p">(</span><span class="n">failed_dps</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">job</span> <span class="ow">in</span> <span class="n">failed_jobs</span><span class="p">:</span>
+    <span class="n">job</span><span class="o">.</span><span class="n">eval_status</span> <span class="o">=</span> <span class="s2">&quot;pending&quot;</span>
+<span class="n">failed_jobs</span> <span class="o">=</span> <span class="n">project_api</span><span class="o">.</span><span class="n">update_jobs</span><span class="p">(</span><span class="n">failed_jobs</span><span class="p">)</span>
 </pre></div>
 </div>
 </section>
 <section id="modify-a-project-job-definition">
 <h2>Modify a project job_definition<a class="headerlink" href="#modify-a-project-job-definition" title="Permalink to this heading">#</a></h2>
 <p>Query an existing project job_definition, modify it and send it back to the server.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">project</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">get_project</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="s2">&quot;mapdl_motorbike_frame&quot;</span><span class="p">)</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">project</span> <span class="o">=</span> <span class="n">jms_api</span><span class="o">.</span><span class="n">get_project_by_name</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;Mapdl Motorbike Frame&quot;</span><span class="p">)</span>
 
 <span class="c1"># get currently active job_definition</span>
-<span class="n">job_def</span> <span class="o">=</span> <span class="n">project</span><span class="o">.</span><span class="n">get_job_definitions</span><span class="p">(</span><span class="n">active</span><span class="o">=</span><span class="kc">True</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+<span class="n">job_def</span> <span class="o">=</span> <span class="n">project_api</span><span class="o">.</span><span class="n">get_job_definitions</span><span class="p">(</span><span class="n">active</span><span class="o">=</span><span class="kc">True</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
 
 <span class="c1"># Update the lower limit of a parameter</span>
-<span class="n">parameter</span> <span class="o">=</span> <span class="n">job_def</span><span class="o">.</span><span class="n">parameter_definitions</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-<span class="n">parameter</span><span class="o">.</span><span class="n">lower_limit</span> <span class="o">=</span> <span class="mf">2.5</span>
+<span class="n">parameter_id</span> <span class="o">=</span> <span class="n">job_def</span><span class="o">.</span><span class="n">parameter_definition_ids</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+<span class="n">parameter_def</span> <span class="o">=</span> <span class="n">project_api</span><span class="o">.</span><span class="n">get_parameter_definitions</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="n">parameter_id</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">parameter_def</span><span class="p">)</span>
+<span class="c1"># {</span>
+<span class="c1">#   &quot;id&quot;: &quot;02qoqeciKZxk3Ua4QjPwue&quot;,</span>
+<span class="c1">#   &quot;name&quot;: &quot;tube1_radius&quot;,</span>
+<span class="c1">#   &quot;mode&quot;: &quot;input&quot;,</span>
+<span class="c1">#   &quot;type&quot;: &quot;float&quot;,</span>
+<span class="c1">#   &quot;default&quot;: 12.0,</span>
+<span class="c1">#   &quot;lower_limit&quot;: 4.0,</span>
+<span class="c1">#   &quot;upper_limit&quot;: 20.0,</span>
+<span class="c1">#   &quot;cyclic&quot;: false</span>
+<span class="c1"># }</span>
+<span class="n">parameter_def</span><span class="o">.</span><span class="n">lower_limit</span> <span class="o">=</span> <span class="mf">2.5</span>
 
 <span class="c1"># send the updated job_definition to the server</span>
-<span class="n">job_def</span> <span class="o">=</span> <span class="n">project</span><span class="o">.</span><span class="n">update_job_definitions</span><span class="p">([</span><span class="n">job_def</span><span class="p">])[</span><span class="mi">0</span><span class="p">]</span>
+<span class="n">project_api</span><span class="o">.</span><span class="n">update_parameter_definitions</span><span class="p">([</span><span class="n">parameter_def</span><span class="p">])</span>
 </pre></div>
 </div>
 </section>
 <section id="delete-some-design-points">
 <h2>Delete some design points<a class="headerlink" href="#delete-some-design-points" title="Permalink to this heading">#</a></h2>
 <p>Query and then delete all design points that timed out.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">project</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">get_project</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="s2">&quot;mapdl_motorbike_frame&quot;</span><span class="p">)</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">project</span> <span class="o">=</span> <span class="n">jms_api</span><span class="o">.</span><span class="n">get_project_by_name</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;Mapdl Motorbike Frame&quot;</span><span class="p">)</span>
 
-<span class="n">jobs</span> <span class="o">=</span> <span class="n">project</span><span class="o">.</span><span class="n">get_jobs</span><span class="p">(</span><span class="n">fields</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">],</span> <span class="n">eval_status</span><span class="o">=</span><span class="s2">&quot;timeout&quot;</span><span class="p">)</span>
-<span class="n">project</span><span class="o">.</span><span class="n">delete_jobs</span><span class="p">(</span><span class="n">jobs</span><span class="p">)</span>
+<span class="n">jobs</span> <span class="o">=</span> <span class="n">project_api</span><span class="o">.</span><span class="n">get_jobs</span><span class="p">(</span><span class="n">fields</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">],</span> <span class="n">eval_status</span><span class="o">=</span><span class="s2">&quot;timeout&quot;</span><span class="p">)</span>
+<span class="n">project_api</span><span class="o">.</span><span class="n">delete_jobs</span><span class="p">(</span><span class="n">jobs</span><span class="p">)</span>
 </pre></div>
 </div>
 </section>
 <section id="query-the-number-of-evaluators">
 <h2>Query the number of evaluators<a class="headerlink" href="#query-the-number-of-evaluators" title="Permalink to this heading">#</a></h2>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">evaluators</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">get_evaluators</span><span class="p">()</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">evaluators</span> <span class="o">=</span> <span class="n">jms_api</span><span class="o">.</span><span class="n">get_evaluators</span><span class="p">()</span>
 
 <span class="c1"># print number of Windows and Linux evaluators connected to the DCS server</span>
 <span class="nb">print</span><span class="p">(</span> <span class="nb">len</span><span class="p">([</span><span class="n">e</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">evaluators</span> <span class="k">if</span> <span class="n">e</span><span class="o">.</span><span class="n">platform</span> <span class="o">==</span> <span class="s2">&quot;Windows&quot;</span> <span class="p">])</span> <span class="p">)</span>
@@ -462,12 +486,12 @@ such as <code class="docutils literal notranslate"><span class="pre">Numpy</span
 </section>
 <section id="replace-a-file-in-a-project">
 <h2>Replace a file in a project<a class="headerlink" href="#replace-a-file-in-a-project" title="Permalink to this heading">#</a></h2>
-<p>Get file definitions from an existing project job_definition and replace the first one.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">job_def</span> <span class="o">=</span> <span class="n">project</span><span class="o">.</span><span class="n">get_job_definitions</span><span class="p">(</span><span class="n">active</span><span class="o">=</span><span class="kc">True</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
-<span class="n">files</span> <span class="o">=</span> <span class="n">project</span><span class="o">.</span><span class="n">get_files</span><span class="p">()</span>
+<p>Get file definitions from an existing project Job Definition and replace the first one.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">job_def</span> <span class="o">=</span> <span class="n">project_api</span><span class="o">.</span><span class="n">get_job_definitions</span><span class="p">(</span><span class="n">active</span><span class="o">=</span><span class="kc">True</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+<span class="n">files</span> <span class="o">=</span> <span class="n">project_api</span><span class="o">.</span><span class="n">get_files</span><span class="p">()</span>
 <span class="n">file</span> <span class="o">=</span> <span class="n">files</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-<span class="n">file</span><span class="o">.</span><span class="n">src</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;D:\local_folder\my_project\workbench_archive.wbpz&quot;</span>
-<span class="n">files</span> <span class="o">=</span> <span class="n">project</span><span class="o">.</span><span class="n">update_files</span><span class="p">([</span><span class="n">file</span><span class="p">])</span>
+<span class="n">file</span><span class="o">.</span><span class="n">src</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;D:\local_folder\my_project\input_file.xyz&quot;</span>
+<span class="n">project</span><span class="o">.</span><span class="n">update_files</span><span class="p">([</span><span class="n">file</span><span class="p">])</span>
 </pre></div>
 </div>
 <p>For instructions on how to add a new file to an existing project job_definition, see <a class="reference internal" href="examples/ex_adding_file.html#example-adding-files"><span class="std std-ref">Adding a file to a project</span></a>.</p>
@@ -478,7 +502,7 @@ such as <code class="docutils literal notranslate"><span class="pre">Numpy</span
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">ansys.rep.client</span> <span class="kn">import</span> <span class="n">Client</span>
 <span class="kn">from</span> <span class="nn">ansys.rep.client.auth</span> <span class="kn">import</span> <span class="n">AuthApi</span><span class="p">,</span> <span class="n">User</span>
 
-<span class="n">client</span> <span class="o">=</span> <span class="n">Client</span><span class="p">(</span><span class="n">rep_url</span><span class="o">=</span><span class="s2">&quot;https://127.0.0.1:8443/rep/&quot;</span><span class="p">,</span> <span class="n">username</span><span class="o">=</span><span class="s2">&quot;repadmin&quot;</span><span class="p">,</span> <span class="n">password</span><span class="o">=</span><span class="s2">&quot;repadmin&quot;</span><span class="p">)</span>
+<span class="n">client</span> <span class="o">=</span> <span class="n">Client</span><span class="p">(</span><span class="n">rep_url</span><span class="o">=</span><span class="s2">&quot;https://localhost:8443/rep/&quot;</span><span class="p">,</span> <span class="n">username</span><span class="o">=</span><span class="s2">&quot;repadmin&quot;</span><span class="p">,</span> <span class="n">password</span><span class="o">=</span><span class="s2">&quot;repadmin&quot;</span><span class="p">)</span>
 <span class="n">auth_api</span> <span class="o">=</span> <span class="n">AuthApi</span><span class="p">(</span><span class="n">client</span><span class="p">)</span>
 
 <span class="c1"># modify the default password of the repadmin user</span>
@@ -491,35 +515,46 @@ such as <code class="docutils literal notranslate"><span class="pre">Numpy</span
                 <span class="n">email</span><span class="o">=</span><span class="s1">&#39;test_user@test.com&#39;</span><span class="p">,</span> <span class="n">fullname</span><span class="o">=</span><span class="s1">&#39;Test User&#39;</span><span class="p">,</span>
                 <span class="n">is_admin</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 <span class="n">new_user</span> <span class="o">=</span> <span class="n">auth_api</span><span class="o">.</span><span class="n">create_user</span><span class="p">(</span><span class="n">new_user</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">new_user</span><span class="p">)</span>
+<span class="c1"># {</span>
+<span class="c1">#   &quot;id&quot;: &quot;f9e068d7-4962-45dc-92a4-2273246039da&quot;,</span>
+<span class="c1">#   &quot;username&quot;: &quot;test_user&quot;,</span>
+<span class="c1">#   &quot;email&quot;: &quot;test_user@test.com&quot;</span>
+<span class="c1"># }</span>
+
+<span class="n">new_user</span><span class="o">.</span><span class="n">password</span> <span class="o">=</span> <span class="s2">&quot;new_password&quot;</span>
+<span class="n">auth_api</span><span class="o">.</span><span class="n">update_user</span><span class="p">(</span><span class="n">new_user</span><span class="p">)</span>
 </pre></div>
 </div>
 </section>
 <section id="exception-handling">
 <h2>Exception handling<a class="headerlink" href="#exception-handling" title="Permalink to this heading">#</a></h2>
-<p>All exceptions that the Ansys DCS clients explicitly raise inherit from <a class="reference internal" href="api/exceptions.html#ansys.rep.client.REPError" title="ansys.rep.client.REPError"><code class="xref py py-exc docutils literal notranslate"><span class="pre">ansys.rep.client.REPError</span></code></a>.
+<p>All exceptions that the Ansys REP client explicitly raise inherit from <a class="reference internal" href="api/exceptions.html#ansys.rep.client.REPError" title="ansys.rep.client.REPError"><code class="xref py py-exc docutils literal notranslate"><span class="pre">ansys.rep.client.REPError</span></code></a>.
 Client Errors are raised for 4xx HTTP status codes, while API Errors are raised for 5xx HTTP status codes (server side errors).</p>
-<p>For example, instantiating a client with invalid credentials will return a 400 Client Error.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">ansys.rep.client</span> <span class="kn">import</span> <span class="n">REPError</span>
-<span class="kn">from</span> <span class="nn">ansys.rep.client.jms</span> <span class="kn">import</span> <span class="n">Client</span>
+<p>For example, instantiating a client with invalid credentials will return a 401 Client Error.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">ansys.rep.client</span> <span class="kn">import</span> <span class="n">Client</span><span class="p">,</span> <span class="n">REPError</span>
 
 <span class="k">try</span><span class="p">:</span>
-    <span class="n">client</span> <span class="o">=</span> <span class="n">Client</span><span class="p">(</span><span class="n">rep_url</span><span class="o">=</span><span class="s2">&quot;https://127.0.0.1:8443/rep/&quot;</span><span class="p">,</span> <span class="n">username</span><span class="o">=</span><span class="s2">&quot;repadmin&quot;</span><span class="p">,</span>  <span class="n">password</span><span class="o">=</span><span class="s2">&quot;wrong_psw&quot;</span><span class="p">)</span>
+    <span class="n">client</span> <span class="o">=</span> <span class="n">Client</span><span class="p">(</span><span class="n">rep_url</span><span class="o">=</span><span class="s2">&quot;https://localhost:8443/rep/&quot;</span><span class="p">,</span> <span class="n">username</span><span class="o">=</span><span class="s2">&quot;repadmin&quot;</span><span class="p">,</span>  <span class="n">password</span><span class="o">=</span><span class="s2">&quot;wrong_psw&quot;</span><span class="p">)</span>
 <span class="k">except</span> <span class="n">REPError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
     <span class="nb">print</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
 
 <span class="c1">#Output:</span>
-<span class="c1">#400 Client Error: invalid_grant for: POST https://127.0.0.1:8443/rep/auth/api/oauth/token</span>
-<span class="c1">#Invalid &quot;username&quot; or &quot;password&quot; in request.</span>
+<span class="c1"># 401 Client Error: invalid_grant for: POST https://localhost:8443/rep/auth/realms/rep/protocol/openid-connect/token</span>
+<span class="c1"># Invalid user credentials</span>
 </pre></div>
 </div>
-<p>A <em>get</em> call  on a non-existing resource will return a 404 Client Error.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">try</span><span class="p">:</span>
-    <span class="n">client</span><span class="o">.</span><span class="n">get_project</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="s2">&quot;non_existing_project&quot;</span><span class="p">)</span>
+<p>A <em>get</em> call on a non-existing resource will return a 404 Client Error.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">ansys.rep.client.jms</span> <span class="kn">import</span> <span class="n">JmsApi</span>
+
+<span class="n">jms_api</span> <span class="o">=</span> <span class="n">JmsApi</span><span class="p">(</span><span class="n">client</span><span class="p">)</span>
+<span class="k">try</span><span class="p">:</span>
+    <span class="n">jms_api</span><span class="o">.</span><span class="n">get_project</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="s2">&quot;non_existing_project&quot;</span><span class="p">)</span>
 <span class="k">except</span> <span class="n">REPError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
     <span class="nb">print</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
 
 <span class="c1">#Output:</span>
-<span class="c1">#404 Client Error: Not Found for: GET https://127.0.0.1:8443/rep/dps/api//projects/non_existing_project</span>
+<span class="c1">#404 Client Error: Not Found for: GET https://localhost:8443/rep//jms/api/v1/projects/non_existing_project</span>
 </pre></div>
 </div>
 </section>
@@ -544,7 +579,7 @@ Client Errors are raised for 4xx HTTP status codes, while API Errors are raised 
   
   <div class="footer-item">
     <p class="copyright">
-    &copy; Copyright (c) 2022 ANSYS, Inc.. All rights reserved.<br>
+    &copy; Copyright (c) 2022 ANSYS, Inc. All rights reserved.<br>
 </p>
   </div>
   

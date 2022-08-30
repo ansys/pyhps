@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
-    <title>Job Management Service &#8212; pyrep</title>
+    <title>Job Management Service &#8212; PyREP</title>
     
 <script>
   document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
@@ -42,6 +42,7 @@
     <script src="../_static/doctools.js"></script>
     <script src="../_static/clipboard.min.js"></script>
     <script src="../_static/copybutton.js"></script>
+    <link rel="shortcut icon" href="../_static/favicon.png"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Exceptions" href="exceptions.html" />
@@ -114,12 +115,6 @@
  </a>
 </li>
 
-<li class="toctree-l1 nav-item">
- <a class="reference internal nav-link" href="../changelog/index.html">
-  Changelog
- </a>
-</li>
-
     
 </ul>
       </div>
@@ -139,7 +134,7 @@
       <div class="navbar-end-item">
         <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
         <li class="nav-item">
-          <a class="nav-link" href="[https://github.com/pyansys/pyrep" rel="noopener" target="_blank" title="GitHub"><span><i class="fab fa-github-square"></i></span>
+          <a class="nav-link" href="https://github.com/pyansys/pyrep" rel="noopener" target="_blank" title="GitHub"><span><i class="fab fa-github-square"></i></span>
             <label class="sr-only">GitHub</label></a>
         </li>
       </ul>
@@ -163,7 +158,7 @@
         <li class="nav-item nav-item-additional-breadcrumb"><a href="https://docs.pyansys.com/">PyAnsys</a> » </li>
     
     
-        <li class="nav-item nav-item-0"><a href="../index.html">pyrep</a> » </li>
+        <li class="nav-item nav-item-0"><a href="../index.html">PyREP</a> » </li>
     
 
           <li class="nav-item nav-item-1"><a href="index.html" accesskey="U">Code Documentation</a> » </li>
@@ -504,8 +499,23 @@ e.g. “<a class="reference external" href="https://127.0.0.1:8443/rep">https://
 
 <dl class="py method">
 <dt class="sig sig-object py" id="ansys.rep.client.jms.JmsApi.get_project">
-<span class="sig-name descname"><span class="pre">get_project</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ansys.rep.client.jms.JmsApi.get_project" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">get_project</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ansys.rep.client.jms.JmsApi.get_project" title="Permalink to this definition">#</a></dt>
 <dd><p>Return a single project for given project id</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ansys.rep.client.jms.JmsApi.get_project_by_name">
+<span class="sig-name descname"><span class="pre">get_project_by_name</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">last_created</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#ansys.rep.client.jms.Project" title="ansys.rep.client.jms.resource.project.Project"><span class="pre">Project</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#ansys.rep.client.jms.Project" title="ansys.rep.client.jms.resource.project.Project"><span class="pre">Project</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#ansys.rep.client.jms.JmsApi.get_project_by_name" title="Permalink to this definition">#</a></dt>
+<dd><dl class="simple">
+<dt>Query projects by name. If no projects are found, an empty list is returned.</dt><dd><dl class="simple">
+<dt>In case of multiple projects with same name:</dt><dd><ul class="simple">
+<li><p>If <cite>last_created = True</cite>, the last created project is returned</p></li>
+<li><p>If <cite>last_created = False</cite>, the full list of projects with given name is returned</p></li>
+</ul>
+</dd>
+</dl>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
@@ -2594,7 +2604,7 @@ as <code class="xref py py-attr docutils literal notranslate"><span class="pre">
   
   <div class="footer-item">
     <p class="copyright">
-    &copy; Copyright (c) 2022 ANSYS, Inc.. All rights reserved.<br>
+    &copy; Copyright (c) 2022 ANSYS, Inc. All rights reserved.<br>
 </p>
   </div>
   
