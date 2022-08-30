@@ -55,4 +55,24 @@ class Object(object):
         )
 
     def __str__(self):
-        return json.dumps(self.Meta.schema(many=False).dump(self), indent=2)
+
+        # Ideally we'd simply do
+        #   return json.dumps(self.Meta.schema(many=False).dump(self), indent=2)
+        # However the schema.dump() function (rightfully) ignores fields marked as load_only.
+        #
+        # Therefore we have to manually iterate over all fields
+
+        schema = self.Meta.schema(many=False)
+        dict_repr = schema.dict_class()
+        for attr_name, field_obj in schema.fields.items():
+            value = missing
+            try:
+                value = field_obj.serialize(attr_name, self, accessor=schema.get_attribute)
+            except:
+                pass
+            if value is missing:
+                continue
+            key = field_obj.data_key if field_obj.data_key is not None else attr_name
+            dict_repr[key] = value
+
+        return json.dumps(dict_repr, indent=2)

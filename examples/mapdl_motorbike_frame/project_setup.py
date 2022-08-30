@@ -326,7 +326,7 @@ def create_project(client, name, num_jobs=20, use_exec_script=False) -> Project:
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("-n", "--name", type=str, default="mapdl_motorbike_frame")
+    parser.add_argument("-n", "--name", type=str, default="Mapdl Motorbike Frame")
     parser.add_argument("-j", "--num-jobs", type=int, default=50)
     parser.add_argument("-es", "--use-exec-script", default=False, action="store_true")
     parser.add_argument("-U", "--url", default="https://127.0.0.1:8443/rep")
