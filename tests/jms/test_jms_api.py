@@ -24,7 +24,7 @@ class REPClientTest(REPTestCase):
 
         log.debug("=== Client ===")
         client = self.client()
-        proj_name = "mapdl_motorbike_frame"
+        proj_name = "Mapdl Motorbike Frame"
 
         log.debug("=== Projects ===")
         jms_api = JmsApi(client)

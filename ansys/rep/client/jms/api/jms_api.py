@@ -2,7 +2,7 @@ import json
 import logging
 import os
 import time
-from typing import List
+from typing import List, Union
 import uuid
 
 from ansys.rep.client.exceptions import REPError
@@ -53,9 +53,18 @@ class JmsApi(object):
         """Return a list of projects, optionally filtered by given query parameters"""
         return get_projects(self.client, self.url, **query_params)
 
-    def get_project(self, id=None, name=None):
+    def get_project(self, id):
         """Return a single project for given project id"""
-        return get_project(self.client, self.url, id, name)
+        return get_project(self.client, self.url, id)
+
+    def get_project_by_name(self, name, last_created=True) -> Union[Project, List[Project]]:
+        """
+        Query projects by name. If no projects are found, an empty list is returned.
+            In case of multiple projects with same name:
+             - If `last_created = True`, the last created project is returned
+             - If `last_created = False`, the full list of projects with given name is returned
+        """
+        return get_project_by_name(self.client, self.url, name, last_created)
 
     def create_project(self, project, replace=False, as_objects=True):
         """Create a new project"""
@@ -156,23 +165,35 @@ def get_projects(client, api_url, as_objects=True, **query_params) -> List[Proje
     return schema.load(data)
 
 
-def get_project(client, api_url, id=None, name=None) -> Project:
+def get_project(client, api_url, id) -> Project:
     """
     Return a single project
     """
-    params = {}
-    if name:
-        url = f"{api_url}/projects/"
-        params["name"] = name
-    else:
-        url = f"{api_url}/projects/{id}"
 
-    r = client.session.get(url, params=params)
+    url = f"{api_url}/projects/{id}"
+    r = client.session.get(url)
 
     if len(r.json()["projects"]):
         schema = ProjectSchema()
         return schema.load(r.json()["projects"][0])
     return None
+
+
+def get_project_by_name(client, api_url, name, last_created=True) -> Union[Project, List[Project]]:
+    """
+    Return a single project
+    """
+
+    params = {"name": name}
+    if last_created:
+        params["sort"] = "-creation_time"
+        params["limit"] = 1
+
+    projects = get_projects(client, api_url, **params)
+
+    if len(projects) == 1:
+        return projects[0]
+    return projects
 
 
 def create_project(client, api_url, project, replace=False, as_objects=True) -> Project:
