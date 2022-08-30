@@ -16,8 +16,8 @@ class SoftwareSchema(BaseSchema):
     class Meta(BaseSchema.Meta):
         pass
 
-    name = fields.String()
-    version = fields.String(allow_none=True)
+    name = fields.String(metadata={"description": "Application's name."})
+    version = fields.String(allow_none=True, metadata={"description": "Application's version."})
 
 
 class ResourceRequirementsSchema(BaseSchema):
@@ -134,5 +134,14 @@ class TaskDefinitionSchema(ObjectSchema):
         description="A :class:`ansys.rep.client.jms.Licensing` object.",
     )
 
-    software_requirements = fields.Nested(SoftwareSchema, many=True, allow_none=True)
-    resource_requirements = fields.Nested(ResourceRequirementsSchema, allow_none=True)
+    software_requirements = fields.Nested(
+        SoftwareSchema,
+        many=True,
+        allow_none=True,
+        metadata={"description": "A list of :class:`ansys.rep.client.jms.Software` objects."},
+    )
+    resource_requirements = fields.Nested(
+        ResourceRequirementsSchema,
+        allow_none=True,
+        metadata={"description": "A :class:`ansys.rep.client.jms.ResourceRequirements` object."},
+    )

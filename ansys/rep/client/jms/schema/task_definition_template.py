@@ -9,6 +9,8 @@
 from marshmallow import fields
 
 from .base import ObjectSchema
+from .file import FileSchema
+from .task_definition import ResourceRequirementsSchema, SoftwareSchema
 
 
 class TaskDefinitionTemplateSchema(ObjectSchema):
@@ -23,11 +25,30 @@ class TaskDefinitionTemplateSchema(ObjectSchema):
     )
 
     name = fields.String(description="Name of the template")
-    application_name = fields.String(
-        description="Name of the application to which the template applies"
+    version = fields.String(description="version of the template", allow_none=True)
+
+    software_requirements = fields.Nested(SoftwareSchema, many=True, allow_none=True)
+    resource_requirements = fields.Nested(ResourceRequirementsSchema, allow_none=True)
+
+    execution_context = fields.Dict(
+        allow_none=True, description="Additional arguments to pass to the executing command"
     )
-    application_version = fields.String(
-        description="Version of the application to which the template applies"
+    environment = fields.Dict(
+        allow_none=True, description="Environment variables to set for the executed process"
     )
 
-    data = fields.Dict(allow_none=True, description="Template's detailed data")
+    execution_command = fields.String(
+        allow_none=True, description="Command to execute (command or execution script is required)."
+    )
+    use_execution_script = fields.Bool(
+        allow_none=True,
+        description="Whether to run task with the execution command or the execution script.",
+    )
+    execution_script_storage_id = fields.String(
+        allow_none=True,
+        description="Storage ID of the script to execute "
+        "(command or execution script is required).",
+    )
+
+    input_files = fields.Nested(FileSchema, many=True, allow_none=True)
+    output_files = fields.Nested(FileSchema, many=True, allow_none=True)

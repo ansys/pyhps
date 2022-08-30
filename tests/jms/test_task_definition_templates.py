@@ -9,6 +9,7 @@
 import json
 import logging
 import unittest
+import uuid
 
 from marshmallow.utils import missing
 
@@ -27,36 +28,34 @@ class TaskDefinitionTemplateTest(REPTestCase):
             # "modification_time": "2021-09-16T12:27:44.771067+00:00",
             "creation_time": "2021-09-16T12:27:44.771067+00:00",
             "name": "ANSYS Mechanical APDL 2021 R1 Default",
-            "data": {
-                "execution_command": """%executable% -b nolist -i %file:dat%
-                                       -o %file:out% -np %resource:num_cores%
-                                       -dis -s noread -p ansys""",
-                "software_requirements": [
-                    {
-                        "name": "ANSYS Mechanical APDL",
-                        "version": "21.1",
-                    }
-                ],
-                "input_files": [],
-                "output_files": [
-                    {
-                        "name": "out",
-                        "obj_type": "File",
-                        "evaluation_path": "solve.out",
-                        "type": "text/plain",
-                        "collect": True,
-                        "monitor": True,
-                    },
-                    {
-                        "name": "cnd",
-                        "obj_type": "File",
-                        "evaluation_path": "file.cnd",
-                        "type": "application/octet-stream",
-                        "collect": True,
-                        "monitor": False,
-                    },
-                ],
-            },
+            "execution_command": """%executable% -b nolist -i %file:dat%
+                                   -o %file:out% -np %resource:num_cores%
+                                   -dis -s noread -p ansys""",
+            "software_requirements": [
+                {
+                    "name": "ANSYS Mechanical APDL",
+                    "version": "21.1",
+                }
+            ],
+            "input_files": [],
+            "output_files": [
+                {
+                    "name": "out",
+                    "obj_type": "File",
+                    "evaluation_path": "solve.out",
+                    "type": "text/plain",
+                    "collect": True,
+                    "monitor": True,
+                },
+                {
+                    "name": "cnd",
+                    "obj_type": "File",
+                    "evaluation_path": "file.cnd",
+                    "type": "application/octet-stream",
+                    "collect": True,
+                    "monitor": False,
+                },
+            ],
         }
 
         template = TaskDefinitionTemplateSchema().load(json_data)
@@ -64,16 +63,16 @@ class TaskDefinitionTemplateTest(REPTestCase):
         self.assertEqual(template.__class__.__name__, "TaskDefinitionTemplate")
         self.assertEqual(template.modification_time, missing)
         self.assertEqual(template.name, json_data["name"])
-        self.assertEqual(len(template.data["output_files"]), 2)
+        self.assertEqual(len(template.output_files), 2)
 
-        json_data["application_version"] = "2022 R2"
-        json_data["data"]["execution_command"] = "my command line"
-        json_data["data"]["my_new_field"] = "value"
+        json_data["software_requirements"][0]["version"] = "2022 R2"
+        json_data["execution_command"] = "my command line"
+        json_data["execution_context"] = {"my_new_field": "value"}
 
         template = TaskDefinitionTemplateSchema().load(json_data)
-        self.assertEqual(template.application_version, "2022 R2")
-        self.assertEqual(template.data["execution_command"], "my command line")
-        self.assertEqual(template.data["my_new_field"], "value")
+        self.assertEqual(template.software_requirements[0].version, "2022 R2")
+        self.assertEqual(template.execution_command, "my command line")
+        self.assertEqual(template.execution_context["my_new_field"], "value")
 
     def test_template_integration(self):
 
@@ -89,35 +88,40 @@ class TaskDefinitionTemplateTest(REPTestCase):
         self.assertGreater(len(templates), 0)
         self.assertTrue(templates[0]["id"] is not None)
 
-        templates = jms_api.get_task_definition_templates(as_objects=False, fields=["name", "data"])
+        templates = jms_api.get_task_definition_templates(
+            as_objects=False, fields=["name", "software_requirements"]
+        )
         self.assertGreater(len(templates), 0)
         log.info(f"templates={json.dumps(templates, indent=4)}")
         if templates:
-            self.assertTrue("data" in templates[0].keys())
-            self.assertTrue("name" in templates[0]["data"]["software_requirements"][0].keys())
-            self.assertTrue("version" in templates[0]["data"]["software_requirements"][0].keys())
+            self.assertTrue("software_requirements" in templates[0].keys())
+            self.assertTrue("name" in templates[0]["software_requirements"][0].keys())
+            self.assertTrue("version" in templates[0]["software_requirements"][0].keys())
 
         templates = jms_api.get_task_definition_templates(fields=["name"])
         if templates:
-            self.assertTrue(templates[0].data == missing)
+            self.assertTrue(templates[0].software_requirements == missing)
 
         # Copy template
-        template_name = f"copied_template_{self.run_id}"
+        template_name = f"copied_template_{uuid.uuid4()}"
         templates = jms_api.get_task_definition_templates(limit=1)
         self.assertEqual(len(templates), 1)
 
-        template = TaskDefinitionTemplate(name=template_name, data=templates[0].data)
+        template = TaskDefinitionTemplate(
+            name=template_name, software_requirements=templates[0].software_requirements
+        )
+        template.version = "1.0"
         templates = jms_api.create_task_definition_templates([template])
         self.assertEqual(len(templates), 1)
         template = templates[0]
         self.assertEqual(template.name, template_name)
 
         # Modify copied template
-        template.data["software_requirements"][0]["version"] = "2.0.1"
+        template.software_requirements[0].version = "2.0.1"
         templates = jms_api.update_task_definition_templates([template])
         self.assertEqual(len(templates), 1)
         template = templates[0]
-        self.assertEqual(template.data["software_requirements"][0]["version"], "2.0.1")
+        self.assertEqual(template.software_requirements[0].version, "2.0.1")
         self.assertEqual(template.name, template_name)
 
         # Delete copied template

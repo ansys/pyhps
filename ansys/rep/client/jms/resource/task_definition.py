@@ -20,6 +20,25 @@ log = logging.getLogger(__name__)
 
 
 class Software(Object):
+    """Software resource.
+
+    Args:
+        **kwargs: Arbitrary keyword arguments, see the Software schema below.
+
+    Example:
+
+        >>> software = Software(
+                name="ANSYS Mechanical APDL"
+                version="2022 R2"
+            )
+        >>> task_definition.software_requirements.append(software)
+
+    The Software schema has the following fields:
+
+    .. jsonschema:: schemas/Software.json
+
+    """
+
     class Meta:
         schema = SoftwareSchema
 
@@ -31,6 +50,26 @@ SoftwareSchema.Meta.object_class = Software
 
 
 class ResourceRequirements(Object):
+    """Compute Resource Requirements.
+
+    Args:
+        **kwargs: Arbitrary keyword arguments, see the ResourceRequirements schema below.
+
+    Example:
+
+        >>> reqs = ResourceRequirements(
+                cpu_core_usage=12.0,
+                memory=250,
+                disk_space=50,
+            )
+        >>> task_definition.resource_requirements = reqs
+
+    The ResourceRequirements schema has the following fields:
+
+    .. jsonschema:: schemas/ResourceRequirements.json
+
+    """
+
     class Meta:
         schema = ResourceRequirementsSchema
 
@@ -108,17 +147,20 @@ class TaskDefinition(Object):
 
     Example:
 
-        >>> ps = TaskDefinition(
+        >>> td = TaskDefinition(
                     name="MAPDL_run",
-                    application_name="ANSYS Mechanical APDL",
-                    application_version="20.1",
+                    software_requirements=[
+                        Software(name="ANSYS Mechanical APDL", version="2022 R2"),
+                    ],
                     execution_command="%executable% -b -i %file:mac%
                                        -o file.out -np %resource:num_cores%",
                     max_execution_time=20.0,
-                    cpu_core_usage=1,
                     execution_level=0,
-                    memory=250,
-                    disk_space=5,
+                    resource_requirements=ResourceRequirements(
+                        cpu_core_usage=1.0,
+                        memory=250,
+                        disk_space=5,
+                    )
                 )
 
     The TaskDefinition schema has the following fields:
