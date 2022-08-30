@@ -10,7 +10,6 @@ from marshmallow import fields
 
 from .base import ObjectSchema
 from .file import FileSchema
-from .object_reference import IdReference
 from .task_definition import ResourceRequirementsSchema, SoftwareSchema
 
 
@@ -45,10 +44,10 @@ class TaskDefinitionTemplateSchema(ObjectSchema):
         allow_none=True,
         description="Whether to run task with the execution command or the execution script.",
     )
-    execution_script_storage_id = IdReference(
-        referenced_class="File",
+    execution_script_storage_id = fields.String(
         allow_none=True,
-        description="Script to execute (command or execution script is required).",
+        description="Storage ID of the script to execute "
+        "(command or execution script is required).",
     )
 
     input_files = fields.Nested(FileSchema, many=True, allow_none=True)
