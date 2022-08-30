@@ -185,6 +185,11 @@
     
     <ul class="current nav bd-sidenav">
  <li class="toctree-l1">
+  <a class="reference internal" href="client.html">
+   Client
+  </a>
+ </li>
+ <li class="toctree-l1">
   <a class="reference internal" href="auth.html">
    Authentication Service
   </a>
@@ -226,84 +231,88 @@
 <nav id="bd-toc-nav">
     <ul class="visible nav section-nav flex-column">
  <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#module-ansys.rep.client.connection">
-   Connection module
+  <a class="reference internal nav-link" href="#apis">
+   APIs
   </a>
+  <ul class="nav section-nav flex-column">
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#jms-api">
+     JMS Api
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#project-api">
+     Project Api
+    </a>
+   </li>
+  </ul>
  </li>
  <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#client-object-tomove">
-   Client object (TOMOVE)
+  <a class="reference internal nav-link" href="#resources">
+   Resources
   </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#jms-api">
-   JMS Api
-  </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#project-api">
-   Project Api
-  </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#file">
-   File
-  </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#project">
-   Project
-  </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#fitness-definition">
-   Fitness Definition
-  </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#parameters">
-   Parameters
-  </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#task-definition">
-   Task Definition
-  </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#job-definition">
-   Job Definition
-  </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#task">
-   Task
-  </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#job">
-   Job
-  </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#job-selection">
-   Job Selection
-  </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#design-exploration-algorithm">
-   Design Exploration Algorithm
-  </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#evaluator">
-   Evaluator
-  </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#task-definition-template">
-   Task Definition Template
-  </a>
+  <ul class="nav section-nav flex-column">
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#file">
+     File
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#project">
+     Project
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#fitness-definition">
+     Fitness Definition
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#parameters">
+     Parameters
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#task-definition">
+     Task Definition
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#job-definition">
+     Job Definition
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#task">
+     Task
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#job">
+     Job
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#job-selection">
+     Job Selection
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#design-exploration-algorithm">
+     Design Exploration Algorithm
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#evaluator">
+     Evaluator
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#task-definition-template">
+     Task Definition Template
+    </a>
+   </li>
+  </ul>
  </li>
 </ul>
 
@@ -327,100 +336,11 @@
   <section id="job-management-service">
 <h1>Job Management Service<a class="headerlink" href="#job-management-service" title="Permalink to this heading">#</a></h1>
 <p>Ansys REP includes Job Management Service (JMS), which is the main service for storing and evaluating jobs using multiple heterogeneous compute resources.</p>
-<p>The Python subpackage <cite>ansys.rep.client.jms</cite> wraps around the JMS service REST API available at <code class="docutils literal notranslate"><span class="pre">https://hostname/rep/jms/api</span></code>.</p>
-<section id="module-ansys.rep.client.connection">
-<span id="connection-module"></span><h2>Connection module<a class="headerlink" href="#module-ansys.rep.client.connection" title="Permalink to this heading">#</a></h2>
-<dl class="py function">
-<dt class="sig sig-object py" id="ansys.rep.client.connection.create_session">
-<span class="sig-prename descclassname"><span class="pre">ansys.rep.client.connection.</span></span><span class="sig-name descname"><span class="pre">create_session</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">access_token</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ansys.rep.client.connection.create_session" title="Permalink to this definition">#</a></dt>
-<dd><p>Return a <code class="xref py py-class docutils literal notranslate"><span class="pre">requests.Session</span></code> object configured for REP with given access token</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>access_token</strong> (<em>str</em>) – The access token provided by <a class="reference internal" href="auth.html#ansys.rep.client.auth.authenticate" title="ansys.rep.client.auth.authenticate"><code class="xref py py-meth docutils literal notranslate"><span class="pre">ansys.rep.client.auth.authenticate()</span></code></a></p>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>The session object.</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">requests.Session</span></code></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="ansys.rep.client.connection.ping">
-<span class="sig-prename descclassname"><span class="pre">ansys.rep.client.connection.</span></span><span class="sig-name descname"><span class="pre">ping</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">session</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">url</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timeout</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10.0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ansys.rep.client.connection.ping" title="Permalink to this definition">#</a></dt>
-<dd><p>Ping the given URL, returning true on success</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>session</strong> – The <code class="xref py py-class docutils literal notranslate"><span class="pre">requests.Session</span></code> object.</p></li>
-<li><p><strong>url</strong> (<em>str</em>) – The URL address to ping.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>True on success.</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>bool</p>
-</dd>
-</dl>
-</dd></dl>
-
-</section>
-<section id="client-object-tomove">
-<h2>Client object (TOMOVE)<a class="headerlink" href="#client-object-tomove" title="Permalink to this heading">#</a></h2>
-<dl class="py class">
-<dt class="sig sig-object py" id="ansys.rep.client.Client">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ansys.rep.client.</span></span><span class="sig-name descname"><span class="pre">Client</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">rep_url</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'https://127.0.0.1:8443/rep'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">username</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'repadmin'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">password</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'repadmin'</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">realm</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'rep'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">grant_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'password'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scope</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'openid'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">client_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'rep-cli'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">client_secret</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">access_token</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">refresh_token</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">auth_url</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ansys.rep.client.Client" title="Permalink to this definition">#</a></dt>
-<dd><p>A python interface to the Remote Execution Platform (REP) API.</p>
-<p>Uses the provided credentials to create and store
-an authorized <code class="xref py py-class docutils literal notranslate"><span class="pre">requests.Session</span></code> object.</p>
-<p>The following authentication workflows are supported:</p>
-<blockquote>
-<div><ul class="simple">
-<li><p>Username and password: the client connects to the OAuth server and
-requests access and refresh tokens.</p></li>
-<li><p>Refresh token: the client connects to the OAuth server and
-requests a new access token.</p></li>
-<li><p>Access token: no authentication needed.</p></li>
-</ul>
-</div></blockquote>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>rep_url</strong> (<em>str</em>) – The base path for the server to call,
-e.g. “<a class="reference external" href="https://127.0.0.1:8443/rep">https://127.0.0.1:8443/rep</a>”.</p></li>
-<li><p><strong>username</strong> (<em>str</em>) – Username (Optional)</p></li>
-<li><p><strong>password</strong> (<em>str</em>) – Password (Optional)</p></li>
-<li><p><strong>refresh_token</strong> (<em>str</em>) – Refresh Token (Optional)</p></li>
-<li><p><strong>access_token</strong> (<em>str</em>) – Access Token (Optional)</p></li>
-</ul>
-</dd>
-</dl>
-<p class="rubric">Example</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">ansys.rep.client</span> <span class="kn">import</span> <span class="n">Client</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Create client object and connect to REP with username &amp; password</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">cl</span> <span class="o">=</span> <span class="n">Client</span><span class="p">(</span>
-<span class="go">        rep_url=&quot;https://127.0.0.1:8443/rep&quot;, username=&quot;repadmin&quot;, password=&quot;repadmin&quot;</span>
-<span class="go">    )</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Extract refresh token to eventually store it</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">refresh_token</span> <span class="o">=</span> <span class="n">cl</span><span class="o">.</span><span class="n">refresh_token</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Alternative: Create client object and connect to REP with refresh token</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">cl</span> <span class="o">=</span> <span class="n">Client</span><span class="p">(</span><span class="n">rep_url</span><span class="o">=</span><span class="s2">&quot;https://127.0.0.1:8443/rep&quot;</span><span class="p">,</span> <span class="n">refresh_token</span><span class="o">=</span><span class="n">refresh_token</span><span class="p">)</span>
-</pre></div>
-</div>
-<dl class="py method">
-<dt class="sig sig-object py" id="ansys.rep.client.Client.refresh_access_token">
-<span class="sig-name descname"><span class="pre">refresh_access_token</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ansys.rep.client.Client.refresh_access_token" title="Permalink to this definition">#</a></dt>
-<dd><p>Use the refresh token to obtain a new access token</p>
-</dd></dl>
-
-</dd></dl>
-
-</section>
+<p>The Python subpackage <code class="docutils literal notranslate"><span class="pre">ansys.rep.client.jms</span></code> wraps around the JMS service REST API available at <code class="docutils literal notranslate"><span class="pre">https://hostname:port/rep/jms/api</span></code>.</p>
+<section id="apis">
+<h2>APIs<a class="headerlink" href="#apis" title="Permalink to this heading">#</a></h2>
 <section id="jms-api">
-<h2>JMS Api<a class="headerlink" href="#jms-api" title="Permalink to this heading">#</a></h2>
+<h3>JMS Api<a class="headerlink" href="#jms-api" title="Permalink to this heading">#</a></h3>
 <dl class="py class">
 <dt class="sig sig-object py" id="ansys.rep.client.jms.JmsApi">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ansys.rep.client.jms.</span></span><span class="sig-name descname"><span class="pre">JmsApi</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">client</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ansys.rep.client.jms.JmsApi" title="Permalink to this definition">#</a></dt>
@@ -583,7 +503,7 @@ optionally filtered by given query parameters</p>
 
 </section>
 <section id="project-api">
-<h2>Project Api<a class="headerlink" href="#project-api" title="Permalink to this heading">#</a></h2>
+<h3>Project Api<a class="headerlink" href="#project-api" title="Permalink to this heading">#</a></h3>
 <dl class="py class">
 <dt class="sig sig-object py" id="ansys.rep.client.jms.ProjectApi">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ansys.rep.client.jms.</span></span><span class="sig-name descname"><span class="pre">ProjectApi</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">client</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">project_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ansys.rep.client.jms.ProjectApi" title="Permalink to this definition">#</a></dt>
@@ -928,8 +848,11 @@ as <code class="xref py py-attr docutils literal notranslate"><span class="pre">
 </dd></dl>
 
 </section>
+</section>
+<section id="resources">
+<h2>Resources<a class="headerlink" href="#resources" title="Permalink to this heading">#</a></h2>
 <section id="file">
-<h2>File<a class="headerlink" href="#file" title="Permalink to this heading">#</a></h2>
+<h3>File<a class="headerlink" href="#file" title="Permalink to this heading">#</a></h3>
 <dl class="py class">
 <dt class="sig sig-object py" id="ansys.rep.client.jms.File">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ansys.rep.client.jms.</span></span><span class="sig-name descname"><span class="pre">File</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">src</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ansys.rep.client.jms.File" title="Permalink to this definition">#</a></dt>
@@ -1042,7 +965,7 @@ as <code class="xref py py-attr docutils literal notranslate"><span class="pre">
 
 </section>
 <section id="project">
-<h2>Project<a class="headerlink" href="#project" title="Permalink to this heading">#</a></h2>
+<h3>Project<a class="headerlink" href="#project" title="Permalink to this heading">#</a></h3>
 <dl class="py class">
 <dt class="sig sig-object py" id="ansys.rep.client.jms.Project">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ansys.rep.client.jms.</span></span><span class="sig-name descname"><span class="pre">Project</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ansys.rep.client.jms.Project" title="Permalink to this definition">#</a></dt>
@@ -1119,7 +1042,7 @@ as <code class="xref py py-attr docutils literal notranslate"><span class="pre">
 
 </section>
 <section id="fitness-definition">
-<h2>Fitness Definition<a class="headerlink" href="#fitness-definition" title="Permalink to this heading">#</a></h2>
+<h3>Fitness Definition<a class="headerlink" href="#fitness-definition" title="Permalink to this heading">#</a></h3>
 <dl class="py class">
 <dt class="sig sig-object py" id="ansys.rep.client.jms.FitnessTermDefinition">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ansys.rep.client.jms.</span></span><span class="sig-name descname"><span class="pre">FitnessTermDefinition</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ansys.rep.client.jms.FitnessTermDefinition" title="Permalink to this definition">#</a></dt>
@@ -1254,7 +1177,7 @@ as <code class="xref py py-attr docutils literal notranslate"><span class="pre">
 
 </section>
 <section id="parameters">
-<h2>Parameters<a class="headerlink" href="#parameters" title="Permalink to this heading">#</a></h2>
+<h3>Parameters<a class="headerlink" href="#parameters" title="Permalink to this heading">#</a></h3>
 <dl class="py class">
 <dt class="sig sig-object py" id="ansys.rep.client.jms.FloatParameterDefinition">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ansys.rep.client.jms.</span></span><span class="sig-name descname"><span class="pre">FloatParameterDefinition</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ansys.rep.client.jms.FloatParameterDefinition" title="Permalink to this definition">#</a></dt>
@@ -1695,7 +1618,105 @@ as <code class="xref py py-attr docutils literal notranslate"><span class="pre">
 
 </section>
 <section id="task-definition">
-<h2>Task Definition<a class="headerlink" href="#task-definition" title="Permalink to this heading">#</a></h2>
+<h3>Task Definition<a class="headerlink" href="#task-definition" title="Permalink to this heading">#</a></h3>
+<dl class="py class">
+<dt class="sig sig-object py" id="ansys.rep.client.jms.Software">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ansys.rep.client.jms.</span></span><span class="sig-name descname"><span class="pre">Software</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ansys.rep.client.jms.Software" title="Permalink to this definition">#</a></dt>
+<dd><p>Software resource.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>**kwargs</strong> – Arbitrary keyword arguments, see the Software schema below.</p>
+</dd>
+</dl>
+<p class="rubric">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">software</span> <span class="o">=</span> <span class="n">Software</span><span class="p">(</span>
+<span class="go">        name=&quot;ANSYS Mechanical APDL&quot;</span>
+<span class="go">        version=&quot;2022 R2&quot;</span>
+<span class="go">    )</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">task_definition</span><span class="o">.</span><span class="n">software_requirements</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">software</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The Software schema has the following fields:</p>
+<table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Name</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Description</p></th>
+<th class="head"><p>Validations</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>name</p></td>
+<td><p>string</p></td>
+<td><p>Application’s name.</p></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p>version</p></td>
+<td><p>string</p></td>
+<td><p>Application’s version.</p></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="ansys.rep.client.jms.ResourceRequirements">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ansys.rep.client.jms.</span></span><span class="sig-name descname"><span class="pre">ResourceRequirements</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ansys.rep.client.jms.ResourceRequirements" title="Permalink to this definition">#</a></dt>
+<dd><p>Compute Resource Requirements.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>**kwargs</strong> – Arbitrary keyword arguments, see the ResourceRequirements schema below.</p>
+</dd>
+</dl>
+<p class="rubric">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">reqs</span> <span class="o">=</span> <span class="n">ResourceRequirements</span><span class="p">(</span>
+<span class="go">        cpu_core_usage=12.0,</span>
+<span class="go">        memory=250,</span>
+<span class="go">        disk_space=50,</span>
+<span class="go">    )</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">task_definition</span><span class="o">.</span><span class="n">resource_requirements</span> <span class="o">=</span> <span class="n">reqs</span>
+</pre></div>
+</div>
+<p>The ResourceRequirements schema has the following fields:</p>
+<table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Name</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Description</p></th>
+<th class="head"><p>Validations</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>platform</p></td>
+<td><p>string</p></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p>memory</p></td>
+<td><p>integer</p></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p>cpu_core_usage</p></td>
+<td><p>number</p></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p>disk_space</p></td>
+<td><p>integer</p></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p>custom</p></td>
+<td><p>object</p></td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
 <dl class="py class">
 <dt class="sig sig-object py" id="ansys.rep.client.jms.SuccessCriteria">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ansys.rep.client.jms.</span></span><span class="sig-name descname"><span class="pre">SuccessCriteria</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ansys.rep.client.jms.SuccessCriteria" title="Permalink to this definition">#</a></dt>
@@ -1802,17 +1823,20 @@ as <code class="xref py py-attr docutils literal notranslate"><span class="pre">
 </dd>
 </dl>
 <p class="rubric">Example</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ps</span> <span class="o">=</span> <span class="n">TaskDefinition</span><span class="p">(</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">td</span> <span class="o">=</span> <span class="n">TaskDefinition</span><span class="p">(</span>
 <span class="go">            name=&quot;MAPDL_run&quot;,</span>
-<span class="go">            application_name=&quot;ANSYS Mechanical APDL&quot;,</span>
-<span class="go">            application_version=&quot;20.1&quot;,</span>
+<span class="go">            software_requirements=[</span>
+<span class="go">                Software(name=&quot;ANSYS Mechanical APDL&quot;, version=&quot;2022 R2&quot;),</span>
+<span class="go">            ],</span>
 <span class="go">            execution_command=&quot;%executable% -b -i %file:mac%</span>
 <span class="go">                               -o file.out -np %resource:num_cores%&quot;,</span>
 <span class="go">            max_execution_time=20.0,</span>
-<span class="go">            cpu_core_usage=1,</span>
 <span class="go">            execution_level=0,</span>
-<span class="go">            memory=250,</span>
-<span class="go">            disk_space=5,</span>
+<span class="go">            resource_requirements=ResourceRequirements(</span>
+<span class="go">                cpu_core_usage=1.0,</span>
+<span class="go">                memory=250,</span>
+<span class="go">                disk_space=5,</span>
+<span class="go">            )</span>
 <span class="go">        )</span>
 </pre></div>
 </div>
@@ -1903,12 +1927,12 @@ as <code class="xref py py-attr docutils literal notranslate"><span class="pre">
 </tr>
 <tr class="row-odd"><td><p>software_requirements[]</p></td>
 <td><p>array</p></td>
-<td></td>
+<td><p>A list of <a class="reference internal" href="#ansys.rep.client.jms.Software" title="ansys.rep.client.jms.Software"><code class="xref py py-class docutils literal notranslate"><span class="pre">ansys.rep.client.jms.Software</span></code></a> objects.</p></td>
 <td></td>
 </tr>
 <tr class="row-even"><td><p>resource_requirements</p></td>
 <td><p>object</p></td>
-<td></td>
+<td><p>A <a class="reference internal" href="#ansys.rep.client.jms.ResourceRequirements" title="ansys.rep.client.jms.ResourceRequirements"><code class="xref py py-class docutils literal notranslate"><span class="pre">ansys.rep.client.jms.ResourceRequirements</span></code></a> object.</p></td>
 <td></td>
 </tr>
 </tbody>
@@ -1917,7 +1941,7 @@ as <code class="xref py py-attr docutils literal notranslate"><span class="pre">
 
 </section>
 <section id="job-definition">
-<h2>Job Definition<a class="headerlink" href="#job-definition" title="Permalink to this heading">#</a></h2>
+<h3>Job Definition<a class="headerlink" href="#job-definition" title="Permalink to this heading">#</a></h3>
 <dl class="py class">
 <dt class="sig sig-object py" id="ansys.rep.client.jms.JobDefinition">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ansys.rep.client.jms.</span></span><span class="sig-name descname"><span class="pre">JobDefinition</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ansys.rep.client.jms.JobDefinition" title="Permalink to this definition">#</a></dt>
@@ -2002,7 +2026,7 @@ as <code class="xref py py-attr docutils literal notranslate"><span class="pre">
 
 </section>
 <section id="task">
-<h2>Task<a class="headerlink" href="#task" title="Permalink to this heading">#</a></h2>
+<h3>Task<a class="headerlink" href="#task" title="Permalink to this heading">#</a></h3>
 <dl class="py class">
 <dt class="sig sig-object py" id="ansys.rep.client.jms.Task">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ansys.rep.client.jms.</span></span><span class="sig-name descname"><span class="pre">Task</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ansys.rep.client.jms.Task" title="Permalink to this definition">#</a></dt>
@@ -2136,7 +2160,7 @@ as <code class="xref py py-attr docutils literal notranslate"><span class="pre">
 
 </section>
 <section id="job">
-<h2>Job<a class="headerlink" href="#job" title="Permalink to this heading">#</a></h2>
+<h3>Job<a class="headerlink" href="#job" title="Permalink to this heading">#</a></h3>
 <dl class="py class">
 <dt class="sig sig-object py" id="ansys.rep.client.jms.Job">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ansys.rep.client.jms.</span></span><span class="sig-name descname"><span class="pre">Job</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ansys.rep.client.jms.Job" title="Permalink to this definition">#</a></dt>
@@ -2258,7 +2282,7 @@ as <code class="xref py py-attr docutils literal notranslate"><span class="pre">
 
 </section>
 <section id="job-selection">
-<h2>Job Selection<a class="headerlink" href="#job-selection" title="Permalink to this heading">#</a></h2>
+<h3>Job Selection<a class="headerlink" href="#job-selection" title="Permalink to this heading">#</a></h3>
 <dl class="py class">
 <dt class="sig sig-object py" id="ansys.rep.client.jms.JobSelection">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ansys.rep.client.jms.</span></span><span class="sig-name descname"><span class="pre">JobSelection</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ansys.rep.client.jms.JobSelection" title="Permalink to this definition">#</a></dt>
@@ -2324,7 +2348,7 @@ as <code class="xref py py-attr docutils literal notranslate"><span class="pre">
 
 </section>
 <section id="design-exploration-algorithm">
-<h2>Design Exploration Algorithm<a class="headerlink" href="#design-exploration-algorithm" title="Permalink to this heading">#</a></h2>
+<h3>Design Exploration Algorithm<a class="headerlink" href="#design-exploration-algorithm" title="Permalink to this heading">#</a></h3>
 <dl class="py class">
 <dt class="sig sig-object py" id="ansys.rep.client.jms.Algorithm">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ansys.rep.client.jms.</span></span><span class="sig-name descname"><span class="pre">Algorithm</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ansys.rep.client.jms.Algorithm" title="Permalink to this definition">#</a></dt>
@@ -2397,7 +2421,7 @@ as <code class="xref py py-attr docutils literal notranslate"><span class="pre">
 
 </section>
 <section id="evaluator">
-<h2>Evaluator<a class="headerlink" href="#evaluator" title="Permalink to this heading">#</a></h2>
+<h3>Evaluator<a class="headerlink" href="#evaluator" title="Permalink to this heading">#</a></h3>
 <dl class="py class">
 <dt class="sig sig-object py" id="ansys.rep.client.jms.Evaluator">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ansys.rep.client.jms.</span></span><span class="sig-name descname"><span class="pre">Evaluator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ansys.rep.client.jms.Evaluator" title="Permalink to this definition">#</a></dt>
@@ -2494,7 +2518,7 @@ as <code class="xref py py-attr docutils literal notranslate"><span class="pre">
 
 </section>
 <section id="task-definition-template">
-<h2>Task Definition Template<a class="headerlink" href="#task-definition-template" title="Permalink to this heading">#</a></h2>
+<h3>Task Definition Template<a class="headerlink" href="#task-definition-template" title="Permalink to this heading">#</a></h3>
 <dl class="py class">
 <dt class="sig sig-object py" id="ansys.rep.client.jms.TaskDefinitionTemplate">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ansys.rep.client.jms.</span></span><span class="sig-name descname"><span class="pre">TaskDefinitionTemplate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ansys.rep.client.jms.TaskDefinitionTemplate" title="Permalink to this definition">#</a></dt>
@@ -2563,25 +2587,61 @@ as <code class="xref py py-attr docutils literal notranslate"><span class="pre">
 <td><p>Name of the template</p></td>
 <td></td>
 </tr>
-<tr class="row-even"><td><p>application_name</p></td>
+<tr class="row-even"><td><p>version</p></td>
 <td><p>string</p></td>
-<td><p>Name of the application to which the template applies</p></td>
+<td><p>version of the template</p></td>
 <td></td>
 </tr>
-<tr class="row-odd"><td><p>application_version</p></td>
-<td><p>string</p></td>
-<td><p>Version of the application to which the template applies</p></td>
+<tr class="row-odd"><td><p>software_requirements[]</p></td>
+<td><p>array</p></td>
+<td></td>
 <td></td>
 </tr>
-<tr class="row-even"><td><p>data</p></td>
+<tr class="row-even"><td><p>resource_requirements</p></td>
 <td><p>object</p></td>
-<td><p>Template’s detailed data</p></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p>execution_context</p></td>
+<td><p>object</p></td>
+<td><p>Additional arguments to pass to the executing command</p></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p>environment</p></td>
+<td><p>object</p></td>
+<td><p>Environment variables to set for the executed process</p></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p>execution_command</p></td>
+<td><p>string</p></td>
+<td><p>Command to execute (command or execution script is required).</p></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p>use_execution_script</p></td>
+<td><p>boolean</p></td>
+<td><p>Whether to run task with the execution command or the execution script.</p></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p>execution_script_storage_id</p></td>
+<td><p>string</p></td>
+<td><p>Storage ID of the script to execute (command or execution script is required).</p></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p>input_files[]</p></td>
+<td><p>array</p></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p>output_files[]</p></td>
+<td><p>array</p></td>
+<td></td>
 <td></td>
 </tr>
 </tbody>
 </table>
 </dd></dl>
 
+</section>
 </section>
 </section>
 
