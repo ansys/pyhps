@@ -1,5 +1,6 @@
 import logging
 import os
+import json
 from pathlib import Path
 from typing import Callable, List
 
@@ -8,7 +9,7 @@ from ansys.rep.client.exceptions import ClientError, REPError
 from ..resource.algorithm import Algorithm
 from ..resource.base import Object
 from ..resource.file import File
-from ..resource.job import Job, copy_jobs, sync_jobs
+from ..resource.job import Job, JobSchema
 from ..resource.job_definition import JobDefinition
 from ..resource.license_context import LicenseContext
 from ..resource.parameter_definition import ParameterDefinition
@@ -489,3 +490,26 @@ def archive_project(project_api: ProjectApi, target_path, include_job_files=True
 
     log.info(f"Done saving project archive to disk")
     return file_path
+
+def copy_jobs(project_api: ProjectApi, jobs: List[Job], as_objects=True, **query_params):
+    """Create new jobs by copying existing ones"""
+
+    url = f"{project_api.url}/jobs"
+
+    query_params.setdefault("fields", "all")
+
+    json_data = json.dumps({"source_ids": [obj.id for obj in jobs]})
+    r = project_api.client.session.post(f"{url}", data=json_data, params=query_params)
+
+    data = r.json()["jobs"]
+    if not as_objects:
+        return data
+
+    return JobSchema(many=True).load(data)
+
+
+def sync_jobs(project_api: ProjectApi, jobs: List[Job]):
+
+    url = f"{project_api.url}/jobs:sync"
+    json_data = json.dumps({"job_ids": [obj.id for obj in jobs]})
+    r = project_api.client.session.put(f"{url}", data=json_data)
