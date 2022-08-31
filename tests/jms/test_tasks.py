@@ -101,7 +101,7 @@ class TasksTest(REPTestCase):
         # examples/mapdl_motorbike_frame/project_setup.py
 
         client = self.client()
-        proj_name = "mapdl_motorbike_frame"
+        proj_name = "Mapdl Motorbike Frame"
 
         jms_api = JmsApi(client)
         project = jms_api.get_projects(name=proj_name, sort="-creation_time")[0]

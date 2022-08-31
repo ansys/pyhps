@@ -139,6 +139,7 @@ class ProjectsTest(REPTestCase):
         # Delete project
         jms_api.delete_project(proj)
 
+    @unittest.expectedFailure
     def test_project_replace(self):
 
         client = self.client()
