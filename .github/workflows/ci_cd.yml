@@ -79,6 +79,7 @@ jobs:
         if: always() # always run even if the previous step fails
         with:
           report_paths: '**/test*.xml'
+          check_name: Test Report ${{ matrix.os }}:${{ matrix.python-version }} 
 
   docs:
     name: Documentation
