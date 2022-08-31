@@ -72,8 +72,8 @@ class ProjectPermissionsTest(REPTestCase):
 
     def test_modify_project_permissions(self):
         user_credentials = {
-            "user1": {"username": "testuser1", "password": "test"},
-            "user2": {"username": "testuser2", "password": "test"},
+            "user1": {"username": f"testuser-{uuid.uuid4().hex[:8]}", "password": "test"},
+            "user2": {"username": f"testuser-{uuid.uuid4().hex[:8]}", "password": "test"},
         }
         proj_name = f"test_jms_get_permissions_test_{uuid.uuid4().hex[:8]}"
 
