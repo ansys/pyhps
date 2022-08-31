@@ -53,6 +53,8 @@ jobs:
     name: Tests and coverage
     runs-on: ${{ matrix.os }}
     strategy:
+      # max 2 jobs running simultaneously against the same server to make it more robust 
+      max-parallel: 2
       matrix:
         os: [windows-latest, ubuntu-latest]
         python-version: ['3.7', '3.10']
