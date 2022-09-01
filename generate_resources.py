@@ -227,7 +227,6 @@ AUTH_RESOURCES = [
         "schema_filename": "user",
         "rest_name": None,
         "additional_fields": [],
-        "base_class": "Object",
         "class": "User",
         "resource_filename": "user",
     },
