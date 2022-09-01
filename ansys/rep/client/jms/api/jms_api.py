@@ -158,6 +158,7 @@ def get_projects(client, api_url, as_objects=True, **query_params) -> List[Proje
     r = client.session.get(url, params=query_params)
 
     data = r.json()["projects"]
+    log.info(f"GET projects:\n{data}")
     if not as_objects:
         return data
 
