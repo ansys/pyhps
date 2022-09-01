@@ -71,6 +71,14 @@ resources = [
         "resource_filename": "parameter_mapping",
     },
     {
+        "schema": "ProjectSchema",
+        "schema_filename": "project",
+        "rest_name": "projects",
+        "additional_fields": [],
+        "class": "Project",
+        "resource_filename": "project",
+    },
+    {
         "schema": "ProjectPermissionSchema",
         "schema_filename": "project_permission",
         "rest_name": "permissions",
@@ -143,9 +151,11 @@ def declared_fields(schema):
         type = FIELD_MAPPING.get(v.__class__, None)
         if type:
             field_doc += f" ({type}"
-        if v.allow_none:
-            field_doc += ", optional"
-        field_doc += ")"
+            if v.allow_none:
+                field_doc += ", optional"
+            field_doc += ")"
+        elif v.allow_none:
+            field_doc += " (optional)"
         desc = v.metadata.get("description", None)
         if desc:
             field_doc += f": {desc}"
@@ -165,11 +175,6 @@ class {resource['class']}(Object):
 
     Parameters:
 {field_docs}
-
-    The {resource['class']} schema has the following fields:
-
-    .. jsonschema:: schemas/{resource['class']}.json
-
     """
 
     class Meta:
