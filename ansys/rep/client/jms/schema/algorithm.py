@@ -31,6 +31,6 @@ class AlgorithmSchema(ObjectSchema):
     data = fields.String(
         allow_none=True,
         description="Generic string field to hold arbitrary algorithm job_definition data,"
-        " e.g. as JSON dict​ionary.",
+        " e.g. as JSON dictionary.",
     )
     job_ids = IdReferenceList("Job", attribute="jobs", description="List of design point IDs.")
