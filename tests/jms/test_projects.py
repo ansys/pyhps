@@ -10,6 +10,7 @@ import os
 import tempfile
 import time
 import unittest
+import uuid
 
 from examples.mapdl_motorbike_frame.project_setup import create_project as motorbike_create_project
 from marshmallow.utils import missing
@@ -110,7 +111,7 @@ class ProjectsTest(REPTestCase):
 
         client = self.client()
         jms_api = JmsApi(client)
-        proj_name = f"test_jms_ProjectTest_{self.run_id}"
+        proj_name = f"test_jms_ProjectTest_{uuid.uuid4()}"
 
         proj = Project(name=proj_name, active=True, priority=10)
         proj = jms_api.create_project(proj, replace=True)
