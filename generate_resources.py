@@ -1,9 +1,20 @@
+"""
+Script to auto generate (most of the) JMS Resources.
+Main aim is to auto-generate the class docstrings and
+allows code completion (intellisense).
+"""
+
 import importlib
 import os
 
 import marshmallow
 
 from ansys.rep.client.jms.schema.object_reference import IdReference, IdReferenceList
+
+parameter_definition_base_class = {
+    "name": "ParameterDefinition",
+    "file_name": "parameter_definition",
+}
 
 resources = [
     {
@@ -29,6 +40,22 @@ resources = [
         "additional_fields": [],
         "class": "FileBase",
         "resource_filename": "file_base",
+    },
+    {
+        "schema": "FitnessDefinitionSchema",
+        "schema_filename": "fitness_definition",
+        "rest_name": None,
+        "additional_fields": [],
+        "class": "FitnessDefinitionBase",
+        "resource_filename": "fitness_definition_base",
+    },
+    {
+        "schema": "FitnessTermDefinitionSchema",
+        "schema_filename": "fitness_definition",
+        "rest_name": None,
+        "additional_fields": [],
+        "class": "FitnessTermDefinitionBase",
+        "resource_filename": "fitness_term_definition_base",
     },
     {
         "schema": "JobSchema",
@@ -95,6 +122,30 @@ resources = [
         "resource_filename": "resource_requirements",
     },
     {
+        "schema": "SoftwareSchema",
+        "schema_filename": "task_definition",
+        "rest_name": None,
+        "additional_fields": [],
+        "class": "Software",
+        "resource_filename": "software",
+    },
+    {
+        "schema": "SuccessCriteriaSchema",
+        "schema_filename": "task_definition",
+        "rest_name": None,
+        "additional_fields": [],
+        "class": "SuccessCriteria",
+        "resource_filename": "success_criteria",
+    },
+    {
+        "schema": "LicensingSchema",
+        "schema_filename": "task_definition",
+        "rest_name": None,
+        "additional_fields": [],
+        "class": "Licensing",
+        "resource_filename": "licensing",
+    },
+    {
         "schema": "JobSelectionSchema",
         "schema_filename": "selection",
         "rest_name": "job_selections",
@@ -111,12 +162,64 @@ resources = [
         "resource_filename": "task_definition_template",
     },
     {
+        "schema": "TaskDefinitionSchema",
+        "schema_filename": "task_definition",
+        "rest_name": "task_definitions",
+        "additional_fields": [],
+        "class": "TaskDefinition",
+        "resource_filename": "task_definition",
+    },
+    {
         "schema": "TaskSchema",
         "schema_filename": "task",
         "rest_name": "tasks",
         "additional_fields": [],
         "class": "Task",
         "resource_filename": "task",
+    },
+    {
+        "schema": "ParameterDefinitionSchema",
+        "schema_filename": "parameter_definition",
+        "rest_name": "parameter_definitions",
+        "additional_fields": [],
+        "class": "ParameterDefinition",
+        "resource_filename": "parameter_definition",
+    },
+    {
+        "schema": "FloatParameterDefinitionSchema",
+        "schema_filename": "parameter_definition",
+        "rest_name": "parameter_definitions",
+        "additional_fields": [],
+        "base_class": "ParameterDefinition",
+        "class": "FloatParameterDefinition",
+        "resource_filename": "float_parameter_definition",
+    },
+    {
+        "schema": "IntParameterDefinitionSchema",
+        "schema_filename": "parameter_definition",
+        "rest_name": "parameter_definitions",
+        "additional_fields": [],
+        "base_class": "ParameterDefinition",
+        "class": "IntParameterDefinition",
+        "resource_filename": "int_parameter_definition",
+    },
+    {
+        "schema": "BoolParameterDefinitionSchema",
+        "schema_filename": "parameter_definition",
+        "rest_name": "parameter_definitions",
+        "additional_fields": [],
+        "base_class": "ParameterDefinition",
+        "class": "BoolParameterDefinition",
+        "resource_filename": "bool_parameter_definition",
+    },
+    {
+        "schema": "StringParameterDefinitionSchema",
+        "schema_filename": "parameter_definition",
+        "rest_name": "parameter_definitions",
+        "additional_fields": [],
+        "base_class": "ParameterDefinition",
+        "class": "StringParameterDefinition",
+        "resource_filename": "string_parameter_definition",
     },
 ]
 
@@ -163,14 +266,16 @@ def declared_fields(schema):
     return fields, fields_doc
 
 
-def get_generated_code(resource, fields, field_docs):
+def get_generated_code(resource, base_class, fields, field_docs):
+
+    base_class_import = f"from .{base_class['filename']} import {base_class['name']}"
 
     code = f'''
 from marshmallow.utils import missing
-from .base import Object
+{base_class_import}
 from ..schema.{resource['schema_filename']} import {resource['schema']}
 
-class {resource['class']}(Object):
+class {resource['class']}({base_class["name"]}):
     """{resource['class']} resource.
 
     Parameters:
@@ -211,7 +316,14 @@ for resource in resources:
 
     print(f"Attributes:\n{field_docs_str}")
 
-    code = get_generated_code(resource, fields_str, field_docs_str)
+    base_class = {"name": "Object", "filename": "base"}
+    if resource.get("base_class", None):
+        base_class["name"] = resource["base_class"]
+        base_class["filename"] = next(
+            (r["resource_filename"] for r in resources if r["class"] == resource["base_class"]),
+            None,
+        )
+    code = get_generated_code(resource, base_class, fields_str, field_docs_str)
 
     file_path = os.path.join(targe_folder, f"{resource['resource_filename']}.py")
     with open(file_path, "w") as file:

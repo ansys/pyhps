@@ -4,16 +4,19 @@ repos:
   rev: 22.3.0
   hooks:
   - id: black
+    exclude: ^ansys/rep/client/jms/resource/
 
 - repo: https://github.com/pycqa/isort
   rev: 5.10.1
   hooks:
   - id: isort
+    exclude: ^ansys/rep/client/jms/resource/
 
 - repo: https://gitlab.com/PyCQA/flake8
   rev: 4.0.1
   hooks:
   - id: flake8
+    exclude: ^ansys/rep/client/jms/resource/
 
 - repo: https://github.com/codespell-project/codespell
   rev: v2.1.0

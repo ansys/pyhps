@@ -18,12 +18,12 @@ log = logging.getLogger(__name__)
 class FitnessTermDefinition(Object):
     """FitnessTermDefinition resource.
 
-    Args:
-        **kwargs: Arbitrary keyword arguments, see the FitnessTermDefinition schema below.
-
-    The FitnessTermDefinition schema has the following fields:
-
-    .. jsonschema:: schemas/FitnessTermDefinition.json
+    Parameters:
+        id (str, optional): Unique ID to access the resource, generated internally by the server on creation.
+        name (str, optional): Name of the fitness term.
+        expression (str, optional): The Python expression that defines the fitness term.
+        type (str, optional): Fitness term type.
+        weighting_factor (float, optional): Relative importance of the fitness term in comparison to other fitness terms.
 
     Example:
 
@@ -51,9 +51,16 @@ class FitnessTermDefinition(Object):
 
     class Meta:
         schema = FitnessTermDefinitionSchema
+        rest_name = "None"
 
     def __init__(self, **kwargs):
-        super(FitnessTermDefinition, self).__init__(**kwargs)
+        self.id = missing
+        self.name = missing
+        self.expression = missing
+        self.type = missing
+        self.weighting_factor = missing
+
+        super().__init__(**kwargs)
 
 
 FitnessTermDefinitionSchema.Meta.object_class = FitnessTermDefinition
@@ -62,8 +69,10 @@ FitnessTermDefinitionSchema.Meta.object_class = FitnessTermDefinition
 class FitnessDefinition(Object):
     """FitnessDefinition resource.
 
-    Args:
-        **kwargs: Arbitrary keyword arguments, see the Job schema below.
+    Parameters:
+        id (str, optional): Unique ID to access the resource, generated internally by the server on creation.
+        fitness_term_definitions: List of :class:`ansys.rep.client.jms.FitnessTermDefinition`.
+        error_fitness (float): The default fitness value assigned to failed design points.
 
     Example:
 
@@ -78,18 +87,18 @@ class FitnessDefinition(Object):
                                     1313.0,
                                     5.0,
                                     30.0 )" )
-
-    The FitnessDefinition schema has the following fields:
-
-    .. jsonschema:: schemas/FitnessDefinition.json
-
     """
 
     class Meta:
         schema = FitnessDefinitionSchema
+        rest_name = "None"
 
     def __init__(self, **kwargs):
-        super(FitnessDefinition, self).__init__(**kwargs)
+        self.id = missing
+        self.fitness_term_definitions = missing
+        self.error_fitness = missing
+
+        super().__init__(**kwargs)
 
     def add_fitness_term(self, **kwargs):
         """

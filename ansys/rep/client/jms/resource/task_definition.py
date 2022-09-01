@@ -1,171 +1,29 @@
-# ----------------------------------------------------------
-# Copyright (C) 2019 by
-# ANSYS Switzerland GmbH
-# www.ansys.com
-#
-# Author(s): O.Koenig
-# ----------------------------------------------------------
-import logging
 
-from ..schema.task_definition import (
-    LicensingSchema,
-    ResourceRequirementsSchema,
-    SoftwareSchema,
-    SuccessCriteriaSchema,
-    TaskDefinitionSchema,
-)
+from marshmallow.utils import missing
 from .base import Object
-
-log = logging.getLogger(__name__)
-
-
-class Software(Object):
-    """Software resource.
-
-    Args:
-        **kwargs: Arbitrary keyword arguments, see the Software schema below.
-
-    Example:
-
-        >>> software = Software(
-                name="ANSYS Mechanical APDL"
-                version="2022 R2"
-            )
-        >>> task_definition.software_requirements.append(software)
-
-    The Software schema has the following fields:
-
-    .. jsonschema:: schemas/Software.json
-
-    """
-
-    class Meta:
-        schema = SoftwareSchema
-
-    def __init__(self, **kwargs):
-        super(Software, self).__init__(**kwargs)
-
-
-SoftwareSchema.Meta.object_class = Software
-
-
-class ResourceRequirements(Object):
-    """Compute Resource Requirements.
-
-    Args:
-        **kwargs: Arbitrary keyword arguments, see the ResourceRequirements schema below.
-
-    Example:
-
-        >>> reqs = ResourceRequirements(
-                cpu_core_usage=12.0,
-                memory=250,
-                disk_space=50,
-            )
-        >>> task_definition.resource_requirements = reqs
-
-    The ResourceRequirements schema has the following fields:
-
-    .. jsonschema:: schemas/ResourceRequirements.json
-
-    """
-
-    class Meta:
-        schema = ResourceRequirementsSchema
-
-    def __init__(self, **kwargs):
-        super(ResourceRequirements, self).__init__(**kwargs)
-
-
-ResourceRequirementsSchema.Meta.object_class = ResourceRequirements
-
-
-class SuccessCriteria(Object):
-    """SuccessCriteria resource.
-
-    Args:
-        **kwargs: Arbitrary keyword arguments, see the SuccessCriteria schema below.
-
-    Example:
-
-        >>> sc = SuccessCriteria(
-                return_code=0,
-                expressions= ["values['tube1_radius']>=4.0", "values['tube1_thickness']>=0.5"],
-                required_output_file_ids=[ f.id for f in files[2:] ],
-                require_all_output_files=False,
-                required_output_parameter_ids=[...],
-                require_all_output_parameters=False
-            )
-
-    The SuccessCriteria schema has the following fields:
-
-    .. jsonschema:: schemas/SuccessCriteria.json
-
-    """
-
-    class Meta:
-        schema = SuccessCriteriaSchema
-
-    def __init__(self, **kwargs):
-        super(SuccessCriteria, self).__init__(**kwargs)
-
-
-SuccessCriteriaSchema.Meta.object_class = SuccessCriteria
-
-
-class Licensing(Object):
-    """Licensing resource.
-
-    Args:
-        **kwargs: Arbitrary keyword arguments, see the Licensing schema below.
-
-    Example:
-
-        >>> lic = Licensing(enable_shared_licensing=true)
-
-    The Licensing schema has the following fields:
-
-    .. jsonschema:: schemas/Licensing.json
-
-    """
-
-    class Meta:
-        schema = LicensingSchema
-
-    def __init__(self, **kwargs):
-        super(Licensing, self).__init__(**kwargs)
-
-
-LicensingSchema.Meta.object_class = Licensing
-
+from ..schema.task_definition import TaskDefinitionSchema
 
 class TaskDefinition(Object):
     """TaskDefinition resource.
 
-    Args:
-        **kwargs: Arbitrary keyword arguments, see the TaskDefinition schema below.
-
-    Example:
-
-        >>> td = TaskDefinition(
-                    name="MAPDL_run",
-                    software_requirements=[
-                        Software(name="ANSYS Mechanical APDL", version="2022 R2"),
-                    ],
-                    execution_command="%executable% -b -i %file:mac%
-                                       -o file.out -np %resource:num_cores%",
-                    max_execution_time=20.0,
-                    execution_level=0,
-                    resource_requirements=ResourceRequirements(
-                        cpu_core_usage=1.0,
-                        memory=250,
-                        disk_space=5,
-                    )
-                )
-
-    The TaskDefinition schema has the following fields:
-
-    .. jsonschema:: schemas/TaskDefinition.json
+    Parameters:
+        id (str, optional): Unique ID to access the resource, generated internally by the server on creation.
+        name (str, optional): Name.
+        execution_command (str, optional): Command to execute (command or execution script is required).
+        use_execution_script (bool, optional): Whether to run task with the execution command or the execution script.
+        execution_script_id (str, optional): Script to execute (command or execution script is required).
+        execution_level (int): Define execution level for this task.
+        execution_context (dict, optional): Additional arguments to pass to the executing command
+        environment (dict, optional): Environment variables to set for the executed process
+        max_execution_time (float, optional): Maximum time in seconds for executing the task.
+        num_trials (int, optional): Maximum number of attempts to execute the task.
+        store_output (bool, optional): Specify whether to store the standard output of the task.
+        input_file_ids (list): List of IDs of input files.
+        output_file_ids (list): List of IDs of output files.
+        success_criteria (optional): A :class:`ansys.rep.client.jms.SuccessCriteria` object.
+        licensing (optional): A :class:`ansys.rep.client.jms.Licensing` object.
+        software_requirements (optional): A list of :class:`ansys.rep.client.jms.Software` objects.
+        resource_requirements (optional): A :class:`ansys.rep.client.jms.ResourceRequirements` object.
 
     """
 
@@ -174,7 +32,24 @@ class TaskDefinition(Object):
         rest_name = "task_definitions"
 
     def __init__(self, **kwargs):
-        super(TaskDefinition, self).__init__(**kwargs)
+        self.id = missing
+        self.name = missing
+        self.execution_command = missing
+        self.use_execution_script = missing
+        self.execution_script_id = missing
+        self.execution_level = missing
+        self.execution_context = missing
+        self.environment = missing
+        self.max_execution_time = missing
+        self.num_trials = missing
+        self.store_output = missing
+        self.input_file_ids = missing
+        self.output_file_ids = missing
+        self.success_criteria = missing
+        self.licensing = missing
+        self.software_requirements = missing
+        self.resource_requirements = missing
 
+        super().__init__(**kwargs)
 
 TaskDefinitionSchema.Meta.object_class = TaskDefinition
