@@ -25,7 +25,7 @@ class REPTestCase(unittest.TestCase):
         # self._stream_handler = logging.StreamHandler(sys.stdout)
         # self.logger.addHandler(self._stream_handler)
 
-        self.rep_url = os.environ.get("REP_TEST_URL") or "https://127.0.0.1:8443/rep"
+        self.rep_url = os.environ.get("REP_TEST_URL") or "https://repkube-dev.westeurope.cloudapp.azure.com/rep"
         self.username = os.environ.get("REP_TEST_USERNAME") or "repadmin"
         self.password = os.environ.get("REP_TEST_PASSWORD") or "repadmin"
 

@@ -1,3 +1,4 @@
+from ast import Str
 import json
 import logging
 from typing import List
@@ -5,15 +6,54 @@ from typing import List
 from requests import Session
 
 from ansys.rep.client.exceptions import ClientError
+from pydantic import BaseModel
 
-from ..resource.base import Object
+from ..resource import (
+    Job,
+    JobDefinition,
+    JobSelection,
+    Project,
+    Task,
+    TaskDefinition,
+    TaskDefinitionTemplate,
+    Evaluator,
+    BoolParameterDefinition,
+    FloatParameterDefinition,
+    IntParameterDefinition,
+    StringParameterDefinition
+)
+
+OBJECT_TYPE_TO_ENDPOINT = [
+    {Job : "jobs"},
+    {JobDefinition, "job_definitions"},
+    {Project, "projects"},
+    {JobSelection: "job_selections"},
+    {Task, "tasks"},
+    {TaskDefinition, "task_definitions"},
+    {BoolParameterDefinition, "parameter_definitions"},
+    {FloatParameterDefinition, "parameter_definitions"},
+    {IntParameterDefinition, "parameter_definitions"},
+    {StringParameterDefinition, "parameter_definitions"}
+]
 
 log = logging.getLogger(__name__)
 
+def objects_to_json(objects: List[BaseModel], rest_name: str):
 
-def get_objects(session: Session, url: str, obj_type: Object, as_objects=True, **query_params):
+    dicts = []
+    for obj in objects:
+        dicts.append(obj.dict())
+    return json.dumps({rest_name: dicts})
 
-    rest_name = obj_type.Meta.rest_name
+def json_to_objects(data, obj_type):
+    obj_list = []
+    for obj in data:
+        obj_list.append(obj_type(**obj)) 
+    return obj_list
+
+def get_objects(session: Session, url: str, obj_type, as_objects=True, **query_params):
+
+    rest_name = OBJECT_TYPE_TO_ENDPOINT[obj_type]
     url = f"{url}/{rest_name}"
     query_params.setdefault("fields", "all")
     r = session.get(url, params=query_params)
@@ -25,15 +65,14 @@ def get_objects(session: Session, url: str, obj_type: Object, as_objects=True, *
     if not as_objects:
         return data
 
-    schema = obj_type.Meta.schema(many=True)
-    return schema.load(data)
+    return json_to_objects(data, obj_type)
 
 
 def get_object(
-    session: Session, url: str, obj_type: Object, id: str, as_object=True, **query_params
+    session: Session, url: str, obj_type, id: str, as_object=True, **query_params
 ):
 
-    rest_name = obj_type.Meta.rest_name
+    rest_name = OBJECT_TYPE_TO_ENDPOINT[obj_type]
     url = f"{url}/{rest_name}/{id}"
     query_params.setdefault("fields", "all")
     r = session.get(url, params=query_params)
@@ -42,19 +81,17 @@ def get_object(
     if not as_object:
         return data
 
-    schema = obj_type.Meta.schema(many=True)
     if len(data) == 0:
         return None
     elif len(data) == 1:
-        return schema.load(data)[0]
+        return obj_type(**data)
     elif len(data) > 1:
         raise ClientError(
-            f"Multiple {Object.__class__.__name__} objects with id={id}: {schema.load(data)}"
+            f"Multiple objects with id={id}"
         )
 
-
 def create_objects(
-    session: Session, url: str, objects: List[Object], as_objects=True, **query_params
+    session: Session, url: str, objects: List[BaseModel], as_objects=True, **query_params
 ):
     if not objects:
         return []
@@ -64,24 +101,21 @@ def create_objects(
         raise ClientError("Mixed object types")
 
     obj_type = objects[0].__class__
-    rest_name = obj_type.Meta.rest_name
+    rest_name = OBJECT_TYPE_TO_ENDPOINT[obj_type]
 
     url = f"{url}/{rest_name}"
     query_params.setdefault("fields", "all")
-    schema = obj_type.Meta.schema(many=True)
-    serialized_data = schema.dump(objects)
-    json_data = json.dumps({rest_name: serialized_data})
 
-    r = session.post(f"{url}", data=json_data, params=query_params)
+    r = session.post(f"{url}", data=objects_to_json(objects, rest_name), params=query_params)
+
     data = r.json()[rest_name]
     if not as_objects:
         return data
-
-    return schema.load(data)
+    return json_to_objects(data, obj_type)
 
 
 def update_objects(
-    session: Session, url: str, objects: List[Object], as_objects=True, **query_params
+    session: Session, url: str, objects: List[BaseModel], as_objects=True, **query_params
 ):
     if not objects:
         return []
@@ -91,23 +125,20 @@ def update_objects(
         raise ClientError("Mixed object types")
 
     obj_type = objects[0].__class__
-    rest_name = obj_type.Meta.rest_name
+    rest_name = OBJECT_TYPE_TO_ENDPOINT[obj_type]
 
     url = f"{url}/{rest_name}"
     query_params.setdefault("fields", "all")
-    schema = obj_type.Meta.schema(many=True)
-    serialized_data = schema.dump(objects)
-    json_data = json.dumps({rest_name: serialized_data})
-    r = session.put(f"{url}", data=json_data, params=query_params)
+
+    r = session.put(f"{url}", data=objects_to_json(objects, rest_name), params=query_params)
 
     data = r.json()[rest_name]
     if not as_objects:
         return data
+    return json_to_objects(data, obj_type)
 
-    return schema.load(data)
 
-
-def delete_objects(session: Session, url: str, objects: List[Object]):
+def delete_objects(session: Session, url: str, objects: List[BaseModel]):
     if not objects:
         return
 
@@ -116,7 +147,8 @@ def delete_objects(session: Session, url: str, objects: List[Object]):
         raise ClientError("Mixed object types")
 
     obj_type = objects[0].__class__
-    rest_name = obj_type.Meta.rest_name
+    rest_name = OBJECT_TYPE_TO_ENDPOINT[obj_type]
+
     url = f"{url}/{rest_name}"
     data = json.dumps({"source_ids": [obj.id for obj in objects]})
 

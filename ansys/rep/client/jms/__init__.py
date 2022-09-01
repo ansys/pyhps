@@ -6,16 +6,16 @@
 # Author(s): O.Koenig
 # ----------------------------------------------------------
 
-from .api import JmsApi, ProjectApi
+from .api import JmsApi#, ProjectApi
 from .resource import (
     Algorithm,
-    BoolParameterDefinition,
+    # BoolParameterDefinition,
     Evaluator,
     File,
-    FitnessDefinition,
-    FitnessTermDefinition,
-    FloatParameterDefinition,
-    IntParameterDefinition,
+    # FitnessDefinition,
+    # FitnessTermDefinition,
+    # FloatParameterDefinition,
+    # IntParameterDefinition,
     Job,
     JobDefinition,
     JobSelection,
@@ -24,9 +24,9 @@ from .resource import (
     Project,
     ProjectPermission,
     ResourceRequirements,
-    Software,
-    StringParameterDefinition,
-    SuccessCriteria,
+    # Software,
+    # StringParameterDefinition,
+    # SuccessCriteria,
     Task,
     TaskDefinition,
     TaskDefinitionTemplate,

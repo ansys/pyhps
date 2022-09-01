@@ -6,30 +6,30 @@
 # Author(s): O.Koenig
 # ----------------------------------------------------------
 
-from .algorithm import Algorithm
-from .evaluator import Evaluator
-from .file import File
-from .fitness_definition import FitnessDefinition, FitnessTermDefinition
-from .job import Job
-from .job_definition import JobDefinition
-from .license_context import LicenseContext
-from .operation import Operation
-from .parameter_definition import (
+from .resources import DesignExplorationAlgorithm as Algorithm
+from .resources import EvaluatorRegistration as Evaluator
+from .resources import File
+from .resources import FitnessDefinition, FitnessTermDefinition
+from .resources import Job
+from .resources import JobDefinition
+from .resources import LicenseContext
+from .resources import Operation
+from .additional_resources import (
     BoolParameterDefinition,
     FloatParameterDefinition,
     IntParameterDefinition,
     StringParameterDefinition,
 )
-from .parameter_mapping import ParameterMapping
-from .project import Project
-from .project_permission import ProjectPermission
-from .selection import JobSelection
-from .task import Task
-from .task_definition import (
+from .resources import ParameterMapping
+from .resources import Project
+from .resources import AccessControl as ProjectPermission
+from .resources import JobSelection
+from .resources import Task
+from .resources import (
     Licensing,
     ResourceRequirements,
-    Software,
-    SuccessCriteria,
+    # Software,
+    # SuccessCriteria,
     TaskDefinition,
 )
-from .task_definition_template import TaskDefinitionTemplate
+from .additional_resources import TaskDefinitionTemplate

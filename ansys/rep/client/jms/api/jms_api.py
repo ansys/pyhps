@@ -8,9 +8,9 @@ import uuid
 from ansys.rep.client.exceptions import REPError
 
 from ..resource import Operation
-from ..resource.evaluator import Evaluator
-from ..resource.project import Project, ProjectSchema
-from ..resource.task_definition_template import TaskDefinitionTemplate
+from ..resource import Evaluator
+from ..resource import Project
+from ..resource import TaskDefinitionTemplate
 from .base import create_objects, delete_objects, get_object, get_objects, update_objects
 
 log = logging.getLogger(__name__)
@@ -161,8 +161,10 @@ def get_projects(client, api_url, as_objects=True, **query_params) -> List[Proje
     if not as_objects:
         return data
 
-    schema = ProjectSchema(many=True)
-    return schema.load(data)
+    obj_list = []
+    for obj in data:
+        obj_list.append(Project(**obj)) 
+    return obj_list
 
 
 def get_project(client, api_url, id) -> Project:
@@ -174,8 +176,8 @@ def get_project(client, api_url, id) -> Project:
     r = client.session.get(url)
 
     if len(r.json()["projects"]):
-        schema = ProjectSchema()
-        return schema.load(r.json()["projects"][0])
+        data = r.json()["projects"][0]
+        return Project(**data)
     return None
 
 
@@ -196,12 +198,10 @@ def get_project_by_name(client, api_url, name, last_created=True) -> Union[Proje
     return projects
 
 
-def create_project(client, api_url, project, replace=False, as_objects=True) -> Project:
+def create_project(client, api_url, project: Project, replace=False, as_objects=True) -> Project:
     url = f"{api_url}/projects/"
 
-    schema = ProjectSchema()
-    serialized_data = schema.dump(project)
-    json_data = json.dumps({"projects": [serialized_data], "replace": replace})
+    json_data = json.dumps({"projects": [project.dict()], "replace": replace})
     r = client.session.post(f"{url}", data=json_data)
 
     if not r.json()["projects"]:
@@ -211,22 +211,20 @@ def create_project(client, api_url, project, replace=False, as_objects=True) -> 
     if not as_objects:
         return data
 
-    return schema.load(data)
+    return Project(**data)
 
 
-def update_project(client, api_url, project, as_objects=True) -> Project:
+def update_project(client, api_url, project: Project, as_objects=True) -> Project:
     url = f"{api_url}/projects/{project.id}"
 
-    schema = ProjectSchema()
-    serialized_data = schema.dump(project)
-    json_data = json.dumps({"projects": [serialized_data]})
+    json_data = json.dumps({"projects": [project.dict()]})
     r = client.session.put(f"{url}", data=json_data)
 
     data = r.json()["projects"][0]
     if not as_objects:
         return data
 
-    return schema.load(data)
+    return Project(**data)
 
 
 def delete_project(client, api_url, project):
