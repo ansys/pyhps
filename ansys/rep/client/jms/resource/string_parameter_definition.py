@@ -21,7 +21,7 @@ class StringParameterDefinition(ParameterDefinition):
         Text to display as the parameter name.
     mode : str
         Indicates whether it's an input or output parameter. Filled server side.
-    type
+    type : str
     default : str, optional
         Default parameter value.
     value_list : list, optional

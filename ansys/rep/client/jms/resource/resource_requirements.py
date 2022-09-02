@@ -10,15 +10,10 @@ class ResourceRequirements(Object):
     Parameters
     ----------
     platform : str, optional
-
     memory : int, optional
-
     cpu_core_usage : float, optional
-
     disk_space : int, optional
-
     custom : dict, optional
-
 
     """
 

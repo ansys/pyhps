@@ -35,14 +35,11 @@ class TaskDefinition(Object):
         List of IDs of input files.
     output_file_ids : list[str]
         List of IDs of output files.
-    success_criteria : any, optional
-        A :class:`ansys.rep.client.jms.SuccessCriteria` object.
-    licensing : any, optional
-        A :class:`ansys.rep.client.jms.Licensing` object.
-    software_requirements : any, optional
-
-    resource_requirements : any, optional
-
+    success_criteria : object, optional
+    licensing : object, optional
+        A :class:`Licensing` object.
+    software_requirements : object, optional
+    resource_requirements : object, optional
 
     """
 

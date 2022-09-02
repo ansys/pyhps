@@ -20,7 +20,7 @@ class EvaluatorSchema(ObjectSchema):
 
     host_id = fields.String(
         description="Unique identifier built from hardware information and "
-        "selected job_definition details of an evaluator."
+        "selected configuration details of an evaluator."
     )
     name = fields.String(allow_none=True, description="Name of the evaluator.")
     hostname = fields.String(

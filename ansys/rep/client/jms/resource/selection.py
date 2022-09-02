@@ -18,7 +18,7 @@ class JobSelection(Object):
     modification_time : datetime, optional
         The date and time the selection was last modified.
     algorithm_id : str, optional
-        ID of the :class:`ansys.rep.client.jms.Algorithm` the selection belongs to (optional).
+        ID of the :class:`Algorithm` the selection belongs to (optional).
     jobs : list[str]
         List of job IDs.
 

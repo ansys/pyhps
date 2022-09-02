@@ -10,13 +10,9 @@ class ProjectPermission(Object):
     Parameters
     ----------
     permission_type : str
-
     value_id : str
-
     value_name : str, optional
-
     role : str
-
 
     """
 

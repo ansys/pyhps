@@ -12,7 +12,7 @@ class Evaluator(Object):
     id : str, optional
         Unique ID to access the resource, generated internally by the server on creation.
     host_id : str
-        Unique identifier built from hardware information and selected job_definition details of an evaluator.
+        Unique identifier built from hardware information and selected configuration details of an evaluator.
     name : str, optional
         Name of the evaluator.
     hostname : str, optional

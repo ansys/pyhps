@@ -241,6 +241,8 @@ FIELD_MAPPING = {
     marshmallow.fields.DateTime: "datetime",
     marshmallow.fields.Dict: "dict",
     marshmallow.fields.List: "list",
+    marshmallow.fields.Constant: "Constant",
+    marshmallow.fields.Nested: "object",
     IdReferenceList: "list[str]",
     IdReference: "str",
 }
@@ -261,9 +263,12 @@ def declared_fields(schema):
 
         # build attribute doc
         field_doc = f"{field}"
-        type = FIELD_MAPPING.get(v.__class__, None)
-        if type:
-            field_doc += f" : {type}"
+        if v.__class__ == marshmallow.fields.Constant:
+            field_type = type(v.constant).__name__
+        else:
+            field_type = FIELD_MAPPING.get(v.__class__, None)
+        if field_type:
+            field_doc += f" : {field_type}"
             if v.allow_none:
                 field_doc += ", optional"
             field_doc += "\n"
@@ -271,7 +276,7 @@ def declared_fields(schema):
             field_doc += " : any, optional\n"
         desc = v.metadata.get("description", None)
         if desc:
-            field_doc += f"        {desc}"
+            field_doc += f"        {desc}\n"
         fields_doc.append(field_doc)
     return fields, fields_doc
 
@@ -330,7 +335,7 @@ def process_resources(subpackage, resources, base_class_path=""):
 
         field_docs_str = ""
         for k in field_docs:
-            field_docs_str += f"    {k}\n"
+            field_docs_str += f"    {k}"
 
         print(f"Class init parameters:\n{field_docs_str}")
 

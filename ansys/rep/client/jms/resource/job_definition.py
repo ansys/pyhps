@@ -12,7 +12,7 @@ class JobDefinition(Object):
     id : str, optional
         Unique ID to access the resource, generated internally by the server on creation.
     name : str, optional
-        Name of the job_definition
+        Name of the job definition
     active : bool
         Defines whether this is the active job definition in the project where evaluators will evaluate pending jobs
     creation_time : datetime, optional
@@ -20,13 +20,10 @@ class JobDefinition(Object):
     modification_time : datetime, optional
         The date and time the job definition was last modified.
     parameter_definition_ids : list[str]
-
     parameter_mapping_ids : list[str]
-
     task_definition_ids : list[str]
-
-    fitness_definition : any, optional
-        An :class:`ansys.rep.client.jms.FitnessDefinition` object.
+    fitness_definition : object, optional
+        A :class:`FitnessDefinition` object.
 
     """
 

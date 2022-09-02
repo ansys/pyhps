@@ -38,6 +38,6 @@ class FitnessDefinitionSchema(ObjectSchema):
     fitness_term_definitions = fields.Nested(
         FitnessTermDefinitionSchema,
         many=True,
-        description="List of :class:`ansys.rep.client.jms.FitnessTermDefinition`.",
+        description="List of :class:`FitnessTermDefinition`.",
     )
     error_fitness = fields.Float(description="The default fitness value assigned to failed jobs.")

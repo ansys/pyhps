@@ -16,11 +16,11 @@ class Job(Object):
     eval_status : str
         Evaluation status.
     job_definition_id : str
-        ID of the linked job_definition, see :class:`ansys.rep.client.jms.JobDefinition`.
+        ID of the linked job definition, see :class:`JobDefinition`.
     priority : int, optional
         Priority with which jobs are evaluated. The default is 0, which is the highest priority. Assigning a higher value to a design point makes it a lower priority.
     values : dict, optional
-        Dictionary with (name,value) pairs for all parameters defined in the linked job_definition.
+        Dictionary with (name,value) pairs for all parameters defined in the linked job definition.
     fitness : float, optional
         Fitness value computed.
     fitness_term_values : dict, optional

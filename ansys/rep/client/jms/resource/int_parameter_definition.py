@@ -21,7 +21,7 @@ class IntParameterDefinition(ParameterDefinition):
         Text to display as the parameter name.
     mode : str
         Indicates whether it's an input or output parameter. Filled server side.
-    type
+    type : str
     default : int, optional
         Default parameter value.
     lower_limit : int, optional

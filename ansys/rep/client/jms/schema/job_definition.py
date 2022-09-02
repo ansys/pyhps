@@ -20,7 +20,7 @@ class JobDefinitionSchema(ObjectSchema):
     class Meta(ObjectSchema.Meta):
         pass
 
-    name = fields.String(allow_none=True, description="Name of the job_definition")
+    name = fields.String(allow_none=True, description="Name of the job definition")
     active = fields.Boolean(
         description="Defines whether this is the active job definition in the "
         "project where evaluators will evaluate pending jobs"
@@ -49,5 +49,5 @@ class JobDefinitionSchema(ObjectSchema):
     fitness_definition = fields.Nested(
         FitnessDefinitionSchema,
         allow_none=True,
-        description="An :class:`ansys.rep.client.jms.FitnessDefinition` object.",
+        description="A :class:`FitnessDefinition` object.",
     )

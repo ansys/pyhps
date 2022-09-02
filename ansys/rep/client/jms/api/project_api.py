@@ -192,10 +192,10 @@ class ProjectApi:
 
     ################################################################
     # Jobs
-    def get_jobs(self, as_objects=True, **query_params):
+    def get_jobs(self, as_objects=True, **query_params) -> List[Job]:
         return self._get_objects(Job, as_objects=as_objects, **query_params)
 
-    def create_jobs(self, jobs, as_objects=True):
+    def create_jobs(self, jobs, as_objects=True) -> List[Job]:
         """Create new jobs
 
         Args:
@@ -218,7 +218,7 @@ class ProjectApi:
         """
         return copy_jobs(self, jobs, as_objects=as_objects, **query_params)
 
-    def update_jobs(self, jobs, as_objects=True):
+    def update_jobs(self, jobs, as_objects=True) -> List[Job]:
         """Update existing jobs
 
         Args:

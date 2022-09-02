@@ -12,23 +12,14 @@ class Operation(Object):
     id : str, optional
         Unique ID to access the resource, generated internally by the server on creation.
     name : str, optional
-
     finished : bool, optional
-
     succeeded : bool, optional
-
     progress : float, optional
-
     status : str, optional
-
     result : dict, optional
-
     messages : list, optional
-
     start_time : datetime, optional
-
     end_time : datetime, optional
-
 
     """
 

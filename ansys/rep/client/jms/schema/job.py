@@ -34,8 +34,7 @@ class JobSchema(ObjectSchema):
         allow_none=False,
         attribute="job_definition_id",
         referenced_class="JobDefinition",
-        description="ID of the linked job_definition, "
-        "see :class:`ansys.rep.client.jms.JobDefinition`.",
+        description="ID of the linked job definition, " "see :class:`JobDefinition`.",
     )
 
     priority = fields.Integer(
@@ -49,7 +48,7 @@ class JobSchema(ObjectSchema):
         keys=fields.String(),
         allow_none=True,
         description="Dictionary with (name,value) pairs for all parameters defined in the "
-        "linked job_definition.",
+        "linked job definition.",
     )
     fitness = fields.Float(allow_none=True, description="Fitness value computed.")
     fitness_term_values = fields.Dict(

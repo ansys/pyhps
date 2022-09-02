@@ -20,7 +20,7 @@ class Algorithm(Object):
     modification_time : datetime, optional
         The date and time the algorithm was last modified.
     data : str, optional
-        Generic string field to hold arbitrary algorithm job_definition data, e.g. as JSON dictionary.
+        Generic string field to hold arbitrary algorithm configuration data, e.g. as JSON dictionary.
     jobs : list[str]
         List of job IDs.
 

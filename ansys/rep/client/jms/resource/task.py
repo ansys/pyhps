@@ -30,13 +30,13 @@ class Task(Object):
     elapsed_time : float, optional
         Number of seconds it took the evaluator to execute the task.
     task_definition_id : str
-        ID of the :class:`ansys.rep.client.jms.TaskDefinition` the task is linked to.
-    task_definition_snapshot : any, optional
-        Snapshot of :class:`ansys.rep.client.jms.TaskDefinition` created when task status changes to prolog, before evaluation.
+        ID of the :class:`TaskDefinition` the task is linked to.
+    task_definition_snapshot : object, optional
+        Snapshot of :class:`TaskDefinition` created when task status changes to prolog, before evaluation.
     job_id : str
-        ID of the :class:`ansys.rep.client.jms.Job` the task is linked to.
+        ID of the :class:`Job` the task is linked to.
     evaluator_id : str, optional
-        UUID of the :class:`ansys.rep.client.jms.Evaluator` that updated the task.
+        UUID of the :class:`Evaluator` that updated the task.
     input_file_ids : list[str]
         List of IDs of input files of task.
     output_file_ids : list[str]

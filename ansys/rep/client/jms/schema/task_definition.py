@@ -126,22 +126,21 @@ class TaskDefinitionSchema(ObjectSchema):
     success_criteria = fields.Nested(
         SuccessCriteriaSchema,
         allow_none=True,
-        description="A :class:`ansys.rep.client.jms.SuccessCriteria` object.",
     )
     licensing = fields.Nested(
         LicensingSchema,
         allow_none=True,
-        description="A :class:`ansys.rep.client.jms.Licensing` object.",
+        description="A :class:`Licensing` object.",
     )
 
     software_requirements = fields.Nested(
         SoftwareSchema,
         many=True,
         allow_none=True,
-        metadata={"description": "A list of :class:`ansys.rep.client.jms.Software` objects."},
+        metadata={"description": "A list of :class:`Software` objects."},
     )
     resource_requirements = fields.Nested(
         ResourceRequirementsSchema,
         allow_none=True,
-        metadata={"description": "A :class:`ansys.rep.client.jms.ResourceRequirements` object."},
+        metadata={"description": "A :class:`ResourceRequirements` object."},
     )

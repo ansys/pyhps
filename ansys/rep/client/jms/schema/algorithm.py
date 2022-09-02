@@ -30,7 +30,7 @@ class AlgorithmSchema(ObjectSchema):
 
     data = fields.String(
         allow_none=True,
-        description="Generic string field to hold arbitrary algorithm job_definition data,"
+        description="Generic string field to hold arbitrary algorithm configuration data,"
         " e.g. as JSON dictionary.",
     )
     job_ids = IdReferenceList("Job", attribute="jobs", description="List of job IDs.")

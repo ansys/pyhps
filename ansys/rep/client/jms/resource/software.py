@@ -10,9 +10,7 @@ class Software(Object):
     Parameters
     ----------
     name : str
-
     version : str, optional
-
 
     """
 
