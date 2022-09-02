@@ -49,9 +49,9 @@ class JmsApi(object):
 
     ################################################################
     # Projects
-    def get_projects(self, **query_params):
+    def get_projects(self, as_objects=True, **query_params):
         """Return a list of projects, optionally filtered by given query parameters"""
-        return get_projects(self.client, self.url, **query_params)
+        return get_projects(self.client, self.url, as_objects, **query_params)
 
     def get_project(self, id):
         """Return a single project for given project id"""

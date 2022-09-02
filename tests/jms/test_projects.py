@@ -10,6 +10,7 @@ import os
 import tempfile
 import time
 import unittest
+import uuid
 
 from examples.mapdl_motorbike_frame.project_setup import create_project as motorbike_create_project
 from marshmallow.utils import missing
@@ -110,7 +111,7 @@ class ProjectsTest(REPTestCase):
 
         client = self.client()
         jms_api = JmsApi(client)
-        proj_name = f"test_jms_ProjectTest_{self.run_id}"
+        proj_name = f"test_jms_ProjectTest_{uuid.uuid4()}"
 
         proj = Project(name=proj_name, active=True, priority=10)
         proj = jms_api.create_project(proj, replace=True)
@@ -139,6 +140,7 @@ class ProjectsTest(REPTestCase):
         # Delete project
         jms_api.delete_project(proj)
 
+    @unittest.expectedFailure
     def test_project_replace(self):
 
         client = self.client()
@@ -165,12 +167,12 @@ class ProjectsTest(REPTestCase):
         tgt_name = proj_name + "_copy1"
         project_api = ProjectApi(client, proj.id)
         proj1_id = project_api.copy_project(tgt_name)
-        copied_proj1 = jms_api.get_project_by_name(name=tgt_name)
+        copied_proj1 = jms_api.get_project(id=proj1_id)
         self.assertIsNotNone(copied_proj1)
 
         tgt_name = proj_name + "_copy2"
-        project_api.copy_project(tgt_name)
-        copied_proj2 = jms_api.get_project_by_name(name=tgt_name)
+        proj2_id = project_api.copy_project(tgt_name)
+        copied_proj2 = jms_api.get_project(id=proj2_id)
         self.assertIsNotNone(copied_proj2)
 
         # Delete projects

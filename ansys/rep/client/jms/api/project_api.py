@@ -446,7 +446,7 @@ def copy_project(project_api: ProjectApi, project_source_id, project_target_name
     op = _monitor_operation(JmsApi(project_api.client), operation_id, 1.0)
     if not op.succeeded:
         raise REPError(f"Failed to copy project {project_source_id}.")
-    return op.result
+    return op.result["project_id"]
 
 
 def archive_project(project_api: ProjectApi, target_path, include_job_files=True) -> str:

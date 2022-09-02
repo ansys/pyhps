@@ -1,11 +1,14 @@
 name: GitHub CI
 on:
+  workflow_dispatch:
   pull_request:
   push:
     tags:
       - "*"
     branches:
       - main
+  schedule:
+  - cron: "0 2 * * 1-5"
 
 env:
   MAIN_PYTHON_VERSION: '3.7'
@@ -53,9 +56,11 @@ jobs:
     name: Tests and coverage
     runs-on: ${{ matrix.os }}
     strategy:
+      # max 1 job at a time running against the server to make it more robust 
+      max-parallel: 1
       matrix:
         os: [windows-latest, ubuntu-latest]
-        python-version: ['3.7', '3.8', '3.9', '3.10']
+        python-version: ['3.7', '3.10']
       fail-fast: false
 
     steps:
@@ -70,6 +75,16 @@ jobs:
       - name: Test with tox
         # Only the tox environment specified in the tox.ini gh-actions is run
         run: tox
+        env:
+          REP_TEST_URL: https://repkube-dev.westeurope.cloudapp.azure.com/rep
+          REP_TEST_USERNAME: repadmin
+          REP_TEST_PASSWORD: repadmin
+      - name: Publish Test Report
+        uses: mikepenz/action-junit-report@v3
+        if: always()
+        with:
+          report_paths: '**/test*.xml'
+          check_name: Test Report ${{ matrix.os }}:${{ matrix.python-version }} 
 
   docs:
     name: Documentation

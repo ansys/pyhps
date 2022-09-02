@@ -60,7 +60,7 @@ class REPClientTest(REPTestCase):
         log.debug(f"Pending jobs: {[j.id for j in pending_jobs]}")
 
         # Alternative access with manually instantiated project
-        proj = jms_api.get_projects(name=proj_name)[0]
+        proj = jms_api.get_projects(id=project.id)[0]
         project_api = ProjectApi(client, proj.id)
         evaluated_jobs = project_api.get_jobs(eval_status="evaluated", fields="all")
         log.debug(f"Evaluated jobs: {[j.id for j in evaluated_jobs]}")
