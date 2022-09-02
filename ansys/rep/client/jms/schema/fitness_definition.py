@@ -40,6 +40,4 @@ class FitnessDefinitionSchema(ObjectSchema):
         many=True,
         description="List of :class:`ansys.rep.client.jms.FitnessTermDefinition`.",
     )
-    error_fitness = fields.Float(
-        description="The default fitness value assigned to failed design points."
-    )
+    error_fitness = fields.Float(description="The default fitness value assigned to failed jobs.")

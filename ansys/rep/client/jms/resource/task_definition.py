@@ -7,24 +7,42 @@ from ..schema.task_definition import TaskDefinitionSchema
 class TaskDefinition(Object):
     """TaskDefinition resource.
 
-    Parameters:
-        id (str, optional): Unique ID to access the resource, generated internally by the server on creation.
-        name (str, optional): Name.
-        execution_command (str, optional): Command to execute (command or execution script is required).
-        use_execution_script (bool, optional): Whether to run task with the execution command or the execution script.
-        execution_script_id (str, optional): Script to execute (command or execution script is required).
-        execution_level (int): Define execution level for this task.
-        execution_context (dict, optional): Additional arguments to pass to the executing command
-        environment (dict, optional): Environment variables to set for the executed process
-        max_execution_time (float, optional): Maximum time in seconds for executing the task.
-        num_trials (int, optional): Maximum number of attempts to execute the task.
-        store_output (bool, optional): Specify whether to store the standard output of the task.
-        input_file_ids (list[str]): List of IDs of input files.
-        output_file_ids (list[str]): List of IDs of output files.
-        success_criteria (optional): A :class:`ansys.rep.client.jms.SuccessCriteria` object.
-        licensing (optional): A :class:`ansys.rep.client.jms.Licensing` object.
-        software_requirements (optional): A list of :class:`ansys.rep.client.jms.Software` objects.
-        resource_requirements (optional): A :class:`ansys.rep.client.jms.ResourceRequirements` object.
+    Parameters
+    ----------
+    id : str, optional
+        Unique ID to access the resource, generated internally by the server on creation.
+    name : str, optional
+        Name.
+    execution_command : str, optional
+        Command to execute (command or execution script is required).
+    use_execution_script : bool, optional
+        Whether to run task with the execution command or the execution script.
+    execution_script_id : str, optional
+        Script to execute (command or execution script is required).
+    execution_level : int
+        Define execution level for this task.
+    execution_context : dict, optional
+        Additional arguments to pass to the executing command
+    environment : dict, optional
+        Environment variables to set for the executed process
+    max_execution_time : float, optional
+        Maximum time in seconds for executing the task.
+    num_trials : int, optional
+        Maximum number of attempts to execute the task.
+    store_output : bool, optional
+        Specify whether to store the standard output of the task.
+    input_file_ids : list[str]
+        List of IDs of input files.
+    output_file_ids : list[str]
+        List of IDs of output files.
+    success_criteria : any, optional
+        A :class:`ansys.rep.client.jms.SuccessCriteria` object.
+    licensing : any, optional
+        A :class:`ansys.rep.client.jms.Licensing` object.
+    software_requirements : any, optional
+
+    resource_requirements : any, optional
+
 
     """
 

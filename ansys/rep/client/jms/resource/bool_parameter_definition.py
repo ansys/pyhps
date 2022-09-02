@@ -7,15 +7,23 @@ from ..schema.parameter_definition import BoolParameterDefinitionSchema
 class BoolParameterDefinition(ParameterDefinition):
     """BoolParameterDefinition resource.
 
-    Parameters:
-        id (str, optional): Unique ID to access the resource, generated internally by the server on creation.
-        name (str, optional): Name (ID) of the parameter.
-        quantity_name (str, optional): Name of the quantity the parameter represents, e.g. Length.
-        units (str, optional): Units for the parameter.
-        display_text (str, optional): Text to display as the parameter name.
-        mode (str): Indicates whether it's an input or output parameter. Filled server side.
-        type
-        default (bool, optional): Default parameter value.
+    Parameters
+    ----------
+    id : str, optional
+        Unique ID to access the resource, generated internally by the server on creation.
+    name : str, optional
+        Name (ID) of the parameter.
+    quantity_name : str, optional
+        Name of the quantity the parameter represents, e.g. Length.
+    units : str, optional
+        Units for the parameter.
+    display_text : str, optional
+        Text to display as the parameter name.
+    mode : str
+        Indicates whether it's an input or output parameter. Filled server side.
+    type
+    default : bool, optional
+        Default parameter value.
 
     """
 

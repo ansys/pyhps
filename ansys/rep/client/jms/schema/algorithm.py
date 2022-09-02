@@ -33,4 +33,4 @@ class AlgorithmSchema(ObjectSchema):
         description="Generic string field to hold arbitrary algorithm job_definition data,"
         " e.g. as JSON dictionary.",
     )
-    job_ids = IdReferenceList("Job", attribute="jobs", description="List of design point IDs.")
+    job_ids = IdReferenceList("Job", attribute="jobs", description="List of job IDs.")

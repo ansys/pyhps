@@ -22,18 +22,18 @@ class JobDefinitionSchema(ObjectSchema):
 
     name = fields.String(allow_none=True, description="Name of the job_definition")
     active = fields.Boolean(
-        description="Defines whether this is the active job_definition in the "
-        "project where evaluators will evaluate pending design points"
+        description="Defines whether this is the active job definition in the "
+        "project where evaluators will evaluate pending jobs"
     )
     creation_time = fields.DateTime(
         allow_none=True,
         load_only=True,
-        description="The date and time the job_definition was created.",
+        description="The date and time the job definition was created.",
     )
     modification_time = fields.DateTime(
         allow_none=True,
         load_only=True,
-        description="The date and time the job_definition was last modified.",
+        description="The date and time the job definition was last modified.",
     )
 
     parameter_definition_ids = IdReferenceList(

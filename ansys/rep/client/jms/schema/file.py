@@ -44,15 +44,13 @@ class FileSchema(ObjectSchema):
     evaluation_path = fields.String(
         allow_none=True,
         description="Relative path under which the file instance for a "
-        "design point evaluation will be stored.",
+        "job evaluation will be stored.",
     )
 
     monitor = fields.Bool(
         allow_none=True, description="Whether to live monitor the file's content."
     )
-    collect = fields.Bool(
-        allow_none=True, description="Whether file should be collected per design point"
-    )
+    collect = fields.Bool(allow_none=True, description="Whether file should be collected per job")
     collect_interval = fields.Int(
         allow_none=True,
         description="Collect frequency for a file with collect=True."

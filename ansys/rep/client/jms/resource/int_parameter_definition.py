@@ -7,19 +7,31 @@ from ..schema.parameter_definition import IntParameterDefinitionSchema
 class IntParameterDefinition(ParameterDefinition):
     """IntParameterDefinition resource.
 
-    Parameters:
-        id (str, optional): Unique ID to access the resource, generated internally by the server on creation.
-        name (str, optional): Name (ID) of the parameter.
-        quantity_name (str, optional): Name of the quantity the parameter represents, e.g. Length.
-        units (str, optional): Units for the parameter.
-        display_text (str, optional): Text to display as the parameter name.
-        mode (str): Indicates whether it's an input or output parameter. Filled server side.
-        type
-        default (int, optional): Default parameter value.
-        lower_limit (int, optional): Lower bound for the parameter value.
-        upper_limit (int, optional): Upper bound for the parameter value.
-        step (int, optional): Equal to 1 by default.
-        cyclic (bool, optional): Indicates if the parameter is cyclic.
+    Parameters
+    ----------
+    id : str, optional
+        Unique ID to access the resource, generated internally by the server on creation.
+    name : str, optional
+        Name (ID) of the parameter.
+    quantity_name : str, optional
+        Name of the quantity the parameter represents, e.g. Length.
+    units : str, optional
+        Units for the parameter.
+    display_text : str, optional
+        Text to display as the parameter name.
+    mode : str
+        Indicates whether it's an input or output parameter. Filled server side.
+    type
+    default : int, optional
+        Default parameter value.
+    lower_limit : int, optional
+        Lower bound for the parameter value.
+    upper_limit : int, optional
+        Upper bound for the parameter value.
+    step : int, optional
+        Equal to 1 by default.
+    cyclic : bool, optional
+        Indicates if the parameter is cyclic.
 
     """
 

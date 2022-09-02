@@ -7,9 +7,12 @@ from ..schema.license_context import LicenseContextSchema
 class LicenseContext(Object):
     """LicenseContext resource.
 
-    Parameters:
-        context_id (str, optional): License context ID
-        environment (dict, optional): License context environment dict
+    Parameters
+    ----------
+    context_id : str, optional
+        License context ID
+    environment : dict, optional
+        License context environment dict
 
     """
 

@@ -34,4 +34,4 @@ class JobSelectionSchema(ObjectSchema):
         description="ID of the :class:`ansys.rep.client.jms.Algorithm` "
         "the selection belongs to (optional).",
     )
-    object_ids = IdReferenceList("Job", attribute="jobs", description="List of design point IDs.")
+    object_ids = IdReferenceList("Job", attribute="jobs", description="List of job IDs.")

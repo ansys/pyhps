@@ -7,21 +7,36 @@ from ..schema.task_definition_template import TaskDefinitionTemplateSchema
 class TaskDefinitionTemplate(Object):
     """TaskDefinitionTemplate resource.
 
-    Parameters:
-        id (str, optional): Unique ID to access the resource, generated internally by the server on creation.
-        modification_time (datetime, optional): Last time the object was modified, in UTC
-        creation_time (datetime, optional): Time when the object was created, in UTC
-        name (str): Name of the template
-        version (str, optional): version of the template
-        software_requirements (optional)
-        resource_requirements (optional)
-        execution_context (dict, optional): Additional arguments to pass to the executing command
-        environment (dict, optional): Environment variables to set for the executed process
-        execution_command (str, optional): Command to execute (command or execution script is required).
-        use_execution_script (bool, optional): Whether to run task with the execution command or the execution script.
-        execution_script_storage_id (str, optional): Storage ID of the script to execute (command or execution script is required).
-        input_files (optional)
-        output_files (optional)
+    Parameters
+    ----------
+    id : str, optional
+        Unique ID to access the resource, generated internally by the server on creation.
+    modification_time : datetime, optional
+        Last time the object was modified, in UTC
+    creation_time : datetime, optional
+        Time when the object was created, in UTC
+    name : str
+        Name of the template
+    version : str, optional
+        version of the template
+    software_requirements : any, optional
+
+    resource_requirements : any, optional
+
+    execution_context : dict, optional
+        Additional arguments to pass to the executing command
+    environment : dict, optional
+        Environment variables to set for the executed process
+    execution_command : str, optional
+        Command to execute (command or execution script is required).
+    use_execution_script : bool, optional
+        Whether to run task with the execution command or the execution script.
+    execution_script_storage_id : str, optional
+        Storage ID of the script to execute (command or execution script is required).
+    input_files : any, optional
+
+    output_files : any, optional
+
 
     """
 

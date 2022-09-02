@@ -7,20 +7,33 @@ from ..schema.parameter_definition import FloatParameterDefinitionSchema
 class FloatParameterDefinition(ParameterDefinition):
     """FloatParameterDefinition resource.
 
-    Parameters:
-        id (str, optional): Unique ID to access the resource, generated internally by the server on creation.
-        name (str, optional): Name (ID) of the parameter.
-        quantity_name (str, optional): Name of the quantity the parameter represents, e.g. Length.
-        units (str, optional): Units for the parameter.
-        display_text (str, optional): Text to display as the parameter name.
-        mode (str): Indicates whether it's an input or output parameter. Filled server side.
-        type
-        default (float, optional): Default parameter value.
-        lower_limit (float, optional): Lower bound for the parameter value.
-        upper_limit (float, optional): Upper bound for the parameter value.
-        step (float, optional): If provided, allowable values are given by: AllowableValue = lower_limit + n * step, where n is an integer and AllowableValue <= upper_limit.
-        cyclic (bool, optional): Indicates if the parameter is cyclic.
-        value_list (list, optional): A list of allowed values, alternative to providing upper and lower limits.
+    Parameters
+    ----------
+    id : str, optional
+        Unique ID to access the resource, generated internally by the server on creation.
+    name : str, optional
+        Name (ID) of the parameter.
+    quantity_name : str, optional
+        Name of the quantity the parameter represents, e.g. Length.
+    units : str, optional
+        Units for the parameter.
+    display_text : str, optional
+        Text to display as the parameter name.
+    mode : str
+        Indicates whether it's an input or output parameter. Filled server side.
+    type
+    default : float, optional
+        Default parameter value.
+    lower_limit : float, optional
+        Lower bound for the parameter value.
+    upper_limit : float, optional
+        Upper bound for the parameter value.
+    step : float, optional
+        If provided, allowable values are given by: AllowableValue = lower_limit + n * step, where n is an integer and AllowableValue <= upper_limit.
+    cyclic : bool, optional
+        Indicates if the parameter is cyclic.
+    value_list : list, optional
+        A list of allowed values, alternative to providing upper and lower limits.
 
     """
 

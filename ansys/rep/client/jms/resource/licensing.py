@@ -7,8 +7,10 @@ from ..schema.task_definition import LicensingSchema
 class Licensing(Object):
     """Licensing resource.
 
-    Parameters:
-        enable_shared_licensing (bool, optional): Whether to enable shared licensing contexts for Ansys simulations
+    Parameters
+    ----------
+    enable_shared_licensing : bool, optional
+        Whether to enable shared licensing contexts for Ansys simulations
 
     """
 

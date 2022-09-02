@@ -7,11 +7,16 @@ from ..schema.project_permission import ProjectPermissionSchema
 class ProjectPermission(Object):
     """ProjectPermission resource.
 
-    Parameters:
-        permission_type (str)
-        value_id (str)
-        value_name (str, optional)
-        role (str)
+    Parameters
+    ----------
+    permission_type : str
+
+    value_id : str
+
+    value_name : str, optional
+
+    role : str
+
 
     """
 

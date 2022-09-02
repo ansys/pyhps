@@ -1,7 +1,7 @@
 """
 Script to auto generate (most of the) JMS Resources.
-Main aim is to auto-generate the class docstrings and
-allows code completion (intellisense).
+The main goal is to auto-generate the class docstrings and
+allow code completion.
 """
 
 import importlib
@@ -263,15 +263,15 @@ def declared_fields(schema):
         field_doc = f"{field}"
         type = FIELD_MAPPING.get(v.__class__, None)
         if type:
-            field_doc += f" ({type}"
+            field_doc += f" : {type}"
             if v.allow_none:
                 field_doc += ", optional"
-            field_doc += ")"
+            field_doc += "\n"
         elif v.allow_none:
-            field_doc += " (optional)"
+            field_doc += " : any, optional\n"
         desc = v.metadata.get("description", None)
         if desc:
-            field_doc += f": {desc}"
+            field_doc += f"        {desc}"
         fields_doc.append(field_doc)
     return fields, fields_doc
 
@@ -291,7 +291,8 @@ from ..schema.{resource['schema_filename']} import {resource['schema']}
 class {resource['class']}({base_class["name"]}):
     """{resource['class']} resource.
 
-    Parameters:
+    Parameters
+    ----------
 {field_docs}
     """
 
@@ -329,7 +330,7 @@ def process_resources(subpackage, resources, base_class_path=""):
 
         field_docs_str = ""
         for k in field_docs:
-            field_docs_str += f"        {k}\n"
+            field_docs_str += f"    {k}\n"
 
         print(f"Class init parameters:\n{field_docs_str}")
 

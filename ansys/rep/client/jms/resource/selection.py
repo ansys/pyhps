@@ -7,13 +7,20 @@ from ..schema.selection import JobSelectionSchema
 class JobSelection(Object):
     """JobSelection resource.
 
-    Parameters:
-        id (str, optional): Unique ID to access the resource, generated internally by the server on creation.
-        name (str): Name of the selection.
-        creation_time (datetime, optional): The date and time the selection was created.
-        modification_time (datetime, optional): The date and time the selection was last modified.
-        algorithm_id (str, optional): ID of the :class:`ansys.rep.client.jms.Algorithm` the selection belongs to (optional).
-        jobs (list[str]): List of design point IDs.
+    Parameters
+    ----------
+    id : str, optional
+        Unique ID to access the resource, generated internally by the server on creation.
+    name : str
+        Name of the selection.
+    creation_time : datetime, optional
+        The date and time the selection was created.
+    modification_time : datetime, optional
+        The date and time the selection was last modified.
+    algorithm_id : str, optional
+        ID of the :class:`ansys.rep.client.jms.Algorithm` the selection belongs to (optional).
+    jobs : list[str]
+        List of job IDs.
 
     """
 

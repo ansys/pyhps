@@ -7,9 +7,12 @@ from ..schema.task_definition import SoftwareSchema
 class Software(Object):
     """Software resource.
 
-    Parameters:
-        name (str): Application's name.
-        version (str, optional): Application's version.
+    Parameters
+    ----------
+    name : str
+
+    version : str, optional
+
 
     """
 

@@ -7,16 +7,25 @@ from ..schema.user import UserSchema
 class User(Object):
     """User resource.
 
-    Parameters:
-        id (str): Unique user ID, generated internally by the server on creation.
-        username (str): Username.
-        password (str): Password.
-        first_name (str, optional): First name
-        last_name (str, optional): Last name
-        email (str, optional): E-mail address (optional).
-        groups (str): Groups the user belongs to
-        realm_roles (str): Realm roles assigned to the user
-        is_admin: Whether the user has admin rights or not.
+    Parameters
+    ----------
+    id : str
+        Unique user ID, generated internally by the server on creation.
+    username : str
+        Username.
+    password : str
+        Password.
+    first_name : str, optional
+        First name
+    last_name : str, optional
+        Last name
+    email : str, optional
+        E-mail address (optional).
+    groups : str
+        Groups the user belongs to
+    realm_roles : str
+        Realm roles assigned to the user
+    is_admin        Whether the user has admin rights or not.
 
     """
 

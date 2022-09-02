@@ -7,12 +7,18 @@ from ..schema.task_definition import ResourceRequirementsSchema
 class ResourceRequirements(Object):
     """ResourceRequirements resource.
 
-    Parameters:
-        platform (str, optional)
-        memory (int, optional)
-        cpu_core_usage (float, optional)
-        disk_space (int, optional)
-        custom (dict, optional)
+    Parameters
+    ----------
+    platform : str, optional
+
+    memory : int, optional
+
+    cpu_core_usage : float, optional
+
+    disk_space : int, optional
+
+    custom : dict, optional
+
 
     """
 

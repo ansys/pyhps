@@ -7,17 +7,28 @@ from ..schema.operation import OperationSchema
 class Operation(Object):
     """Operation resource.
 
-    Parameters:
-        id (str, optional): Unique ID to access the resource, generated internally by the server on creation.
-        name (str, optional)
-        finished (bool, optional)
-        succeeded (bool, optional)
-        progress (float, optional)
-        status (str, optional)
-        result (dict, optional)
-        messages (list, optional)
-        start_time (datetime, optional)
-        end_time (datetime, optional)
+    Parameters
+    ----------
+    id : str, optional
+        Unique ID to access the resource, generated internally by the server on creation.
+    name : str, optional
+
+    finished : bool, optional
+
+    succeeded : bool, optional
+
+    progress : float, optional
+
+    status : str, optional
+
+    result : dict, optional
+
+    messages : list, optional
+
+    start_time : datetime, optional
+
+    end_time : datetime, optional
+
 
     """
 

@@ -7,7 +7,8 @@ from ..schema.parameter_definition import ParameterDefinitionSchema
 class ParameterDefinition(Object):
     """ParameterDefinition resource.
 
-    Parameters:
+    Parameters
+    ----------
 
     """
 
