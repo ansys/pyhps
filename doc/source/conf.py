@@ -35,7 +35,6 @@ extensions = [
     "sphinx.ext.extlinks",
     # "sphinx.ext.viewcode", # to show pytho source code
     "sphinxcontrib.httpdomain",
-    "sphinxcontrib.jsonschema",
     "sphinxcontrib.globalsubs",
     "sphinx.ext.intersphinx",
     "sphinx_copybutton",

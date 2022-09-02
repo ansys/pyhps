@@ -145,5 +145,5 @@ def archive_examples(examples):
 
 
 if __name__ == "__main__":
-    generate_openapi_specs()
+    # generate_openapi_specs()
     archive_examples(["mapdl_motorbike_frame"])
