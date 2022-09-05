@@ -155,6 +155,7 @@ def archive_examples(examples):
         ],
     }
 
+    os.makedirs("build", exist_ok=True)
     for name, files in examples.items():
         with ZipFile(os.path.join("build", f"{name}.zip"), "w") as zip_archive:
             for file in files:
