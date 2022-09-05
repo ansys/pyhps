@@ -1,4 +1,10 @@
+
 """
+.. _ref_mapdl_linked_example:
+
+MAPDL Linked Analyses
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
 Script showing how to submit an MAPDL linked analysis workflow (prestress-modal-harmonic)
 as a multi-task job to REP.
 
@@ -26,6 +32,7 @@ from typing import List, Tuple
 
 from ansys.rep.client import Client, REPError
 from ansys.rep.client import __external_version__ as ansys_version
+from ansys.rep.client import examples_data
 from ansys.rep.client.jms import (
     File,
     JmsApi,
@@ -46,13 +53,12 @@ log = logging.getLogger(__name__)
 def create_prestress_task_definition(project_api: ProjectApi) -> Tuple[str, List[File]]:
 
     log.info("=== Files")
-    cwd = os.path.dirname(__file__)
     files = [
         File(
             name="input_deck",
             evaluation_path="prestres.dat",
             type="text/plain",
-            src=os.path.join(cwd, "prestress.dat"),
+            src=examples_data.download("prestress.dat"),
         ),
         File(
             name="out", evaluation_path="solve.out", type="text/plain", collect=True, monitor=True
@@ -113,14 +119,13 @@ def create_modal_task_definition(
 ) -> Tuple[str, List[File]]:
 
     log.info("=== Files")
-    cwd = os.path.dirname(__file__)
     # the prestress output files already exist, no need to create them
     files = [
         File(
             name="input_deck",
             evaluation_path="modal.dat",
             type="text/plain",
-            src=os.path.join(cwd, "modal.dat"),
+            src=examples_data.download("modal.dat"),
         ),
         File(
             name="out", evaluation_path="solve.out", type="text/plain", collect=True, monitor=True
@@ -194,7 +199,6 @@ def create_modal_task_definition(
 def create_harmonic_task_definition(project_api: ProjectApi, modal_files: List[File]) -> str:
 
     log.info("=== Files")
-    cwd = os.path.dirname(__file__)
     # the modal_files output files already exist, no need to create them
 
     files = [
@@ -202,7 +206,7 @@ def create_harmonic_task_definition(project_api: ProjectApi, modal_files: List[F
             name="input_deck",
             evaluation_path="harmonic.dat",
             type="text/plain",
-            src=os.path.join(cwd, "harmonic.dat"),
+            src=examples_data.download("harmonic.dat"),
         ),
         File(
             name="out", evaluation_path="solve.out", type="text/plain", collect=True, monitor=True

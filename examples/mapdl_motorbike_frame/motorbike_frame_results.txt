@@ -1,4 +1,0 @@
-### Motorbike Frame Results
-weight =           5.14633689
-torsion_stiffness =        1681.71025320
-max_stress =         383.97112011

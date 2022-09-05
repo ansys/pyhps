@@ -7,3 +7,5 @@ sphinxcontrib-httpdomain==1.8.0
 sphinxcontrib-jsonschema==0.9.3
 sphinxcontrib-globalsubs==0.1.0
 sphinxnotes-strike==1.2
+sphinx-gallery==0.11.1
+pypandoc==1.8.1

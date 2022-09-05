@@ -4,6 +4,7 @@ import os
 import sys
 
 from ansys_sphinx_theme import pyansys_logo_black as logo
+from sphinx_gallery.sorting import FileNameSortKey
 
 from ansys.rep.client import __company__, __external_version__, __version__, __version_no_dots__
 
@@ -40,6 +41,7 @@ extensions = [
     "sphinx.ext.intersphinx",
     "sphinx_copybutton",
     "sphinxnotes.strike",
+    "sphinx_gallery.gen_gallery",
 ]
 
 
@@ -70,44 +72,18 @@ master_doc = "index"
 # for a list of supported languages.
 language = "en"
 
-# There are two options for replacing |today|: either, you set today to some
-# non-false value, then it is used:
-# today = ''
-# Else, today_fmt is used as the format for a strftime call.
-# today_fmt = '%B %d, %Y'
-
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
-exclude_patterns = []
-
-# The reST default role (used for this markup: `text`) to use for all
-# documents.
-# default_role = None
-
-# If true, '()' will be appended to :func: etc. cross-reference text.
-# add_function_parentheses = True
-
-# If true, the current module name will be prepended to all description
-# unit titles (such as .. function::).
-# add_module_names = True
-
-# If true, sectionauthor and moduleauthor directives will be shown in the
-# output. They are ignored by default.
-# show_authors = False
+exclude_patterns = [
+    # because we include this in examples/index.rst
+    "examples/gallery_examples/index.rst",
+]
 
 # The name of the Pygments (syntax highlighting) style to use.
 pygments_style = "sphinx"
 
-# A list of ignored prefixes for module index sorting.
-# modindex_common_prefix = []
-
-# If true, keep warnings as "system message" paragraphs in the built documents.
-# keep_warnings = False
-
-
 # If true, `todo` and `todoList` produce output, else they produce nothing.
 todo_include_todos = True
-
 
 # -- Options for HTML output ----------------------------------------------
 
@@ -151,7 +127,6 @@ html_show_sourcelink = False
 # Output file base name for HTML help builder.
 htmlhelp_basename = "pyrepdoc"
 
-
 # -- Options for LaTeX output ---------------------------------------------
 
 latex_elements = {
@@ -176,27 +151,6 @@ latex_documents = [
     ),
 ]
 
-# The name of an image file (relative to this directory) to place at the top of
-# the title page.
-# latex_logo = None
-
-# For "manual" documents, if this is true, then toplevel headings are parts,
-# not chapters.
-# latex_use_parts = False
-
-# If true, show page references after internal links.
-# latex_show_pagerefs = False
-
-# If true, show URL addresses after external links.
-# latex_show_urls = False
-
-# Documents to append as an appendix to all manuals.
-# latex_appendices = []
-
-# If false, no module index is generated.
-# latex_domain_indices = True
-
-
 # -- Options for manual page output ---------------------------------------
 
 # One entry per manual page. List of tuples
@@ -204,10 +158,6 @@ latex_documents = [
 man_pages = [
     ("index", "ansys-rep-client", "REP Python Client Documentation", ["ANSYS Switzerland Gmbh"], 1)
 ]
-
-# If true, show URL addresses after external links.
-# man_show_urls = False
-
 
 # -- Options for Texinfo output -------------------------------------------
 
@@ -225,18 +175,6 @@ texinfo_documents = [
         "Miscellaneous",
     ),
 ]
-
-# Documents to append as an appendix to all manuals.
-# texinfo_appendices = []
-
-# If false, no module index is generated.
-# texinfo_domain_indices = True
-
-# How to display URL addresses: 'footnote', 'no', or 'inline'.
-# texinfo_show_urls = 'footnote'
-
-# If true, do not generate a @detailmenu in the "Top" node's menu.
-# texinfo_no_detailmenu = False
 
 global_substitutions = {
     "client_version": __version__,
@@ -277,4 +215,42 @@ extlinks = {
         secured?returnurl=/Views/Secured/corp/v231/en/dcs_tut/%s.html""",
         "REP Tutorial - ",
     ),
+}
+
+class ResetArgv:
+    def __repr__(self):
+        return 'ResetArgv'
+
+    def __call__(self, sphinx_gallery_conf, script_vars):
+        return ['--url', 'https://repkube-dev.westeurope.cloudapp.azure.com/rep']
+        # if script_vars['src_file'] == 'example1.py':
+        #     return ['-a', '1']
+        # elif script_vars['src_file'] == 'example2.py':
+        #     return ['-a', '2']
+
+
+# sphinx gallery options
+sphinx_gallery_conf = {
+    # convert rst to md for ipynb
+    "pypandoc": True,
+    # path to your examples scripts
+    "examples_dirs": [
+        "../../examples",
+        ],
+    # path where to save gallery generated examples
+    "gallery_dirs": ["new_examples/gallery_examples"],
+    # Patter to search for example files
+    "filename_pattern": r"\.py",
+    # Remove the "Download all examples" button from the top level gallery
+    "download_all_examples": False,
+    # Sort gallery example by file name instead of number of lines (default)
+    "within_subsection_order": FileNameSortKey,
+    # directory where function granular galleries are stored
+    "backreferences_dir": None,
+    # Modules for which function level galleries are created.  In
+    "doc_module": "ansys-rep-client",
+    # "image_scrapers": ("pyvista", "matplotlib"),
+    "ignore_pattern": r"__init__\.py",
+    "thumbnail_size": (350, 350),
+    'reset_argv': ResetArgv(),
 }

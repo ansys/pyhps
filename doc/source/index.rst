@@ -7,7 +7,7 @@ PyREP Documentation |version|
 
     install
     quickstart
-    examples/index
+    new_examples/index
     api/index
 
 Introduction

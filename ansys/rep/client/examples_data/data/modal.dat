@@ -5,12 +5,6 @@
 /assign,rstp,file,rst              ! Force Eigen analysis to write to file.rst because WB expects it
 /solu
 antype,,restart,,,perturbation
-*DIM,_wb_ProjectScratch_dir_Modal,string,248
-_wb_ProjectScratch_dir_Modal(1)= 'D:\Testing\dcs\linked_analyses_demo\_ProjectScratch\Scr99FB\'
-*DIM,_wb_SolverFiles_dir_Modal,string,248
-_wb_SolverFiles_dir_Modal(1)= 'D:\Testing\dcs\linked_analyses_demo\mechanical_linked_files\dp0\SYS-1\MECH\'
-*DIM,_wb_userfiles_dir_Modal,string,248
-_wb_userfiles_dir_Modal(1)= 'D:\Testing\dcs\linked_analyses_demo\mechanical_linked_files\user_files\'
 /title,mechanical_linked--Modal (B5)
 ! ****** Begin Custom Load Command Snippet ******
 /COM, ACT Extensions:

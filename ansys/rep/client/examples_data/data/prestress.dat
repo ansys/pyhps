@@ -2,7 +2,6 @@
 /config,noeldb,1     ! force off writing results to database
 *get,_wallstrt,active,,time,wall
 ! ANSYS input file written by Workbench version 2021 R2
-! File used for geometry attach: C:\Users\fnegri\AppData\Local\Temp\WB_fnegri_30380_2\wbnew_files\dp0\SYS\DM\SYS.scdoc
 /title,wbnew--Static Structural (A5)
 ! ****** Begin Custom Load Command Snippet ******
 /COM, ACT Extensions:
@@ -10,12 +9,6 @@
 /COM,     5f463412-bd3e-484b-87e7-cbc0a665e474, wbex
 /COM,
 ! ****** End   Custom Load Command Snippet ******
-*DIM,_wb_ProjectScratch_dir,string,248
-_wb_ProjectScratch_dir(1) = 'C:\Users\fnegri\AppData\Local\Temp\WB_fnegri_30380_2\_ProjectScratch\Scr1EF9\'
-*DIM,_wb_SolverFiles_dir,string,248
-_wb_SolverFiles_dir(1) = 'C:\Users\fnegri\AppData\Local\Temp\WB_fnegri_30380_2\wbnew_files\dp0\SYS\MECH\'
-*DIM,_wb_userfiles_dir,string,248
-_wb_userfiles_dir(1) = 'C:\Users\fnegri\AppData\Local\Temp\WB_fnegri_30380_2\wbnew_files\user_files\'
 /com,--- Data in consistent NMM units. See Solving Units in the help system for more information.
 /units,MPA
 /nopr

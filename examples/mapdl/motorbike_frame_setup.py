@@ -1,8 +1,34 @@
-"""
-Example script to setup a simple MAPDL project with parameters in pyrep.
 
-Author(s): O.Koenig
 """
+.. _ref_mapdl_motorbike_frame_example:
+
+MAPDL Motorbike Frame - Project Setup
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+This example shows how to create from scratch a REP project consisting of an Ansys APDL beam model
+of a tubular steel trellis motorbike-frame.
+After creating the project job_definition, 10 design points with randomly 
+chosen parameter values are created and set to pending.
+
+.. image:: ../../../_static/motorbike_frame.jpg
+    :scale: 50 %
+    :align: center
+    :alt: motorbike frame picture
+
+The model is parametrized as follows:
+
+- three custom tube types are defined whose radius and thickness can vary in a certain range;
+- for each tube in the frame there is a string parameter specifying which custom type it should be made of;
+- output parameters of interest are the weight, the torsion stiffness and the maximum von Mises stress for a breaking load case. 
+
+For further details about the finite element model and its parametrization, see
+"Using Evolutionary Methods with a Heterogeneous Genotype Representation 
+for Design Optimization of a Tubular Steel Trellis Motorbike-Frame", 2003
+by U. M. Fasel, O. Koenig, M. Wintermantel and P. Ermanni.
+
+"""
+
+# sphinx_gallery_thumbnail_path = '../../doc/source/_static/motorbike_frame.png'
 
 import argparse
 import logging
@@ -11,6 +37,7 @@ import random
 
 from ansys.rep.client import Client, REPError
 from ansys.rep.client import __external_version__ as ansys_version
+from ansys.rep.client import examples_data
 from ansys.rep.client.jms import (
     File,
     FitnessDefinition,
@@ -31,19 +58,15 @@ from ansys.rep.client.jms import (
 
 log = logging.getLogger(__name__)
 
+###############################################################################
+# Main function
+# ~~~~~~~~~~~~~~
+#
+# This is the main function implementing the project creation. It takes as input 
+# a :class:`ansys.rep.client.Client` object. 
 
 def create_project(client, name, num_jobs=20, use_exec_script=False) -> Project:
-    """
-    Create a REP project consisting of an ANSYS APDL beam model of a motorbike-frame.
 
-    After creating the project job_definition, 10 design points with randomly
-    chosen parameter values are created and set to pending.
-
-    For further details about the model and its parametrization, see e.g.
-    "Using Evolutionary Methods with a Heterogeneous Genotype Representation
-    for Design Optimization of a Tubular Steel Trellis Motorbike-Frame", 2003
-    by U. M. Fasel, O. Koenig, M. Wintermantel and P. Ermanni.
-    """
     jms_api = JmsApi(client)
     log.debug("=== Project")
     proj = Project(name=name, priority=1, active=True)
@@ -51,23 +74,28 @@ def create_project(client, name, num_jobs=20, use_exec_script=False) -> Project:
 
     project_api = ProjectApi(client, proj.id)
 
+    
+    # Files: The first step to fill the project Job Definition is to define the files resources. 
+    # Besides the name and type, for each file we need to specify the ``evaluation_path``, 
+    # i.e. the relative path under which the file instance for a design point evaluation
+    # will be stored. Moreover, if the file needs to be uploaded to the server,
+    # we also need to provide the path to the local file as ``src`` argument.
+
     log.debug("=== Files")
-    cwd = os.path.dirname(__file__)
     files = []
     files.append(
         File(
             name="inp",
             evaluation_path="motorbike_frame.mac",
             type="text/plain",
-            src=os.path.join(cwd, "motorbike_frame.mac"),
+            src=examples_data.download("motorbike_frame.mac"),
         )
     )
     files.append(
         File(
             name="results",
             evaluation_path="motorbike_frame_results.txt",
-            type="text/plain",
-            src=os.path.join(cwd, "motorbike_frame_results.txt"),
+            type="text/plain"
         )
     )
     files.append(
@@ -88,15 +116,19 @@ def create_project(client, name, num_jobs=20, use_exec_script=False) -> Project:
                 name="exec_mapdl",
                 evaluation_path="exec_mapdl.py",
                 type="application/x-python-code",
-                src=os.path.join(cwd, "..", "exec_scripts", "exec_mapdl.py"),
+                src=examples_data.download("exec_mapdl.py"),
             )
         )
 
+    # File resources are then created on the server. 
     files = project_api.create_files(files)
     file_ids = {f.name: f.id for f in files}
 
     log.debug("=== JobDefinition with simulation workflow and parameters")
     job_def = JobDefinition(name="JobDefinition.1", active=True)
+
+    # Parameters definition: Creating a parameter requires to first provide
+    # a parameter definition and then specify a parameter mapping.
 
     # Input params: Dimensions of three custom tubes
     float_input_params = []
@@ -236,6 +268,12 @@ def create_project(client, name, num_jobs=20, use_exec_script=False) -> Project:
             file_id=file_ids["inp"],
         )
     )
+    param_mappings = project_api.create_parameter_mappings(param_mappings)
+
+    # Task Definition: In a task definition, we specify which application should be executed, 
+    # its requirements, which input and output files are linked to it, 
+    # and optionally also the criteria for determining whether
+    # the task completes successfully.
 
     # Task definition
     task_def = TaskDefinition(
@@ -268,9 +306,14 @@ def create_project(client, name, num_jobs=20, use_exec_script=False) -> Project:
         task_def.use_execution_script = True
         task_def.execution_script_id = file_ids["exec_mapdl"]
 
+    # Note that multiple task definitions can be defined.
     task_defs = [task_def]
+    task_defs = project_api.create_task_definitions(task_defs)
 
-    # # Fitness definition
+    # Fitness Definition: In an optimization context, different type of fitness terms
+    # can be combined into a fitness definition object. 
+    
+    # Fitness definition
     fd = FitnessDefinition(error_fitness=10.0)
     fd.add_fitness_term(
         name="weight",
@@ -292,8 +335,8 @@ def create_project(client, name, num_jobs=20, use_exec_script=False) -> Project:
     )
     job_def.fitness_definition = fd
 
-    task_defs = project_api.create_task_definitions(task_defs)
-    param_mappings = project_api.create_parameter_mappings(param_mappings)
+
+    # Submit the job_definition: The next step is to send the job definition to the server. 
 
     job_def.parameter_definition_ids = [
         pd.id for pd in float_input_params + str_input_params + output_params + stat_params
@@ -304,7 +347,8 @@ def create_project(client, name, num_jobs=20, use_exec_script=False) -> Project:
     # Create job_definition in project
     job_def = project_api.create_job_definitions([job_def])[0]
 
-    job_def = project_api.get_job_definitions()[0]
+    # Create Design Points: 10 design points with randomly chosen parameter values 
+    # are created and set to pending. 
 
     log.debug(f"=== Create {num_jobs} jobs")
     jobs = []
@@ -324,12 +368,18 @@ def create_project(client, name, num_jobs=20, use_exec_script=False) -> Project:
     return proj
 
 
+###############################################################################
+# Script execution
+# ~~~~~~~~~~~~~~~~~~
+#
+# Describe command line arguments
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("-n", "--name", type=str, default="Mapdl Motorbike Frame")
     parser.add_argument("-j", "--num-jobs", type=int, default=50)
     parser.add_argument("-es", "--use-exec-script", default=False, action="store_true")
-    parser.add_argument("-U", "--url", default="https://127.0.0.1:8443/rep")
+    parser.add_argument("-U", "--url", default="https://localhost:8443/rep")
     parser.add_argument("-u", "--username", default="repadmin")
     parser.add_argument("-p", "--password", default="repadmin")
     args = parser.parse_args()

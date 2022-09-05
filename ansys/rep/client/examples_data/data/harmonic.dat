@@ -4,12 +4,6 @@
 ! ANSYS input file written by Workbench version 2021 R2
 /com,*********** Resuming The ANSYS db File from Modal Solution ***********
 resume,file,db
-*DIM,_wb_ProjectScratch_dir_Harmonic,string,248
-_wb_ProjectScratch_dir_Harmonic(1)= 'D:\Testing\dcs\linked_analyses_demo\_ProjectScratch\ScrBCD9\'
-*DIM,_wb_SolverFiles_dir_Harmonic,string,248
-_wb_SolverFiles_dir_Harmonic(1)= 'D:\Testing\dcs\linked_analyses_demo\mechanical_linked_files\dp0\SYS-2\MECH\'
-*DIM,_wb_userfiles_dir_Harmonic,string,248
-_wb_userfiles_dir_Harmonic(1)= 'D:\Testing\dcs\linked_analyses_demo\mechanical_linked_files\user_files\'
 /title,mechanical_linked--Harmonic Response (C5)
 ! ****** Begin Custom Load Command Snippet ******
 /COM, ACT Extensions:

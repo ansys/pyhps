@@ -1,4 +1,9 @@
 """
+.. _ref_mapdl_motorbike_query_example:
+
+MAPDL Motorbike Frame - Project Query
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
 Example to query things from a project.
 
 - Query values from evaluated jobs,computing some simple statistics on parameter values.
@@ -29,7 +34,7 @@ def query_stats(client, project_name):
     log.info("=== Query values and compoute statistics ===")
     jms_api = JmsApi(client)
     log.info("=== Project")
-    project = jms_api.get_project(name=project_name)
+    project = jms_api.get_project_by_name(name=project_name)
     log.info(f"ID: {project.id}")
     log.info(f"Created on: {project.creation_time}")
 
@@ -69,11 +74,17 @@ def query_stats(client, project_name):
 
 def download_files(client, project_name):
     """Download files."""
-    out_path = os.path.join(os.path.dirname(__file__), "downloads")
+
+    try:
+        cwd = os.path.dirname(__file__) 
+    except:
+        cwd = os.getcwd()
+
+    out_path = os.path.join(cwd, "downloads")
     log.info(f"Downloading files to {out_path}")
 
     jms_api = JmsApi(client)
-    project = jms_api.get_project(name=project_name)
+    project = jms_api.get_project_by_name(name=project_name)
     # Todo: Fix needed in the backend:
     # Currently only the get_project() called with id returns all fields of project.
     project = jms_api.get_project(id=project.id)

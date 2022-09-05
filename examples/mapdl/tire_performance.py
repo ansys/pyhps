@@ -1,7 +1,15 @@
+
 """
+.. _ref_mapdl_type_performance_example:
+
+MAPDL Tyre Performance Example
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
 Example to setup a nonlinear tyre analysis job in REP.
 
-Author(s): F.Negri
+ANSYS APDL Tire-Performance Simulation example as included
+in the technology demonstration guide (td-57).
+
 """
 
 import argparse
@@ -11,6 +19,7 @@ import random
 
 from ansys.rep.client import Client, REPError
 from ansys.rep.client import __external_version__ as ansys_version
+from ansys.rep.client import examples_data
 from ansys.rep.client.jms import (
     File,
     FloatParameterDefinition,
@@ -28,6 +37,12 @@ from ansys.rep.client.jms import (
 log = logging.getLogger(__name__)
 
 
+###############################################################################
+# Main function
+# ~~~~~~~~~~~~~~
+#
+# This is the main function implenting the project creation
+
 def main(client: Client, name: str, num_jobs: int) -> Project:
     """
     Create project with Ansys MAPDL tire simulation.
@@ -43,20 +58,19 @@ def main(client: Client, name: str, num_jobs: int) -> Project:
     project_api = ProjectApi(client, proj.id)
 
     log.debug("=== Files")
-    cwd = os.path.dirname(__file__)
 
     files = [
         File(
             name="mac",
-            evaluation_path="rep_tire_performance_simulation.mac",
+            evaluation_path="tire_performance_simulation.mac",
             type="text/plain",
-            src=os.path.join(cwd, "rep_tire_performance_simulation.mac"),
+            src=examples_data.download("tire_performance_simulation.mac"),
         ),
         File(
             name="geom",
             evaluation_path="2d_tire_geometry.iges",
             type="text/plain",
-            src=os.path.join(cwd, "2d_tire_geometry.iges"),
+            src=examples_data.download("2d_tire_geometry.iges"),
         ),
         File(name="results", evaluation_path="tire_performance_results.txt", type="text/plain"),
         File(name="img", evaluation_path="**.png", type="image/png", collect=True),
@@ -226,11 +240,17 @@ def main(client: Client, name: str, num_jobs: int) -> Project:
     return proj
 
 
+###############################################################################
+# Script execution
+# ~~~~~~~~~~~~~~~~~~
+#
+# Describe command line arguments
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("-n", "--name", type=str, default="Mapdl Tyre Performance")
     parser.add_argument("-j", "--num-jobs", type=int, default=10)
-    parser.add_argument("-U", "--url", default="https://127.0.0.1:8443/rep")
+    parser.add_argument("-U", "--url", default="https://localhost:8443/rep")
     parser.add_argument("-u", "--username", default="repadmin")
     parser.add_argument("-p", "--password", default="repadmin")
 
