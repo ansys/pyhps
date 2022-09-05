@@ -1,7 +1,7 @@
 """
-Example to query things from a project.
+Example to query resources from a project.
 
-- Query values from evaluated jobs,computing some simple statistics on parameter values.
+- Query values from evaluated jobs, computing some simple statistics on parameter values.
 - Download files from the project
 
 """

@@ -46,7 +46,7 @@ of a tubular steel trellis motorbike-frame.
 
 .. only:: builder_html
 
-     The project setup script as well as the data files can be downloaded here :download:`MAPDL Motorbike Frame Project <../../mapdl_motorbike_frame.zip>`.
+     The project setup script as well as the data files can be downloaded here :download:`MAPDL Motorbike Frame Project <../../build/mapdl_motorbike_frame.zip>`.
      To create the project you only need to run the `project_setup` script:
 
 ::
@@ -177,10 +177,10 @@ Query a specific project and set its failed design points (if any) to pending.
     failed_jobs = project_api.update_jobs(failed_jobs)
   
 
-Modify a project job_definition  
+Modify a job definition  
 -----------------------------------
 
-Query an existing project job_definition, modify it and send it back to the server.
+Query an existing job definition, modify it and send it back to the server.
 
 .. code-block:: python
 

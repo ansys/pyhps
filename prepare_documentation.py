@@ -133,17 +133,40 @@ def archive_examples(examples):
     examples = {
         "mapdl_motorbike_frame": [
             "project_setup.py",
+            "project_query.py",
             "motorbike_frame_results.txt",
             "motorbike_frame.mac",
-        ]
+        ],
+        "mapdl_linked_analyses": [
+            "project_setup.py",
+            "prestress.dat",
+            "modal.dat",
+            "harmonic.dat",
+        ],
+        "lsdyna_cylinder_plate": [
+            "lsdyna_job.py",
+            "cylinder_plate.k",
+            "postprocess.cfile",
+        ],
+        "python_two_bar_truss_problem": [
+            "project_setup.py",
+            "evaluate.py",
+            "input_parameters.json",
+        ],
     }
 
     for name, files in examples.items():
-        with ZipFile(f"{name}.zip", "w") as zip_archive:
+        with ZipFile(os.path.join("build", f"{name}.zip"), "w") as zip_archive:
             for file in files:
                 zip_archive.write(os.path.join("examples", name, file), file)
 
 
 if __name__ == "__main__":
     generate_openapi_specs()
-    archive_examples(["mapdl_motorbike_frame"])
+    archive_examples(
+        [
+            "mapdl_motorbike_frame",
+            "mapdl_linked_analyses",
+            "lsdyna_cylinder_plate",
+        ]
+    )
