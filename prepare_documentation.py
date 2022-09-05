@@ -137,6 +137,11 @@ def archive_examples(examples):
             "motorbike_frame_results.txt",
             "motorbike_frame.mac",
         ],
+        "mapdl_tyre_performance": [
+            "project_setup.py",
+            "tire_performance_simulation.mac",
+            "2d_tire_geometry.iges",
+        ],
         "mapdl_linked_analyses": [
             "project_setup.py",
             "prestress.dat",
@@ -161,12 +166,18 @@ def archive_examples(examples):
             for file in files:
                 zip_archive.write(os.path.join("examples", name, file), file)
 
+    with ZipFile(os.path.join("build", f"pyrep_examples.zip"), "w") as zip_archive:
+        for name, files in examples.items():
+            for file in files:
+                zip_archive.write(os.path.join("examples", name, file), os.path.join(name, file))
+
 
 if __name__ == "__main__":
     generate_openapi_specs()
     archive_examples(
         [
             "mapdl_motorbike_frame",
+            "mapdl_tyre_performance",
             "mapdl_linked_analyses",
             "lsdyna_cylinder_plate",
         ]
