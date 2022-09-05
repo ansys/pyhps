@@ -1,0 +1,115 @@
+/batch
+/config,noeldb,1     ! force off writing results to database
+*get,_wallstrt,active,,time,wall
+! ANSYS input file written by Workbench version 2021 R2
+/assign,rstp,file,rst              ! Force Eigen analysis to write to file.rst because WB expects it
+/solu
+antype,,restart,,,perturbation
+/title,mechanical_linked--Modal (B5)
+! ****** Begin Custom Load Command Snippet ******
+/COM, ACT Extensions:
+/COM,     LSDYNA, 2021.1
+/COM,     5f463412-bd3e-484b-87e7-cbc0a665e474, wbex
+/COM,
+! ****** End   Custom Load Command Snippet ******
+perturb,modal,,CURRENT,DZEROKEEP          ! pre-stress modal analysis, only keep zero bcs in case future MSUP
+solve, elform                                       ! Generate matrices needed for perturbation analysis
+_thickRatio=  1     ! Ratio of thick parts in the model
+modopt,lanb,6
+outres,erase
+outres,all,none
+outres,nsol,all
+outres,etmp,all
+outres,strs,all
+outres,epel,all
+outres,eppl,all
+outres,rsol,all
+nsel,s,d,U
+nsel,a,d,ROT
+esln
+cm,_ConstrainedNodes,elem  ! -- reduced set with only constrained nodes
+nsel,all
+esel,all
+outres,nload,all,_ConstrainedNodes  !-- reduced set with only constrained nodes
+mxpand,,,,yes,,no             ! expand requested element results, but not write them to file.mode
+dmpopt,esav,no
+dmpopt,emat,no
+dmpopt,full,no
+! *********** WB SOLVE COMMAND ***********
+! check interactive state
+*get,ANSINTER_,active,,int
+*if,ANSINTER_,ne,0,then
+/eof
+*endif
+solve
+/com *************** Write FE CONNECTORS ********* 
+CEWRITE,file,ce,,INTE
+*get,_nmodalsolproc,active,0,numcpu
+fini
+save,file,db
+/nopr
+*get,_numnode,node,0,count
+*get,_numelem,elem,0,count
+*get, _MAXELEMNUM, elem, 0, NUM, MAX
+*get, _MAXNODENUM, node, 0, NUM, MAX,,,INTERNAL
+*get, _MAXELEMTYPE, etyp, 0, NUM, MAX
+*get, _MAXREALCONST, real, 0, NUM, MAX
+/gopr
+*get,_wallasol,active,,time,wall
+/post1
+/nopr
+*dim,_direction,CHAR,6,1
+_direction(1) = 'X'
+_direction(2) = 'Y'
+_direction(3) = 'Z'
+_direction(4) = 'ROTX'
+_direction(5) = 'ROTY'
+_direction(6) = 'ROTZ'
+*get,_lastLS,active,0,set,LSTP
+*get,_beginset,active,0,set,nset,first,_lastLS
+*get,_endset,active,0,set,nset,last,_lastLS
+_nummodes = 0
+*if,_endset,gt,0,then
+_nummodes = _endset - _beginset + 1
+*endif
+*do,i_mode,1,_nummodes
+   *do,j_component,1,6
+			*get,PFACT_%i_mode%_%j_component%,MODE,%i_mode%,PFACT,,DIREC,_direction(%j_component%)
+   *enddo
+*enddo
+*dim,_tmdirection,CHAR,6,1
+_tmdirection(1) = 'X'
+_tmdirection(2) = 'Y'
+_tmdirection(3) = 'Z'
+_tmdirection(4) = 'X'
+_tmdirection(5) = 'Y'
+_tmdirection(6) = 'Z'
+*do,j_component,1,6
+    *if,j_component,gt,3,then
+        *get,TOTALMASS_%j_component%,ELEM,0,IOR,_tmdirection(%j_component%)
+    *else
+        *get,TOTALMASS_%j_component%,ELEM,0,MTOT,_tmdirection(%j_component%)
+    *endif
+*enddo
+/gopr
+xmlo,ENCODING,ISO-8859-1
+xmlo,parm
+/xml,parm,xml
+fini
+/gopr
+*get,_walldone,active,,time,wall
+_preptime=(_wallbsol-_wallstrt)*3600
+_solvtime=(_wallasol-_wallbsol)*3600
+_posttime=(_walldone-_wallasol)*3600
+_totaltim=(_walldone-_wallstrt)*3600
+*get,_dlbratio,active,0,solu,dlbr
+*get,_combtime,active,0,solu,comb
+*get,_ssmode,active,0,solu,ssmm
+*get,_ndofs,active,0,solu,ndof
+/com,--- Total number of nodes = %_numnode%
+/com,--- Total number of elements = %_numelem%
+/com,--- Element load balance ratio = %_dlbratio%
+/com,--- Time to combine distributed files = %_combtime%
+/com,--- Sparse memory mode = %_ssmode%
+/com,--- Number of DOF = %_ndofs%
+/wb,file,end               ! done with WB generated input

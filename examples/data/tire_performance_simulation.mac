@@ -1,0 +1,582 @@
+/title,Tire Performance Simulation for REP
+/udoc,,date,off
+/com *********************************************
+/com 2D axisymmetric tire modeling
+/com *********************************************
+/prep7
+
+camber=0  ! Set the camber angle to be used before steady state rolling.
+inflation_pressure=0.24e06  ! Set the pressure to be used for the inflation analysis.
+vehicle_load=2000  ! Set the vehicle load to be used for the footprint analysis.
+rotational_velocity=50  ! Set the pressure to be used for the steady state rolling analysis.
+translational_velocity=20  ! Set the translational velocity to be used for steady state rolling analysis.
+
+_geomgen = 1 !Set this key to 1 if the cdb file needs to be updated.
+*if,_geomgen,eq,1,then
+
+/prep7
+cdread,solid,2d_tire_geometry,iges
+allsel,all
+
+! Material Properties
+
+!Tread
+TB,HYPER,1,1,2,MOONEY  
+TBTEMP,0
+TBDATA,,0.406962e06,0.03468e06,0.0145e-06
+
+! Side wall
+TB,HYPER,2,1,2,MOONEY  
+TBTEMP,0
+TBDATA,,0.02372e06,0.29765e06,0.0804e-06
+
+!Belt1 
+TB,HYPER,3,1,2,MOONEY  
+TBTEMP,0
+TBDATA,,1.01025e06,0.07532e06,0.009712e-06
+
+!Rimstrip
+TB,HYPER,4,1,2,MOONEY  
+TBTEMP,0
+TBDATA,,2.637214e06,0.0500535e06,0.0014804e-06
+
+! Apex 
+TB,HYPER,5,1,2,MOONEY  
+TBTEMP,0
+TBDATA,,2.637214e06,0.0500535e06,0.0014804e-06
+
+! Bodyply 1
+TB,HYPER,6,1,2,MOONEY  
+TBTEMP,0
+TBDATA,,0.2652e06,0.1397e06,0.03349e-06
+
+!Inner Liner
+TB,HYPER,7,1,2,MOONEY  
+TBTEMP,0
+TBDATA,,0.14458e06,0.14281e06,0.04861e-06
+
+
+! Bead
+ex,8,2e011
+nuxy,8,0.3
+
+!Bodyply Rebar
+ex,9,6e010
+nuxy,9,0.3
+
+! Belt1 & Belt2 Rebar
+ex,10,2e011
+nuxy,10,0.3
+
+! Belt2 
+TB,HYPER,11,1,2,MOONEY  
+TBTEMP,0
+TBDATA,,1.01025e06,0.07532e06,0.009712e-06
+
+mp,dens,1,1100
+mp,dens,2,1100
+mp,dens,3,1100
+mp,dens,4,1100
+mp,dens,5,1100
+mp,dens,6,1100
+mp,dens,7,1100
+mp,dens,8,5500
+mp,dens,9,1500
+mp,dens,10,5500
+mp,dens,11,1100
+
+/com*************************
+/com*************************
+
+! Mesh
+et,1,182
+keyopt,1,3,6
+keyopt,1,6,1
+
+asel,s,,,3
+asel,a,,,11
+aesize,all,0.01
+allsel,all
+amesh,all
+
+lsel,s,,,417 
+lsel,a,,,420
+lsel,a,,,446,447
+lsel,a,,,505,508
+nsll,,1
+nplot
+cm,pres_node,node
+allsel,all
+
+!Rim Nodes
+lsel,s,,,385
+lsel,a,,,426
+lsel,a,,,489,492
+lsel,a,,,501
+lsel,a,,,517,521
+nsll,,1
+nplot
+cm,rim_node,node
+allsel,all
+
+esel,s,mat,,3
+cm,belt1,element
+
+esel,s,mat,,11
+cm,belt2,element
+
+asel,s,,,5
+asel,a,,,8
+asel,a,,,27,29,2
+asel,a,,,33
+asel,a,,,34
+allsel,below,area
+eplot
+cm,bodyply2,element
+allsel,all
+
+esel,s,mat,,6
+cmsel,u,bodyply2
+cm,bodyply1,element
+allsel,all
+
+/com**************************************
+! Create the tire-road contact pair 
+/com**************************************
+et,3,172
+et,4,169
+
+mat,1
+lsel,s,,,422
+lsel,a,,,435,436
+lsel,a,,,440,442
+lsel,a,,,476
+lsel,a,,,481
+lsel,a,,,483,484
+lsel,a,,,488
+lsel,a,,,493
+nsll,,1
+nplot
+cm,tread_nodes,node
+esln
+type,3
+real,3
+esurf
+allsel,all
+
+type,4
+real,3
+lmesh,411
+allsel,all
+esel,s,type,,4
+esurf,,reverse
+allsel,all
+
+!Create a pilot node for the contact pair ID 5 
+REAL,3 
+TYPE,4  
+TSHAP,PILO  
+N,2000, 0.32,0,0.0   
+E,2000
+allsel,all
+
+/com**********************************************************************
+! Define a tabular coefficient of friction for the tire-road contact pair.
+! The coefficient of friction is ramped from 0 to 1 during the first steady
+! state rolling analysis.
+/com**********************************************************************
+! In can also be defined during the Map2dto3d process later on. In this test 
+! case, it is defined during the Map2dto3d process. So that is why, below 
+! commands are commented out. 
+!TB,FRIC,1,,,ISO
+!TBFIELD,TIME,4
+!TBDATA,1,0.0
+!TBFIELD,TIME,5
+!TBDATA,1,1
+!
+! Similarly, the allowable elastic slip (SLTO) can also be defined here (or  
+! during the Ma2dto3d process), if the default value of the SLTO is not needed. 
+! In this test case, the default value of the SLTO is used. 
+/com**********************************************************************
+
+/com**********************************************************************
+
+/com********************************
+! Create the tire-rim contact pair 
+/com********************************
+et,5,172
+et,6,169
+
+keyopt,5,9,2
+
+mat,10
+cmsel,s,rim_node
+nplot
+esln
+type,5
+real,5
+esurf
+allsel,all
+
+type,6
+real,5
+lsel,s,,,408
+lsel,a,,,416,418,2
+lsel,a,,,699
+lsel,a,,,703
+lsel,a,,,708,712,2
+cm,target_lines,line
+lmesh,all
+allsel,all
+
+!Create a pilot node for contact pair ID 5 
+REAL,5 
+TYPE,6  
+TSHAP,PILO  
+N,3000, 0,0,0.0   
+E,3000
+allsel,all
+
+/com**********************************************
+! Rebar modeling with the mesh-independent method.
+! Creating rebar elements at Belt_1
+/com**********************************************
+a1 = 0.22e-06
+s1=1.1e-03		! Spacing
+m1=10			! Material no
+
+sectype,9,reinf,smear		
+secdata,m1,a1,s1,,-70,mesh	!Use "Mesh" pattern
+
+et,2,200
+keyopt,2,1,0
+mat,m1
+secn,9
+type,2
+
+lsel,s,,,355,358
+cm,belt1_lines,line
+lmesh,all
+allsel,below,line
+cm,belt1_mesh200,elements
+allsel,all
+		
+cmsel,s,belt1			! Select base elements in the belt1 region
+cmsel,a,belt1_mesh200	!Select Mesh200 elements
+eplot
+mat,m1
+ereinf
+allsel,all
+
+!Delete mesh200 elements 
+cmsel,s,belt1_lines
+lclear,all,all
+etdel,2
+allsel,all
+type,1
+
+/com**********************************************
+! Rebar modeling with the standard method
+/com**********************************************
+! Creating rebar elements at Belt_2
+a2 = 0.22e-06
+s2=1.1e-03		! Spacing
+m2=10			! Material no
+sectype,11,reinf,smear		
+secdata,m2,a2,s2,,70,edgo,1,.5
+cmsel,s,belt2
+eplot
+secnum,11
+mat,10
+ereinf
+allsel,all
+
+
+! Creating rebar elements at Body Ply 1
+a3 =0.25e-06
+s3 =1.4e-03		! Spacing
+m3=9			! Material no
+sectype,12,reinf,smear		
+secdata,m3,a3,s3,,0,edgo,1,.5
+cmsel,s,bodyply1
+!cmsel,u,bodyply2
+eplot
+secnum,12
+mat,9
+ereinf
+allsel,all
+
+! Rebar Modeling
+! Creating rebar elements at Body Ply 2
+a3 =0.25e-06
+s3 =1.4e-03		! Spacing
+m3=9			! Material no
+sectype,13,reinf,smear		
+secdata,m3,a3,s3,,0,edgo,2,.5
+cmsel,s,bodyply2
+eplot
+secnum,13
+mat,9
+ereinf
+allsel,all
+
+
+cdwrite,db,tire_performance_simulation,cdb
+*else
+camber_angle_store = camber
+cdread,db,tire_performance_simulation,cdb
+camber = camber_angle_store
+*endif
+finish
+
+Solution
+/solu
+/com *********************************************
+/com Rim mounting analysis
+/com *********************************************
+nldiag,cont,iter
+nlgeom,on
+time,1
+nsub,20,1000,10
+outres,all,all
+rescontro,,all,last
+d,2000,all
+d,3000,all
+allsel,all
+solve
+
+/com *********************************************
+/com Inflation analysis
+/com *********************************************
+time,2
+nsub,20,1000,10
+outres,all,all
+rescontro,,all,last
+cmsel,s,pres_node
+esln
+sf,all,pres,inflation_pressure
+allsel,all
+solve
+finish
+
+!Resutls
+/post1
+set,last
+
+!Settings for reverse video plot
+
+/rgb,index,100,100,100, 0
+/rgb,index, 80, 80, 80,13
+/rgb,index, 60, 60, 60,14
+/rgb,index, 0, 0, 0,15
+jpgprf,,,1
+
+/VIEW,1,,,1 
+/ANG,1 
+rsys,solu
+/show,png
+plnsol,s,eqv
+plnsol,epto,eqv
+plnsol,cont,pres
+/show,close
+parsav,all
+finish
+
+/com ************************************************
+/com Convert the 2D model into the full 3D model
+/com *********************************************
+/clear,nostart
+parres
+/solu
+MAP2DTO3D,START,2,
+allsel,all
+shpp,off
+EEXT,tire,30,3,,40
+allsel,all
+keyopt,8,16,1
+
+R,5,,,,,,1		! Changing PINB for the tire-rim contact pair
+allsel,all
+cm,Etire,element
+
+
+/com**********************************************************************
+! Define a tabular coefficient of friction for the tire-road contact pair.
+! The coefficient of friction is ramped from 0 to 1 during the first 
+! steady state rolling analysis.
+!
+! It is not mandatory to define the coefficient of friction during the   
+! Map2dto3d process only, it can also be defined in the 2D model while 
+! setting up the contact pair at the beginning.  
+/com**********************************************************************
+
+
+*if,camber,eq,0,then
+TB,FRIC,1,,,ISO
+TBFIELD,TIME,4
+TBDATA,1,0.0
+TBFIELD,TIME,5
+TBDATA,1,1
+
+*else
+TB,FRIC,1,,,ISO
+TBFIELD,TIME,5
+TBDATA,1,0.0
+TBFIELD,TIME,6
+TBDATA,1,1
+*endif
+
+allsel,all
+map2dto3d,finish
+map2dto3d,solve,500
+finish
+
+/post1
+set,last
+
+!Settings for reverse video plot
+rsys,solu
+
+/VIEW,  1, -0.682732752801E-01,  0.406682174461    ,  0.911015021204
+/ANG,   1, -0.233084097928  
+
+/show,png
+plnsol,s,eqv
+plnsol,epto,eqv
+plnsol,cont,pres
+/show,close
+parsav,all
+finish
+
+
+/com *********************************************
+/com Footprint analysis on the 3D model
+/com *********************************************
+
+/clear,nostart  
+parres
+/solu
+antype,,restart,2,
+allsel,all
+!cm,Etire,element
+cnkmod,12,12,3		! Convert the tire-rim contact pair to bonded type. 
+time,3
+d,2000,all
+d,2000,ux,-0.006
+nlgeom,on 
+nsub,10,10000,5
+outres,all,last
+NROPT,UNSYM
+rescontrol,,all,last
+allsel,all 
+solve  
+
+! Stage two
+time,4
+ddel,2000,ux,,,on
+f,2000,fx,-3000
+allsel,all
+nlgeom,on 
+eresx,no  
+nsub,10,10000,5
+outres,all,last
+rescontrol,,all,last
+solve 
+
+
+*if,camber,eq,0,then
+
+/com *********************************************
+/com Steady state rolling on the 3D model
+/com *********************************************
+time,5
+NSUBST,10,10000,10
+OUTRES,all,last
+sstate,define,Etire,spin,rotational_velocity,points,0,0,0,0,1,0
+sstate,define,Etire,Translate,,,translational_velocity
+sstate,list
+rescontrol,,all,last
+SOLVE
+
+
+*else
+/com *********************************************
+! An additional load step is added in order to 
+! include a non-zero camber angle. 
+/com *********************************************
+/com Add a non-zero camber angle
+/com *********************************************
+time,5
+!Boundary conditions for the tire
+D,2000,rotz,0.017455*camber
+allsel,all
+nsub,10,100000,10
+SOLVE
+
+/com *********************************************
+/com Steady state rolling on the 3D model
+/com *********************************************
+
+time,6
+NSUBST,10,10000,10
+OUTRES,all,last
+sstate,define,Etire,spin,rotational_velocity,points,0,0,0,0,1,0
+sstate,define,Etire,Translate,,,translational_velocity
+sstate,list
+rescontrol,,all,last
+SOLVE
+
+*endif
+finish
+
+/post1
+/VIEW,1,1,2,3  
+set,last
+
+/show,png
+plnsol,epto,eqv
+*get,max_eptoeqv,plnsol,0,max
+*get,min_eptoeqv,plnsol,0,min
+
+plnsol,s,eqv
+*get,max_seqv,plnsol,0,max
+*get,min_seqv,plnsol,0,min
+
+plnsol,v,sum
+*get,max_vsum,plnsol,0,max
+*get,min_vsum,plnsol,0,min
+
+esel,s,real,,3
+plnsol,cont,pres
+/VIEW,1,,,1 
+plnsol,cont,pres
+
+/show,close
+
+/com Last load step results
+*status,max_eptoeqv
+*status,min_eptoeqv
+*status,max_seqv
+*status,min_seqv
+*status,max_vsum
+*status,min_vsum
+allsel,all
+finish
+
+
+/POST26 
+NUMVAR,200  
+RFORCE,2,3000,F,X, FX_rim  
+RFORCE,3,3000,F,Y, FY_rim  
+RFORCE,4,3000,F,Z, FZ_rim  
+RFORCE,5,3000,M,Y, My_
+/show,png
+plvar,2
+plvar,3
+plvar,4
+plvar,5
+/show,close
+/out,
+prtime,5, 
+prvar,2,3,4,5
+finish

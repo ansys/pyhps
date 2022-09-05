@@ -35,6 +35,7 @@ setup(
         "marshmallow_oneofschema>=2.0.1",
         "cachetools>=4.0.0",
         "python-keycloak>=1.5.0",
+        "pooch",
     ],
     python_requires=">=3.7",
     packages=find_namespace_packages(where=".", include="ansys*"),
