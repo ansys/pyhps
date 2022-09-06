@@ -45,7 +45,7 @@
     <link rel="shortcut icon" href="../_static/favicon.png"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Creating A Project" href="ex_motorbike_frame.html" />
+    <link rel="next" title="MAPDL Motorbike Frame - Project Creation" href="ex_motorbike_frame.html" />
     <link rel="prev" title="Quickstart" href="../quickstart.html" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <meta name="docsearch:language" content="en">
@@ -185,17 +185,32 @@
     <ul class="nav bd-sidenav">
  <li class="toctree-l1">
   <a class="reference internal" href="ex_motorbike_frame.html">
-   Creating A Project
+   MAPDL Motorbike Frame - Project Creation
   </a>
  </li>
  <li class="toctree-l1">
-  <a class="reference internal" href="ex_download.html">
-   Download of output files
+  <a class="reference internal" href="ex_motorbike_frame_query.html">
+   MAPDL Motorbike Frame - Project Query
   </a>
  </li>
  <li class="toctree-l1">
-  <a class="reference internal" href="ex_adding_file.html">
-   Adding a file to a project
+  <a class="reference internal" href="ex_mapdl_tire_performance.html">
+   MAPDL Tire Performance
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ex_mapdl_linked_analyses.html">
+   MAPDL Linked Analyses Example
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ex_lsdyna_job.html">
+   LS-DYNA Job Submission
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ex_python_two_bar.html">
+   Python Two-Bar Truss Example
   </a>
  </li>
 </ul>
@@ -240,28 +255,46 @@
                 
   <section id="examples">
 <span id="id1"></span><h1>Examples<a class="headerlink" href="#examples" title="Permalink to this heading">#</a></h1>
+<p>Here you can find some examples showing how to interact with a REP server in Python using the <code class="docutils literal notranslate"><span class="pre">ansys-rep-client</span></code>.
+Examples consist of a Python script plus some data files (e.g. solver input files).
+Many of the Python scripts can be executed with the following command line arguments:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">-n</span></code>, <code class="docutils literal notranslate"><span class="pre">--name</span></code>: name of the REP project</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">-U</span></code>, <code class="docutils literal notranslate"><span class="pre">--url</span></code>: url or the REP server (default: <a class="reference external" href="https://localhost:8443/rep">https://localhost:8443/rep</a>)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">-u</span></code>, <code class="docutils literal notranslate"><span class="pre">--username</span></code>: REP username (default: repadmin)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">-p</span></code>, <code class="docutils literal notranslate"><span class="pre">--password</span></code>: REP password (default: repadmin)</p></li>
+</ul>
+<p>A link to download all the required resources is available at each example page.</p>
+<p>You can also download the entire set of examples <a class="reference download internal" download="" href="../_downloads/5ff3f511e88624c768f1186f0439eb33/pyrep_examples.zip"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">All</span> <span class="pre">Examples</span></code></a>.</p>
 <div class="toctree-wrapper compound">
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="ex_motorbike_frame.html">Creating A Project</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="ex_motorbike_frame.html#import-modules-and-instantiate-the-dps-client">Import modules and instantiate the DPS client</a></li>
-<li class="toctree-l2"><a class="reference internal" href="ex_motorbike_frame.html#create-an-empty-project-and-a-job-definition">Create an empty project and a job_definition</a></li>
-<li class="toctree-l2"><a class="reference internal" href="ex_motorbike_frame.html#file-resources">File resources</a></li>
-<li class="toctree-l2"><a class="reference internal" href="ex_motorbike_frame.html#parameters-definition">Parameters definition</a></li>
-<li class="toctree-l2"><a class="reference internal" href="ex_motorbike_frame.html#process-step">Process Step</a></li>
-<li class="toctree-l2"><a class="reference internal" href="ex_motorbike_frame.html#fitness-definition">Fitness definition</a></li>
-<li class="toctree-l2"><a class="reference internal" href="ex_motorbike_frame.html#submit-the-job-definition">Submit the job_definition</a></li>
-<li class="toctree-l2"><a class="reference internal" href="ex_motorbike_frame.html#design-points">Design Points</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="ex_download.html">Download of output files</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="ex_download.html#log-files">Log files</a></li>
-<li class="toctree-l2"><a class="reference internal" href="ex_download.html#images">Images</a></li>
-<li class="toctree-l2"><a class="reference internal" href="ex_download.html#parsing-of-log-files">Parsing of log files</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="ex_adding_file.html">Adding a file to a project</a></li>
-</ul>
 </div>
+<table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Name</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><a class="reference internal" href="ex_motorbike_frame.html#example-mapdl-motorbike-frame"><span class="std std-ref">MAPDL Motorbike Frame - Project Creation</span></a></p></td>
+<td><p>Create from scratch a REP project consisting of an Ansys APDL beam model of a tubular steel trellis motorbike-frame. This example shows how to create a parameter study and submit design points.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="ex_motorbike_frame_query.html#example-mapdl-motorbike-frame-query"><span class="std std-ref">MAPDL Motorbike Frame - Project Query</span></a></p></td>
+<td><p>Query an existing project and download output files.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="ex_mapdl_tire_performance.html#example-mapdl-tire-performance"><span class="std std-ref">MAPDL Tire Performance</span></a></p></td>
+<td><p>Submit an MAPDL analysis as a single job. Solution convergence and contacts tracking files are periodically collected.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="ex_mapdl_linked_analyses.html#example-mapdl-linked-analyses"><span class="std std-ref">MAPDL Linked Analyses Example</span></a></p></td>
+<td><p>Submit an MAPDL linked analysis workflow as a multi-task job to REP.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="ex_lsdyna_job.html#example-lsdyna-job"><span class="std std-ref">LS-DYNA Job Submission</span></a></p></td>
+<td><p>Submit, monitor and download results of an LS-DYNA job.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="ex_python_two_bar.html#example-python-two-bar"><span class="std std-ref">Python Two-Bar Truss Example</span></a></p></td>
+<td><p>Create a REP project solving a Two-Bar Truss problem with Python.</p></td>
+</tr>
+</tbody>
+</table>
 </section>
 
 

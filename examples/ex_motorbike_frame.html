@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
-    <title>Creating A Project &#8212; PyREP</title>
+    <title>MAPDL Motorbike Frame - Project Creation &#8212; PyREP</title>
     
 <script>
   document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
@@ -45,7 +45,7 @@
     <link rel="shortcut icon" href="../_static/favicon.png"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Download of output files" href="ex_download.html" />
+    <link rel="next" title="MAPDL Motorbike Frame - Project Query" href="ex_motorbike_frame_query.html" />
     <link rel="prev" title="Examples" href="index.html" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <meta name="docsearch:language" content="en">
@@ -162,7 +162,7 @@
     
 
           <li class="nav-item nav-item-1"><a href="index.html" accesskey="U">Examples</a> » </li>
-        <li class="nav-item nav-item-this"><a href="">Creating A Project</a></li> 
+        <li class="nav-item nav-item-this"><a href="">MAPDL Motorbike Frame - Project Creation</a></li> 
       </ul>
     </div>
         </div>
@@ -186,17 +186,32 @@
     <ul class="current nav bd-sidenav">
  <li class="toctree-l1 current active">
   <a class="current reference internal" href="#">
-   Creating A Project
+   MAPDL Motorbike Frame - Project Creation
   </a>
  </li>
  <li class="toctree-l1">
-  <a class="reference internal" href="ex_download.html">
-   Download of output files
+  <a class="reference internal" href="ex_motorbike_frame_query.html">
+   MAPDL Motorbike Frame - Project Query
   </a>
  </li>
  <li class="toctree-l1">
-  <a class="reference internal" href="ex_adding_file.html">
-   Adding a file to a project
+  <a class="reference internal" href="ex_mapdl_tire_performance.html">
+   MAPDL Tire Performance
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ex_mapdl_linked_analyses.html">
+   MAPDL Linked Analyses Example
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ex_lsdyna_job.html">
+   LS-DYNA Job Submission
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ex_python_two_bar.html">
+   Python Two-Bar Truss Example
   </a>
  </li>
 </ul>
@@ -219,54 +234,9 @@
     
     <div class="toc-item">
       
-<div class="tocsection onthispage mt-5 pt-1 pb-3">
-    <i class="fas fa-list"></i> On this page
-</div>
 
 <nav id="bd-toc-nav">
-    <ul class="visible nav section-nav flex-column">
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#import-modules-and-instantiate-the-dps-client">
-   Import modules and instantiate the DPS client
-  </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#create-an-empty-project-and-a-job-definition">
-   Create an empty project and a job_definition
-  </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#file-resources">
-   File resources
-  </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#parameters-definition">
-   Parameters definition
-  </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#process-step">
-   Process Step
-  </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#fitness-definition">
-   Fitness definition
-  </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#submit-the-job-definition">
-   Submit the job_definition
-  </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#design-points">
-   Design Points
-  </a>
- </li>
-</ul>
-
+    
 </nav>
     </div>
     
@@ -284,9 +254,9 @@
               
               <article class="bd-article" role="main">
                 
-  <section id="creating-a-project">
-<span id="example-mapdl-motorbike-frame"></span><h1>Creating A Project<a class="headerlink" href="#creating-a-project" title="Permalink to this heading">#</a></h1>
-<p>This example shows how to create from scratch a DCS project consisting of an Ansys APDL beam model
+  <section id="mapdl-motorbike-frame-project-creation">
+<span id="example-mapdl-motorbike-frame"></span><h1>MAPDL Motorbike Frame - Project Creation<a class="headerlink" href="#mapdl-motorbike-frame-project-creation" title="Permalink to this heading">#</a></h1>
+<p>This example shows how to create from scratch a REP project consisting of an Ansys APDL beam model
 of a tubular steel trellis motorbike-frame.
 After creating the project job_definition, 10 design points with randomly
 chosen parameter values are created and set to pending.</p>
@@ -301,151 +271,364 @@ chosen parameter values are created and set to pending.</p>
 “Using Evolutionary Methods with a Heterogeneous Genotype Representation
 for Design Optimization of a Tubular Steel Trellis Motorbike-Frame”, 2003
 by U. M. Fasel, O. Koenig, M. Wintermantel and P. Ermanni.</p>
-<p>The project setup script as well as the data files can be downloaded here <a class="reference download internal" download="" href="../_downloads/85f405c045419850de8267799ac6b388/mapdl_motorbike_frame.zip"><code class="xref download docutils literal notranslate"><span class="pre">MAPDL</span> <span class="pre">Motorbike</span> <span class="pre">Frame</span> <span class="pre">Project</span></code></a>.</p>
-<p>We shall now dissect the project setup script in detail.</p>
-<section id="import-modules-and-instantiate-the-dps-client">
-<h2>Import modules and instantiate the DPS client<a class="headerlink" href="#import-modules-and-instantiate-the-dps-client" title="Permalink to this heading">#</a></h2>
-<p>The script starts by importing some generic modules and some key <code class="docutils literal notranslate"><span class="pre">ansys-dcs-client</span></code> classes.
-Next we connect to a DCS server running on the localhost with default username and password.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">os</span>
+<p>The project setup script as well as the data files can be downloaded here <a class="reference download internal" download="" href="../_downloads/8ed38b7d3730aadc96dfe01d14ab6278/mapdl_motorbike_frame.zip"><code class="xref download docutils literal notranslate"><span class="pre">MAPDL</span> <span class="pre">Motorbike</span> <span class="pre">Frame</span> <span class="pre">Project</span></code></a>.</p>
+<div class="literal-block-wrapper docutils container" id="id1">
+<div class="code-block-caption"><span class="caption-text">project_setup.py</span><a class="headerlink" href="#id1" title="Permalink to this code">#</a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Example script to setup a simple MAPDL project with parameters in pyrep.</span>
+
+<span class="sd">Author(s): O.Koenig</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">argparse</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">random</span>
 
-<span class="kn">from</span> <span class="nn">ansys.rep.client.jms</span> <span class="kn">import</span> <span class="n">Client</span>
-<span class="kn">from</span> <span class="nn">ansys.rep.client.jms.resource</span> <span class="kn">import</span> <span class="p">(</span><span class="n">JobDefinition</span><span class="p">,</span> <span class="n">Job</span><span class="p">,</span> <span class="n">File</span><span class="p">,</span>
-                                           <span class="n">FitnessDefinition</span><span class="p">,</span> <span class="n">Project</span><span class="p">,</span>
-                                           <span class="n">SuccessCriteria</span><span class="p">)</span>
+<span class="kn">from</span> <span class="nn">ansys.rep.client</span> <span class="kn">import</span> <span class="n">Client</span><span class="p">,</span> <span class="n">REPError</span>
+<span class="kn">from</span> <span class="nn">ansys.rep.client</span> <span class="kn">import</span> <span class="n">__external_version__</span> <span class="k">as</span> <span class="n">ansys_version</span>
+<span class="kn">from</span> <span class="nn">ansys.rep.client.jms</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">File</span><span class="p">,</span>
+    <span class="n">FitnessDefinition</span><span class="p">,</span>
+    <span class="n">FloatParameterDefinition</span><span class="p">,</span>
+    <span class="n">JmsApi</span><span class="p">,</span>
+    <span class="n">Job</span><span class="p">,</span>
+    <span class="n">JobDefinition</span><span class="p">,</span>
+    <span class="n">Licensing</span><span class="p">,</span>
+    <span class="n">ParameterMapping</span><span class="p">,</span>
+    <span class="n">Project</span><span class="p">,</span>
+    <span class="n">ProjectApi</span><span class="p">,</span>
+    <span class="n">ResourceRequirements</span><span class="p">,</span>
+    <span class="n">Software</span><span class="p">,</span>
+    <span class="n">StringParameterDefinition</span><span class="p">,</span>
+    <span class="n">SuccessCriteria</span><span class="p">,</span>
+    <span class="n">TaskDefinition</span><span class="p">,</span>
+<span class="p">)</span>
 
-<span class="n">client</span> <span class="o">=</span> <span class="n">Client</span><span class="p">(</span><span class="n">rep_url</span><span class="o">=</span><span class="s2">&quot;https://127.0.0.1:8443/rep&quot;</span><span class="p">,</span> <span class="n">username</span><span class="o">=</span><span class="s2">&quot;repadmin&quot;</span><span class="p">,</span> <span class="n">password</span><span class="o">=</span><span class="s2">&quot;repadmin&quot;</span><span class="p">)</span>
-</pre></div>
-</div>
-</section>
-<section id="create-an-empty-project-and-a-job-definition">
-<h2>Create an empty project and a job_definition<a class="headerlink" href="#create-an-empty-project-and-a-job-definition" title="Permalink to this heading">#</a></h2>
-<p>Once the client is available, we can define a new project and send it to the server.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">proj</span> <span class="o">=</span> <span class="n">Project</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="s2">&quot;mapdl_motorbike_frame&quot;</span><span class="p">,</span> <span class="n">display_name</span><span class="o">=</span><span class="s2">&quot;MAPDL Motorbike Frame&quot;</span><span class="p">,</span> <span class="n">priority</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">active</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-<span class="n">proj</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">create_project</span><span class="p">(</span><span class="n">proj</span><span class="p">,</span> <span class="n">replace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-</pre></div>
-</div>
-<p>Next, a job_definition object is created.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">job_def</span> <span class="o">=</span> <span class="n">JobDefinition</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;JobDefinition.1&quot;</span><span class="p">,</span> <span class="n">active</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-</pre></div>
-</div>
-</section>
-<section id="file-resources">
-<h2>File resources<a class="headerlink" href="#file-resources" title="Permalink to this heading">#</a></h2>
-<p>The first step to fill the project job_definition is to define the files resources. Besides the name and type,
-for each file we need to specify the <code class="docutils literal notranslate"><span class="pre">evaluation_path</span></code>, i.e. the relative path under which the file instance
-for a design point evaluation will be stored. Moreover, if the file needs to be uploaded to the server, we also need to provide the path to the local file
-as <code class="docutils literal notranslate"><span class="pre">src</span></code> argument.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">cwd</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)</span>
-<span class="n">files</span> <span class="o">=</span> <span class="p">[]</span>
-<span class="c1"># Input File</span>
-<span class="n">files</span><span class="o">.</span><span class="n">append</span> <span class="p">(</span><span class="n">File</span><span class="p">(</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;mac&quot;</span><span class="p">,</span><span class="n">evaluation_path</span><span class="o">=</span><span class="s2">&quot;motorbike_frame.mac&quot;</span><span class="p">,</span>
-                    <span class="nb">type</span><span class="o">=</span><span class="s2">&quot;text/plain&quot;</span><span class="p">,</span> <span class="n">src</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">cwd</span><span class="p">,</span> <span class="s2">&quot;motorbike_frame.mac&quot;</span><span class="p">)</span> <span class="p">)</span> <span class="p">)</span>
-<span class="c1"># Output Files</span>
-<span class="n">files</span><span class="o">.</span><span class="n">append</span><span class="p">(</span> <span class="n">File</span><span class="p">(</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;results&quot;</span><span class="p">,</span> <span class="n">evaluation_path</span><span class="o">=</span><span class="s2">&quot;motorbike_frame_results.txt&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="s2">&quot;text/plain&quot;</span> <span class="p">)</span> <span class="p">)</span>
-<span class="n">files</span><span class="o">.</span><span class="n">append</span><span class="p">(</span> <span class="n">File</span><span class="p">(</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;img&quot;</span><span class="p">,</span> <span class="n">evaluation_path</span><span class="o">=</span><span class="s2">&quot;file000.jpg&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="s2">&quot;image/jpeg&quot;</span><span class="p">,</span> <span class="n">collect</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="p">)</span>
-<span class="n">files</span><span class="o">.</span><span class="n">append</span><span class="p">(</span> <span class="n">File</span><span class="p">(</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;img2&quot;</span><span class="p">,</span> <span class="n">evaluation_path</span><span class="o">=</span><span class="s2">&quot;file001.jpg&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="s2">&quot;image/jpeg&quot;</span><span class="p">,</span> <span class="n">collect</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="p">)</span>
-<span class="n">files</span><span class="o">.</span><span class="n">append</span><span class="p">(</span> <span class="n">File</span><span class="p">(</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;out&quot;</span><span class="p">,</span> <span class="n">evaluation_path</span><span class="o">=</span><span class="s2">&quot;file.out&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="s2">&quot;text/plain&quot;</span><span class="p">,</span> <span class="n">collect</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="p">)</span>
-</pre></div>
-</div>
-<p>File resources are then created on the server.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">files</span> <span class="o">=</span> <span class="n">proj</span><span class="o">.</span><span class="n">create_files</span><span class="p">(</span><span class="n">files</span><span class="p">)</span>
+<span class="n">log</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
-<span class="c1"># For convenience, we keep a reference to the input and result files.</span>
-<span class="n">mac_file</span> <span class="o">=</span> <span class="n">files</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-<span class="n">result_file</span> <span class="o">=</span> <span class="n">files</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
-</pre></div>
-</div>
-</section>
-<section id="parameters-definition">
-<h2>Parameters definition<a class="headerlink" href="#parameters-definition" title="Permalink to this heading">#</a></h2>
-<p>Creating a parameter requires to first provide a parameter definition and then specify a parameter location.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Input params: Dimensions of three custom tubes</span>
-<span class="n">float_input_params</span><span class="o">=</span><span class="p">[]</span>
-<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">4</span><span class="p">):</span>
-    <span class="n">pd</span> <span class="o">=</span> <span class="n">job_def</span><span class="o">.</span><span class="n">add_float_parameter_definition</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;tube</span><span class="si">%i</span><span class="s1">_radius&#39;</span> <span class="o">%</span><span class="n">i</span><span class="p">,</span> <span class="n">lower_limit</span><span class="o">=</span><span class="mf">4.0</span><span class="p">,</span> <span class="n">upper_limit</span><span class="o">=</span><span class="mf">20.0</span><span class="p">,</span><span class="n">default</span><span class="o">=</span><span class="mf">12.0</span> <span class="p">)</span>
-    <span class="n">job_def</span><span class="o">.</span><span class="n">add_parameter_mapping</span><span class="p">(</span><span class="n">key_string</span><span class="o">=</span><span class="s1">&#39;radius(</span><span class="si">%i</span><span class="s1">)&#39;</span> <span class="o">%</span> <span class="n">i</span><span class="p">,</span> <span class="n">tokenizer</span><span class="o">=</span><span class="s2">&quot;=&quot;</span><span class="p">,</span> <span class="n">parameter_definition_name</span><span class="o">=</span><span class="n">pd</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">file_id</span><span class="o">=</span><span class="n">mac_file</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
-    <span class="n">float_input_params</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">pd</span><span class="p">)</span>
-    <span class="n">pd</span> <span class="o">=</span> <span class="n">job_def</span><span class="o">.</span><span class="n">add_float_parameter_definition</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;tube</span><span class="si">%i</span><span class="s1">_thickness&#39;</span> <span class="o">%</span><span class="n">i</span><span class="p">,</span><span class="n">lower_limit</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">upper_limit</span><span class="o">=</span><span class="mf">2.5</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mf">1.0</span> <span class="p">)</span>
-    <span class="n">job_def</span><span class="o">.</span><span class="n">add_parameter_mapping</span><span class="p">(</span><span class="n">key_string</span><span class="o">=</span><span class="s1">&#39;thickness(</span><span class="si">%i</span><span class="s1">)&#39;</span> <span class="o">%</span> <span class="n">i</span><span class="p">,</span> <span class="n">tokenizer</span><span class="o">=</span><span class="s2">&quot;=&quot;</span><span class="p">,</span> <span class="n">parameter_definition_name</span><span class="o">=</span><span class="n">pd</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">file_id</span><span class="o">=</span><span class="n">mac_file</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
-    <span class="n">float_input_params</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">pd</span><span class="p">)</span>
 
-<span class="c1"># Input params: Custom types used for all the different tubes of the frame</span>
-<span class="n">str_input_params</span><span class="o">=</span><span class="p">[]</span>
-<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">22</span><span class="p">):</span>
-    <span class="n">pd</span> <span class="o">=</span> <span class="n">job_def</span><span class="o">.</span><span class="n">add_string_parameter_definition</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;tube</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span><span class="n">i</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s2">&quot;1&quot;</span><span class="p">,</span> <span class="n">value_list</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;1&quot;</span><span class="p">,</span><span class="s2">&quot;2&quot;</span><span class="p">,</span><span class="s2">&quot;3&quot;</span><span class="p">]</span> <span class="p">)</span>
-    <span class="n">job_def</span><span class="o">.</span><span class="n">add_parameter_mapping</span><span class="p">(</span><span class="n">key_string</span><span class="o">=</span><span class="s1">&#39;tubes(</span><span class="si">%i</span><span class="s1">)&#39;</span> <span class="o">%</span> <span class="n">i</span><span class="p">,</span> <span class="n">tokenizer</span><span class="o">=</span><span class="s2">&quot;=&quot;</span><span class="p">,</span> <span class="n">parameter_definition_name</span><span class="o">=</span><span class="n">pd</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">file_id</span><span class="o">=</span><span class="n">mac_file</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
-    <span class="n">str_input_params</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">pd</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">create_project</span><span class="p">(</span><span class="n">client</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">num_jobs</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">use_exec_script</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Project</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Create a REP project consisting of an ANSYS APDL beam model of a motorbike-frame.</span>
 
-<span class="c1"># Output Parames</span>
-<span class="k">for</span> <span class="n">pname</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;weight&quot;</span><span class="p">,</span> <span class="s2">&quot;torsion_stiffness&quot;</span><span class="p">,</span> <span class="s2">&quot;max_stress&quot;</span><span class="p">]:</span>
-    <span class="n">pd</span> <span class="o">=</span> <span class="n">job_def</span><span class="o">.</span><span class="n">add_float_parameter_definition</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">pname</span><span class="p">)</span>
-    <span class="n">job_def</span><span class="o">.</span><span class="n">add_parameter_mapping</span><span class="p">(</span><span class="n">key_string</span><span class="o">=</span><span class="n">pname</span><span class="p">,</span> <span class="n">tokenizer</span><span class="o">=</span><span class="s2">&quot;=&quot;</span><span class="p">,</span> <span class="n">parameter_definition_name</span><span class="o">=</span><span class="n">pd</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">file_id</span><span class="o">=</span><span class="n">result_file</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
-</pre></div>
-</div>
-</section>
-<section id="process-step">
-<h2>Process Step<a class="headerlink" href="#process-step" title="Permalink to this heading">#</a></h2>
-<p>In a process step, we specify which application should be executed, its requirements, which input and output files are linked to it, and optionally also the criteria for determining whether the process step completes successfully.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Process step</span>
-<span class="n">job_def</span><span class="o">.</span><span class="n">add_task_definition</span><span class="p">(</span>   <span class="n">name</span><span class="o">=</span><span class="s2">&quot;MAPDL_run&quot;</span><span class="p">,</span>
-                        <span class="n">application_name</span><span class="o">=</span><span class="s2">&quot;ANSYS Mechanical APDL&quot;</span><span class="p">,</span>
-                        <span class="n">application_version</span><span class="o">=</span><span class="s2">&quot;20.1&quot;</span><span class="p">,</span>
-                        <span class="n">execution_command</span><span class="o">=</span><span class="s2">&quot;\ %\ executable\ %\ -b -i \ %</span><span class="se">\f</span><span class="s2">ile:mac\ %\ -o file.out&quot;</span><span class="p">,</span>
-                        <span class="n">max_execution_time</span><span class="o">=</span><span class="mf">20.0</span><span class="p">,</span>
-                        <span class="n">cpu_core_usage</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
-                        <span class="n">execution_level</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
-                        <span class="n">memory</span><span class="o">=</span><span class="mi">250</span><span class="p">,</span>
-                        <span class="n">disk_space</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span>
-                        <span class="n">input_file_ids</span><span class="o">=</span><span class="p">[</span><span class="n">f</span><span class="o">.</span><span class="n">id</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">files</span><span class="p">[:</span><span class="mi">1</span><span class="p">]],</span>
-                        <span class="n">output_file_ids</span><span class="o">=</span><span class="p">[</span><span class="n">f</span><span class="o">.</span><span class="n">id</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">files</span><span class="p">[</span><span class="mi">1</span><span class="p">:]],</span>
-                        <span class="n">success_criteria</span><span class="o">=</span> <span class="n">SuccessCriteria</span><span class="p">(</span>
-                            <span class="n">return_code</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
-                            <span class="n">expressions</span><span class="o">=</span> <span class="p">[</span><span class="s2">&quot;values[&#39;tube1_radius&#39;]&gt;=4.0&quot;</span><span class="p">,</span> <span class="s2">&quot;values[&#39;tube1_thickness&#39;]&gt;=0.5&quot;</span><span class="p">],</span>
-                            <span class="n">required_output_file_ids</span><span class="o">=</span><span class="p">[</span> <span class="n">f</span><span class="o">.</span><span class="n">id</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">files</span><span class="p">[</span><span class="mi">2</span><span class="p">:]</span> <span class="p">],</span>
-                            <span class="n">require_all_output_files</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-                            <span class="n">required_output_parameter_names</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;02qPAKWH62wIdNjaD7Uo0l&quot;</span><span class="p">,</span> <span class="s2">&quot;02qPAKWHB1fOcSEc27qUg9&quot;</span><span class="p">,</span> <span class="s2">&quot;02qPAKWHBpZZG1DdoMvjbG&quot;</span><span class="p">],</span>
-                            <span class="n">require_all_output_parameters</span><span class="o">=</span><span class="kc">False</span>
-                        <span class="p">)</span> <span class="p">)</span>
-</pre></div>
-</div>
-<p>Note that multiple process steps can be defined.</p>
-</section>
-<section id="fitness-definition">
-<h2>Fitness definition<a class="headerlink" href="#fitness-definition" title="Permalink to this heading">#</a></h2>
-<p>In an optimization context, different type of fitness terms can be combined into a fitness definition object.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">fd</span> <span class="o">=</span> <span class="n">FitnessDefinition</span><span class="p">(</span><span class="n">error_fitness</span><span class="o">=</span><span class="mf">10.0</span><span class="p">)</span>
-<span class="n">fd</span><span class="o">.</span><span class="n">add_fitness_term</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;weight&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="s2">&quot;design_objective&quot;</span><span class="p">,</span> <span class="n">weighting_factor</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span>
-                    <span class="n">expression</span><span class="o">=</span><span class="s2">&quot;map_design_objective( values[&#39;weight&#39;], 7.5, 5.5)&quot;</span><span class="p">)</span>
-<span class="n">fd</span><span class="o">.</span><span class="n">add_fitness_term</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;torsional_stiffness&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="s2">&quot;target_constraint&quot;</span><span class="p">,</span> <span class="n">weighting_factor</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span>
-                <span class="n">expression</span><span class="o">=</span><span class="s2">&quot;map_target_constraint( values[&#39;torsion_stiffness&#39;], 1313.0, 5.0, 30.0 )&quot;</span> <span class="p">)</span>
-<span class="n">fd</span><span class="o">.</span><span class="n">add_fitness_term</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;max_stress&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="s2">&quot;limit_constraint&quot;</span><span class="p">,</span> <span class="n">weighting_factor</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span>
-                <span class="n">expression</span><span class="o">=</span><span class="s2">&quot;map_limit_constraint( values[&#39;max_stress&#39;], 451.0, 50.0 )&quot;</span><span class="p">)</span>
-<span class="n">job_def</span><span class="o">.</span><span class="n">fitness_definition</span> <span class="o">=</span><span class="n">fd</span>
-</pre></div>
-</div>
-</section>
-<section id="submit-the-job-definition">
-<h2>Submit the job_definition<a class="headerlink" href="#submit-the-job-definition" title="Permalink to this heading">#</a></h2>
-<p>The next step is to send the job_definition to the server.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">job_def</span> <span class="o">=</span> <span class="n">proj</span><span class="o">.</span><span class="n">create_job_definitions</span><span class="p">([</span><span class="n">job_def</span><span class="p">])[</span><span class="mi">0</span><span class="p">]</span>
-</pre></div>
-</div>
-</section>
-<section id="design-points">
-<h2>Design Points<a class="headerlink" href="#design-points" title="Permalink to this heading">#</a></h2>
-<p>Finally, 10 design points with randomly  chosen parameter values are created and set to pending.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">dps</span> <span class="o">=</span> <span class="p">[]</span>
-<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">10</span><span class="p">):</span>
-    <span class="n">values</span> <span class="o">=</span> <span class="p">{</span> <span class="n">p</span><span class="o">.</span><span class="n">name</span> <span class="p">:</span> <span class="n">p</span><span class="o">.</span><span class="n">lower_limit</span> <span class="o">+</span> <span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">()</span><span class="o">*</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">upper_limit</span><span class="o">-</span><span class="n">p</span><span class="o">.</span><span class="n">lower_limit</span><span class="p">)</span>  <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">float_input_params</span> <span class="p">}</span>
-    <span class="n">values</span><span class="o">.</span><span class="n">update</span><span class="p">({</span> <span class="n">p</span><span class="o">.</span><span class="n">name</span><span class="p">:</span> <span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">value_list</span><span class="p">)</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">str_input_params</span><span class="p">})</span>
-    <span class="n">dps</span><span class="o">.</span><span class="n">append</span><span class="p">(</span> <span class="n">Job</span><span class="p">(</span> <span class="n">name</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;Job.</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">values</span><span class="o">=</span><span class="n">values</span><span class="p">,</span> <span class="n">eval_status</span><span class="o">=</span><span class="s2">&quot;pending&quot;</span><span class="p">)</span> <span class="p">)</span>
+<span class="sd">    After creating the project job_definition, 10 design points with randomly</span>
+<span class="sd">    chosen parameter values are created and set to pending.</span>
 
-<span class="n">dps</span> <span class="o">=</span> <span class="n">job_def</span><span class="o">.</span><span class="n">create_jobs</span><span class="p">(</span><span class="n">dps</span><span class="p">)</span>
+<span class="sd">    For further details about the model and its parametrization, see e.g.</span>
+<span class="sd">    &quot;Using Evolutionary Methods with a Heterogeneous Genotype Representation</span>
+<span class="sd">    for Design Optimization of a Tubular Steel Trellis Motorbike-Frame&quot;, 2003</span>
+<span class="sd">    by U. M. Fasel, O. Koenig, M. Wintermantel and P. Ermanni.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">jms_api</span> <span class="o">=</span> <span class="n">JmsApi</span><span class="p">(</span><span class="n">client</span><span class="p">)</span>
+    <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;=== Project&quot;</span><span class="p">)</span>
+    <span class="n">proj</span> <span class="o">=</span> <span class="n">Project</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">priority</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">active</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">proj</span> <span class="o">=</span> <span class="n">jms_api</span><span class="o">.</span><span class="n">create_project</span><span class="p">(</span><span class="n">proj</span><span class="p">,</span> <span class="n">replace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="n">project_api</span> <span class="o">=</span> <span class="n">ProjectApi</span><span class="p">(</span><span class="n">client</span><span class="p">,</span> <span class="n">proj</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+
+    <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;=== Files&quot;</span><span class="p">)</span>
+    <span class="n">cwd</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)</span>
+    <span class="n">files</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">files</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+        <span class="n">File</span><span class="p">(</span>
+            <span class="n">name</span><span class="o">=</span><span class="s2">&quot;inp&quot;</span><span class="p">,</span>
+            <span class="n">evaluation_path</span><span class="o">=</span><span class="s2">&quot;motorbike_frame.mac&quot;</span><span class="p">,</span>
+            <span class="nb">type</span><span class="o">=</span><span class="s2">&quot;text/plain&quot;</span><span class="p">,</span>
+            <span class="n">src</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">cwd</span><span class="p">,</span> <span class="s2">&quot;motorbike_frame.mac&quot;</span><span class="p">),</span>
+        <span class="p">)</span>
+    <span class="p">)</span>
+    <span class="n">files</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+        <span class="n">File</span><span class="p">(</span>
+            <span class="n">name</span><span class="o">=</span><span class="s2">&quot;results&quot;</span><span class="p">,</span>
+            <span class="n">evaluation_path</span><span class="o">=</span><span class="s2">&quot;motorbike_frame_results.txt&quot;</span><span class="p">,</span>
+            <span class="nb">type</span><span class="o">=</span><span class="s2">&quot;text/plain&quot;</span><span class="p">,</span>
+            <span class="n">src</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">cwd</span><span class="p">,</span> <span class="s2">&quot;motorbike_frame_results.txt&quot;</span><span class="p">),</span>
+        <span class="p">)</span>
+    <span class="p">)</span>
+    <span class="n">files</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+        <span class="n">File</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;out&quot;</span><span class="p">,</span> <span class="n">evaluation_path</span><span class="o">=</span><span class="s2">&quot;file.out&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="s2">&quot;text/plain&quot;</span><span class="p">,</span> <span class="n">collect</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">monitor</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="p">)</span>
+    <span class="n">files</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">File</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;img&quot;</span><span class="p">,</span> <span class="n">evaluation_path</span><span class="o">=</span><span class="s2">&quot;**.jpg&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="s2">&quot;image/jpeg&quot;</span><span class="p">,</span> <span class="n">collect</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
+    <span class="n">files</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+        <span class="n">File</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;err&quot;</span><span class="p">,</span> <span class="n">evaluation_path</span><span class="o">=</span><span class="s2">&quot;file*.err&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="s2">&quot;text/plain&quot;</span><span class="p">,</span> <span class="n">collect</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">monitor</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="p">)</span>
+
+    <span class="c1"># Alternative, not recommended way, will collect ALL files matching file.*</span>
+    <span class="c1"># files.append( File( name=&quot;all_files&quot;, evaluation_path=&quot;file.*&quot;, type=&quot;text/plain&quot;) )</span>
+
+    <span class="k">if</span> <span class="n">use_exec_script</span><span class="p">:</span>
+        <span class="c1"># Define and upload an exemplary exec script to run MAPDL</span>
+        <span class="n">files</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+            <span class="n">File</span><span class="p">(</span>
+                <span class="n">name</span><span class="o">=</span><span class="s2">&quot;exec_mapdl&quot;</span><span class="p">,</span>
+                <span class="n">evaluation_path</span><span class="o">=</span><span class="s2">&quot;exec_mapdl.py&quot;</span><span class="p">,</span>
+                <span class="nb">type</span><span class="o">=</span><span class="s2">&quot;application/x-python-code&quot;</span><span class="p">,</span>
+                <span class="n">src</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">cwd</span><span class="p">,</span> <span class="s2">&quot;..&quot;</span><span class="p">,</span> <span class="s2">&quot;exec_scripts&quot;</span><span class="p">,</span> <span class="s2">&quot;exec_mapdl.py&quot;</span><span class="p">),</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
+
+    <span class="n">files</span> <span class="o">=</span> <span class="n">project_api</span><span class="o">.</span><span class="n">create_files</span><span class="p">(</span><span class="n">files</span><span class="p">)</span>
+    <span class="n">file_ids</span> <span class="o">=</span> <span class="p">{</span><span class="n">f</span><span class="o">.</span><span class="n">name</span><span class="p">:</span> <span class="n">f</span><span class="o">.</span><span class="n">id</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">files</span><span class="p">}</span>
+
+    <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;=== JobDefinition with simulation workflow and parameters&quot;</span><span class="p">)</span>
+    <span class="n">job_def</span> <span class="o">=</span> <span class="n">JobDefinition</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;JobDefinition.1&quot;</span><span class="p">,</span> <span class="n">active</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="c1"># Input params: Dimensions of three custom tubes</span>
+    <span class="n">float_input_params</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">4</span><span class="p">):</span>
+        <span class="n">float_input_params</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span>
+            <span class="p">[</span>
+                <span class="n">FloatParameterDefinition</span><span class="p">(</span>
+                    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;tube</span><span class="si">%i</span><span class="s2">_radius&quot;</span> <span class="o">%</span> <span class="n">i</span><span class="p">,</span> <span class="n">lower_limit</span><span class="o">=</span><span class="mf">4.0</span><span class="p">,</span> <span class="n">upper_limit</span><span class="o">=</span><span class="mf">20.0</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mf">12.0</span>
+                <span class="p">),</span>
+                <span class="n">FloatParameterDefinition</span><span class="p">(</span>
+                    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;tube</span><span class="si">%i</span><span class="s2">_thickness&quot;</span> <span class="o">%</span> <span class="n">i</span><span class="p">,</span> <span class="n">lower_limit</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">upper_limit</span><span class="o">=</span><span class="mf">2.5</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mf">1.0</span>
+                <span class="p">),</span>
+            <span class="p">]</span>
+        <span class="p">)</span>
+
+    <span class="n">float_input_params</span> <span class="o">=</span> <span class="n">project_api</span><span class="o">.</span><span class="n">create_parameter_definitions</span><span class="p">(</span><span class="n">float_input_params</span><span class="p">)</span>
+    <span class="n">param_mappings</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">pi</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">4</span><span class="p">):</span>
+        <span class="n">param_mappings</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+            <span class="n">ParameterMapping</span><span class="p">(</span>
+                <span class="n">key_string</span><span class="o">=</span><span class="s2">&quot;radius(</span><span class="si">%i</span><span class="s2">)&quot;</span> <span class="o">%</span> <span class="n">i</span><span class="p">,</span>
+                <span class="n">tokenizer</span><span class="o">=</span><span class="s2">&quot;=&quot;</span><span class="p">,</span>
+                <span class="n">parameter_definition_id</span><span class="o">=</span><span class="n">float_input_params</span><span class="p">[</span><span class="n">pi</span><span class="p">]</span><span class="o">.</span><span class="n">id</span><span class="p">,</span>
+                <span class="n">file_id</span><span class="o">=</span><span class="n">file_ids</span><span class="p">[</span><span class="s2">&quot;inp&quot;</span><span class="p">],</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
+        <span class="n">pi</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="n">param_mappings</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+            <span class="n">ParameterMapping</span><span class="p">(</span>
+                <span class="n">key_string</span><span class="o">=</span><span class="s2">&quot;thickness(</span><span class="si">%i</span><span class="s2">)&quot;</span> <span class="o">%</span> <span class="n">i</span><span class="p">,</span>
+                <span class="n">tokenizer</span><span class="o">=</span><span class="s2">&quot;=&quot;</span><span class="p">,</span>
+                <span class="n">parameter_definition_id</span><span class="o">=</span><span class="n">float_input_params</span><span class="p">[</span><span class="n">pi</span><span class="p">]</span><span class="o">.</span><span class="n">id</span><span class="p">,</span>
+                <span class="n">file_id</span><span class="o">=</span><span class="n">file_ids</span><span class="p">[</span><span class="s2">&quot;inp&quot;</span><span class="p">],</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
+        <span class="n">pi</span> <span class="o">+=</span> <span class="mi">1</span>
+
+    <span class="c1"># Input params: Custom types used for all the different tubes of the frame</span>
+    <span class="n">str_input_params</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">22</span><span class="p">):</span>
+        <span class="n">str_input_params</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+            <span class="n">StringParameterDefinition</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;tube</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">i</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s2">&quot;1&quot;</span><span class="p">,</span> <span class="n">value_list</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;1&quot;</span><span class="p">,</span> <span class="s2">&quot;2&quot;</span><span class="p">,</span> <span class="s2">&quot;3&quot;</span><span class="p">])</span>
+        <span class="p">)</span>
+    <span class="n">str_input_params</span> <span class="o">=</span> <span class="n">project_api</span><span class="o">.</span><span class="n">create_parameter_definitions</span><span class="p">(</span><span class="n">str_input_params</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">22</span><span class="p">):</span>
+        <span class="n">param_mappings</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+            <span class="n">ParameterMapping</span><span class="p">(</span>
+                <span class="n">key_string</span><span class="o">=</span><span class="s2">&quot;tubes(</span><span class="si">%i</span><span class="s2">)&quot;</span> <span class="o">%</span> <span class="n">i</span><span class="p">,</span>
+                <span class="n">tokenizer</span><span class="o">=</span><span class="s2">&quot;=&quot;</span><span class="p">,</span>
+                <span class="n">parameter_definition_id</span><span class="o">=</span><span class="n">str_input_params</span><span class="p">[</span><span class="n">i</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">id</span><span class="p">,</span>
+                <span class="n">file_id</span><span class="o">=</span><span class="n">file_ids</span><span class="p">[</span><span class="s2">&quot;inp&quot;</span><span class="p">],</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
+
+    <span class="c1"># Output Params</span>
+    <span class="n">output_params</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">pname</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;weight&quot;</span><span class="p">,</span> <span class="s2">&quot;torsion_stiffness&quot;</span><span class="p">,</span> <span class="s2">&quot;max_stress&quot;</span><span class="p">]:</span>
+        <span class="n">output_params</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">FloatParameterDefinition</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">pname</span><span class="p">))</span>
+    <span class="n">output_params</span> <span class="o">=</span> <span class="n">project_api</span><span class="o">.</span><span class="n">create_parameter_definitions</span><span class="p">(</span><span class="n">output_params</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">pd</span> <span class="ow">in</span> <span class="n">output_params</span><span class="p">:</span>
+        <span class="n">param_mappings</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+            <span class="n">ParameterMapping</span><span class="p">(</span>
+                <span class="n">key_string</span><span class="o">=</span><span class="n">pd</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+                <span class="n">tokenizer</span><span class="o">=</span><span class="s2">&quot;=&quot;</span><span class="p">,</span>
+                <span class="n">parameter_definition_id</span><span class="o">=</span><span class="n">pd</span><span class="o">.</span><span class="n">id</span><span class="p">,</span>
+                <span class="n">file_id</span><span class="o">=</span><span class="n">file_ids</span><span class="p">[</span><span class="s2">&quot;results&quot;</span><span class="p">],</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
+
+    <span class="n">stat_params</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="c1"># # Collect some runtime stats from MAPDL out file</span>
+    <span class="n">stat_params</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">FloatParameterDefinition</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;mapdl_elapsed_time_obtain_license&quot;</span><span class="p">))</span>
+    <span class="n">stat_params</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">FloatParameterDefinition</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;mapdl_cp_time&quot;</span><span class="p">))</span>
+    <span class="n">stat_params</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">FloatParameterDefinition</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;mapdl_elapsed_time&quot;</span><span class="p">))</span>
+    <span class="n">stat_params</span> <span class="o">=</span> <span class="n">project_api</span><span class="o">.</span><span class="n">create_parameter_definitions</span><span class="p">(</span><span class="n">stat_params</span><span class="p">)</span>
+
+    <span class="n">param_mappings</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+        <span class="n">ParameterMapping</span><span class="p">(</span>
+            <span class="n">key_string</span><span class="o">=</span><span class="s2">&quot;Elapsed time spent obtaining a license&quot;</span><span class="p">,</span>
+            <span class="n">tokenizer</span><span class="o">=</span><span class="s2">&quot;:&quot;</span><span class="p">,</span>
+            <span class="n">parameter_definition_id</span><span class="o">=</span><span class="n">stat_params</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">id</span><span class="p">,</span>
+            <span class="n">file_id</span><span class="o">=</span><span class="n">file_ids</span><span class="p">[</span><span class="s2">&quot;out&quot;</span><span class="p">],</span>
+        <span class="p">)</span>
+    <span class="p">)</span>
+    <span class="n">param_mappings</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+        <span class="n">ParameterMapping</span><span class="p">(</span>
+            <span class="n">key_string</span><span class="o">=</span><span class="s2">&quot;CP Time      (sec)&quot;</span><span class="p">,</span>
+            <span class="n">tokenizer</span><span class="o">=</span><span class="s2">&quot;=&quot;</span><span class="p">,</span>
+            <span class="n">parameter_definition_id</span><span class="o">=</span><span class="n">stat_params</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">id</span><span class="p">,</span>
+            <span class="n">file_id</span><span class="o">=</span><span class="n">file_ids</span><span class="p">[</span><span class="s2">&quot;out&quot;</span><span class="p">],</span>
+        <span class="p">)</span>
+    <span class="p">)</span>
+    <span class="n">param_mappings</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+        <span class="n">ParameterMapping</span><span class="p">(</span>
+            <span class="n">key_string</span><span class="o">=</span><span class="s2">&quot;Elapsed Time (sec)&quot;</span><span class="p">,</span>
+            <span class="n">tokenizer</span><span class="o">=</span><span class="s2">&quot;=&quot;</span><span class="p">,</span>
+            <span class="n">parameter_definition_id</span><span class="o">=</span><span class="n">stat_params</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">id</span><span class="p">,</span>
+            <span class="n">file_id</span><span class="o">=</span><span class="n">file_ids</span><span class="p">[</span><span class="s2">&quot;out&quot;</span><span class="p">],</span>
+        <span class="p">)</span>
+    <span class="p">)</span>
+
+    <span class="c1"># For demonstration purpose we also define some parameter replacements</span>
+    <span class="c1"># that refer to task definition properties</span>
+    <span class="n">param_mappings</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+        <span class="n">ParameterMapping</span><span class="p">(</span>
+            <span class="n">key_string</span><span class="o">=</span><span class="s2">&quot;name&quot;</span><span class="p">,</span>
+            <span class="n">tokenizer</span><span class="o">=</span><span class="s2">&quot;=&quot;</span><span class="p">,</span>
+            <span class="n">string_quote</span><span class="o">=</span><span class="s2">&quot;&#39;&quot;</span><span class="p">,</span>
+            <span class="n">task_definition_property</span><span class="o">=</span><span class="s2">&quot;name&quot;</span><span class="p">,</span>
+            <span class="n">file_id</span><span class="o">=</span><span class="n">file_ids</span><span class="p">[</span><span class="s2">&quot;inp&quot;</span><span class="p">],</span>
+        <span class="p">)</span>
+    <span class="p">)</span>
+    <span class="n">param_mappings</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+        <span class="n">ParameterMapping</span><span class="p">(</span>
+            <span class="n">key_string</span><span class="o">=</span><span class="s2">&quot;application_name&quot;</span><span class="p">,</span>
+            <span class="n">tokenizer</span><span class="o">=</span><span class="s2">&quot;=&quot;</span><span class="p">,</span>
+            <span class="n">string_quote</span><span class="o">=</span><span class="s2">&quot;&#39;&quot;</span><span class="p">,</span>
+            <span class="n">task_definition_property</span><span class="o">=</span><span class="s2">&quot;software_requirements[0].name&quot;</span><span class="p">,</span>
+            <span class="n">file_id</span><span class="o">=</span><span class="n">file_ids</span><span class="p">[</span><span class="s2">&quot;inp&quot;</span><span class="p">],</span>
+        <span class="p">)</span>
+    <span class="p">)</span>
+    <span class="n">param_mappings</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+        <span class="n">ParameterMapping</span><span class="p">(</span>
+            <span class="n">key_string</span><span class="o">=</span><span class="s2">&quot;num_cores&quot;</span><span class="p">,</span>
+            <span class="n">tokenizer</span><span class="o">=</span><span class="s2">&quot;=&quot;</span><span class="p">,</span>
+            <span class="n">task_definition_property</span><span class="o">=</span><span class="s2">&quot;num_cores&quot;</span><span class="p">,</span>
+            <span class="n">file_id</span><span class="o">=</span><span class="n">file_ids</span><span class="p">[</span><span class="s2">&quot;inp&quot;</span><span class="p">],</span>
+        <span class="p">)</span>
+    <span class="p">)</span>
+    <span class="n">param_mappings</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+        <span class="n">ParameterMapping</span><span class="p">(</span>
+            <span class="n">key_string</span><span class="o">=</span><span class="s2">&quot;cpu_core_usage&quot;</span><span class="p">,</span>
+            <span class="n">tokenizer</span><span class="o">=</span><span class="s2">&quot;=&quot;</span><span class="p">,</span>
+            <span class="n">task_definition_property</span><span class="o">=</span><span class="s2">&quot;resource_requirements.cpu_core_usage&quot;</span><span class="p">,</span>
+            <span class="n">file_id</span><span class="o">=</span><span class="n">file_ids</span><span class="p">[</span><span class="s2">&quot;inp&quot;</span><span class="p">],</span>
+        <span class="p">)</span>
+    <span class="p">)</span>
+
+    <span class="c1"># Task definition</span>
+    <span class="n">task_def</span> <span class="o">=</span> <span class="n">TaskDefinition</span><span class="p">(</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;MAPDL_run&quot;</span><span class="p">,</span>
+        <span class="n">software_requirements</span><span class="o">=</span><span class="p">[</span>
+            <span class="n">Software</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;ANSYS Mechanical APDL&quot;</span><span class="p">,</span> <span class="n">version</span><span class="o">=</span><span class="n">ansys_version</span><span class="p">),</span>
+        <span class="p">],</span>
+        <span class="n">execution_command</span><span class="o">=</span><span class="s2">&quot;</span><span class="si">%e</span><span class="s2">xecutable% -b -i </span><span class="si">%f</span><span class="s2">ile:inp</span><span class="si">% -o</span><span class="s2"> file.out -np </span><span class="si">%r</span><span class="s2">esource:num_cores%&quot;</span><span class="p">,</span>
+        <span class="n">resource_requirements</span><span class="o">=</span><span class="n">ResourceRequirements</span><span class="p">(</span>
+            <span class="n">cpu_core_usage</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span>
+            <span class="n">memory</span><span class="o">=</span><span class="mi">250</span><span class="p">,</span>
+            <span class="n">disk_space</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span>
+        <span class="p">),</span>
+        <span class="n">execution_level</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+        <span class="n">max_execution_time</span><span class="o">=</span><span class="mf">50.0</span><span class="p">,</span>
+        <span class="n">num_trials</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+        <span class="n">input_file_ids</span><span class="o">=</span><span class="p">[</span><span class="n">f</span><span class="o">.</span><span class="n">id</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">files</span><span class="p">[:</span><span class="mi">1</span><span class="p">]],</span>
+        <span class="n">output_file_ids</span><span class="o">=</span><span class="p">[</span><span class="n">f</span><span class="o">.</span><span class="n">id</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">files</span><span class="p">[</span><span class="mi">1</span><span class="p">:]],</span>
+        <span class="n">success_criteria</span><span class="o">=</span><span class="n">SuccessCriteria</span><span class="p">(</span>
+            <span class="n">return_code</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+            <span class="n">expressions</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;values[&#39;tube1_radius&#39;]&gt;=4.0&quot;</span><span class="p">,</span> <span class="s2">&quot;values[&#39;tube1_thickness&#39;]&gt;=0.5&quot;</span><span class="p">],</span>
+            <span class="n">required_output_file_ids</span><span class="o">=</span><span class="p">[</span><span class="n">file_ids</span><span class="p">[</span><span class="s2">&quot;results&quot;</span><span class="p">]],</span>
+            <span class="n">require_all_output_files</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+            <span class="n">require_all_output_parameters</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="p">),</span>
+        <span class="n">licensing</span><span class="o">=</span><span class="n">Licensing</span><span class="p">(</span><span class="n">enable_shared_licensing</span><span class="o">=</span><span class="kc">False</span><span class="p">),</span>  <span class="c1"># Shared licensing disabled by default</span>
+    <span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">use_exec_script</span><span class="p">:</span>
+        <span class="n">task_def</span><span class="o">.</span><span class="n">use_execution_script</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="n">task_def</span><span class="o">.</span><span class="n">execution_script_id</span> <span class="o">=</span> <span class="n">file_ids</span><span class="p">[</span><span class="s2">&quot;exec_mapdl&quot;</span><span class="p">]</span>
+
+    <span class="n">task_defs</span> <span class="o">=</span> <span class="p">[</span><span class="n">task_def</span><span class="p">]</span>
+
+    <span class="c1"># # Fitness definition</span>
+    <span class="n">fd</span> <span class="o">=</span> <span class="n">FitnessDefinition</span><span class="p">(</span><span class="n">error_fitness</span><span class="o">=</span><span class="mf">10.0</span><span class="p">)</span>
+    <span class="n">fd</span><span class="o">.</span><span class="n">add_fitness_term</span><span class="p">(</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;weight&quot;</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="s2">&quot;design_objective&quot;</span><span class="p">,</span>
+        <span class="n">weighting_factor</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span>
+        <span class="n">expression</span><span class="o">=</span><span class="s2">&quot;map_design_objective( values[&#39;weight&#39;], 7.5, 5.5)&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">fd</span><span class="o">.</span><span class="n">add_fitness_term</span><span class="p">(</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;torsional_stiffness&quot;</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="s2">&quot;target_constraint&quot;</span><span class="p">,</span>
+        <span class="n">weighting_factor</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span>
+        <span class="n">expression</span><span class="o">=</span><span class="s2">&quot;map_target_constraint( values[&#39;torsion_stiffness&#39;], 1313.0, 5.0, 30.0 )&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">fd</span><span class="o">.</span><span class="n">add_fitness_term</span><span class="p">(</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;max_stress&quot;</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="s2">&quot;limit_constraint&quot;</span><span class="p">,</span>
+        <span class="n">weighting_factor</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span>
+        <span class="n">expression</span><span class="o">=</span><span class="s2">&quot;map_limit_constraint( values[&#39;max_stress&#39;], 451.0, 50.0 )&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">job_def</span><span class="o">.</span><span class="n">fitness_definition</span> <span class="o">=</span> <span class="n">fd</span>
+
+    <span class="n">task_defs</span> <span class="o">=</span> <span class="n">project_api</span><span class="o">.</span><span class="n">create_task_definitions</span><span class="p">(</span><span class="n">task_defs</span><span class="p">)</span>
+    <span class="n">param_mappings</span> <span class="o">=</span> <span class="n">project_api</span><span class="o">.</span><span class="n">create_parameter_mappings</span><span class="p">(</span><span class="n">param_mappings</span><span class="p">)</span>
+
+    <span class="n">job_def</span><span class="o">.</span><span class="n">parameter_definition_ids</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">pd</span><span class="o">.</span><span class="n">id</span> <span class="k">for</span> <span class="n">pd</span> <span class="ow">in</span> <span class="n">float_input_params</span> <span class="o">+</span> <span class="n">str_input_params</span> <span class="o">+</span> <span class="n">output_params</span> <span class="o">+</span> <span class="n">stat_params</span>
+    <span class="p">]</span>
+    <span class="n">job_def</span><span class="o">.</span><span class="n">parameter_mapping_ids</span> <span class="o">=</span> <span class="p">[</span><span class="n">pm</span><span class="o">.</span><span class="n">id</span> <span class="k">for</span> <span class="n">pm</span> <span class="ow">in</span> <span class="n">param_mappings</span><span class="p">]</span>
+    <span class="n">job_def</span><span class="o">.</span><span class="n">task_definition_ids</span> <span class="o">=</span> <span class="p">[</span><span class="n">td</span><span class="o">.</span><span class="n">id</span> <span class="k">for</span> <span class="n">td</span> <span class="ow">in</span> <span class="n">task_defs</span><span class="p">]</span>
+
+    <span class="c1"># Create job_definition in project</span>
+    <span class="n">job_def</span> <span class="o">=</span> <span class="n">project_api</span><span class="o">.</span><span class="n">create_job_definitions</span><span class="p">([</span><span class="n">job_def</span><span class="p">])[</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="n">job_def</span> <span class="o">=</span> <span class="n">project_api</span><span class="o">.</span><span class="n">get_job_definitions</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;=== Create </span><span class="si">{</span><span class="n">num_jobs</span><span class="si">}</span><span class="s2"> jobs&quot;</span><span class="p">)</span>
+    <span class="n">jobs</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_jobs</span><span class="p">):</span>
+        <span class="n">values</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="n">p</span><span class="o">.</span><span class="n">name</span><span class="p">:</span> <span class="n">p</span><span class="o">.</span><span class="n">lower_limit</span> <span class="o">+</span> <span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">()</span> <span class="o">*</span> <span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">upper_limit</span> <span class="o">-</span> <span class="n">p</span><span class="o">.</span><span class="n">lower_limit</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">float_input_params</span>
+        <span class="p">}</span>
+        <span class="n">values</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="n">p</span><span class="o">.</span><span class="n">name</span><span class="p">:</span> <span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">value_list</span><span class="p">)</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">str_input_params</span><span class="p">})</span>
+        <span class="n">jobs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+            <span class="n">Job</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;Job.</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">values</span><span class="o">=</span><span class="n">values</span><span class="p">,</span> <span class="n">eval_status</span><span class="o">=</span><span class="s2">&quot;pending&quot;</span><span class="p">,</span> <span class="n">job_definition_id</span><span class="o">=</span><span class="n">job_def</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+        <span class="p">)</span>
+    <span class="n">jobs</span> <span class="o">=</span> <span class="n">project_api</span><span class="o">.</span><span class="n">create_jobs</span><span class="p">(</span><span class="n">jobs</span><span class="p">)</span>
+
+    <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Created project &#39;</span><span class="si">{</span><span class="n">proj</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&#39;, ID=&#39;</span><span class="si">{</span><span class="n">proj</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">&#39;&quot;</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">proj</span>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="n">parser</span> <span class="o">=</span> <span class="n">argparse</span><span class="o">.</span><span class="n">ArgumentParser</span><span class="p">()</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;-n&quot;</span><span class="p">,</span> <span class="s2">&quot;--name&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s2">&quot;Mapdl Motorbike Frame&quot;</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;-j&quot;</span><span class="p">,</span> <span class="s2">&quot;--num-jobs&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mi">50</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;-es&quot;</span><span class="p">,</span> <span class="s2">&quot;--use-exec-script&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s2">&quot;store_true&quot;</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;-U&quot;</span><span class="p">,</span> <span class="s2">&quot;--url&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s2">&quot;https://127.0.0.1:8443/rep&quot;</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;-u&quot;</span><span class="p">,</span> <span class="s2">&quot;--username&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s2">&quot;repadmin&quot;</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;-p&quot;</span><span class="p">,</span> <span class="s2">&quot;--password&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s2">&quot;repadmin&quot;</span><span class="p">)</span>
+    <span class="n">args</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">parse_args</span><span class="p">()</span>
+
+    <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">()</span>
+    <span class="n">logging</span><span class="o">.</span><span class="n">basicConfig</span><span class="p">(</span><span class="nb">format</span><span class="o">=</span><span class="s2">&quot;</span><span class="si">%(message)s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">level</span><span class="o">=</span><span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">)</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Connect to REP JMS&quot;</span><span class="p">)</span>
+        <span class="n">client</span> <span class="o">=</span> <span class="n">Client</span><span class="p">(</span><span class="n">rep_url</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">url</span><span class="p">,</span> <span class="n">username</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">username</span><span class="p">,</span> <span class="n">password</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">password</span><span class="p">)</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;REP URL: </span><span class="si">{</span><span class="n">client</span><span class="o">.</span><span class="n">rep_url</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">proj</span> <span class="o">=</span> <span class="n">create_project</span><span class="p">(</span>
+            <span class="n">client</span><span class="o">=</span><span class="n">client</span><span class="p">,</span>
+            <span class="n">name</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+            <span class="n">num_jobs</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">num_jobs</span><span class="p">,</span>
+            <span class="n">use_exec_script</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">use_exec_script</span><span class="p">,</span>
+        <span class="p">)</span>
+
+    <span class="k">except</span> <span class="n">REPError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>
 </pre></div>
 </div>
-</section>
+</div>
 </section>
 
 

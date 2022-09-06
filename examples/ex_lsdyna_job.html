@@ -1,0 +1,709 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+
+    <title>LS-DYNA Job Submission &#8212; PyREP</title>
+    
+<script>
+  document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+  document.documentElement.dataset.theme = localStorage.getItem("theme") || "light"
+</script>
+
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=92025949c220c2e29695" rel="stylesheet">
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=92025949c220c2e29695" rel="stylesheet">
+
+
+  <link rel="stylesheet"
+    href="../_static/vendor/fontawesome/5.13.0/css/all.min.css">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/ansys_sphinx_theme.css" />
+
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=92025949c220c2e29695">
+
+    
+        <link href="../_static/css/breadcrumbs.css" rel="stylesheet">
+    
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/clipboard.min.js"></script>
+    <script src="../_static/copybutton.js"></script>
+    <link rel="shortcut icon" href="../_static/favicon.png"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Python Two-Bar Truss Example" href="ex_python_two_bar.html" />
+    <link rel="prev" title="MAPDL Linked Analyses Example" href="ex_mapdl_linked_analyses.html" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="docsearch:language" content="en">
+  </head>
+  
+  
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="180" data-default-mode="">
+    <div class="bd-header-announcement container-fluid" id="banner">
+      
+
+    </div>
+
+    
+    
+    <nav class="bd-header navbar navbar-light navbar-expand-lg bg-light fixed-top bd-navbar" id="navbar-main"><div class="bd-header__inner container-xl">
+
+  <div id="navbar-start">
+    
+    
+  
+
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+    <img src="../_static/pyansys-logo-black-cropped.png" class="logo__image only-light" alt="Logo image">
+    <img src="../_static/pyansys-logo-black-cropped.png" class="logo__image only-dark" alt="Logo image">
+  
+  
+</a>
+    
+  </div>
+
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar-collapsible" aria-controls="navbar-collapsible" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="fas fa-bars"></span>
+  </button>
+
+  
+  <div id="navbar-collapsible" class="col-lg-9 collapse navbar-collapse">
+    <div id="navbar-center" class="mr-auto">
+      
+      <div class="navbar-center-item">
+        <ul id="navbar-main-elements" class="navbar-nav">
+    <li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../install.html">
+  Installation
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../quickstart.html">
+  Quickstart
+ </a>
+</li>
+
+<li class="toctree-l1 current active nav-item">
+ <a class="reference internal nav-link" href="index.html">
+  Examples
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../api/index.html">
+  Code Documentation
+ </a>
+</li>
+
+    
+</ul>
+      </div>
+      
+    </div>
+
+    <div id="navbar-end">
+      
+      <div class="navbar-end-item">
+        <span id="theme-switch" class="btn btn-sm btn-outline-primary navbar-btn rounded-circle">
+    <a class="theme-switch" data-mode="light"><i class="fas fa-sun"></i></a>
+    <a class="theme-switch" data-mode="dark"><i class="far fa-moon"></i></a>
+    <a class="theme-switch" data-mode="auto"><i class="fas fa-adjust"></i></a>
+</span>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
+        <li class="nav-item">
+          <a class="nav-link" href="https://github.com/pyansys/pyrep" rel="noopener" target="_blank" title="GitHub"><span><i class="fab fa-github-square"></i></span>
+            <label class="sr-only">GitHub</label></a>
+        </li>
+      </ul>
+      </div>
+      
+    </div>
+  </div>
+</div>
+    </nav>
+    
+    
+        <div class="container-xl">
+    <div class="row">
+        <div class="col-12 col-md-3" id="breadcrumbs-spacer"></div>
+        <div class="col-12 col-md-11 col-xl-9" id="breadcrumbs">
+          
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+    
+        <li class="nav-item nav-item-additional-breadcrumb"><a href="https://docs.pyansys.com/">PyAnsys</a> » </li>
+    
+    
+        <li class="nav-item nav-item-0"><a href="../index.html">PyREP</a> » </li>
+    
+
+          <li class="nav-item nav-item-1"><a href="index.html" accesskey="U">Examples</a> » </li>
+        <li class="nav-item nav-item-this"><a href="">LS-DYNA Job Submission</a></li> 
+      </ul>
+    </div>
+        </div>
+  </div>
+</div>
+    
+
+
+    <div class="bd-container container-xl">
+      <div class="bd-container__inner row">
+          
+
+<!-- Only show if we have sidebars configured, else just a small margin  -->
+<div class="bd-sidebar-primary col-12 col-md-3 bd-sidebar">
+  <div class="sidebar-start-items"><form class="bd-search d-flex align-items-center" action="../search.html" method="get">
+  <i class="icon fas fa-search"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" >
+</form><nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
+  <div class="bd-toc-item active">
+    
+    <ul class="current nav bd-sidenav">
+ <li class="toctree-l1">
+  <a class="reference internal" href="ex_motorbike_frame.html">
+   MAPDL Motorbike Frame - Project Creation
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ex_motorbike_frame_query.html">
+   MAPDL Motorbike Frame - Project Query
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ex_mapdl_tire_performance.html">
+   MAPDL Tire Performance
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ex_mapdl_linked_analyses.html">
+   MAPDL Linked Analyses Example
+  </a>
+ </li>
+ <li class="toctree-l1 current active">
+  <a class="current reference internal" href="#">
+   LS-DYNA Job Submission
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ex_python_two_bar.html">
+   Python Two-Bar Truss Example
+  </a>
+ </li>
+</ul>
+
+    
+    
+  </div>
+</nav>
+  </div>
+  <div class="sidebar-end-items">
+  </div>
+</div>
+
+
+          
+
+
+<div class="bd-sidebar-secondary d-none d-xl-block col-xl-2 bd-toc">
+  
+    
+    <div class="toc-item">
+      
+
+<nav id="bd-toc-nav">
+    
+</nav>
+    </div>
+    
+    <div class="toc-item">
+      
+    </div>
+    
+  
+</div>
+
+
+          
+          
+          <div class="bd-content col-12 col-md-9 col-xl-7">
+              
+              <article class="bd-article" role="main">
+                
+  <section id="ls-dyna-job-submission">
+<span id="example-lsdyna-job"></span><h1>LS-DYNA Job Submission<a class="headerlink" href="#ls-dyna-job-submission" title="Permalink to this heading">#</a></h1>
+<p>This example shows how to submit an LS-DYNA job to REP. Once submitted, minimal job information are serialized to a JSON file <code class="docutils literal notranslate"><span class="pre">rep_job.json</span></code>.
+This mimics what an application would need to store in order to subsequently monitor the job and download results.</p>
+<p>The job consists of two tasks:</p>
+<ul class="simple">
+<li><p>The first task runs the actual LS-DYNA simulation</p></li>
+<li><p>The second task runs a little LS-PrePost script to post-process the results of the first task.</p></li>
+</ul>
+<p>Usage:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python lsdyna_job.py submit
+python lsdyna_job.py monitor
+python lsdyna_job.py download
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">download</span></code> action requires <code class="docutils literal notranslate"><span class="pre">tqdm</span></code> and <code class="docutils literal notranslate"><span class="pre">humanize</span></code> packages to show a progress bar during the result files download. You can install them with <code class="docutils literal notranslate"><span class="pre">python</span> <span class="pre">-m</span> <span class="pre">pip</span> <span class="pre">install</span> <span class="pre">tqdm</span> <span class="pre">humanize</span></code>.</p>
+</div>
+<p>The project setup script as well as the data files can be downloaded here <a class="reference download internal" download="" href="../_downloads/8565ca91a49cebda5c396144f7acb8dc/lsdyna_cylinder_plate.zip"><code class="xref download docutils literal notranslate"><span class="pre">LS-DYNA</span> <span class="pre">Job</span> <span class="pre">Submission</span> <span class="pre">Example</span></code></a>.</p>
+<div class="literal-block-wrapper docutils container" id="id1">
+<div class="code-block-caption"><span class="caption-text">lsdyna_job.py</span><a class="headerlink" href="#id1" title="Permalink to this code">#</a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Script showing how to submit an LS-DYNA job to REP.</span>
+
+<span class="sd">Once submitted, minimal job information are serialized to a JSON file rep_job.json.</span>
+<span class="sd">This mimics what an application would need to store in order to</span>
+<span class="sd">subsequently monitor the job and download results.</span>
+
+<span class="sd">The job consists of two tasks:</span>
+<span class="sd"> - The first task runs the actual LS-DYNA simulation</span>
+<span class="sd"> - The second task runs a little LS-PrePost script to</span>
+<span class="sd">   post-process the results of the first task.</span>
+
+<span class="sd">Usage:</span>
+
+<span class="sd">    $ python lsdyna_job.py submit</span>
+<span class="sd">    $ python lsdyna_job.py monitor</span>
+<span class="sd">    $ python lsdyna_job.py download</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">argparse</span>
+<span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">time</span>
+
+<span class="kn">from</span> <span class="nn">ansys.rep.client</span> <span class="kn">import</span> <span class="n">Client</span><span class="p">,</span> <span class="n">REPError</span>
+<span class="kn">from</span> <span class="nn">ansys.rep.client.jms</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">File</span><span class="p">,</span>
+    <span class="n">JmsApi</span><span class="p">,</span>
+    <span class="n">Job</span><span class="p">,</span>
+    <span class="n">JobDefinition</span><span class="p">,</span>
+    <span class="n">Project</span><span class="p">,</span>
+    <span class="n">ProjectApi</span><span class="p">,</span>
+    <span class="n">ResourceRequirements</span><span class="p">,</span>
+    <span class="n">Software</span><span class="p">,</span>
+    <span class="n">SuccessCriteria</span><span class="p">,</span>
+    <span class="n">TaskDefinition</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="n">log</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+<span class="n">REP_URL</span> <span class="o">=</span> <span class="s2">&quot;https://localhost:8443/rep&quot;</span>
+<span class="n">USERNAME</span> <span class="o">=</span> <span class="s2">&quot;repadmin&quot;</span>
+<span class="n">PASSWORD</span> <span class="o">=</span> <span class="s2">&quot;repadmin&quot;</span>
+<span class="n">USE_LSDYNA_MPP</span> <span class="o">=</span> <span class="kc">False</span>
+<span class="n">ANSYS_VERSION</span> <span class="o">=</span> <span class="s2">&quot;2023 R1&quot;</span>
+
+
+<span class="k">class</span> <span class="nc">REPJob</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Simplistic helper class to store job information similarly to</span>
+<span class="sd">    what a pre/post processing application would do.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">rep_url</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">project_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">job_definition_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">job_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">auth_token</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">task_ids</span><span class="o">=</span><span class="p">[],</span>
+    <span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">rep_url</span> <span class="o">=</span> <span class="n">rep_url</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">project_id</span> <span class="o">=</span> <span class="n">project_id</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">job_definition_id</span> <span class="o">=</span> <span class="n">job_definition_id</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">job_id</span> <span class="o">=</span> <span class="n">job_id</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">auth_token</span> <span class="o">=</span> <span class="n">auth_token</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">task_ids</span> <span class="o">=</span> <span class="n">task_ids</span>
+
+    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;REP Job:</span><span class="se">\n</span><span class="s2"> </span><span class="si">{</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="vm">__dict__</span><span class="p">,</span> <span class="n">sort_keys</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">save</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Save job info to JSON file&quot;&quot;&quot;</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s2">&quot;rep_job.json&quot;</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="vm">__dict__</span><span class="p">,</span> <span class="n">sort_keys</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">4</span><span class="p">))</span>
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">load</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Load job info from JSON file&quot;&quot;&quot;</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s2">&quot;rep_job.json&quot;</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">job</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">object_hook</span><span class="o">=</span><span class="k">lambda</span> <span class="n">d</span><span class="p">:</span> <span class="bp">cls</span><span class="p">(</span><span class="o">**</span><span class="n">d</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">job</span>
+
+
+<span class="k">def</span> <span class="nf">submit_job</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">REPJob</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Create a REP project running a simple LS-DYNA</span>
+<span class="sd">    job simulating the impact of a cylinder made of Aluminum</span>
+<span class="sd">    against a plate made of steel.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;=== Connect to the REP server&quot;</span><span class="p">)</span>
+    <span class="n">client</span> <span class="o">=</span> <span class="n">Client</span><span class="p">(</span><span class="n">rep_url</span><span class="o">=</span><span class="n">REP_URL</span><span class="p">,</span> <span class="n">username</span><span class="o">=</span><span class="n">USERNAME</span><span class="p">,</span> <span class="n">password</span><span class="o">=</span><span class="n">PASSWORD</span><span class="p">)</span>
+    <span class="n">jms_api</span> <span class="o">=</span> <span class="n">JmsApi</span><span class="p">(</span><span class="n">client</span><span class="p">)</span>
+
+    <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;=== Create an empty project&quot;</span><span class="p">)</span>
+    <span class="n">proj</span> <span class="o">=</span> <span class="n">Project</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;LS-DYNA Cylinder Plate&quot;</span><span class="p">,</span> <span class="n">priority</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">active</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">proj</span> <span class="o">=</span> <span class="n">jms_api</span><span class="o">.</span><span class="n">create_project</span><span class="p">(</span><span class="n">proj</span><span class="p">)</span>
+
+    <span class="n">project_api</span> <span class="o">=</span> <span class="n">ProjectApi</span><span class="p">(</span><span class="n">client</span><span class="p">,</span> <span class="n">proj</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+
+    <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;=== Create file resources&quot;</span><span class="p">)</span>
+    <span class="n">cwd</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)</span>
+    <span class="n">files</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="c1"># input files</span>
+    <span class="n">files</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+        <span class="n">File</span><span class="p">(</span>
+            <span class="n">name</span><span class="o">=</span><span class="s2">&quot;input_deck&quot;</span><span class="p">,</span>
+            <span class="n">evaluation_path</span><span class="o">=</span><span class="s2">&quot;cylinder_plate.k&quot;</span><span class="p">,</span>
+            <span class="nb">type</span><span class="o">=</span><span class="s2">&quot;text/plain&quot;</span><span class="p">,</span>
+            <span class="n">src</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">cwd</span><span class="p">,</span> <span class="s2">&quot;cylinder_plate.k&quot;</span><span class="p">),</span>
+        <span class="p">)</span>
+    <span class="p">)</span>
+    <span class="n">files</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+        <span class="n">File</span><span class="p">(</span>
+            <span class="n">name</span><span class="o">=</span><span class="s2">&quot;post_commands&quot;</span><span class="p">,</span>
+            <span class="n">evaluation_path</span><span class="o">=</span><span class="s2">&quot;postprocess.cfile&quot;</span><span class="p">,</span>
+            <span class="nb">type</span><span class="o">=</span><span class="s2">&quot;text/plain&quot;</span><span class="p">,</span>
+            <span class="n">src</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">cwd</span><span class="p">,</span> <span class="s2">&quot;postprocess.cfile&quot;</span><span class="p">),</span>
+        <span class="p">)</span>
+    <span class="p">)</span>
+
+    <span class="c1"># output files</span>
+    <span class="n">files</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+        <span class="n">File</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;d3hsp&quot;</span><span class="p">,</span> <span class="n">evaluation_path</span><span class="o">=</span><span class="s2">&quot;d3hsp&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="s2">&quot;text/plain&quot;</span><span class="p">,</span> <span class="n">collect</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">monitor</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="p">)</span>
+    <span class="k">if</span> <span class="n">USE_LSDYNA_MPP</span><span class="p">:</span>
+        <span class="n">files</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+            <span class="n">File</span><span class="p">(</span>
+                <span class="n">name</span><span class="o">=</span><span class="s2">&quot;messag&quot;</span><span class="p">,</span>
+                <span class="n">evaluation_path</span><span class="o">=</span><span class="s2">&quot;mes0000&quot;</span><span class="p">,</span>
+                <span class="nb">type</span><span class="o">=</span><span class="s2">&quot;text/plain&quot;</span><span class="p">,</span>
+                <span class="n">collect</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                <span class="n">monitor</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="p">)</span>  <span class="c1"># for distributed run</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">files</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+            <span class="n">File</span><span class="p">(</span>
+                <span class="n">name</span><span class="o">=</span><span class="s2">&quot;messag&quot;</span><span class="p">,</span>
+                <span class="n">evaluation_path</span><span class="o">=</span><span class="s2">&quot;messag&quot;</span><span class="p">,</span>
+                <span class="nb">type</span><span class="o">=</span><span class="s2">&quot;text/plain&quot;</span><span class="p">,</span>
+                <span class="n">collect</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                <span class="n">monitor</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="p">)</span>  <span class="c1"># for shared memory run</span>
+    <span class="n">files</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+        <span class="n">File</span><span class="p">(</span>
+            <span class="n">name</span><span class="o">=</span><span class="s2">&quot;d3plot&quot;</span><span class="p">,</span>
+            <span class="n">evaluation_path</span><span class="o">=</span><span class="s2">&quot;d3plot*&quot;</span><span class="p">,</span>
+            <span class="nb">type</span><span class="o">=</span><span class="s2">&quot;application/octet-stream&quot;</span><span class="p">,</span>
+            <span class="n">collect</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="n">monitor</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="p">)</span>
+    <span class="p">)</span>
+    <span class="n">files</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+        <span class="n">File</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;img&quot;</span><span class="p">,</span> <span class="n">evaluation_path</span><span class="o">=</span><span class="s2">&quot;**.png&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="s2">&quot;image/png&quot;</span><span class="p">,</span> <span class="n">collect</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">monitor</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="p">)</span>
+    <span class="n">files</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+        <span class="n">File</span><span class="p">(</span>
+            <span class="n">name</span><span class="o">=</span><span class="s2">&quot;movie&quot;</span><span class="p">,</span>
+            <span class="n">evaluation_path</span><span class="o">=</span><span class="s2">&quot;**.wmv&quot;</span><span class="p">,</span>
+            <span class="nb">type</span><span class="o">=</span><span class="s2">&quot;video/x-ms-wmv&quot;</span><span class="p">,</span>
+            <span class="n">collect</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="n">monitor</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="p">)</span>
+    <span class="p">)</span>
+
+    <span class="n">files</span> <span class="o">=</span> <span class="n">project_api</span><span class="o">.</span><span class="n">create_files</span><span class="p">(</span><span class="n">files</span><span class="p">)</span>
+    <span class="n">file_ids</span> <span class="o">=</span> <span class="p">{</span><span class="n">f</span><span class="o">.</span><span class="n">name</span><span class="p">:</span> <span class="n">f</span><span class="o">.</span><span class="n">id</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">files</span><span class="p">}</span>
+
+    <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;=== Simulation workflow&quot;</span><span class="p">)</span>
+    <span class="n">job_def</span> <span class="o">=</span> <span class="n">JobDefinition</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;JobDefinition.1&quot;</span><span class="p">,</span> <span class="n">active</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="c1"># Define process steps (task definitions)</span>
+    <span class="n">ls_dyna_command</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%e</span><span class="s2">xecutable</span><span class="si">% i</span><span class="s2">=</span><span class="si">%f</span><span class="s2">ile:input_deck% ncpu=</span><span class="si">%r</span><span class="s2">esource:num_cores% memory=300m&quot;</span>
+    <span class="k">if</span> <span class="n">USE_LSDYNA_MPP</span><span class="p">:</span>
+        <span class="n">ls_dyna_command</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="s2">&quot;</span><span class="si">%e</span><span class="s2">xecutable</span><span class="si">% -d</span><span class="s2">is -np </span><span class="si">%r</span><span class="s2">esource:num_cores</span><span class="si">% i</span><span class="s2">=</span><span class="si">%f</span><span class="s2">ile:input_deck% memory=300m&quot;</span>
+        <span class="p">)</span>
+
+    <span class="n">task_def1</span> <span class="o">=</span> <span class="n">TaskDefinition</span><span class="p">(</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;LS-DYNA Run&quot;</span><span class="p">,</span>
+        <span class="n">software_requirements</span><span class="o">=</span><span class="p">[</span><span class="n">Software</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;ANSYS LS-DYNA&quot;</span><span class="p">,</span> <span class="n">version</span><span class="o">=</span><span class="n">ANSYS_VERSION</span><span class="p">)],</span>
+        <span class="n">execution_command</span><span class="o">=</span><span class="n">ls_dyna_command</span><span class="p">,</span>
+        <span class="n">max_execution_time</span><span class="o">=</span><span class="mf">3600.0</span><span class="p">,</span>
+        <span class="n">resource_requirements</span><span class="o">=</span><span class="n">ResourceRequirements</span><span class="p">(</span>
+            <span class="n">cpu_core_usage</span><span class="o">=</span><span class="mi">6</span><span class="p">,</span>
+            <span class="n">memory</span><span class="o">=</span><span class="mi">6000</span><span class="p">,</span>
+            <span class="n">disk_space</span><span class="o">=</span><span class="mi">4000</span><span class="p">,</span>
+        <span class="p">),</span>
+        <span class="n">execution_level</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+        <span class="n">num_trials</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+        <span class="n">input_file_ids</span><span class="o">=</span><span class="p">[</span><span class="n">file_ids</span><span class="p">[</span><span class="s2">&quot;input_deck&quot;</span><span class="p">]],</span>
+        <span class="n">output_file_ids</span><span class="o">=</span><span class="p">[</span><span class="n">file_ids</span><span class="p">[</span><span class="s2">&quot;d3hsp&quot;</span><span class="p">],</span> <span class="n">file_ids</span><span class="p">[</span><span class="s2">&quot;messag&quot;</span><span class="p">],</span> <span class="n">file_ids</span><span class="p">[</span><span class="s2">&quot;d3plot&quot;</span><span class="p">]],</span>
+        <span class="n">success_criteria</span><span class="o">=</span><span class="n">SuccessCriteria</span><span class="p">(</span>
+            <span class="n">return_code</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+            <span class="n">required_output_file_ids</span><span class="o">=</span><span class="p">[</span><span class="n">file_ids</span><span class="p">[</span><span class="s2">&quot;d3plot&quot;</span><span class="p">]],</span>
+            <span class="n">require_all_output_parameters</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+            <span class="n">require_all_output_files</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="p">),</span>
+    <span class="p">)</span>
+
+    <span class="n">task_def2</span> <span class="o">=</span> <span class="n">TaskDefinition</span><span class="p">(</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;LS-PrePost Run&quot;</span><span class="p">,</span>
+        <span class="n">software_requirements</span><span class="o">=</span><span class="p">[</span><span class="n">Software</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;ANSYS LS-PrePost&quot;</span><span class="p">,</span> <span class="n">version</span><span class="o">=</span><span class="n">ANSYS_VERSION</span><span class="p">)],</span>
+        <span class="n">execution_command</span><span class="o">=</span><span class="s2">&quot;</span><span class="si">%e</span><span class="s2">xecutable</span><span class="si">% c</span><span class="s2">=</span><span class="si">%f</span><span class="s2">ile:post_commands%&quot;</span><span class="p">,</span>
+        <span class="n">max_execution_time</span><span class="o">=</span><span class="mf">600.0</span><span class="p">,</span>
+        <span class="n">resource_requirements</span><span class="o">=</span><span class="n">ResourceRequirements</span><span class="p">(</span>
+            <span class="n">cpu_core_usage</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+            <span class="n">memory</span><span class="o">=</span><span class="mi">3000</span><span class="p">,</span>
+            <span class="n">disk_space</span><span class="o">=</span><span class="mi">4000</span><span class="p">,</span>
+        <span class="p">),</span>
+        <span class="n">execution_level</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+        <span class="n">num_trials</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+        <span class="n">input_file_ids</span><span class="o">=</span><span class="p">[</span><span class="n">file_ids</span><span class="p">[</span><span class="s2">&quot;post_commands&quot;</span><span class="p">],</span> <span class="n">file_ids</span><span class="p">[</span><span class="s2">&quot;d3plot&quot;</span><span class="p">]],</span>
+        <span class="n">output_file_ids</span><span class="o">=</span><span class="p">[</span><span class="n">file_ids</span><span class="p">[</span><span class="s2">&quot;img&quot;</span><span class="p">],</span> <span class="n">file_ids</span><span class="p">[</span><span class="s2">&quot;movie&quot;</span><span class="p">]],</span>
+        <span class="n">success_criteria</span><span class="o">=</span><span class="n">SuccessCriteria</span><span class="p">(</span>
+            <span class="n">required_output_file_ids</span><span class="o">=</span><span class="p">[</span><span class="n">file_ids</span><span class="p">[</span><span class="s2">&quot;movie&quot;</span><span class="p">]],</span>
+            <span class="n">require_all_output_parameters</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+            <span class="n">require_all_output_files</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="p">),</span>
+    <span class="p">)</span>
+
+    <span class="n">task_definitions</span> <span class="o">=</span> <span class="n">project_api</span><span class="o">.</span><span class="n">create_task_definitions</span><span class="p">([</span><span class="n">task_def1</span><span class="p">,</span> <span class="n">task_def2</span><span class="p">])</span>
+
+    <span class="c1"># Create job definition in project</span>
+    <span class="n">job_def</span> <span class="o">=</span> <span class="n">JobDefinition</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;JobDefinition.1&quot;</span><span class="p">,</span> <span class="n">active</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">job_def</span><span class="o">.</span><span class="n">task_definition_ids</span> <span class="o">=</span> <span class="p">[</span><span class="n">td</span><span class="o">.</span><span class="n">id</span> <span class="k">for</span> <span class="n">td</span> <span class="ow">in</span> <span class="n">task_definitions</span><span class="p">]</span>
+
+    <span class="n">job_def</span> <span class="o">=</span> <span class="n">project_api</span><span class="o">.</span><span class="n">create_job_definitions</span><span class="p">([</span><span class="n">job_def</span><span class="p">])[</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;=== Submit the job&quot;</span><span class="p">)</span>
+    <span class="n">job</span> <span class="o">=</span> <span class="n">Job</span><span class="p">(</span>
+        <span class="n">eval_status</span><span class="o">=</span><span class="s2">&quot;pending&quot;</span><span class="p">,</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Nominal: 56.7km/h (30ms sim time)&quot;</span><span class="p">,</span>
+        <span class="n">job_definition_id</span><span class="o">=</span><span class="n">job_def</span><span class="o">.</span><span class="n">id</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">job</span> <span class="o">=</span> <span class="n">project_api</span><span class="o">.</span><span class="n">create_jobs</span><span class="p">([</span><span class="n">job</span><span class="p">])[</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="n">app_job</span> <span class="o">=</span> <span class="n">REPJob</span><span class="p">()</span>
+    <span class="n">app_job</span><span class="o">.</span><span class="n">project_id</span> <span class="o">=</span> <span class="n">proj</span><span class="o">.</span><span class="n">id</span>
+    <span class="n">app_job</span><span class="o">.</span><span class="n">job_definition_id</span> <span class="o">=</span> <span class="n">job_def</span><span class="o">.</span><span class="n">id</span>
+    <span class="n">app_job</span><span class="o">.</span><span class="n">job_id</span> <span class="o">=</span> <span class="n">job</span><span class="o">.</span><span class="n">id</span>
+    <span class="n">app_job</span><span class="o">.</span><span class="n">rep_url</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">rep_url</span>
+    <span class="n">app_job</span><span class="o">.</span><span class="n">auth_token</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">refresh_token</span>
+
+    <span class="n">tasks</span> <span class="o">=</span> <span class="n">project_api</span><span class="o">.</span><span class="n">get_tasks</span><span class="p">(</span><span class="n">job_id</span><span class="o">=</span><span class="n">job</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+    <span class="n">job</span><span class="o">.</span><span class="n">task_ids</span> <span class="o">=</span> <span class="p">[</span><span class="n">t</span><span class="o">.</span><span class="n">id</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">tasks</span><span class="p">]</span>
+
+    <span class="k">return</span> <span class="n">app_job</span>
+
+
+<span class="k">def</span> <span class="nf">monitor_job</span><span class="p">(</span><span class="n">app_job</span><span class="p">:</span> <span class="n">REPJob</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Monitor the evaluation status of an existing REP job</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># Since we stored the auth token in the job info, there&#39;s no need</span>
+    <span class="c1"># to enter user and password anymore to connect to the REP server.</span>
+    <span class="n">client</span> <span class="o">=</span> <span class="n">Client</span><span class="p">(</span><span class="n">rep_url</span><span class="o">=</span><span class="n">app_job</span><span class="o">.</span><span class="n">rep_url</span><span class="p">,</span> <span class="n">refresh_token</span><span class="o">=</span><span class="n">app_job</span><span class="o">.</span><span class="n">auth_token</span><span class="p">)</span>
+    <span class="n">project_api</span> <span class="o">=</span> <span class="n">ProjectApi</span><span class="p">(</span><span class="n">client</span><span class="p">,</span> <span class="n">app_job</span><span class="o">.</span><span class="n">project_id</span><span class="p">)</span>
+
+    <span class="n">job</span> <span class="o">=</span> <span class="n">project_api</span><span class="o">.</span><span class="n">get_jobs</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="n">app_job</span><span class="o">.</span><span class="n">job_id</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="k">while</span> <span class="n">job</span><span class="o">.</span><span class="n">eval_status</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;evaluated&quot;</span><span class="p">,</span> <span class="s2">&quot;timeout&quot;</span><span class="p">,</span> <span class="s2">&quot;failed&quot;</span><span class="p">,</span> <span class="s2">&quot;aborted&quot;</span><span class="p">]:</span>
+        <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;Waiting for job </span><span class="si">{</span><span class="n">job</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> to complete &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;[</span><span class="si">{</span><span class="n">client</span><span class="o">.</span><span class="n">rep_url</span><span class="si">}</span><span class="s2">/jms/#/projects/</span><span class="si">{</span><span class="n">app_job</span><span class="o">.</span><span class="n">project_id</span><span class="si">}</span><span class="s2">/jobs/</span><span class="si">{</span><span class="n">job</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">] ... &quot;</span>
+        <span class="p">)</span>
+        <span class="n">job</span> <span class="o">=</span> <span class="n">project_api</span><span class="o">.</span><span class="n">get_jobs</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="n">job</span><span class="o">.</span><span class="n">id</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+
+        <span class="n">tasks</span> <span class="o">=</span> <span class="n">project_api</span><span class="o">.</span><span class="n">get_tasks</span><span class="p">(</span><span class="n">job_id</span><span class="o">=</span><span class="n">job</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">task</span> <span class="ow">in</span> <span class="n">tasks</span><span class="p">:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot; Task </span><span class="si">{</span><span class="n">task</span><span class="o">.</span><span class="n">task_definition_snapshot</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> (id=</span><span class="si">{</span><span class="n">task</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">) is </span><span class="si">{</span><span class="n">task</span><span class="o">.</span><span class="n">eval_status</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="p">)</span>
+
+    <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Job </span><span class="si">{</span><span class="n">job</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> final status: </span><span class="si">{</span><span class="n">job</span><span class="o">.</span><span class="n">eval_status</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="k">return</span>
+
+
+<span class="k">def</span> <span class="nf">download_results</span><span class="p">(</span><span class="n">app_job</span><span class="p">:</span> <span class="n">REPJob</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Download the job output files (if any)</span>
+
+<span class="sd">    Requires the packages tqdm and humanize</span>
+<span class="sd">    python -m pip install tqdm humanize</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="kn">from</span> <span class="nn">tqdm</span> <span class="kn">import</span> <span class="n">tqdm</span>
+    <span class="k">except</span> <span class="ne">ImportError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;The &#39;tqdm&#39; package is not installed. Please pip install it&quot;</span><span class="p">)</span>
+        <span class="k">return</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="kn">import</span> <span class="nn">humanize</span>
+    <span class="k">except</span> <span class="ne">ImportError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;The &#39;humanize&#39; package is not installed. Please pip install it&quot;</span><span class="p">)</span>
+        <span class="k">return</span>
+
+    <span class="c1"># Since we stored the auth token in the job info, there&#39;s no need</span>
+    <span class="c1"># to enter user and password anymore to connect to the REP server.</span>
+    <span class="n">client</span> <span class="o">=</span> <span class="n">Client</span><span class="p">(</span><span class="n">rep_url</span><span class="o">=</span><span class="n">job</span><span class="o">.</span><span class="n">rep_url</span><span class="p">,</span> <span class="n">refresh_token</span><span class="o">=</span><span class="n">app_job</span><span class="o">.</span><span class="n">auth_token</span><span class="p">)</span>
+    <span class="n">project_api</span> <span class="o">=</span> <span class="n">ProjectApi</span><span class="p">(</span><span class="n">client</span><span class="p">,</span> <span class="n">app_job</span><span class="o">.</span><span class="n">project_id</span><span class="p">)</span>
+
+    <span class="n">tasks</span> <span class="o">=</span> <span class="n">project_api</span><span class="o">.</span><span class="n">get_tasks</span><span class="p">(</span><span class="n">job_id</span><span class="o">=</span><span class="n">app_job</span><span class="o">.</span><span class="n">job_id</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">task</span> <span class="ow">in</span> <span class="n">tasks</span><span class="p">:</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">task</span><span class="o">.</span><span class="n">output_file_ids</span><span class="p">:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;No files are available on the server for Task </span><span class="si">{</span><span class="n">task</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">continue</span>
+
+        <span class="n">query_params</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="n">task</span><span class="o">.</span><span class="n">output_file_ids</span><span class="p">,</span> <span class="s2">&quot;hash.ne&quot;</span><span class="p">:</span> <span class="s2">&quot;null&quot;</span><span class="p">}</span>
+        <span class="n">files</span> <span class="o">=</span> <span class="n">project_api</span><span class="o">.</span><span class="n">get_files</span><span class="p">(</span><span class="n">content</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">query_params</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">files</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">files</span><span class="p">)</span><span class="si">}</span><span class="s2"> files are available on the server for Task &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">task</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">f</span><span class="o">.</span><span class="n">evaluation_path</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">files</span><span class="p">])</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">file</span> <span class="ow">in</span> <span class="n">files</span><span class="p">:</span>
+
+            <span class="n">target_folder</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s2">&quot;job_results&quot;</span><span class="p">,</span> <span class="n">task</span><span class="o">.</span><span class="n">task_definition_snapshot</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+            <span class="n">download_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">target_folder</span><span class="p">,</span> <span class="n">file</span><span class="o">.</span><span class="n">evaluation_path</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">download_path</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">file</span><span class="o">.</span><span class="n">size</span> <span class="o">==</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">getsize</span><span class="p">(</span><span class="n">download_path</span><span class="p">):</span>
+                    <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+                        <span class="sa">f</span><span class="s2">&quot;Skip download of file &quot;</span>
+                        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">file</span><span class="o">.</span><span class="n">evaluation_path</span><span class="si">}</span><span class="s2"> (</span><span class="si">{</span><span class="n">humanize</span><span class="o">.</span><span class="n">naturalsize</span><span class="p">(</span><span class="n">file</span><span class="o">.</span><span class="n">size</span><span class="p">)</span><span class="si">}</span><span class="s2">)&quot;</span>
+                    <span class="p">)</span>
+                    <span class="k">continue</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">log</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">file</span><span class="o">.</span><span class="n">evaluation_path</span><span class="si">}</span><span class="s2"> already exists:&quot;</span>
+                        <span class="sa">f</span><span class="s2">&quot;size on server: </span><span class="si">{</span><span class="n">humanize</span><span class="o">.</span><span class="n">naturalsize</span><span class="p">(</span><span class="n">file</span><span class="o">.</span><span class="n">size</span><span class="p">)</span><span class="si">}</span><span class="s2">, &quot;</span>
+                        <span class="sa">f</span><span class="s2">&quot;size on disk </span><span class="si">{</span><span class="n">humanize</span><span class="o">.</span><span class="n">naturalsize</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">getsize</span><span class="p">(</span><span class="n">download_path</span><span class="p">))</span><span class="si">}</span><span class="s2"> MB&quot;</span>
+                    <span class="p">)</span>
+
+            <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;Start download of file </span><span class="si">{</span><span class="n">file</span><span class="o">.</span><span class="n">evaluation_path</span><span class="si">}</span><span class="s2"> (</span><span class="si">{</span><span class="n">humanize</span><span class="o">.</span><span class="n">naturalsize</span><span class="p">(</span><span class="n">file</span><span class="o">.</span><span class="n">size</span><span class="p">)</span><span class="si">}</span><span class="s2">)&quot;</span>
+            <span class="p">)</span>
+
+            <span class="k">with</span> <span class="n">tqdm</span><span class="p">(</span>
+                <span class="n">total</span><span class="o">=</span><span class="n">file</span><span class="o">.</span><span class="n">size</span><span class="p">,</span>
+                <span class="n">unit</span><span class="o">=</span><span class="s2">&quot;B&quot;</span><span class="p">,</span>
+                <span class="n">unit_scale</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                <span class="n">desc</span><span class="o">=</span><span class="n">file</span><span class="o">.</span><span class="n">evaluation_path</span><span class="p">,</span>
+                <span class="n">initial</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+                <span class="n">ascii</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                <span class="n">ncols</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span>
+            <span class="p">)</span> <span class="k">as</span> <span class="n">pbar</span><span class="p">:</span>
+                <span class="n">project_api</span><span class="o">.</span><span class="n">download_file</span><span class="p">(</span>
+                    <span class="n">file</span><span class="p">,</span> <span class="n">target_folder</span><span class="p">,</span> <span class="n">progress_handler</span><span class="o">=</span><span class="k">lambda</span> <span class="n">chunk_size</span><span class="p">:</span> <span class="n">pbar</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">chunk_size</span><span class="p">)</span>
+                <span class="p">)</span>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+
+    <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">()</span>
+    <span class="n">logging</span><span class="o">.</span><span class="n">basicConfig</span><span class="p">(</span><span class="nb">format</span><span class="o">=</span><span class="s2">&quot;[</span><span class="si">%(asctime)s</span><span class="s2"> | </span><span class="si">%(levelname)s</span><span class="s2">] </span><span class="si">%(message)s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">level</span><span class="o">=</span><span class="n">logging</span><span class="o">.</span><span class="n">INFO</span><span class="p">)</span>
+
+    <span class="n">parser</span> <span class="o">=</span> <span class="n">argparse</span><span class="o">.</span><span class="n">ArgumentParser</span><span class="p">()</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;action&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s2">&quot;submit&quot;</span><span class="p">,</span> <span class="n">choices</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;submit&quot;</span><span class="p">,</span> <span class="s2">&quot;monitor&quot;</span><span class="p">,</span> <span class="s2">&quot;download&quot;</span><span class="p">],</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Action to run&quot;</span>
+    <span class="p">)</span>
+
+    <span class="n">args</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">parse_args</span><span class="p">()</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">action</span> <span class="o">==</span> <span class="s2">&quot;submit&quot;</span><span class="p">:</span>
+            <span class="n">job</span> <span class="o">=</span> <span class="n">submit_job</span><span class="p">()</span>
+            <span class="n">job</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
+        <span class="k">elif</span> <span class="n">args</span><span class="o">.</span><span class="n">action</span> <span class="o">==</span> <span class="s2">&quot;monitor&quot;</span><span class="p">:</span>
+            <span class="n">job</span> <span class="o">=</span> <span class="n">REPJob</span><span class="o">.</span><span class="n">load</span><span class="p">()</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">job</span><span class="p">)</span>
+            <span class="n">monitor_job</span><span class="p">(</span><span class="n">job</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">args</span><span class="o">.</span><span class="n">action</span> <span class="o">==</span> <span class="s2">&quot;download&quot;</span><span class="p">:</span>
+            <span class="n">job</span> <span class="o">=</span> <span class="n">REPJob</span><span class="o">.</span><span class="n">load</span><span class="p">()</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">job</span><span class="p">)</span>
+            <span class="n">download_results</span><span class="p">(</span><span class="n">job</span><span class="p">)</span>
+    <span class="k">except</span> <span class="n">REPError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>
+    <span class="k">except</span> <span class="ne">KeyboardInterrupt</span><span class="p">:</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;Interrupted, stopping ...&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</section>
+
+
+              </article>
+              
+
+              
+          </div>
+          
+      </div>
+    </div>
+
+  
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../_static/scripts/pydata-sphinx-theme.js?digest=92025949c220c2e29695"></script>
+
+<footer class="bd-footer"><div class="bd-footer__inner container">
+  
+  <div class="footer-item">
+    <p class="copyright">
+    &copy; Copyright (c) 2022 ANSYS, Inc. All rights reserved.<br>
+</p>
+  </div>
+  
+  <div class="footer-item">
+    <p class="sphinx-version">
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 5.1.1.<br>
+</p>
+  </div>
+  
+</div>
+</footer>
+  </body>
+</html>
