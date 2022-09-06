@@ -1,20 +1,25 @@
+import json
 import logging
 import os
 from pathlib import Path
 from typing import Callable, List
+
+from cachetools import TTLCache, cached
+from marshmallow.utils import missing
+import requests
 
 from ansys.rep.client.exceptions import ClientError, REPError
 
 from ..resource.algorithm import Algorithm
 from ..resource.base import Object
 from ..resource.file import File
-from ..resource.job import Job, copy_jobs, sync_jobs
+from ..resource.job import Job, JobSchema
 from ..resource.job_definition import JobDefinition
 from ..resource.license_context import LicenseContext
 from ..resource.parameter_definition import ParameterDefinition
 from ..resource.parameter_mapping import ParameterMapping
-from ..resource.project import get_fs_url
-from ..resource.project_permission import ProjectPermission, update_permissions
+from ..resource.project import Project
+from ..resource.project_permission import ProjectPermission, ProjectPermissionSchema
 from ..resource.selection import JobSelection
 from ..resource.task import Task
 from ..resource.task_definition import TaskDefinition
@@ -187,10 +192,10 @@ class ProjectApi:
 
     ################################################################
     # Jobs
-    def get_jobs(self, as_objects=True, **query_params):
+    def get_jobs(self, as_objects=True, **query_params) -> List[Job]:
         return self._get_objects(Job, as_objects=as_objects, **query_params)
 
-    def create_jobs(self, jobs, as_objects=True):
+    def create_jobs(self, jobs, as_objects=True) -> List[Job]:
         """Create new jobs
 
         Args:
@@ -213,7 +218,7 @@ class ProjectApi:
         """
         return copy_jobs(self, jobs, as_objects=as_objects, **query_params)
 
-    def update_jobs(self, jobs, as_objects=True):
+    def update_jobs(self, jobs, as_objects=True) -> List[Job]:
         """Update existing jobs
 
         Args:
@@ -489,3 +494,62 @@ def archive_project(project_api: ProjectApi, target_path, include_job_files=True
 
     log.info(f"Done saving project archive to disk")
     return file_path
+
+
+def copy_jobs(project_api: ProjectApi, jobs: List[Job], as_objects=True, **query_params):
+    """Create new jobs by copying existing ones"""
+
+    url = f"{project_api.url}/jobs"
+
+    query_params.setdefault("fields", "all")
+
+    json_data = json.dumps({"source_ids": [obj.id for obj in jobs]})
+    r = project_api.client.session.post(f"{url}", data=json_data, params=query_params)
+
+    data = r.json()["jobs"]
+    if not as_objects:
+        return data
+
+    return JobSchema(many=True).load(data)
+
+
+def sync_jobs(project_api: ProjectApi, jobs: List[Job]):
+
+    url = f"{project_api.url}/jobs:sync"
+    json_data = json.dumps({"job_ids": [obj.id for obj in jobs]})
+    r = project_api.client.session.put(f"{url}", data=json_data)
+
+
+def update_permissions(client, project_api_url, permissions):
+
+    if not permissions:
+        return
+
+    url = f"{project_api_url}/permissions"
+
+    schema = ProjectPermissionSchema(many=True)
+    serialized_data = schema.dump(permissions)
+    json_data = json.dumps({"permissions": serialized_data})
+    r = client.session.put(f"{url}", data=json_data)
+
+
+@cached(cache=TTLCache(1024, 60), key=lambda project: project.id)
+def get_fs_url(project: Project):
+    if project.file_storages == missing:
+        raise REPError(f"The project object has no file storages information.")
+    rest_gateways = [fs for fs in project.file_storages if fs["obj_type"] == "RestGateway"]
+    rest_gateways.sort(key=lambda fs: fs["priority"], reverse=True)
+
+    if not rest_gateways:
+        raise REPError(f"Project {project.name} (id={project.id}) has no Rest Gateway defined.")
+
+    for d in rest_gateways:
+        url = d["url"]
+        try:
+            r = requests.get(url, verify=False, timeout=2)
+        except Exception as ex:
+            log.debug(ex)
+            continue
+        if r.status_code == 200:
+            return url
+    return None

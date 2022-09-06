@@ -11,11 +11,12 @@ import unittest
 from marshmallow.utils import missing
 
 from ansys.rep.client.jms import JmsApi, ProjectApi
-from ansys.rep.client.jms.resource import JobDefinition, Project
-from ansys.rep.client.jms.resource.parameter_definition import (
+from ansys.rep.client.jms.resource import (
     BoolParameterDefinition,
     FloatParameterDefinition,
     IntParameterDefinition,
+    JobDefinition,
+    Project,
     StringParameterDefinition,
 )
 from ansys.rep.client.jms.schema.parameter_definition import (

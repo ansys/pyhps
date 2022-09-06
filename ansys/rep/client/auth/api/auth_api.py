@@ -6,7 +6,9 @@
 # Author(s): F.Negri, O.Koenig
 # ----------------------------------------------------------
 
-from ..resource.user import create_user, delete_user, get_users, update_user
+from keycloak import KeycloakAdmin
+
+from ..schema.user import UserSchema
 
 
 class AuthApi:
@@ -71,3 +73,82 @@ class AuthApi:
             user (:class:`ansys.rep.client.auth.User`): A User object. Defaults to None.
         """
         return delete_user(self.client, user)
+
+
+def _admin_client(client):
+
+    custom_headers = {
+        "Authorization": "Bearer " + client.access_token,
+        "Content-Type": "application/json",
+    }
+    keycloak_admin = KeycloakAdmin(
+        server_url=client.auth_api_url,
+        username=None,
+        password=None,
+        realm_name=client.realm,
+        client_id=client.client_id,
+        verify=False,
+        custom_headers=custom_headers,
+    )
+    return keycloak_admin
+
+
+def get_users(client, as_objects=True):
+    admin = _admin_client(client)
+    data = admin.get_users({})
+    for d in data:
+        uid = d["id"]
+        groups = admin.get_user_groups(uid)
+        d["groups"] = [g["name"] for g in groups]
+        realm_roles = admin.get_realm_roles_of_user(uid)
+        d["realm_roles"] = [r["name"] for r in realm_roles]
+        d["is_admin"] = d  # Force admin check
+
+    schema = UserSchema(many=True)
+    users = schema.load(data)
+    return users
+
+
+def create_user(client, user, as_objects=True):
+    schema = UserSchema(many=False)
+    data = schema.dump(user)
+
+    pwd = data.pop("password", None)
+    if pwd is not None:
+        data["credentials"] = [
+            {
+                "type": "password",
+                "value": pwd,
+            }
+        ]
+    data["enabled"] = True
+
+    admin = _admin_client(client)
+    uid = admin.create_user(data)
+    data = admin.get_user(uid)
+    user = schema.load(data)
+    return user
+
+
+def update_user(client, user, as_objects=True):
+    schema = UserSchema(many=False)
+    data = schema.dump(user)
+
+    pwd = data.pop("password", None)
+    if pwd is not None:
+        data["credentials"] = [
+            {
+                "type": "password",
+                "value": pwd,
+            }
+        ]
+
+    admin = _admin_client(client)
+    data = admin.update_user(user.id, data)
+    user = schema.load(data)
+    return user
+
+
+def delete_user(client, user):
+    admin = _admin_client(client)
+    admin.delete_user(user.id)
