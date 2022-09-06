@@ -233,8 +233,8 @@
   </a>
  </li>
  <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#modify-a-job-definition">
-   Modify a job definition
+  <a class="reference internal nav-link" href="#modify-a-project-job-definition">
+   Modify a project job_definition
   </a>
  </li>
  <li class="toc-h2 nav-item toc-entry">
@@ -316,7 +316,7 @@ while detailed documentation can be found in the <a class="reference internal" h
 <h2>Create a demo project: the MAPDL motorbike frame example<a class="headerlink" href="#create-a-demo-project-the-mapdl-motorbike-frame-example" title="Permalink to this heading">#</a></h2>
 <p>Create a project consisting of an Ansys Mechanical APDL beam model
 of a tubular steel trellis motorbike-frame.</p>
-<p>The project setup script as well as the data files can be downloaded here <a class="reference download internal" download="" href="_downloads/8ed38b7d3730aadc96dfe01d14ab6278/mapdl_motorbike_frame.zip"><code class="xref download docutils literal notranslate"><span class="pre">MAPDL</span> <span class="pre">Motorbike</span> <span class="pre">Frame</span> <span class="pre">Project</span></code></a>.
+<p>The project setup script as well as the data files can be downloaded here <a class="reference download internal" download="" href="_downloads/85f405c045419850de8267799ac6b388/mapdl_motorbike_frame.zip"><code class="xref download docutils literal notranslate"><span class="pre">MAPDL</span> <span class="pre">Motorbike</span> <span class="pre">Frame</span> <span class="pre">Project</span></code></a>.
 To create the project you only need to run the <cite>project_setup</cite> script:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ python path_to_download_folder\mapdl_motorbike_frame\project_setup.py
 </pre></div>
@@ -327,7 +327,7 @@ To create the project you only need to run the <cite>project_setup</cite> script
 If your REP server is hosted at a different URL or you want to specify different credentials,
 please adjust the script before running it.</p>
 </div>
-<p>See <a class="reference internal" href="examples/ex_motorbike_frame.html#example-mapdl-motorbike-frame"><span class="std std-ref">MAPDL Motorbike Frame - Project Creation</span></a> for a detailed description of this example.</p>
+<p>See <a class="reference internal" href="examples/ex_motorbike_frame.html#example-mapdl-motorbike-frame"><span class="std std-ref">Creating A Project</span></a> for a detailed description of this example.</p>
 </section>
 <section id="query-parameters">
 <h2>Query parameters<a class="headerlink" href="#query-parameters" title="Permalink to this heading">#</a></h2>
@@ -435,9 +435,9 @@ such as <code class="docutils literal notranslate"><span class="pre">Numpy</span
 </pre></div>
 </div>
 </section>
-<section id="modify-a-job-definition">
-<h2>Modify a job definition<a class="headerlink" href="#modify-a-job-definition" title="Permalink to this heading">#</a></h2>
-<p>Query an existing job definition, modify it and send it back to the server.</p>
+<section id="modify-a-project-job-definition">
+<h2>Modify a project job_definition<a class="headerlink" href="#modify-a-project-job-definition" title="Permalink to this heading">#</a></h2>
+<p>Query an existing project job_definition, modify it and send it back to the server.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">project</span> <span class="o">=</span> <span class="n">jms_api</span><span class="o">.</span><span class="n">get_project_by_name</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;Mapdl Motorbike Frame&quot;</span><span class="p">)</span>
 
 <span class="c1"># get currently active job_definition</span>
