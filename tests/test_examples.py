@@ -107,7 +107,7 @@ class REPClientTest(REPTestCase):
 
             jms_api.delete_project(project)
 
-    def test_python_two_bar_truss_problem(self):
+    def test_fluent_2d_heat_exchanger(self):
 
         from examples.fluent_2d_heat_exchanger.project_setup import main
 
