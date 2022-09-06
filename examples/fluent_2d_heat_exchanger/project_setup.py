@@ -23,7 +23,7 @@ from ansys.rep.client.jms import (
 log = logging.getLogger(__name__)
 
 
-def main(client: Client, name: str):
+def main(client: Client, name: str) -> Project:
 
     log.info("=== Create Project")
     jms_api = JmsApi(client)
@@ -105,6 +105,8 @@ def main(client: Client, name: str):
         f"You can monitor the job status at "
         f"{project_api.client.rep_url}/jms/#/projects/{project_api.project_id}/jobs/{job.id}"
     )
+
+    return proj
 
 
 if __name__ == "__main__":

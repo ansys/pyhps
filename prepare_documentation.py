@@ -127,7 +127,7 @@ def generate_openapi_specs():
             outfile.write(json.dumps({"properties": modified_prop_dict}, indent=4))
 
 
-def archive_examples(examples):
+def archive_examples():
     """Create a zip archive for each listed example included in the examples folder."""
 
     examples = {
@@ -158,6 +158,11 @@ def archive_examples(examples):
             "evaluate.py",
             "input_parameters.json",
         ],
+        "fluent_2d_heat_exchanger": [
+            "project_setup.py",
+            "heat_exchanger.jou",
+            "heat_exchanger.cas.h5",
+        ],
     }
 
     os.makedirs("build", exist_ok=True)
@@ -174,11 +179,4 @@ def archive_examples(examples):
 
 if __name__ == "__main__":
     # generate_openapi_specs()
-    archive_examples(
-        [
-            "mapdl_motorbike_frame",
-            "mapdl_tyre_performance",
-            "mapdl_linked_analyses",
-            "lsdyna_cylinder_plate",
-        ]
-    )
+    archive_examples()

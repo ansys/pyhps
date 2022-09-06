@@ -25,6 +25,7 @@ You can also download the entire set of examples :download:`Download All Example
   ex_mapdl_tire_performance
   ex_mapdl_linked_analyses
   ex_lsdyna_job
+  ex_fluent_2d_heat_exchanger
   ex_python_two_bar
 
 .. list-table::
@@ -42,5 +43,7 @@ You can also download the entire set of examples :download:`Download All Example
      - Submit an MAPDL linked analysis workflow as a multi-task job to REP.
    * - :ref:`example_lsdyna_job`
      - Submit, monitor and download results of an LS-DYNA job. 
+   * - :ref:`example_fluent_2d_heat_exchanger`
+     - Submit a Fluent solve job to REP.
    * - :ref:`example_python_two_bar`
      - Create a REP project solving a Two-Bar Truss problem with Python.
