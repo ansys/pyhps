@@ -1,7 +1,8 @@
 """
-Example to setup a nonlinear tyre analysis job in REP.
+Example to submit a nonlinear tyre analysis job in REP.
 
-Author(s): F.Negri
+ANSYS APDL Tire-Performance Simulation example as included
+in the technology demonstration guide (td-57).
 """
 
 import argparse
@@ -29,12 +30,7 @@ log = logging.getLogger(__name__)
 
 
 def main(client: Client, name: str, num_jobs: int) -> Project:
-    """
-    Create project with Ansys MAPDL tire simulation.
 
-    ANSYS APDL Tire-Performance Simulation example as included
-    in the technology demonstration guide (td-57).
-    """
     log.debug("=== Project")
     jms_api = JmsApi(client)
     proj = Project(name=name, priority=1, active=True)
@@ -48,9 +44,9 @@ def main(client: Client, name: str, num_jobs: int) -> Project:
     files = [
         File(
             name="mac",
-            evaluation_path="rep_tire_performance_simulation.mac",
+            evaluation_path="tire_performance_simulation.mac",
             type="text/plain",
-            src=os.path.join(cwd, "rep_tire_performance_simulation.mac"),
+            src=os.path.join(cwd, "tire_performance_simulation.mac"),
         ),
         File(
             name="geom",
@@ -230,7 +226,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("-n", "--name", type=str, default="Mapdl Tyre Performance")
     parser.add_argument("-j", "--num-jobs", type=int, default=10)
-    parser.add_argument("-U", "--url", default="https://127.0.0.1:8443/rep")
+    parser.add_argument("-U", "--url", default="https://localhost:8443/rep")
     parser.add_argument("-u", "--username", default="repadmin")
     parser.add_argument("-p", "--password", default="repadmin")
 
