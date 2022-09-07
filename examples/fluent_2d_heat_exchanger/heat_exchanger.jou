@@ -1,0 +1,10 @@
+/file/set-batch-options no yes yes no
+/file/start-transcript outputfile.trn 
+/file/read-case heat_exchanger.cas.h5
+/solve/initialize/initialize/
+/solve/iterate 25
+/parallel timer usage
+/file/write-case output_results.cas
+/file/write-data output_results.data
+/report/summary report.sum
+/exit yes

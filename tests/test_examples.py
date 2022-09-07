@@ -107,6 +107,21 @@ class REPClientTest(REPTestCase):
 
             jms_api.delete_project(project)
 
+    def test_fluent_2d_heat_exchanger(self):
+
+        from examples.fluent_2d_heat_exchanger.project_setup import main
+
+        project = main(self.client(), name="Fluent Test")
+        self.assertIsNotNone(project)
+
+        jms_api = JmsApi(self.client())
+        project_api = ProjectApi(self.client(), project.id)
+
+        self.assertEqual(len(project_api.get_jobs()), 1)
+        self.assertEqual(jms_api.get_project(id=project.id).name, "Fluent Test")
+
+        jms_api.delete_project(project)
+
 
 if __name__ == "__main__":
     unittest.main()
