@@ -13,8 +13,8 @@ from requests.adapters import HTTPAdapter, Retry
 log = logging.getLogger(__name__)
 
 
-def create_session(access_token=None):
-    """Return a :class:`requests.Session` object configured for REP with given access token
+def create_session(access_token: str = None) -> requests.Session:
+    """Returns a :class:`requests.Session` object configured for REP with given access token
 
     Args:
         access_token (str): The access token provided by :meth:`ansys.rep.client.auth.authenticate`
@@ -44,7 +44,7 @@ def create_session(access_token=None):
     return session
 
 
-def ping(session, url, timeout=10.0):
+def ping(session: requests.Session, url: str, timeout=10.0) -> bool:
     """Ping the given URL, returning true on success
 
     Args:
