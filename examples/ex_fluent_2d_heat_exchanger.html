@@ -1,0 +1,435 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+
+    <title>Fluent 2d Heat Exchanger &#8212; PyREP</title>
+    
+<script>
+  document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+  document.documentElement.dataset.theme = localStorage.getItem("theme") || "light"
+</script>
+
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=92025949c220c2e29695" rel="stylesheet">
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=92025949c220c2e29695" rel="stylesheet">
+
+
+  <link rel="stylesheet"
+    href="../_static/vendor/fontawesome/5.13.0/css/all.min.css">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/ansys_sphinx_theme.css" />
+
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=92025949c220c2e29695">
+
+    
+        <link href="../_static/css/breadcrumbs.css" rel="stylesheet">
+    
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/clipboard.min.js"></script>
+    <script src="../_static/copybutton.js"></script>
+    <link rel="shortcut icon" href="../_static/favicon.png"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Python Two-Bar Truss Example" href="ex_python_two_bar.html" />
+    <link rel="prev" title="LS-DYNA Job Submission" href="ex_lsdyna_job.html" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="docsearch:language" content="en">
+  </head>
+  
+  
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="180" data-default-mode="">
+    <div class="bd-header-announcement container-fluid" id="banner">
+      
+
+    </div>
+
+    
+    
+    <nav class="bd-header navbar navbar-light navbar-expand-lg bg-light fixed-top bd-navbar" id="navbar-main"><div class="bd-header__inner container-xl">
+
+  <div id="navbar-start">
+    
+    
+  
+
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+    <img src="../_static/pyansys-logo-black-cropped.png" class="logo__image only-light" alt="Logo image">
+    <img src="../_static/pyansys-logo-black-cropped.png" class="logo__image only-dark" alt="Logo image">
+  
+  
+</a>
+    
+  </div>
+
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar-collapsible" aria-controls="navbar-collapsible" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="fas fa-bars"></span>
+  </button>
+
+  
+  <div id="navbar-collapsible" class="col-lg-9 collapse navbar-collapse">
+    <div id="navbar-center" class="mr-auto">
+      
+      <div class="navbar-center-item">
+        <ul id="navbar-main-elements" class="navbar-nav">
+    <li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../install.html">
+  Installation
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../quickstart.html">
+  Quickstart
+ </a>
+</li>
+
+<li class="toctree-l1 current active nav-item">
+ <a class="reference internal nav-link" href="index.html">
+  Examples
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../api/index.html">
+  Code Documentation
+ </a>
+</li>
+
+    
+</ul>
+      </div>
+      
+    </div>
+
+    <div id="navbar-end">
+      
+      <div class="navbar-end-item">
+        <span id="theme-switch" class="btn btn-sm btn-outline-primary navbar-btn rounded-circle">
+    <a class="theme-switch" data-mode="light"><i class="fas fa-sun"></i></a>
+    <a class="theme-switch" data-mode="dark"><i class="far fa-moon"></i></a>
+    <a class="theme-switch" data-mode="auto"><i class="fas fa-adjust"></i></a>
+</span>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
+        <li class="nav-item">
+          <a class="nav-link" href="https://github.com/pyansys/pyrep" rel="noopener" target="_blank" title="GitHub"><span><i class="fab fa-github-square"></i></span>
+            <label class="sr-only">GitHub</label></a>
+        </li>
+      </ul>
+      </div>
+      
+    </div>
+  </div>
+</div>
+    </nav>
+    
+    
+        <div class="container-xl">
+    <div class="row">
+        <div class="col-12 col-md-3" id="breadcrumbs-spacer"></div>
+        <div class="col-12 col-md-11 col-xl-9" id="breadcrumbs">
+          
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+    
+        <li class="nav-item nav-item-additional-breadcrumb"><a href="https://docs.pyansys.com/">PyAnsys</a> » </li>
+    
+    
+        <li class="nav-item nav-item-0"><a href="../index.html">PyREP</a> » </li>
+    
+
+          <li class="nav-item nav-item-1"><a href="index.html" accesskey="U">Examples</a> » </li>
+        <li class="nav-item nav-item-this"><a href="">Fluent 2d Heat Exchanger</a></li> 
+      </ul>
+    </div>
+        </div>
+  </div>
+</div>
+    
+
+
+    <div class="bd-container container-xl">
+      <div class="bd-container__inner row">
+          
+
+<!-- Only show if we have sidebars configured, else just a small margin  -->
+<div class="bd-sidebar-primary col-12 col-md-3 bd-sidebar">
+  <div class="sidebar-start-items"><form class="bd-search d-flex align-items-center" action="../search.html" method="get">
+  <i class="icon fas fa-search"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" >
+</form><nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
+  <div class="bd-toc-item active">
+    
+    <ul class="current nav bd-sidenav">
+ <li class="toctree-l1">
+  <a class="reference internal" href="ex_motorbike_frame.html">
+   MAPDL Motorbike Frame - Project Creation
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ex_motorbike_frame_query.html">
+   MAPDL Motorbike Frame - Project Query
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ex_mapdl_tire_performance.html">
+   MAPDL Tire Performance
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ex_mapdl_linked_analyses.html">
+   MAPDL Linked Analyses Example
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ex_lsdyna_job.html">
+   LS-DYNA Job Submission
+  </a>
+ </li>
+ <li class="toctree-l1 current active">
+  <a class="current reference internal" href="#">
+   Fluent 2d Heat Exchanger
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="ex_python_two_bar.html">
+   Python Two-Bar Truss Example
+  </a>
+ </li>
+</ul>
+
+    
+    
+  </div>
+</nav>
+  </div>
+  <div class="sidebar-end-items">
+  </div>
+</div>
+
+
+          
+
+
+<div class="bd-sidebar-secondary d-none d-xl-block col-xl-2 bd-toc">
+  
+    
+    <div class="toc-item">
+      
+
+<nav id="bd-toc-nav">
+    
+</nav>
+    </div>
+    
+    <div class="toc-item">
+      
+    </div>
+    
+  
+</div>
+
+
+          
+          
+          <div class="bd-content col-12 col-md-9 col-xl-7">
+              
+              <article class="bd-article" role="main">
+                
+  <section id="fluent-2d-heat-exchanger">
+<span id="example-fluent-2d-heat-exchanger"></span><h1>Fluent 2d Heat Exchanger<a class="headerlink" href="#fluent-2d-heat-exchanger" title="Permalink to this heading">#</a></h1>
+<p>This example shows how to submit a simple Fluent solve job to REP. The model consists of a 2D heat exchanger.</p>
+<p>The project setup script as well as the data files can be downloaded here <a class="reference download internal" download="" href="../_downloads/84412412a130bb84aec9f8bcc59c3d79/fluent_2d_heat_exchanger.zip"><code class="xref download docutils literal notranslate"><span class="pre">Fluent</span> <span class="pre">2d</span> <span class="pre">Heat</span> <span class="pre">Exchanger</span> <span class="pre">Example</span></code></a>.</p>
+<div class="literal-block-wrapper docutils container" id="id1">
+<div class="code-block-caption"><span class="caption-text">project_setup.py</span><a class="headerlink" href="#id1" title="Permalink to this code">#</a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">This example shows how to submit a simple Fluent 2D job to REP.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">argparse</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">os</span>
+
+<span class="kn">from</span> <span class="nn">ansys.rep.client</span> <span class="kn">import</span> <span class="n">Client</span><span class="p">,</span> <span class="n">REPError</span>
+<span class="kn">from</span> <span class="nn">ansys.rep.client</span> <span class="kn">import</span> <span class="n">__external_version__</span> <span class="k">as</span> <span class="n">ansys_version</span>
+<span class="kn">from</span> <span class="nn">ansys.rep.client.jms</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">File</span><span class="p">,</span>
+    <span class="n">JmsApi</span><span class="p">,</span>
+    <span class="n">Job</span><span class="p">,</span>
+    <span class="n">JobDefinition</span><span class="p">,</span>
+    <span class="n">Project</span><span class="p">,</span>
+    <span class="n">ProjectApi</span><span class="p">,</span>
+    <span class="n">ResourceRequirements</span><span class="p">,</span>
+    <span class="n">Software</span><span class="p">,</span>
+    <span class="n">TaskDefinition</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="n">log</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">main</span><span class="p">(</span><span class="n">client</span><span class="p">:</span> <span class="n">Client</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Project</span><span class="p">:</span>
+
+    <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;=== Create Project&quot;</span><span class="p">)</span>
+    <span class="n">jms_api</span> <span class="o">=</span> <span class="n">JmsApi</span><span class="p">(</span><span class="n">client</span><span class="p">)</span>
+    <span class="n">proj</span> <span class="o">=</span> <span class="n">Project</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">priority</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">active</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">proj</span> <span class="o">=</span> <span class="n">jms_api</span><span class="o">.</span><span class="n">create_project</span><span class="p">(</span><span class="n">proj</span><span class="p">)</span>
+
+    <span class="n">project_api</span> <span class="o">=</span> <span class="n">ProjectApi</span><span class="p">(</span><span class="n">client</span><span class="p">,</span> <span class="n">proj</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+
+    <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;=== Create Files&quot;</span><span class="p">)</span>
+    <span class="n">cwd</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)</span>
+
+    <span class="n">files</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">File</span><span class="p">(</span>
+            <span class="n">name</span><span class="o">=</span><span class="s2">&quot;cas_h5&quot;</span><span class="p">,</span>
+            <span class="n">evaluation_path</span><span class="o">=</span><span class="s2">&quot;heat_exchanger.cas.h5&quot;</span><span class="p">,</span>
+            <span class="nb">type</span><span class="o">=</span><span class="s2">&quot;application/octet-stream&quot;</span><span class="p">,</span>
+            <span class="n">src</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">cwd</span><span class="p">,</span> <span class="s2">&quot;heat_exchanger.cas.h5&quot;</span><span class="p">),</span>
+        <span class="p">),</span>
+        <span class="n">File</span><span class="p">(</span>
+            <span class="n">name</span><span class="o">=</span><span class="s2">&quot;journal&quot;</span><span class="p">,</span>
+            <span class="n">evaluation_path</span><span class="o">=</span><span class="s2">&quot;heat_exchanger.jou&quot;</span><span class="p">,</span>
+            <span class="nb">type</span><span class="o">=</span><span class="s2">&quot;text/plain&quot;</span><span class="p">,</span>
+            <span class="n">src</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">cwd</span><span class="p">,</span> <span class="s2">&quot;heat_exchanger.jou&quot;</span><span class="p">),</span>
+        <span class="p">),</span>
+        <span class="n">File</span><span class="p">(</span>
+            <span class="n">name</span><span class="o">=</span><span class="s2">&quot;trn&quot;</span><span class="p">,</span> <span class="n">evaluation_path</span><span class="o">=</span><span class="s2">&quot;fluent*.trn&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="s2">&quot;text/plain&quot;</span><span class="p">,</span> <span class="n">collect</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">monitor</span><span class="o">=</span><span class="kc">True</span>
+        <span class="p">),</span>
+        <span class="n">File</span><span class="p">(</span>
+            <span class="n">name</span><span class="o">=</span><span class="s2">&quot;output_cas&quot;</span><span class="p">,</span>
+            <span class="n">evaluation_path</span><span class="o">=</span><span class="s2">&quot;output_results.cas.h5&quot;</span><span class="p">,</span>
+            <span class="nb">type</span><span class="o">=</span><span class="s2">&quot;application/octet-stream&quot;</span><span class="p">,</span>
+            <span class="n">collect</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="n">monitor</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="p">),</span>
+        <span class="n">File</span><span class="p">(</span>
+            <span class="n">name</span><span class="o">=</span><span class="s2">&quot;output_data&quot;</span><span class="p">,</span>
+            <span class="n">evaluation_path</span><span class="o">=</span><span class="s2">&quot;output_results.data.dat.h5&quot;</span><span class="p">,</span>
+            <span class="nb">type</span><span class="o">=</span><span class="s2">&quot;application/octet-stream&quot;</span><span class="p">,</span>
+            <span class="n">collect</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="n">monitor</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="p">),</span>
+    <span class="p">]</span>
+
+    <span class="n">files</span> <span class="o">=</span> <span class="n">project_api</span><span class="o">.</span><span class="n">create_files</span><span class="p">(</span><span class="n">files</span><span class="p">)</span>
+    <span class="n">file_ids</span> <span class="o">=</span> <span class="p">{</span><span class="n">f</span><span class="o">.</span><span class="n">name</span><span class="p">:</span> <span class="n">f</span><span class="o">.</span><span class="n">id</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">files</span><span class="p">}</span>
+
+    <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;=== Job Definition with simulation workflow&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Task Definition</span>
+    <span class="n">task_def</span> <span class="o">=</span> <span class="n">TaskDefinition</span><span class="p">(</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Fluent Run&quot;</span><span class="p">,</span>
+        <span class="n">software_requirements</span><span class="o">=</span><span class="p">[</span><span class="n">Software</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;Ansys Fluent&quot;</span><span class="p">,</span> <span class="n">version</span><span class="o">=</span><span class="n">ansys_version</span><span class="p">)],</span>
+        <span class="n">execution_command</span><span class="o">=</span><span class="s2">&quot;</span><span class="si">%e</span><span class="s2">xecutable</span><span class="si">% 2d</span><span class="s2"> -g -tm </span><span class="si">%r</span><span class="s2">esource:num_cores</span><span class="si">% -i</span><span class="s2"> </span><span class="si">%f</span><span class="s2">ile:journal%&quot;</span><span class="p">,</span>
+        <span class="n">resource_requirements</span><span class="o">=</span><span class="n">ResourceRequirements</span><span class="p">(</span>
+            <span class="n">cpu_core_usage</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span>
+            <span class="n">memory</span><span class="o">=</span><span class="mi">4000</span><span class="p">,</span>
+            <span class="n">disk_space</span><span class="o">=</span><span class="mi">500</span><span class="p">,</span>
+        <span class="p">),</span>
+        <span class="n">max_execution_time</span><span class="o">=</span><span class="mf">600.0</span><span class="p">,</span>
+        <span class="n">execution_level</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+        <span class="n">num_trials</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+        <span class="n">input_file_ids</span><span class="o">=</span><span class="p">[</span><span class="n">file_ids</span><span class="p">[</span><span class="s2">&quot;cas_h5&quot;</span><span class="p">],</span> <span class="n">file_ids</span><span class="p">[</span><span class="s2">&quot;journal&quot;</span><span class="p">]],</span>
+        <span class="n">output_file_ids</span><span class="o">=</span><span class="p">[</span><span class="n">file_ids</span><span class="p">[</span><span class="s2">&quot;trn&quot;</span><span class="p">],</span> <span class="n">file_ids</span><span class="p">[</span><span class="s2">&quot;output_cas&quot;</span><span class="p">],</span> <span class="n">file_ids</span><span class="p">[</span><span class="s2">&quot;output_data&quot;</span><span class="p">]],</span>
+    <span class="p">)</span>
+    <span class="n">task_def</span> <span class="o">=</span> <span class="n">project_api</span><span class="o">.</span><span class="n">create_task_definitions</span><span class="p">([</span><span class="n">task_def</span><span class="p">])[</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="c1"># Create job_definition in project</span>
+    <span class="n">job_def</span> <span class="o">=</span> <span class="n">JobDefinition</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;JobDefinition.1&quot;</span><span class="p">,</span> <span class="n">active</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">job_def</span><span class="o">.</span><span class="n">task_definition_ids</span> <span class="o">=</span> <span class="p">[</span><span class="n">task_def</span><span class="o">.</span><span class="n">id</span><span class="p">]</span>
+    <span class="n">job_def</span> <span class="o">=</span> <span class="n">project_api</span><span class="o">.</span><span class="n">create_job_definitions</span><span class="p">([</span><span class="n">job_def</span><span class="p">])[</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;=== Submit Job&quot;</span><span class="p">)</span>
+    <span class="n">job</span> <span class="o">=</span> <span class="n">project_api</span><span class="o">.</span><span class="n">create_jobs</span><span class="p">(</span>
+        <span class="p">[</span><span class="n">Job</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;Job&quot;</span><span class="p">,</span> <span class="n">eval_status</span><span class="o">=</span><span class="s2">&quot;pending&quot;</span><span class="p">,</span> <span class="n">job_definition_id</span><span class="o">=</span><span class="n">job_def</span><span class="o">.</span><span class="n">id</span><span class="p">)]</span>
+    <span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Created project &#39;</span><span class="si">{</span><span class="n">proj</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&#39;, ID=&#39;</span><span class="si">{</span><span class="n">proj</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">&#39;&quot;</span><span class="p">)</span>
+    <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+        <span class="sa">f</span><span class="s2">&quot;You can monitor the job status at &quot;</span>
+        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">project_api</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">rep_url</span><span class="si">}</span><span class="s2">/jms/#/projects/</span><span class="si">{</span><span class="n">project_api</span><span class="o">.</span><span class="n">project_id</span><span class="si">}</span><span class="s2">/jobs/</span><span class="si">{</span><span class="n">job</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">&quot;</span>
+    <span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">proj</span>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="n">parser</span> <span class="o">=</span> <span class="n">argparse</span><span class="o">.</span><span class="n">ArgumentParser</span><span class="p">()</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;-n&quot;</span><span class="p">,</span> <span class="s2">&quot;--name&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s2">&quot;Fluent 2D Heat Exchanger&quot;</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;-U&quot;</span><span class="p">,</span> <span class="s2">&quot;--url&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s2">&quot;https://localhost:8443/rep&quot;</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;-u&quot;</span><span class="p">,</span> <span class="s2">&quot;--username&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s2">&quot;repadmin&quot;</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;-p&quot;</span><span class="p">,</span> <span class="s2">&quot;--password&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s2">&quot;repadmin&quot;</span><span class="p">)</span>
+
+    <span class="n">args</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">parse_args</span><span class="p">()</span>
+
+    <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">()</span>
+    <span class="n">logging</span><span class="o">.</span><span class="n">basicConfig</span><span class="p">(</span><span class="nb">format</span><span class="o">=</span><span class="s2">&quot;[</span><span class="si">%(asctime)s</span><span class="s2"> | </span><span class="si">%(levelname)s</span><span class="s2">] </span><span class="si">%(message)s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">level</span><span class="o">=</span><span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">)</span>
+
+    <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;=== REP connection&quot;</span><span class="p">)</span>
+    <span class="n">client</span> <span class="o">=</span> <span class="n">Client</span><span class="p">(</span><span class="n">rep_url</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">url</span><span class="p">,</span> <span class="n">username</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">username</span><span class="p">,</span> <span class="n">password</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">password</span><span class="p">)</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">main</span><span class="p">(</span><span class="n">client</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+    <span class="k">except</span> <span class="n">REPError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+</section>
+
+
+              </article>
+              
+
+              
+          </div>
+          
+      </div>
+    </div>
+
+  
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../_static/scripts/pydata-sphinx-theme.js?digest=92025949c220c2e29695"></script>
+
+<footer class="bd-footer"><div class="bd-footer__inner container">
+  
+  <div class="footer-item">
+    <p class="copyright">
+    &copy; Copyright (c) 2022 ANSYS, Inc. All rights reserved.<br>
+</p>
+  </div>
+  
+  <div class="footer-item">
+    <p class="sphinx-version">
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 5.1.1.<br>
+</p>
+  </div>
+  
+</div>
+</footer>
+  </body>
+</html>
