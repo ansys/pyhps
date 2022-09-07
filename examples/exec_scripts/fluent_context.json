@@ -1,0 +1,73 @@
+{
+    "software": [{
+            "environment": {},
+            "name": "ANSYS Fluent",
+            "version": "2022 R2",
+            "executable": "C:\\Program Files\\ANSYS Inc\\v222\\fluent\\ntbin\\win64\\fluent.exe",
+            "install_path": "C:\\Program Files\\ANSYS Inc\\v222\\fluent"
+        }
+    ],
+    "resource_requirements": {
+        "cpu_core_usage": 1.0,
+        "custom": {},
+        "disk_space": 5,
+        "memory": 250,
+        "num_cores": 1
+    },
+    "execution_context": {
+        "fluent_MPIType": "intel",
+        "fluent_dimension": "3d",
+        "fluent_jouFile": "solve.jou",
+        "fluent_meshing": false,
+        "fluent_numGPGPUsPerMachine": 0,
+        "fluent_otherEnvironment": "{}",
+        "fluent_precision": "dp",
+        "fluent_useGUI": false
+    },
+    "environment": {},
+    "parameter_values": {
+        "mapdl_cp_time": null,
+        "mapdl_elapsed_time": null,
+        "mapdl_elapsed_time_obtain_license": null
+    },
+    "input_files": [{
+            "name": "inp",
+            "path": "nozzle.cas",
+            "type": "text/plain",
+            "monitor": true
+        }
+    ],
+    "output_files": [{
+            "name": "jou",
+            "path": "solve.jou",
+            "type": "text/plain",
+            "monitor": true
+        }, {
+            "name": "out",
+            "path": "fluent*.out",
+            "type": "text/plain",
+            "monitor": true
+        }, {
+            "name": "err",
+            "path": "*error.log",
+            "type": "text/plain",
+            "monitor": true
+        }, {
+            "name": "exec_fluent",
+            "path": "exec_fluent.py",
+            "type": "application/x-python-code",
+            "monitor": true
+        }, {
+            "name": "console_output",
+            "path": "console_output.txt",
+            "type": "text/plain",
+            "monitor": true
+        }, {
+            "name": "console_output",
+            "path": "console_output.txt",
+            "type": "text/plain",
+            "monitor": true,
+            "console_output": true
+        }
+    ]
+}

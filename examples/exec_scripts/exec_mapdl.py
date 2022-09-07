@@ -6,15 +6,18 @@ Command formed: ansys.exe -b -i <inp_file> -o <out_file> -np 4
 """
 import os
 import subprocess
+import json
 
 from ansys.rep.common.logging import log
 from ansys.rep.evaluator.task_manager import ApplicationExecution
-
 
 class MAPDLExecution(ApplicationExecution):
     def execute(self):
 
         log.info("Start MAPDL execution script")
+
+        #with open("c:/ansysdev/pyrep/examples/exec_scripts/mapdl_context.json", "w") as f:
+        #    json.dump(vars(self.context), f)
 
         # Identify files
         inp_file = next((f for f in self.context.input_files if f["name"] == "inp"), None)
