@@ -595,7 +595,7 @@ the other fields can be empty.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="ansys.rep.client.jms.ProjectApi.create_jobs">
-<span class="sig-name descname"><span class="pre">create_jobs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">jobs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">as_objects</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ansys.rep.client.jms.ProjectApi.create_jobs" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">create_jobs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">jobs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">as_objects</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#ansys.rep.client.jms.Job" title="ansys.rep.client.jms.resource.job.Job"><span class="pre">Job</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#ansys.rep.client.jms.ProjectApi.create_jobs" title="Permalink to this definition">#</a></dt>
 <dd><p>Create new jobs</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -735,7 +735,7 @@ as <code class="xref py py-attr docutils literal notranslate"><span class="pre">
 
 <dl class="py method">
 <dt class="sig sig-object py" id="ansys.rep.client.jms.ProjectApi.get_jobs">
-<span class="sig-name descname"><span class="pre">get_jobs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">as_objects</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">query_params</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ansys.rep.client.jms.ProjectApi.get_jobs" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">get_jobs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">as_objects</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">query_params</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#ansys.rep.client.jms.Job" title="ansys.rep.client.jms.resource.job.Job"><span class="pre">Job</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#ansys.rep.client.jms.ProjectApi.get_jobs" title="Permalink to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
@@ -795,7 +795,7 @@ as <code class="xref py py-attr docutils literal notranslate"><span class="pre">
 
 <dl class="py method">
 <dt class="sig sig-object py" id="ansys.rep.client.jms.ProjectApi.update_jobs">
-<span class="sig-name descname"><span class="pre">update_jobs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">jobs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">as_objects</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ansys.rep.client.jms.ProjectApi.update_jobs" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">update_jobs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">jobs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">as_objects</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#ansys.rep.client.jms.Job" title="ansys.rep.client.jms.resource.job.Job"><span class="pre">Job</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#ansys.rep.client.jms.ProjectApi.update_jobs" title="Permalink to this definition">#</a></dt>
 <dd><p>Update existing jobs</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -860,107 +860,24 @@ as <code class="xref py py-attr docutils literal notranslate"><span class="pre">
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>src</strong> (<em>str</em><em>, </em><em>optional</em>) – Path to the local file. Defaults to None.</p></li>
-<li><p><strong>**kwargs</strong> – Arbitrary keyword arguments, see the File schema below.</p></li>
+<li><p><strong>src</strong> (<em>str</em><em>, </em><em>optional</em>) – Client-only field to specify the path of an input file.</p></li>
+<li><p><strong>id</strong> (<em>str</em><em>, </em><em>optional</em>) – Unique ID to access the resource, generated internally by the server on creation.</p></li>
+<li><p><strong>name</strong> (<em>str</em>) – Name of the file resource.</p></li>
+<li><p><strong>type</strong> (<em>str</em><em>, </em><em>optional</em>) – Type of the file. This can be any string but using a correct media type for the given resource is advisable.</p></li>
+<li><p><strong>storage_id</strong> (<em>str</em><em>, </em><em>optional</em>) – File’s identifier in the (orthogonal) file storage system</p></li>
+<li><p><strong>size</strong> (<em>int</em><em>, </em><em>optional</em>) – </p></li>
+<li><p><strong>hash</strong> (<em>str</em><em>, </em><em>optional</em>) – </p></li>
+<li><p><strong>creation_time</strong> (<em>datetime</em><em>, </em><em>optional</em>) – The date and time the file resource was created.</p></li>
+<li><p><strong>modification_time</strong> (<em>datetime</em><em>, </em><em>optional</em>) – The date and time the file resource was last modified.</p></li>
+<li><p><strong>format</strong> (<em>str</em><em>, </em><em>optional</em>) – </p></li>
+<li><p><strong>evaluation_path</strong> (<em>str</em><em>, </em><em>optional</em>) – Relative path under which the file instance for a job evaluation will be stored.</p></li>
+<li><p><strong>monitor</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether to live monitor the file’s content.</p></li>
+<li><p><strong>collect</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether file should be collected per job</p></li>
+<li><p><strong>collect_interval</strong> (<em>int</em><em>, </em><em>optional</em>) – Collect frequency for a file with collect=True. Min value limited by the evaluator’s settings. 0/None - let the evaluator decide, other value - interval in seconds</p></li>
+<li><p><strong>reference_id</strong> (<em>str</em><em>, </em><em>optional</em>) – Reference file from which this one was created</p></li>
 </ul>
 </dd>
 </dl>
-<p class="rubric">Example</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># input file</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">f1</span> <span class="o">=</span> <span class="n">File</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;mac&quot;</span><span class="p">,</span> <span class="n">evaluation_path</span><span class="o">=</span><span class="s2">&quot;demo_project.mac&quot;</span><span class="p">,</span>
-<span class="go">                type=&quot;text/plain&quot;, src=os.path.join(os.getcwd(), &quot;motorbike_frame.mac&quot;)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="c1"># output file</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">f2</span> <span class="o">=</span> <span class="n">File</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;img&quot;</span><span class="p">,</span> <span class="n">evaluation_path</span><span class="o">=</span><span class="s2">&quot;file000.jpg&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="s2">&quot;image/jpeg&quot;</span><span class="p">)</span> <span class="p">)</span>
-</pre></div>
-</div>
-<p>The File schema has the following fields:</p>
-<table class="table">
-<thead>
-<tr class="row-odd"><th class="head"><p>Name</p></th>
-<th class="head"><p>Type</p></th>
-<th class="head"><p>Description</p></th>
-<th class="head"><p>Validations</p></th>
-</tr>
-</thead>
-<tbody>
-<tr class="row-even"><td><p>id</p></td>
-<td><p>string</p></td>
-<td><p>Unique ID to access the resource, generated internally by the server on creation.</p></td>
-<td></td>
-</tr>
-<tr class="row-odd"><td><p>name</p></td>
-<td><p>string</p></td>
-<td><p>Name of the file resource.</p></td>
-<td></td>
-</tr>
-<tr class="row-even"><td><p>type</p></td>
-<td><p>string</p></td>
-<td><p>Type of the file. This can be any string but using a correct media type for the given resource is advisable.</p></td>
-<td></td>
-</tr>
-<tr class="row-odd"><td><p>storage_id</p></td>
-<td><p>string</p></td>
-<td><p>File’s identifier in the (orthogonal) file storage system</p></td>
-<td></td>
-</tr>
-<tr class="row-even"><td><p>size</p></td>
-<td><p>integer</p></td>
-<td></td>
-<td></td>
-</tr>
-<tr class="row-odd"><td><p>hash</p></td>
-<td><p>string</p></td>
-<td></td>
-<td></td>
-</tr>
-<tr class="row-even"><td><p>creation_time</p></td>
-<td><p>string</p></td>
-<td><p>The date and time the file resource was created.</p></td>
-<td><ul class="simple">
-<li><p>It must be formatted as date-time</p></li>
-</ul>
-</td>
-</tr>
-<tr class="row-odd"><td><p>modification_time</p></td>
-<td><p>string</p></td>
-<td><p>The date and time the file resource was last modified.</p></td>
-<td><ul class="simple">
-<li><p>It must be formatted as date-time</p></li>
-</ul>
-</td>
-</tr>
-<tr class="row-even"><td><p>format</p></td>
-<td><p>string</p></td>
-<td></td>
-<td></td>
-</tr>
-<tr class="row-odd"><td><p>evaluation_path</p></td>
-<td><p>string</p></td>
-<td><p>Relative path under which the file instance for a design point evaluation will be stored.</p></td>
-<td></td>
-</tr>
-<tr class="row-even"><td><p>monitor</p></td>
-<td><p>boolean</p></td>
-<td><p>Whether to live monitor the file’s content.</p></td>
-<td></td>
-</tr>
-<tr class="row-odd"><td><p>collect</p></td>
-<td><p>boolean</p></td>
-<td><p>Whether file should be collected per design point</p></td>
-<td></td>
-</tr>
-<tr class="row-even"><td><p>collect_interval</p></td>
-<td><p>integer</p></td>
-<td><p>Collect frequency for a file with collect=True. Min value limited by the evaluator’s settings. 0/None - let the evaluator decide, other value - interval in seconds</p></td>
-<td></td>
-</tr>
-<tr class="row-odd"><td><p>reference_id</p></td>
-<td><p>string</p></td>
-<td><p>Reference file from which this one was created</p></td>
-<td></td>
-</tr>
-</tbody>
-</table>
 </dd></dl>
 
 </section>
@@ -969,75 +886,21 @@ as <code class="xref py py-attr docutils literal notranslate"><span class="pre">
 <dl class="py class">
 <dt class="sig sig-object py" id="ansys.rep.client.jms.Project">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ansys.rep.client.jms.</span></span><span class="sig-name descname"><span class="pre">Project</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ansys.rep.client.jms.Project" title="Permalink to this definition">#</a></dt>
-<dd><p>Project resource</p>
+<dd><p>Project resource.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>**kwargs</strong> – Arbitrary keyword arguments, see the Project schema below.</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>id</strong> (<em>str</em>) – Unique ID to access the project, specified on creation of the project.</p></li>
+<li><p><strong>name</strong> (<em>str</em>) – Name of the project.</p></li>
+<li><p><strong>active</strong> (<em>bool</em>) – Defines whether the project is active for evaluation.</p></li>
+<li><p><strong>priority</strong> (<em>int</em>) – Priority to pick the project for evaluation.</p></li>
+<li><p><strong>creation_time</strong> (<em>datetime</em><em>, </em><em>optional</em>) – The date and time the project was created.</p></li>
+<li><p><strong>modification_time</strong> (<em>datetime</em><em>, </em><em>optional</em>) – The date and time the project was last modified.</p></li>
+<li><p><strong>file_storages</strong> (<em>list</em>) – List of file storages defined for the project.</p></li>
+<li><p><strong>statistics</strong> (<em>dict</em>) – Optional dictionary containing various project statistics.</p></li>
+</ul>
 </dd>
 </dl>
-<p class="rubric">Example</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">proj</span> <span class="o">=</span> <span class="n">Project</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="s2">&quot;demo_project&quot;</span><span class="p">,</span> <span class="n">active</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">priority</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">proj</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">create_project</span><span class="p">(</span><span class="n">proj</span><span class="p">,</span> <span class="n">replace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-</pre></div>
-</div>
-<p>The Project schema has the following fields:</p>
-<table class="table">
-<thead>
-<tr class="row-odd"><th class="head"><p>Name</p></th>
-<th class="head"><p>Type</p></th>
-<th class="head"><p>Description</p></th>
-<th class="head"><p>Validations</p></th>
-</tr>
-</thead>
-<tbody>
-<tr class="row-even"><td><p>id</p></td>
-<td><p>string</p></td>
-<td><p>Unique ID to access the project, specified on creation of the project.</p></td>
-<td></td>
-</tr>
-<tr class="row-odd"><td><p>name</p></td>
-<td><p>string</p></td>
-<td><p>Name of the project.</p></td>
-<td></td>
-</tr>
-<tr class="row-even"><td><p>active</p></td>
-<td><p>boolean</p></td>
-<td><p>Defines whether the project is active for evaluation.</p></td>
-<td></td>
-</tr>
-<tr class="row-odd"><td><p>priority</p></td>
-<td><p>integer</p></td>
-<td><p>Priority to pick the project for evaluation.</p></td>
-<td></td>
-</tr>
-<tr class="row-even"><td><p>creation_time</p></td>
-<td><p>string</p></td>
-<td><p>The date and time the project was created.</p></td>
-<td><ul class="simple">
-<li><p>It must be formatted as date-time</p></li>
-</ul>
-</td>
-</tr>
-<tr class="row-odd"><td><p>modification_time</p></td>
-<td><p>string</p></td>
-<td><p>The date and time the project was last modified.</p></td>
-<td><ul class="simple">
-<li><p>It must be formatted as date-time</p></li>
-</ul>
-</td>
-</tr>
-<tr class="row-even"><td><p>file_storages[]</p></td>
-<td><p>array</p></td>
-<td><p>List of file storages defined for the project.</p></td>
-<td></td>
-</tr>
-<tr class="row-odd"><td><p>statistics</p></td>
-<td><p>object</p></td>
-<td><p>Optional dictionary containing various project statistics.</p></td>
-<td></td>
-</tr>
-</tbody>
-</table>
 </dd></dl>
 
 </section>
@@ -1049,70 +912,43 @@ as <code class="xref py py-attr docutils literal notranslate"><span class="pre">
 <dd><p>FitnessTermDefinition resource.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>**kwargs</strong> – Arbitrary keyword arguments, see the FitnessTermDefinition schema below.</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>id</strong> (<em>str</em><em>, </em><em>optional</em>) – Unique ID to access the resource, generated internally by the server on creation.</p></li>
+<li><p><strong>name</strong> (<em>str</em><em>, </em><em>optional</em>) – Name of the fitness term.</p></li>
+<li><p><strong>expression</strong> (<em>str</em><em>, </em><em>optional</em>) – The Python expression that defines the fitness term.</p></li>
+<li><p><strong>type</strong> (<em>str</em><em>, </em><em>optional</em>) – Fitness term type.</p></li>
+<li><p><strong>weighting_factor</strong> (<em>float</em><em>, </em><em>optional</em>) – Relative importance of the fitness term in comparison to other fitness terms.</p></li>
+</ul>
 </dd>
 </dl>
-<p>The FitnessTermDefinition schema has the following fields:</p>
-<table class="table">
-<thead>
-<tr class="row-odd"><th class="head"><p>Name</p></th>
-<th class="head"><p>Type</p></th>
-<th class="head"><p>Description</p></th>
-<th class="head"><p>Validations</p></th>
-</tr>
-</thead>
-<tbody>
-<tr class="row-even"><td><p>id</p></td>
-<td><p>string</p></td>
-<td><p>Unique ID to access the resource, generated internally by the server on creation.</p></td>
-<td></td>
-</tr>
-<tr class="row-odd"><td><p>name</p></td>
-<td><p>string</p></td>
-<td><p>Name of the fitness term.</p></td>
-<td></td>
-</tr>
-<tr class="row-even"><td><p>expression</p></td>
-<td><p>string</p></td>
-<td><p>The Python expression that defines the fitness term.</p></td>
-<td></td>
-</tr>
-<tr class="row-odd"><td><p>type</p></td>
-<td><p>string</p></td>
-<td><p>Fitness term type.</p></td>
-<td><ul class="simple">
-<li><p>It must be equal to one of the elements in [“design_objective”, “limit_constraint”, “target_constraint”]</p></li>
-</ul>
-</td>
-</tr>
-<tr class="row-even"><td><p>weighting_factor</p></td>
-<td><p>number</p></td>
-<td><p>Relative importance of the fitness term in comparison to other fitness terms.</p></td>
-<td></td>
-</tr>
-</tbody>
-</table>
-<p class="rubric">Example</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># A fitness term of type objective</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">ft1</span> <span class="o">=</span> <span class="n">FitnessTermDefinition</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;weight&quot;</span><span class="p">,</span>
-<span class="go">                                type=&quot;design_objective&quot;,</span>
-<span class="go">                                weighting_factor=1.0,</span>
-<span class="go">                                expression=&quot;map_design_objective(values[&#39;weight&#39;],7.5,5.5)&quot;</span>
-<span class="go">                                )</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="c1"># A fitness term of type target constraint</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">ft2</span> <span class="o">=</span> <span class="n">FitnessTermDefinition</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;torsional_stiffness&quot;</span><span class="p">,</span>
-<span class="go">                                type=&quot;target_constraint&quot;,</span>
-<span class="go">                                weighting_factor=0.8,</span>
-<span class="go">                                expression=&quot;map_target_constraint(</span>
-<span class="go">                                    values[&#39;torsion_stiffness&#39;], 1313.0, 5.0, 30.0)&quot;</span>
-<span class="go">                                )</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="c1"># A fitness term of type limit constraint</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">ft3</span> <span class="o">=</span> <span class="n">FitnessTermDefinition</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;max_stress&quot;</span><span class="p">,</span>
-<span class="go">                                type=&quot;limit_constraint&quot;,</span>
-<span class="go">                                weighting_factor=0.6,</span>
-<span class="go">                                expression=&quot;map_limit_constraint(</span>
-<span class="go">                                    values[&#39;max_stress&#39;], 451.0, 50.0 )&quot;</span>
-<span class="go">                                )</span>
+<p class="rubric">Examples</p>
+<p>A fitness term of type objective</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ft1</span> <span class="o">=</span> <span class="n">FitnessTermDefinition</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;weight&quot;</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="nb">type</span><span class="o">=</span><span class="s2">&quot;design_objective&quot;</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">weighting_factor</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">expression</span><span class="o">=</span><span class="s2">&quot;map_design_objective(values[&#39;weight&#39;],7.5,5.5)&quot;</span>
+<span class="gp">... </span><span class="p">)</span>
+</pre></div>
+</div>
+<p>A fitness term of type target constraint</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ft2</span> <span class="o">=</span> <span class="n">FitnessTermDefinition</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;torsional_stiffness&quot;</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="nb">type</span><span class="o">=</span><span class="s2">&quot;target_constraint&quot;</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">weighting_factor</span><span class="o">=</span><span class="mf">0.8</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">expression</span><span class="o">=</span><span class="s2">&quot;map_target_constraint(</span>
+<span class="gp">... </span>        <span class="n">values</span><span class="p">[</span><span class="s1">&#39;torsion_stiffness&#39;</span><span class="p">],</span> <span class="mf">1313.0</span><span class="p">,</span> <span class="mf">5.0</span><span class="p">,</span> <span class="mf">30.0</span><span class="p">)</span><span class="s2">&quot;</span>
+<span class="gp">... </span><span class="p">)</span>
+</pre></div>
+</div>
+<p>A fitness term of type limit constraint</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ft3</span> <span class="o">=</span> <span class="n">FitnessTermDefinition</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;max_stress&quot;</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="nb">type</span><span class="o">=</span><span class="s2">&quot;limit_constraint&quot;</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">weighting_factor</span><span class="o">=</span><span class="mf">0.6</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">expression</span><span class="o">=</span><span class="s2">&quot;map_limit_constraint(</span>
+<span class="gp">... </span>        <span class="n">values</span><span class="p">[</span><span class="s1">&#39;max_stress&#39;</span><span class="p">],</span> <span class="mf">451.0</span><span class="p">,</span> <span class="mf">50.0</span> <span class="p">)</span><span class="s2">&quot;</span>
+<span class="gp">... </span><span class="p">)</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -1123,50 +959,28 @@ as <code class="xref py py-attr docutils literal notranslate"><span class="pre">
 <dd><p>FitnessDefinition resource.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>**kwargs</strong> – Arbitrary keyword arguments, see the Job schema below.</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>id</strong> (<em>str</em><em>, </em><em>optional</em>) – Unique ID to access the resource, generated internally by the server on creation.</p></li>
+<li><p><strong>fitness_term_definitions</strong> – List of <a class="reference internal" href="#ansys.rep.client.jms.FitnessTermDefinition" title="ansys.rep.client.jms.FitnessTermDefinition"><code class="xref py py-class docutils literal notranslate"><span class="pre">ansys.rep.client.jms.FitnessTermDefinition</span></code></a>.</p></li>
+<li><p><strong>error_fitness</strong> (<em>float</em>) – The default fitness value assigned to failed design points.</p></li>
+</ul>
 </dd>
 </dl>
-<p class="rubric">Example</p>
+<p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">fd</span> <span class="o">=</span> <span class="n">FitnessDefinition</span><span class="p">(</span><span class="n">error_fitness</span><span class="o">=</span><span class="mf">10.0</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">fd</span><span class="o">.</span><span class="n">add_fitness_term</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;weight&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="s2">&quot;design_objective&quot;</span><span class="p">,</span> <span class="n">weighting_factor</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span>
-<span class="go">            expression=&quot;map_design_objective( values[&#39;weight&#39;], 7.5, 5.5)&quot;)</span>
+<span class="gp">... </span>        <span class="n">expression</span><span class="o">=</span><span class="s2">&quot;map_design_objective( values[&#39;weight&#39;], 7.5, 5.5)&quot;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">fd</span><span class="o">.</span><span class="n">add_fitness_term</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;torsional_stiffness&quot;</span><span class="p">,</span>
-<span class="go">                        type=&quot;target_constraint&quot;,</span>
-<span class="go">                        weighting_factor=1.0,</span>
-<span class="go">                        expression=&quot;map_target_constraint(</span>
-<span class="go">                            values[&#39;torsion_stiffness&#39;],</span>
-<span class="go">                            1313.0,</span>
-<span class="go">                            5.0,</span>
-<span class="go">                            30.0 )&quot; )</span>
+<span class="gp">... </span>                    <span class="nb">type</span><span class="o">=</span><span class="s2">&quot;target_constraint&quot;</span><span class="p">,</span>
+<span class="gp">... </span>                    <span class="n">weighting_factor</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span>
+<span class="gp">... </span>                    <span class="n">expression</span><span class="o">=</span><span class="s2">&quot;map_target_constraint(</span>
+<span class="gp">... </span>                        <span class="n">values</span><span class="p">[</span><span class="s1">&#39;torsion_stiffness&#39;</span><span class="p">],</span>
+<span class="gp">... </span>                        <span class="mf">1313.0</span><span class="p">,</span>
+<span class="gp">... </span>                        <span class="mf">5.0</span><span class="p">,</span>
+<span class="gp">... </span>                        <span class="mf">30.0</span> <span class="p">)</span><span class="s2">&quot;</span>
+<span class="gp">... </span>                    <span class="p">)</span>
 </pre></div>
 </div>
-<p>The FitnessDefinition schema has the following fields:</p>
-<table class="table">
-<thead>
-<tr class="row-odd"><th class="head"><p>Name</p></th>
-<th class="head"><p>Type</p></th>
-<th class="head"><p>Description</p></th>
-<th class="head"><p>Validations</p></th>
-</tr>
-</thead>
-<tbody>
-<tr class="row-even"><td><p>id</p></td>
-<td><p>string</p></td>
-<td><p>Unique ID to access the resource, generated internally by the server on creation.</p></td>
-<td></td>
-</tr>
-<tr class="row-odd"><td><p>fitness_term_definitions[]</p></td>
-<td><p>array</p></td>
-<td><p>List of <a class="reference internal" href="#ansys.rep.client.jms.FitnessTermDefinition" title="ansys.rep.client.jms.FitnessTermDefinition"><code class="xref py py-class docutils literal notranslate"><span class="pre">ansys.rep.client.jms.FitnessTermDefinition</span></code></a>.</p></td>
-<td></td>
-</tr>
-<tr class="row-even"><td><p>error_fitness</p></td>
-<td><p>number</p></td>
-<td><p>The default fitness value assigned to failed design points.</p></td>
-<td></td>
-</tr>
-</tbody>
-</table>
 <dl class="py method">
 <dt class="sig sig-object py" id="ansys.rep.client.jms.FitnessDefinition.add_fitness_term">
 <span class="sig-name descname"><span class="pre">add_fitness_term</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ansys.rep.client.jms.FitnessDefinition.add_fitness_term" title="Permalink to this definition">#</a></dt>
@@ -1184,96 +998,23 @@ as <code class="xref py py-attr docutils literal notranslate"><span class="pre">
 <dd><p>FloatParameterDefinition resource.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>**kwargs</strong> – Arbitrary keyword arguments, see the FloatParameterDefinition schema below.</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>id</strong> (<em>str</em><em>, </em><em>optional</em>) – Unique ID to access the resource, generated internally by the server on creation.</p></li>
+<li><p><strong>name</strong> (<em>str</em><em>, </em><em>optional</em>) – Name (ID) of the parameter.</p></li>
+<li><p><strong>quantity_name</strong> (<em>str</em><em>, </em><em>optional</em>) – Name of the quantity the parameter represents, e.g. Length.</p></li>
+<li><p><strong>units</strong> (<em>str</em><em>, </em><em>optional</em>) – Units for the parameter.</p></li>
+<li><p><strong>display_text</strong> (<em>str</em><em>, </em><em>optional</em>) – Text to display as the parameter name.</p></li>
+<li><p><strong>mode</strong> (<em>str</em>) – Indicates whether it’s an input or output parameter. Filled server side.</p></li>
+<li><p><strong>type</strong> (<em>str</em>) – </p></li>
+<li><p><strong>default</strong> (<em>float</em><em>, </em><em>optional</em>) – Default parameter value.</p></li>
+<li><p><strong>lower_limit</strong> (<em>float</em><em>, </em><em>optional</em>) – Lower bound for the parameter value.</p></li>
+<li><p><strong>upper_limit</strong> (<em>float</em><em>, </em><em>optional</em>) – Upper bound for the parameter value.</p></li>
+<li><p><strong>step</strong> (<em>float</em><em>, </em><em>optional</em>) – If provided, allowable values are given by: AllowableValue = lower_limit + n * step, where n is an integer and AllowableValue &lt;= upper_limit.</p></li>
+<li><p><strong>cyclic</strong> (<em>bool</em><em>, </em><em>optional</em>) – Indicates if the parameter is cyclic.</p></li>
+<li><p><strong>value_list</strong> (<em>list</em><em>, </em><em>optional</em>) – A list of allowed values, alternative to providing upper and lower limits.</p></li>
+</ul>
 </dd>
 </dl>
-<p class="rubric">Example</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># A continuous parameter</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">pd1</span> <span class="o">=</span> <span class="n">FloatParameterDefinition</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;param_1&#39;</span><span class="p">,</span> <span class="n">lower_limit</span><span class="o">=</span><span class="mf">4.0</span><span class="p">,</span>
-<span class="go">                                   upper_limit=20.0, default=12.0)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="c1"># In case of e.g. a manifacturing variable which can only take some values</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">pd2</span> <span class="o">=</span> <span class="n">FloatParameterDefinition</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;param_2&#39;</span><span class="p">,</span>
-<span class="go">                                   value_list=[4.7, 12.0, 15.5, 20.0],</span>
-<span class="go">                                   default=12.0)</span>
-</pre></div>
-</div>
-<p>The FloatParameterDefinition schema has the following fields:</p>
-<table class="table">
-<thead>
-<tr class="row-odd"><th class="head"><p>Name</p></th>
-<th class="head"><p>Type</p></th>
-<th class="head"><p>Description</p></th>
-<th class="head"><p>Validations</p></th>
-</tr>
-</thead>
-<tbody>
-<tr class="row-even"><td><p>id</p></td>
-<td><p>string</p></td>
-<td><p>Unique ID to access the resource, generated internally by the server on creation.</p></td>
-<td></td>
-</tr>
-<tr class="row-odd"><td><p>name</p></td>
-<td><p>string</p></td>
-<td><p>Name (ID) of the parameter.</p></td>
-<td></td>
-</tr>
-<tr class="row-even"><td><p>quantity_name</p></td>
-<td><p>string</p></td>
-<td><p>Name of the quantity the parameter represents, e.g. Length.</p></td>
-<td></td>
-</tr>
-<tr class="row-odd"><td><p>units</p></td>
-<td><p>string</p></td>
-<td><p>Units for the parameter.</p></td>
-<td></td>
-</tr>
-<tr class="row-even"><td><p>display_text</p></td>
-<td><p>string</p></td>
-<td><p>Text to display as the parameter name.</p></td>
-<td></td>
-</tr>
-<tr class="row-odd"><td><p>mode</p></td>
-<td><p>string</p></td>
-<td><p>Indicates whether it’s an input or output parameter. Filled server side.</p></td>
-<td></td>
-</tr>
-<tr class="row-even"><td><p>type</p></td>
-<td><p>object</p></td>
-<td></td>
-<td></td>
-</tr>
-<tr class="row-odd"><td><p>default</p></td>
-<td><p>number</p></td>
-<td><p>Default parameter value.</p></td>
-<td></td>
-</tr>
-<tr class="row-even"><td><p>lower_limit</p></td>
-<td><p>number</p></td>
-<td><p>Lower bound for the parameter value.</p></td>
-<td></td>
-</tr>
-<tr class="row-odd"><td><p>upper_limit</p></td>
-<td><p>number</p></td>
-<td><p>Upper bound for the parameter value.</p></td>
-<td></td>
-</tr>
-<tr class="row-even"><td><p>step</p></td>
-<td><p>number</p></td>
-<td><p>If provided, allowable values are given by: AllowableValue = lower_limit + n * step, where n is an integer and AllowableValue &lt;= upper_limit.</p></td>
-<td></td>
-</tr>
-<tr class="row-odd"><td><p>cyclic</p></td>
-<td><p>boolean</p></td>
-<td><p>Indicates if the parameter is cyclic.</p></td>
-<td></td>
-</tr>
-<tr class="row-even"><td><p>value_list[]</p></td>
-<td><p>array</p></td>
-<td><p>A list of allowed values, alternative to providing upper and lower limits.</p></td>
-<td></td>
-</tr>
-</tbody>
-</table>
 </dd></dl>
 
 <dl class="py class">
@@ -1282,61 +1023,18 @@ as <code class="xref py py-attr docutils literal notranslate"><span class="pre">
 <dd><p>BoolParameterDefinition resource.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>**kwargs</strong> – Arbitrary keyword arguments, see the BoolParameterDefinition schema below.</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>id</strong> (<em>str</em><em>, </em><em>optional</em>) – Unique ID to access the resource, generated internally by the server on creation.</p></li>
+<li><p><strong>name</strong> (<em>str</em><em>, </em><em>optional</em>) – Name (ID) of the parameter.</p></li>
+<li><p><strong>quantity_name</strong> (<em>str</em><em>, </em><em>optional</em>) – Name of the quantity the parameter represents, e.g. Length.</p></li>
+<li><p><strong>units</strong> (<em>str</em><em>, </em><em>optional</em>) – Units for the parameter.</p></li>
+<li><p><strong>display_text</strong> (<em>str</em><em>, </em><em>optional</em>) – Text to display as the parameter name.</p></li>
+<li><p><strong>mode</strong> (<em>str</em>) – Indicates whether it’s an input or output parameter. Filled server side.</p></li>
+<li><p><strong>type</strong> (<em>str</em>) – </p></li>
+<li><p><strong>default</strong> (<em>bool</em><em>, </em><em>optional</em>) – Default parameter value.</p></li>
+</ul>
 </dd>
 </dl>
-<p>The BoolParameterDefinition schema has the following fields:</p>
-<table class="table">
-<thead>
-<tr class="row-odd"><th class="head"><p>Name</p></th>
-<th class="head"><p>Type</p></th>
-<th class="head"><p>Description</p></th>
-<th class="head"><p>Validations</p></th>
-</tr>
-</thead>
-<tbody>
-<tr class="row-even"><td><p>id</p></td>
-<td><p>string</p></td>
-<td><p>Unique ID to access the resource, generated internally by the server on creation.</p></td>
-<td></td>
-</tr>
-<tr class="row-odd"><td><p>name</p></td>
-<td><p>string</p></td>
-<td><p>Name (ID) of the parameter.</p></td>
-<td></td>
-</tr>
-<tr class="row-even"><td><p>quantity_name</p></td>
-<td><p>string</p></td>
-<td><p>Name of the quantity the parameter represents, e.g. Length.</p></td>
-<td></td>
-</tr>
-<tr class="row-odd"><td><p>units</p></td>
-<td><p>string</p></td>
-<td><p>Units for the parameter.</p></td>
-<td></td>
-</tr>
-<tr class="row-even"><td><p>display_text</p></td>
-<td><p>string</p></td>
-<td><p>Text to display as the parameter name.</p></td>
-<td></td>
-</tr>
-<tr class="row-odd"><td><p>mode</p></td>
-<td><p>string</p></td>
-<td><p>Indicates whether it’s an input or output parameter. Filled server side.</p></td>
-<td></td>
-</tr>
-<tr class="row-even"><td><p>type</p></td>
-<td><p>object</p></td>
-<td></td>
-<td></td>
-</tr>
-<tr class="row-odd"><td><p>default</p></td>
-<td><p>boolean</p></td>
-<td><p>Default parameter value.</p></td>
-<td></td>
-</tr>
-</tbody>
-</table>
 </dd></dl>
 
 <dl class="py class">
@@ -1345,92 +1043,22 @@ as <code class="xref py py-attr docutils literal notranslate"><span class="pre">
 <dd><p>IntParameterDefinition resource.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>**kwargs</strong> – Arbitrary keyword arguments, see the IntParameterDefinition schema below.</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>id</strong> (<em>str</em><em>, </em><em>optional</em>) – Unique ID to access the resource, generated internally by the server on creation.</p></li>
+<li><p><strong>name</strong> (<em>str</em><em>, </em><em>optional</em>) – Name (ID) of the parameter.</p></li>
+<li><p><strong>quantity_name</strong> (<em>str</em><em>, </em><em>optional</em>) – Name of the quantity the parameter represents, e.g. Length.</p></li>
+<li><p><strong>units</strong> (<em>str</em><em>, </em><em>optional</em>) – Units for the parameter.</p></li>
+<li><p><strong>display_text</strong> (<em>str</em><em>, </em><em>optional</em>) – Text to display as the parameter name.</p></li>
+<li><p><strong>mode</strong> (<em>str</em>) – Indicates whether it’s an input or output parameter. Filled server side.</p></li>
+<li><p><strong>type</strong> (<em>str</em>) – </p></li>
+<li><p><strong>default</strong> (<em>int</em><em>, </em><em>optional</em>) – Default parameter value.</p></li>
+<li><p><strong>lower_limit</strong> (<em>int</em><em>, </em><em>optional</em>) – Lower bound for the parameter value.</p></li>
+<li><p><strong>upper_limit</strong> (<em>int</em><em>, </em><em>optional</em>) – Upper bound for the parameter value.</p></li>
+<li><p><strong>step</strong> (<em>int</em><em>, </em><em>optional</em>) – Equal to 1 by default.</p></li>
+<li><p><strong>cyclic</strong> (<em>bool</em><em>, </em><em>optional</em>) – Indicates if the parameter is cyclic.</p></li>
+</ul>
 </dd>
 </dl>
-<p class="rubric">Example</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">pd1</span> <span class="o">=</span> <span class="n">IntParameterDefinition</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;ply_angle&#39;</span><span class="p">,</span>
-<span class="go">                                 value_list=[-60, -45, 0, 45, 60],</span>
-<span class="go">                                 default=0)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">pd2</span> <span class="o">=</span> <span class="n">IntParameterDefinition</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;number_of_layers&#39;</span><span class="p">,</span>
-<span class="go">                                 lower_limit=1,</span>
-<span class="go">                                 upper_limit=5,</span>
-<span class="go">                                 default=2,</span>
-<span class="go">                                 step=1)</span>
-</pre></div>
-</div>
-<p>The IntParameterDefinition schema has the following fields:</p>
-<table class="table">
-<thead>
-<tr class="row-odd"><th class="head"><p>Name</p></th>
-<th class="head"><p>Type</p></th>
-<th class="head"><p>Description</p></th>
-<th class="head"><p>Validations</p></th>
-</tr>
-</thead>
-<tbody>
-<tr class="row-even"><td><p>id</p></td>
-<td><p>string</p></td>
-<td><p>Unique ID to access the resource, generated internally by the server on creation.</p></td>
-<td></td>
-</tr>
-<tr class="row-odd"><td><p>name</p></td>
-<td><p>string</p></td>
-<td><p>Name (ID) of the parameter.</p></td>
-<td></td>
-</tr>
-<tr class="row-even"><td><p>quantity_name</p></td>
-<td><p>string</p></td>
-<td><p>Name of the quantity the parameter represents, e.g. Length.</p></td>
-<td></td>
-</tr>
-<tr class="row-odd"><td><p>units</p></td>
-<td><p>string</p></td>
-<td><p>Units for the parameter.</p></td>
-<td></td>
-</tr>
-<tr class="row-even"><td><p>display_text</p></td>
-<td><p>string</p></td>
-<td><p>Text to display as the parameter name.</p></td>
-<td></td>
-</tr>
-<tr class="row-odd"><td><p>mode</p></td>
-<td><p>string</p></td>
-<td><p>Indicates whether it’s an input or output parameter. Filled server side.</p></td>
-<td></td>
-</tr>
-<tr class="row-even"><td><p>type</p></td>
-<td><p>object</p></td>
-<td></td>
-<td></td>
-</tr>
-<tr class="row-odd"><td><p>default</p></td>
-<td><p>integer</p></td>
-<td><p>Default parameter value.</p></td>
-<td></td>
-</tr>
-<tr class="row-even"><td><p>lower_limit</p></td>
-<td><p>integer</p></td>
-<td><p>Lower bound for the parameter value.</p></td>
-<td></td>
-</tr>
-<tr class="row-odd"><td><p>upper_limit</p></td>
-<td><p>integer</p></td>
-<td><p>Upper bound for the parameter value.</p></td>
-<td></td>
-</tr>
-<tr class="row-even"><td><p>step</p></td>
-<td><p>integer</p></td>
-<td><p>Equal to 1 by default.</p></td>
-<td></td>
-</tr>
-<tr class="row-odd"><td><p>cyclic</p></td>
-<td><p>boolean</p></td>
-<td><p>Indicates if the parameter is cyclic.</p></td>
-<td></td>
-</tr>
-</tbody>
-</table>
 </dd></dl>
 
 <dl class="py class">
@@ -1439,72 +1067,19 @@ as <code class="xref py py-attr docutils literal notranslate"><span class="pre">
 <dd><p>StringParameterDefinition resource.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>**kwargs</strong> – Arbitrary keyword arguments, see the StringParameterDefinition schema below.</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>id</strong> (<em>str</em><em>, </em><em>optional</em>) – Unique ID to access the resource, generated internally by the server on creation.</p></li>
+<li><p><strong>name</strong> (<em>str</em><em>, </em><em>optional</em>) – Name (ID) of the parameter.</p></li>
+<li><p><strong>quantity_name</strong> (<em>str</em><em>, </em><em>optional</em>) – Name of the quantity the parameter represents, e.g. Length.</p></li>
+<li><p><strong>units</strong> (<em>str</em><em>, </em><em>optional</em>) – Units for the parameter.</p></li>
+<li><p><strong>display_text</strong> (<em>str</em><em>, </em><em>optional</em>) – Text to display as the parameter name.</p></li>
+<li><p><strong>mode</strong> (<em>str</em>) – Indicates whether it’s an input or output parameter. Filled server side.</p></li>
+<li><p><strong>type</strong> (<em>str</em>) – </p></li>
+<li><p><strong>default</strong> (<em>str</em><em>, </em><em>optional</em>) – Default parameter value.</p></li>
+<li><p><strong>value_list</strong> (<em>list</em><em>, </em><em>optional</em>) – A list of allowed values.</p></li>
+</ul>
 </dd>
 </dl>
-<p class="rubric">Example</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">pd</span> <span class="o">=</span> <span class="n">StringParameterDefinition</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;DiameterDistribution&#39;</span><span class="p">,</span>
-<span class="go">                                   value_list=[&#39;Constant&#39;, &#39;Uniform&#39;, &#39;Log-Normal&#39;],</span>
-<span class="go">                                   default=&#39;Constant&#39;)</span>
-</pre></div>
-</div>
-<p>The StringParameterDefinition schema has the following fields:</p>
-<table class="table">
-<thead>
-<tr class="row-odd"><th class="head"><p>Name</p></th>
-<th class="head"><p>Type</p></th>
-<th class="head"><p>Description</p></th>
-<th class="head"><p>Validations</p></th>
-</tr>
-</thead>
-<tbody>
-<tr class="row-even"><td><p>id</p></td>
-<td><p>string</p></td>
-<td><p>Unique ID to access the resource, generated internally by the server on creation.</p></td>
-<td></td>
-</tr>
-<tr class="row-odd"><td><p>name</p></td>
-<td><p>string</p></td>
-<td><p>Name (ID) of the parameter.</p></td>
-<td></td>
-</tr>
-<tr class="row-even"><td><p>quantity_name</p></td>
-<td><p>string</p></td>
-<td><p>Name of the quantity the parameter represents, e.g. Length.</p></td>
-<td></td>
-</tr>
-<tr class="row-odd"><td><p>units</p></td>
-<td><p>string</p></td>
-<td><p>Units for the parameter.</p></td>
-<td></td>
-</tr>
-<tr class="row-even"><td><p>display_text</p></td>
-<td><p>string</p></td>
-<td><p>Text to display as the parameter name.</p></td>
-<td></td>
-</tr>
-<tr class="row-odd"><td><p>mode</p></td>
-<td><p>string</p></td>
-<td><p>Indicates whether it’s an input or output parameter. Filled server side.</p></td>
-<td></td>
-</tr>
-<tr class="row-even"><td><p>type</p></td>
-<td><p>object</p></td>
-<td></td>
-<td></td>
-</tr>
-<tr class="row-odd"><td><p>default</p></td>
-<td><p>string</p></td>
-<td><p>Default parameter value.</p></td>
-<td></td>
-</tr>
-<tr class="row-even"><td><p>value_list[]</p></td>
-<td><p>array</p></td>
-<td><p>A list of allowed values.</p></td>
-<td></td>
-</tr>
-</tbody>
-</table>
 </dd></dl>
 
 <dl class="py class">
@@ -1513,107 +1088,26 @@ as <code class="xref py py-attr docutils literal notranslate"><span class="pre">
 <dd><p>ParameterMapping resource.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>**kwargs</strong> – Arbitrary keyword arguments, see the ParameterMapping schema below.</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>id</strong> (<em>str</em><em>, </em><em>optional</em>) – Unique ID to access the resource, generated internally by the server on creation.</p></li>
+<li><p><strong>line</strong> (<em>int</em><em>, </em><em>optional</em>) – </p></li>
+<li><p><strong>column</strong> (<em>int</em><em>, </em><em>optional</em>) – </p></li>
+<li><p><strong>key_string</strong> (<em>str</em><em>, </em><em>optional</em>) – </p></li>
+<li><p><strong>float_field</strong> (<em>str</em><em>, </em><em>optional</em>) – </p></li>
+<li><p><strong>width</strong> (<em>int</em><em>, </em><em>optional</em>) – </p></li>
+<li><p><strong>precision</strong> (<em>int</em><em>, </em><em>optional</em>) – </p></li>
+<li><p><strong>tokenizer</strong> (<em>str</em><em>, </em><em>optional</em>) – </p></li>
+<li><p><strong>decimal_symbol</strong> (<em>str</em><em>, </em><em>optional</em>) – </p></li>
+<li><p><strong>digit_grouping_symbol</strong> (<em>str</em><em>, </em><em>optional</em>) – </p></li>
+<li><p><strong>string_quote</strong> (<em>str</em><em>, </em><em>optional</em>) – </p></li>
+<li><p><strong>true_string</strong> (<em>str</em><em>, </em><em>optional</em>) – </p></li>
+<li><p><strong>false_string</strong> (<em>str</em><em>, </em><em>optional</em>) – </p></li>
+<li><p><strong>parameter_definition_id</strong> (<em>str</em><em>, </em><em>optional</em>) – ID of the linked parameter definition, see <code class="xref py py-class docutils literal notranslate"><span class="pre">ParameterDefinition</span></code>.</p></li>
+<li><p><strong>task_definition_property</strong> (<em>str</em><em>, </em><em>optional</em>) – </p></li>
+<li><p><strong>file_id</strong> (<em>str</em><em>, </em><em>optional</em>) – ID of the file resource.</p></li>
+</ul>
 </dd>
 </dl>
-<p class="rubric">Example</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">pl</span> <span class="o">=</span> <span class="n">ParameterMapping</span><span class="p">(</span><span class="n">key_string</span><span class="o">=</span><span class="s1">&#39;radius(0)&#39;</span><span class="p">,</span>
-<span class="go">                          tokenizer=&quot;=&quot;,</span>
-<span class="go">                          parameter_definition_name=&quot;tube_radius&quot;)</span>
-</pre></div>
-</div>
-<p>The ParameterMapping schema has the following fields:</p>
-<table class="table">
-<thead>
-<tr class="row-odd"><th class="head"><p>Name</p></th>
-<th class="head"><p>Type</p></th>
-<th class="head"><p>Description</p></th>
-<th class="head"><p>Validations</p></th>
-</tr>
-</thead>
-<tbody>
-<tr class="row-even"><td><p>id</p></td>
-<td><p>string</p></td>
-<td><p>Unique ID to access the resource, generated internally by the server on creation.</p></td>
-<td></td>
-</tr>
-<tr class="row-odd"><td><p>line</p></td>
-<td><p>integer</p></td>
-<td></td>
-<td></td>
-</tr>
-<tr class="row-even"><td><p>column</p></td>
-<td><p>integer</p></td>
-<td></td>
-<td></td>
-</tr>
-<tr class="row-odd"><td><p>key_string</p></td>
-<td><p>string</p></td>
-<td></td>
-<td></td>
-</tr>
-<tr class="row-even"><td><p>float_field</p></td>
-<td><p>string</p></td>
-<td></td>
-<td></td>
-</tr>
-<tr class="row-odd"><td><p>width</p></td>
-<td><p>integer</p></td>
-<td></td>
-<td></td>
-</tr>
-<tr class="row-even"><td><p>precision</p></td>
-<td><p>integer</p></td>
-<td></td>
-<td></td>
-</tr>
-<tr class="row-odd"><td><p>tokenizer</p></td>
-<td><p>string</p></td>
-<td></td>
-<td></td>
-</tr>
-<tr class="row-even"><td><p>decimal_symbol</p></td>
-<td><p>string</p></td>
-<td></td>
-<td></td>
-</tr>
-<tr class="row-odd"><td><p>digit_grouping_symbol</p></td>
-<td><p>string</p></td>
-<td></td>
-<td></td>
-</tr>
-<tr class="row-even"><td><p>string_quote</p></td>
-<td><p>string</p></td>
-<td></td>
-<td></td>
-</tr>
-<tr class="row-odd"><td><p>true_string</p></td>
-<td><p>string</p></td>
-<td></td>
-<td></td>
-</tr>
-<tr class="row-even"><td><p>false_string</p></td>
-<td><p>string</p></td>
-<td></td>
-<td></td>
-</tr>
-<tr class="row-odd"><td><p>parameter_definition_id</p></td>
-<td><p>string</p></td>
-<td><p>ID of the linked parameter definition, see <code class="xref py py-class docutils literal notranslate"><span class="pre">ansys.rep.client.jms.ParameterDefinition</span></code>.</p></td>
-<td></td>
-</tr>
-<tr class="row-even"><td><p>task_definition_property</p></td>
-<td><p>string</p></td>
-<td></td>
-<td></td>
-</tr>
-<tr class="row-odd"><td><p>file_id</p></td>
-<td><p>string</p></td>
-<td><p>ID of the file resource.</p></td>
-<td></td>
-</tr>
-</tbody>
-</table>
 </dd></dl>
 
 </section>
@@ -1625,96 +1119,29 @@ as <code class="xref py py-attr docutils literal notranslate"><span class="pre">
 <dd><p>Software resource.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>**kwargs</strong> – Arbitrary keyword arguments, see the Software schema below.</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<em>str</em>) – </p></li>
+<li><p><strong>version</strong> (<em>str</em><em>, </em><em>optional</em>) – </p></li>
+</ul>
 </dd>
 </dl>
-<p class="rubric">Example</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">software</span> <span class="o">=</span> <span class="n">Software</span><span class="p">(</span>
-<span class="go">        name=&quot;ANSYS Mechanical APDL&quot;</span>
-<span class="go">        version=&quot;2022 R2&quot;</span>
-<span class="go">    )</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">task_definition</span><span class="o">.</span><span class="n">software_requirements</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">software</span><span class="p">)</span>
-</pre></div>
-</div>
-<p>The Software schema has the following fields:</p>
-<table class="table">
-<thead>
-<tr class="row-odd"><th class="head"><p>Name</p></th>
-<th class="head"><p>Type</p></th>
-<th class="head"><p>Description</p></th>
-<th class="head"><p>Validations</p></th>
-</tr>
-</thead>
-<tbody>
-<tr class="row-even"><td><p>name</p></td>
-<td><p>string</p></td>
-<td><p>Application’s name.</p></td>
-<td></td>
-</tr>
-<tr class="row-odd"><td><p>version</p></td>
-<td><p>string</p></td>
-<td><p>Application’s version.</p></td>
-<td></td>
-</tr>
-</tbody>
-</table>
 </dd></dl>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="ansys.rep.client.jms.ResourceRequirements">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ansys.rep.client.jms.</span></span><span class="sig-name descname"><span class="pre">ResourceRequirements</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ansys.rep.client.jms.ResourceRequirements" title="Permalink to this definition">#</a></dt>
-<dd><p>Compute Resource Requirements.</p>
+<dd><p>ResourceRequirements resource.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>**kwargs</strong> – Arbitrary keyword arguments, see the ResourceRequirements schema below.</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>platform</strong> (<em>str</em><em>, </em><em>optional</em>) – </p></li>
+<li><p><strong>memory</strong> (<em>int</em><em>, </em><em>optional</em>) – </p></li>
+<li><p><strong>cpu_core_usage</strong> (<em>float</em><em>, </em><em>optional</em>) – </p></li>
+<li><p><strong>disk_space</strong> (<em>int</em><em>, </em><em>optional</em>) – </p></li>
+<li><p><strong>custom</strong> (<em>dict</em><em>, </em><em>optional</em>) – </p></li>
+</ul>
 </dd>
 </dl>
-<p class="rubric">Example</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">reqs</span> <span class="o">=</span> <span class="n">ResourceRequirements</span><span class="p">(</span>
-<span class="go">        cpu_core_usage=12.0,</span>
-<span class="go">        memory=250,</span>
-<span class="go">        disk_space=50,</span>
-<span class="go">    )</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">task_definition</span><span class="o">.</span><span class="n">resource_requirements</span> <span class="o">=</span> <span class="n">reqs</span>
-</pre></div>
-</div>
-<p>The ResourceRequirements schema has the following fields:</p>
-<table class="table">
-<thead>
-<tr class="row-odd"><th class="head"><p>Name</p></th>
-<th class="head"><p>Type</p></th>
-<th class="head"><p>Description</p></th>
-<th class="head"><p>Validations</p></th>
-</tr>
-</thead>
-<tbody>
-<tr class="row-even"><td><p>platform</p></td>
-<td><p>string</p></td>
-<td></td>
-<td></td>
-</tr>
-<tr class="row-odd"><td><p>memory</p></td>
-<td><p>integer</p></td>
-<td></td>
-<td></td>
-</tr>
-<tr class="row-even"><td><p>cpu_core_usage</p></td>
-<td><p>number</p></td>
-<td></td>
-<td></td>
-</tr>
-<tr class="row-odd"><td><p>disk_space</p></td>
-<td><p>integer</p></td>
-<td></td>
-<td></td>
-</tr>
-<tr class="row-even"><td><p>custom</p></td>
-<td><p>object</p></td>
-<td></td>
-<td></td>
-</tr>
-</tbody>
-</table>
 </dd></dl>
 
 <dl class="py class">
@@ -1723,62 +1150,16 @@ as <code class="xref py py-attr docutils literal notranslate"><span class="pre">
 <dd><p>SuccessCriteria resource.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>**kwargs</strong> – Arbitrary keyword arguments, see the SuccessCriteria schema below.</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>return_code</strong> (<em>int</em><em>, </em><em>optional</em>) – The process exit code that must be returned by the executed command.</p></li>
+<li><p><strong>expressions</strong> (<em>list</em><em>, </em><em>optional</em>) – A list of expressions to be evaluated.</p></li>
+<li><p><strong>required_output_file_ids</strong> (<em>list</em><em>[</em><em>str</em><em>]</em><em>, </em><em>optional</em>) – List of IDs of required output files.</p></li>
+<li><p><strong>require_all_output_files</strong> (<em>bool</em><em>, </em><em>optional</em>) – Flag to require all output files.</p></li>
+<li><p><strong>required_output_parameter_ids</strong> (<em>list</em><em>[</em><em>str</em><em>]</em><em>, </em><em>optional</em>) – List of names of required output parameters.</p></li>
+<li><p><strong>require_all_output_parameters</strong> (<em>bool</em><em>, </em><em>optional</em>) – Flag to require all output parameters.</p></li>
+</ul>
 </dd>
 </dl>
-<p class="rubric">Example</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">sc</span> <span class="o">=</span> <span class="n">SuccessCriteria</span><span class="p">(</span>
-<span class="go">        return_code=0,</span>
-<span class="go">        expressions= [&quot;values[&#39;tube1_radius&#39;]&gt;=4.0&quot;, &quot;values[&#39;tube1_thickness&#39;]&gt;=0.5&quot;],</span>
-<span class="go">        required_output_file_ids=[ f.id for f in files[2:] ],</span>
-<span class="go">        require_all_output_files=False,</span>
-<span class="go">        required_output_parameter_ids=[...],</span>
-<span class="go">        require_all_output_parameters=False</span>
-<span class="go">    )</span>
-</pre></div>
-</div>
-<p>The SuccessCriteria schema has the following fields:</p>
-<table class="table">
-<thead>
-<tr class="row-odd"><th class="head"><p>Name</p></th>
-<th class="head"><p>Type</p></th>
-<th class="head"><p>Description</p></th>
-<th class="head"><p>Validations</p></th>
-</tr>
-</thead>
-<tbody>
-<tr class="row-even"><td><p>return_code</p></td>
-<td><p>integer</p></td>
-<td><p>The process exit code that must be returned by the executed command.</p></td>
-<td></td>
-</tr>
-<tr class="row-odd"><td><p>expressions[]</p></td>
-<td><p>array</p></td>
-<td><p>A list of expressions to be evaluated.</p></td>
-<td></td>
-</tr>
-<tr class="row-even"><td><p>required_output_file_ids[]</p></td>
-<td><p>array</p></td>
-<td><p>List of IDs of required output files.</p></td>
-<td></td>
-</tr>
-<tr class="row-odd"><td><p>require_all_output_files</p></td>
-<td><p>boolean</p></td>
-<td><p>Flag to require all output files.</p></td>
-<td></td>
-</tr>
-<tr class="row-even"><td><p>required_output_parameter_ids[]</p></td>
-<td><p>array</p></td>
-<td><p>List of names of required output parameters.</p></td>
-<td></td>
-</tr>
-<tr class="row-odd"><td><p>require_all_output_parameters</p></td>
-<td><p>boolean</p></td>
-<td><p>Flag to require all output parameters.</p></td>
-<td></td>
-</tr>
-</tbody>
-</table>
 </dd></dl>
 
 <dl class="py class">
@@ -1787,30 +1168,9 @@ as <code class="xref py py-attr docutils literal notranslate"><span class="pre">
 <dd><p>Licensing resource.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>**kwargs</strong> – Arbitrary keyword arguments, see the Licensing schema below.</p>
+<dd class="field-odd"><p><strong>enable_shared_licensing</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether to enable shared licensing contexts for Ansys simulations</p>
 </dd>
 </dl>
-<p class="rubric">Example</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">lic</span> <span class="o">=</span> <span class="n">Licensing</span><span class="p">(</span><span class="n">enable_shared_licensing</span><span class="o">=</span><span class="n">true</span><span class="p">)</span>
-</pre></div>
-</div>
-<p>The Licensing schema has the following fields:</p>
-<table class="table">
-<thead>
-<tr class="row-odd"><th class="head"><p>Name</p></th>
-<th class="head"><p>Type</p></th>
-<th class="head"><p>Description</p></th>
-<th class="head"><p>Validations</p></th>
-</tr>
-</thead>
-<tbody>
-<tr class="row-even"><td><p>enable_shared_licensing</p></td>
-<td><p>boolean</p></td>
-<td><p>Whether to enable shared licensing contexts for Ansys simulations</p></td>
-<td></td>
-</tr>
-</tbody>
-</table>
 </dd></dl>
 
 <dl class="py class">
@@ -1819,124 +1179,27 @@ as <code class="xref py py-attr docutils literal notranslate"><span class="pre">
 <dd><p>TaskDefinition resource.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>**kwargs</strong> – Arbitrary keyword arguments, see the TaskDefinition schema below.</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>id</strong> (<em>str</em><em>, </em><em>optional</em>) – Unique ID to access the resource, generated internally by the server on creation.</p></li>
+<li><p><strong>name</strong> (<em>str</em><em>, </em><em>optional</em>) – Name.</p></li>
+<li><p><strong>execution_command</strong> (<em>str</em><em>, </em><em>optional</em>) – Command to execute (command or execution script is required).</p></li>
+<li><p><strong>use_execution_script</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether to run task with the execution command or the execution script.</p></li>
+<li><p><strong>execution_script_id</strong> (<em>str</em><em>, </em><em>optional</em>) – Script to execute (command or execution script is required).</p></li>
+<li><p><strong>execution_level</strong> (<em>int</em>) – Define execution level for this task.</p></li>
+<li><p><strong>execution_context</strong> (<em>dict</em><em>, </em><em>optional</em>) – Additional arguments to pass to the executing command</p></li>
+<li><p><strong>environment</strong> (<em>dict</em><em>, </em><em>optional</em>) – Environment variables to set for the executed process</p></li>
+<li><p><strong>max_execution_time</strong> (<em>float</em><em>, </em><em>optional</em>) – Maximum time in seconds for executing the task.</p></li>
+<li><p><strong>num_trials</strong> (<em>int</em><em>, </em><em>optional</em>) – Maximum number of attempts to execute the task.</p></li>
+<li><p><strong>store_output</strong> (<em>bool</em><em>, </em><em>optional</em>) – Specify whether to store the standard output of the task.</p></li>
+<li><p><strong>input_file_ids</strong> (<em>list</em><em>[</em><em>str</em><em>]</em>) – List of IDs of input files.</p></li>
+<li><p><strong>output_file_ids</strong> (<em>list</em><em>[</em><em>str</em><em>]</em>) – List of IDs of output files.</p></li>
+<li><p><strong>success_criteria</strong> (<em>object</em><em>, </em><em>optional</em>) – </p></li>
+<li><p><strong>licensing</strong> (<em>object</em><em>, </em><em>optional</em>) – A <a class="reference internal" href="#ansys.rep.client.jms.Licensing" title="ansys.rep.client.jms.Licensing"><code class="xref py py-class docutils literal notranslate"><span class="pre">Licensing</span></code></a> object.</p></li>
+<li><p><strong>software_requirements</strong> (<em>object</em><em>, </em><em>optional</em>) – </p></li>
+<li><p><strong>resource_requirements</strong> (<em>object</em><em>, </em><em>optional</em>) – </p></li>
+</ul>
 </dd>
 </dl>
-<p class="rubric">Example</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">td</span> <span class="o">=</span> <span class="n">TaskDefinition</span><span class="p">(</span>
-<span class="go">            name=&quot;MAPDL_run&quot;,</span>
-<span class="go">            software_requirements=[</span>
-<span class="go">                Software(name=&quot;ANSYS Mechanical APDL&quot;, version=&quot;2022 R2&quot;),</span>
-<span class="go">            ],</span>
-<span class="go">            execution_command=&quot;%executable% -b -i %file:mac%</span>
-<span class="go">                               -o file.out -np %resource:num_cores%&quot;,</span>
-<span class="go">            max_execution_time=20.0,</span>
-<span class="go">            execution_level=0,</span>
-<span class="go">            resource_requirements=ResourceRequirements(</span>
-<span class="go">                cpu_core_usage=1.0,</span>
-<span class="go">                memory=250,</span>
-<span class="go">                disk_space=5,</span>
-<span class="go">            )</span>
-<span class="go">        )</span>
-</pre></div>
-</div>
-<p>The TaskDefinition schema has the following fields:</p>
-<table class="table">
-<thead>
-<tr class="row-odd"><th class="head"><p>Name</p></th>
-<th class="head"><p>Type</p></th>
-<th class="head"><p>Description</p></th>
-<th class="head"><p>Validations</p></th>
-</tr>
-</thead>
-<tbody>
-<tr class="row-even"><td><p>id</p></td>
-<td><p>string</p></td>
-<td><p>Unique ID to access the resource, generated internally by the server on creation.</p></td>
-<td></td>
-</tr>
-<tr class="row-odd"><td><p>name</p></td>
-<td><p>string</p></td>
-<td><p>Name.</p></td>
-<td></td>
-</tr>
-<tr class="row-even"><td><p>execution_command</p></td>
-<td><p>string</p></td>
-<td><p>Command to execute (command or execution script is required).</p></td>
-<td></td>
-</tr>
-<tr class="row-odd"><td><p>use_execution_script</p></td>
-<td><p>boolean</p></td>
-<td><p>Whether to run task with the execution command or the execution script.</p></td>
-<td></td>
-</tr>
-<tr class="row-even"><td><p>execution_script_id</p></td>
-<td><p>string</p></td>
-<td><p>Script to execute (command or execution script is required).</p></td>
-<td></td>
-</tr>
-<tr class="row-odd"><td><p>execution_level</p></td>
-<td><p>integer</p></td>
-<td><p>Define execution level for this task.</p></td>
-<td></td>
-</tr>
-<tr class="row-even"><td><p>execution_context</p></td>
-<td><p>object</p></td>
-<td><p>Additional arguments to pass to the executing command</p></td>
-<td></td>
-</tr>
-<tr class="row-odd"><td><p>environment</p></td>
-<td><p>object</p></td>
-<td><p>Environment variables to set for the executed process</p></td>
-<td></td>
-</tr>
-<tr class="row-even"><td><p>max_execution_time</p></td>
-<td><p>number</p></td>
-<td><p>Maximum time in seconds for executing the task.</p></td>
-<td></td>
-</tr>
-<tr class="row-odd"><td><p>num_trials</p></td>
-<td><p>integer</p></td>
-<td><p>Maximum number of attempts to execute the task.</p></td>
-<td></td>
-</tr>
-<tr class="row-even"><td><p>store_output</p></td>
-<td><p>boolean</p></td>
-<td><p>Specify whether to store the standard output of the task.</p></td>
-<td></td>
-</tr>
-<tr class="row-odd"><td><p>input_file_ids[]</p></td>
-<td><p>array</p></td>
-<td><p>List of IDs of input files.</p></td>
-<td></td>
-</tr>
-<tr class="row-even"><td><p>output_file_ids[]</p></td>
-<td><p>array</p></td>
-<td><p>List of IDs of output files.</p></td>
-<td></td>
-</tr>
-<tr class="row-odd"><td><p>success_criteria</p></td>
-<td><p>object</p></td>
-<td><p>A <a class="reference internal" href="#ansys.rep.client.jms.SuccessCriteria" title="ansys.rep.client.jms.SuccessCriteria"><code class="xref py py-class docutils literal notranslate"><span class="pre">ansys.rep.client.jms.SuccessCriteria</span></code></a> object.</p></td>
-<td></td>
-</tr>
-<tr class="row-even"><td><p>licensing</p></td>
-<td><p>object</p></td>
-<td><p>A <a class="reference internal" href="#ansys.rep.client.jms.Licensing" title="ansys.rep.client.jms.Licensing"><code class="xref py py-class docutils literal notranslate"><span class="pre">ansys.rep.client.jms.Licensing</span></code></a> object.</p></td>
-<td></td>
-</tr>
-<tr class="row-odd"><td><p>software_requirements[]</p></td>
-<td><p>array</p></td>
-<td><p>A list of <a class="reference internal" href="#ansys.rep.client.jms.Software" title="ansys.rep.client.jms.Software"><code class="xref py py-class docutils literal notranslate"><span class="pre">ansys.rep.client.jms.Software</span></code></a> objects.</p></td>
-<td></td>
-</tr>
-<tr class="row-even"><td><p>resource_requirements</p></td>
-<td><p>object</p></td>
-<td><p>A <a class="reference internal" href="#ansys.rep.client.jms.ResourceRequirements" title="ansys.rep.client.jms.ResourceRequirements"><code class="xref py py-class docutils literal notranslate"><span class="pre">ansys.rep.client.jms.ResourceRequirements</span></code></a> object.</p></td>
-<td></td>
-</tr>
-</tbody>
-</table>
 </dd></dl>
 
 </section>
@@ -1948,80 +1211,19 @@ as <code class="xref py py-attr docutils literal notranslate"><span class="pre">
 <dd><p>JobDefinition resource.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>**kwargs</strong> – Arbitrary keyword arguments, see the JobDefinition schema below.</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>id</strong> (<em>str</em><em>, </em><em>optional</em>) – Unique ID to access the resource, generated internally by the server on creation.</p></li>
+<li><p><strong>name</strong> (<em>str</em><em>, </em><em>optional</em>) – Name of the job definition</p></li>
+<li><p><strong>active</strong> (<em>bool</em>) – Defines whether this is the active job definition in the project where evaluators will evaluate pending jobs</p></li>
+<li><p><strong>creation_time</strong> (<em>datetime</em><em>, </em><em>optional</em>) – The date and time the job definition was created.</p></li>
+<li><p><strong>modification_time</strong> (<em>datetime</em><em>, </em><em>optional</em>) – The date and time the job definition was last modified.</p></li>
+<li><p><strong>parameter_definition_ids</strong> (<em>list</em><em>[</em><em>str</em><em>]</em>) – </p></li>
+<li><p><strong>parameter_mapping_ids</strong> (<em>list</em><em>[</em><em>str</em><em>]</em>) – </p></li>
+<li><p><strong>task_definition_ids</strong> (<em>list</em><em>[</em><em>str</em><em>]</em>) – </p></li>
+<li><p><strong>fitness_definition</strong> (<em>object</em><em>, </em><em>optional</em>) – A <a class="reference internal" href="#ansys.rep.client.jms.FitnessDefinition" title="ansys.rep.client.jms.FitnessDefinition"><code class="xref py py-class docutils literal notranslate"><span class="pre">FitnessDefinition</span></code></a> object.</p></li>
+</ul>
 </dd>
 </dl>
-<p class="rubric">Example</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">job_def</span> <span class="o">=</span> <span class="n">JobDefinition</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;JobDefinition.1&quot;</span><span class="p">,</span> <span class="n">active</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">job_def</span><span class="o">.</span><span class="n">add_float_parameter_definition</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;tube_radius&#39;</span><span class="p">,</span>
-<span class="go">                                           lower_limit=4.0,</span>
-<span class="go">                                           upper_limit=20.0,</span>
-<span class="go">                                           default=12.0 )</span>
-</pre></div>
-</div>
-<p>The JobDefinition schema has the following fields:</p>
-<table class="table">
-<thead>
-<tr class="row-odd"><th class="head"><p>Name</p></th>
-<th class="head"><p>Type</p></th>
-<th class="head"><p>Description</p></th>
-<th class="head"><p>Validations</p></th>
-</tr>
-</thead>
-<tbody>
-<tr class="row-even"><td><p>id</p></td>
-<td><p>string</p></td>
-<td><p>Unique ID to access the resource, generated internally by the server on creation.</p></td>
-<td></td>
-</tr>
-<tr class="row-odd"><td><p>name</p></td>
-<td><p>string</p></td>
-<td><p>Name of the job_definition</p></td>
-<td></td>
-</tr>
-<tr class="row-even"><td><p>active</p></td>
-<td><p>boolean</p></td>
-<td><p>Defines whether this is the active job_definition in the project where evaluators will evaluate pending design points</p></td>
-<td></td>
-</tr>
-<tr class="row-odd"><td><p>creation_time</p></td>
-<td><p>string</p></td>
-<td><p>The date and time the job_definition was created.</p></td>
-<td><ul class="simple">
-<li><p>It must be formatted as date-time</p></li>
-</ul>
-</td>
-</tr>
-<tr class="row-even"><td><p>modification_time</p></td>
-<td><p>string</p></td>
-<td><p>The date and time the job_definition was last modified.</p></td>
-<td><ul class="simple">
-<li><p>It must be formatted as date-time</p></li>
-</ul>
-</td>
-</tr>
-<tr class="row-odd"><td><p>parameter_definition_ids[]</p></td>
-<td><p>array</p></td>
-<td></td>
-<td></td>
-</tr>
-<tr class="row-even"><td><p>parameter_mapping_ids[]</p></td>
-<td><p>array</p></td>
-<td></td>
-<td></td>
-</tr>
-<tr class="row-odd"><td><p>task_definition_ids[]</p></td>
-<td><p>array</p></td>
-<td></td>
-<td></td>
-</tr>
-<tr class="row-even"><td><p>fitness_definition</p></td>
-<td><p>object</p></td>
-<td><p>An <a class="reference internal" href="#ansys.rep.client.jms.FitnessDefinition" title="ansys.rep.client.jms.FitnessDefinition"><code class="xref py py-class docutils literal notranslate"><span class="pre">ansys.rep.client.jms.FitnessDefinition</span></code></a> object.</p></td>
-<td></td>
-</tr>
-</tbody>
-</table>
 </dd></dl>
 
 </section>
@@ -2033,129 +1235,28 @@ as <code class="xref py py-attr docutils literal notranslate"><span class="pre">
 <dd><p>Task resource.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>**kwargs</strong> – Arbitrary keyword arguments, see the Task schema below.</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>id</strong> (<em>str</em><em>, </em><em>optional</em>) – Unique ID to access the resource, generated internally by the server on creation.</p></li>
+<li><p><strong>modification_time</strong> (<em>datetime</em><em>, </em><em>optional</em>) – The date and time the task was last modified.</p></li>
+<li><p><strong>creation_time</strong> (<em>datetime</em><em>, </em><em>optional</em>) – The date and time the task was created.</p></li>
+<li><p><strong>pending_time</strong> (<em>datetime</em><em>, </em><em>optional</em>) – The date and time the task was set to pending.</p></li>
+<li><p><strong>prolog_time</strong> (<em>datetime</em><em>, </em><em>optional</em>) – The date and time the task was set to prolog.</p></li>
+<li><p><strong>running_time</strong> (<em>datetime</em><em>, </em><em>optional</em>) – The date and time the task was set to running.</p></li>
+<li><p><strong>finished_time</strong> (<em>datetime</em><em>, </em><em>optional</em>) – The date and time the task was completed.</p></li>
+<li><p><strong>eval_status</strong> (<em>str</em><em>, </em><em>optional</em>) – Evaluation status.</p></li>
+<li><p><strong>trial_number</strong> (<em>int</em><em>, </em><em>optional</em>) – Which attempt to execute the process step this task represent.</p></li>
+<li><p><strong>elapsed_time</strong> (<em>float</em><em>, </em><em>optional</em>) – Number of seconds it took the evaluator to execute the task.</p></li>
+<li><p><strong>task_definition_id</strong> (<em>str</em>) – ID of the <a class="reference internal" href="#ansys.rep.client.jms.TaskDefinition" title="ansys.rep.client.jms.TaskDefinition"><code class="xref py py-class docutils literal notranslate"><span class="pre">TaskDefinition</span></code></a> the task is linked to.</p></li>
+<li><p><strong>task_definition_snapshot</strong> (<em>object</em><em>, </em><em>optional</em>) – Snapshot of <a class="reference internal" href="#ansys.rep.client.jms.TaskDefinition" title="ansys.rep.client.jms.TaskDefinition"><code class="xref py py-class docutils literal notranslate"><span class="pre">TaskDefinition</span></code></a> created when task status changes to prolog, before evaluation.</p></li>
+<li><p><strong>job_id</strong> (<em>str</em>) – ID of the <a class="reference internal" href="#ansys.rep.client.jms.Job" title="ansys.rep.client.jms.Job"><code class="xref py py-class docutils literal notranslate"><span class="pre">Job</span></code></a> the task is linked to.</p></li>
+<li><p><strong>evaluator_id</strong> (<em>str</em><em>, </em><em>optional</em>) – UUID of the <a class="reference internal" href="#ansys.rep.client.jms.Evaluator" title="ansys.rep.client.jms.Evaluator"><code class="xref py py-class docutils literal notranslate"><span class="pre">Evaluator</span></code></a> that updated the task.</p></li>
+<li><p><strong>input_file_ids</strong> (<em>list</em><em>[</em><em>str</em><em>]</em>) – List of IDs of input files of task.</p></li>
+<li><p><strong>output_file_ids</strong> (<em>list</em><em>[</em><em>str</em><em>]</em>) – List of IDs of output files of task.</p></li>
+<li><p><strong>inherited_file_ids</strong> (<em>list</em><em>[</em><em>str</em><em>]</em>) – List of IDs of inherited files of task.</p></li>
+<li><p><strong>owned_file_ids</strong> (<em>list</em><em>[</em><em>str</em><em>]</em>) – List of IDs of owned files of task.</p></li>
+</ul>
 </dd>
 </dl>
-<p>The Task schema has the following fields:</p>
-<table class="table">
-<thead>
-<tr class="row-odd"><th class="head"><p>Name</p></th>
-<th class="head"><p>Type</p></th>
-<th class="head"><p>Description</p></th>
-<th class="head"><p>Validations</p></th>
-</tr>
-</thead>
-<tbody>
-<tr class="row-even"><td><p>id</p></td>
-<td><p>string</p></td>
-<td><p>Unique ID to access the resource, generated internally by the server on creation.</p></td>
-<td></td>
-</tr>
-<tr class="row-odd"><td><p>modification_time</p></td>
-<td><p>string</p></td>
-<td><p>The date and time the task was last modified.</p></td>
-<td><ul class="simple">
-<li><p>It must be formatted as date-time</p></li>
-</ul>
-</td>
-</tr>
-<tr class="row-even"><td><p>creation_time</p></td>
-<td><p>string</p></td>
-<td><p>The date and time the task was created.</p></td>
-<td><ul class="simple">
-<li><p>It must be formatted as date-time</p></li>
-</ul>
-</td>
-</tr>
-<tr class="row-odd"><td><p>pending_time</p></td>
-<td><p>string</p></td>
-<td><p>The date and time the task was set to pending.</p></td>
-<td><ul class="simple">
-<li><p>It must be formatted as date-time</p></li>
-</ul>
-</td>
-</tr>
-<tr class="row-even"><td><p>prolog_time</p></td>
-<td><p>string</p></td>
-<td><p>The date and time the task was set to prolog.</p></td>
-<td><ul class="simple">
-<li><p>It must be formatted as date-time</p></li>
-</ul>
-</td>
-</tr>
-<tr class="row-odd"><td><p>running_time</p></td>
-<td><p>string</p></td>
-<td><p>The date and time the task was set to running.</p></td>
-<td><ul class="simple">
-<li><p>It must be formatted as date-time</p></li>
-</ul>
-</td>
-</tr>
-<tr class="row-even"><td><p>finished_time</p></td>
-<td><p>string</p></td>
-<td><p>The date and time the task was completed.</p></td>
-<td><ul class="simple">
-<li><p>It must be formatted as date-time</p></li>
-</ul>
-</td>
-</tr>
-<tr class="row-odd"><td><p>eval_status</p></td>
-<td><p>string</p></td>
-<td><p>Evaluation status.</p></td>
-<td></td>
-</tr>
-<tr class="row-even"><td><p>trial_number</p></td>
-<td><p>integer</p></td>
-<td><p>Which attempt to execute the process step this task represent.</p></td>
-<td></td>
-</tr>
-<tr class="row-odd"><td><p>elapsed_time</p></td>
-<td><p>number</p></td>
-<td><p>Number of seconds it took the evaluator to execute the task.</p></td>
-<td></td>
-</tr>
-<tr class="row-even"><td><p>task_definition_id</p></td>
-<td><p>string</p></td>
-<td><p>[‘ID of the <a class="reference internal" href="#ansys.rep.client.jms.TaskDefinition" title="ansys.rep.client.jms.TaskDefinition"><code class="xref py py-class docutils literal notranslate"><span class="pre">ansys.rep.client.jms.TaskDefinition</span></code></a> the task is linked to.’]</p></td>
-<td></td>
-</tr>
-<tr class="row-odd"><td><p>task_definition_snapshot</p></td>
-<td><p>object</p></td>
-<td><p>Snapshot of <a class="reference internal" href="#ansys.rep.client.jms.TaskDefinition" title="ansys.rep.client.jms.TaskDefinition"><code class="xref py py-class docutils literal notranslate"><span class="pre">ansys.rep.client.jms.TaskDefinition</span></code></a> created when task status changes to prolog, before evaluation.</p></td>
-<td></td>
-</tr>
-<tr class="row-even"><td><p>job_id</p></td>
-<td><p>string</p></td>
-<td><p>ID of the <a class="reference internal" href="#ansys.rep.client.jms.Job" title="ansys.rep.client.jms.Job"><code class="xref py py-class docutils literal notranslate"><span class="pre">ansys.rep.client.jms.Job</span></code></a> the task is linked to.</p></td>
-<td></td>
-</tr>
-<tr class="row-odd"><td><p>evaluator_id</p></td>
-<td><p>string</p></td>
-<td><p>UUID of the <a class="reference internal" href="#ansys.rep.client.jms.Evaluator" title="ansys.rep.client.jms.Evaluator"><code class="xref py py-class docutils literal notranslate"><span class="pre">ansys.rep.client.jms.Evaluator</span></code></a> that updated the task.</p></td>
-<td></td>
-</tr>
-<tr class="row-even"><td><p>input_file_ids[]</p></td>
-<td><p>array</p></td>
-<td><p>List of IDs of input files of task.</p></td>
-<td></td>
-</tr>
-<tr class="row-odd"><td><p>output_file_ids[]</p></td>
-<td><p>array</p></td>
-<td><p>List of IDs of output files of task.</p></td>
-<td></td>
-</tr>
-<tr class="row-even"><td><p>inherited_file_ids[]</p></td>
-<td><p>array</p></td>
-<td><p>List of IDs of inherited files of task.</p></td>
-<td></td>
-</tr>
-<tr class="row-odd"><td><p>owned_file_ids[]</p></td>
-<td><p>array</p></td>
-<td><p>List of IDs of owned files of task.</p></td>
-<td></td>
-</tr>
-</tbody>
-</table>
 </dd></dl>
 
 </section>
@@ -2167,117 +1268,26 @@ as <code class="xref py py-attr docutils literal notranslate"><span class="pre">
 <dd><p>Job resource.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>**kwargs</strong> – Arbitrary keyword arguments, see the Job schema below.</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>id</strong> (<em>str</em><em>, </em><em>optional</em>) – Unique ID to access the resource, generated internally by the server on creation.</p></li>
+<li><p><strong>name</strong> (<em>str</em><em>, </em><em>optional</em>) – Name of the job.</p></li>
+<li><p><strong>eval_status</strong> (<em>str</em>) – Evaluation status.</p></li>
+<li><p><strong>job_definition_id</strong> (<em>str</em>) – ID of the linked job definition, see <a class="reference internal" href="#ansys.rep.client.jms.JobDefinition" title="ansys.rep.client.jms.JobDefinition"><code class="xref py py-class docutils literal notranslate"><span class="pre">JobDefinition</span></code></a>.</p></li>
+<li><p><strong>priority</strong> (<em>int</em><em>, </em><em>optional</em>) – Priority with which jobs are evaluated. The default is 0, which is the highest priority. Assigning a higher value to a design point makes it a lower priority.</p></li>
+<li><p><strong>values</strong> (<em>dict</em><em>, </em><em>optional</em>) – Dictionary with (name,value) pairs for all parameters defined in the linked job definition.</p></li>
+<li><p><strong>fitness</strong> (<em>float</em><em>, </em><em>optional</em>) – Fitness value computed.</p></li>
+<li><p><strong>fitness_term_values</strong> (<em>dict</em><em>, </em><em>optional</em>) – Dictionary with (name,value) pairs for all fitness terms computed.</p></li>
+<li><p><strong>note</strong> (<em>str</em><em>, </em><em>optional</em>) – Optional note for this job.</p></li>
+<li><p><strong>creator</strong> (<em>str</em><em>, </em><em>optional</em>) – Optional name/ID of the creator of this job.</p></li>
+<li><p><strong>executed_task_definition_level</strong> (<em>int</em><em>, </em><em>optional</em>) – Execution level of the last executed process step (-1 if none has been executed yet).</p></li>
+<li><p><strong>creation_time</strong> (<em>datetime</em><em>, </em><em>optional</em>) – The date and time the job was created.</p></li>
+<li><p><strong>modification_time</strong> (<em>datetime</em><em>, </em><em>optional</em>) – The date and time the job was last modified.</p></li>
+<li><p><strong>elapsed_time</strong> (<em>float</em>) – Number of seconds it took the evaluator(s) to update the job.</p></li>
+<li><p><strong>evaluators</strong> (<em>list</em><em>, </em><em>optional</em>) – List of IDs of the evaluators that updated the job.</p></li>
+<li><p><strong>file_ids</strong> (<em>list</em><em>[</em><em>str</em><em>]</em>) – List of IDs of all files of this job.</p></li>
+</ul>
 </dd>
 </dl>
-<p class="rubric">Example</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">jobs</span> <span class="o">=</span> <span class="p">[]</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">jobs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span> <span class="n">Job</span><span class="p">(</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;job_1&quot;</span><span class="p">,</span> <span class="n">eval_status</span><span class="o">=</span><span class="s2">&quot;pending&quot;</span><span class="p">,</span> <span class="n">job_definition_id</span><span class="o">=</span><span class="n">job_def</span><span class="o">.</span><span class="n">id</span><span class="p">)</span> <span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">jobs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span> <span class="n">Job</span><span class="p">(</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;job_2&quot;</span><span class="p">,</span> <span class="n">eval_status</span><span class="o">=</span><span class="s2">&quot;pending&quot;</span><span class="p">,</span> <span class="n">job_definition_id</span><span class="o">=</span><span class="n">job_def</span><span class="o">.</span><span class="n">id</span><span class="p">)</span> <span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">project_api</span><span class="o">.</span><span class="n">create_jobs</span><span class="p">(</span> <span class="n">jobs</span> <span class="p">)</span>
-</pre></div>
-</div>
-<p>The Job schema has the following fields:</p>
-<table class="table">
-<thead>
-<tr class="row-odd"><th class="head"><p>Name</p></th>
-<th class="head"><p>Type</p></th>
-<th class="head"><p>Description</p></th>
-<th class="head"><p>Validations</p></th>
-</tr>
-</thead>
-<tbody>
-<tr class="row-even"><td><p>id</p></td>
-<td><p>string</p></td>
-<td><p>Unique ID to access the resource, generated internally by the server on creation.</p></td>
-<td></td>
-</tr>
-<tr class="row-odd"><td><p>name</p></td>
-<td><p>string</p></td>
-<td><p>Name of the design point.</p></td>
-<td></td>
-</tr>
-<tr class="row-even"><td><p>eval_status</p></td>
-<td><p>string</p></td>
-<td><p>Evaluation status.</p></td>
-<td><ul class="simple">
-<li><p>It must be equal to one of the elements in [“inactive”, “pending”, “prolog”, “running”, “evaluated”, “failed”, “aborted”, “timeout”]</p></li>
-</ul>
-</td>
-</tr>
-<tr class="row-odd"><td><p>job_definition_id</p></td>
-<td><p>string</p></td>
-<td><p>ID of the linked job_definition, see <a class="reference internal" href="#ansys.rep.client.jms.JobDefinition" title="ansys.rep.client.jms.JobDefinition"><code class="xref py py-class docutils literal notranslate"><span class="pre">ansys.rep.client.jms.JobDefinition</span></code></a>.</p></td>
-<td></td>
-</tr>
-<tr class="row-even"><td><p>priority</p></td>
-<td><p>integer</p></td>
-<td><p>Priority with which design points are evaluated. The default is 0, which is the highest priority. Assigning a higher value to a design point makes it a lower priority.</p></td>
-<td></td>
-</tr>
-<tr class="row-odd"><td><p>values</p></td>
-<td><p>object</p></td>
-<td><p>Dictionary with (name,value) pairs for all parameters defined in the linked job_definition.</p></td>
-<td></td>
-</tr>
-<tr class="row-even"><td><p>fitness</p></td>
-<td><p>number</p></td>
-<td><p>Fitness value computed.</p></td>
-<td></td>
-</tr>
-<tr class="row-odd"><td><p>fitness_term_values</p></td>
-<td><p>object</p></td>
-<td><p>Dictionary with (name,value) pairs for all fitness terms computed.</p></td>
-<td></td>
-</tr>
-<tr class="row-even"><td><p>note</p></td>
-<td><p>string</p></td>
-<td><p>Optional note for this design point.</p></td>
-<td></td>
-</tr>
-<tr class="row-odd"><td><p>creator</p></td>
-<td><p>string</p></td>
-<td><p>Optional name/ID of the creator of this design point.</p></td>
-<td></td>
-</tr>
-<tr class="row-even"><td><p>executed_task_definition_level</p></td>
-<td><p>integer</p></td>
-<td><p>Execution level of the last executed process step (-1 if none has been executed yet).</p></td>
-<td></td>
-</tr>
-<tr class="row-odd"><td><p>creation_time</p></td>
-<td><p>string</p></td>
-<td><p>The date and time the design point was created.</p></td>
-<td><ul class="simple">
-<li><p>It must be formatted as date-time</p></li>
-</ul>
-</td>
-</tr>
-<tr class="row-even"><td><p>modification_time</p></td>
-<td><p>string</p></td>
-<td><p>The date and time the design point was last modified.</p></td>
-<td><ul class="simple">
-<li><p>It must be formatted as date-time</p></li>
-</ul>
-</td>
-</tr>
-<tr class="row-odd"><td><p>elapsed_time</p></td>
-<td><p>number</p></td>
-<td><p>Number of seconds it took the evaluator(s) to update the design point.</p></td>
-<td></td>
-</tr>
-<tr class="row-even"><td><p>evaluators[]</p></td>
-<td><p>array</p></td>
-<td><p>List of UUID strings of the evaluators that updated the design point.</p></td>
-<td></td>
-</tr>
-<tr class="row-odd"><td><p>file_ids[]</p></td>
-<td><p>array</p></td>
-<td><p>List of IDs of all files of this design point.</p></td>
-<td></td>
-</tr>
-</tbody>
-</table>
 </dd></dl>
 
 </section>
@@ -2289,61 +1299,16 @@ as <code class="xref py py-attr docutils literal notranslate"><span class="pre">
 <dd><p>JobSelection resource.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>**kwargs</strong> – Arbitrary keyword arguments, see the Selection schema below.</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>id</strong> (<em>str</em><em>, </em><em>optional</em>) – Unique ID to access the resource, generated internally by the server on creation.</p></li>
+<li><p><strong>name</strong> (<em>str</em>) – Name of the selection.</p></li>
+<li><p><strong>creation_time</strong> (<em>datetime</em><em>, </em><em>optional</em>) – The date and time the selection was created.</p></li>
+<li><p><strong>modification_time</strong> (<em>datetime</em><em>, </em><em>optional</em>) – The date and time the selection was last modified.</p></li>
+<li><p><strong>algorithm_id</strong> (<em>str</em><em>, </em><em>optional</em>) – ID of the <a class="reference internal" href="#ansys.rep.client.jms.Algorithm" title="ansys.rep.client.jms.Algorithm"><code class="xref py py-class docutils literal notranslate"><span class="pre">Algorithm</span></code></a> the selection belongs to (optional).</p></li>
+<li><p><strong>jobs</strong> (<em>list</em><em>[</em><em>str</em><em>]</em>) – List of job IDs.</p></li>
+</ul>
 </dd>
 </dl>
-<p class="rubric">Example</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">sel</span> <span class="o">=</span> <span class="n">JobSelection</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;selection_0&quot;</span><span class="p">,</span> <span class="n">jobs</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">15</span><span class="p">,</span><span class="mi">28</span><span class="p">,</span><span class="mi">45</span><span class="p">])</span>
-</pre></div>
-</div>
-<p>The JobSelection schema has the following fields:</p>
-<table class="table">
-<thead>
-<tr class="row-odd"><th class="head"><p>Name</p></th>
-<th class="head"><p>Type</p></th>
-<th class="head"><p>Description</p></th>
-<th class="head"><p>Validations</p></th>
-</tr>
-</thead>
-<tbody>
-<tr class="row-even"><td><p>id</p></td>
-<td><p>string</p></td>
-<td><p>Unique ID to access the resource, generated internally by the server on creation.</p></td>
-<td></td>
-</tr>
-<tr class="row-odd"><td><p>name</p></td>
-<td><p>string</p></td>
-<td><p>Name of the selection.</p></td>
-<td></td>
-</tr>
-<tr class="row-even"><td><p>creation_time</p></td>
-<td><p>string</p></td>
-<td><p>The date and time the selection was created.</p></td>
-<td><ul class="simple">
-<li><p>It must be formatted as date-time</p></li>
-</ul>
-</td>
-</tr>
-<tr class="row-odd"><td><p>modification_time</p></td>
-<td><p>string</p></td>
-<td><p>The date and time the selection was last modified.</p></td>
-<td><ul class="simple">
-<li><p>It must be formatted as date-time</p></li>
-</ul>
-</td>
-</tr>
-<tr class="row-even"><td><p>algorithm_id</p></td>
-<td><p>string</p></td>
-<td><p>ID of the <a class="reference internal" href="#ansys.rep.client.jms.Algorithm" title="ansys.rep.client.jms.Algorithm"><code class="xref py py-class docutils literal notranslate"><span class="pre">ansys.rep.client.jms.Algorithm</span></code></a> the selection belongs to (optional).</p></td>
-<td></td>
-</tr>
-<tr class="row-odd"><td><p>jobs[]</p></td>
-<td><p>array</p></td>
-<td><p>List of design point IDs.</p></td>
-<td></td>
-</tr>
-</tbody>
-</table>
 </dd></dl>
 
 </section>
@@ -2355,68 +1320,17 @@ as <code class="xref py py-attr docutils literal notranslate"><span class="pre">
 <dd><p>Algorithm resource.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>**kwargs</strong> – Arbitrary keyword arguments, see the Algorithm schema below.</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>id</strong> (<em>str</em><em>, </em><em>optional</em>) – Unique ID to access the resource, generated internally by the server on creation.</p></li>
+<li><p><strong>name</strong> (<em>str</em><em>, </em><em>optional</em>) – Name of the algorithm.</p></li>
+<li><p><strong>description</strong> (<em>str</em><em>, </em><em>optional</em>) – Description of the algorithm.</p></li>
+<li><p><strong>creation_time</strong> (<em>datetime</em><em>, </em><em>optional</em>) – The date and time the algorithm was created.</p></li>
+<li><p><strong>modification_time</strong> (<em>datetime</em><em>, </em><em>optional</em>) – The date and time the algorithm was last modified.</p></li>
+<li><p><strong>data</strong> (<em>str</em><em>, </em><em>optional</em>) – Generic string field to hold arbitrary algorithm configuration data, e.g. as JSON dictionary.</p></li>
+<li><p><strong>jobs</strong> (<em>list</em><em>[</em><em>str</em><em>]</em>) – List of job IDs.</p></li>
+</ul>
 </dd>
 </dl>
-<p class="rubric">Example</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">algo</span> <span class="o">=</span> <span class="n">Algorithm</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;gradient_descent&quot;</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">algo</span><span class="o">.</span><span class="n">description</span> <span class="o">=</span> <span class="s2">&quot;Gradient descent is an iterative optimization algorithm.&quot;</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">algo</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="s2">&quot;{&quot;</span><span class="n">step_size</span><span class="s2">&quot;: 0.2,&quot;</span><span class="n">max_iterations</span><span class="s2">&quot;:10}&quot;</span>
-</pre></div>
-</div>
-<p>The Algorithm schema has the following fields:</p>
-<table class="table">
-<thead>
-<tr class="row-odd"><th class="head"><p>Name</p></th>
-<th class="head"><p>Type</p></th>
-<th class="head"><p>Description</p></th>
-<th class="head"><p>Validations</p></th>
-</tr>
-</thead>
-<tbody>
-<tr class="row-even"><td><p>id</p></td>
-<td><p>string</p></td>
-<td><p>Unique ID to access the resource, generated internally by the server on creation.</p></td>
-<td></td>
-</tr>
-<tr class="row-odd"><td><p>name</p></td>
-<td><p>string</p></td>
-<td><p>Name of the algorithm.</p></td>
-<td></td>
-</tr>
-<tr class="row-even"><td><p>description</p></td>
-<td><p>string</p></td>
-<td><p>Description of the algorithm.</p></td>
-<td></td>
-</tr>
-<tr class="row-odd"><td><p>creation_time</p></td>
-<td><p>string</p></td>
-<td><p>The date and time the algorithm was created.</p></td>
-<td><ul class="simple">
-<li><p>It must be formatted as date-time</p></li>
-</ul>
-</td>
-</tr>
-<tr class="row-even"><td><p>modification_time</p></td>
-<td><p>string</p></td>
-<td><p>The date and time the algorithm was last modified.</p></td>
-<td><ul class="simple">
-<li><p>It must be formatted as date-time</p></li>
-</ul>
-</td>
-</tr>
-<tr class="row-odd"><td><p>data</p></td>
-<td><p>string</p></td>
-<td><p>Generic string field to hold arbitrary algorithm job_definition data, e.g. as JSON dict​ionary.</p></td>
-<td></td>
-</tr>
-<tr class="row-even"><td><p>jobs[]</p></td>
-<td><p>array</p></td>
-<td><p>List of design point IDs.</p></td>
-<td></td>
-</tr>
-</tbody>
-</table>
 </dd></dl>
 
 </section>
@@ -2428,92 +1342,23 @@ as <code class="xref py py-attr docutils literal notranslate"><span class="pre">
 <dd><p>Evaluator resource.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>**kwargs</strong> – Arbitrary keyword arguments, see the Evaluator schema below.</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>id</strong> (<em>str</em><em>, </em><em>optional</em>) – Unique ID to access the resource, generated internally by the server on creation.</p></li>
+<li><p><strong>host_id</strong> (<em>str</em>) – Unique identifier built from hardware information and selected configuration details of an evaluator.</p></li>
+<li><p><strong>name</strong> (<em>str</em><em>, </em><em>optional</em>) – Name of the evaluator.</p></li>
+<li><p><strong>hostname</strong> (<em>str</em><em>, </em><em>optional</em>) – Name of the host on which the evaluator is running.</p></li>
+<li><p><strong>platform</strong> (<em>str</em><em>, </em><em>optional</em>) – Operating system on which the evaluator is running.</p></li>
+<li><p><strong>task_manager_type</strong> (<em>str</em><em>, </em><em>optional</em>) – Type of the task manager used by the evaluator.</p></li>
+<li><p><strong>project_server_select</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether the evaluator allows server-driven assignment of projects or uses it’s own local settings.</p></li>
+<li><p><strong>alive_update_interval</strong> (<em>int</em><em>, </em><em>optional</em>) – Minimal time (in seconds) between evaluator registration updates.</p></li>
+<li><p><strong>update_time</strong> (<em>datetime</em><em>, </em><em>optional</em>) – Last time the evaluator updated it’s registration details. Used to check which evaluators are alive.</p></li>
+<li><p><strong>external_access_port</strong> (<em>int</em><em>, </em><em>optional</em>) – Port number for external access to the evaluator.</p></li>
+<li><p><strong>project_assignment_mode</strong> (<em>str</em><em>, </em><em>optional</em>) – Which strategy to use for selecting projects to work on.</p></li>
+<li><p><strong>project_list</strong> (<em>list</em>) – List of projects on which this evaluator should be working.</p></li>
+<li><p><strong>configuration</strong> (<em>dict</em><em>, </em><em>optional</em>) – Details of the evaluator configuration, including hardware info and available applications.</p></li>
+</ul>
 </dd>
 </dl>
-<p>The Evaluator schema has the following fields:</p>
-<table class="table">
-<thead>
-<tr class="row-odd"><th class="head"><p>Name</p></th>
-<th class="head"><p>Type</p></th>
-<th class="head"><p>Description</p></th>
-<th class="head"><p>Validations</p></th>
-</tr>
-</thead>
-<tbody>
-<tr class="row-even"><td><p>id</p></td>
-<td><p>string</p></td>
-<td><p>Unique ID to access the resource, generated internally by the server on creation.</p></td>
-<td></td>
-</tr>
-<tr class="row-odd"><td><p>host_id</p></td>
-<td><p>string</p></td>
-<td><p>Unique identifier built from hardware information and selected job_definition details of an evaluator.</p></td>
-<td></td>
-</tr>
-<tr class="row-even"><td><p>name</p></td>
-<td><p>string</p></td>
-<td><p>Name of the evaluator.</p></td>
-<td></td>
-</tr>
-<tr class="row-odd"><td><p>hostname</p></td>
-<td><p>string</p></td>
-<td><p>Name of the host on which the evaluator is running.</p></td>
-<td></td>
-</tr>
-<tr class="row-even"><td><p>platform</p></td>
-<td><p>string</p></td>
-<td><p>Operating system on which the evaluator is running.</p></td>
-<td></td>
-</tr>
-<tr class="row-odd"><td><p>task_manager_type</p></td>
-<td><p>string</p></td>
-<td><p>Type of the task manager used by the evaluator.</p></td>
-<td></td>
-</tr>
-<tr class="row-even"><td><p>project_server_select</p></td>
-<td><p>boolean</p></td>
-<td><p>Whether the evaluator allows server-driven assignment of projects or uses it’s own local settings.</p></td>
-<td></td>
-</tr>
-<tr class="row-odd"><td><p>alive_update_interval</p></td>
-<td><p>integer</p></td>
-<td><p>Minimal time (in seconds) between evaluator registration updates.</p></td>
-<td></td>
-</tr>
-<tr class="row-even"><td><p>update_time</p></td>
-<td><p>string</p></td>
-<td><p>Last time the evaluator updated it’s registration details. Used to check which evaluators are alive.</p></td>
-<td><ul class="simple">
-<li><p>It must be formatted as date-time</p></li>
-</ul>
-</td>
-</tr>
-<tr class="row-odd"><td><p>external_access_port</p></td>
-<td><p>integer</p></td>
-<td><p>Port number for external access to the evaluator.</p></td>
-<td></td>
-</tr>
-<tr class="row-even"><td><p>project_assignment_mode</p></td>
-<td><p>string</p></td>
-<td><p>Which strategy to use for selecting projects to work on.</p></td>
-<td><ul class="simple">
-<li><p>It must be equal to one of the elements in [“disabled”, “all_active”, “project_list”]</p></li>
-</ul>
-</td>
-</tr>
-<tr class="row-odd"><td><p>project_list[]</p></td>
-<td><p>array</p></td>
-<td><p>List of projects on which this evaluator should be working.</p></td>
-<td></td>
-</tr>
-<tr class="row-even"><td><p>configuration</p></td>
-<td><p>object</p></td>
-<td><p>Details of the evaluator configuration, including hardware info and available applications.</p></td>
-<td></td>
-</tr>
-</tbody>
-</table>
 </dd></dl>
 
 </section>
@@ -2525,120 +1370,24 @@ as <code class="xref py py-attr docutils literal notranslate"><span class="pre">
 <dd><p>TaskDefinitionTemplate resource.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>**kwargs</strong> – Arbitrary keyword arguments, see the TaskDefinitionTemplate schema below.</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>id</strong> (<em>str</em><em>, </em><em>optional</em>) – Unique ID to access the resource, generated internally by the server on creation.</p></li>
+<li><p><strong>modification_time</strong> (<em>datetime</em><em>, </em><em>optional</em>) – Last time the object was modified, in UTC</p></li>
+<li><p><strong>creation_time</strong> (<em>datetime</em><em>, </em><em>optional</em>) – Time when the object was created, in UTC</p></li>
+<li><p><strong>name</strong> (<em>str</em>) – Name of the template</p></li>
+<li><p><strong>version</strong> (<em>str</em><em>, </em><em>optional</em>) – version of the template</p></li>
+<li><p><strong>software_requirements</strong> (<em>object</em><em>, </em><em>optional</em>) – </p></li>
+<li><p><strong>resource_requirements</strong> (<em>object</em><em>, </em><em>optional</em>) – </p></li>
+<li><p><strong>execution_context</strong> (<em>dict</em><em>, </em><em>optional</em>) – Additional arguments to pass to the executing command</p></li>
+<li><p><strong>environment</strong> (<em>dict</em><em>, </em><em>optional</em>) – Environment variables to set for the executed process</p></li>
+<li><p><strong>execution_command</strong> (<em>str</em><em>, </em><em>optional</em>) – Command to execute (command or execution script is required).</p></li>
+<li><p><strong>use_execution_script</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether to run task with the execution command or the execution script.</p></li>
+<li><p><strong>execution_script_storage_id</strong> (<em>str</em><em>, </em><em>optional</em>) – Storage ID of the script to execute (command or execution script is required).</p></li>
+<li><p><strong>input_files</strong> (<em>object</em><em>, </em><em>optional</em>) – </p></li>
+<li><p><strong>output_files</strong> (<em>object</em><em>, </em><em>optional</em>) – </p></li>
+</ul>
 </dd>
 </dl>
-<p class="rubric">Example</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">template</span> <span class="o">=</span> <span class="n">TaskDefinitionTemplate</span><span class="p">(</span>
-<span class="go">            name=&quot;MAPDL_run&quot;,</span>
-<span class="go">            application_name=&quot;ANSYS Mechanical APDL&quot;,</span>
-<span class="go">            application_version=&quot;2022 R2&quot;,</span>
-<span class="go">            data = {</span>
-<span class="go">                &quot;execution_command&quot;: &quot;%executable% -b</span>
-<span class="go">                                      -i %file:mac% -o file.out</span>
-<span class="go">                                      -np %resource:num_cores%&quot;,</span>
-<span class="go">                &quot;output_files&quot;: [</span>
-<span class="go">                    {</span>
-<span class="go">                      &quot;name&quot;: &quot;out&quot;,</span>
-<span class="go">                      &quot;obj_type&quot;: &quot;File&quot;,</span>
-<span class="go">                      &quot;evaluation_path&quot;: &quot;solve.out&quot;,</span>
-<span class="go">                      &quot;type&quot;: &quot;text/plain&quot;,</span>
-<span class="go">                      &quot;collect&quot;: true,</span>
-<span class="go">                      &quot;monitor&quot;: true</span>
-<span class="go">                    }</span>
-<span class="go">                ]</span>
-<span class="go">            }</span>
-<span class="go">        )</span>
-</pre></div>
-</div>
-<p>The TaskDefinitionTemplate schema has the following fields:</p>
-<table class="table">
-<thead>
-<tr class="row-odd"><th class="head"><p>Name</p></th>
-<th class="head"><p>Type</p></th>
-<th class="head"><p>Description</p></th>
-<th class="head"><p>Validations</p></th>
-</tr>
-</thead>
-<tbody>
-<tr class="row-even"><td><p>id</p></td>
-<td><p>string</p></td>
-<td><p>Unique ID to access the resource, generated internally by the server on creation.</p></td>
-<td></td>
-</tr>
-<tr class="row-odd"><td><p>modification_time</p></td>
-<td><p>string</p></td>
-<td><p>Last time the object was modified, in UTC</p></td>
-<td><ul class="simple">
-<li><p>It must be formatted as date-time</p></li>
-</ul>
-</td>
-</tr>
-<tr class="row-even"><td><p>creation_time</p></td>
-<td><p>string</p></td>
-<td><p>Time when the object was created, in UTC</p></td>
-<td><ul class="simple">
-<li><p>It must be formatted as date-time</p></li>
-</ul>
-</td>
-</tr>
-<tr class="row-odd"><td><p>name</p></td>
-<td><p>string</p></td>
-<td><p>Name of the template</p></td>
-<td></td>
-</tr>
-<tr class="row-even"><td><p>version</p></td>
-<td><p>string</p></td>
-<td><p>version of the template</p></td>
-<td></td>
-</tr>
-<tr class="row-odd"><td><p>software_requirements[]</p></td>
-<td><p>array</p></td>
-<td></td>
-<td></td>
-</tr>
-<tr class="row-even"><td><p>resource_requirements</p></td>
-<td><p>object</p></td>
-<td></td>
-<td></td>
-</tr>
-<tr class="row-odd"><td><p>execution_context</p></td>
-<td><p>object</p></td>
-<td><p>Additional arguments to pass to the executing command</p></td>
-<td></td>
-</tr>
-<tr class="row-even"><td><p>environment</p></td>
-<td><p>object</p></td>
-<td><p>Environment variables to set for the executed process</p></td>
-<td></td>
-</tr>
-<tr class="row-odd"><td><p>execution_command</p></td>
-<td><p>string</p></td>
-<td><p>Command to execute (command or execution script is required).</p></td>
-<td></td>
-</tr>
-<tr class="row-even"><td><p>use_execution_script</p></td>
-<td><p>boolean</p></td>
-<td><p>Whether to run task with the execution command or the execution script.</p></td>
-<td></td>
-</tr>
-<tr class="row-odd"><td><p>execution_script_storage_id</p></td>
-<td><p>string</p></td>
-<td><p>Storage ID of the script to execute (command or execution script is required).</p></td>
-<td></td>
-</tr>
-<tr class="row-even"><td><p>input_files[]</p></td>
-<td><p>array</p></td>
-<td></td>
-<td></td>
-</tr>
-<tr class="row-odd"><td><p>output_files[]</p></td>
-<td><p>array</p></td>
-<td></td>
-<td></td>
-</tr>
-</tbody>
-</table>
 </dd></dl>
 
 </section>
