@@ -344,27 +344,32 @@
 <dl class="py class">
 <dt class="sig sig-object py" id="ansys.rep.client.jms.JmsApi">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ansys.rep.client.jms.</span></span><span class="sig-name descname"><span class="pre">JmsApi</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">client</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ansys.rep.client.jms.JmsApi" title="Permalink to this definition">#</a></dt>
-<dd><p>Root API</p>
+<dd><p>Wraps around the Job Management Service root endpoints.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>client</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">ansys.rep.client.jms.Client</span></code>) – A client object.</p>
+<dd class="field-odd"><p><strong>client</strong> (<a class="reference internal" href="client.html#ansys.rep.client.Client" title="ansys.rep.client.Client"><em>Client</em></a>) – A REP client object.</p>
 </dd>
 </dl>
-<p class="rubric">Example</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">ansys.rep.client.jms</span> <span class="kn">import</span> <span class="n">Client</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Create client object and connect to REP with username &amp; password</span>
+<p class="rubric">Examples</p>
+<p>Create a new project</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">ansys.rep.client</span> <span class="kn">import</span> <span class="n">Client</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">ansys.rep.client.jms</span> <span class="kn">import</span> <span class="n">JmsApi</span><span class="p">,</span> <span class="n">Project</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">cl</span> <span class="o">=</span> <span class="n">Client</span><span class="p">(</span>
-<span class="go">        rep_url=&quot;https://127.0.0.1:8443/rep&quot;, username=&quot;repadmin&quot;, password=&quot;repadmin&quot;</span>
-<span class="go">    )</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Create a new project</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">root_api</span> <span class="o">=</span> <span class="n">RootApi</span><span class="p">(</span><span class="n">client</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">project</span> <span class="o">=</span> <span class="n">root_api</span><span class="o">.</span><span class="n">create_project</span><span class="p">(</span><span class="n">Project</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;Example Project&quot;</span><span class="p">))</span>
+<span class="gp">... </span>    <span class="n">rep_url</span><span class="o">=</span><span class="s2">&quot;https://127.0.0.1:8443/rep&quot;</span><span class="p">,</span> <span class="n">username</span><span class="o">=</span><span class="s2">&quot;repadmin&quot;</span><span class="p">,</span> <span class="n">password</span><span class="o">=</span><span class="s2">&quot;repadmin&quot;</span>
+<span class="gp">... </span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">jms_api</span> <span class="o">=</span> <span class="n">JmsApi</span><span class="p">(</span><span class="n">cl</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">project</span> <span class="o">=</span> <span class="n">jms_api</span><span class="o">.</span><span class="n">create_project</span><span class="p">(</span><span class="n">Project</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;Example Project&quot;</span><span class="p">))</span>
 </pre></div>
 </div>
 <dl class="py method">
 <dt class="sig sig-object py" id="ansys.rep.client.jms.JmsApi.create_project">
 <span class="sig-name descname"><span class="pre">create_project</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">project</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">replace</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">as_objects</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ansys.rep.client.jms.JmsApi.create_project" title="Permalink to this definition">#</a></dt>
 <dd><p>Create a new project</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#ansys.rep.client.jms.Project" title="ansys.rep.client.jms.resource.project.Project"><code class="xref py py-class docutils literal notranslate"><span class="pre">Project</span></code></a></p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
@@ -374,6 +379,9 @@
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>templates</strong> (list of <a class="reference internal" href="#ansys.rep.client.jms.TaskDefinitionTemplate" title="ansys.rep.client.jms.TaskDefinitionTemplate"><code class="xref py py-class docutils literal notranslate"><span class="pre">ansys.rep.client.jms.TaskDefinitionTemplate</span></code></a>) – A list of task definition templates</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<a class="reference internal" href="#ansys.rep.client.jms.TaskDefinitionTemplate" title="ansys.rep.client.jms.resource.task_definition_template.TaskDefinitionTemplate"><code class="xref py py-class docutils literal notranslate"><span class="pre">TaskDefinitionTemplate</span></code></a>]</p>
 </dd>
 </dl>
 </dd></dl>
@@ -405,35 +413,58 @@
 <dt class="sig sig-object py" id="ansys.rep.client.jms.JmsApi.get_evaluators">
 <span class="sig-name descname"><span class="pre">get_evaluators</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">as_objects</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">query_params</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ansys.rep.client.jms.JmsApi.get_evaluators" title="Permalink to this definition">#</a></dt>
 <dd><p>Return a list of evaluators, optionally filtered by given query parameters</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<a class="reference internal" href="#ansys.rep.client.jms.Evaluator" title="ansys.rep.client.jms.resource.evaluator.Evaluator"><code class="xref py py-class docutils literal notranslate"><span class="pre">Evaluator</span></code></a>]</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="ansys.rep.client.jms.JmsApi.get_operation">
 <span class="sig-name descname"><span class="pre">get_operation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">as_object</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ansys.rep.client.jms.JmsApi.get_operation" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Operation</span></code></p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="ansys.rep.client.jms.JmsApi.get_operations">
 <span class="sig-name descname"><span class="pre">get_operations</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">as_objects</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">query_params</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ansys.rep.client.jms.JmsApi.get_operations" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Operation</span></code>]</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="ansys.rep.client.jms.JmsApi.get_project">
 <span class="sig-name descname"><span class="pre">get_project</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ansys.rep.client.jms.JmsApi.get_project" title="Permalink to this definition">#</a></dt>
-<dd><p>Return a single project for given project id</p>
+<dd><p>Return a single project for given project id.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#ansys.rep.client.jms.Project" title="ansys.rep.client.jms.resource.project.Project"><code class="xref py py-class docutils literal notranslate"><span class="pre">Project</span></code></a></p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="ansys.rep.client.jms.JmsApi.get_project_by_name">
-<span class="sig-name descname"><span class="pre">get_project_by_name</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">last_created</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#ansys.rep.client.jms.Project" title="ansys.rep.client.jms.resource.project.Project"><span class="pre">Project</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#ansys.rep.client.jms.Project" title="ansys.rep.client.jms.resource.project.Project"><span class="pre">Project</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#ansys.rep.client.jms.JmsApi.get_project_by_name" title="Permalink to this definition">#</a></dt>
-<dd><dl class="simple">
-<dt>Query projects by name. If no projects are found, an empty list is returned.</dt><dd><dl class="simple">
-<dt>In case of multiple projects with same name:</dt><dd><ul class="simple">
-<li><p>If <cite>last_created = True</cite>, the last created project is returned</p></li>
-<li><p>If <cite>last_created = False</cite>, the full list of projects with given name is returned</p></li>
+<span class="sig-name descname"><span class="pre">get_project_by_name</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">last_created</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ansys.rep.client.jms.JmsApi.get_project_by_name" title="Permalink to this definition">#</a></dt>
+<dd><p>Query projects by name. If no projects are found, an empty list is returned.</p>
+<p>In case of multiple projects with same name:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>If <code class="docutils literal notranslate"><span class="pre">last_created</span></code> = True, the last created project is returned</p></li>
+<li><p>If <code class="docutils literal notranslate"><span class="pre">last_created</span></code> = False, the full list of projects with given name is returned</p></li>
 </ul>
-</dd>
-</dl>
+</div></blockquote>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<a class="reference internal" href="#ansys.rep.client.jms.Project" title="ansys.rep.client.jms.resource.project.Project"><code class="xref py py-class docutils literal notranslate"><span class="pre">Project</span></code></a>, <code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<a class="reference internal" href="#ansys.rep.client.jms.Project" title="ansys.rep.client.jms.resource.project.Project"><code class="xref py py-class docutils literal notranslate"><span class="pre">Project</span></code></a>]]</p>
 </dd>
 </dl>
 </dd></dl>
@@ -441,7 +472,12 @@
 <dl class="py method">
 <dt class="sig sig-object py" id="ansys.rep.client.jms.JmsApi.get_projects">
 <span class="sig-name descname"><span class="pre">get_projects</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">as_objects</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">query_params</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ansys.rep.client.jms.JmsApi.get_projects" title="Permalink to this definition">#</a></dt>
-<dd><p>Return a list of projects, optionally filtered by given query parameters</p>
+<dd><p>Return a list of projects, optionally filtered by given query parameters.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<a class="reference internal" href="#ansys.rep.client.jms.Project" title="ansys.rep.client.jms.resource.project.Project"><code class="xref py py-class docutils literal notranslate"><span class="pre">Project</span></code></a>]</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
@@ -449,24 +485,23 @@
 <span class="sig-name descname"><span class="pre">get_task_definition_templates</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">as_objects</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">query_params</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ansys.rep.client.jms.JmsApi.get_task_definition_templates" title="Permalink to this definition">#</a></dt>
 <dd><p>Return a list of task definition templates,
 optionally filtered by given query parameters</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<a class="reference internal" href="#ansys.rep.client.jms.TaskDefinitionTemplate" title="ansys.rep.client.jms.resource.task_definition_template.TaskDefinitionTemplate"><code class="xref py py-class docutils literal notranslate"><span class="pre">TaskDefinitionTemplate</span></code></a>]</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="ansys.rep.client.jms.JmsApi.restore_project">
-<span class="sig-name descname"><span class="pre">restore_project</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#ansys.rep.client.jms.Project" title="ansys.rep.client.jms.resource.project.Project"><span class="pre">Project</span></a></span></span><a class="headerlink" href="#ansys.rep.client.jms.JmsApi.restore_project" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">restore_project</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ansys.rep.client.jms.JmsApi.restore_project" title="Permalink to this definition">#</a></dt>
 <dd><p>Restore a project from an archive</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>path</strong> (<em>str</em>) – Path of the archive file to be restored.</p></li>
-<li><p><strong>project_name</strong> (<em>str</em>) – Name of the restored project. (optional)</p></li>
-</ul>
+<dd class="field-odd"><p><strong>path</strong> (<em>str</em>) – Path of the archive file to be restored.</p>
 </dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>A Project object.</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="#ansys.rep.client.jms.Project" title="ansys.rep.client.jms.Project"><code class="xref py py-class docutils literal notranslate"><span class="pre">ansys.rep.client.jms.Project</span></code></a></p>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="#ansys.rep.client.jms.Project" title="ansys.rep.client.jms.resource.project.Project"><code class="xref py py-class docutils literal notranslate"><span class="pre">Project</span></code></a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -475,12 +510,22 @@ optionally filtered by given query parameters</p>
 <dt class="sig sig-object py" id="ansys.rep.client.jms.JmsApi.update_evaluators">
 <span class="sig-name descname"><span class="pre">update_evaluators</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">evaluators</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">as_objects</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">query_params</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ansys.rep.client.jms.JmsApi.update_evaluators" title="Permalink to this definition">#</a></dt>
 <dd><p>Update evaluators configuration</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<a class="reference internal" href="#ansys.rep.client.jms.Evaluator" title="ansys.rep.client.jms.resource.evaluator.Evaluator"><code class="xref py py-class docutils literal notranslate"><span class="pre">Evaluator</span></code></a>]</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="ansys.rep.client.jms.JmsApi.update_project">
 <span class="sig-name descname"><span class="pre">update_project</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">project</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">as_objects</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ansys.rep.client.jms.JmsApi.update_project" title="Permalink to this definition">#</a></dt>
 <dd><p>Update an existing project</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#ansys.rep.client.jms.Project" title="ansys.rep.client.jms.resource.project.Project"><code class="xref py py-class docutils literal notranslate"><span class="pre">Project</span></code></a></p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
@@ -491,13 +536,22 @@ optionally filtered by given query parameters</p>
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>templates</strong> (list of <a class="reference internal" href="#ansys.rep.client.jms.TaskDefinitionTemplate" title="ansys.rep.client.jms.TaskDefinitionTemplate"><code class="xref py py-class docutils literal notranslate"><span class="pre">ansys.rep.client.jms.TaskDefinitionTemplate</span></code></a>) – A list of task definition templates</p>
 </dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<a class="reference internal" href="#ansys.rep.client.jms.TaskDefinitionTemplate" title="ansys.rep.client.jms.resource.task_definition_template.TaskDefinitionTemplate"><code class="xref py py-class docutils literal notranslate"><span class="pre">TaskDefinitionTemplate</span></code></a>]</p>
+</dd>
 </dl>
 </dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="ansys.rep.client.jms.JmsApi.url">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">url</span></span><a class="headerlink" href="#ansys.rep.client.jms.JmsApi.url" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">url</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#ansys.rep.client.jms.JmsApi.url" title="Permalink to this definition">#</a></dt>
+<dd><p>Returns the API url</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></p>
+</dd>
+</dl>
+</dd></dl>
 
 </dd></dl>
 
@@ -506,30 +560,41 @@ optionally filtered by given query parameters</p>
 <h3>Project Api<a class="headerlink" href="#project-api" title="Permalink to this heading">#</a></h3>
 <dl class="py class">
 <dt class="sig sig-object py" id="ansys.rep.client.jms.ProjectApi">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ansys.rep.client.jms.</span></span><span class="sig-name descname"><span class="pre">ProjectApi</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">client</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">project_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ansys.rep.client.jms.ProjectApi" title="Permalink to this definition">#</a></dt>
-<dd><p>Project API</p>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ansys.rep.client.jms.</span></span><span class="sig-name descname"><span class="pre">ProjectApi</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">client</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">project_id</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ansys.rep.client.jms.ProjectApi" title="Permalink to this definition">#</a></dt>
+<dd><p>Exposes the Project endpoints of the Job Management Service</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>client</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">ansys.rep.client.jms.Client</span></code>) – A client object.</p></li>
-<li><p><strong>project_id</strong> (<em>str</em>) – </p></li>
+<li><p><strong>client</strong> (<a class="reference internal" href="client.html#ansys.rep.client.Client" title="ansys.rep.client.Client"><em>Client</em></a>) – A REP client object.</p></li>
+<li><p><strong>project_id</strong> (<em>str</em>) – ID of the project</p></li>
 </ul>
 </dd>
 </dl>
-<p class="rubric">Example</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">ansys.rep.client</span> <span class="n">Client</span>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">ansys.rep.client</span> <span class="kn">import</span> <span class="n">Client</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">ansys.rep.client.jms</span> <span class="kn">import</span> <span class="n">JmsApi</span><span class="p">,</span> <span class="n">Project</span><span class="p">,</span> <span class="n">ProjectApi</span>
-<span class="go">&gt;&gt;&gt;</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">cl</span> <span class="o">=</span> <span class="n">Client</span><span class="p">(</span>
-<span class="go">        rep_url=&quot;https://127.0.0.1:8443/rep&quot;, username=&quot;repadmin&quot;, password=&quot;repadmin&quot;</span>
-<span class="go">    )</span>
+<span class="gp">... </span>    <span class="n">rep_url</span><span class="o">=</span><span class="s2">&quot;https://127.0.0.1:8443/rep&quot;</span><span class="p">,</span> <span class="n">username</span><span class="o">=</span><span class="s2">&quot;repadmin&quot;</span><span class="p">,</span> <span class="n">password</span><span class="o">=</span><span class="s2">&quot;repadmin&quot;</span>
+<span class="gp">... </span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">project</span> <span class="o">=</span> <span class="n">Project</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;Example Project&quot;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">project</span><span class="p">)</span>
-<span class="go">&gt;&gt;&gt;</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">jms_api</span> <span class="o">=</span> <span class="n">JmsApi</span><span class="p">(</span><span class="n">client</span><span class="p">)</span>
+<span class="go">{</span>
+<span class="go">    &quot;name&quot;: &quot;Example Project&quot;</span>
+<span class="go">}</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">jms_api</span> <span class="o">=</span> <span class="n">JmsApi</span><span class="p">(</span><span class="n">cl</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">project</span> <span class="o">=</span> <span class="n">jms_api</span><span class="o">.</span><span class="n">create_project</span><span class="p">(</span><span class="n">project</span><span class="p">)</span>
-<span class="go">&gt;&gt;&gt;</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">project_api</span> <span class="o">=</span> <span class="n">ProjectApi</span><span class="p">(</span><span class="n">client</span><span class="p">,</span> <span class="n">project</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">project</span><span class="p">)</span>
+<span class="go">{</span>
+<span class="go">    &quot;id&quot;: &quot;02qtyJfpfAQ0fr3zkoIAfC&quot;,</span>
+<span class="go">    &quot;name&quot;: &quot;Example Project&quot;,</span>
+<span class="go">    &quot;active&quot;: false,</span>
+<span class="go">    &quot;priority&quot;: 1,</span>
+<span class="go">    &quot;creation_time&quot;: ...</span>
+<span class="go">    ...</span>
+<span class="go">}</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">project_api</span> <span class="o">=</span> <span class="n">ProjectApi</span><span class="p">(</span><span class="n">cl</span><span class="p">,</span> <span class="n">project</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">project_api</span><span class="p">)</span>
+<span class="go">&#39;https://127.0.0.1:8443/rep/jms/api/v1/projects/02qtyJfpfAQ0fr3zkoIAfC&#39;</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">jobs</span> <span class="o">=</span> <span class="n">project_api</span><span class="o">.</span><span class="n">get_jobs</span><span class="p">()</span>
 </pre></div>
 </div>
@@ -571,31 +636,56 @@ the other fields can be empty.</p>
 <dt class="sig sig-object py" id="ansys.rep.client.jms.ProjectApi.copy_project">
 <span class="sig-name descname"><span class="pre">copy_project</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">project_target_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wait</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ansys.rep.client.jms.ProjectApi.copy_project" title="Permalink to this definition">#</a></dt>
 <dd><p>Duplicate project</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="ansys.rep.client.jms.ProjectApi.create_algorithms">
 <span class="sig-name descname"><span class="pre">create_algorithms</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">algorithms</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">as_objects</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ansys.rep.client.jms.ProjectApi.create_algorithms" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<a class="reference internal" href="#ansys.rep.client.jms.Algorithm" title="ansys.rep.client.jms.resource.algorithm.Algorithm"><code class="xref py py-class docutils literal notranslate"><span class="pre">Algorithm</span></code></a>]</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="ansys.rep.client.jms.ProjectApi.create_files">
 <span class="sig-name descname"><span class="pre">create_files</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">files</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">as_objects</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ansys.rep.client.jms.ProjectApi.create_files" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<a class="reference internal" href="#ansys.rep.client.jms.File" title="ansys.rep.client.jms.resource.file.File"><code class="xref py py-class docutils literal notranslate"><span class="pre">File</span></code></a>]</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="ansys.rep.client.jms.ProjectApi.create_job_definitions">
 <span class="sig-name descname"><span class="pre">create_job_definitions</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">job_definitions</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">as_objects</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ansys.rep.client.jms.ProjectApi.create_job_definitions" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<a class="reference internal" href="#ansys.rep.client.jms.JobDefinition" title="ansys.rep.client.jms.resource.job_definition.JobDefinition"><code class="xref py py-class docutils literal notranslate"><span class="pre">JobDefinition</span></code></a>]</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="ansys.rep.client.jms.ProjectApi.create_job_selections">
 <span class="sig-name descname"><span class="pre">create_job_selections</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">selections</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">as_objects</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ansys.rep.client.jms.ProjectApi.create_job_selections" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<a class="reference internal" href="#ansys.rep.client.jms.JobSelection" title="ansys.rep.client.jms.resource.selection.JobSelection"><code class="xref py py-class docutils literal notranslate"><span class="pre">JobSelection</span></code></a>]</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="ansys.rep.client.jms.ProjectApi.create_jobs">
-<span class="sig-name descname"><span class="pre">create_jobs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">jobs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">as_objects</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#ansys.rep.client.jms.Job" title="ansys.rep.client.jms.resource.job.Job"><span class="pre">Job</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#ansys.rep.client.jms.ProjectApi.create_jobs" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">create_jobs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">jobs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">as_objects</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ansys.rep.client.jms.ProjectApi.create_jobs" title="Permalink to this definition">#</a></dt>
 <dd><p>Create new jobs</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -604,8 +694,11 @@ the other fields can be empty.</p>
 <li><p><strong>as_objects</strong> (<em>bool</em>) – Whether to return jobs as objects or dictionaries</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>List of <a class="reference internal" href="#ansys.rep.client.jms.Job" title="ansys.rep.client.jms.Job"><code class="xref py py-class docutils literal notranslate"><span class="pre">ansys.rep.client.jms.Job</span></code></a> or list of dict if <cite>as_objects</cite> is False</p>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<a class="reference internal" href="#ansys.rep.client.jms.Job" title="ansys.rep.client.jms.resource.job.Job"><code class="xref py py-class docutils literal notranslate"><span class="pre">Job</span></code></a>]</p>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>List of <a class="reference internal" href="#ansys.rep.client.jms.Job" title="ansys.rep.client.jms.Job"><code class="xref py py-class docutils literal notranslate"><span class="pre">ansys.rep.client.jms.Job</span></code></a> or list of dict if <cite>as_objects</cite> is False</p>
 </dd>
 </dl>
 </dd></dl>
@@ -613,22 +706,42 @@ the other fields can be empty.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="ansys.rep.client.jms.ProjectApi.create_license_contexts">
 <span class="sig-name descname"><span class="pre">create_license_contexts</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">as_objects</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ansys.rep.client.jms.ProjectApi.create_license_contexts" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">LicenseContext</span></code>]</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="ansys.rep.client.jms.ProjectApi.create_parameter_definitions">
 <span class="sig-name descname"><span class="pre">create_parameter_definitions</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">parameter_definitions</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">as_objects</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ansys.rep.client.jms.ProjectApi.create_parameter_definitions" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">ParameterDefinition</span></code>]</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="ansys.rep.client.jms.ProjectApi.create_parameter_mappings">
 <span class="sig-name descname"><span class="pre">create_parameter_mappings</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">parameter_mappings</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">as_objects</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ansys.rep.client.jms.ProjectApi.create_parameter_mappings" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<a class="reference internal" href="#ansys.rep.client.jms.ParameterMapping" title="ansys.rep.client.jms.resource.parameter_mapping.ParameterMapping"><code class="xref py py-class docutils literal notranslate"><span class="pre">ParameterMapping</span></code></a>]</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="ansys.rep.client.jms.ProjectApi.create_task_definitions">
 <span class="sig-name descname"><span class="pre">create_task_definitions</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">task_definitions</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">as_objects</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ansys.rep.client.jms.ProjectApi.create_task_definitions" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<a class="reference internal" href="#ansys.rep.client.jms.TaskDefinition" title="ansys.rep.client.jms.resource.task_definition.TaskDefinition"><code class="xref py py-class docutils literal notranslate"><span class="pre">TaskDefinition</span></code></a>]</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="ansys.rep.client.jms.ProjectApi.delete_algorithms">
@@ -692,28 +805,48 @@ the other fields can be empty.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="ansys.rep.client.jms.ProjectApi.download_file">
-<span class="sig-name descname"><span class="pre">download_file</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#ansys.rep.client.jms.File" title="ansys.rep.client.jms.resource.file.File"><span class="pre">File</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stream</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">progress_handler</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Callable</span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">None</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#ansys.rep.client.jms.ProjectApi.download_file" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">download_file</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stream</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">progress_handler</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ansys.rep.client.jms.ProjectApi.download_file" title="Permalink to this definition">#</a></dt>
 <dd><p>Download file content and save it to disk. If stream=True,
 data is retrieved in chunks, avoiding storing the entire content
 in memory.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="ansys.rep.client.jms.ProjectApi.fs_bucket_url">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">fs_bucket_url</span></span><a class="headerlink" href="#ansys.rep.client.jms.ProjectApi.fs_bucket_url" title="Permalink to this definition">#</a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">fs_bucket_url</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#ansys.rep.client.jms.ProjectApi.fs_bucket_url" title="Permalink to this definition">#</a></dt>
 <dd><p>URL of the project’s bucket in the file storage gateway</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="ansys.rep.client.jms.ProjectApi.fs_url">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">fs_url</span></span><a class="headerlink" href="#ansys.rep.client.jms.ProjectApi.fs_url" title="Permalink to this definition">#</a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">fs_url</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#ansys.rep.client.jms.ProjectApi.fs_url" title="Permalink to this definition">#</a></dt>
 <dd><p>URL of the file storage gateway</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="ansys.rep.client.jms.ProjectApi.get_algorithms">
 <span class="sig-name descname"><span class="pre">get_algorithms</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">as_objects</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">query_params</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ansys.rep.client.jms.ProjectApi.get_algorithms" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<a class="reference internal" href="#ansys.rep.client.jms.Algorithm" title="ansys.rep.client.jms.resource.algorithm.Algorithm"><code class="xref py py-class docutils literal notranslate"><span class="pre">Algorithm</span></code></a>]</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="ansys.rep.client.jms.ProjectApi.get_files">
@@ -721,62 +854,122 @@ in memory.</p>
 <dd><p>Return a list of file resources, optionally filtered by given query parameters.
 If content=True, each files content is downloaded as well and stored in memory
 as <code class="xref py py-attr docutils literal notranslate"><span class="pre">ansys.rep.client.jms.File.content</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<a class="reference internal" href="#ansys.rep.client.jms.File" title="ansys.rep.client.jms.resource.file.File"><code class="xref py py-class docutils literal notranslate"><span class="pre">File</span></code></a>]</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="ansys.rep.client.jms.ProjectApi.get_job_definitions">
 <span class="sig-name descname"><span class="pre">get_job_definitions</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">as_objects</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">query_params</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ansys.rep.client.jms.ProjectApi.get_job_definitions" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<a class="reference internal" href="#ansys.rep.client.jms.JobDefinition" title="ansys.rep.client.jms.resource.job_definition.JobDefinition"><code class="xref py py-class docutils literal notranslate"><span class="pre">JobDefinition</span></code></a>]</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="ansys.rep.client.jms.ProjectApi.get_job_selections">
 <span class="sig-name descname"><span class="pre">get_job_selections</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">as_objects</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">query_params</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ansys.rep.client.jms.ProjectApi.get_job_selections" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<a class="reference internal" href="#ansys.rep.client.jms.JobSelection" title="ansys.rep.client.jms.resource.selection.JobSelection"><code class="xref py py-class docutils literal notranslate"><span class="pre">JobSelection</span></code></a>]</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="ansys.rep.client.jms.ProjectApi.get_jobs">
-<span class="sig-name descname"><span class="pre">get_jobs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">as_objects</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">query_params</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#ansys.rep.client.jms.Job" title="ansys.rep.client.jms.resource.job.Job"><span class="pre">Job</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#ansys.rep.client.jms.ProjectApi.get_jobs" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
+<span class="sig-name descname"><span class="pre">get_jobs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">as_objects</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">query_params</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ansys.rep.client.jms.ProjectApi.get_jobs" title="Permalink to this definition">#</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<a class="reference internal" href="#ansys.rep.client.jms.Job" title="ansys.rep.client.jms.resource.job.Job"><code class="xref py py-class docutils literal notranslate"><span class="pre">Job</span></code></a>]</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="ansys.rep.client.jms.ProjectApi.get_license_contexts">
 <span class="sig-name descname"><span class="pre">get_license_contexts</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">as_objects</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">query_params</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ansys.rep.client.jms.ProjectApi.get_license_contexts" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">LicenseContext</span></code>]</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="ansys.rep.client.jms.ProjectApi.get_parameter_definitions">
 <span class="sig-name descname"><span class="pre">get_parameter_definitions</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">as_objects</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">query_params</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ansys.rep.client.jms.ProjectApi.get_parameter_definitions" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">ParameterDefinition</span></code>]</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="ansys.rep.client.jms.ProjectApi.get_parameter_mappings">
 <span class="sig-name descname"><span class="pre">get_parameter_mappings</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">as_objects</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">query_params</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ansys.rep.client.jms.ProjectApi.get_parameter_mappings" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<a class="reference internal" href="#ansys.rep.client.jms.ParameterMapping" title="ansys.rep.client.jms.resource.parameter_mapping.ParameterMapping"><code class="xref py py-class docutils literal notranslate"><span class="pre">ParameterMapping</span></code></a>]</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="ansys.rep.client.jms.ProjectApi.get_permissions">
 <span class="sig-name descname"><span class="pre">get_permissions</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">as_objects</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ansys.rep.client.jms.ProjectApi.get_permissions" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">ProjectPermission</span></code>]</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="ansys.rep.client.jms.ProjectApi.get_task_definitions">
 <span class="sig-name descname"><span class="pre">get_task_definitions</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">as_objects</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">query_params</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ansys.rep.client.jms.ProjectApi.get_task_definitions" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<a class="reference internal" href="#ansys.rep.client.jms.TaskDefinition" title="ansys.rep.client.jms.resource.task_definition.TaskDefinition"><code class="xref py py-class docutils literal notranslate"><span class="pre">TaskDefinition</span></code></a>]</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="ansys.rep.client.jms.ProjectApi.get_tasks">
 <span class="sig-name descname"><span class="pre">get_tasks</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">as_objects</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">query_params</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ansys.rep.client.jms.ProjectApi.get_tasks" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<a class="reference internal" href="#ansys.rep.client.jms.Task" title="ansys.rep.client.jms.resource.task.Task"><code class="xref py py-class docutils literal notranslate"><span class="pre">Task</span></code></a>]</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="ansys.rep.client.jms.ProjectApi.jms_api_url">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">jms_api_url</span></span><a class="headerlink" href="#ansys.rep.client.jms.ProjectApi.jms_api_url" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">jms_api_url</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#ansys.rep.client.jms.ProjectApi.jms_api_url" title="Permalink to this definition">#</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="ansys.rep.client.jms.ProjectApi.update_algorithms">
 <span class="sig-name descname"><span class="pre">update_algorithms</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">algorithms</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">as_objects</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ansys.rep.client.jms.ProjectApi.update_algorithms" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<a class="reference internal" href="#ansys.rep.client.jms.Algorithm" title="ansys.rep.client.jms.resource.algorithm.Algorithm"><code class="xref py py-class docutils literal notranslate"><span class="pre">Algorithm</span></code></a>]</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="ansys.rep.client.jms.ProjectApi.update_files">
@@ -786,16 +979,26 @@ as <code class="xref py py-attr docutils literal notranslate"><span class="pre">
 <dl class="py method">
 <dt class="sig sig-object py" id="ansys.rep.client.jms.ProjectApi.update_job_definitions">
 <span class="sig-name descname"><span class="pre">update_job_definitions</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">job_definitions</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">as_objects</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ansys.rep.client.jms.ProjectApi.update_job_definitions" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<a class="reference internal" href="#ansys.rep.client.jms.JobDefinition" title="ansys.rep.client.jms.resource.job_definition.JobDefinition"><code class="xref py py-class docutils literal notranslate"><span class="pre">JobDefinition</span></code></a>]</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="ansys.rep.client.jms.ProjectApi.update_job_selections">
 <span class="sig-name descname"><span class="pre">update_job_selections</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">selections</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">as_objects</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ansys.rep.client.jms.ProjectApi.update_job_selections" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<a class="reference internal" href="#ansys.rep.client.jms.JobSelection" title="ansys.rep.client.jms.resource.selection.JobSelection"><code class="xref py py-class docutils literal notranslate"><span class="pre">JobSelection</span></code></a>]</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="ansys.rep.client.jms.ProjectApi.update_jobs">
-<span class="sig-name descname"><span class="pre">update_jobs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">jobs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">as_objects</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#ansys.rep.client.jms.Job" title="ansys.rep.client.jms.resource.job.Job"><span class="pre">Job</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#ansys.rep.client.jms.ProjectApi.update_jobs" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">update_jobs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">jobs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">as_objects</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ansys.rep.client.jms.ProjectApi.update_jobs" title="Permalink to this definition">#</a></dt>
 <dd><p>Update existing jobs</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -804,8 +1007,11 @@ as <code class="xref py py-attr docutils literal notranslate"><span class="pre">
 <li><p><strong>as_objects</strong> (<em>bool</em>) – Whether to return jobs as objects or dictionaries</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>List of <a class="reference internal" href="#ansys.rep.client.jms.Job" title="ansys.rep.client.jms.Job"><code class="xref py py-class docutils literal notranslate"><span class="pre">ansys.rep.client.jms.Job</span></code></a> or list of dict if <cite>as_objects</cite> is True</p>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<a class="reference internal" href="#ansys.rep.client.jms.Job" title="ansys.rep.client.jms.resource.job.Job"><code class="xref py py-class docutils literal notranslate"><span class="pre">Job</span></code></a>]</p>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>List of <a class="reference internal" href="#ansys.rep.client.jms.Job" title="ansys.rep.client.jms.Job"><code class="xref py py-class docutils literal notranslate"><span class="pre">ansys.rep.client.jms.Job</span></code></a> or list of dict if <cite>as_objects</cite> is True</p>
 </dd>
 </dl>
 </dd></dl>
@@ -813,17 +1019,32 @@ as <code class="xref py py-attr docutils literal notranslate"><span class="pre">
 <dl class="py method">
 <dt class="sig sig-object py" id="ansys.rep.client.jms.ProjectApi.update_license_contexts">
 <span class="sig-name descname"><span class="pre">update_license_contexts</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">license_contexts</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">as_objects</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ansys.rep.client.jms.ProjectApi.update_license_contexts" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">LicenseContext</span></code>]</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="ansys.rep.client.jms.ProjectApi.update_parameter_definitions">
 <span class="sig-name descname"><span class="pre">update_parameter_definitions</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">parameter_definitions</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">as_objects</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ansys.rep.client.jms.ProjectApi.update_parameter_definitions" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">ParameterDefinition</span></code>]</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="ansys.rep.client.jms.ProjectApi.update_parameter_mappings">
 <span class="sig-name descname"><span class="pre">update_parameter_mappings</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">parameter_mappings</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">as_objects</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ansys.rep.client.jms.ProjectApi.update_parameter_mappings" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<a class="reference internal" href="#ansys.rep.client.jms.ParameterMapping" title="ansys.rep.client.jms.resource.parameter_mapping.ParameterMapping"><code class="xref py py-class docutils literal notranslate"><span class="pre">ParameterMapping</span></code></a>]</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="ansys.rep.client.jms.ProjectApi.update_permissions">
@@ -833,17 +1054,33 @@ as <code class="xref py py-attr docutils literal notranslate"><span class="pre">
 <dl class="py method">
 <dt class="sig sig-object py" id="ansys.rep.client.jms.ProjectApi.update_task_definitions">
 <span class="sig-name descname"><span class="pre">update_task_definitions</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">task_definitions</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">as_objects</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ansys.rep.client.jms.ProjectApi.update_task_definitions" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<a class="reference internal" href="#ansys.rep.client.jms.TaskDefinition" title="ansys.rep.client.jms.resource.task_definition.TaskDefinition"><code class="xref py py-class docutils literal notranslate"><span class="pre">TaskDefinition</span></code></a>]</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="ansys.rep.client.jms.ProjectApi.update_tasks">
 <span class="sig-name descname"><span class="pre">update_tasks</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tasks</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">as_objects</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ansys.rep.client.jms.ProjectApi.update_tasks" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<a class="reference internal" href="#ansys.rep.client.jms.Task" title="ansys.rep.client.jms.resource.task.Task"><code class="xref py py-class docutils literal notranslate"><span class="pre">Task</span></code></a>]</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="ansys.rep.client.jms.ProjectApi.url">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">url</span></span><a class="headerlink" href="#ansys.rep.client.jms.ProjectApi.url" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">url</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#ansys.rep.client.jms.ProjectApi.url" title="Permalink to this definition">#</a></dt>
+<dd><p>Returns the API url</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></p>
+</dd>
+</dl>
+</dd></dl>
 
 </dd></dl>
 
@@ -1120,8 +1357,8 @@ as <code class="xref py py-attr docutils literal notranslate"><span class="pre">
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>name</strong> (<em>str</em>) – </p></li>
-<li><p><strong>version</strong> (<em>str</em><em>, </em><em>optional</em>) – </p></li>
+<li><p><strong>name</strong> (<em>str</em>) – Application’s name.</p></li>
+<li><p><strong>version</strong> (<em>str</em><em>, </em><em>optional</em>) – Application’s version.</p></li>
 </ul>
 </dd>
 </dl>
@@ -1195,8 +1432,8 @@ as <code class="xref py py-attr docutils literal notranslate"><span class="pre">
 <li><p><strong>output_file_ids</strong> (<em>list</em><em>[</em><em>str</em><em>]</em>) – List of IDs of output files.</p></li>
 <li><p><strong>success_criteria</strong> (<em>object</em><em>, </em><em>optional</em>) – </p></li>
 <li><p><strong>licensing</strong> (<em>object</em><em>, </em><em>optional</em>) – A <a class="reference internal" href="#ansys.rep.client.jms.Licensing" title="ansys.rep.client.jms.Licensing"><code class="xref py py-class docutils literal notranslate"><span class="pre">Licensing</span></code></a> object.</p></li>
-<li><p><strong>software_requirements</strong> (<em>object</em><em>, </em><em>optional</em>) – </p></li>
-<li><p><strong>resource_requirements</strong> (<em>object</em><em>, </em><em>optional</em>) – </p></li>
+<li><p><strong>software_requirements</strong> (<em>object</em><em>, </em><em>optional</em>) – A list of <a class="reference internal" href="#ansys.rep.client.jms.Software" title="ansys.rep.client.jms.Software"><code class="xref py py-class docutils literal notranslate"><span class="pre">Software</span></code></a> objects.</p></li>
+<li><p><strong>resource_requirements</strong> (<em>object</em><em>, </em><em>optional</em>) – A <a class="reference internal" href="#ansys.rep.client.jms.ResourceRequirements" title="ansys.rep.client.jms.ResourceRequirements"><code class="xref py py-class docutils literal notranslate"><span class="pre">ResourceRequirements</span></code></a> object.</p></li>
 </ul>
 </dd>
 </dl>
