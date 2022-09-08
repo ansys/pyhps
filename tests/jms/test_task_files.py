@@ -22,7 +22,7 @@ log = logging.getLogger(__name__)
 
 
 class TaskFilesTest(REPTestCase):
-    @pytest.mark.e2e
+    @pytest.mark.requires_evaluator
     def test_task_files_in_single_task_definition_project(self):
         num_jobs = 5
         client = self.client()

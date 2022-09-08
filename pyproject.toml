@@ -24,5 +24,9 @@ log_cli_level = "INFO"
 log_cli_format = "%(asctime)s [%(levelname)8s] %(message)s (%(filename)s:%(lineno)s)"
 log_cli_date_format = "%Y-%m-%d %H:%M:%S"
 markers = [
-    "e2e: marks tests as end-to-end requiring a running evaluator (deselect with '-m \"not e2e\"')",
+    "requires_evaluator: marks tests as end-to-end requiring a running evaluator (deselect with '-m \"not requires_evaluator\"')",
+]
+filterwarnings = [
+    "ignore::urllib3.exceptions.InsecureRequestWarning",
+    "ignore::marshmallow.warnings.RemovedInMarshmallow4Warning",
 ]
