@@ -76,7 +76,7 @@ jobs:
           python -m pip install --upgrade pip setuptools tox tox-gh-actions
 
       - name: Test with tox
-        run: tox -e ${{ matrix.cfg.toxenv }}-noeval-cov 
+        run: tox -e ${{ matrix.cfg.toxenv }}-noeval-coverage 
         env:
           REP_TEST_URL: https://repkube-dev.westeurope.cloudapp.azure.com/rep
           REP_TEST_USERNAME: repadmin
@@ -104,7 +104,7 @@ jobs:
           python -m pip install --upgrade pip setuptools tox tox-gh-actions
 
       - name: Test with tox
-        run: tox -e ${{ matrix.cfg.toxenv }}-witheval-cov 
+        run: tox -e ${{ matrix.cfg.toxenv }}-witheval 
         env:
           REP_TEST_URL: https://repkube-dev.westeurope.cloudapp.azure.com/rep
           REP_TEST_USERNAME: repadmin
