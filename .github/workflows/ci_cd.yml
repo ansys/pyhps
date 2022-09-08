@@ -104,7 +104,7 @@ jobs:
           python -m pip install --upgrade pip setuptools tox tox-gh-actions
 
       - name: Test with tox
-        run: tox -e py310-witheval 
+        run: tox -e py37-witheval 
         env:
           REP_TEST_URL: https://repkube-dev.westeurope.cloudapp.azure.com/rep
           REP_TEST_USERNAME: repadmin
