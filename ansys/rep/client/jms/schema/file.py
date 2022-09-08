@@ -8,7 +8,8 @@
 
 from marshmallow import fields
 
-from .base import ObjectSchema
+from ansys.rep.client.common import ObjectSchema
+
 from .object_reference import IdReference
 
 

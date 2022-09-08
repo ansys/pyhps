@@ -1,7 +1,7 @@
 from marshmallow.utils import missing
 
 from ..schema.file import FileSchema
-from .base import Object
+from ansys.rep.client.common import Object
 
 
 class File(Object):

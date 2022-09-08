@@ -314,7 +314,7 @@ class {resource['class']}({base_class["name"]}):
     return code
 
 
-def process_resources(subpackage, resources, base_class_path=""):
+def process_resources(subpackage, resources, base_class_path="ansys.rep.client"):
 
     targe_folder = os.path.join("ansys", "rep", "client", subpackage, "resource")
     for resource in resources:
@@ -341,9 +341,10 @@ def process_resources(subpackage, resources, base_class_path=""):
 
         # if a base class other than Object need to be used,
         # we need to make sure to properly import it in the generated code
-        base_class = {"name": "Object", "filename": "base", "path": base_class_path}
+        base_class = {"name": "Object", "filename": "common", "path": base_class_path}
         if resource.get("base_class", None):
             base_class["name"] = resource["base_class"]
+            base_class["path"] = "ansys.rep.client.jms.resource"
             base_class["filename"] = next(
                 (r["resource_filename"] for r in resources if r["class"] == resource["base_class"]),
                 None,
@@ -360,7 +361,7 @@ def process_resources(subpackage, resources, base_class_path=""):
 
 def run():
     process_resources("jms", JMS_RESOURCES)
-    process_resources("auth", AUTH_RESOURCES, base_class_path="ansys.rep.client.jms.resource")
+    process_resources("auth", AUTH_RESOURCES)
 
 
 if __name__ == "__main__":

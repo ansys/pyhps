@@ -25,25 +25,31 @@ class Client(object):
           requests a new access token.
         - Access token: no authentication needed.
 
-    Args:
-        rep_url (str): The base path for the server to call,
-                       e.g. "https://127.0.0.1:8443/rep".
-        username (str): Username (Optional)
-        password (str): Password (Optional)
-        refresh_token (str): Refresh Token (Optional)
-        access_token (str): Access Token (Optional)
+    Parameters
+    ----------
+    rep_url : str
+        The base path for the server to call, e.g. "https://127.0.0.1:8443/rep".
+    username : str, optional
+        Username
+    password : str, optional
+        Password
+    refresh_token : str, optional
+        Refresh Token
+    access_token : str, optional
+        Access Token
 
-    Example:
+    Examples
+    --------
 
-        >>> from ansys.rep.client import Client
-        >>> # Create client object and connect to REP with username & password
-        >>> cl = Client(
-                rep_url="https://127.0.0.1:8443/rep", username="repadmin", password="repadmin"
-            )
-        >>> # Extract refresh token to eventually store it
-        >>> refresh_token = cl.refresh_token
-        >>> # Alternative: Create client object and connect to REP with refresh token
-        >>> cl = Client(rep_url="https://127.0.0.1:8443/rep", refresh_token=refresh_token)
+    >>> from ansys.rep.client import Client
+    >>> # Create client object and connect to REP with username & password
+    >>> cl = Client(
+            rep_url="https://localhost:8443/rep", username="repadmin", password="repadmin"
+        )
+    >>> # Extract refresh token to eventually store it
+    >>> refresh_token = cl.refresh_token
+    >>> # Alternative: Create client object and connect to REP with refresh token
+    >>> cl = Client(rep_url="https://localhost:8443/rep", refresh_token=refresh_token)
 
     """
 

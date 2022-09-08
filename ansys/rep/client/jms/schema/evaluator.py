@@ -9,7 +9,7 @@
 from marshmallow import fields
 from marshmallow.validate import OneOf
 
-from .base import ObjectSchema
+from ansys.rep.client.common import ObjectSchema
 
 project_assignment_modes = ["disabled", "all_active", "project_list"]
 

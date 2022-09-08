@@ -8,10 +8,11 @@ from cachetools import TTLCache, cached
 from marshmallow.utils import missing
 import requests
 
+from ansys.rep.client.client import Client
+from ansys.rep.client.common import Object
 from ansys.rep.client.exceptions import ClientError, REPError
 
 from ..resource.algorithm import Algorithm
-from ..resource.base import Object
 from ..resource.file import File
 from ..resource.job import Job, JobSchema
 from ..resource.job_definition import JobDefinition
@@ -30,46 +31,63 @@ log = logging.getLogger(__name__)
 
 
 class ProjectApi:
-    """Project API
+    """Exposes the Project endpoints of the Job Management Service
 
-    Args:
-        client (:class:`ansys.rep.client.jms.Client`): A client object.
-        project_id (str):
+    Parameters
+    ----------
+    client : Client
+        A REP client object.
+    project_id : str
+        ID of the project
 
-    Example:
+    Examples
+    --------
 
-        >>> from ansys.rep.client Client
-        >>> from ansys.rep.client.jms import JmsApi, Project, ProjectApi
-        >>>
-        >>> cl = Client(
-                rep_url="https://127.0.0.1:8443/rep", username="repadmin", password="repadmin"
-            )
-        >>> project = Project(name="Example Project")
-        >>> print(project)
-        >>>
-        >>> jms_api = JmsApi(client)
-        >>> project = jms_api.create_project(project)
-        >>>
-        >>> project_api = ProjectApi(client, project.id)
-        >>> jobs = project_api.get_jobs()
+    >>> from ansys.rep.client import Client
+    >>> from ansys.rep.client.jms import JmsApi, Project, ProjectApi
+    >>> cl = Client(
+    ...     rep_url="https://127.0.0.1:8443/rep", username="repadmin", password="repadmin"
+    ... )
+    >>> project = Project(name="Example Project")
+    >>> print(project)
+    {
+        "name": "Example Project"
+    }
+    >>> jms_api = JmsApi(cl)
+    >>> project = jms_api.create_project(project)
+    >>> print(project)
+    {
+        "id": "02qtyJfpfAQ0fr3zkoIAfC",
+        "name": "Example Project",
+        "active": false,
+        "priority": 1,
+        "creation_time": ...
+        ...
+    }
+    >>> project_api = ProjectApi(cl, project.id)
+    >>> print(project_api)
+    'https://127.0.0.1:8443/rep/jms/api/v1/projects/02qtyJfpfAQ0fr3zkoIAfC'
+    >>> jobs = project_api.get_jobs()
+
     """
 
-    def __init__(self, client, project_id: str):
+    def __init__(self, client: Client, project_id: str):
         self.client = client
         self.project_id = project_id
         self._fs_url = None
         self._fs_project_id = None
 
     @property
-    def jms_api_url(self):
+    def jms_api_url(self) -> str:
         return f"{self.client.rep_url}/jms/api/v1"
 
     @property
-    def url(self):
+    def url(self) -> str:
+        """Returns the API url"""
         return f"{self.jms_api_url}/projects/{self.project_id}"
 
     @property
-    def fs_url(self):
+    def fs_url(self) -> str:
         """URL of the file storage gateway"""
         if self._fs_url is None or self._fs_project_id != self.project_id:
             self._fs_project_id = self.project_id
@@ -78,17 +96,17 @@ class ProjectApi:
         return self._fs_url
 
     @property
-    def fs_bucket_url(self):
+    def fs_bucket_url(self) -> str:
         """URL of the project's bucket in the file storage gateway"""
         return f"{self.fs_url}/{self.project_id}"
 
     ################################################################
     # Project operations (copy, archive)
-    def copy_project(self, project_target_name, wait=True):
+    def copy_project(self, project_target_name: str, wait: bool = True) -> str:
         """Duplicate project"""
         return copy_project(self, self.project_id, project_target_name, wait)
 
-    def archive_project(self, path, include_job_files=True):
+    def archive_project(self, path: str, include_job_files: bool = True):
         """Archive an existing project and save it to disk
 
         Args:
@@ -103,7 +121,7 @@ class ProjectApi:
 
     ################################################################
     # Files
-    def get_files(self, as_objects=True, content=False, **query_params):
+    def get_files(self, as_objects=True, content=False, **query_params) -> List[File]:
         """
         Return a list of file resources, optionally filtered by given query parameters.
         If content=True, each files content is downloaded as well and stored in memory
@@ -111,13 +129,13 @@ class ProjectApi:
         """
         return get_files(self, as_objects=as_objects, content=content, **query_params)
 
-    def create_files(self, files, as_objects=True):
+    def create_files(self, files: List[File], as_objects=True) -> List[File]:
         return create_files(self, files, as_objects=as_objects)
 
-    def update_files(self, files, as_objects=True):
+    def update_files(self, files: List[File], as_objects=True):
         return update_files(self, files, as_objects=as_objects)
 
-    def delete_files(self, files):
+    def delete_files(self, files: List[File]):
         return self._delete_objects(files)
 
     def download_file(
@@ -136,58 +154,76 @@ class ProjectApi:
 
     ################################################################
     # Parameter definitions
-    def get_parameter_definitions(self, as_objects=True, **query_params):
+    def get_parameter_definitions(
+        self, as_objects=True, **query_params
+    ) -> List[ParameterDefinition]:
         return self._get_objects(ParameterDefinition, as_objects, **query_params)
 
-    def create_parameter_definitions(self, parameter_definitions, as_objects=True):
+    def create_parameter_definitions(
+        self, parameter_definitions, as_objects=True
+    ) -> List[ParameterDefinition]:
         return self._create_objects(parameter_definitions, as_objects)
 
-    def update_parameter_definitions(self, parameter_definitions, as_objects=True):
+    def update_parameter_definitions(
+        self, parameter_definitions: List[ParameterDefinition], as_objects=True
+    ) -> List[ParameterDefinition]:
         return self._update_objects(parameter_definitions, as_objects)
 
-    def delete_parameter_definitions(self, parameter_definitions):
+    def delete_parameter_definitions(self, parameter_definitions: List[ParameterDefinition]):
         return self._delete_objects(parameter_definitions)
 
     ################################################################
     # Parameter mappings
-    def get_parameter_mappings(self, as_objects=True, **query_params):
+    def get_parameter_mappings(self, as_objects=True, **query_params) -> List[ParameterMapping]:
         return self._get_objects(ParameterMapping, as_objects=as_objects, **query_params)
 
-    def create_parameter_mappings(self, parameter_mappings, as_objects=True):
+    def create_parameter_mappings(
+        self, parameter_mappings: List[ParameterMapping], as_objects=True
+    ) -> List[ParameterMapping]:
         return self._create_objects(parameter_mappings, as_objects=as_objects)
 
-    def update_parameter_mappings(self, parameter_mappings, as_objects=True):
+    def update_parameter_mappings(
+        self, parameter_mappings: List[ParameterMapping], as_objects=True
+    ) -> List[ParameterMapping]:
         return self._update_objects(parameter_mappings, as_objects=as_objects)
 
-    def delete_parameter_mappings(self, parameter_mappings):
+    def delete_parameter_mappings(self, parameter_mappings: List[ParameterMapping]):
         return self._delete_objects(parameter_mappings)
 
     ################################################################
     # Task definitions
-    def get_task_definitions(self, as_objects=True, **query_params):
+    def get_task_definitions(self, as_objects=True, **query_params) -> List[TaskDefinition]:
         return self._get_objects(TaskDefinition, as_objects=as_objects, **query_params)
 
-    def create_task_definitions(self, task_definitions, as_objects=True):
+    def create_task_definitions(
+        self, task_definitions: List[TaskDefinition], as_objects=True
+    ) -> List[TaskDefinition]:
         return self._create_objects(task_definitions, as_objects=as_objects)
 
-    def update_task_definitions(self, task_definitions, as_objects=True):
+    def update_task_definitions(
+        self, task_definitions: List[TaskDefinition], as_objects=True
+    ) -> List[TaskDefinition]:
         return self._update_objects(task_definitions, as_objects=as_objects)
 
-    def delete_task_definitions(self, task_definitions):
+    def delete_task_definitions(self, task_definitions: List[TaskDefinition]):
         return self._delete_objects(task_definitions)
 
     ################################################################
     # Job definitions
-    def get_job_definitions(self, as_objects=True, **query_params):
+    def get_job_definitions(self, as_objects=True, **query_params) -> List[JobDefinition]:
         return self._get_objects(JobDefinition, as_objects=as_objects, **query_params)
 
-    def create_job_definitions(self, job_definitions, as_objects=True):
+    def create_job_definitions(
+        self, job_definitions: List[JobDefinition], as_objects=True
+    ) -> List[JobDefinition]:
         return self._create_objects(job_definitions, as_objects=as_objects)
 
-    def update_job_definitions(self, job_definitions, as_objects=True):
+    def update_job_definitions(
+        self, job_definitions: List[JobDefinition], as_objects=True
+    ) -> List[JobDefinition]:
         return self._update_objects(job_definitions, as_objects=as_objects)
 
-    def delete_job_definitions(self, job_definitions):
+    def delete_job_definitions(self, job_definitions: List[JobDefinition]):
         return self._delete_objects(job_definitions)
 
     ################################################################
@@ -195,7 +231,7 @@ class ProjectApi:
     def get_jobs(self, as_objects=True, **query_params) -> List[Job]:
         return self._get_objects(Job, as_objects=as_objects, **query_params)
 
-    def create_jobs(self, jobs, as_objects=True) -> List[Job]:
+    def create_jobs(self, jobs: List[Job], as_objects=True) -> List[Job]:
         """Create new jobs
 
         Args:
@@ -207,7 +243,7 @@ class ProjectApi:
         """
         return self._create_objects(jobs, as_objects=as_objects)
 
-    def copy_jobs(self, jobs, as_objects=True, **query_params):
+    def copy_jobs(self, jobs: List[Job], as_objects=True, **query_params):
         """Create new jobs by copying existing ones
 
         Args:
@@ -218,7 +254,7 @@ class ProjectApi:
         """
         return copy_jobs(self, jobs, as_objects=as_objects, **query_params)
 
-    def update_jobs(self, jobs, as_objects=True) -> List[Job]:
+    def update_jobs(self, jobs: List[Job], as_objects=True) -> List[Job]:
         """Update existing jobs
 
         Args:
@@ -230,7 +266,7 @@ class ProjectApi:
         """
         return self._update_objects(jobs, as_objects=as_objects)
 
-    def delete_jobs(self, jobs):
+    def delete_jobs(self, jobs: List[Job]):
         """Delete existing jobs
 
         Args:
@@ -249,61 +285,65 @@ class ProjectApi:
         """
         return self._delete_objects(jobs)
 
-    def _sync_jobs(self, jobs):
+    def _sync_jobs(self, jobs: List[Job]):
         log.warning("ProjectApi._sync_jobs is a beta feature. Use with care.")
         return sync_jobs(self, jobs)
 
     ################################################################
     # Tasks
-    def get_tasks(self, as_objects=True, **query_params):
+    def get_tasks(self, as_objects=True, **query_params) -> List[Task]:
         return self._get_objects(Task, as_objects=as_objects, **query_params)
 
-    def update_tasks(self, tasks, as_objects=True):
+    def update_tasks(self, tasks: List[Task], as_objects=True) -> List[Task]:
         return self._update_objects(tasks, as_objects=as_objects)
 
     ################################################################
     # Selections
-    def get_job_selections(self, as_objects=True, **query_params):
+    def get_job_selections(self, as_objects=True, **query_params) -> List[JobSelection]:
         return self._get_objects(JobSelection, as_objects=as_objects, **query_params)
 
-    def create_job_selections(self, selections, as_objects=True):
+    def create_job_selections(
+        self, selections: List[JobSelection], as_objects=True
+    ) -> List[JobSelection]:
         return self._create_objects(selections, as_objects=as_objects)
 
-    def update_job_selections(self, selections, as_objects=True):
+    def update_job_selections(
+        self, selections: List[JobSelection], as_objects=True
+    ) -> List[JobSelection]:
         return self._update_objects(selections, as_objects=as_objects)
 
-    def delete_job_selections(self, selections):
+    def delete_job_selections(self, selections: List[JobSelection]):
         return self._delete_objects(selections)
 
     ################################################################
     # Algorithms
-    def get_algorithms(self, as_objects=True, **query_params):
+    def get_algorithms(self, as_objects=True, **query_params) -> List[Algorithm]:
         return self._get_objects(Algorithm, as_objects=as_objects, **query_params)
 
-    def create_algorithms(self, algorithms, as_objects=True):
+    def create_algorithms(self, algorithms: List[Algorithm], as_objects=True) -> List[Algorithm]:
         return self._create_objects(algorithms, as_objects=as_objects)
 
-    def update_algorithms(self, algorithms, as_objects=True):
+    def update_algorithms(self, algorithms: List[Algorithm], as_objects=True) -> List[Algorithm]:
         return self._update_objects(algorithms, as_objects=as_objects)
 
-    def delete_algorithms(self, algorithms):
+    def delete_algorithms(self, algorithms: List[Algorithm]):
         return self._delete_objects(algorithms)
 
     ################################################################
     # Permissions
-    def get_permissions(self, as_objects=True):
+    def get_permissions(self, as_objects=True) -> List[ProjectPermission]:
         return self._get_objects(ProjectPermission, as_objects=as_objects)
 
-    def update_permissions(self, permissions):
+    def update_permissions(self, permissions: List[ProjectPermission]):
         # the rest api currently doesn't return anything on permissions update
         update_permissions(self.client, self.url, permissions)
 
     ################################################################
     # License contexts
-    def get_license_contexts(self, as_objects=True, **query_params):
+    def get_license_contexts(self, as_objects=True, **query_params) -> List[LicenseContext]:
         return self._get_objects(self, LicenseContext, as_objects=as_objects, **query_params)
 
-    def create_license_contexts(self, as_objects=True):
+    def create_license_contexts(self, as_objects=True) -> List[LicenseContext]:
         rest_name = LicenseContext.Meta.rest_name
         url = f"{self.jms_api_url}/projects/{self.project_id}/{rest_name}"
         r = self.client.session.post(f"{url}")
@@ -314,7 +354,7 @@ class ProjectApi:
         objects = schema.load(data)
         return objects
 
-    def update_license_contexts(self, license_contexts, as_objects=True):
+    def update_license_contexts(self, license_contexts, as_objects=True) -> List[LicenseContext]:
         return self._update_objects(self, license_contexts, as_objects=as_objects)
 
     def delete_license_contexts(self):

@@ -9,7 +9,7 @@ import logging
 
 from marshmallow import fields
 
-from ansys.rep.client.jms.schema.base import BaseSchema
+from ansys.rep.client.common.base_schema import BaseSchema
 
 log = logging.getLogger(__name__)
 
