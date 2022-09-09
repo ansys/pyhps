@@ -12,6 +12,7 @@ import unittest
 import uuid
 
 from examples.mapdl_motorbike_frame.project_setup import create_project
+import pytest
 
 from ansys.rep.client.jms import JmsApi, ProjectApi
 from ansys.rep.client.jms.resource import Job, JobDefinition, Project, TaskDefinition
@@ -114,6 +115,7 @@ class TasksTest(REPTestCase):
             tasks = project_api.get_tasks(job_id=job.id)
             self.assertEqual(tasks[0].job_id, job.id)
 
+    @pytest.mark.requires_evaluator
     def test_job_sync(self):
 
         # create base project with 1 process step and 3 design points
@@ -241,6 +243,7 @@ class TasksTest(REPTestCase):
 
         return job
 
+    @pytest.mark.requires_evaluator
     def test_sync_task_definition_snapshot(self):
         # verity that the process step snapshot of an evaluated task in not modified
         # on job:sync
