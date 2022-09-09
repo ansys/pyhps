@@ -185,7 +185,7 @@ def submit_job() -> REPJob:
 
     task_def1 = TaskDefinition(
         name="LS-DYNA Run",
-        software_requirements=[Software(name="ANSYS LS-DYNA", version=ANSYS_VERSION)],
+        software_requirements=[Software(name="Ansys LS-DYNA", version=ANSYS_VERSION)],
         execution_command=ls_dyna_command,
         max_execution_time=3600.0,
         resource_requirements=ResourceRequirements(
@@ -207,7 +207,7 @@ def submit_job() -> REPJob:
 
     task_def2 = TaskDefinition(
         name="LS-PrePost Run",
-        software_requirements=[Software(name="ANSYS LS-PrePost", version=ANSYS_VERSION)],
+        software_requirements=[Software(name="Ansys LS-PrePost", version=ANSYS_VERSION)],
         execution_command="%executable% c=%file:post_commands%",
         max_execution_time=600.0,
         resource_requirements=ResourceRequirements(

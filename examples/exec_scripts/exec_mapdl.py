@@ -23,7 +23,7 @@ class MAPDLExecution(ApplicationExecution):
         assert out_file, "Output file out missing"
 
         # Identify application
-        app_name = "ANSYS Mechanical APDL"
+        app_name = "Ansys Mechanical APDL"
         app = next((a for a in self.context.software if a["name"] == app_name), None)
         assert app, f"Cannot find app {app_name}"
 

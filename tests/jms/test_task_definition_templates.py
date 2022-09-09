@@ -27,13 +27,13 @@ class TaskDefinitionTemplateTest(REPTestCase):
         json_data = {
             # "modification_time": "2021-09-16T12:27:44.771067+00:00",
             "creation_time": "2021-09-16T12:27:44.771067+00:00",
-            "name": "ANSYS Mechanical APDL 2021 R1 Default",
+            "name": "Ansys Mechanical APDL 2021 R1 Default",
             "execution_command": """%executable% -b nolist -i %file:dat%
                                    -o %file:out% -np %resource:num_cores%
                                    -dis -s noread -p ansys""",
             "software_requirements": [
                 {
-                    "name": "ANSYS Mechanical APDL",
+                    "name": "Ansys Mechanical APDL",
                     "version": "21.1",
                 }
             ],

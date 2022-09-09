@@ -91,7 +91,7 @@ def create_prestress_task_definition(project_api: ProjectApi) -> Tuple[str, List
 
     task_def = TaskDefinition(
         name="Prestress",
-        software_requirements=[Software(name="ANSYS Mechanical APDL", version=ansys_version)],
+        software_requirements=[Software(name="Ansys Mechanical APDL", version=ansys_version)],
         execution_command="%executable% -b -nolist -i %file:input_deck%"
         " -o solve.out -np %resource:num_cores%",
         max_execution_time=360.0,
@@ -174,7 +174,7 @@ def create_modal_task_definition(
 
     task_def = TaskDefinition(
         name="Modal",
-        software_requirements=[Software(name="ANSYS Mechanical APDL", version=ansys_version)],
+        software_requirements=[Software(name="Ansys Mechanical APDL", version=ansys_version)],
         execution_command="%executable% -b -nolist -i %file:input_deck% "
         "-o solve.out -np %resource:num_cores%",
         max_execution_time=360.0,
@@ -221,7 +221,7 @@ def create_harmonic_task_definition(project_api: ProjectApi, modal_files: List[F
 
     task_def = TaskDefinition(
         name="Harmonic",
-        software_requirements=[Software(name="ANSYS Mechanical APDL", version=ansys_version)],
+        software_requirements=[Software(name="Ansys Mechanical APDL", version=ansys_version)],
         execution_command="%executable% -b -nolist -i %file:input_deck% "
         "-o solve.out -np %resource:num_cores%",
         max_execution_time=360.0,
