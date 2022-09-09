@@ -10,7 +10,7 @@ import logging
 from marshmallow.utils import missing
 
 from ..schema.fitness_definition import FitnessDefinitionSchema, FitnessTermDefinitionSchema
-from .base import Object
+from ansys.rep.client.common import Object
 
 log = logging.getLogger(__name__)
 

@@ -90,3 +90,8 @@ class AuthClientTest(REPTestCase):
             except_obj = e
 
         self.assertEqual(except_obj.response_code, 403)
+
+        api.delete_user(new_user)
+        users = api.get_users()
+        usernames = [x.username for x in users]
+        self.assertNotIn(new_user.username, usernames)

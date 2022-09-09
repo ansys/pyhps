@@ -9,7 +9,7 @@
 from marshmallow import fields
 from marshmallow.validate import OneOf
 
-from .base import ObjectSchema
+from ansys.rep.client.common import ObjectSchema
 
 fitness_term_types = ["design_objective", "limit_constraint", "target_constraint"]
 

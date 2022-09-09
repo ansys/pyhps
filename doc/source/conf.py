@@ -39,6 +39,7 @@ extensions = [
     "sphinx.ext.intersphinx",
     "sphinx_copybutton",
     "sphinxnotes.strike",
+    "sphinx_autodoc_typehints",
 ]
 
 

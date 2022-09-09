@@ -10,7 +10,7 @@ import logging
 from marshmallow import fields
 from marshmallow_oneofschema import OneOfSchema
 
-from .base import ObjectSchema
+from ansys.rep.client.common import ObjectSchema
 
 log = logging.getLogger(__name__)
 

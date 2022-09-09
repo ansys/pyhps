@@ -12,6 +12,7 @@ import time
 import unittest
 
 from examples.mapdl_motorbike_frame.project_setup import create_project
+import pytest
 
 from ansys.rep.client.jms import JmsApi, ProjectApi
 from ansys.rep.client.jms.resource import File
@@ -21,6 +22,7 @@ log = logging.getLogger(__name__)
 
 
 class TaskFilesTest(REPTestCase):
+    @pytest.mark.requires_evaluator
     def test_task_files_in_single_task_definition_project(self):
         num_jobs = 5
         client = self.client()

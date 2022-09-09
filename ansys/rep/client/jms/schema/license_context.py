@@ -8,7 +8,7 @@
 
 from marshmallow import fields
 
-from .base import BaseSchema
+from ansys.rep.client.common import BaseSchema
 
 
 class LicenseContextSchema(BaseSchema):

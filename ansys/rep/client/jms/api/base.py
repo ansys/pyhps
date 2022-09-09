@@ -4,9 +4,8 @@ from typing import List
 
 from requests import Session
 
+from ansys.rep.client.common import Object
 from ansys.rep.client.exceptions import ClientError
-
-from ..resource.base import Object
 
 log = logging.getLogger(__name__)
 
