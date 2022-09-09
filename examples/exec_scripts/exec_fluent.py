@@ -41,7 +41,7 @@ class FluentExecution(ApplicationExecution):
             pythoncode_version="0.1"
             log.info("python code version "+pythoncode_version)                
             
-            log.info("Queue Platform:" + platform.platform())
+            log.info("Queue Platform: " + platform.platform())
             
             coresCount = self.context.resource_requirements["num_cores"]
             log.info(f'coresCount: {coresCount}')
@@ -315,10 +315,10 @@ class FluentExecution(ApplicationExecution):
                         msg=line.rstrip()
                         if msg.startswith('ANSYS LICENSE STDOUT ERROR'):
                             self.error_detected=True
-                            log.info("Liscense error detected in fluent")
+                            log.info("License error detected in fluent")
                         if msg.startswith('Unexpected license problem'):
                             self.error_detected=True
-                            log.info("Unexpected liscense error detected in fluent")
+                            log.info("Unexpected license error detected in fluent")
                         if msg.startswith('Warning: An error or interrupt occurred while reading the journal file'):
                             self.error_detected=True
                             log.info("An error detected in fluent, killing fluent...")
