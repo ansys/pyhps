@@ -6,7 +6,7 @@ Command formed: ansys.exe -b -i <inp_file> -o <out_file> -np 4
 """
 import os
 import subprocess
-import json
+#import json
 
 from ansys.rep.common.logging import log
 from ansys.rep.evaluator.task_manager import ApplicationExecution

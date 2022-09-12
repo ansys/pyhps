@@ -218,8 +218,8 @@ class FluentExecution(ApplicationExecution):
             log.info("====== error in execute =========")
             raise e
         
-    # HPC required method, user defined implementation
-    # this method is called whenever an Out-of Cloud user makes a request to this Python task
+    # TODO: this method is no longer called to make requests this Python task. 
+    # TODO: need an alternative for interrupt?
     # if FluentLauncherActionDefinition.withSoftInterrupt is true, implementation forSoftInterrupt command is required
     def oncommand(self, command):
         log.info("Received!\n\n"+format(command)+"\n\n")

@@ -13,18 +13,18 @@ from ansys.rep.client import Client, REPError
 from ansys.rep.client import __external_version__ as ansys_version
 from ansys.rep.client.jms import (
     File,
-    FitnessDefinition,
-    FloatParameterDefinition,
+#    FitnessDefinition,
+#    FloatParameterDefinition,
     JmsApi,
     Job,
     JobDefinition,
     Licensing,
-    ParameterMapping,
+#    ParameterMapping,
     Project,
     ProjectApi,
     ResourceRequirements,
     Software,
-    StringParameterDefinition,
+#    StringParameterDefinition,
     SuccessCriteria,
     TaskDefinition,
 )
@@ -117,7 +117,7 @@ def create_project(client, name, num_jobs=20, use_exec_script=False):
     task_def = TaskDefinition(
         name="Fluent_run",
         software_requirements=[
-            Software(name="ANSYS Fluent", version="2022 R2") #ansys_version),
+            Software(name="ANSYS Fluent", version=ansys_version),
         ],
         execution_command="%executable% -b -i %file:inp% -o file.out -np %resource:num_cores%",
         resource_requirements=ResourceRequirements(
