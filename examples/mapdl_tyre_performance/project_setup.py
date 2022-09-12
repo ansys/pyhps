@@ -178,7 +178,7 @@ def main(client: Client, name: str, num_jobs: int) -> Project:
     # Process step
     task_def = TaskDefinition(
         name="MAPDL_run",
-        software_requirements=[Software(name="ANSYS Mechanical APDL", version=ansys_version)],
+        software_requirements=[Software(name="Ansys Mechanical APDL", version=ansys_version)],
         execution_command="%executable% -b -i %file:mac% -o file.out -np %resource:num_cores%",
         resource_requirements=ResourceRequirements(
             cpu_core_usage=4,
