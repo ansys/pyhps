@@ -468,7 +468,7 @@ python lsdyna_job.py download
 
     <span class="n">task_def1</span> <span class="o">=</span> <span class="n">TaskDefinition</span><span class="p">(</span>
         <span class="n">name</span><span class="o">=</span><span class="s2">&quot;LS-DYNA Run&quot;</span><span class="p">,</span>
-        <span class="n">software_requirements</span><span class="o">=</span><span class="p">[</span><span class="n">Software</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;ANSYS LS-DYNA&quot;</span><span class="p">,</span> <span class="n">version</span><span class="o">=</span><span class="n">ANSYS_VERSION</span><span class="p">)],</span>
+        <span class="n">software_requirements</span><span class="o">=</span><span class="p">[</span><span class="n">Software</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;Ansys LS-DYNA&quot;</span><span class="p">,</span> <span class="n">version</span><span class="o">=</span><span class="n">ANSYS_VERSION</span><span class="p">)],</span>
         <span class="n">execution_command</span><span class="o">=</span><span class="n">ls_dyna_command</span><span class="p">,</span>
         <span class="n">max_execution_time</span><span class="o">=</span><span class="mf">3600.0</span><span class="p">,</span>
         <span class="n">resource_requirements</span><span class="o">=</span><span class="n">ResourceRequirements</span><span class="p">(</span>
@@ -490,7 +490,7 @@ python lsdyna_job.py download
 
     <span class="n">task_def2</span> <span class="o">=</span> <span class="n">TaskDefinition</span><span class="p">(</span>
         <span class="n">name</span><span class="o">=</span><span class="s2">&quot;LS-PrePost Run&quot;</span><span class="p">,</span>
-        <span class="n">software_requirements</span><span class="o">=</span><span class="p">[</span><span class="n">Software</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;ANSYS LS-PrePost&quot;</span><span class="p">,</span> <span class="n">version</span><span class="o">=</span><span class="n">ANSYS_VERSION</span><span class="p">)],</span>
+        <span class="n">software_requirements</span><span class="o">=</span><span class="p">[</span><span class="n">Software</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;Ansys LS-PrePost&quot;</span><span class="p">,</span> <span class="n">version</span><span class="o">=</span><span class="n">ANSYS_VERSION</span><span class="p">)],</span>
         <span class="n">execution_command</span><span class="o">=</span><span class="s2">&quot;</span><span class="si">%e</span><span class="s2">xecutable</span><span class="si">% c</span><span class="s2">=</span><span class="si">%f</span><span class="s2">ile:post_commands%&quot;</span><span class="p">,</span>
         <span class="n">max_execution_time</span><span class="o">=</span><span class="mf">600.0</span><span class="p">,</span>
         <span class="n">resource_requirements</span><span class="o">=</span><span class="n">ResourceRequirements</span><span class="p">(</span>
