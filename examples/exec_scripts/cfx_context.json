@@ -1,0 +1,63 @@
+{
+    "software": [{
+            "environment": {},
+            "name": "ANSYS CFX",
+            "version": "2022 R2",
+            "executable": "C:\\Program Files\\ANSYS Inc\\v222\\CFX\\bin\\cfx5solve.exe",
+            "install_path": "C:\\Program Files\\ANSYS Inc\\v222\\CFX"
+        }
+    ],
+    "resource_requirements": {
+        "cpu_core_usage": 1.0,
+        "custom": {},
+        "disk_space": 5,
+        "memory": 250,
+        "num_cores": 1
+    },
+    "execution_context": {
+        "cfx_cclFile": "runInput.ccl",
+        "cfx_runName" : "StaticMixer"
+    },
+    "environment": {},
+    "parameter_values": {},
+    "input_files": [{
+            "name": "ccl",
+            "path": "runInput.ccl",
+            "type": "text/plain",
+            "monitor": true
+        }, {
+            "name": "inp",
+            "path": "StaticMixer_001.cfx",
+            "type": "application/octet-stream",
+            "monitor": true
+        }, {
+            "name": "def",
+            "path": "StaticMixer_001.def",
+            "type": "application/octet-stream",
+            "monitor": true
+        }, {
+            "name": "exec_cfx",
+            "path": "exec_cfx.py",
+            "type": "application/x-python-code",
+            "monitor": true
+        }
+    ],
+    "output_files": [{
+            "name": "out",
+            "path": "StaticMixer_001.out",
+            "type": "text/plain",
+            "monitor": true
+        }, {
+            "name": "console_output",
+            "path": "console_output.txt",
+            "type": "text/plain",
+            "monitor": true
+        }, {
+            "name": "console_output",
+            "path": "console_output.txt",
+            "type": "text/plain",
+            "monitor": true,
+            "console_output": true
+        }
+    ]
+}
