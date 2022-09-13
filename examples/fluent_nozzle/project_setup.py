@@ -38,7 +38,7 @@ def create_project(client, name, num_jobs=20, use_exec_script=False):
     """
     jms_api = JmsApi(client)
     log.debug("=== Project")
-    proj = Project(name=name, priority=1, active=True)
+    proj = Project(name=name, priority=1, active=False)
     proj = jms_api.create_project(proj, replace=True)
 
     project_api = ProjectApi(client, proj.id)
@@ -52,6 +52,18 @@ def create_project(client, name, num_jobs=20, use_exec_script=False):
     files.append(
         File(name="jou", evaluation_path="solve.jou", type="text/plain", src=os.path.join(cwd, "solve.jou") )
     )
+
+    if use_exec_script:
+        # Define and upload an exemplary exec script to run MAPDL
+        files.append(
+            File(
+                name="exec_fluent",
+                evaluation_path="exec_fluent.py",
+                type="application/x-python-code",
+                src=os.path.join(cwd, "..", "exec_scripts", "exec_fluent.py"),
+            )
+        )
+
     files.append(
         File(name="trn", evaluation_path="fluent*.trn", type="text/plain", collect=True, monitor=True)
     )
@@ -70,19 +82,6 @@ def create_project(client, name, num_jobs=20, use_exec_script=False):
     files.append(
         File(name="output_data", evaluation_path="nozzle.dat.h5", type="application/octet-stream", collect=True, monitor=False)
     )
-    # Alternative, not recommended way, will collect ALL files matching file.*
-    # files.append( File( name="all_files", evaluation_path="file.*", type="text/plain") )
-
-    if use_exec_script:
-        # Define and upload an exemplary exec script to run MAPDL
-        files.append(
-            File(
-                name="exec_fluent",
-                evaluation_path="exec_fluent.py",
-                type="application/x-python-code",
-                src=os.path.join(cwd, "..", "exec_scripts", "exec_fluent.py"),
-            )
-        )
 
     files = project_api.create_files(files)
     file_ids = {f.name: f.id for f in files}
@@ -114,6 +113,7 @@ def create_project(client, name, num_jobs=20, use_exec_script=False):
     str_input_params = []
 
     # Task definition
+    num_input_files = 3 if use_exec_script else 2
     task_def = TaskDefinition(
         name="Fluent_run",
         software_requirements=[
@@ -138,8 +138,8 @@ def create_project(client, name, num_jobs=20, use_exec_script=False):
         },
         max_execution_time=50.0,
         num_trials=1,
-        input_file_ids=[f.id for f in files[:2]],
-        output_file_ids=[f.id for f in files[2:]],
+        input_file_ids=[f.id for f in files[:num_input_files]],
+        output_file_ids=[f.id for f in files[num_input_files:]],
         success_criteria=SuccessCriteria(
             return_code=0,
             #expressions=["values['tube1_radius']>=4.0", "values['tube1_thickness']>=0.5"],
@@ -151,6 +151,7 @@ def create_project(client, name, num_jobs=20, use_exec_script=False):
 
     if use_exec_script:
         task_def.use_execution_script = True
+        task_def.execution_command=None
         task_def.execution_script_id = file_ids["exec_fluent"]
 
     task_defs = [task_def]
