@@ -43,7 +43,7 @@ class FluentExecution(ApplicationExecution):
             pythoncode_version="0.1"
             log.info("python code version "+pythoncode_version)                
             
-            log.info("Queue Platform: " + platform.platform())
+            log.info("Evaluator Platform: " + platform.platform())
             
             num_cores = self.context.resource_requirements["num_cores"]
             log.info(f'Requested cores: {num_cores}')
