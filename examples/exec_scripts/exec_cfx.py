@@ -8,7 +8,6 @@ import json
 import re
 import os
 import platform
-#import psutil
 import shlex
 import subprocess
 import time
@@ -123,10 +122,8 @@ class CfxExecution(ApplicationExecution):
                 log.info("   " + f)
 
             # Determine CFX root directory, solver command and hosts
-            #self.rootDir = desired_cfx.rootFolder
             self.publish_to_default_log("CFX Root directory = " + app["install_path"])
 
-            #exe = self.cfx_command("cfx5solve")
             exe = app["executable"]  # should already be platform specific
             self.publish_to_default_log("CFX Solver command: " + exe)
 
@@ -249,9 +246,7 @@ class CfxExecution(ApplicationExecution):
             self.publish_to_default_log(str(e))
             raise e
 
-    # HPC required method, user defined implementation
-    # this method is called whenever an Out-of Cloud user makes a request to this Python task
-    # if CFXSolverLauncherActionDefinition.withSoftInterrupt is true, implementation forSoftInterrupt command is required
+    # TODO: Soft interrupt and dynamic control is not implemented.
     def oncommand(self, command):
         self.publish_to_default_log("Received command:\n\n"+format(command)+"\n\n")
         if command.commandName=='SoftInterrupt':
