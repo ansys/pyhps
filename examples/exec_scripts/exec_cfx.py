@@ -45,7 +45,7 @@ class CfxExecution(ApplicationExecution):
 
         try:
 
-            log.info("Queue Platform: " + platform.platform())
+            log.info("Evaluator Platform: " + platform.platform())
 
             num_cores = self.context.resource_requirements["num_cores"]
             log.info(f'Requested cores: {num_cores}')
