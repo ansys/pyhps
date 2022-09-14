@@ -93,11 +93,8 @@ class FluentExecution(ApplicationExecution):
                 raise Exception("File "+inputs["fluent_jouFile"]+" does not exist!")            
 
             # Add " around exe if needed for Windows
-            #exe= f"{desired_fluent.rootFolder}/bin/fluent" if isLinux else f'{desired_fluent.rootFolder}\\ntbin\\win64\\fluent.exe'
             exe = app["executable"]  # should already be platform specific
             log.info("Fluent executable: " + exe)
-            #if " " in exe and not exe.startswith('"'):
-            #    exe = '"%s"' % exe
             
             if inputs["fluent_UDFBat"]==None:
                 if self.isLinux:
@@ -106,7 +103,7 @@ class FluentExecution(ApplicationExecution):
                     inputs["fluent_UDFBat"]=os.path.join(os.path.dirname(exe), "udf.bat")
                     log.info("Setting fluent_UDFBat to "+inputs["fluent_UDFBat"])
             
-            #machines = self.environmentInfo.machines           
+            # TODO: machines = self.environmentInfo.machines           
             #log.info(str(len(machines))+" available machine(s):")        
             #for machine in machines:log.info("\t-"+str(machine.hostname)+" ("+str(machine.coresCount)+" cores)")
             #cnf = ""
@@ -220,7 +217,6 @@ class FluentExecution(ApplicationExecution):
         
     # TODO: this method is no longer called to make requests this Python task. 
     # TODO: need an alternative for interrupt?
-    # if FluentLauncherActionDefinition.withSoftInterrupt is true, implementation forSoftInterrupt command is required
     def oncommand(self, command):
         log.info("Received!\n\n"+format(command)+"\n\n")
         try:
@@ -268,8 +264,6 @@ class FluentExecution(ApplicationExecution):
             log.info(errormessage)
             log.info(self, command.commandId,"Failed",errormessage)
     
-    #user defined methods follow ...
-    
     #monitor the children of the main process
     def monitor_children(self,proc):
         starting_process=psutil.Process(proc.pid)
@@ -309,7 +303,6 @@ class FluentExecution(ApplicationExecution):
                     for _ in range(current_line):
                         next(f)
                     for line in f:
-                        #log.info(format(self.FluentTranscript)+" -------> "+line.rstrip())
                         log.info(line.rstrip())
                         current_line=current_line+1
                         msg=line.rstrip()
@@ -357,7 +350,6 @@ class FluentExecution(ApplicationExecution):
         for line in iter(proc.stderr.readline, b''):
             msg=line.decode("utf-8").rstrip()
             log.error(msg)
-            #self.publishMainTranscriptMessage(f'ERROR: {msg}')
             if msg.startswith('Fatal error in MPI_Init: Internal MPI error!'):
                 if self.CleanupScript==None:
                     self.proc.kill()

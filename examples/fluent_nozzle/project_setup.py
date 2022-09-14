@@ -1,7 +1,5 @@
 """
 Example script to setup a simple Fluent project in pyrep.
-
-Author(s): O.Koenig
 """
 
 import argparse
@@ -54,7 +52,6 @@ def create_project(client, name, num_jobs=20, use_exec_script=False):
     )
 
     if use_exec_script:
-        # Define and upload an exemplary exec script to run MAPDL
         files.append(
             File(
                 name="exec_fluent",
@@ -88,28 +85,17 @@ def create_project(client, name, num_jobs=20, use_exec_script=False):
 
     log.debug("=== JobDefinition with simulation workflow and parameters")
     job_def = JobDefinition(name="JobDefinition.1", active=True)
+
+    # EXAMPLE: See MAPDL example
     float_input_params = []
-
-    stat_params = []
     
-    # EXAMPLE: Collect some runtime stats from Fluent transcript file
-    #stat_params.append(FloatParameterDefinition(name="mapdl_elapsed_time_obtain_license"))
-    #stat_params.append(FloatParameterDefinition(name="mapdl_cp_time"))
-    #stat_params.append(FloatParameterDefinition(name="mapdl_elapsed_time"))
-    #stat_params = project_api.create_parameter_definitions(stat_params)
+    # EXAMPLE: Collect some runtime stats. See MAPDL example
+    stat_params = []
 
+    # EXAMPLE: output file is parsed for desired value. See MAPDL example
     param_mappings = []
 
-    # EXAMPLE: output file is parsed for desired value
-    #param_mappings.append(
-    #    ParameterMapping(
-    #        key_string="Elapsed time spent obtaining a license",
-    #        tokenizer=":",
-    #        parameter_definition_id=stat_params[0].id,
-    #        file_id=file_ids["out"],
-    #    )
-    #)
-
+    # EXAMPLE: See MAPDL example
     str_input_params = []
 
     # Task definition
@@ -119,7 +105,7 @@ def create_project(client, name, num_jobs=20, use_exec_script=False):
         software_requirements=[
             Software(name="ANSYS Fluent", version=ansys_version),
         ],
-        execution_command="%executable% -b -i %file:inp% -o file.out -np %resource:num_cores%",
+        execution_command=None, # Only execution currently supported
         resource_requirements=ResourceRequirements(
             cpu_core_usage=1.0,
             memory=250,
@@ -142,7 +128,6 @@ def create_project(client, name, num_jobs=20, use_exec_script=False):
         output_file_ids=[f.id for f in files[num_input_files:]],
         success_criteria=SuccessCriteria(
             return_code=0,
-            #expressions=["values['tube1_radius']>=4.0", "values['tube1_thickness']>=0.5"],
             required_output_file_ids=[file_ids["output_cas"], file_ids["surf_out"], file_ids["vol_out"] ],
             require_all_output_files=False
         ),
@@ -156,16 +141,7 @@ def create_project(client, name, num_jobs=20, use_exec_script=False):
 
     task_defs = [task_def]
 
-    # EXAMPLE Fitness definition
-    #fd = FitnessDefinition(error_fitness=10.0)
-    #fd.add_fitness_term(
-    #    name="weight",
-    #    type="design_objective",
-    #    weighting_factor=1.0,
-    #    expression="map_design_objective( values['weight'], 7.5, 5.5)",
-    #)
-    #
-    #job_def.fitness_definition = fd
+    # EXAMPLE Fitness definition. See MAPDL example
 
     task_defs = project_api.create_task_definitions(task_defs)
     param_mappings = project_api.create_parameter_mappings(param_mappings)
