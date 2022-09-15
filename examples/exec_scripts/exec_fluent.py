@@ -1,8 +1,6 @@
 """
 Copyright (C) 2021 ANSYS, Inc. and its subsidiaries.  All Rights Reserved.
 """
-
-# modules required to support Fluent implemented functionality
 import subprocess
 import time
 import _thread
@@ -25,20 +23,11 @@ class FluentExecution(ApplicationExecution):
         self.FluentTranscript = None
         self.error_detected = False
         self.fluent_children=[]
-        #self.aas_workflow_path=None
-        #self.aas_key=None
-        #self.aas_key_broadcasted=False  
-
         ApplicationExecution.__init__(self, context)
 
     def execute(self):
         try:
             log.info("Start FLUENT execution script")
-
-            # EXAMPLE: uncomment to generate a context file when this script is executed.
-            # The context file is used in conjunction with __main__ function below
-            #with open("c:/ansysdev/pyrep/examples/exec_scripts/fluent_context.json", "w") as f:
-            #    json.dump(vars(self.context), f)
 
             pythoncode_version="0.1"
             log.info("python code version "+pythoncode_version)                
@@ -105,17 +94,6 @@ class FluentExecution(ApplicationExecution):
                     inputs["fluent_UDFBat"]=os.path.join(os.path.dirname(exe), "udf.bat")
                     log.info("Setting fluent_UDFBat to "+inputs["fluent_UDFBat"])
             
-            # TODO: machines = self.environmentInfo.machines           
-            #log.info(str(len(machines))+" available machine(s):")        
-            #for machine in machines:log.info("\t-"+str(machine.hostname)+" ("+str(machine.num_cores)+" cores)")
-            #cnf = ""
-            #if len(machines)>1:
-            #    cnf = ""
-            #    hosts = machines[0].hostname
-            #    for m in machines[1:]:
-            #        hosts = hosts+','+m.hostname
-            #    cnf = f" -cnf={hosts}"
-
             otherEnvironment=json.loads(inputs['fluent_otherEnvironment'])
             noGuiOptions=None
             if not inputs["fluent_useGUI"]:
@@ -159,7 +137,6 @@ class FluentExecution(ApplicationExecution):
                     
             log.info(' '.join(cmd))
             
-            #aas_task_name="aas"
             max_wait_time = 120
             tried_time = 0
             self.error_detected = False
@@ -201,10 +178,6 @@ class FluentExecution(ApplicationExecution):
                         log.info("\t- fluent exits normally")
                         break
                     
-            #log.info("waiting 180 seconds for log completions...")
-            #time.sleep(180)
-            #log.info("leaving Python task...")
-
             log.info("Finished Fluent solve")
             if rc!=0:
                 log.info(f'Error: Solver exited with errors ({rc}).')
@@ -216,55 +189,6 @@ class FluentExecution(ApplicationExecution):
             log.info(str(e))
             log.info("====== error in execute =========")
             raise e
-        
-    # TODO: this method is no longer called to make requests this Python task. 
-    # TODO: need an alternative for interrupt?
-    def oncommand(self, command):
-        log.info("Received!\n\n"+format(command)+"\n\n")
-        try:
-            log.info(self, command.commandId,"Received")
-            if command.commandName=='SoftInterrupt':
-                log.info("\n\nSoftInterrupt Received!\n\n")
-                if self.CleanupScript==None:
-                    log.info("\n\nSoftInterrupt There is no kill script!\n\n")
-                    log.info("\n\n Discovering the kill script ... \n\n")
-                    for fn in os.listdir('.'):
-                        if not fn.startswith('cleanup-fluent'):continue
-                        log.info("\t- "+fn)
-                        log.info("\n\n Candidate kill script found \n\n")
-                        with open(fn) as candidate_kill_script:
-                            content=candidate_kill_script.read()
-                            for pidc in self.fluent_children:
-                                footprint=" "+format(pidc)
-                                log.info("\n\n Checking for footprint:<"+footprint+"> \n\n")
-                                if footprint in content:
-                                    log.info("\n\n kill script found:"+fn+" \n\n")
-                                    self.CleanupScript=fn
-                                    if self.isLinux:os.system(f"./sh {self.CleanupScript}")
-                                    else:os.system(self.CleanupScript)
-                                    log.info(self, command.commandId,"Completed","Killing using "+format(self.CleanupScript)) 
-                                    break                                    
-                else:
-                    if self.isLinux:os.system(f"./sh {self.CleanupScript}")
-                    else:os.system(self.CleanupScript)
-                    log.info(self, command.commandId,"Completed","Killing using "+format(self.CleanupScript))                                    
-            elif command.commandName=='TestFail': 
-                #this should be used to in test to certify that errors are reported accuratley to the caller
-                #this command is implemented intentionally to fail (true negative test)
-                failure_on_intent=3/0
-            elif command.commandName=='TestSucceedWithOutput':
-                #this should be used to in test to certify that outputs are reported accurately to the caller
-                #this command is implemented intentionally to succeed (true positive test)
-                log.info(self, command.commandId,"Completed","command <"+command.commandName+"> has suceeded!")
-            else:
-                # this should be used to test that "No implemented" or "Not yet implemented" commands
-                #    return an accurate response. 
-                # Silent reponse (no reponse ) is a defective response
-                log.info(self, command.commandId,"Completed","No callback for command <"+command.commandName+">")
-        except Exception as e:
-            errormessage=traceback.format_exc()
-            log.info(errormessage)
-            log.info(self, command.commandId,"Failed",errormessage)
     
     #monitor the children of the main process
     def monitor_children(self,proc):
@@ -361,8 +285,6 @@ class FluentExecution(ApplicationExecution):
         proc.stderr.close()
 
 # EXAMPLE: this function will only be called if this script is run at the command line.
-# Useful for developement and debugging the execution script. A context file can be 
-# generated by uncommenting code in the execute(self) function
 if __name__ == "__main__":
     log = logging.getLogger()
     logging.basicConfig(format="%(message)s", level=logging.DEBUG)
