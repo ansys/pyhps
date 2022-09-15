@@ -1,7 +1,6 @@
 """
 Example script to setup a simple CFX project in pyrep.
 """
-
 import argparse
 import logging
 import os
@@ -11,20 +10,16 @@ from ansys.rep.client import Client, REPError
 from ansys.rep.client import __external_version__ as ansys_version
 from ansys.rep.client.jms import (
     File,
-    FitnessDefinition,
-    FloatParameterDefinition,
     JmsApi,
     Job,
     JobDefinition,
     Licensing,
-    ParameterMapping,
     Project,
     ProjectApi,
     ResourceRequirements,
     Software,
-    StringParameterDefinition,
     SuccessCriteria,
-    TaskDefinition,
+    TaskDefinition
 )
 
 log = logging.getLogger(__name__)
@@ -35,7 +30,7 @@ def create_project(client, name, num_jobs=20, use_exec_script=False):
     """
     jms_api = JmsApi(client)
     log.debug("=== Project")
-    proj = Project(name=name, priority=1, active=False)
+    proj = Project(name=name, priority=1, active=True)
     proj = jms_api.create_project(proj, replace=True)
 
     project_api = ProjectApi(client, proj.id)
@@ -71,18 +66,6 @@ def create_project(client, name, num_jobs=20, use_exec_script=False):
     log.debug("=== JobDefinition with simulation workflow and parameters")
     job_def = JobDefinition(name="JobDefinition.1", active=True)
     
-    # EXAMPLE: See MAPDL example
-    float_input_params = []
-
-    # EXAMPLE: Collect some runtime stats.  See MAPDL example
-    stat_params = []
-
-    # EXAMPLE: Define mapping from result file to parameter.  See MAPDL example
-    param_mappings = []
-
-    # EXAMPLE: See MAPDL example
-    str_input_params = []
-
     # Task definition
     num_input_files = 4 if use_exec_script else 3
     task_def = TaskDefinition(
@@ -119,18 +102,8 @@ def create_project(client, name, num_jobs=20, use_exec_script=False):
         task_def.execution_script_id = file_ids["exec_cfx"]
 
     task_defs = [task_def]
-
-    # EXAMPLE: Fitness definition. See MAPDL example
- 
     task_defs = project_api.create_task_definitions(task_defs)
-    param_mappings = project_api.create_parameter_mappings(param_mappings)
 
-    output_params = []
-
-    job_def.parameter_definition_ids = [
-        pd.id for pd in float_input_params + str_input_params + output_params + stat_params
-    ]
-    job_def.parameter_mapping_ids = [pm.id for pm in param_mappings]
     job_def.task_definition_ids = [td.id for td in task_defs]
 
     # Create job_definition in project
@@ -141,13 +114,8 @@ def create_project(client, name, num_jobs=20, use_exec_script=False):
     log.debug(f"=== Create {num_jobs} jobs")
     jobs = []
     for i in range(num_jobs):
-        values = {
-            p.name: p.lower_limit + random.random() * (p.upper_limit - p.lower_limit)
-            for p in float_input_params
-        }
-        values.update({p.name: random.choice(p.value_list) for p in str_input_params})
         jobs.append(
-            Job(name=f"Job.{i}", values=values, eval_status="pending", job_definition_id=job_def.id)
+            Job(name=f"Job.{i}", eval_status="pending", job_definition_id=job_def.id)
         )
     jobs = project_api.create_jobs(jobs)
 
