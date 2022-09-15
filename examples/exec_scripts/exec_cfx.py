@@ -1,8 +1,6 @@
 """
 Copyright (C) 2021 ANSYS, Inc. and its subsidiaries.  All Rights Reserved.
 """
-
-# modules required to support CFX implemented functionality
 from os import path
 import json
 import re
@@ -38,13 +36,7 @@ class CfxExecution(ApplicationExecution):
     def execute(self):
         log.info("Start CFX execution script")
 
-        # EXAMPLE: uncomment to generate a context file when this script is executed.
-        # The context file is used in conjunction with __main__ function below
-        #with open("c:/ansysdev/pyrep/examples/exec_scripts/cfx_context.json", "w") as f:
-        #    json.dump(vars(self.context), f)
-
         try:
-
             log.info("Evaluator Platform: " + platform.platform())
 
             num_cores = self.context.resource_requirements["num_cores"]
@@ -129,24 +121,11 @@ class CfxExecution(ApplicationExecution):
             exe = app["executable"]  # should already be platform specific
             self.publish_to_default_log("CFX Solver command: " + exe)
 
-            machines = [] # TODO: self.environmentInfo.machines
-            #self.publish_to_default_log(str(len(machines))+" available machine(s):")
-            #for machine in machines:
-            #    self.publish_to_default_log("\t-"+str(machine.hostname)+" ("+str(machine.num_cores)+" cores)")
-
             # Create command line
             # Add parallel options
             cmd = [exe]
             cmd.extend(["-fullname", self.active_run_name])
             cmd.append("-batch")
-            
-            # TODO: handle distributed solve
-            #if num_cores>1:
-            #    hostlist = []
-            #    for machine in machines:
-            #        hostlist.append(str(machine.hostname)+"*"+str(machine.num_cores))
-            #    cmd.extend(["-par-dist", ','.join(hostlist)])
-            #else:
             cmd.append("-serial")
 
             # Add options requiring an argument
@@ -191,8 +170,6 @@ class CfxExecution(ApplicationExecution):
                 self.publish_to_default_log("CFX solver started\npid:"+format(self.proc.pid))
                 t1=_thread.start_new_thread(self.process_output, (self.proc,))
                 t2=_thread.start_new_thread(self.process_error, (self.proc,))
-                t3=_thread.start_new_thread(self.monitor_outfile, (self.proc,))
-                t4=_thread.start_new_thread(self.monitor_monfile, (self.proc,))
 
                 while rc is None:
                     rc = self.proc.poll()
@@ -249,101 +226,6 @@ class CfxExecution(ApplicationExecution):
             self.publish_to_default_log(str(e))
             raise e
 
-    # TODO: Soft interrupt and dynamic control is not implemented.
-    def oncommand(self, command):
-        self.publish_to_default_log("Received command:\n\n"+format(command)+"\n\n")
-        if command.commandName=='SoftInterrupt':
-            self.execute_soft_interrupt()
-        if command.commandName=='DynControl':
-            self.execute_dyn_control(command.inputs.__dict__)
-        return
-
-    # Interrupt (gracefully stop) a solver run
-    def execute_soft_interrupt(self):
-        if not self.rootDir:
-            self.publish_to_default_log("Error: Cannot stop run unless started.")
-            return
-
-        active_run_name = self.find_active_run_name()
-        if active_run_name == None:
-            self.publish_to_default_log("Cannot stop run. No active run found.")
-            return
-
-        rundir = path.join(os.getcwd(),active_run_name+'.dir')
-        if not path.isdir(rundir):
-            self.publish_to_default_log("Cannot stop run. Run directory not found: "+str(rundir))
-            return
-
-        exe = self.cfx_command("cfx5stop")
-        cmd = [exe]
-        cmd.extend(["-directory",rundir])
-        self.publish_to_default_log("command line = "+str(cmd))
-        result = subprocess.run(cmd)
-        rc = result.returncode
-
-        if rc==0:
-            self.publish_to_default_log("normal completion of cfx5stop")
-        else:
-            self.publish_to_default_log(f'Error: cfx5stop exited with errors ({rc}).')
-            raise Exception("cfx5stop exited with errors.")
-
-        return
-
-    # Dynamically control a solver run
-    def execute_dyn_control(self,inputs):
-        if not self.rootDir:
-            self.publish_to_default_log("Error: Dynamic run control not possible. Run is not started.")
-            return
-
-        if not inputs:
-            self.publish_to_default_log("Error: Dynamic run control not possible without inputs.")
-            return
-
-        active_run_name = self.find_active_run_name()
-        if active_run_name == None:
-            self.publish_to_default_log("Dynamic run control not possible. No active run found.")
-            return
-
-        rundir = path.join(os.getcwd(),active_run_name+'.dir')
-        if not path.isdir(rundir):
-            self.publish_to_default_log("Dynamic run control not possible. Run directory not found: "+str(rundir))
-            return
-
-        exe = self.cfx_command("cfx5control")
-        cmd = [exe]
-        cmd.append(rundir)
-
-        # Add options requiring an argument
-        options_arg = {"-inject-commands":"injectCommands",
-                       "-merge-commands":"mergeCommands"}
-        for opt, i in sorted(options_arg.items()):
-            k = "cfx_"+i
-            if k in inputs:
-                cmd.extend([opt,inputs[k]])
-
-        # Add options not requiring an argument
-        options_noarg = {"-abort":"abort",
-                         "-backup":"backup",
-                         "-complete-child-runs":"completeChildRuns",
-                         "-no-backup":"noBackup",
-                         "-stop":"stop"}
-        for opt, i in sorted(options_noarg.items()):
-            k = "cfx_"+i
-            if k in inputs:
-                cmd.append(opt)
-
-        self.publish_to_default_log("command line = "+str(cmd))
-        result = subprocess.run(cmd)
-        rc = result.returncode
-
-        if rc==0:
-            self.publish_to_default_log("normal completion of cfx5control")
-        else:
-            self.publish_to_default_log(f'Error: cfx5control exited with errors ({rc}).')
-            raise Exception("cfx5control exited with errors.")
-
-        return
-
     # Set putative run name from problem name (to be called BEFORE the run is started)
     def set_putative_run_name(self,probname):
         if self.active_run_name != None:
@@ -390,60 +272,7 @@ class CfxExecution(ApplicationExecution):
             self.publish_to_default_log(msg)
         proc.stderr.close()
 
-    # Monitor the solver output file
-    def monitor_outfile (self, proc):
-        active_run_name = self.find_active_run_name()
-        try:
-            while (self.CFXOutputFile == None):
-                time.sleep(1)
-                if not active_run_name == None:
-                    f = path.join(os.getcwd(),active_run_name+'.out')
-                    if os.path.isfile(f):
-                        self.CFXOutputFile = f
-            self.publish_to_default_log("CFX solver output file detected: <"+format(self.CFXOutputFile)+">")
-
-            current_line=0
-            while True:
-                time.sleep(1)
-                with open(self.CFXOutputFile) as f:
-                    for _ in range(current_line):
-                        next(f)
-                    for line in f:
-                        self.publish_to_default_log(line.rstrip())
-                        current_line=current_line+1
-        except Exception as e:
-            errormessage=traceback.format_exc()
-            self.publish_to_default_log(errormessage)
-            self.publish_to_default_log("<"+format(e)+">")
-
-    # Monitor the solver monitor file
-    def monitor_monfile (self, proc):
-        active_run_name = self.find_active_run_name()
-        try:
-            while (self.CFXMonFile == None):
-                time.sleep(1)
-                if not active_run_name == None:
-                    f = path.join(os.getcwd(),active_run_name+'.dir','mon')
-                    if os.path.isfile(f):
-                        self.CFXMonFile = f
-            self.publish_to_default_log("CFX solver monitor file detected: <"+format(self.CFXMonFile)+">")
-
-            # TODO: do something with mon file?
-        except Exception as e:
-            errormessage=traceback.format_exc()
-            self.publish_to_default_log(errormessage)
-            self.publish_to_default_log("<"+format(e)+">")
-
-    # Return the full path of a CFX command, appropriate for the OS used
-    def cfx_command(self,command):
-        if self.isLinux:
-            return self.rootDir+"/bin/"+command
-        else:
-            return self.rootDir+"\\bin\\"+command+".exe"
-
 # EXAMPLE: this function will only be called if this script is run at the command line.
-# Useful for developement and debugging the execution script. A context file can be 
-# generated by uncommenting code in the execute(self) function
 if __name__ == "__main__":
     log = logging.getLogger()
     logging.basicConfig(format="%(message)s", level=logging.DEBUG)
