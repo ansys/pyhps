@@ -62,10 +62,11 @@ class JobSchema(ObjectSchema):
     creator = fields.String(
         allow_none=True, description="Optional name/ID of the creator of this job."
     )
-    executed_task_definition_level = fields.Integer(
+
+    executed_level = fields.Integer(
         allow_none=True,
         description="Execution level of the last executed "
-        "process step (-1 if none has been executed yet).",
+        "task (-1 if none has been executed yet).",
     )
 
     creation_time = fields.DateTime(
@@ -83,6 +84,7 @@ class JobSchema(ObjectSchema):
         description="Number of seconds it took the evaluator(s) to update the job.",
     )
 
+    # TODO
     evaluators = fields.List(
         fields.String(allow_none=True),
         allow_none=True,
