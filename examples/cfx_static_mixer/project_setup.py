@@ -71,7 +71,7 @@ def create_project(client, name, num_jobs=20, use_exec_script=False):
     task_def = TaskDefinition(
         name="CFX_run",
         software_requirements=[
-            Software(name="ANSYS CFX", version=ansys_version),
+            Software(name="Ansys CFX", version=ansys_version),
         ],
         execution_command=None, # only execution script supported initially
         resource_requirements=ResourceRequirements(

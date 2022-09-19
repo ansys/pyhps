@@ -104,7 +104,7 @@ class CfxExecution(ApplicationExecution):
                             self.set_putative_run_name(m.group(1))
 
             # Identify application
-            app_name = "ANSYS CFX"
+            app_name = "Ansys CFX"
             app = next((a for a in self.context.software if a["name"] == app_name), None)
             assert app, f"{app_name} is required for execution"
 
@@ -143,25 +143,12 @@ class CfxExecution(ApplicationExecution):
                 if not inputs[k]==None:
                     cmd.extend([opt,inputs[k]])
 
-            # Add aaS options
-            aasKeyFile = str(uuid.uuid4())+".txt"
-            instantaasKeyFile = "instant_"+aasKeyFile
-            aas_enabled = False
-            if inputs["cfx_useAAS"]:
-                aas_enabled = True
-                cmd.extend(["-aas", "-aas-keyfile", aasKeyFile])
-
             # Add additional options
             if not inputs["cfx_additionalArgs"]=="":
                 cmd.extend(shlex.split(inputs["cfx_additionalArgs"]))
 
             # Start the solver
             self.publish_to_default_log("CFX solver command line = "+str(cmd))
-
-            aas_task_name="aas"
-            self.aas_workflow_path=None
-            self.aas_key=None
-            self.aas_key_broadcasted=False
 
             rc = None
             self.CFXOutputFile = None
@@ -173,42 +160,6 @@ class CfxExecution(ApplicationExecution):
 
                 while rc is None:
                     rc = self.proc.poll()
-
-                    if (aas_enabled):
-                        # Get aaS workflow path. Wait up to 1 minute.
-                        if self.aas_workflow_path==None:
-                            for i in range(60):
-                                aas_task_paths=self.get_task_paths_by_name(aas_task_name)
-                                if len(aas_task_paths)==1:
-                                    self.aas_workflow_path=aas_task_paths[0]
-                                    self.publish_to_default_log("aas_workflow_path: "+format(self.aas_workflow_path))
-                                    break
-                                time.sleep(1)
-
-                        # aaS key not yet set: Read from key file if present. Allow 2 seconds for the file to be written.
-                        if self.aas_key==None:
-                            if os.path.isfile(instantaasKeyFile):
-                                time.sleep(2)
-                                self.publish_to_default_log("New AAS key generated in <"+instantaasKeyFile+">")
-                                with open(instantaasKeyFile,'r') as f:
-                                    self.aas_key=f.read()
-
-                        # aas key is set: Broadcast key to jobs API
-                        if not self.aas_key==None:
-                            if not self.aas_workflow_path==None:
-                                if self.aas_key_broadcasted==False:
-                                    command="NewAASKey"
-                                    inputs={}
-                                    inputs["name"]="Main CFX"
-                                    inputs["description"]="This is the CFX session"
-                                    inputs["Solver"]="CFX"
-                                    inputs["IOR"]=self.aas_key
-                                    if self.job_access==True:
-                                        command_model = ansys.hpcservices.job_management_jobs_v1.CommandModel(workflow_path=self.aas_workflow_path, command=command, inputs=inputs)
-                                        self.publish_to_default_log("command_model:"+format(command_model))
-                                        api_response = self.jobs_api.run_job_command_async(self.context.jobReference, command_model=command_model)
-                                        self.publish_to_default_log("api_response:"+format(api_response))
-                                        self.aas_key_broadcasted=True
                     time.sleep(1)
 
             # Post solution actions
