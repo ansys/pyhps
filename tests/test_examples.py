@@ -126,7 +126,9 @@ class REPClientTest(REPTestCase):
 
         from examples.fluent_nozzle.project_setup import create_project
 
-        project = create_project(self.client(), name="Fluent Nozzle Test")
+        project = create_project(
+            self.client(), name="Fluent Nozzle Test", num_jobs=1, use_exec_script=True
+        )
         self.assertIsNotNone(project)
 
         jms_api = JmsApi(self.client())
@@ -141,7 +143,9 @@ class REPClientTest(REPTestCase):
 
         from examples.cfx_static_mixer.project_setup import create_project
 
-        project = create_project(self.client(), name="CFX Static Mixer Test")
+        project = create_project(
+            self.client(), name="CFX Static Mixer Test", num_jobs=1, use_exec_script=True
+        )
         self.assertIsNotNone(project)
 
         jms_api = JmsApi(self.client())
