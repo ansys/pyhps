@@ -122,6 +122,40 @@ class REPClientTest(REPTestCase):
 
         jms_api.delete_project(project)
 
+    def test_fluent_nozzle(self):
+
+        from examples.fluent_nozzle.project_setup import create_project
+
+        project = create_project(
+            self.client(), name="Fluent Nozzle Test", num_jobs=1, use_exec_script=True
+        )
+        self.assertIsNotNone(project)
+
+        jms_api = JmsApi(self.client())
+        project_api = ProjectApi(self.client(), project.id)
+
+        self.assertEqual(len(project_api.get_jobs()), 1)
+        self.assertEqual(jms_api.get_project(id=project.id).name, "Fluent Nozzle Test")
+
+        jms_api.delete_project(project)
+
+    def test_cfx_static_mixer(self):
+
+        from examples.cfx_static_mixer.project_setup import create_project
+
+        project = create_project(
+            self.client(), name="CFX Static Mixer Test", num_jobs=1, use_exec_script=True
+        )
+        self.assertIsNotNone(project)
+
+        jms_api = JmsApi(self.client())
+        project_api = ProjectApi(self.client(), project.id)
+
+        self.assertEqual(len(project_api.get_jobs()), 1)
+        self.assertEqual(jms_api.get_project(id=project.id).name, "CFX Static Mixer Test")
+
+        jms_api.delete_project(project)
+
 
 if __name__ == "__main__":
     unittest.main()
