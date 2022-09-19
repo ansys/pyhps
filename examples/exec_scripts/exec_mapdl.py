@@ -10,7 +10,6 @@ import subprocess
 from ansys.rep.common.logging import log
 from ansys.rep.evaluator.task_manager import ApplicationExecution
 
-
 class MAPDLExecution(ApplicationExecution):
     def execute(self):
 
