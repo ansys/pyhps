@@ -26,6 +26,8 @@ You can also download the entire set of examples :download:`Download All Example
   ex_mapdl_linked_analyses
   ex_lsdyna_job
   ex_fluent_2d_heat_exchanger
+  ex_fluent_nozzle
+  ex_cfx_static_mixer
   ex_python_two_bar
 
 .. list-table::
@@ -45,5 +47,9 @@ You can also download the entire set of examples :download:`Download All Example
      - Submit, monitor and download results of an LS-DYNA job. 
    * - :ref:`example_fluent_2d_heat_exchanger`
      - Submit a Fluent solve job to REP.
+   * - :ref:`example_fluent_nozzle`
+     - Submit a Fluent solve job to REP using an execution script.
+   * - :ref:`example_cfx_static_mixer`
+     - Submit a CFX solve job to REP using an execution script.
    * - :ref:`example_python_two_bar`
      - Create a REP project solving a Two-Bar Truss problem with Python.
