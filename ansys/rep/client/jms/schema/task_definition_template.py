@@ -17,10 +17,14 @@ class TemplatePropertySchema(BaseSchema):
     class Meta(BaseSchema.Meta):
         pass
 
-    default = fields.Raw(allow_none=True)
-    description = fields.String(allow_none=True)
+    default = fields.Raw(allow_none=True, metadata={"description": "Default value."})
+    description = fields.String(
+        allow_none=True, metadata={"description": "Description of the property's purpose."}
+    )
     type = fields.String(
-        allow_none=True, validate=validate.OneOf(["int", "float", "bool", "string"])
+        allow_none=True,
+        validate=validate.OneOf(["int", "float", "bool", "string"]),
+        metadata={"description": "Type of the property: either int, float, bool or string."},
     )
 
 
@@ -75,8 +79,20 @@ class TaskDefinitionTemplateSchema(ObjectSchema):
     name = fields.String(description="Name of the template")
     version = fields.String(description="version of the template", allow_none=True)
 
-    software_requirements = fields.Nested(SoftwareSchema, many=True, allow_none=True)
-    resource_requirements = fields.Nested(TemplateResourceRequirementsSchema, allow_none=True)
+    software_requirements = fields.Nested(
+        SoftwareSchema,
+        many=True,
+        allow_none=True,
+        metadata={"description": "A list of required software."},
+    )
+    resource_requirements = fields.Nested(
+        TemplateResourceRequirementsSchema,
+        allow_none=True,
+        metadata={
+            "description": "Includes hardware requirements such as number of cores,"
+            " memory and disk space."
+        },
+    )
 
     execution_context = fields.Dict(
         keys=fields.String,
@@ -104,5 +120,15 @@ class TaskDefinitionTemplateSchema(ObjectSchema):
         "(command or execution script is required).",
     )
 
-    input_files = fields.Nested(TemplateInputFileSchema, many=True, allow_none=True)
-    output_files = fields.Nested(TemplateOutputFileSchema, many=True, allow_none=True)
+    input_files = fields.Nested(
+        TemplateInputFileSchema,
+        many=True,
+        allow_none=True,
+        metadata={"description": "List of predefined input files."},
+    )
+    output_files = fields.Nested(
+        TemplateOutputFileSchema,
+        many=True,
+        allow_none=True,
+        metadata={"description": "List of predefined output files."},
+    )

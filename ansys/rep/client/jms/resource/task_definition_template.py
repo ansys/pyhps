@@ -13,8 +13,11 @@ class TemplateProperty(Object):
     Parameters
     ----------
     default : any, optional
+        Default value.
     description : str, optional
+        Description of the property's purpose.
     type : str, optional
+        Type of the property: either int, float, bool or string.
 
     """
 
@@ -141,7 +144,9 @@ class TaskDefinitionTemplate(Object):
     version : str, optional
         version of the template
     software_requirements : Software, optional
+        A list of required software.
     resource_requirements : TemplateResourceRequirements, optional
+        Includes hardware requirements such as number of cores, memory and disk space.
     execution_context : dict, optional
         Additional arguments to pass to the executing command
     environment : dict, optional
@@ -153,7 +158,9 @@ class TaskDefinitionTemplate(Object):
     execution_script_storage_id : str, optional
         Storage ID of the script to execute (command or execution script is required).
     input_files : TemplateInputFile, optional
+        List of predefined input files.
     output_files : TemplateOutputFile, optional
+        List of predefined output files.
 
     """
 
