@@ -35,12 +35,12 @@ class TaskDefinition(Object):
         List of IDs of input files.
     output_file_ids : list[str]
         List of IDs of output files.
-    success_criteria : object, optional
-    licensing : object, optional
+    success_criteria : SuccessCriteria, optional
+    licensing : Licensing, optional
         A :class:`Licensing` object.
-    software_requirements : object, optional
+    software_requirements : Software, optional
         A list of :class:`Software` objects.
-    resource_requirements : object, optional
+    resource_requirements : ResourceRequirements, optional
         A :class:`ResourceRequirements` object.
 
     """

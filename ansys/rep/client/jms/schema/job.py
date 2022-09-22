@@ -84,8 +84,7 @@ class JobSchema(ObjectSchema):
         description="Number of seconds it took the evaluator(s) to update the job.",
     )
 
-    # TODO
-    evaluators = fields.List(
+    evaluator_ids = fields.List(
         fields.String(allow_none=True),
         allow_none=True,
         description="List of IDs of the evaluators that updated the job.",

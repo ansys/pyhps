@@ -152,6 +152,38 @@ JMS_RESOURCES = [
         "resource_filename": "selection",
     },
     {
+        "schema": "TemplatePropertySchema",
+        "schema_filename": "task_definition_template",
+        "rest_name": None,
+        "additional_fields": [],
+        "class": "TemplateProperty",
+        "resource_filename": "template_property",
+    },
+    {
+        "schema": "TemplateResourceRequirementsSchema",
+        "schema_filename": "task_definition_template",
+        "rest_name": None,
+        "additional_fields": [],
+        "class": "TemplateResourceRequirements",
+        "resource_filename": "template_resource_requirements",
+    },
+    {
+        "schema": "TemplateInputFileSchema",
+        "schema_filename": "task_definition_template",
+        "rest_name": None,
+        "additional_fields": [],
+        "class": "TemplateInputFile",
+        "resource_filename": "template_input_file",
+    },
+    {
+        "schema": "TemplateOutputFileSchema",
+        "schema_filename": "task_definition_template",
+        "rest_name": None,
+        "additional_fields": [],
+        "class": "TemplateOutputFile",
+        "resource_filename": "template_output_file",
+    },
+    {
         "schema": "TaskDefinitionTemplateSchema",
         "schema_filename": "task_definition_template",
         "rest_name": "task_definition_templates",
@@ -248,7 +280,7 @@ FIELD_MAPPING = {
 }
 
 
-def declared_fields(schema):
+def declared_fields(schema, resources):
     """
     Helper function to retrieve the fields that will be defined as class members for an object
     """
@@ -265,6 +297,12 @@ def declared_fields(schema):
         field_doc = f"{field}"
         if v.__class__ == marshmallow.fields.Constant:
             field_type = type(v.constant).__name__
+        elif v.__class__ == marshmallow.fields.Nested:
+            field_type_schema = v.nested.__name__
+            field_type = next(
+                (r["class"] for r in resources if r["schema"] == field_type_schema),
+                "object",
+            )
         else:
             field_type = FIELD_MAPPING.get(v.__class__, None)
         if field_type:
@@ -327,7 +365,7 @@ def process_resources(subpackage, resources, base_class_path="ansys.rep.client")
         resource_class = getattr(module, resource["schema"])
 
         # query schema field names and doc
-        fields, field_docs = declared_fields(resource_class)
+        fields, field_docs = declared_fields(resource_class, resources)
 
         fields_str = ""
         for k in fields:

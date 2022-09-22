@@ -22,7 +22,7 @@ class JobDefinition(Object):
     parameter_definition_ids : list[str]
     parameter_mapping_ids : list[str]
     task_definition_ids : list[str]
-    fitness_definition : object, optional
+    fitness_definition : FitnessDefinitionBase, optional
         A :class:`FitnessDefinition` object.
 
     """

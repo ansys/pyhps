@@ -14,7 +14,7 @@ import uuid
 from marshmallow.utils import missing
 
 from ansys.rep.client.jms import JmsApi
-from ansys.rep.client.jms.resource.task_definition_template import TaskDefinitionTemplate
+from ansys.rep.client.jms.resource import TaskDefinitionTemplate
 from ansys.rep.client.jms.schema.task_definition_template import TaskDefinitionTemplateSchema
 from tests.rep_test import REPTestCase
 
@@ -41,7 +41,6 @@ class TaskDefinitionTemplateTest(REPTestCase):
             "output_files": [
                 {
                     "name": "out",
-                    "obj_type": "File",
                     "evaluation_path": "solve.out",
                     "type": "text/plain",
                     "collect": True,
@@ -49,7 +48,6 @@ class TaskDefinitionTemplateTest(REPTestCase):
                 },
                 {
                     "name": "cnd",
-                    "obj_type": "File",
                     "evaluation_path": "file.cnd",
                     "type": "application/octet-stream",
                     "collect": True,
@@ -64,15 +62,17 @@ class TaskDefinitionTemplateTest(REPTestCase):
         self.assertEqual(template.modification_time, missing)
         self.assertEqual(template.name, json_data["name"])
         self.assertEqual(len(template.output_files), 2)
+        self.assertEqual(template.output_files[0].name, "out")
+        self.assertEqual(template.output_files[1].type, "application/octet-stream")
 
         json_data["software_requirements"][0]["version"] = "2022 R2"
         json_data["execution_command"] = "my command line"
-        json_data["execution_context"] = {"my_new_field": "value"}
+        json_data["execution_context"] = {"my_new_field": {"default": "value", "type": "string"}}
 
         template = TaskDefinitionTemplateSchema().load(json_data)
         self.assertEqual(template.software_requirements[0].version, "2022 R2")
         self.assertEqual(template.execution_command, "my command line")
-        self.assertEqual(template.execution_context["my_new_field"], "value")
+        self.assertEqual(template.execution_context["my_new_field"].default, "value")
 
     def test_template_integration(self):
 

@@ -30,3 +30,7 @@ from .success_criteria import SuccessCriteria
 from .task import Task
 from .task_definition import TaskDefinition
 from .task_definition_template import TaskDefinitionTemplate
+from .template_property import TemplateProperty
+from .template_resource_requirements import TemplateResourceRequirements
+from .template_input_file import TemplateInputFile
+from .template_output_file import TemplateOutputFile

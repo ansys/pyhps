@@ -19,8 +19,8 @@ class TaskDefinitionTemplate(Object):
         Name of the template
     version : str, optional
         version of the template
-    software_requirements : object, optional
-    resource_requirements : object, optional
+    software_requirements : Software, optional
+    resource_requirements : TemplateResourceRequirements, optional
     execution_context : dict, optional
         Additional arguments to pass to the executing command
     environment : dict, optional
@@ -31,8 +31,8 @@ class TaskDefinitionTemplate(Object):
         Whether to run task with the execution command or the execution script.
     execution_script_storage_id : str, optional
         Storage ID of the script to execute (command or execution script is required).
-    input_files : object, optional
-    output_files : object, optional
+    input_files : TemplateInputFile, optional
+    output_files : TemplateOutputFile, optional
 
     """
 
