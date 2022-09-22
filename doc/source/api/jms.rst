@@ -131,5 +131,17 @@ Evaluator
 Task Definition Template
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+.. autoclass:: ansys.rep.client.jms.TemplateProperty
+   :members:
+
+.. autoclass:: ansys.rep.client.jms.TemplateResourceRequirements
+   :members:
+
+.. autoclass:: ansys.rep.client.jms.TemplateInputFile
+   :members:
+
+.. autoclass:: ansys.rep.client.jms.TemplateOutputFile
+   :members:
+
 .. autoclass:: ansys.rep.client.jms.TaskDefinitionTemplate
    :members:

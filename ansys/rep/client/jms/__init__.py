@@ -30,4 +30,8 @@ from .resource import (
     Task,
     TaskDefinition,
     TaskDefinitionTemplate,
+    TemplateInputFile,
+    TemplateOutputFile,
+    TemplateProperty,
+    TemplateResourceRequirements,
 )
