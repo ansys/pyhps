@@ -18,6 +18,8 @@ class TemplateProperty(Object):
         Description of the property's purpose.
     type : str, optional
         Type of the property: either int, float, bool or string.
+    value_list : any, optional
+        List of possible values for this property.
 
     """
 
@@ -29,6 +31,7 @@ class TemplateProperty(Object):
         self.default = missing
         self.description = missing
         self.type = missing
+        self.value_list = missing
 
         super().__init__(**kwargs)
 
@@ -75,6 +78,8 @@ class TemplateInputFile(Object):
         Path under which the file is expected to be found during evaluation.
     description : str
         Description of the file's purpose.
+    required : bool
+        Is the file required by the task
 
     """
 
@@ -87,6 +92,7 @@ class TemplateInputFile(Object):
         self.type = missing
         self.evaluation_path = missing
         self.description = missing
+        self.required = missing
 
         super().__init__(**kwargs)
 
@@ -105,10 +111,12 @@ class TemplateOutputFile(Object):
         Path under which the file is expected to be found during evaluation.
     description : str
         Description of the file's purpose.
+    required : bool
+        Is the file required by the task
     monitor : bool, optional
-        Should the file's contents be live monitored
+        Should the file's contents be live monitored.
     collect : bool, optional
-        Should files be collected per job
+        Should files be collected per job.
 
     """
 
@@ -121,6 +129,7 @@ class TemplateOutputFile(Object):
         self.type = missing
         self.evaluation_path = missing
         self.description = missing
+        self.required = missing
         self.monitor = missing
         self.collect = missing
 
@@ -136,21 +145,23 @@ class TaskDefinitionTemplate(Object):
     id : str, optional
         Unique ID to access the resource, generated internally by the server on creation.
     modification_time : datetime, optional
-        Last time the object was modified, in UTC
+        Last time the object was modified, in UTC.
     creation_time : datetime, optional
-        Time when the object was created, in UTC
+        Time when the object was created, in UTC.
     name : str
         Name of the template
     version : str, optional
-        version of the template
+        Version of the template
+    description : str, optional
+        Description of the template
     software_requirements : Software, optional
         A list of required software.
     resource_requirements : TemplateResourceRequirements, optional
         Includes hardware requirements such as number of cores, memory and disk space.
     execution_context : dict, optional
-        Additional arguments to pass to the executing command
+        Additional arguments to pass to the executing command.
     environment : dict, optional
-        Environment variables to set for the executed process
+        Environment variables to set for the executed process.
     execution_command : str, optional
         Command to execute (command or execution script is required).
     use_execution_script : bool, optional
@@ -174,6 +185,7 @@ class TaskDefinitionTemplate(Object):
         self.creation_time = missing
         self.name = missing
         self.version = missing
+        self.description = missing
         self.software_requirements = missing
         self.resource_requirements = missing
         self.execution_context = missing

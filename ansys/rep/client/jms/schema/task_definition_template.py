@@ -26,6 +26,12 @@ class TemplatePropertySchema(BaseSchema):
         validate=validate.OneOf(["int", "float", "bool", "string"]),
         metadata={"description": "Type of the property: either int, float, bool or string."},
     )
+    value_list = fields.Raw(
+        allow_none=True,
+        many=True,
+        default=[],
+        metadata={"description": "List of possible values for this property."},
+    )
 
 
 class TemplateResourceRequirementsSchema(BaseSchema):
@@ -46,12 +52,17 @@ class TemplateFileSchema(BaseSchema):
         pass
 
     name = fields.String(description="Name of the file.")
-    type = fields.String(allow_none=True, description="MIME type of the file, ie. text/plain.")
+    type = fields.String(
+        allow_none=True, metadata={"description": "MIME type of the file, ie. text/plain."}
+    )
     evaluation_path = fields.String(
         allow_none=True,
-        description="Path under which the file is expected to be found during evaluation.",
+        metadata={
+            "description": "Path under which the file is expected to be found during evaluation."
+        },
     )
-    description = fields.String(description="Description of the file's purpose.")
+    description = fields.String(metadata={"description": "Description of the file's purpose."})
+    required = fields.Bool(metadata={"description": "Is the file required by the task"})
 
 
 class TemplateInputFileSchema(TemplateFileSchema):
@@ -60,9 +71,11 @@ class TemplateInputFileSchema(TemplateFileSchema):
 
 class TemplateOutputFileSchema(TemplateFileSchema):
     monitor = fields.Bool(
-        allow_none=True, description="Should the file's contents be live monitored"
+        allow_none=True, metadata={"description": "Should the file's contents be live monitored."}
     )
-    collect = fields.Bool(allow_none=True, description="Should files be collected per job")
+    collect = fields.Bool(
+        allow_none=True, metadata={"description": "Should files be collected per job."}
+    )
 
 
 class TaskDefinitionTemplateSchema(ObjectSchema):
@@ -70,14 +83,15 @@ class TaskDefinitionTemplateSchema(ObjectSchema):
         pass
 
     modification_time = fields.DateTime(
-        allow_none=True, load_only=True, description="Last time the object was modified, in UTC"
+        allow_none=True, load_only=True, description="Last time the object was modified, in UTC."
     )
     creation_time = fields.DateTime(
-        allow_none=True, load_only=True, description="Time when the object was created, in UTC"
+        allow_none=True, load_only=True, description="Time when the object was created, in UTC."
     )
 
     name = fields.String(description="Name of the template")
-    version = fields.String(description="version of the template", allow_none=True)
+    version = fields.String(description="Version of the template", allow_none=True)
+    description = fields.String(description="Description of the template", allow_none=True)
 
     software_requirements = fields.Nested(
         SoftwareSchema,
@@ -98,13 +112,13 @@ class TaskDefinitionTemplateSchema(ObjectSchema):
         keys=fields.String,
         values=fields.Nested(TemplatePropertySchema),
         allow_none=True,
-        description="Additional arguments to pass to the executing command",
+        description="Additional arguments to pass to the executing command.",
     )
     environment = fields.Dict(
         keys=fields.String,
         values=fields.Nested(TemplatePropertySchema),
         allow_none=True,
-        description="Environment variables to set for the executed process",
+        description="Environment variables to set for the executed process.",
     )
 
     execution_command = fields.String(

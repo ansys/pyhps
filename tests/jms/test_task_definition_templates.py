@@ -54,6 +54,15 @@ class TaskDefinitionTemplateTest(REPTestCase):
                     "monitor": False,
                 },
             ],
+            "execution_context": {
+                "parallel_processing_type": {
+                    "default": "DMP",
+                    "type": "string",
+                    "description": "Available parallel processing types.",
+                    "display_name": "Parallel Processing Type",
+                    "value_list": ["DMP", "SMP", "Hybrid"],
+                },
+            },
         }
 
         template = TaskDefinitionTemplateSchema().load(json_data)
@@ -61,6 +70,11 @@ class TaskDefinitionTemplateTest(REPTestCase):
         self.assertEqual(template.__class__.__name__, "TaskDefinitionTemplate")
         self.assertEqual(template.modification_time, missing)
         self.assertEqual(template.name, json_data["name"])
+        self.assertEqual(template.execution_context["parallel_processing_type"].default, "DMP")
+        self.assertEqual(len(template.execution_context["parallel_processing_type"].value_list), 3)
+        self.assertTrue(
+            "Hybrid" in template.execution_context["parallel_processing_type"].value_list
+        )
         self.assertEqual(len(template.output_files), 2)
         self.assertEqual(template.output_files[0].name, "out")
         self.assertEqual(template.output_files[1].type, "application/octet-stream")
