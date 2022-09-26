@@ -106,7 +106,7 @@ jobs:
       - name: Test with tox
         run: tox -e py37-witheval 
         env:
-          REP_TEST_URL: https://repkube-dev.westeurope.cloudapp.azure.com/rep
+          REP_TEST_URL: https://repkube.westeurope.cloudapp.azure.com/rep
           REP_TEST_USERNAME: repadmin
           REP_TEST_PASSWORD: repadmin
           
