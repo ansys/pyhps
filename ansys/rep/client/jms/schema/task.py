@@ -73,7 +73,7 @@ class TaskSchema(ObjectSchema):
         description="ID of the :class:`Job` the task is linked to.",
     )
 
-    evaluator_id = fields.String(
+    host_id = fields.String(
         allow_none=True,
         description="UUID of the :class:`Evaluator` that updated the task.",
     )
@@ -98,4 +98,9 @@ class TaskSchema(ObjectSchema):
         referenced_class="File",
         attribute="owned_file_ids",
         description="List of IDs of owned files of task.",
+    )
+
+    license_context_id = fields.String(
+        allow_none=True,
+        metadata={"description": "ID of license context in use"},
     )

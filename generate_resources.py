@@ -117,7 +117,7 @@ JMS_RESOURCES = [
         "rest_name": None,
         "additional_fields": [],
         "class": "ResourceRequirements",
-        "resource_filename": "resource_requirements",
+        "resource_filename": "task_definition",
     },
     {
         "schema": "SoftwareSchema",
@@ -125,7 +125,7 @@ JMS_RESOURCES = [
         "rest_name": None,
         "additional_fields": [],
         "class": "Software",
-        "resource_filename": "software",
+        "resource_filename": "task_definition",
     },
     {
         "schema": "SuccessCriteriaSchema",
@@ -133,7 +133,7 @@ JMS_RESOURCES = [
         "rest_name": None,
         "additional_fields": [],
         "class": "SuccessCriteria",
-        "resource_filename": "success_criteria",
+        "resource_filename": "task_definition",
     },
     {
         "schema": "LicensingSchema",
@@ -141,7 +141,15 @@ JMS_RESOURCES = [
         "rest_name": None,
         "additional_fields": [],
         "class": "Licensing",
-        "resource_filename": "licensing",
+        "resource_filename": "task_definition",
+    },
+    {
+        "schema": "TaskDefinitionSchema",
+        "schema_filename": "task_definition",
+        "rest_name": "task_definitions",
+        "additional_fields": [],
+        "class": "TaskDefinition",
+        "resource_filename": "task_definition",
     },
     {
         "schema": "JobSelectionSchema",
@@ -152,20 +160,44 @@ JMS_RESOURCES = [
         "resource_filename": "selection",
     },
     {
+        "schema": "TemplatePropertySchema",
+        "schema_filename": "task_definition_template",
+        "rest_name": None,
+        "additional_fields": [],
+        "class": "TemplateProperty",
+        "resource_filename": "task_definition_template",
+    },
+    {
+        "schema": "TemplateResourceRequirementsSchema",
+        "schema_filename": "task_definition_template",
+        "rest_name": None,
+        "additional_fields": [],
+        "class": "TemplateResourceRequirements",
+        "resource_filename": "task_definition_template",
+    },
+    {
+        "schema": "TemplateInputFileSchema",
+        "schema_filename": "task_definition_template",
+        "rest_name": None,
+        "additional_fields": [],
+        "class": "TemplateInputFile",
+        "resource_filename": "task_definition_template",
+    },
+    {
+        "schema": "TemplateOutputFileSchema",
+        "schema_filename": "task_definition_template",
+        "rest_name": None,
+        "additional_fields": [],
+        "class": "TemplateOutputFile",
+        "resource_filename": "task_definition_template",
+    },
+    {
         "schema": "TaskDefinitionTemplateSchema",
         "schema_filename": "task_definition_template",
         "rest_name": "task_definition_templates",
         "additional_fields": [],
         "class": "TaskDefinitionTemplate",
         "resource_filename": "task_definition_template",
-    },
-    {
-        "schema": "TaskDefinitionSchema",
-        "schema_filename": "task_definition",
-        "rest_name": "task_definitions",
-        "additional_fields": [],
-        "class": "TaskDefinition",
-        "resource_filename": "task_definition",
     },
     {
         "schema": "TaskSchema",
@@ -190,7 +222,7 @@ JMS_RESOURCES = [
         "additional_fields": [],
         "base_class": "ParameterDefinition",
         "class": "FloatParameterDefinition",
-        "resource_filename": "float_parameter_definition",
+        "resource_filename": "parameter_definition",
     },
     {
         "schema": "IntParameterDefinitionSchema",
@@ -199,7 +231,7 @@ JMS_RESOURCES = [
         "additional_fields": [],
         "base_class": "ParameterDefinition",
         "class": "IntParameterDefinition",
-        "resource_filename": "int_parameter_definition",
+        "resource_filename": "parameter_definition",
     },
     {
         "schema": "BoolParameterDefinitionSchema",
@@ -208,7 +240,7 @@ JMS_RESOURCES = [
         "additional_fields": [],
         "base_class": "ParameterDefinition",
         "class": "BoolParameterDefinition",
-        "resource_filename": "bool_parameter_definition",
+        "resource_filename": "parameter_definition",
     },
     {
         "schema": "StringParameterDefinitionSchema",
@@ -217,7 +249,7 @@ JMS_RESOURCES = [
         "additional_fields": [],
         "base_class": "ParameterDefinition",
         "class": "StringParameterDefinition",
-        "resource_filename": "string_parameter_definition",
+        "resource_filename": "parameter_definition",
     },
 ]
 
@@ -248,7 +280,7 @@ FIELD_MAPPING = {
 }
 
 
-def declared_fields(schema):
+def declared_fields(schema, resources):
     """
     Helper function to retrieve the fields that will be defined as class members for an object
     """
@@ -265,6 +297,12 @@ def declared_fields(schema):
         field_doc = f"{field}"
         if v.__class__ == marshmallow.fields.Constant:
             field_type = type(v.constant).__name__
+        elif v.__class__ == marshmallow.fields.Nested:
+            field_type_schema = v.nested.__name__
+            field_type = next(
+                (r["class"] for r in resources if r["schema"] == field_type_schema),
+                "object",
+            )
         else:
             field_type = FIELD_MAPPING.get(v.__class__, None)
         if field_type:
@@ -281,19 +319,20 @@ def declared_fields(schema):
     return fields, fields_doc
 
 
-def get_generated_code(resource, base_class, fields, field_docs):
+def get_resource_imports(resource, base_class):
 
-    base_class_import = (
-        f"from {base_class['path']}.{base_class['filename']} import {base_class['name']}"
-    )
+    imports = [
+        "from marshmallow.utils import missing",
+        "from ansys.rep.client.common import Object",
+        # f"from {base_class['path']}.{base_class['filename']} import {base_class['name']}",
+        f"from ..schema.{resource['schema_filename']} import {resource['schema']}",
+    ]
+    return imports
 
-    code = f'''# autogenerated code based on {resource["schema"]}
 
-from marshmallow.utils import missing
-{base_class_import}
-from ..schema.{resource['schema_filename']} import {resource['schema']}
+def get_resource_code(resource, base_class, fields, field_docs):
 
-class {resource['class']}({base_class["name"]}):
+    code = f'''class {resource['class']}({base_class["name"]}):
     """{resource['class']} resource.
 
     Parameters
@@ -316,7 +355,8 @@ class {resource['class']}({base_class["name"]}):
 
 def process_resources(subpackage, resources, base_class_path="ansys.rep.client"):
 
-    targe_folder = os.path.join("ansys", "rep", "client", subpackage, "resource")
+    target_folder = os.path.join("ansys", "rep", "client", subpackage, "resource")
+    resources_code = {}
     for resource in resources:
         print(f"Processing resource {resource['class']}")
 
@@ -327,7 +367,7 @@ def process_resources(subpackage, resources, base_class_path="ansys.rep.client")
         resource_class = getattr(module, resource["schema"])
 
         # query schema field names and doc
-        fields, field_docs = declared_fields(resource_class)
+        fields, field_docs = declared_fields(resource_class, resources)
 
         fields_str = ""
         for k in fields:
@@ -351,12 +391,26 @@ def process_resources(subpackage, resources, base_class_path="ansys.rep.client")
             )
 
         # we're ready to put the pieces together
-        code = get_generated_code(resource, base_class, fields_str, field_docs_str)
+        file_name = resource["resource_filename"]
+        if not file_name in resources_code:
+            resources_code[file_name] = {"imports": [], "code": []}
 
-        # dump generated code to file
-        file_path = os.path.join(targe_folder, f"{resource['resource_filename']}.py")
+        resources_code[file_name]["imports"].extend(get_resource_imports(resource, base_class))
+        resources_code[file_name]["code"].append(
+            get_resource_code(resource, base_class, fields_str, field_docs_str)
+        )
+
+    # dump generated code to files
+    for file, content in resources_code.items():
+        file_path = os.path.join(target_folder, f"{file}.py")
+        print(f"=== file={file}, file_path={file_path}")
+        unique_imports = list(dict.fromkeys(content["imports"]))
+        code = content["code"]
         with open(file_path, "w") as file:
-            file.write(code)
+            file.write("# autogenerated code\n")
+            file.write("\n".join(unique_imports))
+            file.write("\n\n")
+            file.write("\n".join(code))
 
 
 def run():

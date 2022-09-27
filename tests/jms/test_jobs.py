@@ -37,7 +37,7 @@ class JobsTest(REPTestCase):
             "fitness_term_values": {"fit_term1": 1.5},
             "note": "hello",
             "creator": "Creator.1",
-            "executed_task_definition_level": 0,
+            "executed_level": 0,
             "values": {
                 "tube1_radius": 12.509928919324276,
                 "tube1_thickness": 0.588977941435834,
@@ -56,7 +56,7 @@ class JobsTest(REPTestCase):
                 "tube3": "2",
             },
             "elapsed_time": 14.922003,
-            "evaluators": ["9be2d91a-abb1-3b68-bc36-d23a990a9792"],
+            "host_ids": ["9be2d91a-abb1-3b68-bc36-d23a990a9792"],
             "file_ids": [
                 "02q3QVM1RJMzSKccWZ5gUT",
                 "02q3QKzo7389RU5tGfDhPj",
@@ -79,14 +79,14 @@ class JobsTest(REPTestCase):
 
         self.assertEqual(job.note, "hello")
         self.assertEqual(job.creator, "Creator.1")
-        self.assertEqual(job.executed_task_definition_level, 0)
+        self.assertEqual(job.executed_level, 0)
         self.assertEqual(len(job.values), 15)
         self.assertAlmostEqual(job.values["tube1_radius"], 12.509928919324276)
         self.assertAlmostEqual(job.values["mapdl_elapsed_time"], 3.0)
         self.assertEqual(job.values["tube1"], "1")
 
         self.assertAlmostEqual(job.elapsed_time, 14.922003)
-        self.assertEqual(job.evaluators, ["9be2d91a-abb1-3b68-bc36-d23a990a9792"])
+        self.assertEqual(job.host_ids, ["9be2d91a-abb1-3b68-bc36-d23a990a9792"])
         self.assertEqual(
             job.file_ids,
             [
@@ -104,7 +104,7 @@ class JobsTest(REPTestCase):
         job = Job(
             name="dp0",
             job_definition_id=2,
-            evaluators=["uuid-4", "uuid-5"],
+            host_ids=["uuid-4", "uuid-5"],
             values={"p1": "string_value", "p2": 8.9, "p3": True},
             creator="dcs-client",
             elapsed_time=40.8,
@@ -123,8 +123,8 @@ class JobsTest(REPTestCase):
         self.assertEqual(serialized_job["values"]["p3"], True)
         self.assertFalse("fitness" in serialized_job.keys())
         self.assertFalse("files" in serialized_job.keys())
-        self.assertEqual(len(serialized_job["evaluators"]), 2)
-        self.assertEqual(serialized_job["evaluators"][1], "uuid-5")
+        self.assertEqual(len(serialized_job["host_ids"]), 2)
+        self.assertEqual(serialized_job["host_ids"][1], "uuid-5")
 
     def test_job_integration(self):
 
@@ -160,7 +160,7 @@ class JobsTest(REPTestCase):
             self.assertEqual(job.creator, None)
             self.assertEqual(job.note, None)
             self.assertEqual(job.fitness, None)
-            self.assertTrue(job.executed_task_definition_level is not None)
+            self.assertTrue(job.executed_level is not None)
 
         jobs = project_api.get_jobs()
         for job in jobs:
@@ -168,7 +168,7 @@ class JobsTest(REPTestCase):
             self.assertEqual(job.creator, None)
             self.assertEqual(job.note, None)
             self.assertEqual(job.fitness, None)
-            self.assertTrue(job.executed_task_definition_level is not None)
+            self.assertTrue(job.executed_level is not None)
             # fill some of them
             job.creator = "rep-client"
             job.note = f"test job{job.id} update"
@@ -180,7 +180,7 @@ class JobsTest(REPTestCase):
             self.assertTrue(job.note is not None)
             self.assertTrue(job.job_definition_id, 1)
             self.assertEqual(job.fitness, None)
-            self.assertTrue(job.executed_task_definition_level is not None)
+            self.assertTrue(job.executed_level is not None)
 
         jobs = project_api.get_jobs(limit=2, fields=["id", "creator", "note"])
 

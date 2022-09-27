@@ -6,12 +6,76 @@
 # Author(s): F. Negri
 # ----------------------------------------------------------
 
-from marshmallow import fields
+from marshmallow import fields, validate
 
-from ansys.rep.client.common import ObjectSchema
+from ansys.rep.client.common import BaseSchema, ObjectSchema
 
-from .file import FileSchema
-from .task_definition import ResourceRequirementsSchema, SoftwareSchema
+from .task_definition import SoftwareSchema
+
+
+class TemplatePropertySchema(BaseSchema):
+    class Meta(BaseSchema.Meta):
+        pass
+
+    default = fields.Raw(allow_none=True, metadata={"description": "Default value."})
+    description = fields.String(
+        allow_none=True, metadata={"description": "Description of the property's purpose."}
+    )
+    type = fields.String(
+        allow_none=True,
+        validate=validate.OneOf(["int", "float", "bool", "string"]),
+        metadata={"description": "Type of the property: either int, float, bool or string."},
+    )
+    value_list = fields.Raw(
+        allow_none=True,
+        many=True,
+        default=[],
+        metadata={"description": "List of possible values for this property."},
+    )
+
+
+class TemplateResourceRequirementsSchema(BaseSchema):
+    class Meta(BaseSchema.Meta):
+        pass
+
+    platform = fields.Nested(TemplatePropertySchema, allow_none=True)
+    memory = fields.Nested(TemplatePropertySchema, allow_none=True)
+    cpu_core_usage = fields.Nested(TemplatePropertySchema, allow_none=True)
+    disk_space = fields.Nested(TemplatePropertySchema, allow_none=True)
+    custom = fields.Dict(
+        keys=fields.String, values=fields.Nested(TemplatePropertySchema), allow_none=True
+    )
+
+
+class TemplateFileSchema(BaseSchema):
+    class Meta(BaseSchema.Meta):
+        pass
+
+    name = fields.String(description="Name of the file.")
+    type = fields.String(
+        allow_none=True, metadata={"description": "MIME type of the file, ie. text/plain."}
+    )
+    evaluation_path = fields.String(
+        allow_none=True,
+        metadata={
+            "description": "Path under which the file is expected to be found during evaluation."
+        },
+    )
+    description = fields.String(metadata={"description": "Description of the file's purpose."})
+    required = fields.Bool(metadata={"description": "Is the file required by the task"})
+
+
+class TemplateInputFileSchema(TemplateFileSchema):
+    pass
+
+
+class TemplateOutputFileSchema(TemplateFileSchema):
+    monitor = fields.Bool(
+        allow_none=True, metadata={"description": "Should the file's contents be live monitored."}
+    )
+    collect = fields.Bool(
+        allow_none=True, metadata={"description": "Should files be collected per job."}
+    )
 
 
 class TaskDefinitionTemplateSchema(ObjectSchema):
@@ -19,23 +83,42 @@ class TaskDefinitionTemplateSchema(ObjectSchema):
         pass
 
     modification_time = fields.DateTime(
-        allow_none=True, load_only=True, description="Last time the object was modified, in UTC"
+        allow_none=True, load_only=True, description="Last time the object was modified, in UTC."
     )
     creation_time = fields.DateTime(
-        allow_none=True, load_only=True, description="Time when the object was created, in UTC"
+        allow_none=True, load_only=True, description="Time when the object was created, in UTC."
     )
 
     name = fields.String(description="Name of the template")
-    version = fields.String(description="version of the template", allow_none=True)
+    version = fields.String(description="Version of the template", allow_none=True)
+    description = fields.String(description="Description of the template", allow_none=True)
 
-    software_requirements = fields.Nested(SoftwareSchema, many=True, allow_none=True)
-    resource_requirements = fields.Nested(ResourceRequirementsSchema, allow_none=True)
+    software_requirements = fields.Nested(
+        SoftwareSchema,
+        many=True,
+        allow_none=True,
+        metadata={"description": "A list of required software."},
+    )
+    resource_requirements = fields.Nested(
+        TemplateResourceRequirementsSchema,
+        allow_none=True,
+        metadata={
+            "description": "Includes hardware requirements such as number of cores,"
+            " memory and disk space."
+        },
+    )
 
     execution_context = fields.Dict(
-        allow_none=True, description="Additional arguments to pass to the executing command"
+        keys=fields.String,
+        values=fields.Nested(TemplatePropertySchema),
+        allow_none=True,
+        description="Additional arguments to pass to the executing command.",
     )
     environment = fields.Dict(
-        allow_none=True, description="Environment variables to set for the executed process"
+        keys=fields.String,
+        values=fields.Nested(TemplatePropertySchema),
+        allow_none=True,
+        description="Environment variables to set for the executed process.",
     )
 
     execution_command = fields.String(
@@ -51,5 +134,15 @@ class TaskDefinitionTemplateSchema(ObjectSchema):
         "(command or execution script is required).",
     )
 
-    input_files = fields.Nested(FileSchema, many=True, allow_none=True)
-    output_files = fields.Nested(FileSchema, many=True, allow_none=True)
+    input_files = fields.Nested(
+        TemplateInputFileSchema,
+        many=True,
+        allow_none=True,
+        metadata={"description": "List of predefined input files."},
+    )
+    output_files = fields.Nested(
+        TemplateOutputFileSchema,
+        many=True,
+        allow_none=True,
+        metadata={"description": "List of predefined output files."},
+    )
