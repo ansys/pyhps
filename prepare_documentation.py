@@ -163,6 +163,23 @@ def archive_examples():
             "heat_exchanger.jou",
             "heat_exchanger.cas.h5",
         ],
+        "fluent_nozzle": [
+            "project_setup.py",
+            "solve.jou",
+            "nozzle.cas",
+        ],
+        "cfx_static_mixer": [
+            "project_setup.py",
+            "runInput.ccl",
+            "StaticMixer_001.cfx",
+            "StaticMixer_001.def",
+        ],
+        "exec_scripts": [
+            "exec_cfx.py",
+            "exec_mapdl.py",
+            "exec_fluent.py",
+            "exec_python.py",
+        ],
     }
 
     os.makedirs("build", exist_ok=True)

@@ -1,0 +1,7 @@
+SIMULATION CONTROL:
+  EXECUTION CONTROL:
+    RUN DEFINITION:
+      Solver Input File = StaticMixer_001.def
+    END
+  END
+END

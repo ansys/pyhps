@@ -1,0 +1,8 @@
+;Journal file automatically created by EKM to execute Fluent job submitted from Web UI
+file sbo n y y n
+file rc nozzle.cas
+sol i i
+de mo steady
+it 10
+file wcd nozzle.cas
+exit

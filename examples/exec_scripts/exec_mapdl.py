@@ -14,7 +14,7 @@ from ansys.rep.evaluator.task_manager import ApplicationExecution
 class MAPDLExecution(ApplicationExecution):
     def execute(self):
 
-        log.info("Start MAPDL execution script")
+        log.info("Starting MAPDL execution script")
 
         # Identify files
         inp_file = next((f for f in self.context.input_files if f["name"] == "inp"), None)
@@ -23,7 +23,7 @@ class MAPDLExecution(ApplicationExecution):
         assert out_file, "Output file out missing"
 
         # Identify application
-        app_name = "ANSYS Mechanical APDL"
+        app_name = "Ansys Mechanical APDL"
         app = next((a for a in self.context.software if a["name"] == app_name), None)
         assert app, f"Cannot find app {app_name}"
 

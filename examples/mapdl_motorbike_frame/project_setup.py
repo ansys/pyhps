@@ -241,7 +241,7 @@ def create_project(client, name, num_jobs=20, use_exec_script=False) -> Project:
     task_def = TaskDefinition(
         name="MAPDL_run",
         software_requirements=[
-            Software(name="ANSYS Mechanical APDL", version=ansys_version),
+            Software(name="Ansys Mechanical APDL", version=ansys_version),
         ],
         execution_command="%executable% -b -i %file:inp% -o file.out -np %resource:num_cores%",
         resource_requirements=ResourceRequirements(

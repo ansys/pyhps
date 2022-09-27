@@ -258,7 +258,7 @@ class TasksTest(REPTestCase):
         tasks = project_api.get_tasks(job_id=job.id)
         self.assertEqual(len(tasks), 1)
         self.assertEqual(
-            tasks[0].task_definition_snapshot.software_requirements[0].name, "ANSYS Mechanical APDL"
+            tasks[0].task_definition_snapshot.software_requirements[0].name, "Ansys Mechanical APDL"
         )
 
         job_def = project_api.get_job_definitions(id=job.job_definition_id)[0]
@@ -278,7 +278,7 @@ class TasksTest(REPTestCase):
         self.assertEqual(len(tasks), 1)
         self.assertEqual(tasks[0].eval_status, "evaluated")
         self.assertEqual(
-            tasks[0].task_definition_snapshot.software_requirements[0].name, "ANSYS Mechanical APDL"
+            tasks[0].task_definition_snapshot.software_requirements[0].name, "Ansys Mechanical APDL"
         )
 
         JmsApi(client).delete_project(project)
