@@ -1430,10 +1430,10 @@ as <code class="xref py py-attr docutils literal notranslate"><span class="pre">
 <li><p><strong>store_output</strong> (<em>bool</em><em>, </em><em>optional</em>) – Specify whether to store the standard output of the task.</p></li>
 <li><p><strong>input_file_ids</strong> (<em>list</em><em>[</em><em>str</em><em>]</em>) – List of IDs of input files.</p></li>
 <li><p><strong>output_file_ids</strong> (<em>list</em><em>[</em><em>str</em><em>]</em>) – List of IDs of output files.</p></li>
-<li><p><strong>success_criteria</strong> (<em>object</em><em>, </em><em>optional</em>) – </p></li>
-<li><p><strong>licensing</strong> (<em>object</em><em>, </em><em>optional</em>) – A <a class="reference internal" href="#ansys.rep.client.jms.Licensing" title="ansys.rep.client.jms.Licensing"><code class="xref py py-class docutils literal notranslate"><span class="pre">Licensing</span></code></a> object.</p></li>
-<li><p><strong>software_requirements</strong> (<em>object</em><em>, </em><em>optional</em>) – A list of <a class="reference internal" href="#ansys.rep.client.jms.Software" title="ansys.rep.client.jms.Software"><code class="xref py py-class docutils literal notranslate"><span class="pre">Software</span></code></a> objects.</p></li>
-<li><p><strong>resource_requirements</strong> (<em>object</em><em>, </em><em>optional</em>) – A <a class="reference internal" href="#ansys.rep.client.jms.ResourceRequirements" title="ansys.rep.client.jms.ResourceRequirements"><code class="xref py py-class docutils literal notranslate"><span class="pre">ResourceRequirements</span></code></a> object.</p></li>
+<li><p><strong>success_criteria</strong> (<a class="reference internal" href="#ansys.rep.client.jms.SuccessCriteria" title="ansys.rep.client.jms.SuccessCriteria"><em>SuccessCriteria</em></a><em>, </em><em>optional</em>) – </p></li>
+<li><p><strong>licensing</strong> (<a class="reference internal" href="#ansys.rep.client.jms.Licensing" title="ansys.rep.client.jms.Licensing"><em>Licensing</em></a><em>, </em><em>optional</em>) – A <a class="reference internal" href="#ansys.rep.client.jms.Licensing" title="ansys.rep.client.jms.Licensing"><code class="xref py py-class docutils literal notranslate"><span class="pre">Licensing</span></code></a> object.</p></li>
+<li><p><strong>software_requirements</strong> (<a class="reference internal" href="#ansys.rep.client.jms.Software" title="ansys.rep.client.jms.Software"><em>Software</em></a><em>, </em><em>optional</em>) – A list of <a class="reference internal" href="#ansys.rep.client.jms.Software" title="ansys.rep.client.jms.Software"><code class="xref py py-class docutils literal notranslate"><span class="pre">Software</span></code></a> objects.</p></li>
+<li><p><strong>resource_requirements</strong> (<a class="reference internal" href="#ansys.rep.client.jms.ResourceRequirements" title="ansys.rep.client.jms.ResourceRequirements"><em>ResourceRequirements</em></a><em>, </em><em>optional</em>) – A <a class="reference internal" href="#ansys.rep.client.jms.ResourceRequirements" title="ansys.rep.client.jms.ResourceRequirements"><code class="xref py py-class docutils literal notranslate"><span class="pre">ResourceRequirements</span></code></a> object.</p></li>
 </ul>
 </dd>
 </dl>
@@ -1457,7 +1457,7 @@ as <code class="xref py py-attr docutils literal notranslate"><span class="pre">
 <li><p><strong>parameter_definition_ids</strong> (<em>list</em><em>[</em><em>str</em><em>]</em>) – </p></li>
 <li><p><strong>parameter_mapping_ids</strong> (<em>list</em><em>[</em><em>str</em><em>]</em>) – </p></li>
 <li><p><strong>task_definition_ids</strong> (<em>list</em><em>[</em><em>str</em><em>]</em>) – </p></li>
-<li><p><strong>fitness_definition</strong> (<em>object</em><em>, </em><em>optional</em>) – A <a class="reference internal" href="#ansys.rep.client.jms.FitnessDefinition" title="ansys.rep.client.jms.FitnessDefinition"><code class="xref py py-class docutils literal notranslate"><span class="pre">FitnessDefinition</span></code></a> object.</p></li>
+<li><p><strong>fitness_definition</strong> (<em>FitnessDefinitionBase</em><em>, </em><em>optional</em>) – A <a class="reference internal" href="#ansys.rep.client.jms.FitnessDefinition" title="ansys.rep.client.jms.FitnessDefinition"><code class="xref py py-class docutils literal notranslate"><span class="pre">FitnessDefinition</span></code></a> object.</p></li>
 </ul>
 </dd>
 </dl>
@@ -1484,13 +1484,14 @@ as <code class="xref py py-attr docutils literal notranslate"><span class="pre">
 <li><p><strong>trial_number</strong> (<em>int</em><em>, </em><em>optional</em>) – Which attempt to execute the process step this task represent.</p></li>
 <li><p><strong>elapsed_time</strong> (<em>float</em><em>, </em><em>optional</em>) – Number of seconds it took the evaluator to execute the task.</p></li>
 <li><p><strong>task_definition_id</strong> (<em>str</em>) – ID of the <a class="reference internal" href="#ansys.rep.client.jms.TaskDefinition" title="ansys.rep.client.jms.TaskDefinition"><code class="xref py py-class docutils literal notranslate"><span class="pre">TaskDefinition</span></code></a> the task is linked to.</p></li>
-<li><p><strong>task_definition_snapshot</strong> (<em>object</em><em>, </em><em>optional</em>) – Snapshot of <a class="reference internal" href="#ansys.rep.client.jms.TaskDefinition" title="ansys.rep.client.jms.TaskDefinition"><code class="xref py py-class docutils literal notranslate"><span class="pre">TaskDefinition</span></code></a> created when task status changes to prolog, before evaluation.</p></li>
+<li><p><strong>task_definition_snapshot</strong> (<a class="reference internal" href="#ansys.rep.client.jms.TaskDefinition" title="ansys.rep.client.jms.TaskDefinition"><em>TaskDefinition</em></a><em>, </em><em>optional</em>) – Snapshot of <a class="reference internal" href="#ansys.rep.client.jms.TaskDefinition" title="ansys.rep.client.jms.TaskDefinition"><code class="xref py py-class docutils literal notranslate"><span class="pre">TaskDefinition</span></code></a> created when task status changes to prolog, before evaluation.</p></li>
 <li><p><strong>job_id</strong> (<em>str</em>) – ID of the <a class="reference internal" href="#ansys.rep.client.jms.Job" title="ansys.rep.client.jms.Job"><code class="xref py py-class docutils literal notranslate"><span class="pre">Job</span></code></a> the task is linked to.</p></li>
-<li><p><strong>evaluator_id</strong> (<em>str</em><em>, </em><em>optional</em>) – UUID of the <a class="reference internal" href="#ansys.rep.client.jms.Evaluator" title="ansys.rep.client.jms.Evaluator"><code class="xref py py-class docutils literal notranslate"><span class="pre">Evaluator</span></code></a> that updated the task.</p></li>
+<li><p><strong>host_id</strong> (<em>str</em><em>, </em><em>optional</em>) – UUID of the <a class="reference internal" href="#ansys.rep.client.jms.Evaluator" title="ansys.rep.client.jms.Evaluator"><code class="xref py py-class docutils literal notranslate"><span class="pre">Evaluator</span></code></a> that updated the task.</p></li>
 <li><p><strong>input_file_ids</strong> (<em>list</em><em>[</em><em>str</em><em>]</em>) – List of IDs of input files of task.</p></li>
 <li><p><strong>output_file_ids</strong> (<em>list</em><em>[</em><em>str</em><em>]</em>) – List of IDs of output files of task.</p></li>
 <li><p><strong>inherited_file_ids</strong> (<em>list</em><em>[</em><em>str</em><em>]</em>) – List of IDs of inherited files of task.</p></li>
 <li><p><strong>owned_file_ids</strong> (<em>list</em><em>[</em><em>str</em><em>]</em>) – List of IDs of owned files of task.</p></li>
+<li><p><strong>license_context_id</strong> (<em>str</em><em>, </em><em>optional</em>) – ID of license context in use</p></li>
 </ul>
 </dd>
 </dl>
@@ -1516,11 +1517,11 @@ as <code class="xref py py-attr docutils literal notranslate"><span class="pre">
 <li><p><strong>fitness_term_values</strong> (<em>dict</em><em>, </em><em>optional</em>) – Dictionary with (name,value) pairs for all fitness terms computed.</p></li>
 <li><p><strong>note</strong> (<em>str</em><em>, </em><em>optional</em>) – Optional note for this job.</p></li>
 <li><p><strong>creator</strong> (<em>str</em><em>, </em><em>optional</em>) – Optional name/ID of the creator of this job.</p></li>
-<li><p><strong>executed_task_definition_level</strong> (<em>int</em><em>, </em><em>optional</em>) – Execution level of the last executed process step (-1 if none has been executed yet).</p></li>
+<li><p><strong>executed_level</strong> (<em>int</em><em>, </em><em>optional</em>) – Execution level of the last executed task (-1 if none has been executed yet).</p></li>
 <li><p><strong>creation_time</strong> (<em>datetime</em><em>, </em><em>optional</em>) – The date and time the job was created.</p></li>
 <li><p><strong>modification_time</strong> (<em>datetime</em><em>, </em><em>optional</em>) – The date and time the job was last modified.</p></li>
 <li><p><strong>elapsed_time</strong> (<em>float</em>) – Number of seconds it took the evaluator(s) to update the job.</p></li>
-<li><p><strong>evaluators</strong> (<em>list</em><em>, </em><em>optional</em>) – List of IDs of the evaluators that updated the job.</p></li>
+<li><p><strong>host_ids</strong> (<em>list</em><em>, </em><em>optional</em>) – List of Host IDs of the evaluators that updated the job.</p></li>
 <li><p><strong>file_ids</strong> (<em>list</em><em>[</em><em>str</em><em>]</em>) – List of IDs of all files of this job.</p></li>
 </ul>
 </dd>
@@ -1602,6 +1603,75 @@ as <code class="xref py py-attr docutils literal notranslate"><span class="pre">
 <section id="task-definition-template">
 <h3>Task Definition Template<a class="headerlink" href="#task-definition-template" title="Permalink to this heading">#</a></h3>
 <dl class="py class">
+<dt class="sig sig-object py" id="ansys.rep.client.jms.TemplateProperty">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ansys.rep.client.jms.</span></span><span class="sig-name descname"><span class="pre">TemplateProperty</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ansys.rep.client.jms.TemplateProperty" title="Permalink to this definition">#</a></dt>
+<dd><p>TemplateProperty resource.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>default</strong> (<em>any</em><em>, </em><em>optional</em>) – Default value.</p></li>
+<li><p><strong>description</strong> (<em>str</em><em>, </em><em>optional</em>) – Description of the property’s purpose.</p></li>
+<li><p><strong>type</strong> (<em>str</em><em>, </em><em>optional</em>) – Type of the property: either int, float, bool or string.</p></li>
+<li><p><strong>value_list</strong> (<em>any</em><em>, </em><em>optional</em>) – List of possible values for this property.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="ansys.rep.client.jms.TemplateResourceRequirements">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ansys.rep.client.jms.</span></span><span class="sig-name descname"><span class="pre">TemplateResourceRequirements</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ansys.rep.client.jms.TemplateResourceRequirements" title="Permalink to this definition">#</a></dt>
+<dd><p>TemplateResourceRequirements resource.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>platform</strong> (<a class="reference internal" href="#ansys.rep.client.jms.TemplateProperty" title="ansys.rep.client.jms.TemplateProperty"><em>TemplateProperty</em></a><em>, </em><em>optional</em>) – </p></li>
+<li><p><strong>memory</strong> (<a class="reference internal" href="#ansys.rep.client.jms.TemplateProperty" title="ansys.rep.client.jms.TemplateProperty"><em>TemplateProperty</em></a><em>, </em><em>optional</em>) – </p></li>
+<li><p><strong>cpu_core_usage</strong> (<a class="reference internal" href="#ansys.rep.client.jms.TemplateProperty" title="ansys.rep.client.jms.TemplateProperty"><em>TemplateProperty</em></a><em>, </em><em>optional</em>) – </p></li>
+<li><p><strong>disk_space</strong> (<a class="reference internal" href="#ansys.rep.client.jms.TemplateProperty" title="ansys.rep.client.jms.TemplateProperty"><em>TemplateProperty</em></a><em>, </em><em>optional</em>) – </p></li>
+<li><p><strong>custom</strong> (<em>dict</em><em>, </em><em>optional</em>) – </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="ansys.rep.client.jms.TemplateInputFile">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ansys.rep.client.jms.</span></span><span class="sig-name descname"><span class="pre">TemplateInputFile</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ansys.rep.client.jms.TemplateInputFile" title="Permalink to this definition">#</a></dt>
+<dd><p>TemplateInputFile resource.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<em>str</em>) – Name of the file.</p></li>
+<li><p><strong>type</strong> (<em>str</em><em>, </em><em>optional</em>) – MIME type of the file, ie. text/plain.</p></li>
+<li><p><strong>evaluation_path</strong> (<em>str</em><em>, </em><em>optional</em>) – Path under which the file is expected to be found during evaluation.</p></li>
+<li><p><strong>description</strong> (<em>str</em>) – Description of the file’s purpose.</p></li>
+<li><p><strong>required</strong> (<em>bool</em>) – Is the file required by the task</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="ansys.rep.client.jms.TemplateOutputFile">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ansys.rep.client.jms.</span></span><span class="sig-name descname"><span class="pre">TemplateOutputFile</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ansys.rep.client.jms.TemplateOutputFile" title="Permalink to this definition">#</a></dt>
+<dd><p>TemplateOutputFile resource.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<em>str</em>) – Name of the file.</p></li>
+<li><p><strong>type</strong> (<em>str</em><em>, </em><em>optional</em>) – MIME type of the file, ie. text/plain.</p></li>
+<li><p><strong>evaluation_path</strong> (<em>str</em><em>, </em><em>optional</em>) – Path under which the file is expected to be found during evaluation.</p></li>
+<li><p><strong>description</strong> (<em>str</em>) – Description of the file’s purpose.</p></li>
+<li><p><strong>required</strong> (<em>bool</em>) – Is the file required by the task</p></li>
+<li><p><strong>monitor</strong> (<em>bool</em><em>, </em><em>optional</em>) – Should the file’s contents be live monitored.</p></li>
+<li><p><strong>collect</strong> (<em>bool</em><em>, </em><em>optional</em>) – Should files be collected per job.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py class">
 <dt class="sig sig-object py" id="ansys.rep.client.jms.TaskDefinitionTemplate">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ansys.rep.client.jms.</span></span><span class="sig-name descname"><span class="pre">TaskDefinitionTemplate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ansys.rep.client.jms.TaskDefinitionTemplate" title="Permalink to this definition">#</a></dt>
 <dd><p>TaskDefinitionTemplate resource.</p>
@@ -1609,19 +1679,20 @@ as <code class="xref py py-attr docutils literal notranslate"><span class="pre">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>id</strong> (<em>str</em><em>, </em><em>optional</em>) – Unique ID to access the resource, generated internally by the server on creation.</p></li>
-<li><p><strong>modification_time</strong> (<em>datetime</em><em>, </em><em>optional</em>) – Last time the object was modified, in UTC</p></li>
-<li><p><strong>creation_time</strong> (<em>datetime</em><em>, </em><em>optional</em>) – Time when the object was created, in UTC</p></li>
+<li><p><strong>modification_time</strong> (<em>datetime</em><em>, </em><em>optional</em>) – Last time the object was modified, in UTC.</p></li>
+<li><p><strong>creation_time</strong> (<em>datetime</em><em>, </em><em>optional</em>) – Time when the object was created, in UTC.</p></li>
 <li><p><strong>name</strong> (<em>str</em>) – Name of the template</p></li>
-<li><p><strong>version</strong> (<em>str</em><em>, </em><em>optional</em>) – version of the template</p></li>
-<li><p><strong>software_requirements</strong> (<em>object</em><em>, </em><em>optional</em>) – </p></li>
-<li><p><strong>resource_requirements</strong> (<em>object</em><em>, </em><em>optional</em>) – </p></li>
-<li><p><strong>execution_context</strong> (<em>dict</em><em>, </em><em>optional</em>) – Additional arguments to pass to the executing command</p></li>
-<li><p><strong>environment</strong> (<em>dict</em><em>, </em><em>optional</em>) – Environment variables to set for the executed process</p></li>
+<li><p><strong>version</strong> (<em>str</em><em>, </em><em>optional</em>) – Version of the template</p></li>
+<li><p><strong>description</strong> (<em>str</em><em>, </em><em>optional</em>) – Description of the template</p></li>
+<li><p><strong>software_requirements</strong> (<a class="reference internal" href="#ansys.rep.client.jms.Software" title="ansys.rep.client.jms.Software"><em>Software</em></a><em>, </em><em>optional</em>) – A list of required software.</p></li>
+<li><p><strong>resource_requirements</strong> (<a class="reference internal" href="#ansys.rep.client.jms.TemplateResourceRequirements" title="ansys.rep.client.jms.TemplateResourceRequirements"><em>TemplateResourceRequirements</em></a><em>, </em><em>optional</em>) – Includes hardware requirements such as number of cores, memory and disk space.</p></li>
+<li><p><strong>execution_context</strong> (<em>dict</em><em>, </em><em>optional</em>) – Additional arguments to pass to the executing command.</p></li>
+<li><p><strong>environment</strong> (<em>dict</em><em>, </em><em>optional</em>) – Environment variables to set for the executed process.</p></li>
 <li><p><strong>execution_command</strong> (<em>str</em><em>, </em><em>optional</em>) – Command to execute (command or execution script is required).</p></li>
 <li><p><strong>use_execution_script</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether to run task with the execution command or the execution script.</p></li>
 <li><p><strong>execution_script_storage_id</strong> (<em>str</em><em>, </em><em>optional</em>) – Storage ID of the script to execute (command or execution script is required).</p></li>
-<li><p><strong>input_files</strong> (<em>object</em><em>, </em><em>optional</em>) – </p></li>
-<li><p><strong>output_files</strong> (<em>object</em><em>, </em><em>optional</em>) – </p></li>
+<li><p><strong>input_files</strong> (<a class="reference internal" href="#ansys.rep.client.jms.TemplateInputFile" title="ansys.rep.client.jms.TemplateInputFile"><em>TemplateInputFile</em></a><em>, </em><em>optional</em>) – List of predefined input files.</p></li>
+<li><p><strong>output_files</strong> (<a class="reference internal" href="#ansys.rep.client.jms.TemplateOutputFile" title="ansys.rep.client.jms.TemplateOutputFile"><em>TemplateOutputFile</em></a><em>, </em><em>optional</em>) – List of predefined output files.</p></li>
 </ul>
 </dd>
 </dl>
