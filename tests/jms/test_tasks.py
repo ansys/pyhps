@@ -39,7 +39,7 @@ class TasksTest(REPTestCase):
             "elapsed_time": 20.733581,
             "task_definition_id": "02q3zCLSZjRkJhCzjVjyYn",
             "job_id": "02q3zCLScqou7nbJBXFEfw",
-            "evaluator_id": "9be2d91a-abb1-3b68-bc36-d23a990a9792",
+            "host_id": "9be2d91a-abb1-3b68-bc36-d23a990a9792",
             "license_context_id": None,
             "input_file_ids": ["02q3zEBtQFm0UcdNSLPvC9"],
             "output_file_ids": [
@@ -68,7 +68,7 @@ class TasksTest(REPTestCase):
         self.assertAlmostEqual(task.elapsed_time, 20.733581)
         self.assertEqual(task.task_definition_id, "02q3zCLSZjRkJhCzjVjyYn")
         self.assertEqual(task.job_id, "02q3zCLScqou7nbJBXFEfw")
-        self.assertEqual(task.evaluator_id, "9be2d91a-abb1-3b68-bc36-d23a990a9792")
+        self.assertEqual(task.host_id, "9be2d91a-abb1-3b68-bc36-d23a990a9792")
         # self.assertEqual( task.uuid, "f6775a29-d98b-4048-a14d-ea86669e55d0")
         # self.assertEqual( task.license_context_id, None)
         self.assertEqual(task.input_file_ids, ["02q3zEBtQFm0UcdNSLPvC9"])
