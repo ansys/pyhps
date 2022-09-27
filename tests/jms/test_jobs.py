@@ -56,7 +56,7 @@ class JobsTest(REPTestCase):
                 "tube3": "2",
             },
             "elapsed_time": 14.922003,
-            "evaluator_ids": ["9be2d91a-abb1-3b68-bc36-d23a990a9792"],
+            "host_ids": ["9be2d91a-abb1-3b68-bc36-d23a990a9792"],
             "file_ids": [
                 "02q3QVM1RJMzSKccWZ5gUT",
                 "02q3QKzo7389RU5tGfDhPj",
@@ -86,7 +86,7 @@ class JobsTest(REPTestCase):
         self.assertEqual(job.values["tube1"], "1")
 
         self.assertAlmostEqual(job.elapsed_time, 14.922003)
-        self.assertEqual(job.evaluator_ids, ["9be2d91a-abb1-3b68-bc36-d23a990a9792"])
+        self.assertEqual(job.host_ids, ["9be2d91a-abb1-3b68-bc36-d23a990a9792"])
         self.assertEqual(
             job.file_ids,
             [
@@ -104,7 +104,7 @@ class JobsTest(REPTestCase):
         job = Job(
             name="dp0",
             job_definition_id=2,
-            evaluator_ids=["uuid-4", "uuid-5"],
+            host_ids=["uuid-4", "uuid-5"],
             values={"p1": "string_value", "p2": 8.9, "p3": True},
             creator="dcs-client",
             elapsed_time=40.8,
@@ -123,8 +123,8 @@ class JobsTest(REPTestCase):
         self.assertEqual(serialized_job["values"]["p3"], True)
         self.assertFalse("fitness" in serialized_job.keys())
         self.assertFalse("files" in serialized_job.keys())
-        self.assertEqual(len(serialized_job["evaluator_ids"]), 2)
-        self.assertEqual(serialized_job["evaluator_ids"][1], "uuid-5")
+        self.assertEqual(len(serialized_job["host_ids"]), 2)
+        self.assertEqual(serialized_job["host_ids"][1], "uuid-5")
 
     def test_job_integration(self):
 

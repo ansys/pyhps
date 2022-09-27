@@ -36,8 +36,8 @@ class Job(Object):
         The date and time the job was last modified.
     elapsed_time : float
         Number of seconds it took the evaluator(s) to update the job.
-    evaluator_ids : list, optional
-        List of IDs of the evaluators that updated the job.
+    host_ids : list, optional
+        List of Host IDs of the evaluators that updated the job.
     file_ids : list[str]
         List of IDs of all files of this job.
 
@@ -62,7 +62,7 @@ class Job(Object):
         self.creation_time = missing
         self.modification_time = missing
         self.elapsed_time = missing
-        self.evaluator_ids = missing
+        self.host_ids = missing
         self.file_ids = missing
 
         super().__init__(**kwargs)

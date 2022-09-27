@@ -84,10 +84,10 @@ class JobSchema(ObjectSchema):
         description="Number of seconds it took the evaluator(s) to update the job.",
     )
 
-    evaluator_ids = fields.List(
+    host_ids = fields.List(
         fields.String(allow_none=True),
         allow_none=True,
-        description="List of IDs of the evaluators that updated the job.",
+        description="List of Host IDs of the evaluators that updated the job.",
     )
     file_ids = IdReferenceList(
         referenced_class="File",
