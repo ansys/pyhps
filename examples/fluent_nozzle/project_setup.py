@@ -30,7 +30,7 @@ def create_project(client, name, num_jobs=20, use_exec_script=False):
     """
     jms_api = JmsApi(client)
     log.debug("=== Project")
-    proj = Project(name=name, priority=1, active=False)
+    proj = Project(name=name, priority=1, active=True)
     proj = jms_api.create_project(proj, replace=True)
 
     project_api = ProjectApi(client, proj.id)
