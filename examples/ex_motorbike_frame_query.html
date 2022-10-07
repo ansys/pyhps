@@ -306,7 +306,7 @@
     <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;=== Query values and compoute statistics ===&quot;</span><span class="p">)</span>
     <span class="n">jms_api</span> <span class="o">=</span> <span class="n">JmsApi</span><span class="p">(</span><span class="n">client</span><span class="p">)</span>
     <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;=== Project&quot;</span><span class="p">)</span>
-    <span class="n">project</span> <span class="o">=</span> <span class="n">jms_api</span><span class="o">.</span><span class="n">get_project</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">project_name</span><span class="p">)</span>
+    <span class="n">project</span> <span class="o">=</span> <span class="n">jms_api</span><span class="o">.</span><span class="n">get_project_by_name</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">project_name</span><span class="p">)</span>
     <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;ID: </span><span class="si">{</span><span class="n">project</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
     <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Created on: </span><span class="si">{</span><span class="n">project</span><span class="o">.</span><span class="n">creation_time</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
@@ -350,7 +350,7 @@
     <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Downloading files to </span><span class="si">{</span><span class="n">out_path</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
     <span class="n">jms_api</span> <span class="o">=</span> <span class="n">JmsApi</span><span class="p">(</span><span class="n">client</span><span class="p">)</span>
-    <span class="n">project</span> <span class="o">=</span> <span class="n">jms_api</span><span class="o">.</span><span class="n">get_project</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">project_name</span><span class="p">)</span>
+    <span class="n">project</span> <span class="o">=</span> <span class="n">jms_api</span><span class="o">.</span><span class="n">get_project_by_name</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">project_name</span><span class="p">)</span>
     <span class="c1"># Todo: Fix needed in the backend:</span>
     <span class="c1"># Currently only the get_project() called with id returns all fields of project.</span>
     <span class="n">project</span> <span class="o">=</span> <span class="n">jms_api</span><span class="o">.</span><span class="n">get_project</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="n">project</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>

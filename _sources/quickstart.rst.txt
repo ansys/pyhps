@@ -230,7 +230,7 @@ Query the number of evaluators
     evaluators = jms_api.get_evaluators()
 
     # print number of Windows and Linux evaluators connected to the DCS server
-    print( len([e for e in evaluators if e.platform == "Windows" ]) )
+    print( len([e for e in evaluators if e.platform == "windows" ]) )
     print( len([e for e in evaluators if e.platform == "Linux" ]) )
 
 
