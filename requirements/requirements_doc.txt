@@ -1,9 +1,9 @@
-Sphinx==5.1.1
-numpydoc==1.4.0
-ansys-sphinx-theme==0.5.2
+Sphinx==5.2.3
+numpydoc==1.5.0
+ansys-sphinx-theme==0.6.1
 sphinx-copybutton==0.5
 apispec==5.2.2
 sphinxcontrib-httpdomain==1.8.0
 sphinxcontrib-globalsubs==0.1.0
 sphinxnotes-strike==1.2
-sphinx-autodoc-typehints==1.19.2
+sphinx-autodoc-typehints==1.19.4
