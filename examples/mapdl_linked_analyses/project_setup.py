@@ -24,8 +24,7 @@ import logging
 import os
 from typing import List, Tuple
 
-from ansys.rep.client import Client, REPError
-from ansys.rep.client import __external_version__ as ansys_version
+from ansys.rep.client import Client, REPError, __external_version__
 from ansys.rep.client.jms import (
     File,
     JmsApi,
@@ -43,7 +42,9 @@ NUM_CORES = 2.0
 log = logging.getLogger(__name__)
 
 
-def create_prestress_task_definition(project_api: ProjectApi) -> Tuple[str, List[File]]:
+def create_prestress_task_definition(
+    project_api: ProjectApi, version: str
+) -> Tuple[str, List[File]]:
 
     log.info("=== Files")
     cwd = os.path.dirname(__file__)
@@ -91,7 +92,7 @@ def create_prestress_task_definition(project_api: ProjectApi) -> Tuple[str, List
 
     task_def = TaskDefinition(
         name="Prestress",
-        software_requirements=[Software(name="Ansys Mechanical APDL", version=ansys_version)],
+        software_requirements=[Software(name="Ansys Mechanical APDL", version=version)],
         execution_command="%executable% -b -nolist -i %file:input_deck%"
         " -o solve.out -np %resource:num_cores%",
         max_execution_time=360.0,
@@ -109,7 +110,7 @@ def create_prestress_task_definition(project_api: ProjectApi) -> Tuple[str, List
 
 
 def create_modal_task_definition(
-    project_api: ProjectApi, prestress_files: List[File]
+    project_api: ProjectApi, prestress_files: List[File], version: str
 ) -> Tuple[str, List[File]]:
 
     log.info("=== Files")
@@ -174,7 +175,7 @@ def create_modal_task_definition(
 
     task_def = TaskDefinition(
         name="Modal",
-        software_requirements=[Software(name="Ansys Mechanical APDL", version=ansys_version)],
+        software_requirements=[Software(name="Ansys Mechanical APDL", version=version)],
         execution_command="%executable% -b -nolist -i %file:input_deck% "
         "-o solve.out -np %resource:num_cores%",
         max_execution_time=360.0,
@@ -191,7 +192,9 @@ def create_modal_task_definition(
     return task_def.id, [f for f in files if f.name in ["rst", "mode", "db", "esav", "emat"]]
 
 
-def create_harmonic_task_definition(project_api: ProjectApi, modal_files: List[File]) -> str:
+def create_harmonic_task_definition(
+    project_api: ProjectApi, modal_files: List[File], version: str
+) -> str:
 
     log.info("=== Files")
     cwd = os.path.dirname(__file__)
@@ -221,7 +224,7 @@ def create_harmonic_task_definition(project_api: ProjectApi, modal_files: List[F
 
     task_def = TaskDefinition(
         name="Harmonic",
-        software_requirements=[Software(name="Ansys Mechanical APDL", version=ansys_version)],
+        software_requirements=[Software(name="Ansys Mechanical APDL", version=version)],
         execution_command="%executable% -b -nolist -i %file:input_deck% "
         "-o solve.out -np %resource:num_cores%",
         max_execution_time=360.0,
@@ -245,7 +248,7 @@ def set_last_task_to_pending(project_api: ProjectApi, job_id: str):
     return project_api.update_tasks([task])
 
 
-def create_project(client: Client, name: str, incremental: bool) -> Project:
+def create_project(client: Client, name: str, incremental: bool, version: str) -> Project:
 
     log.info("=== REP connection")
     log.info(f"Client connected at {client.rep_url}")
@@ -264,7 +267,7 @@ def create_project(client: Client, name: str, incremental: bool) -> Project:
     job_definition = JobDefinition(name="Linked Analyses", active=True)
 
     log.info("=== Create Prestress task definition")
-    prestress_task_def_id, prestress_files = create_prestress_task_definition(project_api)
+    prestress_task_def_id, prestress_files = create_prestress_task_definition(project_api, version)
 
     job_definition.task_definition_ids = [prestress_task_def_id]
 
@@ -277,7 +280,9 @@ def create_project(client: Client, name: str, incremental: bool) -> Project:
         )[0]
 
     log.info("=== Create Modal task definition")
-    modal_task_def_id, modal_files = create_modal_task_definition(project_api, prestress_files)
+    modal_task_def_id, modal_files = create_modal_task_definition(
+        project_api, prestress_files, version
+    )
 
     job_definition.task_definition_ids.append(modal_task_def_id)
 
@@ -288,7 +293,7 @@ def create_project(client: Client, name: str, incremental: bool) -> Project:
         set_last_task_to_pending(project_api, job.id)
 
     log.info("=== Create Harmonic task definition")
-    harmonic_task_def_id = create_harmonic_task_definition(project_api, modal_files)
+    harmonic_task_def_id = create_harmonic_task_definition(project_api, modal_files, version)
 
     job_definition.task_definition_ids.append(harmonic_task_def_id)
 
@@ -316,6 +321,7 @@ if __name__ == "__main__":
     parser.add_argument("-u", "--username", default="repadmin")
     parser.add_argument("-p", "--password", default="repadmin")
     parser.add_argument("--incremental", action="store_true")
+    parser.add_argument("-v", "--ansys-version", default=__external_version__)
 
     args = parser.parse_args()
 
@@ -326,6 +332,8 @@ if __name__ == "__main__":
     client = Client(rep_url=args.url, username=args.username, password=args.password)
 
     try:
-        create_project(client, name=args.name, incremental=args.incremental)
+        create_project(
+            client, name=args.name, incremental=args.incremental, version=args.ansys_version
+        )
     except REPError as e:
         log.error(str(e))

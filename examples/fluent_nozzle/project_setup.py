@@ -5,8 +5,7 @@ import argparse
 import logging
 import os
 
-from ansys.rep.client import Client, REPError
-from ansys.rep.client import __external_version__ as ansys_version
+from ansys.rep.client import Client, REPError, __external_version__
 from ansys.rep.client.jms import (
     File,
     JmsApi,
@@ -24,7 +23,7 @@ from ansys.rep.client.jms import (
 log = logging.getLogger(__name__)
 
 
-def create_project(client, name, num_jobs=20, use_exec_script=False):
+def create_project(client, name, num_jobs=20, version=__external_version__):
     """
     Create a REP project consisting of an Ansys Fluent model.
     """
@@ -55,15 +54,14 @@ def create_project(client, name, num_jobs=20, use_exec_script=False):
         )
     )
 
-    if use_exec_script:
-        files.append(
-            File(
-                name="exec_fluent",
-                evaluation_path="exec_fluent.py",
-                type="application/x-python-code",
-                src=os.path.join(cwd, "..", "exec_scripts", "exec_fluent.py"),
-            )
+    files.append(
+        File(
+            name="exec_fluent",
+            evaluation_path="exec_fluent.py",
+            type="application/x-python-code",
+            src=os.path.join(cwd, "..", "exec_scripts", "exec_fluent.py"),
         )
+    )
 
     files.append(
         File(
@@ -119,11 +117,11 @@ def create_project(client, name, num_jobs=20, use_exec_script=False):
     job_def = JobDefinition(name="JobDefinition.1", active=True)
 
     # Task definition
-    num_input_files = 3 if use_exec_script else 2
+    num_input_files = 3
     task_def = TaskDefinition(
         name="Fluent_run",
         software_requirements=[
-            Software(name="Ansys Fluent", version=ansys_version),
+            Software(name="Ansys Fluent", version=version),
         ],
         execution_command=None,  # Only execution currently supported
         resource_requirements=ResourceRequirements(
@@ -158,10 +156,9 @@ def create_project(client, name, num_jobs=20, use_exec_script=False):
         licensing=Licensing(enable_shared_licensing=False),  # Shared licensing disabled by default
     )
 
-    if use_exec_script:
-        task_def.use_execution_script = True
-        task_def.execution_command = None
-        task_def.execution_script_id = file_ids["exec_fluent"]
+    task_def.use_execution_script = True
+    task_def.execution_command = None
+    task_def.execution_script_id = file_ids["exec_fluent"]
 
     task_defs = [task_def]
     task_defs = project_api.create_task_definitions(task_defs)
@@ -191,6 +188,7 @@ if __name__ == "__main__":
     parser.add_argument("-U", "--url", default="https://127.0.0.1:8443/rep")
     parser.add_argument("-u", "--username", default="repadmin")
     parser.add_argument("-p", "--password", default="repadmin")
+    parser.add_argument("-v", "--ansys-version", default=__external_version__)
     args = parser.parse_args()
 
     logger = logging.getLogger()
@@ -201,10 +199,7 @@ if __name__ == "__main__":
         client = Client(rep_url=args.url, username=args.username, password=args.password)
         log.info(f"REP URL: {client.rep_url}")
         proj = create_project(
-            client=client,
-            name=args.name,
-            num_jobs=args.num_jobs,
-            use_exec_script=args.use_exec_script,
+            client=client, name=args.name, num_jobs=args.num_jobs, version=args.ansys_version
         )
 
     except REPError as e:

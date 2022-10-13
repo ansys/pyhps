@@ -264,7 +264,8 @@ AUTH_RESOURCES = [
     },
 ]
 
-# mapping of marshmallow field types to doc types
+# mapping of marshmallow field types to types
+
 FIELD_MAPPING = {
     marshmallow.fields.Integer: "int",
     marshmallow.fields.Float: "float",
@@ -306,6 +307,8 @@ def declared_fields(schema, resources):
         else:
             field_type = FIELD_MAPPING.get(v.__class__, None)
         if field_type:
+            if hasattr(v, "many") and v.many == True:
+                field_type = f"list[{field_type}]"
             field_doc += f" : {field_type}"
             if v.allow_none:
                 field_doc += ", optional"

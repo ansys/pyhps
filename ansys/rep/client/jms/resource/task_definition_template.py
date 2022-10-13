@@ -154,7 +154,7 @@ class TaskDefinitionTemplate(Object):
         Version of the template
     description : str, optional
         Description of the template
-    software_requirements : Software, optional
+    software_requirements : list[Software], optional
         A list of required software.
     resource_requirements : TemplateResourceRequirements, optional
         Includes hardware requirements such as number of cores, memory and disk space.
@@ -168,9 +168,9 @@ class TaskDefinitionTemplate(Object):
         Whether to run task with the execution command or the execution script.
     execution_script_storage_id : str, optional
         Storage ID of the script to execute (command or execution script is required).
-    input_files : TemplateInputFile, optional
+    input_files : list[TemplateInputFile], optional
         List of predefined input files.
-    output_files : TemplateOutputFile, optional
+    output_files : list[TemplateOutputFile], optional
         List of predefined output files.
 
     """
