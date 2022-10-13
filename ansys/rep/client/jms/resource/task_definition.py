@@ -150,7 +150,7 @@ class TaskDefinition(Object):
     success_criteria : SuccessCriteria, optional
     licensing : Licensing, optional
         A :class:`Licensing` object.
-    software_requirements : Software, optional
+    software_requirements : list[Software], optional
         A list of :class:`Software` objects.
     resource_requirements : ResourceRequirements, optional
         A :class:`ResourceRequirements` object.
