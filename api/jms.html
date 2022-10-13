@@ -40,6 +40,7 @@
     <script src="../_static/underscore.js"></script>
     <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="../_static/doctools.js"></script>
+    <script src="../_static/sphinx_highlight.js"></script>
     <script src="../_static/clipboard.min.js"></script>
     <script src="../_static/copybutton.js"></script>
     <link rel="shortcut icon" href="../_static/favicon.png"/>
@@ -239,11 +240,622 @@
     <a class="reference internal nav-link" href="#jms-api">
      JMS Api
     </a>
+    <ul class="nav section-nav flex-column">
+     <li class="toc-h4 nav-item toc-entry">
+      <a class="reference internal nav-link" href="#ansys.rep.client.jms.JmsApi">
+       <code class="docutils literal notranslate">
+        <span class="pre">
+         JmsApi
+        </span>
+       </code>
+      </a>
+      <ul class="nav section-nav flex-column">
+       <li class="toc-h5 nav-item toc-entry">
+        <a class="reference internal nav-link" href="#ansys.rep.client.jms.JmsApi.create_project">
+         <code class="docutils literal notranslate">
+          <span class="pre">
+           JmsApi.create_project()
+          </span>
+         </code>
+        </a>
+       </li>
+       <li class="toc-h5 nav-item toc-entry">
+        <a class="reference internal nav-link" href="#ansys.rep.client.jms.JmsApi.create_task_definition_templates">
+         <code class="docutils literal notranslate">
+          <span class="pre">
+           JmsApi.create_task_definition_templates()
+          </span>
+         </code>
+        </a>
+       </li>
+       <li class="toc-h5 nav-item toc-entry">
+        <a class="reference internal nav-link" href="#ansys.rep.client.jms.JmsApi.delete_project">
+         <code class="docutils literal notranslate">
+          <span class="pre">
+           JmsApi.delete_project()
+          </span>
+         </code>
+        </a>
+       </li>
+       <li class="toc-h5 nav-item toc-entry">
+        <a class="reference internal nav-link" href="#ansys.rep.client.jms.JmsApi.delete_task_definition_templates">
+         <code class="docutils literal notranslate">
+          <span class="pre">
+           JmsApi.delete_task_definition_templates()
+          </span>
+         </code>
+        </a>
+       </li>
+       <li class="toc-h5 nav-item toc-entry">
+        <a class="reference internal nav-link" href="#ansys.rep.client.jms.JmsApi.get_api_info">
+         <code class="docutils literal notranslate">
+          <span class="pre">
+           JmsApi.get_api_info()
+          </span>
+         </code>
+        </a>
+       </li>
+       <li class="toc-h5 nav-item toc-entry">
+        <a class="reference internal nav-link" href="#ansys.rep.client.jms.JmsApi.get_evaluators">
+         <code class="docutils literal notranslate">
+          <span class="pre">
+           JmsApi.get_evaluators()
+          </span>
+         </code>
+        </a>
+       </li>
+       <li class="toc-h5 nav-item toc-entry">
+        <a class="reference internal nav-link" href="#ansys.rep.client.jms.JmsApi.get_operation">
+         <code class="docutils literal notranslate">
+          <span class="pre">
+           JmsApi.get_operation()
+          </span>
+         </code>
+        </a>
+       </li>
+       <li class="toc-h5 nav-item toc-entry">
+        <a class="reference internal nav-link" href="#ansys.rep.client.jms.JmsApi.get_operations">
+         <code class="docutils literal notranslate">
+          <span class="pre">
+           JmsApi.get_operations()
+          </span>
+         </code>
+        </a>
+       </li>
+       <li class="toc-h5 nav-item toc-entry">
+        <a class="reference internal nav-link" href="#ansys.rep.client.jms.JmsApi.get_project">
+         <code class="docutils literal notranslate">
+          <span class="pre">
+           JmsApi.get_project()
+          </span>
+         </code>
+        </a>
+       </li>
+       <li class="toc-h5 nav-item toc-entry">
+        <a class="reference internal nav-link" href="#ansys.rep.client.jms.JmsApi.get_project_by_name">
+         <code class="docutils literal notranslate">
+          <span class="pre">
+           JmsApi.get_project_by_name()
+          </span>
+         </code>
+        </a>
+       </li>
+       <li class="toc-h5 nav-item toc-entry">
+        <a class="reference internal nav-link" href="#ansys.rep.client.jms.JmsApi.get_projects">
+         <code class="docutils literal notranslate">
+          <span class="pre">
+           JmsApi.get_projects()
+          </span>
+         </code>
+        </a>
+       </li>
+       <li class="toc-h5 nav-item toc-entry">
+        <a class="reference internal nav-link" href="#ansys.rep.client.jms.JmsApi.get_task_definition_templates">
+         <code class="docutils literal notranslate">
+          <span class="pre">
+           JmsApi.get_task_definition_templates()
+          </span>
+         </code>
+        </a>
+       </li>
+       <li class="toc-h5 nav-item toc-entry">
+        <a class="reference internal nav-link" href="#ansys.rep.client.jms.JmsApi.restore_project">
+         <code class="docutils literal notranslate">
+          <span class="pre">
+           JmsApi.restore_project()
+          </span>
+         </code>
+        </a>
+       </li>
+       <li class="toc-h5 nav-item toc-entry">
+        <a class="reference internal nav-link" href="#ansys.rep.client.jms.JmsApi.update_evaluators">
+         <code class="docutils literal notranslate">
+          <span class="pre">
+           JmsApi.update_evaluators()
+          </span>
+         </code>
+        </a>
+       </li>
+       <li class="toc-h5 nav-item toc-entry">
+        <a class="reference internal nav-link" href="#ansys.rep.client.jms.JmsApi.update_project">
+         <code class="docutils literal notranslate">
+          <span class="pre">
+           JmsApi.update_project()
+          </span>
+         </code>
+        </a>
+       </li>
+       <li class="toc-h5 nav-item toc-entry">
+        <a class="reference internal nav-link" href="#ansys.rep.client.jms.JmsApi.update_task_definition_templates">
+         <code class="docutils literal notranslate">
+          <span class="pre">
+           JmsApi.update_task_definition_templates()
+          </span>
+         </code>
+        </a>
+       </li>
+       <li class="toc-h5 nav-item toc-entry">
+        <a class="reference internal nav-link" href="#ansys.rep.client.jms.JmsApi.url">
+         <code class="docutils literal notranslate">
+          <span class="pre">
+           JmsApi.url
+          </span>
+         </code>
+        </a>
+       </li>
+      </ul>
+     </li>
+    </ul>
    </li>
    <li class="toc-h3 nav-item toc-entry">
     <a class="reference internal nav-link" href="#project-api">
      Project Api
     </a>
+    <ul class="nav section-nav flex-column">
+     <li class="toc-h4 nav-item toc-entry">
+      <a class="reference internal nav-link" href="#ansys.rep.client.jms.ProjectApi">
+       <code class="docutils literal notranslate">
+        <span class="pre">
+         ProjectApi
+        </span>
+       </code>
+      </a>
+      <ul class="nav section-nav flex-column">
+       <li class="toc-h5 nav-item toc-entry">
+        <a class="reference internal nav-link" href="#ansys.rep.client.jms.ProjectApi.archive_project">
+         <code class="docutils literal notranslate">
+          <span class="pre">
+           ProjectApi.archive_project()
+          </span>
+         </code>
+        </a>
+       </li>
+       <li class="toc-h5 nav-item toc-entry">
+        <a class="reference internal nav-link" href="#ansys.rep.client.jms.ProjectApi.copy_jobs">
+         <code class="docutils literal notranslate">
+          <span class="pre">
+           ProjectApi.copy_jobs()
+          </span>
+         </code>
+        </a>
+       </li>
+       <li class="toc-h5 nav-item toc-entry">
+        <a class="reference internal nav-link" href="#ansys.rep.client.jms.ProjectApi.copy_project">
+         <code class="docutils literal notranslate">
+          <span class="pre">
+           ProjectApi.copy_project()
+          </span>
+         </code>
+        </a>
+       </li>
+       <li class="toc-h5 nav-item toc-entry">
+        <a class="reference internal nav-link" href="#ansys.rep.client.jms.ProjectApi.create_algorithms">
+         <code class="docutils literal notranslate">
+          <span class="pre">
+           ProjectApi.create_algorithms()
+          </span>
+         </code>
+        </a>
+       </li>
+       <li class="toc-h5 nav-item toc-entry">
+        <a class="reference internal nav-link" href="#ansys.rep.client.jms.ProjectApi.create_files">
+         <code class="docutils literal notranslate">
+          <span class="pre">
+           ProjectApi.create_files()
+          </span>
+         </code>
+        </a>
+       </li>
+       <li class="toc-h5 nav-item toc-entry">
+        <a class="reference internal nav-link" href="#ansys.rep.client.jms.ProjectApi.create_job_definitions">
+         <code class="docutils literal notranslate">
+          <span class="pre">
+           ProjectApi.create_job_definitions()
+          </span>
+         </code>
+        </a>
+       </li>
+       <li class="toc-h5 nav-item toc-entry">
+        <a class="reference internal nav-link" href="#ansys.rep.client.jms.ProjectApi.create_job_selections">
+         <code class="docutils literal notranslate">
+          <span class="pre">
+           ProjectApi.create_job_selections()
+          </span>
+         </code>
+        </a>
+       </li>
+       <li class="toc-h5 nav-item toc-entry">
+        <a class="reference internal nav-link" href="#ansys.rep.client.jms.ProjectApi.create_jobs">
+         <code class="docutils literal notranslate">
+          <span class="pre">
+           ProjectApi.create_jobs()
+          </span>
+         </code>
+        </a>
+       </li>
+       <li class="toc-h5 nav-item toc-entry">
+        <a class="reference internal nav-link" href="#ansys.rep.client.jms.ProjectApi.create_license_contexts">
+         <code class="docutils literal notranslate">
+          <span class="pre">
+           ProjectApi.create_license_contexts()
+          </span>
+         </code>
+        </a>
+       </li>
+       <li class="toc-h5 nav-item toc-entry">
+        <a class="reference internal nav-link" href="#ansys.rep.client.jms.ProjectApi.create_parameter_definitions">
+         <code class="docutils literal notranslate">
+          <span class="pre">
+           ProjectApi.create_parameter_definitions()
+          </span>
+         </code>
+        </a>
+       </li>
+       <li class="toc-h5 nav-item toc-entry">
+        <a class="reference internal nav-link" href="#ansys.rep.client.jms.ProjectApi.create_parameter_mappings">
+         <code class="docutils literal notranslate">
+          <span class="pre">
+           ProjectApi.create_parameter_mappings()
+          </span>
+         </code>
+        </a>
+       </li>
+       <li class="toc-h5 nav-item toc-entry">
+        <a class="reference internal nav-link" href="#ansys.rep.client.jms.ProjectApi.create_task_definitions">
+         <code class="docutils literal notranslate">
+          <span class="pre">
+           ProjectApi.create_task_definitions()
+          </span>
+         </code>
+        </a>
+       </li>
+       <li class="toc-h5 nav-item toc-entry">
+        <a class="reference internal nav-link" href="#ansys.rep.client.jms.ProjectApi.delete_algorithms">
+         <code class="docutils literal notranslate">
+          <span class="pre">
+           ProjectApi.delete_algorithms()
+          </span>
+         </code>
+        </a>
+       </li>
+       <li class="toc-h5 nav-item toc-entry">
+        <a class="reference internal nav-link" href="#ansys.rep.client.jms.ProjectApi.delete_files">
+         <code class="docutils literal notranslate">
+          <span class="pre">
+           ProjectApi.delete_files()
+          </span>
+         </code>
+        </a>
+       </li>
+       <li class="toc-h5 nav-item toc-entry">
+        <a class="reference internal nav-link" href="#ansys.rep.client.jms.ProjectApi.delete_job_definitions">
+         <code class="docutils literal notranslate">
+          <span class="pre">
+           ProjectApi.delete_job_definitions()
+          </span>
+         </code>
+        </a>
+       </li>
+       <li class="toc-h5 nav-item toc-entry">
+        <a class="reference internal nav-link" href="#ansys.rep.client.jms.ProjectApi.delete_job_selections">
+         <code class="docutils literal notranslate">
+          <span class="pre">
+           ProjectApi.delete_job_selections()
+          </span>
+         </code>
+        </a>
+       </li>
+       <li class="toc-h5 nav-item toc-entry">
+        <a class="reference internal nav-link" href="#ansys.rep.client.jms.ProjectApi.delete_jobs">
+         <code class="docutils literal notranslate">
+          <span class="pre">
+           ProjectApi.delete_jobs()
+          </span>
+         </code>
+        </a>
+       </li>
+       <li class="toc-h5 nav-item toc-entry">
+        <a class="reference internal nav-link" href="#ansys.rep.client.jms.ProjectApi.delete_license_contexts">
+         <code class="docutils literal notranslate">
+          <span class="pre">
+           ProjectApi.delete_license_contexts()
+          </span>
+         </code>
+        </a>
+       </li>
+       <li class="toc-h5 nav-item toc-entry">
+        <a class="reference internal nav-link" href="#ansys.rep.client.jms.ProjectApi.delete_parameter_definitions">
+         <code class="docutils literal notranslate">
+          <span class="pre">
+           ProjectApi.delete_parameter_definitions()
+          </span>
+         </code>
+        </a>
+       </li>
+       <li class="toc-h5 nav-item toc-entry">
+        <a class="reference internal nav-link" href="#ansys.rep.client.jms.ProjectApi.delete_parameter_mappings">
+         <code class="docutils literal notranslate">
+          <span class="pre">
+           ProjectApi.delete_parameter_mappings()
+          </span>
+         </code>
+        </a>
+       </li>
+       <li class="toc-h5 nav-item toc-entry">
+        <a class="reference internal nav-link" href="#ansys.rep.client.jms.ProjectApi.delete_task_definitions">
+         <code class="docutils literal notranslate">
+          <span class="pre">
+           ProjectApi.delete_task_definitions()
+          </span>
+         </code>
+        </a>
+       </li>
+       <li class="toc-h5 nav-item toc-entry">
+        <a class="reference internal nav-link" href="#ansys.rep.client.jms.ProjectApi.download_file">
+         <code class="docutils literal notranslate">
+          <span class="pre">
+           ProjectApi.download_file()
+          </span>
+         </code>
+        </a>
+       </li>
+       <li class="toc-h5 nav-item toc-entry">
+        <a class="reference internal nav-link" href="#ansys.rep.client.jms.ProjectApi.fs_bucket_url">
+         <code class="docutils literal notranslate">
+          <span class="pre">
+           ProjectApi.fs_bucket_url
+          </span>
+         </code>
+        </a>
+       </li>
+       <li class="toc-h5 nav-item toc-entry">
+        <a class="reference internal nav-link" href="#ansys.rep.client.jms.ProjectApi.fs_url">
+         <code class="docutils literal notranslate">
+          <span class="pre">
+           ProjectApi.fs_url
+          </span>
+         </code>
+        </a>
+       </li>
+       <li class="toc-h5 nav-item toc-entry">
+        <a class="reference internal nav-link" href="#ansys.rep.client.jms.ProjectApi.get_algorithms">
+         <code class="docutils literal notranslate">
+          <span class="pre">
+           ProjectApi.get_algorithms()
+          </span>
+         </code>
+        </a>
+       </li>
+       <li class="toc-h5 nav-item toc-entry">
+        <a class="reference internal nav-link" href="#ansys.rep.client.jms.ProjectApi.get_files">
+         <code class="docutils literal notranslate">
+          <span class="pre">
+           ProjectApi.get_files()
+          </span>
+         </code>
+        </a>
+       </li>
+       <li class="toc-h5 nav-item toc-entry">
+        <a class="reference internal nav-link" href="#ansys.rep.client.jms.ProjectApi.get_job_definitions">
+         <code class="docutils literal notranslate">
+          <span class="pre">
+           ProjectApi.get_job_definitions()
+          </span>
+         </code>
+        </a>
+       </li>
+       <li class="toc-h5 nav-item toc-entry">
+        <a class="reference internal nav-link" href="#ansys.rep.client.jms.ProjectApi.get_job_selections">
+         <code class="docutils literal notranslate">
+          <span class="pre">
+           ProjectApi.get_job_selections()
+          </span>
+         </code>
+        </a>
+       </li>
+       <li class="toc-h5 nav-item toc-entry">
+        <a class="reference internal nav-link" href="#ansys.rep.client.jms.ProjectApi.get_jobs">
+         <code class="docutils literal notranslate">
+          <span class="pre">
+           ProjectApi.get_jobs()
+          </span>
+         </code>
+        </a>
+       </li>
+       <li class="toc-h5 nav-item toc-entry">
+        <a class="reference internal nav-link" href="#ansys.rep.client.jms.ProjectApi.get_license_contexts">
+         <code class="docutils literal notranslate">
+          <span class="pre">
+           ProjectApi.get_license_contexts()
+          </span>
+         </code>
+        </a>
+       </li>
+       <li class="toc-h5 nav-item toc-entry">
+        <a class="reference internal nav-link" href="#ansys.rep.client.jms.ProjectApi.get_parameter_definitions">
+         <code class="docutils literal notranslate">
+          <span class="pre">
+           ProjectApi.get_parameter_definitions()
+          </span>
+         </code>
+        </a>
+       </li>
+       <li class="toc-h5 nav-item toc-entry">
+        <a class="reference internal nav-link" href="#ansys.rep.client.jms.ProjectApi.get_parameter_mappings">
+         <code class="docutils literal notranslate">
+          <span class="pre">
+           ProjectApi.get_parameter_mappings()
+          </span>
+         </code>
+        </a>
+       </li>
+       <li class="toc-h5 nav-item toc-entry">
+        <a class="reference internal nav-link" href="#ansys.rep.client.jms.ProjectApi.get_permissions">
+         <code class="docutils literal notranslate">
+          <span class="pre">
+           ProjectApi.get_permissions()
+          </span>
+         </code>
+        </a>
+       </li>
+       <li class="toc-h5 nav-item toc-entry">
+        <a class="reference internal nav-link" href="#ansys.rep.client.jms.ProjectApi.get_task_definitions">
+         <code class="docutils literal notranslate">
+          <span class="pre">
+           ProjectApi.get_task_definitions()
+          </span>
+         </code>
+        </a>
+       </li>
+       <li class="toc-h5 nav-item toc-entry">
+        <a class="reference internal nav-link" href="#ansys.rep.client.jms.ProjectApi.get_tasks">
+         <code class="docutils literal notranslate">
+          <span class="pre">
+           ProjectApi.get_tasks()
+          </span>
+         </code>
+        </a>
+       </li>
+       <li class="toc-h5 nav-item toc-entry">
+        <a class="reference internal nav-link" href="#ansys.rep.client.jms.ProjectApi.jms_api_url">
+         <code class="docutils literal notranslate">
+          <span class="pre">
+           ProjectApi.jms_api_url
+          </span>
+         </code>
+        </a>
+       </li>
+       <li class="toc-h5 nav-item toc-entry">
+        <a class="reference internal nav-link" href="#ansys.rep.client.jms.ProjectApi.update_algorithms">
+         <code class="docutils literal notranslate">
+          <span class="pre">
+           ProjectApi.update_algorithms()
+          </span>
+         </code>
+        </a>
+       </li>
+       <li class="toc-h5 nav-item toc-entry">
+        <a class="reference internal nav-link" href="#ansys.rep.client.jms.ProjectApi.update_files">
+         <code class="docutils literal notranslate">
+          <span class="pre">
+           ProjectApi.update_files()
+          </span>
+         </code>
+        </a>
+       </li>
+       <li class="toc-h5 nav-item toc-entry">
+        <a class="reference internal nav-link" href="#ansys.rep.client.jms.ProjectApi.update_job_definitions">
+         <code class="docutils literal notranslate">
+          <span class="pre">
+           ProjectApi.update_job_definitions()
+          </span>
+         </code>
+        </a>
+       </li>
+       <li class="toc-h5 nav-item toc-entry">
+        <a class="reference internal nav-link" href="#ansys.rep.client.jms.ProjectApi.update_job_selections">
+         <code class="docutils literal notranslate">
+          <span class="pre">
+           ProjectApi.update_job_selections()
+          </span>
+         </code>
+        </a>
+       </li>
+       <li class="toc-h5 nav-item toc-entry">
+        <a class="reference internal nav-link" href="#ansys.rep.client.jms.ProjectApi.update_jobs">
+         <code class="docutils literal notranslate">
+          <span class="pre">
+           ProjectApi.update_jobs()
+          </span>
+         </code>
+        </a>
+       </li>
+       <li class="toc-h5 nav-item toc-entry">
+        <a class="reference internal nav-link" href="#ansys.rep.client.jms.ProjectApi.update_license_contexts">
+         <code class="docutils literal notranslate">
+          <span class="pre">
+           ProjectApi.update_license_contexts()
+          </span>
+         </code>
+        </a>
+       </li>
+       <li class="toc-h5 nav-item toc-entry">
+        <a class="reference internal nav-link" href="#ansys.rep.client.jms.ProjectApi.update_parameter_definitions">
+         <code class="docutils literal notranslate">
+          <span class="pre">
+           ProjectApi.update_parameter_definitions()
+          </span>
+         </code>
+        </a>
+       </li>
+       <li class="toc-h5 nav-item toc-entry">
+        <a class="reference internal nav-link" href="#ansys.rep.client.jms.ProjectApi.update_parameter_mappings">
+         <code class="docutils literal notranslate">
+          <span class="pre">
+           ProjectApi.update_parameter_mappings()
+          </span>
+         </code>
+        </a>
+       </li>
+       <li class="toc-h5 nav-item toc-entry">
+        <a class="reference internal nav-link" href="#ansys.rep.client.jms.ProjectApi.update_permissions">
+         <code class="docutils literal notranslate">
+          <span class="pre">
+           ProjectApi.update_permissions()
+          </span>
+         </code>
+        </a>
+       </li>
+       <li class="toc-h5 nav-item toc-entry">
+        <a class="reference internal nav-link" href="#ansys.rep.client.jms.ProjectApi.update_task_definitions">
+         <code class="docutils literal notranslate">
+          <span class="pre">
+           ProjectApi.update_task_definitions()
+          </span>
+         </code>
+        </a>
+       </li>
+       <li class="toc-h5 nav-item toc-entry">
+        <a class="reference internal nav-link" href="#ansys.rep.client.jms.ProjectApi.update_tasks">
+         <code class="docutils literal notranslate">
+          <span class="pre">
+           ProjectApi.update_tasks()
+          </span>
+         </code>
+        </a>
+       </li>
+       <li class="toc-h5 nav-item toc-entry">
+        <a class="reference internal nav-link" href="#ansys.rep.client.jms.ProjectApi.url">
+         <code class="docutils literal notranslate">
+          <span class="pre">
+           ProjectApi.url
+          </span>
+         </code>
+        </a>
+       </li>
+      </ul>
+     </li>
+    </ul>
    </li>
   </ul>
  </li>
@@ -256,61 +868,321 @@
     <a class="reference internal nav-link" href="#file">
      File
     </a>
+    <ul class="nav section-nav flex-column">
+     <li class="toc-h4 nav-item toc-entry">
+      <a class="reference internal nav-link" href="#ansys.rep.client.jms.File">
+       <code class="docutils literal notranslate">
+        <span class="pre">
+         File
+        </span>
+       </code>
+      </a>
+     </li>
+    </ul>
    </li>
    <li class="toc-h3 nav-item toc-entry">
     <a class="reference internal nav-link" href="#project">
      Project
     </a>
+    <ul class="nav section-nav flex-column">
+     <li class="toc-h4 nav-item toc-entry">
+      <a class="reference internal nav-link" href="#ansys.rep.client.jms.Project">
+       <code class="docutils literal notranslate">
+        <span class="pre">
+         Project
+        </span>
+       </code>
+      </a>
+     </li>
+    </ul>
    </li>
    <li class="toc-h3 nav-item toc-entry">
     <a class="reference internal nav-link" href="#fitness-definition">
      Fitness Definition
     </a>
+    <ul class="nav section-nav flex-column">
+     <li class="toc-h4 nav-item toc-entry">
+      <a class="reference internal nav-link" href="#ansys.rep.client.jms.FitnessTermDefinition">
+       <code class="docutils literal notranslate">
+        <span class="pre">
+         FitnessTermDefinition
+        </span>
+       </code>
+      </a>
+     </li>
+     <li class="toc-h4 nav-item toc-entry">
+      <a class="reference internal nav-link" href="#ansys.rep.client.jms.FitnessDefinition">
+       <code class="docutils literal notranslate">
+        <span class="pre">
+         FitnessDefinition
+        </span>
+       </code>
+      </a>
+      <ul class="nav section-nav flex-column">
+       <li class="toc-h5 nav-item toc-entry">
+        <a class="reference internal nav-link" href="#ansys.rep.client.jms.FitnessDefinition.add_fitness_term">
+         <code class="docutils literal notranslate">
+          <span class="pre">
+           FitnessDefinition.add_fitness_term()
+          </span>
+         </code>
+        </a>
+       </li>
+      </ul>
+     </li>
+    </ul>
    </li>
    <li class="toc-h3 nav-item toc-entry">
     <a class="reference internal nav-link" href="#parameters">
      Parameters
     </a>
+    <ul class="nav section-nav flex-column">
+     <li class="toc-h4 nav-item toc-entry">
+      <a class="reference internal nav-link" href="#ansys.rep.client.jms.FloatParameterDefinition">
+       <code class="docutils literal notranslate">
+        <span class="pre">
+         FloatParameterDefinition
+        </span>
+       </code>
+      </a>
+     </li>
+     <li class="toc-h4 nav-item toc-entry">
+      <a class="reference internal nav-link" href="#ansys.rep.client.jms.BoolParameterDefinition">
+       <code class="docutils literal notranslate">
+        <span class="pre">
+         BoolParameterDefinition
+        </span>
+       </code>
+      </a>
+     </li>
+     <li class="toc-h4 nav-item toc-entry">
+      <a class="reference internal nav-link" href="#ansys.rep.client.jms.IntParameterDefinition">
+       <code class="docutils literal notranslate">
+        <span class="pre">
+         IntParameterDefinition
+        </span>
+       </code>
+      </a>
+     </li>
+     <li class="toc-h4 nav-item toc-entry">
+      <a class="reference internal nav-link" href="#ansys.rep.client.jms.StringParameterDefinition">
+       <code class="docutils literal notranslate">
+        <span class="pre">
+         StringParameterDefinition
+        </span>
+       </code>
+      </a>
+     </li>
+     <li class="toc-h4 nav-item toc-entry">
+      <a class="reference internal nav-link" href="#ansys.rep.client.jms.ParameterMapping">
+       <code class="docutils literal notranslate">
+        <span class="pre">
+         ParameterMapping
+        </span>
+       </code>
+      </a>
+     </li>
+    </ul>
    </li>
    <li class="toc-h3 nav-item toc-entry">
     <a class="reference internal nav-link" href="#task-definition">
      Task Definition
     </a>
+    <ul class="nav section-nav flex-column">
+     <li class="toc-h4 nav-item toc-entry">
+      <a class="reference internal nav-link" href="#ansys.rep.client.jms.Software">
+       <code class="docutils literal notranslate">
+        <span class="pre">
+         Software
+        </span>
+       </code>
+      </a>
+     </li>
+     <li class="toc-h4 nav-item toc-entry">
+      <a class="reference internal nav-link" href="#ansys.rep.client.jms.ResourceRequirements">
+       <code class="docutils literal notranslate">
+        <span class="pre">
+         ResourceRequirements
+        </span>
+       </code>
+      </a>
+     </li>
+     <li class="toc-h4 nav-item toc-entry">
+      <a class="reference internal nav-link" href="#ansys.rep.client.jms.SuccessCriteria">
+       <code class="docutils literal notranslate">
+        <span class="pre">
+         SuccessCriteria
+        </span>
+       </code>
+      </a>
+     </li>
+     <li class="toc-h4 nav-item toc-entry">
+      <a class="reference internal nav-link" href="#ansys.rep.client.jms.Licensing">
+       <code class="docutils literal notranslate">
+        <span class="pre">
+         Licensing
+        </span>
+       </code>
+      </a>
+     </li>
+     <li class="toc-h4 nav-item toc-entry">
+      <a class="reference internal nav-link" href="#ansys.rep.client.jms.TaskDefinition">
+       <code class="docutils literal notranslate">
+        <span class="pre">
+         TaskDefinition
+        </span>
+       </code>
+      </a>
+     </li>
+    </ul>
    </li>
    <li class="toc-h3 nav-item toc-entry">
     <a class="reference internal nav-link" href="#job-definition">
      Job Definition
     </a>
+    <ul class="nav section-nav flex-column">
+     <li class="toc-h4 nav-item toc-entry">
+      <a class="reference internal nav-link" href="#ansys.rep.client.jms.JobDefinition">
+       <code class="docutils literal notranslate">
+        <span class="pre">
+         JobDefinition
+        </span>
+       </code>
+      </a>
+     </li>
+    </ul>
    </li>
    <li class="toc-h3 nav-item toc-entry">
     <a class="reference internal nav-link" href="#task">
      Task
     </a>
+    <ul class="nav section-nav flex-column">
+     <li class="toc-h4 nav-item toc-entry">
+      <a class="reference internal nav-link" href="#ansys.rep.client.jms.Task">
+       <code class="docutils literal notranslate">
+        <span class="pre">
+         Task
+        </span>
+       </code>
+      </a>
+     </li>
+    </ul>
    </li>
    <li class="toc-h3 nav-item toc-entry">
     <a class="reference internal nav-link" href="#job">
      Job
     </a>
+    <ul class="nav section-nav flex-column">
+     <li class="toc-h4 nav-item toc-entry">
+      <a class="reference internal nav-link" href="#ansys.rep.client.jms.Job">
+       <code class="docutils literal notranslate">
+        <span class="pre">
+         Job
+        </span>
+       </code>
+      </a>
+     </li>
+    </ul>
    </li>
    <li class="toc-h3 nav-item toc-entry">
     <a class="reference internal nav-link" href="#job-selection">
      Job Selection
     </a>
+    <ul class="nav section-nav flex-column">
+     <li class="toc-h4 nav-item toc-entry">
+      <a class="reference internal nav-link" href="#ansys.rep.client.jms.JobSelection">
+       <code class="docutils literal notranslate">
+        <span class="pre">
+         JobSelection
+        </span>
+       </code>
+      </a>
+     </li>
+    </ul>
    </li>
    <li class="toc-h3 nav-item toc-entry">
     <a class="reference internal nav-link" href="#design-exploration-algorithm">
      Design Exploration Algorithm
     </a>
+    <ul class="nav section-nav flex-column">
+     <li class="toc-h4 nav-item toc-entry">
+      <a class="reference internal nav-link" href="#ansys.rep.client.jms.Algorithm">
+       <code class="docutils literal notranslate">
+        <span class="pre">
+         Algorithm
+        </span>
+       </code>
+      </a>
+     </li>
+    </ul>
    </li>
    <li class="toc-h3 nav-item toc-entry">
     <a class="reference internal nav-link" href="#evaluator">
      Evaluator
     </a>
+    <ul class="nav section-nav flex-column">
+     <li class="toc-h4 nav-item toc-entry">
+      <a class="reference internal nav-link" href="#ansys.rep.client.jms.Evaluator">
+       <code class="docutils literal notranslate">
+        <span class="pre">
+         Evaluator
+        </span>
+       </code>
+      </a>
+     </li>
+    </ul>
    </li>
    <li class="toc-h3 nav-item toc-entry">
     <a class="reference internal nav-link" href="#task-definition-template">
      Task Definition Template
     </a>
+    <ul class="nav section-nav flex-column">
+     <li class="toc-h4 nav-item toc-entry">
+      <a class="reference internal nav-link" href="#ansys.rep.client.jms.TemplateProperty">
+       <code class="docutils literal notranslate">
+        <span class="pre">
+         TemplateProperty
+        </span>
+       </code>
+      </a>
+     </li>
+     <li class="toc-h4 nav-item toc-entry">
+      <a class="reference internal nav-link" href="#ansys.rep.client.jms.TemplateResourceRequirements">
+       <code class="docutils literal notranslate">
+        <span class="pre">
+         TemplateResourceRequirements
+        </span>
+       </code>
+      </a>
+     </li>
+     <li class="toc-h4 nav-item toc-entry">
+      <a class="reference internal nav-link" href="#ansys.rep.client.jms.TemplateInputFile">
+       <code class="docutils literal notranslate">
+        <span class="pre">
+         TemplateInputFile
+        </span>
+       </code>
+      </a>
+     </li>
+     <li class="toc-h4 nav-item toc-entry">
+      <a class="reference internal nav-link" href="#ansys.rep.client.jms.TemplateOutputFile">
+       <code class="docutils literal notranslate">
+        <span class="pre">
+         TemplateOutputFile
+        </span>
+       </code>
+      </a>
+     </li>
+     <li class="toc-h4 nav-item toc-entry">
+      <a class="reference internal nav-link" href="#ansys.rep.client.jms.TaskDefinitionTemplate">
+       <code class="docutils literal notranslate">
+        <span class="pre">
+         TaskDefinitionTemplate
+        </span>
+       </code>
+      </a>
+     </li>
+    </ul>
    </li>
   </ul>
  </li>
@@ -1727,7 +2599,7 @@ as <code class="xref py py-attr docutils literal notranslate"><span class="pre">
   
   <div class="footer-item">
     <p class="sphinx-version">
-Created using <a href="http://sphinx-doc.org/">Sphinx</a> 5.1.1.<br>
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 5.2.3.<br>
 </p>
   </div>
   

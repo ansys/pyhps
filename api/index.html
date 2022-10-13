@@ -40,6 +40,7 @@
     <script src="../_static/underscore.js"></script>
     <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="../_static/doctools.js"></script>
+    <script src="../_static/sphinx_highlight.js"></script>
     <script src="../_static/clipboard.min.js"></script>
     <script src="../_static/copybutton.js"></script>
     <link rel="shortcut icon" href="../_static/favicon.png"/>
@@ -249,14 +250,30 @@
 <div class="toctree-wrapper compound">
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="client.html">Client</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="client.html#module-ansys.rep.client.connection">Connection module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="client.html#client-object">Client object</a></li>
+<li class="toctree-l2"><a class="reference internal" href="client.html#module-ansys.rep.client.connection">Connection module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="client.html#ansys.rep.client.connection.create_session"><code class="docutils literal notranslate"><span class="pre">create_session()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="client.html#ansys.rep.client.connection.ping"><code class="docutils literal notranslate"><span class="pre">ping()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="client.html#client-object">Client object</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="client.html#ansys.rep.client.Client"><code class="docutils literal notranslate"><span class="pre">Client</span></code></a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="auth.html">Authentication Service</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="auth.html#authentication-function">Authentication function</a></li>
-<li class="toctree-l2"><a class="reference internal" href="auth.html#auth-api">Auth API</a></li>
-<li class="toctree-l2"><a class="reference internal" href="auth.html#user">User</a></li>
+<li class="toctree-l2"><a class="reference internal" href="auth.html#authentication-function">Authentication function</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="auth.html#ansys.rep.client.auth.authenticate"><code class="docutils literal notranslate"><span class="pre">authenticate()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="auth.html#auth-api">Auth API</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="auth.html#ansys.rep.client.auth.AuthApi"><code class="docutils literal notranslate"><span class="pre">AuthApi</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="auth.html#user">User</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="auth.html#ansys.rep.client.auth.User"><code class="docutils literal notranslate"><span class="pre">User</span></code></a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="jms.html">Job Management Service</a><ul>
@@ -282,7 +299,12 @@
 </li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="exceptions.html">Exceptions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="exceptions.html">Exceptions</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="exceptions.html#ansys.rep.client.REPError"><code class="docutils literal notranslate"><span class="pre">REPError</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="exceptions.html#ansys.rep.client.APIError"><code class="docutils literal notranslate"><span class="pre">APIError</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="exceptions.html#ansys.rep.client.ClientError"><code class="docutils literal notranslate"><span class="pre">ClientError</span></code></a></li>
+</ul>
+</li>
 </ul>
 </div>
 </section>
@@ -312,7 +334,7 @@
   
   <div class="footer-item">
     <p class="sphinx-version">
-Created using <a href="http://sphinx-doc.org/">Sphinx</a> 5.1.1.<br>
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 5.2.3.<br>
 </p>
   </div>
   
