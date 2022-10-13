@@ -182,6 +182,8 @@ class ProjectPermissionsTest(REPTestCase):
         self.assertTrue(except_obj.response.status_code, 403)
 
         root_api1.delete_project(proj)
+        auth_api.delete_user(user1)
+        auth_api.delete_user(user2)
 
 
 if __name__ == "__main__":

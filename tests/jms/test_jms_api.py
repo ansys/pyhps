@@ -51,18 +51,18 @@ class REPClientTest(REPTestCase):
         log.debug(f"job_definition={job_def}")
 
         log.debug("=== Jobs ===")
-        all_jobs = project_api.get_jobs(fields="all")
+        all_jobs = project_api.get_jobs(fields="all", limit=50)
         log.debug(f"# jobs: {len(all_jobs)}")
         if all_jobs:
             log.debug(f"dp0={all_jobs[0]}")
 
-        pending_jobs = project_api.get_jobs(eval_status="pending")
+        pending_jobs = project_api.get_jobs(eval_status="pending", limit=50)
         log.debug(f"Pending jobs: {[j.id for j in pending_jobs]}")
 
         # Alternative access with manually instantiated project
         proj = jms_api.get_projects(id=project.id)[0]
         project_api = ProjectApi(client, proj.id)
-        evaluated_jobs = project_api.get_jobs(eval_status="evaluated", fields="all")
+        evaluated_jobs = project_api.get_jobs(eval_status="evaluated", fields="all", limit=50)
         log.debug(f"Evaluated jobs: {[j.id for j in evaluated_jobs]}")
 
         # Access jobs data without objects
