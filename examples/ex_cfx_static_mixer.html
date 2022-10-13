@@ -284,8 +284,7 @@ The execution script is located in this zip file <a class="reference download in
 <span class="kn">import</span> <span class="nn">logging</span>
 <span class="kn">import</span> <span class="nn">os</span>
 
-<span class="kn">from</span> <span class="nn">ansys.rep.client</span> <span class="kn">import</span> <span class="n">Client</span><span class="p">,</span> <span class="n">REPError</span>
-<span class="kn">from</span> <span class="nn">ansys.rep.client</span> <span class="kn">import</span> <span class="n">__external_version__</span> <span class="k">as</span> <span class="n">ansys_version</span>
+<span class="kn">from</span> <span class="nn">ansys.rep.client</span> <span class="kn">import</span> <span class="n">Client</span><span class="p">,</span> <span class="n">REPError</span><span class="p">,</span> <span class="n">__external_version__</span>
 <span class="kn">from</span> <span class="nn">ansys.rep.client.jms</span> <span class="kn">import</span> <span class="p">(</span>
     <span class="n">File</span><span class="p">,</span>
     <span class="n">JmsApi</span><span class="p">,</span>
@@ -303,7 +302,7 @@ The execution script is located in this zip file <a class="reference download in
 <span class="n">log</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
 
-<span class="k">def</span> <span class="nf">create_project</span><span class="p">(</span><span class="n">client</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">num_jobs</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">use_exec_script</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">create_project</span><span class="p">(</span><span class="n">client</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">num_jobs</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">version</span><span class="o">=</span><span class="n">__external_version__</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Create a REP project consisting of an ANSYS CFX model.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -342,15 +341,14 @@ The execution script is located in this zip file <a class="reference download in
         <span class="p">)</span>
     <span class="p">)</span>
 
-    <span class="k">if</span> <span class="n">use_exec_script</span><span class="p">:</span>
-        <span class="n">files</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
-            <span class="n">File</span><span class="p">(</span>
-                <span class="n">name</span><span class="o">=</span><span class="s2">&quot;exec_cfx&quot;</span><span class="p">,</span>
-                <span class="n">evaluation_path</span><span class="o">=</span><span class="s2">&quot;exec_cfx.py&quot;</span><span class="p">,</span>
-                <span class="nb">type</span><span class="o">=</span><span class="s2">&quot;application/x-python-code&quot;</span><span class="p">,</span>
-                <span class="n">src</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">cwd</span><span class="p">,</span> <span class="s2">&quot;..&quot;</span><span class="p">,</span> <span class="s2">&quot;exec_scripts&quot;</span><span class="p">,</span> <span class="s2">&quot;exec_cfx.py&quot;</span><span class="p">),</span>
-            <span class="p">)</span>
+    <span class="n">files</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+        <span class="n">File</span><span class="p">(</span>
+            <span class="n">name</span><span class="o">=</span><span class="s2">&quot;exec_cfx&quot;</span><span class="p">,</span>
+            <span class="n">evaluation_path</span><span class="o">=</span><span class="s2">&quot;exec_cfx.py&quot;</span><span class="p">,</span>
+            <span class="nb">type</span><span class="o">=</span><span class="s2">&quot;application/x-python-code&quot;</span><span class="p">,</span>
+            <span class="n">src</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">cwd</span><span class="p">,</span> <span class="s2">&quot;..&quot;</span><span class="p">,</span> <span class="s2">&quot;exec_scripts&quot;</span><span class="p">,</span> <span class="s2">&quot;exec_cfx.py&quot;</span><span class="p">),</span>
         <span class="p">)</span>
+    <span class="p">)</span>
 
     <span class="n">files</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
         <span class="n">File</span><span class="p">(</span>
@@ -378,11 +376,11 @@ The execution script is located in this zip file <a class="reference download in
     <span class="n">job_def</span> <span class="o">=</span> <span class="n">JobDefinition</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;JobDefinition.1&quot;</span><span class="p">,</span> <span class="n">active</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
     <span class="c1"># Task definition</span>
-    <span class="n">num_input_files</span> <span class="o">=</span> <span class="mi">4</span> <span class="k">if</span> <span class="n">use_exec_script</span> <span class="k">else</span> <span class="mi">3</span>
+    <span class="n">num_input_files</span> <span class="o">=</span> <span class="mi">4</span>
     <span class="n">task_def</span> <span class="o">=</span> <span class="n">TaskDefinition</span><span class="p">(</span>
         <span class="n">name</span><span class="o">=</span><span class="s2">&quot;CFX_run&quot;</span><span class="p">,</span>
         <span class="n">software_requirements</span><span class="o">=</span><span class="p">[</span>
-            <span class="n">Software</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;Ansys CFX&quot;</span><span class="p">,</span> <span class="n">version</span><span class="o">=</span><span class="n">ansys_version</span><span class="p">),</span>
+            <span class="n">Software</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;Ansys CFX&quot;</span><span class="p">,</span> <span class="n">version</span><span class="o">=</span><span class="n">version</span><span class="p">),</span>
         <span class="p">],</span>
         <span class="n">execution_command</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>  <span class="c1"># only execution script supported initially</span>
         <span class="n">resource_requirements</span><span class="o">=</span><span class="n">ResourceRequirements</span><span class="p">(</span>
@@ -404,10 +402,9 @@ The execution script is located in this zip file <a class="reference download in
         <span class="n">licensing</span><span class="o">=</span><span class="n">Licensing</span><span class="p">(</span><span class="n">enable_shared_licensing</span><span class="o">=</span><span class="kc">False</span><span class="p">),</span>  <span class="c1"># Shared licensing disabled by default</span>
     <span class="p">)</span>
 
-    <span class="k">if</span> <span class="n">use_exec_script</span><span class="p">:</span>
-        <span class="n">task_def</span><span class="o">.</span><span class="n">use_execution_script</span> <span class="o">=</span> <span class="kc">True</span>
-        <span class="n">task_def</span><span class="o">.</span><span class="n">execution_command</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="n">task_def</span><span class="o">.</span><span class="n">execution_script_id</span> <span class="o">=</span> <span class="n">file_ids</span><span class="p">[</span><span class="s2">&quot;exec_cfx&quot;</span><span class="p">]</span>
+    <span class="n">task_def</span><span class="o">.</span><span class="n">use_execution_script</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="n">task_def</span><span class="o">.</span><span class="n">execution_command</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">task_def</span><span class="o">.</span><span class="n">execution_script_id</span> <span class="o">=</span> <span class="n">file_ids</span><span class="p">[</span><span class="s2">&quot;exec_cfx&quot;</span><span class="p">]</span>
 
     <span class="n">task_defs</span> <span class="o">=</span> <span class="p">[</span><span class="n">task_def</span><span class="p">]</span>
     <span class="n">task_defs</span> <span class="o">=</span> <span class="n">project_api</span><span class="o">.</span><span class="n">create_task_definitions</span><span class="p">(</span><span class="n">task_defs</span><span class="p">)</span>
@@ -434,10 +431,10 @@ The execution script is located in this zip file <a class="reference download in
     <span class="n">parser</span> <span class="o">=</span> <span class="n">argparse</span><span class="o">.</span><span class="n">ArgumentParser</span><span class="p">()</span>
     <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;-n&quot;</span><span class="p">,</span> <span class="s2">&quot;--name&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s2">&quot;cfx_static_mixer&quot;</span><span class="p">)</span>
     <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;-j&quot;</span><span class="p">,</span> <span class="s2">&quot;--num-jobs&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;-es&quot;</span><span class="p">,</span> <span class="s2">&quot;--use-exec-script&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s2">&quot;store_true&quot;</span><span class="p">)</span>
     <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;-U&quot;</span><span class="p">,</span> <span class="s2">&quot;--url&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s2">&quot;https://127.0.0.1:8443/rep&quot;</span><span class="p">)</span>
     <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;-u&quot;</span><span class="p">,</span> <span class="s2">&quot;--username&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s2">&quot;repadmin&quot;</span><span class="p">)</span>
     <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;-p&quot;</span><span class="p">,</span> <span class="s2">&quot;--password&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s2">&quot;repadmin&quot;</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;-v&quot;</span><span class="p">,</span> <span class="s2">&quot;--ansys-version&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="n">__external_version__</span><span class="p">)</span>
     <span class="n">args</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">parse_args</span><span class="p">()</span>
 
     <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">()</span>
@@ -448,10 +445,7 @@ The execution script is located in this zip file <a class="reference download in
         <span class="n">client</span> <span class="o">=</span> <span class="n">Client</span><span class="p">(</span><span class="n">rep_url</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">url</span><span class="p">,</span> <span class="n">username</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">username</span><span class="p">,</span> <span class="n">password</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">password</span><span class="p">)</span>
         <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;REP URL: </span><span class="si">{</span><span class="n">client</span><span class="o">.</span><span class="n">rep_url</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="n">proj</span> <span class="o">=</span> <span class="n">create_project</span><span class="p">(</span>
-            <span class="n">client</span><span class="o">=</span><span class="n">client</span><span class="p">,</span>
-            <span class="n">name</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
-            <span class="n">num_jobs</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">num_jobs</span><span class="p">,</span>
-            <span class="n">use_exec_script</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">use_exec_script</span><span class="p">,</span>
+            <span class="n">client</span><span class="o">=</span><span class="n">client</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">num_jobs</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">num_jobs</span><span class="p">,</span> <span class="n">version</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">ansys_version</span>
         <span class="p">)</span>
 
     <span class="k">except</span> <span class="n">REPError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>

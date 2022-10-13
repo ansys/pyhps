@@ -11,6 +11,7 @@ Many of the Python scripts can be executed with the following command line argum
 * ``-U``, ``--url``: url or the REP server (default: https://localhost:8443/rep)
 * ``-u``, ``--username``: REP username (default: repadmin)
 * ``-p``, ``--password``: REP password (default: repadmin)
+* ``-v``, ``--ansys-version``: Ansys version (default: |ansys_version|)
 
 A link to download all the required resources is available at each example page. 
 

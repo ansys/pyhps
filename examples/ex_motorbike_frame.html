@@ -300,8 +300,7 @@ by U. M. Fasel, O. Koenig, M. Wintermantel and P. Ermanni.</p>
 <span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">random</span>
 
-<span class="kn">from</span> <span class="nn">ansys.rep.client</span> <span class="kn">import</span> <span class="n">Client</span><span class="p">,</span> <span class="n">REPError</span>
-<span class="kn">from</span> <span class="nn">ansys.rep.client</span> <span class="kn">import</span> <span class="n">__external_version__</span> <span class="k">as</span> <span class="n">ansys_version</span>
+<span class="kn">from</span> <span class="nn">ansys.rep.client</span> <span class="kn">import</span> <span class="n">Client</span><span class="p">,</span> <span class="n">REPError</span><span class="p">,</span> <span class="n">__external_version__</span>
 <span class="kn">from</span> <span class="nn">ansys.rep.client.jms</span> <span class="kn">import</span> <span class="p">(</span>
     <span class="n">File</span><span class="p">,</span>
     <span class="n">FitnessDefinition</span><span class="p">,</span>
@@ -323,7 +322,9 @@ by U. M. Fasel, O. Koenig, M. Wintermantel and P. Ermanni.</p>
 <span class="n">log</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
 
-<span class="k">def</span> <span class="nf">create_project</span><span class="p">(</span><span class="n">client</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">num_jobs</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">use_exec_script</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Project</span><span class="p">:</span>
+<span class="k">def</span> <span class="nf">create_project</span><span class="p">(</span>
+    <span class="n">client</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">version</span><span class="o">=</span><span class="n">__external_version__</span><span class="p">,</span> <span class="n">num_jobs</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">use_exec_script</span><span class="o">=</span><span class="kc">False</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Project</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Create a REP project consisting of an ANSYS APDL beam model of a motorbike-frame.</span>
 
@@ -532,7 +533,7 @@ by U. M. Fasel, O. Koenig, M. Wintermantel and P. Ermanni.</p>
     <span class="n">task_def</span> <span class="o">=</span> <span class="n">TaskDefinition</span><span class="p">(</span>
         <span class="n">name</span><span class="o">=</span><span class="s2">&quot;MAPDL_run&quot;</span><span class="p">,</span>
         <span class="n">software_requirements</span><span class="o">=</span><span class="p">[</span>
-            <span class="n">Software</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;Ansys Mechanical APDL&quot;</span><span class="p">,</span> <span class="n">version</span><span class="o">=</span><span class="n">ansys_version</span><span class="p">),</span>
+            <span class="n">Software</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;Ansys Mechanical APDL&quot;</span><span class="p">,</span> <span class="n">version</span><span class="o">=</span><span class="n">version</span><span class="p">),</span>
         <span class="p">],</span>
         <span class="n">execution_command</span><span class="o">=</span><span class="s2">&quot;</span><span class="si">%e</span><span class="s2">xecutable% -b -i </span><span class="si">%f</span><span class="s2">ile:inp</span><span class="si">% -o</span><span class="s2"> file.out -np </span><span class="si">%r</span><span class="s2">esource:num_cores%&quot;</span><span class="p">,</span>
         <span class="n">resource_requirements</span><span class="o">=</span><span class="n">ResourceRequirements</span><span class="p">(</span>
@@ -623,6 +624,7 @@ by U. M. Fasel, O. Koenig, M. Wintermantel and P. Ermanni.</p>
     <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;-U&quot;</span><span class="p">,</span> <span class="s2">&quot;--url&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s2">&quot;https://127.0.0.1:8443/rep&quot;</span><span class="p">)</span>
     <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;-u&quot;</span><span class="p">,</span> <span class="s2">&quot;--username&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s2">&quot;repadmin&quot;</span><span class="p">)</span>
     <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;-p&quot;</span><span class="p">,</span> <span class="s2">&quot;--password&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s2">&quot;repadmin&quot;</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;-v&quot;</span><span class="p">,</span> <span class="s2">&quot;--ansys-version&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="n">__external_version__</span><span class="p">)</span>
     <span class="n">args</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">parse_args</span><span class="p">()</span>
 
     <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">()</span>
@@ -635,6 +637,7 @@ by U. M. Fasel, O. Koenig, M. Wintermantel and P. Ermanni.</p>
         <span class="n">proj</span> <span class="o">=</span> <span class="n">create_project</span><span class="p">(</span>
             <span class="n">client</span><span class="o">=</span><span class="n">client</span><span class="p">,</span>
             <span class="n">name</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+            <span class="n">version</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">ansys_version</span><span class="p">,</span>
             <span class="n">num_jobs</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">num_jobs</span><span class="p">,</span>
             <span class="n">use_exec_script</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">use_exec_script</span><span class="p">,</span>
         <span class="p">)</span>

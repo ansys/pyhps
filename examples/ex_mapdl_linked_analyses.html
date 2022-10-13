@@ -319,8 +319,7 @@ as a multi-task job to REP. The script shows two possible ways to submit the ind
 <span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Tuple</span>
 
-<span class="kn">from</span> <span class="nn">ansys.rep.client</span> <span class="kn">import</span> <span class="n">Client</span><span class="p">,</span> <span class="n">REPError</span>
-<span class="kn">from</span> <span class="nn">ansys.rep.client</span> <span class="kn">import</span> <span class="n">__external_version__</span> <span class="k">as</span> <span class="n">ansys_version</span>
+<span class="kn">from</span> <span class="nn">ansys.rep.client</span> <span class="kn">import</span> <span class="n">Client</span><span class="p">,</span> <span class="n">REPError</span><span class="p">,</span> <span class="n">__external_version__</span>
 <span class="kn">from</span> <span class="nn">ansys.rep.client.jms</span> <span class="kn">import</span> <span class="p">(</span>
     <span class="n">File</span><span class="p">,</span>
     <span class="n">JmsApi</span><span class="p">,</span>
@@ -338,7 +337,9 @@ as a multi-task job to REP. The script shows two possible ways to submit the ind
 <span class="n">log</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
 
-<span class="k">def</span> <span class="nf">create_prestress_task_definition</span><span class="p">(</span><span class="n">project_api</span><span class="p">:</span> <span class="n">ProjectApi</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="n">File</span><span class="p">]]:</span>
+<span class="k">def</span> <span class="nf">create_prestress_task_definition</span><span class="p">(</span>
+    <span class="n">project_api</span><span class="p">:</span> <span class="n">ProjectApi</span><span class="p">,</span> <span class="n">version</span><span class="p">:</span> <span class="nb">str</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="n">File</span><span class="p">]]:</span>
 
     <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;=== Files&quot;</span><span class="p">)</span>
     <span class="n">cwd</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)</span>
@@ -386,7 +387,7 @@ as a multi-task job to REP. The script shows two possible ways to submit the ind
 
     <span class="n">task_def</span> <span class="o">=</span> <span class="n">TaskDefinition</span><span class="p">(</span>
         <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Prestress&quot;</span><span class="p">,</span>
-        <span class="n">software_requirements</span><span class="o">=</span><span class="p">[</span><span class="n">Software</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;Ansys Mechanical APDL&quot;</span><span class="p">,</span> <span class="n">version</span><span class="o">=</span><span class="n">ansys_version</span><span class="p">)],</span>
+        <span class="n">software_requirements</span><span class="o">=</span><span class="p">[</span><span class="n">Software</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;Ansys Mechanical APDL&quot;</span><span class="p">,</span> <span class="n">version</span><span class="o">=</span><span class="n">version</span><span class="p">)],</span>
         <span class="n">execution_command</span><span class="o">=</span><span class="s2">&quot;</span><span class="si">%e</span><span class="s2">xecutable% -b -nolist -i </span><span class="si">%f</span><span class="s2">ile:input_deck%&quot;</span>
         <span class="s2">&quot; -o solve.out -np </span><span class="si">%r</span><span class="s2">esource:num_cores%&quot;</span><span class="p">,</span>
         <span class="n">max_execution_time</span><span class="o">=</span><span class="mf">360.0</span><span class="p">,</span>
@@ -404,7 +405,7 @@ as a multi-task job to REP. The script shows two possible ways to submit the ind
 
 
 <span class="k">def</span> <span class="nf">create_modal_task_definition</span><span class="p">(</span>
-    <span class="n">project_api</span><span class="p">:</span> <span class="n">ProjectApi</span><span class="p">,</span> <span class="n">prestress_files</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">File</span><span class="p">]</span>
+    <span class="n">project_api</span><span class="p">:</span> <span class="n">ProjectApi</span><span class="p">,</span> <span class="n">prestress_files</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">File</span><span class="p">],</span> <span class="n">version</span><span class="p">:</span> <span class="nb">str</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="n">File</span><span class="p">]]:</span>
 
     <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;=== Files&quot;</span><span class="p">)</span>
@@ -469,7 +470,7 @@ as a multi-task job to REP. The script shows two possible ways to submit the ind
 
     <span class="n">task_def</span> <span class="o">=</span> <span class="n">TaskDefinition</span><span class="p">(</span>
         <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Modal&quot;</span><span class="p">,</span>
-        <span class="n">software_requirements</span><span class="o">=</span><span class="p">[</span><span class="n">Software</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;Ansys Mechanical APDL&quot;</span><span class="p">,</span> <span class="n">version</span><span class="o">=</span><span class="n">ansys_version</span><span class="p">)],</span>
+        <span class="n">software_requirements</span><span class="o">=</span><span class="p">[</span><span class="n">Software</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;Ansys Mechanical APDL&quot;</span><span class="p">,</span> <span class="n">version</span><span class="o">=</span><span class="n">version</span><span class="p">)],</span>
         <span class="n">execution_command</span><span class="o">=</span><span class="s2">&quot;</span><span class="si">%e</span><span class="s2">xecutable% -b -nolist -i </span><span class="si">%f</span><span class="s2">ile:input_deck% &quot;</span>
         <span class="s2">&quot;-o solve.out -np </span><span class="si">%r</span><span class="s2">esource:num_cores%&quot;</span><span class="p">,</span>
         <span class="n">max_execution_time</span><span class="o">=</span><span class="mf">360.0</span><span class="p">,</span>
@@ -486,7 +487,9 @@ as a multi-task job to REP. The script shows two possible ways to submit the ind
     <span class="k">return</span> <span class="n">task_def</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="p">[</span><span class="n">f</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">files</span> <span class="k">if</span> <span class="n">f</span><span class="o">.</span><span class="n">name</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;rst&quot;</span><span class="p">,</span> <span class="s2">&quot;mode&quot;</span><span class="p">,</span> <span class="s2">&quot;db&quot;</span><span class="p">,</span> <span class="s2">&quot;esav&quot;</span><span class="p">,</span> <span class="s2">&quot;emat&quot;</span><span class="p">]]</span>
 
 
-<span class="k">def</span> <span class="nf">create_harmonic_task_definition</span><span class="p">(</span><span class="n">project_api</span><span class="p">:</span> <span class="n">ProjectApi</span><span class="p">,</span> <span class="n">modal_files</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">File</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="k">def</span> <span class="nf">create_harmonic_task_definition</span><span class="p">(</span>
+    <span class="n">project_api</span><span class="p">:</span> <span class="n">ProjectApi</span><span class="p">,</span> <span class="n">modal_files</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">File</span><span class="p">],</span> <span class="n">version</span><span class="p">:</span> <span class="nb">str</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 
     <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;=== Files&quot;</span><span class="p">)</span>
     <span class="n">cwd</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)</span>
@@ -516,7 +519,7 @@ as a multi-task job to REP. The script shows two possible ways to submit the ind
 
     <span class="n">task_def</span> <span class="o">=</span> <span class="n">TaskDefinition</span><span class="p">(</span>
         <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Harmonic&quot;</span><span class="p">,</span>
-        <span class="n">software_requirements</span><span class="o">=</span><span class="p">[</span><span class="n">Software</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;Ansys Mechanical APDL&quot;</span><span class="p">,</span> <span class="n">version</span><span class="o">=</span><span class="n">ansys_version</span><span class="p">)],</span>
+        <span class="n">software_requirements</span><span class="o">=</span><span class="p">[</span><span class="n">Software</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;Ansys Mechanical APDL&quot;</span><span class="p">,</span> <span class="n">version</span><span class="o">=</span><span class="n">version</span><span class="p">)],</span>
         <span class="n">execution_command</span><span class="o">=</span><span class="s2">&quot;</span><span class="si">%e</span><span class="s2">xecutable% -b -nolist -i </span><span class="si">%f</span><span class="s2">ile:input_deck% &quot;</span>
         <span class="s2">&quot;-o solve.out -np </span><span class="si">%r</span><span class="s2">esource:num_cores%&quot;</span><span class="p">,</span>
         <span class="n">max_execution_time</span><span class="o">=</span><span class="mf">360.0</span><span class="p">,</span>
@@ -540,7 +543,7 @@ as a multi-task job to REP. The script shows two possible ways to submit the ind
     <span class="k">return</span> <span class="n">project_api</span><span class="o">.</span><span class="n">update_tasks</span><span class="p">([</span><span class="n">task</span><span class="p">])</span>
 
 
-<span class="k">def</span> <span class="nf">create_project</span><span class="p">(</span><span class="n">client</span><span class="p">:</span> <span class="n">Client</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">incremental</span><span class="p">:</span> <span class="nb">bool</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Project</span><span class="p">:</span>
+<span class="k">def</span> <span class="nf">create_project</span><span class="p">(</span><span class="n">client</span><span class="p">:</span> <span class="n">Client</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">incremental</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span> <span class="n">version</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Project</span><span class="p">:</span>
 
     <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;=== REP connection&quot;</span><span class="p">)</span>
     <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Client connected at </span><span class="si">{</span><span class="n">client</span><span class="o">.</span><span class="n">rep_url</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
@@ -559,7 +562,7 @@ as a multi-task job to REP. The script shows two possible ways to submit the ind
     <span class="n">job_definition</span> <span class="o">=</span> <span class="n">JobDefinition</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;Linked Analyses&quot;</span><span class="p">,</span> <span class="n">active</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
     <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;=== Create Prestress task definition&quot;</span><span class="p">)</span>
-    <span class="n">prestress_task_def_id</span><span class="p">,</span> <span class="n">prestress_files</span> <span class="o">=</span> <span class="n">create_prestress_task_definition</span><span class="p">(</span><span class="n">project_api</span><span class="p">)</span>
+    <span class="n">prestress_task_def_id</span><span class="p">,</span> <span class="n">prestress_files</span> <span class="o">=</span> <span class="n">create_prestress_task_definition</span><span class="p">(</span><span class="n">project_api</span><span class="p">,</span> <span class="n">version</span><span class="p">)</span>
 
     <span class="n">job_definition</span><span class="o">.</span><span class="n">task_definition_ids</span> <span class="o">=</span> <span class="p">[</span><span class="n">prestress_task_def_id</span><span class="p">]</span>
 
@@ -572,7 +575,9 @@ as a multi-task job to REP. The script shows two possible ways to submit the ind
         <span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
 
     <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;=== Create Modal task definition&quot;</span><span class="p">)</span>
-    <span class="n">modal_task_def_id</span><span class="p">,</span> <span class="n">modal_files</span> <span class="o">=</span> <span class="n">create_modal_task_definition</span><span class="p">(</span><span class="n">project_api</span><span class="p">,</span> <span class="n">prestress_files</span><span class="p">)</span>
+    <span class="n">modal_task_def_id</span><span class="p">,</span> <span class="n">modal_files</span> <span class="o">=</span> <span class="n">create_modal_task_definition</span><span class="p">(</span>
+        <span class="n">project_api</span><span class="p">,</span> <span class="n">prestress_files</span><span class="p">,</span> <span class="n">version</span>
+    <span class="p">)</span>
 
     <span class="n">job_definition</span><span class="o">.</span><span class="n">task_definition_ids</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">modal_task_def_id</span><span class="p">)</span>
 
@@ -583,7 +588,7 @@ as a multi-task job to REP. The script shows two possible ways to submit the ind
         <span class="n">set_last_task_to_pending</span><span class="p">(</span><span class="n">project_api</span><span class="p">,</span> <span class="n">job</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
 
     <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;=== Create Harmonic task definition&quot;</span><span class="p">)</span>
-    <span class="n">harmonic_task_def_id</span> <span class="o">=</span> <span class="n">create_harmonic_task_definition</span><span class="p">(</span><span class="n">project_api</span><span class="p">,</span> <span class="n">modal_files</span><span class="p">)</span>
+    <span class="n">harmonic_task_def_id</span> <span class="o">=</span> <span class="n">create_harmonic_task_definition</span><span class="p">(</span><span class="n">project_api</span><span class="p">,</span> <span class="n">modal_files</span><span class="p">,</span> <span class="n">version</span><span class="p">)</span>
 
     <span class="n">job_definition</span><span class="o">.</span><span class="n">task_definition_ids</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">harmonic_task_def_id</span><span class="p">)</span>
 
@@ -611,6 +616,7 @@ as a multi-task job to REP. The script shows two possible ways to submit the ind
     <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;-u&quot;</span><span class="p">,</span> <span class="s2">&quot;--username&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s2">&quot;repadmin&quot;</span><span class="p">)</span>
     <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;-p&quot;</span><span class="p">,</span> <span class="s2">&quot;--password&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s2">&quot;repadmin&quot;</span><span class="p">)</span>
     <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--incremental&quot;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s2">&quot;store_true&quot;</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;-v&quot;</span><span class="p">,</span> <span class="s2">&quot;--ansys-version&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="n">__external_version__</span><span class="p">)</span>
 
     <span class="n">args</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">parse_args</span><span class="p">()</span>
 
@@ -621,7 +627,9 @@ as a multi-task job to REP. The script shows two possible ways to submit the ind
     <span class="n">client</span> <span class="o">=</span> <span class="n">Client</span><span class="p">(</span><span class="n">rep_url</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">url</span><span class="p">,</span> <span class="n">username</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">username</span><span class="p">,</span> <span class="n">password</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">password</span><span class="p">)</span>
 
     <span class="k">try</span><span class="p">:</span>
-        <span class="n">create_project</span><span class="p">(</span><span class="n">client</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">incremental</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">incremental</span><span class="p">)</span>
+        <span class="n">create_project</span><span class="p">(</span>
+            <span class="n">client</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">incremental</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">incremental</span><span class="p">,</span> <span class="n">version</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">ansys_version</span>
+        <span class="p">)</span>
     <span class="k">except</span> <span class="n">REPError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
         <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>
 </pre></div>
