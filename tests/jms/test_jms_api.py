@@ -51,7 +51,7 @@ class REPClientTest(REPTestCase):
         log.debug(f"job_definition={job_def}")
 
         log.debug("=== Jobs ===")
-        all_jobs = project_api.get_jobs(fields="all")
+        all_jobs = project_api.get_jobs(fields="all", limit=50)
         log.debug(f"# jobs: {len(all_jobs)}")
         if all_jobs:
             log.debug(f"dp0={all_jobs[0]}")
