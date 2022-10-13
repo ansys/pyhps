@@ -242,6 +242,7 @@ global_substitutions = {
     "client_version": __version__,
     "version_no_dots": __version_no_dots__,
     "external_version": __external_version__,
+    "ansys_version": __external_version__,
 }
 
 # numpydoc configuration

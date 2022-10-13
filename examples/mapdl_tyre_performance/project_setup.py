@@ -10,8 +10,7 @@ import logging
 import os
 import random
 
-from ansys.rep.client import Client, REPError
-from ansys.rep.client import __external_version__ as ansys_version
+from ansys.rep.client import Client, REPError, __external_version__
 from ansys.rep.client.jms import (
     File,
     FloatParameterDefinition,
@@ -29,7 +28,7 @@ from ansys.rep.client.jms import (
 log = logging.getLogger(__name__)
 
 
-def main(client: Client, name: str, num_jobs: int) -> Project:
+def main(client: Client, name: str, num_jobs: int, version: str) -> Project:
 
     log.debug("=== Project")
     jms_api = JmsApi(client)
@@ -178,7 +177,7 @@ def main(client: Client, name: str, num_jobs: int) -> Project:
     # Process step
     task_def = TaskDefinition(
         name="MAPDL_run",
-        software_requirements=[Software(name="Ansys Mechanical APDL", version=ansys_version)],
+        software_requirements=[Software(name="Ansys Mechanical APDL", version=version)],
         execution_command="%executable% -b -i %file:mac% -o file.out -np %resource:num_cores%",
         resource_requirements=ResourceRequirements(
             cpu_core_usage=4,
@@ -229,6 +228,7 @@ if __name__ == "__main__":
     parser.add_argument("-U", "--url", default="https://localhost:8443/rep")
     parser.add_argument("-u", "--username", default="repadmin")
     parser.add_argument("-p", "--password", default="repadmin")
+    parser.add_argument("-v", "--ansys-version", default=__external_version__)
 
     args = parser.parse_args()
 
@@ -239,6 +239,6 @@ if __name__ == "__main__":
     client = Client(rep_url=args.url, username=args.username, password=args.password)
 
     try:
-        main(client, name=args.name, num_jobs=args.num_jobs)
+        main(client, name=args.name, num_jobs=args.num_jobs, version=args.ansys_version)
     except REPError as e:
         log.error(str(e))

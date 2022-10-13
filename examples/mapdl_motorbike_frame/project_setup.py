@@ -9,8 +9,7 @@ import logging
 import os
 import random
 
-from ansys.rep.client import Client, REPError
-from ansys.rep.client import __external_version__ as ansys_version
+from ansys.rep.client import Client, REPError, __external_version__
 from ansys.rep.client.jms import (
     File,
     FitnessDefinition,
@@ -32,7 +31,9 @@ from ansys.rep.client.jms import (
 log = logging.getLogger(__name__)
 
 
-def create_project(client, name, num_jobs=20, use_exec_script=False) -> Project:
+def create_project(
+    client, name, version=__external_version__, num_jobs=20, use_exec_script=False
+) -> Project:
     """
     Create a REP project consisting of an ANSYS APDL beam model of a motorbike-frame.
 
@@ -241,7 +242,7 @@ def create_project(client, name, num_jobs=20, use_exec_script=False) -> Project:
     task_def = TaskDefinition(
         name="MAPDL_run",
         software_requirements=[
-            Software(name="Ansys Mechanical APDL", version=ansys_version),
+            Software(name="Ansys Mechanical APDL", version=version),
         ],
         execution_command="%executable% -b -i %file:inp% -o file.out -np %resource:num_cores%",
         resource_requirements=ResourceRequirements(
@@ -332,6 +333,7 @@ if __name__ == "__main__":
     parser.add_argument("-U", "--url", default="https://127.0.0.1:8443/rep")
     parser.add_argument("-u", "--username", default="repadmin")
     parser.add_argument("-p", "--password", default="repadmin")
+    parser.add_argument("-v", "--ansys-version", default=__external_version__)
     args = parser.parse_args()
 
     logger = logging.getLogger()
@@ -344,6 +346,7 @@ if __name__ == "__main__":
         proj = create_project(
             client=client,
             name=args.name,
+            version=args.ansys_version,
             num_jobs=args.num_jobs,
             use_exec_script=args.use_exec_script,
         )

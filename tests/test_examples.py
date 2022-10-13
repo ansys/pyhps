@@ -1,6 +1,7 @@
 import logging
 import unittest
 
+from ansys.rep.client import __external_version__ as ansys_version
 from ansys.rep.client.jms import JmsApi, ProjectApi
 from tests.rep_test import REPTestCase
 
@@ -42,12 +43,41 @@ class REPClientTest(REPTestCase):
 
         jms_api.delete_project(project)
 
+    def test_mapdl_motorbike_frame_with_user_defined_version(self):
+
+        from examples.mapdl_motorbike_frame.project_setup import create_project
+
+        num_jobs = 5
+        project = create_project(
+            self.client(),
+            f"Test mapdl_motorbike_frame",
+            version="2022 R1",
+            num_jobs=num_jobs,
+            use_exec_script=False,
+        )
+        self.assertIsNotNone(project)
+
+        jms_api = JmsApi(self.client())
+        project_api = ProjectApi(self.client(), project.id)
+
+        self.assertEqual(len(project_api.get_jobs()), num_jobs)
+
+        job_def = project_api.get_job_definitions()[0]
+        task_def = project_api.get_task_definitions(id=job_def.task_definition_ids)[0]
+        app = task_def.software_requirements[0]
+        self.assertEqual(app.name, "Ansys Mechanical APDL")
+        self.assertEqual(app.version, "2022 R1")
+
+        jms_api.delete_project(project)
+
     def test_mapdl_tyre_performance(self):
 
         from examples.mapdl_tyre_performance.project_setup import main
 
         num_jobs = 1
-        project = main(self.client(), f"Test mapdl_tyre_performance", num_jobs)
+        project = main(
+            self.client(), f"Test mapdl_tyre_performance", num_jobs, version=ansys_version
+        )
         self.assertIsNotNone(project)
 
         jms_api = JmsApi(self.client())
@@ -95,7 +125,10 @@ class REPClientTest(REPTestCase):
 
         for incremental_version in [True, False]:
             project = create_project(
-                client, name="Test Linked Analyses", incremental=incremental_version
+                client,
+                name="Test Linked Analyses",
+                incremental=incremental_version,
+                version=ansys_version,
             )
             self.assertIsNotNone(project)
 
@@ -111,7 +144,7 @@ class REPClientTest(REPTestCase):
 
         from examples.fluent_2d_heat_exchanger.project_setup import main
 
-        project = main(self.client(), name="Fluent Test")
+        project = main(self.client(), name="Fluent Test", version=ansys_version)
         self.assertIsNotNone(project)
 
         jms_api = JmsApi(self.client())
@@ -127,7 +160,7 @@ class REPClientTest(REPTestCase):
         from examples.fluent_nozzle.project_setup import create_project
 
         project = create_project(
-            self.client(), name="Fluent Nozzle Test", num_jobs=1, use_exec_script=True
+            self.client(), name="Fluent Nozzle Test", num_jobs=1, version=ansys_version
         )
         self.assertIsNotNone(project)
 
@@ -144,7 +177,7 @@ class REPClientTest(REPTestCase):
         from examples.cfx_static_mixer.project_setup import create_project
 
         project = create_project(
-            self.client(), name="CFX Static Mixer Test", num_jobs=1, use_exec_script=True
+            self.client(), name="CFX Static Mixer Test", num_jobs=1, version=ansys_version
         )
         self.assertIsNotNone(project)
 
