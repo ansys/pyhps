@@ -80,7 +80,7 @@ jobs:
         env:
           REP_TEST_URL: https://repkube.westeurope.cloudapp.azure.com/dev/rep
           REP_TEST_USERNAME: repadmin
-          REP_TEST_PASSWORD: repadmin
+          REP_TEST_PASSWORD: ${{ secrets.REPADMIN_PASSWORD }}
 
       - name: Publish Test Report
         uses: mikepenz/action-junit-report@v3
@@ -108,7 +108,7 @@ jobs:
         env:
           REP_TEST_URL: https://repkube.westeurope.cloudapp.azure.com/dev/rep
           REP_TEST_USERNAME: repadmin
-          REP_TEST_PASSWORD: repadmin
+          REP_TEST_PASSWORD: ${{ secrets.REPADMIN_PASSWORD }}
           
       - name: Publish Test Report
         uses: mikepenz/action-junit-report@v3
