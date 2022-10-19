@@ -382,7 +382,12 @@ requests a new access token.</p></li>
 <span class="gp">&gt;&gt;&gt; </span><span class="c1"># Extract refresh token to eventually store it</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">refresh_token</span> <span class="o">=</span> <span class="n">cl</span><span class="o">.</span><span class="n">refresh_token</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="c1"># Alternative: Create client object and connect to REP with refresh token</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">cl</span> <span class="o">=</span> <span class="n">Client</span><span class="p">(</span><span class="n">rep_url</span><span class="o">=</span><span class="s2">&quot;https://localhost:8443/rep&quot;</span><span class="p">,</span> <span class="n">refresh_token</span><span class="o">=</span><span class="n">refresh_token</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">cl</span> <span class="o">=</span> <span class="n">Client</span><span class="p">(</span>
+<span class="go">    rep_url=&quot;https://localhost:8443/rep&quot;,</span>
+<span class="go">    username=&quot;repadmin&quot;,</span>
+<span class="go">    refresh_token=refresh_token,</span>
+<span class="go">    grant_type=&quot;refresh_token&quot;</span>
+<span class="go">)</span>
 </pre></div>
 </div>
 <dl class="py method">
