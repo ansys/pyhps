@@ -37,7 +37,12 @@ class REPClientTest(REPTestCase):
         self.assertEqual(client1.access_token, client0.access_token)
         self.assertTrue(client1.refresh_token is None)
 
-        client2 = Client(self.rep_url, refresh_token=client0.refresh_token)
+        client2 = Client(
+            self.rep_url,
+            refresh_token=client0.refresh_token,
+            username=client0.username,
+            grant_type="refresh_token",
+        )
         self.assertTrue(client2.access_token is not None)
         self.assertNotEqual(client2.refresh_token, client0.refresh_token)
         client2.refresh_access_token()

@@ -49,7 +49,12 @@ class Client(object):
     >>> # Extract refresh token to eventually store it
     >>> refresh_token = cl.refresh_token
     >>> # Alternative: Create client object and connect to REP with refresh token
-    >>> cl = Client(rep_url="https://localhost:8443/rep", refresh_token=refresh_token)
+    >>> cl = Client(
+        rep_url="https://localhost:8443/rep",
+        username="repadmin",
+        refresh_token=refresh_token,
+        grant_type="refresh_token"
+    )
 
     """
 
@@ -122,7 +127,12 @@ class Client(object):
 
     def refresh_access_token(self):
         """Use the refresh token to obtain a new access token"""
-        tokens = authenticate(url=self.auth_url or self.rep_url, refresh_token=self.refresh_token)
+        tokens = authenticate(
+            url=self.auth_url or self.rep_url,
+            refresh_token=self.refresh_token,
+            username=self.username,
+            grant_type="refresh_token",
+        )
         self.access_token = tokens["access_token"]
         self.refresh_token = tokens["refresh_token"]
         self.session.headers.update({"Authorization": "Bearer %s" % tokens["access_token"]})
