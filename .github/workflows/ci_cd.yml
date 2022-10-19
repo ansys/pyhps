@@ -79,8 +79,8 @@ jobs:
         run: tox -e ${{ matrix.cfg.toxenv }}-noeval-coverage 
         env:
           REP_TEST_URL: https://repkube.westeurope.cloudapp.azure.com/dev/rep
-          REP_TEST_USERNAME: repbuild
-          REP_TEST_PASSWORD: repbuild
+          REP_TEST_USERNAME: repadmin
+          REP_TEST_PASSWORD: ${{ secrets.REPADMIN_PASSWORD }}
 
       - name: Publish Test Report
         uses: mikepenz/action-junit-report@v3
@@ -107,8 +107,8 @@ jobs:
         run: tox -e py37-witheval 
         env:
           REP_TEST_URL: https://repkube.westeurope.cloudapp.azure.com/dev/rep
-          REP_TEST_USERNAME: repbuild
-          REP_TEST_PASSWORD: repbuild
+          REP_TEST_USERNAME: repadmin
+          REP_TEST_PASSWORD: ${{ secrets.REPADMIN_PASSWORD }}
           
       - name: Publish Test Report
         uses: mikepenz/action-junit-report@v3
