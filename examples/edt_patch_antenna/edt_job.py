@@ -5,14 +5,9 @@ Once submitted, minimal job information are serialized to a JSON file rep_job.js
 This mimics what an application would need to store in order to
 subsequently monitor the job and download results.
 
-The job consists of two tasks:
- - The first task runs the actual LS-DYNA simulation
- - The second task runs a little LS-PrePost script to
-   post-process the results of the first task.
-
 Usage:
 
-    $ python edt_job.py submit
+    $ python edt_job.py submit -n job_name
     $ python edt_job.py monitor
     $ python edt_job.py download
 """
@@ -29,12 +24,13 @@ from ansys.rep.client.jms import (
     JmsApi,
     Job,
     JobDefinition,
+    Licensing,
     Project,
     ProjectApi,
     ResourceRequirements,
     Software,
     SuccessCriteria,
-    TaskDefinition, Licensing,
+    TaskDefinition,
 )
 
 log = logging.getLogger(__name__)
@@ -86,8 +82,7 @@ class REPJob:
 
 
 def submit_job(name, username, password, rep_url) -> REPJob:
-    """Create a REP project running the specified EDT archive job.
-    """
+    """Create a REP project running the specified EDT archive job."""
 
     log.info("=== Connect to the REP server")
     client = Client(rep_url=rep_url, username=username, password=password)
@@ -107,7 +102,7 @@ def submit_job(name, username, password, rep_url) -> REPJob:
     files.append(
         File(
             name="aedtz",
-            evaluation_path= archfile,
+            evaluation_path=archfile,
             type="application/octet-stream",
             src=os.path.join(cwd, archfile),
         )
@@ -136,11 +131,13 @@ def submit_job(name, username, password, rep_url) -> REPJob:
             Software(name="Ansys Electronics Desktop", version="2023 R2"),
         ],
         environment={
-            "ANSOFT_DEBUG_LOG":"c:\\Users\\wchristo\\repui\\pyrep\\logs\\LOG",
-            "ANSOFT_DEBUG_MODE":"4"
+            # for extra debugging add
+            # "ANSOFT_DEBUG_LOG": "c:\\path\\to\\your\\log\\directory\\prefix-for-log-files",
+            # "ANSOFT_DEBUG_MODE": "4",
         },
-        use_execution_script=False,
-        execution_command="%executable% -ng -batchsolve -archiveoptions repackageresults %file:aedtz%",
+        use_execution_script=False,  # TODO: In the template version we do use the execution script
+        execution_command="%executable% -ng -batchsolve -archiveoptions repackageresults "
+        "%file:aedtz%",
         resource_requirements=ResourceRequirements(
             cpu_core_usage=1.0,
             memory=250,
@@ -154,7 +151,7 @@ def submit_job(name, username, password, rep_url) -> REPJob:
         output_file_ids=[f.id for f in files[num_input_files:]],
         success_criteria=SuccessCriteria(
             return_code=0,
-            required_output_file_ids=[file_ids['result']],
+            required_output_file_ids=[file_ids["result"]],
             require_all_output_files=False,
         ),
         licensing=Licensing(enable_shared_licensing=False),  # Shared licensing disabled by default
@@ -186,6 +183,7 @@ def submit_job(name, username, password, rep_url) -> REPJob:
     job.task_ids = [t.id for t in tasks]
 
     return app_job
+
 
 def monitor_job(app_job: REPJob):
     """

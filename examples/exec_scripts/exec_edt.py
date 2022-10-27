@@ -2,12 +2,11 @@
 Electronics Desktop execution script
 """
 import os
-import shlex
 import subprocess
 
 from ansys.rep.common.logging import log
 from ansys.rep.evaluator.task_manager import ApplicationExecution
-import json
+
 
 class EDTExecution(ApplicationExecution):
     def execute(self):
@@ -33,16 +32,33 @@ class EDTExecution(ApplicationExecution):
 
         # Handle context
         log.debug(f"EX: {self.context.execution_context}")
-        batchopts = [f"'{k}'='{1 if v==True else v}'" for k, v in self.context.execution_context.items() if v]
+        batchopts = [
+            # Note that ansysedt.exe expects booleans to be sent as 0/1
+            # We omit options whose values are 0/false/"" - this is the default for most but
+            # not all of them.  TODO: fix this
+            f"'{k}'='{1 if v==True else v}'"
+            for k, v in self.context.execution_context.items()
+            if v
+        ]
         log.debug(f"Batch opts: {batchopts}")
 
         # Form command
-        cmd = [exe, '-ng', '-batchsolve', '-archiveoptions', 'repackageresults',  '-batchoptions', ' '.join(batchopts), inp_file['path']]
+        cmd = [
+            exe,
+            "-ng",
+            "-batchsolve",
+            "-archiveoptions",
+            "repackageresults",
+            "-batchoptions",
+            " ".join(batchopts),
+            inp_file["path"],
+        ]
 
         # Execute command
         log.info(f"Running: {cmd}")
         subprocess.run(cmd, capture_output=True, env=env)
         log.info(f"Command is done")
 
-        # Rename the overwritten aedtz file to whatever was specified in the project definition (the default is results.aedtz)
-        os.rename(inp_file['path'], res_file['path'])
+        # Rename the overwritten aedtz file to whatever was specified in the project definition
+        # (the default is results.aedtz)
+        os.rename(inp_file["path"], res_file["path"])
