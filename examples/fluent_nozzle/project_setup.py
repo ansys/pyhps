@@ -137,7 +137,6 @@ def create_project(client, name, num_jobs=20, version=__external_version__):
             "fluent_numGPGPUsPerMachine": 0,
             "fluent_MPIType": "intel",
             "fluent_otherEnvironment": "{}",
-            "fluent_jouFile": "solve.jou",
             "fluent_useGUI": False,
         },
         max_execution_time=50.0,

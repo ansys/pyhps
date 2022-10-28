@@ -64,6 +64,16 @@ class CfxExecution(ApplicationExecution):
             inputs["cfx_startMethod"] = self.context.execution_context.get("cfx_startMethod", None)
             inputs["cfx_runName"] = self.context.execution_context.get("cfx_runName", None)
 
+            cclFile = next((f for f in self.context.input_files if f["name"] == "ccl"), None)
+            if cclFile != None:
+                inputs["cfx_cclFile"] = cclFile["path"]
+                log.info("ccl file path: " + cclFile["path"])
+
+            defFile = next((f for f in self.context.input_files if f["name"] == "def"), None)
+            if defFile != None:
+                inputs["cfx_definitionFile"] = defFile["path"]
+                log.info("def file path: " + defFile["path"])
+
             self.publish_to_default_log(
                 "Task inputs after applying default values to missing inputs:"
             )
@@ -142,8 +152,9 @@ class CfxExecution(ApplicationExecution):
 
             # Create command line
             # Add parallel options
-            cmd = [exe]
-            cmd.extend(["-fullname", self.active_run_name])
+            cmd = [os.path.basename(exe)]
+            cmd.append("-fullname")
+            cmd.append(self.active_run_name)
             cmd.append("-batch")
             cmd.append("-serial")
 
@@ -162,10 +173,11 @@ class CfxExecution(ApplicationExecution):
             for opt, i in sorted(options_arg.items()):
                 k = "cfx_" + i
                 if not inputs[k] == None:
-                    cmd.extend([opt, inputs[k]])
+                    cmd.append(opt)
+                    cmd.append(inputs[k])
 
             # Add additional options
-            if not inputs["cfx_additionalArgs"] == "":
+            if not inputs["cfx_additionalArgs"] == "" and not inputs["cfx_additionalArgs"] == None:
                 cmd.extend(shlex.split(inputs["cfx_additionalArgs"]))
 
             # Start the solver
@@ -174,7 +186,13 @@ class CfxExecution(ApplicationExecution):
             rc = None
             self.CFXOutputFile = None
             self.CFXMonFile = None
-            with subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE) as self.proc:
+            cfx_env = os.environ.copy()
+
+            with subprocess.Popen(
+                cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=cfx_env, executable=exe
+            ) as self.proc:
+                if self.proc == None:
+                    raise Exception("CFX Solver did not start")
                 self.publish_to_default_log("CFX solver started\npid:" + format(self.proc.pid))
                 t1 = _thread.start_new_thread(self.process_output, (self.proc,))
                 t2 = _thread.start_new_thread(self.process_error, (self.proc,))
