@@ -62,7 +62,6 @@ class FluentExecution(ApplicationExecution):
                 "fluent_otherEnvironment", "{}"
             )
             inputs["fluent_UDFBat"] = self.context.execution_context.get("fluent_UDFBat", None)
-            inputs["fluent_jouFile"] = self.context.execution_context.get("fluent_jouFile", None)
             inputs["fluent_useGUI"] = self.context.execution_context.get("fluent_useGUI", False)
             inputs["fluent_additionalArgs"] = self.context.execution_context.get(
                 "fluent_additionalArgs", ""
@@ -106,8 +105,11 @@ class FluentExecution(ApplicationExecution):
             for f in files:
                 log.info("   " + f)
 
-            if not os.path.isfile(inputs["fluent_jouFile"]):
-                raise Exception("File " + inputs["fluent_jouFile"] + " does not exist!")
+            jouFile = next((f for f in self.context.input_files if f["name"] == "jou"), None)
+            log.info("journal file path: " + jouFile["path"])
+
+            if jouFile == None or not os.path.isfile(jouFile["path"]):
+                raise Exception("File " + jouFile["path"] + " does not exist!")
 
             # Add " around exe if needed for Windows
             exe = app["executable"]  # should already be platform specific
@@ -137,7 +139,7 @@ class FluentExecution(ApplicationExecution):
                 args += " -mpi=" + format(inputs["fluent_MPIType"])
             if inputs["fluent_numGPGPUsPerMachine"] > 0:
                 args += " -gpgp=" + format(inputs["fluent_numGPGPUsPerMachine"])
-            args += " -i " + inputs["fluent_jouFile"]
+            args += " -i " + jouFile["path"]
             # args+= cnf
             if not noGuiOptions == None:
                 args += noGuiOptions
