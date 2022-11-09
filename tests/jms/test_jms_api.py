@@ -8,6 +8,8 @@
 import logging
 import unittest
 
+from examples.mapdl_motorbike_frame.project_setup import create_project
+
 from ansys.rep.client.jms import JmsApi, ProjectApi
 from ansys.rep.client.jms.resource import Job, Project
 from tests.rep_test import REPTestCase
@@ -18,26 +20,20 @@ log = logging.getLogger(__name__)
 class REPClientTest(REPTestCase):
     def test_jms_api(self):
 
-        # This test assumes that the project mapdl_motorbike_frame already exists on the REP server.
-        # In case, you can create such project running the script
-        # examples/mapdl_motorbike_frame/project_setup.py
-
         log.debug("=== Client ===")
         client = self.client()
         proj_name = "Mapdl Motorbike Frame"
 
         log.debug("=== Projects ===")
         jms_api = JmsApi(client)
-        projects = jms_api.get_projects()
-        log.debug(f"Projects: {[p.id for p in projects]}")
-        project = None
-        for p in projects:
-            if p.name == proj_name:
-                project = p
+        project = jms_api.get_project_by_name(name=proj_name)
 
         if project:
             log.debug(f"Project: {project.id}")
             log.debug(f"project={project}")
+        else:
+            log.debug(f"Project {proj_name} not found. Creating it.")
+            project = create_project(client, proj_name, num_jobs=5, use_exec_script=False)
 
         new_proj = Project(name="New project", active=True)
         new_proj = jms_api.create_project(new_proj, replace=True)

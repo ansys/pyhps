@@ -105,7 +105,10 @@ class TasksTest(REPTestCase):
         proj_name = "Mapdl Motorbike Frame"
 
         jms_api = JmsApi(client)
-        project = jms_api.get_projects(name=proj_name, sort="-creation_time")[0]
+        project = jms_api.get_project_by_name(name=proj_name)
+        if not project:
+            project = create_project(client, proj_name, num_jobs=5, use_exec_script=False)
+
         project_api = ProjectApi(client, project.id)
         tasks = project_api.get_tasks(limit=5)
         self.assertEqual(len(tasks), 5)
