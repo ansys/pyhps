@@ -1,12 +1,8 @@
-name: GitHub CI
+name: Nightly Build
 on:
   workflow_dispatch:
-  pull_request:
-  push:
-    tags:
-      - "*"
-    branches:
-      - main
+  schedule:
+  - cron: "0 2 * * 1-5"
 
 env:
   MAIN_PYTHON_VERSION: '3.7'
@@ -39,8 +35,9 @@ jobs:
       # max 1 job at a time running against the server to make it more robust 
       max-parallel: 1
       matrix:
-        os: [ubuntu-latest]
+        os: [windows-latest, ubuntu-latest]
         cfg:
+          - {python-version: "3.7", toxenv: "py37"}
           - {python-version: "3.10", toxenv: "py310"}
       fail-fast: false
 
@@ -67,6 +64,34 @@ jobs:
         with:
           report_paths: '**/test*.xml'
           check_name: Test Report ${{ matrix.os }}:${{ matrix.cfg.python-version }} 
+
+  end-to-end-tests:
+    name: End-to-end tests
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up Python ${{ env.MAIN_PYTHON_VERSION }}
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ env.MAIN_PYTHON_VERSION }}
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip setuptools tox tox-gh-actions
+
+      - name: Test with tox
+        run: tox -e py37-witheval 
+        env:
+          REP_TEST_URL: https://repkube.westeurope.cloudapp.azure.com/dev/rep
+          REP_TEST_USERNAME: repadmin
+          REP_TEST_PASSWORD: ${{ secrets.REPADMIN_PASSWORD }}
+          
+      - name: Publish Test Report
+        uses: mikepenz/action-junit-report@v3
+        if: always()
+        with:
+          report_paths: '**/test*.xml'
+          check_name: End-to-end Test Report 
 
   docs:
     name: Documentation
@@ -125,3 +150,4 @@ jobs:
           path: |
             dist/*.whl
           retention-days: 5
+
