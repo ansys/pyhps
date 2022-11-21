@@ -1,9 +1,9 @@
 Sphinx==5.3.0
 numpydoc==1.5.0
 ansys-sphinx-theme==0.7.1
-sphinx-copybutton==0.5
+sphinx-copybutton==0.5.1
 apispec==6.0.2
-sphinxcontrib-httpdomain==1.8.0
+sphinxcontrib-httpdomain==1.8.1
 sphinxcontrib-globalsubs==0.1.0
 sphinxnotes-strike==1.2
 sphinx-autodoc-typehints==1.19.5
