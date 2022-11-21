@@ -61,7 +61,7 @@ class JobDefinitionsTest(REPTestCase):
         )
         task_def = project_api.create_task_definitions([task_def])[0]
         self.assertEqual(task_def.store_output, True)
-        self.assertEqual(task_def.resource_requirements.memory, 256 * 1024 * 1024 * 1024)
-        self.assertEqual(task_def.resource_requirements.disk_space, 2 * 1024 * 1024 * 1024 * 1024)
+        self.assertEqual(task_def.resource_requirements.memory, 274877906944)
+        self.assertEqual(task_def.resource_requirements.disk_space, 2199023255552)
 
         jms_api.delete_project(project)
