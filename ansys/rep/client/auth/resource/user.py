@@ -41,7 +41,8 @@ class User(Object):
         email=missing,
         groups=missing,
         realm_roles=missing,
-        is_admin=missing
+        is_admin=missing,
+        **kwargs
     ):
         self.id = id
         self.username = username
@@ -53,6 +54,6 @@ class User(Object):
         self.realm_roles = realm_roles
         self.is_admin = is_admin
 
-        self.obj_type = self.__class__.__name__
+        super().__init__(**kwargs)
 
 UserSchema.Meta.object_class = User

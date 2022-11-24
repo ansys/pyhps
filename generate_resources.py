@@ -261,6 +261,7 @@ AUTH_RESOURCES = [
         "additional_fields": [],
         "class": "User",
         "resource_filename": "user",
+        "init_with_kwargs": True,
     },
 ]
 
@@ -339,6 +340,12 @@ def get_resource_code(resource, base_class, fields, field_docs):
     for k in fields:
         fields_str += f"        self.{k} = {k}\n"
     init_fields_str = ",\n".join([f"        {k}=missing" for k in fields])
+
+    additional_initialization = "        self.obj_type = self.__class__.__name__"
+    if "init_with_kwargs" in resource:
+        additional_initialization = "        super().__init__(**kwargs)"
+        init_fields_str += ",\n        **kwargs"
+
     code = f'''class {resource['class']}({base_class["name"]}):
     """{resource['class']} resource.
 
@@ -355,7 +362,7 @@ def get_resource_code(resource, base_class, fields, field_docs):
 {init_fields_str}
     ):
 {fields_str}
-        self.obj_type = self.__class__.__name__
+{additional_initialization}
 
 {resource['schema']}.Meta.object_class = {resource['class']}
 '''
