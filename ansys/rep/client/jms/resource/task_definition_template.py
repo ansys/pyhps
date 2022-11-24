@@ -27,13 +27,18 @@ class TemplateProperty(Object):
         schema = TemplatePropertySchema
         rest_name = "None"
 
-    def __init__(self, **kwargs):
-        self.default = missing
-        self.description = missing
-        self.type = missing
-        self.value_list = missing
+    def __init__(self,
+        default=missing,
+        description=missing,
+        type=missing,
+        value_list=missing
+    ):
+        self.default = default
+        self.description = description
+        self.type = type
+        self.value_list = value_list
 
-        super().__init__(**kwargs)
+        self.obj_type = self.__class__.__name__
 
 TemplatePropertySchema.Meta.object_class = TemplateProperty
 
@@ -54,14 +59,20 @@ class TemplateResourceRequirements(Object):
         schema = TemplateResourceRequirementsSchema
         rest_name = "None"
 
-    def __init__(self, **kwargs):
-        self.platform = missing
-        self.memory = missing
-        self.cpu_core_usage = missing
-        self.disk_space = missing
-        self.custom = missing
+    def __init__(self,
+        platform=missing,
+        memory=missing,
+        cpu_core_usage=missing,
+        disk_space=missing,
+        custom=missing
+    ):
+        self.platform = platform
+        self.memory = memory
+        self.cpu_core_usage = cpu_core_usage
+        self.disk_space = disk_space
+        self.custom = custom
 
-        super().__init__(**kwargs)
+        self.obj_type = self.__class__.__name__
 
 TemplateResourceRequirementsSchema.Meta.object_class = TemplateResourceRequirements
 
@@ -87,14 +98,20 @@ class TemplateInputFile(Object):
         schema = TemplateInputFileSchema
         rest_name = "None"
 
-    def __init__(self, **kwargs):
-        self.name = missing
-        self.type = missing
-        self.evaluation_path = missing
-        self.description = missing
-        self.required = missing
+    def __init__(self,
+        name=missing,
+        type=missing,
+        evaluation_path=missing,
+        description=missing,
+        required=missing
+    ):
+        self.name = name
+        self.type = type
+        self.evaluation_path = evaluation_path
+        self.description = description
+        self.required = required
 
-        super().__init__(**kwargs)
+        self.obj_type = self.__class__.__name__
 
 TemplateInputFileSchema.Meta.object_class = TemplateInputFile
 
@@ -124,16 +141,24 @@ class TemplateOutputFile(Object):
         schema = TemplateOutputFileSchema
         rest_name = "None"
 
-    def __init__(self, **kwargs):
-        self.name = missing
-        self.type = missing
-        self.evaluation_path = missing
-        self.description = missing
-        self.required = missing
-        self.monitor = missing
-        self.collect = missing
+    def __init__(self,
+        name=missing,
+        type=missing,
+        evaluation_path=missing,
+        description=missing,
+        required=missing,
+        monitor=missing,
+        collect=missing
+    ):
+        self.name = name
+        self.type = type
+        self.evaluation_path = evaluation_path
+        self.description = description
+        self.required = required
+        self.monitor = monitor
+        self.collect = collect
 
-        super().__init__(**kwargs)
+        self.obj_type = self.__class__.__name__
 
 TemplateOutputFileSchema.Meta.object_class = TemplateOutputFile
 
@@ -168,6 +193,8 @@ class TaskDefinitionTemplate(Object):
         Whether to run task with the execution command or the execution script.
     execution_script_storage_id : str, optional
         Storage ID of the script to execute (command or execution script is required).
+    execution_script_storage_bucket : str, optional
+        File storage bucket where the execution script is located.
     input_files : list[TemplateInputFile], optional
         List of predefined input files.
     output_files : list[TemplateOutputFile], optional
@@ -179,23 +206,41 @@ class TaskDefinitionTemplate(Object):
         schema = TaskDefinitionTemplateSchema
         rest_name = "task_definition_templates"
 
-    def __init__(self, **kwargs):
-        self.id = missing
-        self.modification_time = missing
-        self.creation_time = missing
-        self.name = missing
-        self.version = missing
-        self.description = missing
-        self.software_requirements = missing
-        self.resource_requirements = missing
-        self.execution_context = missing
-        self.environment = missing
-        self.execution_command = missing
-        self.use_execution_script = missing
-        self.execution_script_storage_id = missing
-        self.input_files = missing
-        self.output_files = missing
+    def __init__(self,
+        id=missing,
+        modification_time=missing,
+        creation_time=missing,
+        name=missing,
+        version=missing,
+        description=missing,
+        software_requirements=missing,
+        resource_requirements=missing,
+        execution_context=missing,
+        environment=missing,
+        execution_command=missing,
+        use_execution_script=missing,
+        execution_script_storage_id=missing,
+        execution_script_storage_bucket=missing,
+        input_files=missing,
+        output_files=missing
+    ):
+        self.id = id
+        self.modification_time = modification_time
+        self.creation_time = creation_time
+        self.name = name
+        self.version = version
+        self.description = description
+        self.software_requirements = software_requirements
+        self.resource_requirements = resource_requirements
+        self.execution_context = execution_context
+        self.environment = environment
+        self.execution_command = execution_command
+        self.use_execution_script = use_execution_script
+        self.execution_script_storage_id = execution_script_storage_id
+        self.execution_script_storage_bucket = execution_script_storage_bucket
+        self.input_files = input_files
+        self.output_files = output_files
 
-        super().__init__(**kwargs)
+        self.obj_type = self.__class__.__name__
 
 TaskDefinitionTemplateSchema.Meta.object_class = TaskDefinitionTemplate

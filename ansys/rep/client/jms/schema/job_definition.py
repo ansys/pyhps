@@ -26,6 +26,7 @@ class JobDefinitionSchema(ObjectSchema):
         description="Defines whether this is the active job definition in the "
         "project where evaluators will evaluate pending jobs"
     )
+    client_hash = fields.String(allow_none=True)
     creation_time = fields.DateTime(
         allow_none=True,
         load_only=True,

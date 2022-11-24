@@ -29,15 +29,23 @@ class Algorithm(Object):
         schema = AlgorithmSchema
         rest_name = "algorithms"
 
-    def __init__(self, **kwargs):
-        self.id = missing
-        self.name = missing
-        self.description = missing
-        self.creation_time = missing
-        self.modification_time = missing
-        self.data = missing
-        self.jobs = missing
+    def __init__(self,
+        id=missing,
+        name=missing,
+        description=missing,
+        creation_time=missing,
+        modification_time=missing,
+        data=missing,
+        jobs=missing
+    ):
+        self.id = id
+        self.name = name
+        self.description = description
+        self.creation_time = creation_time
+        self.modification_time = modification_time
+        self.data = data
+        self.jobs = jobs
 
-        super().__init__(**kwargs)
+        self.obj_type = self.__class__.__name__
 
 AlgorithmSchema.Meta.object_class = Algorithm

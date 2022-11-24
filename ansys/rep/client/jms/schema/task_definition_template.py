@@ -133,6 +133,10 @@ class TaskDefinitionTemplateSchema(ObjectSchema):
         description="Storage ID of the script to execute "
         "(command or execution script is required).",
     )
+    execution_script_storage_bucket = fields.String(
+        allow_none=True,
+        metadata={"description": "File storage bucket where the execution script is located."},
+    )
 
     input_files = fields.Nested(
         TemplateInputFileSchema,

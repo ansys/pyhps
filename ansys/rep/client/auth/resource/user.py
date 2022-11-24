@@ -32,17 +32,27 @@ class User(Object):
         schema = UserSchema
         rest_name = "None"
 
-    def __init__(self, **kwargs):
-        self.id = missing
-        self.username = missing
-        self.password = missing
-        self.first_name = missing
-        self.last_name = missing
-        self.email = missing
-        self.groups = missing
-        self.realm_roles = missing
-        self.is_admin = missing
+    def __init__(self,
+        id=missing,
+        username=missing,
+        password=missing,
+        first_name=missing,
+        last_name=missing,
+        email=missing,
+        groups=missing,
+        realm_roles=missing,
+        is_admin=missing
+    ):
+        self.id = id
+        self.username = username
+        self.password = password
+        self.first_name = first_name
+        self.last_name = last_name
+        self.email = email
+        self.groups = groups
+        self.realm_roles = realm_roles
+        self.is_admin = is_admin
 
-        super().__init__(**kwargs)
+        self.obj_type = self.__class__.__name__
 
 UserSchema.Meta.object_class = User

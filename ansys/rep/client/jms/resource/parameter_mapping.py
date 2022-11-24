@@ -34,24 +34,41 @@ class ParameterMapping(Object):
         schema = ParameterMappingSchema
         rest_name = "parameter_mappings"
 
-    def __init__(self, **kwargs):
-        self.id = missing
-        self.line = missing
-        self.column = missing
-        self.key_string = missing
-        self.float_field = missing
-        self.width = missing
-        self.precision = missing
-        self.tokenizer = missing
-        self.decimal_symbol = missing
-        self.digit_grouping_symbol = missing
-        self.string_quote = missing
-        self.true_string = missing
-        self.false_string = missing
-        self.parameter_definition_id = missing
-        self.task_definition_property = missing
-        self.file_id = missing
+    def __init__(self,
+        id=missing,
+        line=missing,
+        column=missing,
+        key_string=missing,
+        float_field=missing,
+        width=missing,
+        precision=missing,
+        tokenizer=missing,
+        decimal_symbol=missing,
+        digit_grouping_symbol=missing,
+        string_quote=missing,
+        true_string=missing,
+        false_string=missing,
+        parameter_definition_id=missing,
+        task_definition_property=missing,
+        file_id=missing
+    ):
+        self.id = id
+        self.line = line
+        self.column = column
+        self.key_string = key_string
+        self.float_field = float_field
+        self.width = width
+        self.precision = precision
+        self.tokenizer = tokenizer
+        self.decimal_symbol = decimal_symbol
+        self.digit_grouping_symbol = digit_grouping_symbol
+        self.string_quote = string_quote
+        self.true_string = true_string
+        self.false_string = false_string
+        self.parameter_definition_id = parameter_definition_id
+        self.task_definition_property = task_definition_property
+        self.file_id = file_id
 
-        super().__init__(**kwargs)
+        self.obj_type = self.__class__.__name__
 
 ParameterMappingSchema.Meta.object_class = ParameterMapping

@@ -19,10 +19,13 @@ class LicenseContext(Object):
         schema = LicenseContextSchema
         rest_name = "license_contexts"
 
-    def __init__(self, **kwargs):
-        self.context_id = missing
-        self.environment = missing
+    def __init__(self,
+        context_id=missing,
+        environment=missing
+    ):
+        self.context_id = context_id
+        self.environment = environment
 
-        super().__init__(**kwargs)
+        self.obj_type = self.__class__.__name__
 
 LicenseContextSchema.Meta.object_class = LicenseContext

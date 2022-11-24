@@ -32,6 +32,7 @@ class Task(Object):
         ID of the :class:`TaskDefinition` the task is linked to.
     task_definition_snapshot : TaskDefinition, optional
         Snapshot of :class:`TaskDefinition` created when task status changes to prolog, before evaluation.
+    executed_command : str, optional
     job_id : str
         ID of the :class:`Job` the task is linked to.
     host_id : str, optional
@@ -40,6 +41,8 @@ class Task(Object):
         List of IDs of input files of task.
     output_file_ids : list[str]
         List of IDs of output files of task.
+    monitored_file_ids : list[str]
+        List of IDs of monitored files of task.
     inherited_file_ids : list[str]
         List of IDs of inherited files of task.
     owned_file_ids : list[str]
@@ -53,27 +56,51 @@ class Task(Object):
         schema = TaskSchema
         rest_name = "tasks"
 
-    def __init__(self, **kwargs):
-        self.id = missing
-        self.modification_time = missing
-        self.creation_time = missing
-        self.pending_time = missing
-        self.prolog_time = missing
-        self.running_time = missing
-        self.finished_time = missing
-        self.eval_status = missing
-        self.trial_number = missing
-        self.elapsed_time = missing
-        self.task_definition_id = missing
-        self.task_definition_snapshot = missing
-        self.job_id = missing
-        self.host_id = missing
-        self.input_file_ids = missing
-        self.output_file_ids = missing
-        self.inherited_file_ids = missing
-        self.owned_file_ids = missing
-        self.license_context_id = missing
+    def __init__(self,
+        id=missing,
+        modification_time=missing,
+        creation_time=missing,
+        pending_time=missing,
+        prolog_time=missing,
+        running_time=missing,
+        finished_time=missing,
+        eval_status=missing,
+        trial_number=missing,
+        elapsed_time=missing,
+        task_definition_id=missing,
+        task_definition_snapshot=missing,
+        executed_command=missing,
+        job_id=missing,
+        host_id=missing,
+        input_file_ids=missing,
+        output_file_ids=missing,
+        monitored_file_ids=missing,
+        inherited_file_ids=missing,
+        owned_file_ids=missing,
+        license_context_id=missing
+    ):
+        self.id = id
+        self.modification_time = modification_time
+        self.creation_time = creation_time
+        self.pending_time = pending_time
+        self.prolog_time = prolog_time
+        self.running_time = running_time
+        self.finished_time = finished_time
+        self.eval_status = eval_status
+        self.trial_number = trial_number
+        self.elapsed_time = elapsed_time
+        self.task_definition_id = task_definition_id
+        self.task_definition_snapshot = task_definition_snapshot
+        self.executed_command = executed_command
+        self.job_id = job_id
+        self.host_id = host_id
+        self.input_file_ids = input_file_ids
+        self.output_file_ids = output_file_ids
+        self.monitored_file_ids = monitored_file_ids
+        self.inherited_file_ids = inherited_file_ids
+        self.owned_file_ids = owned_file_ids
+        self.license_context_id = license_context_id
 
-        super().__init__(**kwargs)
+        self.obj_type = self.__class__.__name__
 
 TaskSchema.Meta.object_class = Task

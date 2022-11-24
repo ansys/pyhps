@@ -19,12 +19,17 @@ class ProjectPermission(Object):
         schema = ProjectPermissionSchema
         rest_name = "permissions"
 
-    def __init__(self, **kwargs):
-        self.permission_type = missing
-        self.value_id = missing
-        self.value_name = missing
-        self.role = missing
+    def __init__(self,
+        permission_type=missing,
+        value_id=missing,
+        value_name=missing,
+        role=missing
+    ):
+        self.permission_type = permission_type
+        self.value_id = value_id
+        self.value_name = value_name
+        self.role = role
 
-        super().__init__(**kwargs)
+        self.obj_type = self.__class__.__name__
 
 ProjectPermissionSchema.Meta.object_class = ProjectPermission

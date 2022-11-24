@@ -49,8 +49,6 @@ class JobDefinitionsTest(REPTestCase):
 
         task_def = TaskDefinition(
             name="Task.1",
-            application_name="MyApp",
-            application_version="1.0.0",
             execution_command="%executable%",
             max_execution_time=10.0,
             execution_level=0,

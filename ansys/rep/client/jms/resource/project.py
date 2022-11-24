@@ -31,16 +31,25 @@ class Project(Object):
         schema = ProjectSchema
         rest_name = "projects"
 
-    def __init__(self, **kwargs):
-        self.id = missing
-        self.name = missing
-        self.active = missing
-        self.priority = missing
-        self.creation_time = missing
-        self.modification_time = missing
-        self.file_storages = missing
-        self.statistics = missing
+    def __init__(self,
+        id=missing,
+        name=missing,
+        active=missing,
+        priority=missing,
+        creation_time=missing,
+        modification_time=missing,
+        file_storages=missing,
+        statistics=missing
+    ):
+        self.id = id
+        self.name = name
+        self.active = active
+        self.priority = priority
+        self.creation_time = creation_time
+        self.modification_time = modification_time
+        self.file_storages = file_storages
+        self.statistics = statistics
 
-        super().__init__(**kwargs)
+        self.obj_type = self.__class__.__name__
 
 ProjectSchema.Meta.object_class = Project

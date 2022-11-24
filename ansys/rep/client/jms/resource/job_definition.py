@@ -14,6 +14,7 @@ class JobDefinition(Object):
         Name of the job definition
     active : bool
         Defines whether this is the active job definition in the project where evaluators will evaluate pending jobs
+    client_hash : str, optional
     creation_time : datetime, optional
         The date and time the job definition was created.
     modification_time : datetime, optional
@@ -30,17 +31,29 @@ class JobDefinition(Object):
         schema = JobDefinitionSchema
         rest_name = "job_definitions"
 
-    def __init__(self, **kwargs):
-        self.id = missing
-        self.name = missing
-        self.active = missing
-        self.creation_time = missing
-        self.modification_time = missing
-        self.parameter_definition_ids = missing
-        self.parameter_mapping_ids = missing
-        self.task_definition_ids = missing
-        self.fitness_definition = missing
+    def __init__(self,
+        id=missing,
+        name=missing,
+        active=missing,
+        client_hash=missing,
+        creation_time=missing,
+        modification_time=missing,
+        parameter_definition_ids=missing,
+        parameter_mapping_ids=missing,
+        task_definition_ids=missing,
+        fitness_definition=missing
+    ):
+        self.id = id
+        self.name = name
+        self.active = active
+        self.client_hash = client_hash
+        self.creation_time = creation_time
+        self.modification_time = modification_time
+        self.parameter_definition_ids = parameter_definition_ids
+        self.parameter_mapping_ids = parameter_mapping_ids
+        self.task_definition_ids = task_definition_ids
+        self.fitness_definition = fitness_definition
 
-        super().__init__(**kwargs)
+        self.obj_type = self.__class__.__name__
 
 JobDefinitionSchema.Meta.object_class = JobDefinition

@@ -47,24 +47,41 @@ class Job(Object):
         schema = JobSchema
         rest_name = "jobs"
 
-    def __init__(self, **kwargs):
-        self.id = missing
-        self.name = missing
-        self.eval_status = missing
-        self.job_definition_id = missing
-        self.priority = missing
-        self.values = missing
-        self.fitness = missing
-        self.fitness_term_values = missing
-        self.note = missing
-        self.creator = missing
-        self.executed_level = missing
-        self.creation_time = missing
-        self.modification_time = missing
-        self.elapsed_time = missing
-        self.host_ids = missing
-        self.file_ids = missing
+    def __init__(self,
+        id=missing,
+        name=missing,
+        eval_status=missing,
+        job_definition_id=missing,
+        priority=missing,
+        values=missing,
+        fitness=missing,
+        fitness_term_values=missing,
+        note=missing,
+        creator=missing,
+        executed_level=missing,
+        creation_time=missing,
+        modification_time=missing,
+        elapsed_time=missing,
+        host_ids=missing,
+        file_ids=missing
+    ):
+        self.id = id
+        self.name = name
+        self.eval_status = eval_status
+        self.job_definition_id = job_definition_id
+        self.priority = priority
+        self.values = values
+        self.fitness = fitness
+        self.fitness_term_values = fitness_term_values
+        self.note = note
+        self.creator = creator
+        self.executed_level = executed_level
+        self.creation_time = creation_time
+        self.modification_time = modification_time
+        self.elapsed_time = elapsed_time
+        self.host_ids = host_ids
+        self.file_ids = file_ids
 
-        super().__init__(**kwargs)
+        self.obj_type = self.__class__.__name__
 
 JobSchema.Meta.object_class = Job

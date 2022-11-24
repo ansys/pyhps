@@ -19,9 +19,11 @@ class ParameterDefinition(Object):
         schema = ParameterDefinitionSchema
         rest_name = "parameter_definitions"
 
-    def __init__(self, **kwargs):
+    def __init__(self,
 
-        super().__init__(**kwargs)
+    ):
+
+        self.obj_type = self.__class__.__name__
 
 ParameterDefinitionSchema.Meta.object_class = ParameterDefinition
 
@@ -62,22 +64,36 @@ class FloatParameterDefinition(ParameterDefinition):
         schema = FloatParameterDefinitionSchema
         rest_name = "parameter_definitions"
 
-    def __init__(self, **kwargs):
-        self.id = missing
-        self.name = missing
-        self.quantity_name = missing
-        self.units = missing
-        self.display_text = missing
-        self.mode = missing
-        self.type = missing
-        self.default = missing
-        self.lower_limit = missing
-        self.upper_limit = missing
-        self.step = missing
-        self.cyclic = missing
-        self.value_list = missing
+    def __init__(self,
+        id=missing,
+        name=missing,
+        quantity_name=missing,
+        units=missing,
+        display_text=missing,
+        mode=missing,
+        type=missing,
+        default=missing,
+        lower_limit=missing,
+        upper_limit=missing,
+        step=missing,
+        cyclic=missing,
+        value_list=missing
+    ):
+        self.id = id
+        self.name = name
+        self.quantity_name = quantity_name
+        self.units = units
+        self.display_text = display_text
+        self.mode = mode
+        self.type = type
+        self.default = default
+        self.lower_limit = lower_limit
+        self.upper_limit = upper_limit
+        self.step = step
+        self.cyclic = cyclic
+        self.value_list = value_list
 
-        super().__init__(**kwargs)
+        self.obj_type = self.__class__.__name__
 
 FloatParameterDefinitionSchema.Meta.object_class = FloatParameterDefinition
 
@@ -116,21 +132,34 @@ class IntParameterDefinition(ParameterDefinition):
         schema = IntParameterDefinitionSchema
         rest_name = "parameter_definitions"
 
-    def __init__(self, **kwargs):
-        self.id = missing
-        self.name = missing
-        self.quantity_name = missing
-        self.units = missing
-        self.display_text = missing
-        self.mode = missing
-        self.type = missing
-        self.default = missing
-        self.lower_limit = missing
-        self.upper_limit = missing
-        self.step = missing
-        self.cyclic = missing
+    def __init__(self,
+        id=missing,
+        name=missing,
+        quantity_name=missing,
+        units=missing,
+        display_text=missing,
+        mode=missing,
+        type=missing,
+        default=missing,
+        lower_limit=missing,
+        upper_limit=missing,
+        step=missing,
+        cyclic=missing
+    ):
+        self.id = id
+        self.name = name
+        self.quantity_name = quantity_name
+        self.units = units
+        self.display_text = display_text
+        self.mode = mode
+        self.type = type
+        self.default = default
+        self.lower_limit = lower_limit
+        self.upper_limit = upper_limit
+        self.step = step
+        self.cyclic = cyclic
 
-        super().__init__(**kwargs)
+        self.obj_type = self.__class__.__name__
 
 IntParameterDefinitionSchema.Meta.object_class = IntParameterDefinition
 
@@ -161,17 +190,26 @@ class BoolParameterDefinition(ParameterDefinition):
         schema = BoolParameterDefinitionSchema
         rest_name = "parameter_definitions"
 
-    def __init__(self, **kwargs):
-        self.id = missing
-        self.name = missing
-        self.quantity_name = missing
-        self.units = missing
-        self.display_text = missing
-        self.mode = missing
-        self.type = missing
-        self.default = missing
+    def __init__(self,
+        id=missing,
+        name=missing,
+        quantity_name=missing,
+        units=missing,
+        display_text=missing,
+        mode=missing,
+        type=missing,
+        default=missing
+    ):
+        self.id = id
+        self.name = name
+        self.quantity_name = quantity_name
+        self.units = units
+        self.display_text = display_text
+        self.mode = mode
+        self.type = type
+        self.default = default
 
-        super().__init__(**kwargs)
+        self.obj_type = self.__class__.__name__
 
 BoolParameterDefinitionSchema.Meta.object_class = BoolParameterDefinition
 
@@ -204,17 +242,27 @@ class StringParameterDefinition(ParameterDefinition):
         schema = StringParameterDefinitionSchema
         rest_name = "parameter_definitions"
 
-    def __init__(self, **kwargs):
-        self.id = missing
-        self.name = missing
-        self.quantity_name = missing
-        self.units = missing
-        self.display_text = missing
-        self.mode = missing
-        self.type = missing
-        self.default = missing
-        self.value_list = missing
+    def __init__(self,
+        id=missing,
+        name=missing,
+        quantity_name=missing,
+        units=missing,
+        display_text=missing,
+        mode=missing,
+        type=missing,
+        default=missing,
+        value_list=missing
+    ):
+        self.id = id
+        self.name = name
+        self.quantity_name = quantity_name
+        self.units = units
+        self.display_text = display_text
+        self.mode = mode
+        self.type = type
+        self.default = default
+        self.value_list = value_list
 
-        super().__init__(**kwargs)
+        self.obj_type = self.__class__.__name__
 
 StringParameterDefinitionSchema.Meta.object_class = StringParameterDefinition

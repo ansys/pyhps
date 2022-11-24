@@ -335,6 +335,10 @@ def get_resource_imports(resource, base_class):
 
 def get_resource_code(resource, base_class, fields, field_docs):
 
+    fields_str = ""
+    for k in fields:
+        fields_str += f"        self.{k} = {k}\n"
+    init_fields_str = ",\n".join([f"        {k}=missing" for k in fields])
     code = f'''class {resource['class']}({base_class["name"]}):
     """{resource['class']} resource.
 
@@ -347,9 +351,11 @@ def get_resource_code(resource, base_class, fields, field_docs):
         schema = {resource['schema']}
         rest_name = "{resource['rest_name']}"
 
-    def __init__(self, **kwargs):
-{fields}
-        super().__init__(**kwargs)
+    def __init__(self,
+{init_fields_str}
+    ):
+{fields_str}
+        self.obj_type = self.__class__.__name__
 
 {resource['schema']}.Meta.object_class = {resource['class']}
 '''
@@ -371,10 +377,6 @@ def process_resources(subpackage, resources, base_class_path="ansys.rep.client")
 
         # query schema field names and doc
         fields, field_docs = declared_fields(resource_class, resources)
-
-        fields_str = ""
-        for k in fields:
-            fields_str += f"        self.{k} = missing\n"
 
         field_docs_str = ""
         for k in field_docs:
@@ -400,7 +402,7 @@ def process_resources(subpackage, resources, base_class_path="ansys.rep.client")
 
         resources_code[file_name]["imports"].extend(get_resource_imports(resource, base_class))
         resources_code[file_name]["code"].append(
-            get_resource_code(resource, base_class, fields_str, field_docs_str)
+            get_resource_code(resource, base_class, fields, field_docs_str)
         )
 
     # dump generated code to files

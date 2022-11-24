@@ -59,7 +59,6 @@ class TaskDefinitionTemplateTest(REPTestCase):
                     "default": "DMP",
                     "type": "string",
                     "description": "Available parallel processing types.",
-                    "display_name": "Parallel Processing Type",
                     "value_list": ["DMP", "SMP", "Hybrid"],
                 },
             },
