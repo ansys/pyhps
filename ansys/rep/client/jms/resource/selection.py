@@ -27,14 +27,21 @@ class JobSelection(Object):
         schema = JobSelectionSchema
         rest_name = "job_selections"
 
-    def __init__(self, **kwargs):
-        self.id = missing
-        self.name = missing
-        self.creation_time = missing
-        self.modification_time = missing
-        self.algorithm_id = missing
-        self.jobs = missing
+    def __init__(self,
+        id=missing,
+        name=missing,
+        creation_time=missing,
+        modification_time=missing,
+        algorithm_id=missing,
+        jobs=missing
+    ):
+        self.id = id
+        self.name = name
+        self.creation_time = creation_time
+        self.modification_time = modification_time
+        self.algorithm_id = algorithm_id
+        self.jobs = jobs
 
-        super().__init__(**kwargs)
+        self.obj_type = self.__class__.__name__
 
 JobSelectionSchema.Meta.object_class = JobSelection

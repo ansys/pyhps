@@ -24,9 +24,8 @@ log = logging.getLogger(__name__)
 class JobsTest(REPTestCase):
     def test_job_deserialization(self):
 
-        dp_dict = {
+        job_dict = {
             "id": "02q1DiPEP0nanLN5384q8L",
-            "obj_type": "Job",
             "modification_time": "2021-03-03T19:39:38.826286+00:00",
             "creation_time": "2021-03-03T19:38:15.024782+00:00",
             "name": "Job.0",
@@ -68,7 +67,7 @@ class JobsTest(REPTestCase):
         }
 
         schema = JobSchema()
-        job = schema.load(dp_dict)
+        job = schema.load(job_dict)
         self.assertEqual(job.id, "02q1DiPEP0nanLN5384q8L")
         self.assertEqual(job.name, "Job.0")
         self.assertEqual(job.job_definition_id, "02q3QL54xZzmBhfkAcEdqh")

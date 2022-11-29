@@ -24,14 +24,20 @@ class ResourceRequirements(Object):
         schema = ResourceRequirementsSchema
         rest_name = "None"
 
-    def __init__(self, **kwargs):
-        self.platform = missing
-        self.memory = missing
-        self.cpu_core_usage = missing
-        self.disk_space = missing
-        self.custom = missing
+    def __init__(self,
+        platform=missing,
+        memory=missing,
+        cpu_core_usage=missing,
+        disk_space=missing,
+        custom=missing
+    ):
+        self.platform = platform
+        self.memory = memory
+        self.cpu_core_usage = cpu_core_usage
+        self.disk_space = disk_space
+        self.custom = custom
 
-        super().__init__(**kwargs)
+        self.obj_type = self.__class__.__name__
 
 ResourceRequirementsSchema.Meta.object_class = ResourceRequirements
 
@@ -51,11 +57,14 @@ class Software(Object):
         schema = SoftwareSchema
         rest_name = "None"
 
-    def __init__(self, **kwargs):
-        self.name = missing
-        self.version = missing
+    def __init__(self,
+        name=missing,
+        version=missing
+    ):
+        self.name = name
+        self.version = version
 
-        super().__init__(**kwargs)
+        self.obj_type = self.__class__.__name__
 
 SoftwareSchema.Meta.object_class = Software
 
@@ -83,15 +92,22 @@ class SuccessCriteria(Object):
         schema = SuccessCriteriaSchema
         rest_name = "None"
 
-    def __init__(self, **kwargs):
-        self.return_code = missing
-        self.expressions = missing
-        self.required_output_file_ids = missing
-        self.require_all_output_files = missing
-        self.required_output_parameter_ids = missing
-        self.require_all_output_parameters = missing
+    def __init__(self,
+        return_code=missing,
+        expressions=missing,
+        required_output_file_ids=missing,
+        require_all_output_files=missing,
+        required_output_parameter_ids=missing,
+        require_all_output_parameters=missing
+    ):
+        self.return_code = return_code
+        self.expressions = expressions
+        self.required_output_file_ids = required_output_file_ids
+        self.require_all_output_files = require_all_output_files
+        self.required_output_parameter_ids = required_output_parameter_ids
+        self.require_all_output_parameters = require_all_output_parameters
 
-        super().__init__(**kwargs)
+        self.obj_type = self.__class__.__name__
 
 SuccessCriteriaSchema.Meta.object_class = SuccessCriteria
 
@@ -109,10 +125,12 @@ class Licensing(Object):
         schema = LicensingSchema
         rest_name = "None"
 
-    def __init__(self, **kwargs):
-        self.enable_shared_licensing = missing
+    def __init__(self,
+        enable_shared_licensing=missing
+    ):
+        self.enable_shared_licensing = enable_shared_licensing
 
-        super().__init__(**kwargs)
+        self.obj_type = self.__class__.__name__
 
 LicensingSchema.Meta.object_class = Licensing
 
@@ -161,25 +179,43 @@ class TaskDefinition(Object):
         schema = TaskDefinitionSchema
         rest_name = "task_definitions"
 
-    def __init__(self, **kwargs):
-        self.id = missing
-        self.name = missing
-        self.execution_command = missing
-        self.use_execution_script = missing
-        self.execution_script_id = missing
-        self.execution_level = missing
-        self.execution_context = missing
-        self.environment = missing
-        self.max_execution_time = missing
-        self.num_trials = missing
-        self.store_output = missing
-        self.input_file_ids = missing
-        self.output_file_ids = missing
-        self.success_criteria = missing
-        self.licensing = missing
-        self.software_requirements = missing
-        self.resource_requirements = missing
+    def __init__(self,
+        id=missing,
+        name=missing,
+        execution_command=missing,
+        use_execution_script=missing,
+        execution_script_id=missing,
+        execution_level=missing,
+        execution_context=missing,
+        environment=missing,
+        max_execution_time=missing,
+        num_trials=missing,
+        store_output=missing,
+        input_file_ids=missing,
+        output_file_ids=missing,
+        success_criteria=missing,
+        licensing=missing,
+        software_requirements=missing,
+        resource_requirements=missing
+    ):
+        self.id = id
+        self.name = name
+        self.execution_command = execution_command
+        self.use_execution_script = use_execution_script
+        self.execution_script_id = execution_script_id
+        self.execution_level = execution_level
+        self.execution_context = execution_context
+        self.environment = environment
+        self.max_execution_time = max_execution_time
+        self.num_trials = num_trials
+        self.store_output = store_output
+        self.input_file_ids = input_file_ids
+        self.output_file_ids = output_file_ids
+        self.success_criteria = success_criteria
+        self.licensing = licensing
+        self.software_requirements = software_requirements
+        self.resource_requirements = resource_requirements
 
-        super().__init__(**kwargs)
+        self.obj_type = self.__class__.__name__
 
 TaskDefinitionSchema.Meta.object_class = TaskDefinition

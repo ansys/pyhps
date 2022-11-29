@@ -66,6 +66,8 @@ class TaskSchema(ObjectSchema):
         "created when task status changes to prolog, before evaluation.",
     )
 
+    executed_command = fields.String(allow_none=True)
+
     job_id = IdReference(
         allow_none=False,
         attribute="job_id",
@@ -87,6 +89,11 @@ class TaskSchema(ObjectSchema):
         referenced_class="File",
         attribute="output_file_ids",
         description="List of IDs of output files of task.",
+    )
+    monitored_file_ids = IdReferenceList(
+        referenced_class="File",
+        attribute="monitored_file_ids",
+        description="List of IDs of monitored files of task.",
     )
 
     inherited_file_ids = IdReferenceList(

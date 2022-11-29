@@ -15,7 +15,7 @@ from examples.mapdl_motorbike_frame.project_setup import create_project
 import pytest
 
 from ansys.rep.client.jms import JmsApi, ProjectApi
-from ansys.rep.client.jms.resource import Job, JobDefinition, Project, TaskDefinition
+from ansys.rep.client.jms.resource import Job, JobDefinition, Project, Software, TaskDefinition
 from ansys.rep.client.jms.schema.task import TaskSchema
 from tests.rep_test import REPTestCase
 
@@ -27,7 +27,6 @@ class TasksTest(REPTestCase):
 
         task_dict = {
             "id": "02q3zCLSbavqZAeO3VjChL",
-            "obj_type": "Task",
             "modification_time": "2021-02-26T09:02:47.818186+00:00",
             "creation_time": "2021-02-26T09:02:11.999810+00:00",
             "pending_time": "2021-02-26T09:02:12.464568+00:00",
@@ -118,10 +117,9 @@ class TasksTest(REPTestCase):
             tasks = project_api.get_tasks(job_id=job.id)
             self.assertEqual(tasks[0].job_id, job.id)
 
-    @pytest.mark.requires_evaluator
     def test_job_sync(self):
 
-        # create base project with 1 process step and 3 design points
+        # create base project with 1 task and 3 jobs
         num_jobs = 3
         client = self.client()
         jms_api = JmsApi(client)
@@ -133,8 +131,7 @@ class TasksTest(REPTestCase):
 
         task_def_1 = TaskDefinition(
             name="Task.1",
-            application_name="NonExistingApp",
-            application_version="1.0.0",
+            software_requirements=[Software(name="NonExistingApp", version="1.0.0")],
             execution_command="%executable%",
             max_execution_time=10.0,
             execution_level=0,
@@ -156,11 +153,10 @@ class TasksTest(REPTestCase):
             self.assertEqual(len(tasks), 1)
             self.assertEqual(tasks[0].eval_status, "pending")
 
-        # add a second process step
+        # add a second task
         task_def_2 = TaskDefinition(
             name="Task.2",
-            application_name="NonExistingApp",
-            application_version="1.0.0",
+            software_requirements=[Software(name="NonExistingApp", version="1.0.0")],
             execution_command="%executable%",
             max_execution_time=10.0,
             execution_level=1,
@@ -171,7 +167,7 @@ class TasksTest(REPTestCase):
         job_def.task_definition_ids.append(task_def_2.id)
         job_def = project_api.update_job_definitions([job_def])[0]
 
-        # sync design points individually
+        # sync jobs individually
         jobs = project_api.get_jobs()
         project_api._sync_jobs(jobs)
 
@@ -201,8 +197,7 @@ class TasksTest(REPTestCase):
         # add a third process step
         task_def_3 = TaskDefinition(
             name="Task.3",
-            application_name="NonExistingApp",
-            application_version="1.0.0",
+            software_requirements=[Software(name="NonExistingApp", version="1.0.0")],
             execution_command="%executable%",
             max_execution_time=10.0,
             execution_level=0,

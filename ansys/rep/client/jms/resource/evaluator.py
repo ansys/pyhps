@@ -41,21 +41,35 @@ class Evaluator(Object):
         schema = EvaluatorSchema
         rest_name = "evaluators"
 
-    def __init__(self, **kwargs):
-        self.id = missing
-        self.host_id = missing
-        self.name = missing
-        self.hostname = missing
-        self.platform = missing
-        self.task_manager_type = missing
-        self.project_server_select = missing
-        self.alive_update_interval = missing
-        self.update_time = missing
-        self.external_access_port = missing
-        self.project_assignment_mode = missing
-        self.project_list = missing
-        self.configuration = missing
+    def __init__(self,
+        id=missing,
+        host_id=missing,
+        name=missing,
+        hostname=missing,
+        platform=missing,
+        task_manager_type=missing,
+        project_server_select=missing,
+        alive_update_interval=missing,
+        update_time=missing,
+        external_access_port=missing,
+        project_assignment_mode=missing,
+        project_list=missing,
+        configuration=missing
+    ):
+        self.id = id
+        self.host_id = host_id
+        self.name = name
+        self.hostname = hostname
+        self.platform = platform
+        self.task_manager_type = task_manager_type
+        self.project_server_select = project_server_select
+        self.alive_update_interval = alive_update_interval
+        self.update_time = update_time
+        self.external_access_port = external_access_port
+        self.project_assignment_mode = project_assignment_mode
+        self.project_list = project_list
+        self.configuration = configuration
 
-        super().__init__(**kwargs)
+        self.obj_type = self.__class__.__name__
 
 EvaluatorSchema.Meta.object_class = Evaluator

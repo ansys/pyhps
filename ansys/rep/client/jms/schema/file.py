@@ -40,6 +40,10 @@ class FileSchema(ObjectSchema):
         load_only=True,
         description="The date and time the file resource was last modified.",
     )
+    expiry_time = fields.DateTime(
+        allow_none=True,
+        metadata={"description": "File expiration time."},
+    )
 
     format = fields.String(allow_none=True)
     evaluation_path = fields.String(

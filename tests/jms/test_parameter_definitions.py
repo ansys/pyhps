@@ -183,8 +183,8 @@ class ParameterDefitionTest(REPTestCase):
         job_def = project_api.create_job_definitions([job_def])[0]
         self.assertEqual(len(job_def.parameter_definition_ids), 2)
 
-        fp = FloatParameterDefinition(name="f_param", display_name="A Float Parameter")
-        bp = BoolParameterDefinition(name="b_param", display_name="A Bool Parameter", default=False)
+        fp = FloatParameterDefinition(name="f_param", display_text="A Float Parameter")
+        bp = BoolParameterDefinition(name="b_param", display_text="A Bool Parameter", default=False)
         fp = project_api.create_parameter_definitions([fp])[0]
         bp = project_api.create_parameter_definitions([bp])[0]
         job_def.parameter_definition_ids.extend([p.id for p in [bp, fp]])

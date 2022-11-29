@@ -26,18 +26,29 @@ class Operation(Object):
         schema = OperationSchema
         rest_name = "operations"
 
-    def __init__(self, **kwargs):
-        self.id = missing
-        self.name = missing
-        self.finished = missing
-        self.succeeded = missing
-        self.progress = missing
-        self.status = missing
-        self.result = missing
-        self.messages = missing
-        self.start_time = missing
-        self.end_time = missing
+    def __init__(self,
+        id=missing,
+        name=missing,
+        finished=missing,
+        succeeded=missing,
+        progress=missing,
+        status=missing,
+        result=missing,
+        messages=missing,
+        start_time=missing,
+        end_time=missing
+    ):
+        self.id = id
+        self.name = name
+        self.finished = finished
+        self.succeeded = succeeded
+        self.progress = progress
+        self.status = status
+        self.result = result
+        self.messages = messages
+        self.start_time = start_time
+        self.end_time = end_time
 
-        super().__init__(**kwargs)
+        self.obj_type = self.__class__.__name__
 
 OperationSchema.Meta.object_class = Operation

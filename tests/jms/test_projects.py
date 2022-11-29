@@ -96,7 +96,7 @@ class ProjectsTest(REPTestCase):
 
     def test_project_serialization(self):
 
-        project = Project(name="new_project", replace=False)
+        project = Project(name="new_project")
 
         self.assertEqual(project.creation_time, missing)
         self.assertEqual(project.statistics, missing)

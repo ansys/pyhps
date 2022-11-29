@@ -26,6 +26,8 @@ class File(Object):
     modification_time : datetime, optional
         The date and time the file resource was last modified.
     format : str, optional
+    expiry_time : datetime, optional
+        File expiration time.
     evaluation_path : str, optional
         Relative path under which the file instance for a job evaluation will be stored.
     monitor : bool, optional
@@ -43,25 +45,42 @@ class File(Object):
         schema = FileSchema
         rest_name = "files"
 
-    def __init__(self, src=None, **kwargs):
+    def __init__(self, src=None,
+        id=missing,
+        name=missing,
+        type=missing,
+        storage_id=missing,
+        size=missing,
+        hash=missing,
+        creation_time=missing,
+        modification_time=missing,
+        expiry_time=missing,
+        format=missing,
+        evaluation_path=missing,
+        monitor=missing,
+        collect=missing,
+        collect_interval=missing,
+        reference_id=missing
+    ):
         self.src = src
         self.content = None
 
-        self.id = missing
-        self.name = missing
-        self.type = missing
-        self.storage_id = missing
-        self.size = missing
-        self.hash = missing
-        self.creation_time = missing
-        self.modification_time = missing
-        self.format = missing
-        self.evaluation_path = missing
-        self.monitor = missing
-        self.collect = missing
-        self.collect_interval = missing
-        self.reference_id = missing
+        self.id = id
+        self.name = name
+        self.type = type
+        self.storage_id = storage_id
+        self.size = size
+        self.hash = hash
+        self.creation_time = creation_time
+        self.modification_time = modification_time
+        self.expiry_time = expiry_time
+        self.format = format
+        self.evaluation_path = evaluation_path
+        self.monitor = monitor
+        self.collect = collect
+        self.collect_interval = collect_interval
+        self.reference_id = reference_id
 
-        super().__init__(**kwargs)
+        self.obj_type = self.__class__.__name__
 
 FileSchema.Meta.object_class = File

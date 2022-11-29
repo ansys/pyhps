@@ -6,8 +6,11 @@
 # Author(s): F.Negri, O.Koenig
 # ----------------------------------------------------------
 
+from typing import List
+
 from keycloak import KeycloakAdmin
 
+from ..resource import User
 from ..schema.user import UserSchema
 
 
@@ -44,11 +47,11 @@ class AuthApi:
     def url(self):
         return f"{self.client.rep_url}/auth/"
 
-    def get_users(self, as_objects=True):
+    def get_users(self, as_objects=True) -> List[User]:
         """Return a list of users."""
         return get_users(self.client, as_objects=as_objects)
 
-    def create_user(self, user, as_objects=True):
+    def create_user(self, user: User, as_objects=True) -> User:
         """Create a new user.
 
         Args:
@@ -57,7 +60,7 @@ class AuthApi:
         """
         return create_user(self.client, user, as_objects=as_objects)
 
-    def update_user(self, user, as_objects=True):
+    def update_user(self, user: User, as_objects=True) -> User:
         """Modify an existing user.
 
         Args:
@@ -66,7 +69,7 @@ class AuthApi:
         """
         return update_user(self.client, user, as_objects=as_objects)
 
-    def delete_user(self, user):
+    def delete_user(self, user: User) -> None:
         """Delete an existing user.
 
         Args:
