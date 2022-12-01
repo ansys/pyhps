@@ -6,9 +6,13 @@
 # Author(s): F.Negri, O.Koenig
 # ----------------------------------------------------------
 
+import logging
+
 from .auth.authenticate import authenticate
 from .connection import create_session
 from .exceptions import raise_for_status
+
+log = logging.getLogger(__name__)
 
 
 class Client(object):
@@ -120,6 +124,7 @@ class Client(object):
             response.status_code == 401
             and self._unauthorized_num_retry < self._unauthorized_max_retry
         ):
+            log.warning(f"[debug log] 401 error\n{response.json()}")
             self._unauthorized_num_retry += 1
             self.refresh_access_token()
             response.request.headers.update(
