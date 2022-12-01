@@ -13,7 +13,7 @@ from requests.adapters import HTTPAdapter, Retry
 log = logging.getLogger(__name__)
 
 
-def create_session(access_token: str = None) -> requests.Session:
+def create_session(access_token: str = None, pat: str = None) -> requests.Session:
     """Returns a :class:`requests.Session` object configured for REP with given access token
 
     Args:
@@ -37,6 +37,8 @@ def create_session(access_token: str = None) -> requests.Session:
 
     if access_token:
         session.headers.update({"Authorization": "Bearer %s" % access_token})
+    elif pat:
+        session.headers.update({"x-api-key": pat})
 
     retries = Retry(total=10, backoff_factor=1, status_forcelist=[503])
     session.mount("http://", HTTPAdapter(max_retries=retries))

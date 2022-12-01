@@ -71,6 +71,7 @@ class Client(object):
         client_secret: str = None,
         access_token: str = None,
         refresh_token: str = None,
+        pat: str = None,
         auth_url: str = None,
     ):
 
@@ -84,9 +85,13 @@ class Client(object):
         self.scope = scope
         self.client_id = client_id
         self.client_secret = client_secret
+        self.access_token = None
+        self.pat = None
 
         if access_token:
             self.access_token = access_token
+        elif pat:
+            self.pat = pat
         else:
             tokens = authenticate(
                 url=auth_url or rep_url,
@@ -102,7 +107,7 @@ class Client(object):
             self.access_token = tokens["access_token"]
             self.refresh_token = tokens["refresh_token"]
 
-        self.session = create_session(self.access_token)
+        self.session = create_session(self.access_token, self.pat)
         # register hook to handle expiring of the refresh token
         self.session.hooks["response"] = [self._auto_refresh_token, raise_for_status]
         self._unauthorized_num_retry = 0
