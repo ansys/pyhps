@@ -23,16 +23,19 @@ class Client(object):
 
     The following authentication workflows are supported:
 
+        - Access token: no authentication needed.
+        - Personal Access Token (PAT): no authentication needed.
         - Username and password: the client connects to the OAuth server and
           requests access and refresh tokens.
         - Refresh token: the client connects to the OAuth server and
           requests a new access token.
-        - Access token: no authentication needed.
+
+
 
     Parameters
     ----------
     rep_url : str
-        The base path for the server to call, e.g. "https://127.0.0.1:8443/rep".
+        The base path for the server to call, e.g. "https://localhost:8443/rep".
     username : str, optional
         Username
     password : str, optional
@@ -41,22 +44,31 @@ class Client(object):
         Refresh Token
     access_token : str, optional
         Access Token
+    pat: str, optional
+        Personal Access Token
 
     Examples
     --------
+    Create client object and connect to REP with username and password
 
     >>> from ansys.rep.client import Client
-    >>> # Create client object and connect to REP with username & password
     >>> cl = Client(
             rep_url="https://localhost:8443/rep", username="repadmin", password="repadmin"
         )
-    >>> # Extract refresh token to eventually store it
-    >>> refresh_token = cl.refresh_token
-    >>> # Alternative: Create client object and connect to REP with refresh token
+
+    Create client object and connect to REP with a PAT
+
+    >>> cl = Client(
+        rep_url="https://localhost:8443/rep",
+        pat="stalHBSPyb4k5PVVsGUVHC1KKDvi0jIRL3gFKTy6wC4FcOeWv8"
+    )
+
+    Create client object and connect to REP with refresh token
+
     >>> cl = Client(
         rep_url="https://localhost:8443/rep",
         username="repadmin",
-        refresh_token=refresh_token,
+        refresh_token="eyJhbGciOiJIUzI1NiIsInR5cC...",
         grant_type="refresh_token"
     )
 
@@ -64,7 +76,7 @@ class Client(object):
 
     def __init__(
         self,
-        rep_url: str = "https://127.0.0.1:8443/rep",
+        rep_url: str = "https://localhost:8443/rep",
         username: str = "repadmin",
         password: str = "repadmin",
         *,
@@ -123,8 +135,9 @@ class Client(object):
         if (
             response.status_code == 401
             and self._unauthorized_num_retry < self._unauthorized_max_retry
+            and self.refresh_token is not None
         ):
-            log.warning(f"[debug log] 401 error\n{response.json()}")
+            log.info(f"401 authorization error: trying to get a new access token.")
             self._unauthorized_num_retry += 1
             self.refresh_access_token()
             response.request.headers.update(

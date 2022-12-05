@@ -172,7 +172,6 @@ def get_projects(client, api_url, as_objects=True, **query_params) -> List[Proje
     Returns list of projects
     """
     url = f"{api_url}/projects"
-    log.info(f"[debug log] headers = {client.session.headers}")
     r = client.session.get(url, params=query_params)
 
     data = r.json()["projects"]

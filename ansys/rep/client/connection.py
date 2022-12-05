@@ -16,11 +16,17 @@ log = logging.getLogger(__name__)
 def create_session(access_token: str = None, pat: str = None) -> requests.Session:
     """Returns a :class:`requests.Session` object configured for REP with given access token
 
-    Args:
-        access_token (str): The access token provided by :meth:`ansys.rep.client.auth.authenticate`
+    Parameters
+    ----------
+    access_token : str
+        The access token provided by :meth:`ansys.rep.client.auth.authenticate`
+    pat : str
+        Personal Access Token.
 
-    Returns:
-        :class:`requests.Session`: The session object.
+    Returns
+    -------
+    :class:`requests.Session`
+        The session object.
     """
     session = requests.Session()
 
