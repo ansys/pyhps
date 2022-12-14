@@ -1,17 +1,9 @@
-# ----------------------------------------------------------
-# Copyright (C) 2019 by
-# ANSYS Switzerland GmbH
-# www.ansys.com
-#
-# Author(s): F.Negri
-# ----------------------------------------------------------
-
 from marshmallow import fields
 
 from ansys.rep.client.common import BaseSchema
 
 
-class ProjectPermissionSchema(BaseSchema):
+class PermissionSchema(BaseSchema):
     class Meta(BaseSchema.Meta):
         pass
 

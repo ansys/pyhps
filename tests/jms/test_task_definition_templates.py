@@ -13,8 +13,10 @@ import uuid
 
 from marshmallow.utils import missing
 
+from ansys.rep.client import Client
+from ansys.rep.client.auth import AuthApi, User
 from ansys.rep.client.jms import JmsApi
-from ansys.rep.client.jms.resource import TaskDefinitionTemplate
+from ansys.rep.client.jms.resource import Permission, TaskDefinitionTemplate
 from ansys.rep.client.jms.schema.task_definition_template import TaskDefinitionTemplateSchema
 from tests.rep_test import REPTestCase
 
@@ -142,6 +144,67 @@ class TaskDefinitionTemplateTest(REPTestCase):
 
         templates = jms_api.get_task_definition_templates(name=template_name)
         self.assertEqual(len(templates), 0)
+
+    def test_template_permissions(self):
+
+        client = self.client()
+        jms_api = JmsApi(client)
+
+        templates = jms_api.get_task_definition_templates()
+
+        # a regular deployment should have some default templates
+        # with read all permissions + some user defined ones with
+        # either user or group permissions
+        for template in templates:
+            permissions = jms_api.get_task_definition_template_permissions(template_id=template.id)
+            for permission in permissions:
+                self.assertIn(permission.permission_type, ["user", "group", "anyone"])
+
+        # create new template and check default permissions
+        template = TaskDefinitionTemplate(name="my_template", version=uuid.uuid4())
+        template = jms_api.create_task_definition_templates([template])[0]
+        permissions = jms_api.get_task_definition_template_permissions(template_id=template.id)
+        self.assertEqual(len(permissions), 1)
+        self.assertEqual(permissions[0].permission_type, "user")
+        self.assertEqual(permissions[0].role, "admin")
+        self.assertIsNotNone(permissions[0].value_id)
+
+        # create test user
+        auth_api = AuthApi(client)
+        user_credentials = {
+            "user1": {"username": f"testuser-{uuid.uuid4().hex[:8]}", "password": "test"}
+        }
+        user1 = auth_api.create_user(
+            User(
+                username=user_credentials["user1"]["username"],
+                password=user_credentials["user1"]["password"],
+                is_admin=False,
+            )
+        )
+        log.info(f"User 1: {user1}")
+        client1 = Client(
+            rep_url=self.rep_url,
+            username=user1.username,
+            password=user_credentials["user1"]["password"],
+        )
+        jms_api1 = JmsApi(client1)
+
+        # verify test user can't access the template
+        client1_templates = jms_api1.get_task_definition_templates(id=template.id)
+
+        # grant read all permissions
+        permissions.append(Permission(permission_type="anyone", role="reader", value_id="None"))
+        log.debug(permissions)
+        permissions = jms_api.update_task_definition_template_permissions(template.id, permissions)
+        self.assertEqual(len(permissions), 2)
+
+        # verify test user can now access the template
+        client1_templates = jms_api1.get_task_definition_templates(id=template.id)
+        self.assertEqual(len(client1_templates), 1)
+        self.assertEqual(client1_templates.name, template.name)
+
+        # Delete template
+        jms_api.delete_task_definition_templates([template])
 
 
 if __name__ == "__main__":

@@ -14,7 +14,7 @@ from ansys.rep.client import Client
 from ansys.rep.client.auth import AuthApi, User
 from ansys.rep.client.exceptions import ClientError
 from ansys.rep.client.jms import JmsApi, ProjectApi
-from ansys.rep.client.jms.resource import JobDefinition, Project, ProjectPermission
+from ansys.rep.client.jms.resource import JobDefinition, Permission, Project
 from tests.rep_test import REPTestCase
 
 log = logging.getLogger(__name__)
@@ -31,7 +31,7 @@ def grant_permissions(project_api: ProjectApi, user):
     permissions = project_api.get_permissions()
     log.info(f"Permissions before: {permissions}")
     permissions.append(
-        ProjectPermission(
+        Permission(
             permission_type="user", value_name=user.username, role="writer", value_id=user.id
         )
     )

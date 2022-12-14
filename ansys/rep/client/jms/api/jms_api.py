@@ -10,6 +10,7 @@ from ansys.rep.client.exceptions import REPError
 
 from ..resource import Operation
 from ..resource.evaluator import Evaluator
+from ..resource.permission import Permission
 from ..resource.project import Project, ProjectSchema
 from ..resource.task_definition_template import TaskDefinitionTemplate
 from .base import create_objects, delete_objects, get_object, get_objects, update_objects
@@ -152,6 +153,25 @@ class JmsApi(object):
                 A list of task definition templates
         """
         return delete_objects(self.client.session, self.url, templates)
+
+    # Task Definition Template Permissions
+    def get_task_definition_template_permissions(
+        self, template_id, as_objects=True
+    ) -> List[Permission]:
+        return get_objects(
+            self.client.session,
+            f"{self.url}/task_definition_templates/{template_id}",
+            Permission,
+            as_objects,
+        )
+
+    def update_task_definition_template_permissions(
+        self, template_id, permissions: List[Permission]
+    ):
+        # TODO: check if api returns something
+        return update_objects(
+            self.client.session, f"{self.url}/task_definition_templates/{template_id}", permissions
+        )
 
     ################################################################
     # Operations

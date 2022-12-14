@@ -19,8 +19,8 @@ from ..resource.job_definition import JobDefinition
 from ..resource.license_context import LicenseContext
 from ..resource.parameter_definition import ParameterDefinition
 from ..resource.parameter_mapping import ParameterMapping
+from ..resource.permission import Permission, PermissionSchema
 from ..resource.project import Project
-from ..resource.project_permission import ProjectPermission, ProjectPermissionSchema
 from ..resource.selection import JobSelection
 from ..resource.task import Task
 from ..resource.task_definition import TaskDefinition
@@ -331,10 +331,10 @@ class ProjectApi:
 
     ################################################################
     # Permissions
-    def get_permissions(self, as_objects=True) -> List[ProjectPermission]:
-        return self._get_objects(ProjectPermission, as_objects=as_objects)
+    def get_permissions(self, as_objects=True) -> List[Permission]:
+        return self._get_objects(Permission, as_objects=as_objects, fields=None)
 
-    def update_permissions(self, permissions: List[ProjectPermission]):
+    def update_permissions(self, permissions: List[Permission]):
         # the rest api currently doesn't return anything on permissions update
         update_permissions(self.client, self.url, permissions)
 
@@ -567,7 +567,7 @@ def update_permissions(client, project_api_url, permissions):
 
     url = f"{project_api_url}/permissions"
 
-    schema = ProjectPermissionSchema(many=True)
+    schema = PermissionSchema(many=True)
     serialized_data = schema.dump(permissions)
     json_data = json.dumps({"permissions": serialized_data})
     r = client.session.put(f"{url}", data=json_data)
