@@ -6,6 +6,7 @@
 # Author(s): O.Koenig
 # ----------------------------------------------------------
 import logging
+import unittest
 
 from ansys.rep.client.auth import authenticate
 from ansys.rep.client.connection import create_session, ping
@@ -16,6 +17,10 @@ log = logging.getLogger(__name__)
 
 class ConnectionTest(REPTestCase):
     def test_connection(self):
+
+        if self.pat:
+            raise unittest.SkipTest("This test is not supported with PAT authentication.")
+
         rep_url = self.rep_url
         resp = authenticate(url=rep_url, username=self.username, password=self.password)
         access_token = resp["access_token"]

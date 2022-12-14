@@ -26,9 +26,11 @@ class REPTestCase(unittest.TestCase):
         # self.logger.addHandler(self._stream_handler)
 
         self.rep_url = os.environ.get("REP_TEST_URL") or "https://localhost:8443/rep"
-        self.username = os.environ.get("REP_TEST_USERNAME") or "repadmin"
-        self.password = os.environ.get("REP_TEST_PASSWORD") or "repadmin"
         self.pat = os.environ.get("REP_TEST_PAT", None)
+
+        if self.pat is None:
+            self.username = os.environ.get("REP_TEST_USERNAME") or "repadmin"
+            self.password = os.environ.get("REP_TEST_PASSWORD") or "repadmin"
 
         # Create a unique run_id (to be used when creating new projects)
         # to avoid conflicts in case of

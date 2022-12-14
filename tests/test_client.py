@@ -18,6 +18,9 @@ log = logging.getLogger(__name__)
 class REPClientTest(REPTestCase):
     def test_authentication_workflows(self):
 
+        if self.pat:
+            raise unittest.SkipTest("This test is not supported with PAT authentication.")
+
         client0 = Client(self.rep_url, self.username, self.password)
 
         self.assertTrue(client0.access_token is not None)

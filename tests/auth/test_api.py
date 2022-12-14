@@ -6,6 +6,7 @@
 # Author(s): O.Koenig
 # ----------------------------------------------------------
 import logging
+import unittest
 import uuid
 
 from keycloak.exceptions import KeycloakError
@@ -20,13 +21,16 @@ log = logging.getLogger(__name__)
 class AuthClientTest(REPTestCase):
     def test_auth_client(self):
 
+        if self.pat:
+            raise unittest.SkipTest("This test is not supported with PAT authentication.")
+
         api = AuthApi(Client(self.rep_url, username=self.username, password=self.password))
         users = api.get_users()
 
         # we run the test only if self.username is an admin user
         for user in users:
             if user.username == self.username and not user.is_admin:
-                return
+                raise unittest.SkipTest("This test is not supported for non-admin users.")
 
         username = f"test_user_{uuid.uuid4()}"
         new_user = User(
@@ -59,6 +63,9 @@ class AuthClientTest(REPTestCase):
         self.assertNotIn(new_user.username, usernames)
 
     def test_auth_api_exceptions(self):
+
+        if self.pat:
+            raise unittest.SkipTest("This test is not supported with PAT authentication.")
 
         api = AuthApi(Client(self.rep_url, username=self.username, password=self.password))
         users = api.get_users()

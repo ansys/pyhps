@@ -35,6 +35,9 @@ class ExceptionTest(REPTestCase):
 
     def test_client_error(self):
 
+        if self.pat is not None:
+            raise unittest.SkipTest("This test is not supported with PAT authentication.")
+
         except_obj = None
         try:
             client = Client(self.rep_url, self.username, f"{self.password}_wrong")
