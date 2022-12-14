@@ -68,7 +68,7 @@ def get_oidc_response(
 
 
 def authenticate(
-    url: str = "https://127.0.0.1:8443/rep",
+    url: str = "https://localhost:8443/rep",
     realm: str = "rep",
     grant_type: str = "password",
     scope="openid",
@@ -84,7 +84,7 @@ def authenticate(
     If successful, the response includes access and refresh tokens.
 
     Args:
-        url (str): The base path for the server to call, e.g. "https://127.0.0.1:8443/rep".
+        url (str): The base path for the server to call, e.g. "https://localhost:8443/rep".
         username (str): Username
         password (str): Password
         refresh_token (str, optional): Refresh token.
@@ -130,40 +130,20 @@ def authenticate(
     r = session.post(token_url, data=data, timeout=timeout)
 
     raise_for_status(r)
-    # if r.status_code != 200:
-    # raise ClientError(f"Failed to retrieve access token for client {client_id} from
-    # {token_url} using {grant_type} grant, status code {r.status_code}: {r.content.decode()}", **d)
-
     return r.json()
 
-    # auth_data={}
-    # if refresh_token:
-    #     auth_data = {'client_id': client_id,
-    #                 'grant_type': 'refresh_token',
-    #                 'scope': scope,
-    #                 'refresh_token' : refresh_token}
-    #     log.debug("Authenticate on %s with refresh token" % auth_api_url)
-    # elif password:
-    #     auth_data = {'client_id': client_id,
-    #                 'grant_type': 'password',
-    #                 'scope': scope,
-    #                 'username': username,
-    #                 'password': password}
-    #     log.debug("Authenticate on %s with user %s and password" % (auth_api_url,username))
 
-    # with requests.Session() as session:
-    #     # Disable SSL certificate verification and warnings about it
-    #     session.verify = False
-    #     requests.packages.urllib3.disable_warnings(
-    #       requests.packages.urllib3.exceptions.InsecureRequestWarning
-    #     )
+def generate_personal_access_token(session: requests.Session, url: str):
+    """
+    Generate PAT from auth service
 
-    #     # Set basic content type
-    #     session.headers.update({'content-type': 'application/x-www-form-urlencoded'})
-
-    #     # Query tokens
-    #     resp = session.post("%s/oauth/token" % auth_api_url, data=auth_data, timeout=timeout)
-    #     raise_for_status(resp)
-    #     log.debug("Authentication successful, returning tokens")
-
-    # return resp.json()
+    Parameters
+    ----------
+    session : :class:`requests.Session`
+        An authenticated REP session with a valid access token.
+    url : str
+        REP url, e.g. "https://localhost:8443/rep".
+    """
+    r = session.get(f"{url}/auth/realms/rep/verify-pat/token")
+    raise_for_status(r)
+    return r.text

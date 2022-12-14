@@ -25,9 +25,10 @@ class REPTestCase(unittest.TestCase):
         # self._stream_handler = logging.StreamHandler(sys.stdout)
         # self.logger.addHandler(self._stream_handler)
 
-        self.rep_url = os.environ.get("REP_TEST_URL") or "https://127.0.0.1:8443/rep"
+        self.rep_url = os.environ.get("REP_TEST_URL") or "https://localhost:8443/rep"
         self.username = os.environ.get("REP_TEST_USERNAME") or "repadmin"
         self.password = os.environ.get("REP_TEST_PASSWORD") or "repadmin"
+        self.pat = os.environ.get("REP_TEST_PAT", None)
 
         # Create a unique run_id (to be used when creating new projects)
         # to avoid conflicts in case of
@@ -52,5 +53,5 @@ class REPTestCase(unittest.TestCase):
 
     def client(self):
         if self._client is None:
-            self._client = Client(self.rep_url, self.username, self.password)
+            self._client = Client(self.rep_url, self.username, self.password, pat=self.pat)
         return self._client

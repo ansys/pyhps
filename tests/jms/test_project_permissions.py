@@ -62,7 +62,10 @@ class ProjectPermissionsTest(REPTestCase):
         project_api = ProjectApi(client, proj.id)
 
         perms = project_api.get_permissions()
+
         self.assertEqual(len(perms), 1)
+        self.assertIsNotNone(perms[0].value_id)
+        self.assertNotEqual(perms[0].value_id, "None")
         self.assertEqual(perms[0].value_name, self.username)
         self.assertEqual(perms[0].role, "admin")
         self.assertEqual(perms[0].permission_type, "user")
@@ -76,6 +79,9 @@ class ProjectPermissionsTest(REPTestCase):
             "user2": {"username": f"testuser-{uuid.uuid4().hex[:8]}", "password": "test"},
         }
         proj_name = f"test_jms_get_permissions_test_{uuid.uuid4().hex[:8]}"
+
+        if self.pat is not None:
+            raise unittest.SkipTest("This test is not supported with PAT authentication.")
 
         client = self.client()
         auth_api = AuthApi(client)

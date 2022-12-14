@@ -10,6 +10,8 @@ from typing import List
 
 from keycloak import KeycloakAdmin
 
+from ansys.rep.client.exceptions import REPError
+
 from ..resource import User
 from ..schema.user import UserSchema
 
@@ -79,6 +81,13 @@ class AuthApi:
 
 
 def _admin_client(client):
+
+    if client.access_token is None:
+        raise REPError(
+            "Missing access token. You need to authenticate with "
+            "the username and password workflow to be able to operate "
+            "Keycloak as admin."
+        )
 
     custom_headers = {
         "Authorization": "Bearer " + client.access_token,

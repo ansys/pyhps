@@ -23,14 +23,14 @@ class Client(object):
 
     The following authentication workflows are supported:
 
-        - Access token: no authentication needed.
-        - Personal Access Token (PAT): no authentication needed.
-        - Username and password: the client connects to the OAuth server and
+        1. Access token: no authentication needed.
+        2. Personal Access Token (PAT): no authentication needed.
+        3. Username and password: the client connects to the OAuth server and
           requests access and refresh tokens.
-        - Refresh token: the client connects to the OAuth server and
+        4. Refresh token: the client connects to the OAuth server and
           requests a new access token.
 
-
+    These alternative workflows are evaluated in the order listed above.
 
     Parameters
     ----------
@@ -68,8 +68,7 @@ class Client(object):
     >>> cl = Client(
         rep_url="https://localhost:8443/rep",
         username="repadmin",
-        refresh_token="eyJhbGciOiJIUzI1NiIsInR5cC...",
-        grant_type="refresh_token"
+        refresh_token="eyJhbGciOiJIUzI1NiIsInR5cC..."
     )
 
     """
@@ -77,8 +76,8 @@ class Client(object):
     def __init__(
         self,
         rep_url: str = "https://localhost:8443/rep",
-        username: str = "repadmin",
-        password: str = "repadmin",
+        username: str = None,
+        password: str = None,
         *,
         realm: str = "rep",
         grant_type: str = "password",
@@ -105,10 +104,15 @@ class Client(object):
         self.pat = None
 
         if access_token:
+            log.debug("Authenticate with access token")
             self.access_token = access_token
         elif pat:
             self.pat = pat
+            log.debug("Authenticate with PAT")
         else:
+            if not password and refresh_token:
+                grant_type = "refresh_token"
+                log.debug("Authenticate with refresh token")
             tokens = authenticate(
                 url=auth_url or rep_url,
                 realm=realm,
