@@ -228,6 +228,25 @@ class TaskDefinitionTemplateTest(REPTestCase):
         # Delete template
         jms_api.delete_task_definition_templates([template])
 
+        # Let user1 create a template
+        template = TaskDefinitionTemplate(name="my_template", version=uuid.uuid4())
+        template = jms_api1.create_task_definition_templates([template])[0]
+        permissions = jms_api1.get_task_definition_template_permissions(template_id=template.id)
+        self.assertEqual(len(permissions), 1)
+        self.assertEqual(permissions[0].permission_type, "user")
+        self.assertEqual(permissions[0].role, "admin")
+        self.assertEqual(permissions[0].value_id, user1.id)
+
+        # verify that an admin user can access the template
+        admin_templates = jms_api.get_task_definition_templates(id=template.id)
+        log.info(admin_templates)
+        self.assertEqual(len(admin_templates), 1)
+        self.assertEqual(admin_templates[0].name, template.name)
+        self.assertEqual(admin_templates[0].version, template.version)
+
+        # Delete template
+        jms_api1.delete_task_definition_templates([template])
+
         # Delete user
         auth_api.delete_user(user1)
 
