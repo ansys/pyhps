@@ -9,9 +9,12 @@ class Permission(Object):
     Parameters
     ----------
     permission_type : str
-    value_id : str
+        Either 'user', 'group', or 'anyone'.
+    value_id : str, optional
+        Can be the ID of a user or group.
     value_name : str, optional
     role : str
+        Either 'admin', 'writer',  or 'reader'.
 
     """
 

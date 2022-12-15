@@ -193,15 +193,15 @@ class TaskDefinitionTemplateTest(REPTestCase):
         client1_templates = jms_api1.get_task_definition_templates(id=template.id)
 
         # grant read all permissions
-        permissions.append(Permission(permission_type="anyone", role="reader", value_id="None"))
-        log.debug(permissions)
-        permissions = jms_api.update_task_definition_template_permissions(template.id, permissions)
+        permissions.append(Permission(permission_type="anyone", role="reader", value_id=None))
+        jms_api.update_task_definition_template_permissions(template.id, permissions)
+        permissions = jms_api.get_task_definition_template_permissions(template_id=template.id)
         self.assertEqual(len(permissions), 2)
 
         # verify test user can now access the template
         client1_templates = jms_api1.get_task_definition_templates(id=template.id)
         self.assertEqual(len(client1_templates), 1)
-        self.assertEqual(client1_templates.name, template.name)
+        self.assertEqual(client1_templates[0].name, template.name)
 
         # Delete template
         jms_api.delete_task_definition_templates([template])
