@@ -13,7 +13,7 @@ import uuid
 
 from marshmallow.utils import missing
 
-from ansys.rep.client import Client
+from ansys.rep.client import Client, REPError
 from ansys.rep.client.auth import AuthApi, User
 from ansys.rep.client.jms import JmsApi
 from ansys.rep.client.jms.resource import Permission, TaskDefinitionTemplate
@@ -191,6 +191,7 @@ class TaskDefinitionTemplateTest(REPTestCase):
 
         # verify test user can't access the template
         client1_templates = jms_api1.get_task_definition_templates(id=template.id)
+        self.assertEqual(len(client1_templates), 0)
 
         # grant read all permissions
         permissions.append(Permission(permission_type="anyone", role="reader", value_id=None))
@@ -203,8 +204,32 @@ class TaskDefinitionTemplateTest(REPTestCase):
         self.assertEqual(len(client1_templates), 1)
         self.assertEqual(client1_templates[0].name, template.name)
 
+        # verify test user can't edit the template
+        client1_templates[0].version = client1_templates[0].version + "-dev"
+
+        except_obj = None
+        try:
+            client1_templates = jms_api1.update_task_definition_templates(client1_templates)
+        except REPError as e:
+            except_obj = e
+        self.assertEqual(except_obj.response.status_code, 403)
+        self.assertEqual(except_obj.description, "Access to this resource has been restricted")
+
+        # grant write permissions to the user
+        permissions.append(Permission(permission_type="user", role="writer", value_id=user1.id))
+        jms_api.update_task_definition_template_permissions(template.id, permissions)
+        permissions = jms_api.get_task_definition_template_permissions(template_id=template.id)
+        self.assertEqual(len(permissions), 3)
+
+        # verify test user can now edit the template
+        client1_templates[0].version = client1_templates[0].version + "-dev"
+        client1_templates = jms_api1.update_task_definition_templates(client1_templates)
+
         # Delete template
         jms_api.delete_task_definition_templates([template])
+
+        # Delete user
+        auth_api.delete_user(user1)
 
 
 if __name__ == "__main__":
