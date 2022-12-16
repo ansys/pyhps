@@ -250,6 +250,85 @@ class TaskDefinitionTemplateTest(REPTestCase):
         # Delete user
         auth_api.delete_user(user1)
 
+    def test_template_anyone_permission(self):
+
+        client = self.client()
+        jms_api = JmsApi(client)
+
+        # create new template and check default permissions
+        template = TaskDefinitionTemplate(name="my_template", version=uuid.uuid4())
+        template = jms_api.create_task_definition_templates([template])[0]
+        permissions = jms_api.get_task_definition_template_permissions(template_id=template.id)
+        self.assertEqual(len(permissions), 1)
+        self.assertEqual(permissions[0].permission_type, "user")
+        self.assertEqual(permissions[0].role, "admin")
+        self.assertIsNotNone(permissions[0].value_id)
+
+        # create test user
+        auth_api = AuthApi(client)
+        user_credentials = {
+            "user1": {"username": f"testuser-{uuid.uuid4().hex[:8]}", "password": "test"}
+        }
+        user1 = auth_api.create_user(
+            User(
+                username=user_credentials["user1"]["username"],
+                password=user_credentials["user1"]["password"],
+                is_admin=False,
+            )
+        )
+        log.info(f"User 1: {user1}")
+        client1 = Client(
+            rep_url=self.rep_url,
+            username=user1.username,
+            password=user_credentials["user1"]["password"],
+        )
+        jms_api1 = JmsApi(client1)
+
+        # verify test user can't access the template
+        client1_templates = jms_api1.get_task_definition_templates(id=template.id)
+        self.assertEqual(len(client1_templates), 0)
+
+        # grant read all permissions
+        permissions.append(Permission(permission_type="anyone", role="reader", value_id=None))
+        jms_api.update_task_definition_template_permissions(template.id, permissions)
+        permissions = jms_api.get_task_definition_template_permissions(template_id=template.id)
+        self.assertEqual(len(permissions), 2)
+
+        # verify test user can now access the template
+        client1_templates = jms_api1.get_task_definition_templates(id=template.id)
+        self.assertEqual(len(client1_templates), 1)
+        self.assertEqual(client1_templates[0].name, template.name)
+
+        # verify test user can't edit the template
+        client1_templates[0].version = client1_templates[0].version + "-dev"
+
+        except_obj = None
+        try:
+            client1_templates = jms_api1.update_task_definition_templates(client1_templates)
+        except REPError as e:
+            except_obj = e
+        self.assertEqual(except_obj.response.status_code, 403)
+        self.assertEqual(except_obj.description, "Access to this resource has been restricted")
+
+        # grant write all permissions
+        anyone_permission = next(p for p in permissions if p.permission_type == "anyone")
+        anyone_permission.role = "writer"
+        jms_api.update_task_definition_template_permissions(template.id, permissions)
+        permissions = jms_api.get_task_definition_template_permissions(template_id=template.id)
+        self.assertEqual(len(permissions), 2)
+        for p in permissions:
+            if p.permission_type == "anyone":
+                self.assertEqual(p.role, "writer")
+
+        # verify test user can now edit the template
+        client1_templates = jms_api1.update_task_definition_templates(client1_templates)
+
+        # Delete template
+        jms_api.delete_task_definition_templates([template])
+
+        # Delete user
+        auth_api.delete_user(user1)
+
 
 if __name__ == "__main__":
     unittest.main()
