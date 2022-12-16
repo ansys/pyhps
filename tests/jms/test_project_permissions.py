@@ -35,8 +35,7 @@ def grant_permissions(project_api: ProjectApi, user):
             permission_type="user", value_name=user.username, role="writer", value_id=user.id
         )
     )
-    project_api.update_permissions(permissions)
-    permissions = project_api.get_permissions()
+    permissions = project_api.update_permissions(permissions)
     log.info(f"Permissions after: {permissions}")
 
 
@@ -45,8 +44,7 @@ def remove_permissions(project_api: ProjectApi, user):
     permissions = project_api.get_permissions()
     log.info(f"Permissions before: {permissions}")
     permissions = [p for p in permissions if p.value_name != user.username]
-    project_api.update_permissions(permissions)
-    permissions = project_api.get_permissions()
+    permissions = project_api.update_permissions(permissions)
     log.info(f"Permissions after: {permissions}")
 
 

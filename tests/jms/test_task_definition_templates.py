@@ -195,8 +195,7 @@ class TaskDefinitionTemplateTest(REPTestCase):
 
         # grant read all permissions
         permissions.append(Permission(permission_type="anyone", role="reader", value_id=None))
-        jms_api.update_task_definition_template_permissions(template.id, permissions)
-        permissions = jms_api.get_task_definition_template_permissions(template_id=template.id)
+        permissions = jms_api.update_task_definition_template_permissions(template.id, permissions)
         self.assertEqual(len(permissions), 2)
 
         # verify test user can now access the template
@@ -217,8 +216,7 @@ class TaskDefinitionTemplateTest(REPTestCase):
 
         # grant write permissions to the user
         permissions.append(Permission(permission_type="user", role="writer", value_id=user1.id))
-        jms_api.update_task_definition_template_permissions(template.id, permissions)
-        permissions = jms_api.get_task_definition_template_permissions(template_id=template.id)
+        permissions = jms_api.update_task_definition_template_permissions(template.id, permissions)
         self.assertEqual(len(permissions), 3)
 
         # verify test user can now edit the template
@@ -290,8 +288,7 @@ class TaskDefinitionTemplateTest(REPTestCase):
 
         # grant read all permissions
         permissions.append(Permission(permission_type="anyone", role="reader", value_id=None))
-        jms_api.update_task_definition_template_permissions(template.id, permissions)
-        permissions = jms_api.get_task_definition_template_permissions(template_id=template.id)
+        permissions = jms_api.update_task_definition_template_permissions(template.id, permissions)
         self.assertEqual(len(permissions), 2)
 
         # verify test user can now access the template
@@ -313,8 +310,7 @@ class TaskDefinitionTemplateTest(REPTestCase):
         # grant write all permissions
         anyone_permission = next(p for p in permissions if p.permission_type == "anyone")
         anyone_permission.role = "writer"
-        jms_api.update_task_definition_template_permissions(template.id, permissions)
-        permissions = jms_api.get_task_definition_template_permissions(template_id=template.id)
+        permissions = jms_api.update_task_definition_template_permissions(template.id, permissions)
         self.assertEqual(len(permissions), 2)
         for p in permissions:
             if p.permission_type == "anyone":

@@ -10,7 +10,7 @@ from ansys.rep.client.exceptions import REPError
 
 from ..resource import Operation
 from ..resource.evaluator import Evaluator
-from ..resource.permission import Permission, PermissionSchema
+from ..resource.permission import Permission
 from ..resource.project import Project, ProjectSchema
 from ..resource.task_definition_template import TaskDefinitionTemplate
 from .base import create_objects, delete_objects, get_object, get_objects, update_objects
@@ -166,17 +166,17 @@ class JmsApi(object):
         )
 
     def update_task_definition_template_permissions(
-        self, template_id, permissions: List[Permission]
+        self,
+        template_id,
+        permissions: List[Permission],
+        as_objects=True,
     ) -> None:
-        if not permissions:
-            return
-
-        url = f"{self.url}/task_definition_templates/{template_id}/permissions"
-        schema = PermissionSchema(many=True)
-        serialized_data = schema.dump(permissions)
-        json_data = json.dumps({"permissions": serialized_data})
-        r = self.client.session.put(f"{url}", data=json_data)
-        return
+        return update_objects(
+            self.client.session,
+            f"{self.url}/task_definition_templates/{template_id}",
+            permissions,
+            as_objects,
+        )
 
     ################################################################
     # Operations
