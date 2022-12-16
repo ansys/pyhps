@@ -7,12 +7,15 @@ import uuid
 
 from ansys.rep.client.client import Client
 from ansys.rep.client.exceptions import REPError
+from ansys.rep.client.jms.resource import (
+    Evaluator,
+    Operation,
+    Permission,
+    Project,
+    TaskDefinitionTemplate,
+)
+from ansys.rep.client.jms.schema.project import ProjectSchema
 
-from ..resource import Operation
-from ..resource.evaluator import Evaluator
-from ..resource.permission import Permission
-from ..resource.project import Project, ProjectSchema
-from ..resource.task_definition_template import TaskDefinitionTemplate
 from .base import create_objects, delete_objects, get_object, get_objects, update_objects
 
 log = logging.getLogger(__name__)

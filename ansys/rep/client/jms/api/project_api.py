@@ -11,19 +11,22 @@ import requests
 from ansys.rep.client.client import Client
 from ansys.rep.client.common import Object
 from ansys.rep.client.exceptions import ClientError, REPError
+from ansys.rep.client.jms.resource import (
+    Algorithm,
+    File,
+    Job,
+    JobDefinition,
+    JobSelection,
+    LicenseContext,
+    ParameterDefinition,
+    ParameterMapping,
+    Permission,
+    Project,
+    Task,
+    TaskDefinition,
+)
+from ansys.rep.client.jms.schema.job import JobSchema
 
-from ..resource.algorithm import Algorithm
-from ..resource.file import File
-from ..resource.job import Job, JobSchema
-from ..resource.job_definition import JobDefinition
-from ..resource.license_context import LicenseContext
-from ..resource.parameter_definition import ParameterDefinition
-from ..resource.parameter_mapping import ParameterMapping
-from ..resource.permission import Permission
-from ..resource.project import Project
-from ..resource.selection import JobSelection
-from ..resource.task import Task
-from ..resource.task_definition import TaskDefinition
 from .base import create_objects, delete_objects, get_objects, update_objects
 from .jms_api import JmsApi, _monitor_operation, get_project
 
