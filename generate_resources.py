@@ -104,12 +104,12 @@ JMS_RESOURCES = [
         "resource_filename": "project",
     },
     {
-        "schema": "ProjectPermissionSchema",
-        "schema_filename": "project_permission",
+        "schema": "PermissionSchema",
+        "schema_filename": "permission",
         "rest_name": "permissions",
         "additional_fields": [],
-        "class": "ProjectPermission",
-        "resource_filename": "project_permission",
+        "class": "Permission",
+        "resource_filename": "permission",
     },
     {
         "schema": "ResourceRequirementsSchema",

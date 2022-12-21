@@ -18,7 +18,7 @@ from .parameter_definition import ParameterDefinition, FloatParameterDefinition,
     IntParameterDefinition, StringParameterDefinition, BoolParameterDefinition
 from .parameter_mapping import ParameterMapping
 from .project import Project
-from .project_permission import ProjectPermission
+from .permission import Permission
 from .selection import JobSelection
 from .task import Task
 from .task_definition import Licensing, SuccessCriteria, Software, ResourceRequirements, TaskDefinition

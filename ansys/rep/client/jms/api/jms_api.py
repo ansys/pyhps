@@ -7,11 +7,15 @@ import uuid
 
 from ansys.rep.client.client import Client
 from ansys.rep.client.exceptions import REPError
+from ansys.rep.client.jms.resource import (
+    Evaluator,
+    Operation,
+    Permission,
+    Project,
+    TaskDefinitionTemplate,
+)
+from ansys.rep.client.jms.schema.project import ProjectSchema
 
-from ..resource import Operation
-from ..resource.evaluator import Evaluator
-from ..resource.project import Project, ProjectSchema
-from ..resource.task_definition_template import TaskDefinitionTemplate
 from .base import create_objects, delete_objects, get_object, get_objects, update_objects
 
 log = logging.getLogger(__name__)
@@ -152,6 +156,32 @@ class JmsApi(object):
                 A list of task definition templates
         """
         return delete_objects(self.client.session, self.url, templates)
+
+    # Task Definition Template Permissions
+    def get_task_definition_template_permissions(
+        self, template_id: str, as_objects: bool = True
+    ) -> List[Permission]:
+        """Get permissions of a task definition template"""
+        return get_objects(
+            self.client.session,
+            f"{self.url}/task_definition_templates/{template_id}",
+            Permission,
+            as_objects,
+        )
+
+    def update_task_definition_template_permissions(
+        self,
+        template_id: str,
+        permissions: List[Permission],
+        as_objects: bool = True,
+    ) -> List[Permission]:
+        """Update permissions of a task definition template"""
+        return update_objects(
+            self.client.session,
+            f"{self.url}/task_definition_templates/{template_id}",
+            permissions,
+            as_objects,
+        )
 
     ################################################################
     # Operations
