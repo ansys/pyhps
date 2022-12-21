@@ -31,8 +31,8 @@ from ansys.rep.client.jms.resource import (
     Licensing,
     Operation,
     ParameterMapping,
+    Permission,
     Project,
-    ProjectPermission,
     ResourceRequirements,
     Software,
     StringParameterDefinition,
@@ -66,7 +66,7 @@ def generate_openapi_specs():
 
     for resource in [
         Project,
-        ProjectPermission,
+        Permission,
         LicenseContext,
         Job,
         Algorithm,
