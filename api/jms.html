@@ -351,6 +351,15 @@
         </a>
        </li>
        <li class="toc-h5 nav-item toc-entry">
+        <a class="reference internal nav-link" href="#ansys.rep.client.jms.JmsApi.get_task_definition_template_permissions">
+         <code class="docutils literal notranslate">
+          <span class="pre">
+           JmsApi.get_task_definition_template_permissions()
+          </span>
+         </code>
+        </a>
+       </li>
+       <li class="toc-h5 nav-item toc-entry">
         <a class="reference internal nav-link" href="#ansys.rep.client.jms.JmsApi.get_task_definition_templates">
          <code class="docutils literal notranslate">
           <span class="pre">
@@ -382,6 +391,15 @@
          <code class="docutils literal notranslate">
           <span class="pre">
            JmsApi.update_project()
+          </span>
+         </code>
+        </a>
+       </li>
+       <li class="toc-h5 nav-item toc-entry">
+        <a class="reference internal nav-link" href="#ansys.rep.client.jms.JmsApi.update_task_definition_template_permissions">
+         <code class="docutils literal notranslate">
+          <span class="pre">
+           JmsApi.update_task_definition_template_permissions()
           </span>
          </code>
         </a>
@@ -1185,6 +1203,22 @@
      </li>
     </ul>
    </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#permissions">
+     Permissions
+    </a>
+    <ul class="nav section-nav flex-column">
+     <li class="toc-h4 nav-item toc-entry">
+      <a class="reference internal nav-link" href="#ansys.rep.client.jms.Permission">
+       <code class="docutils literal notranslate">
+        <span class="pre">
+         Permission
+        </span>
+       </code>
+      </a>
+     </li>
+    </ul>
+   </li>
   </ul>
  </li>
 </ul>
@@ -1354,6 +1388,17 @@
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="ansys.rep.client.jms.JmsApi.get_task_definition_template_permissions">
+<span class="sig-name descname"><span class="pre">get_task_definition_template_permissions</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">template_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">as_objects</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ansys.rep.client.jms.JmsApi.get_task_definition_template_permissions" title="Permalink to this definition">#</a></dt>
+<dd><p>Get permissions of a task definition template</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<a class="reference internal" href="#ansys.rep.client.jms.Permission" title="ansys.rep.client.jms.resource.permission.Permission"><code class="xref py py-class docutils literal notranslate"><span class="pre">Permission</span></code></a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="ansys.rep.client.jms.JmsApi.get_task_definition_templates">
 <span class="sig-name descname"><span class="pre">get_task_definition_templates</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">as_objects</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">query_params</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ansys.rep.client.jms.JmsApi.get_task_definition_templates" title="Permalink to this definition">#</a></dt>
 <dd><p>Return a list of task definition templates,
@@ -1397,6 +1442,17 @@ optionally filtered by given query parameters</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><a class="reference internal" href="#ansys.rep.client.jms.Project" title="ansys.rep.client.jms.resource.project.Project"><code class="xref py py-class docutils literal notranslate"><span class="pre">Project</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ansys.rep.client.jms.JmsApi.update_task_definition_template_permissions">
+<span class="sig-name descname"><span class="pre">update_task_definition_template_permissions</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">template_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">permissions</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">as_objects</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ansys.rep.client.jms.JmsApi.update_task_definition_template_permissions" title="Permalink to this definition">#</a></dt>
+<dd><p>Update permissions of a task definition template</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<a class="reference internal" href="#ansys.rep.client.jms.Permission" title="ansys.rep.client.jms.resource.permission.Permission"><code class="xref py py-class docutils literal notranslate"><span class="pre">Permission</span></code></a>]</p>
 </dd>
 </dl>
 </dd></dl>
@@ -1799,7 +1855,7 @@ as <code class="xref py py-attr docutils literal notranslate"><span class="pre">
 <span class="sig-name descname"><span class="pre">get_permissions</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">as_objects</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ansys.rep.client.jms.ProjectApi.get_permissions" title="Permalink to this definition">#</a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">ProjectPermission</span></code>]</p>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<a class="reference internal" href="#ansys.rep.client.jms.Permission" title="ansys.rep.client.jms.resource.permission.Permission"><code class="xref py py-class docutils literal notranslate"><span class="pre">Permission</span></code></a>]</p>
 </dd>
 </dl>
 </dd></dl>
@@ -1921,7 +1977,7 @@ as <code class="xref py py-attr docutils literal notranslate"><span class="pre">
 
 <dl class="py method">
 <dt class="sig sig-object py" id="ansys.rep.client.jms.ProjectApi.update_permissions">
-<span class="sig-name descname"><span class="pre">update_permissions</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">permissions</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ansys.rep.client.jms.ProjectApi.update_permissions" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">update_permissions</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">permissions</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">as_objects</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ansys.rep.client.jms.ProjectApi.update_permissions" title="Permalink to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
@@ -2571,6 +2627,25 @@ as <code class="xref py py-attr docutils literal notranslate"><span class="pre">
 <li><p><strong>execution_script_storage_bucket</strong> (<em>str</em><em>, </em><em>optional</em>) – File storage bucket where the execution script is located.</p></li>
 <li><p><strong>input_files</strong> (<em>list</em><em>[</em><a class="reference internal" href="#ansys.rep.client.jms.TemplateInputFile" title="ansys.rep.client.jms.TemplateInputFile"><em>TemplateInputFile</em></a><em>]</em><em>, </em><em>optional</em>) – List of predefined input files.</p></li>
 <li><p><strong>output_files</strong> (<em>list</em><em>[</em><a class="reference internal" href="#ansys.rep.client.jms.TemplateOutputFile" title="ansys.rep.client.jms.TemplateOutputFile"><em>TemplateOutputFile</em></a><em>]</em><em>, </em><em>optional</em>) – List of predefined output files.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="permissions">
+<h3>Permissions<a class="headerlink" href="#permissions" title="Permalink to this heading">#</a></h3>
+<dl class="py class">
+<dt class="sig sig-object py" id="ansys.rep.client.jms.Permission">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ansys.rep.client.jms.</span></span><span class="sig-name descname"><span class="pre">Permission</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">permission_type=&lt;marshmallow.missing&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value_id=&lt;marshmallow.missing&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value_name=&lt;marshmallow.missing&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">role=&lt;marshmallow.missing&gt;</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ansys.rep.client.jms.Permission" title="Permalink to this definition">#</a></dt>
+<dd><p>Permission resource.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>permission_type</strong> (<em>str</em>) – Either ‘user’, ‘group’, or ‘anyone’.</p></li>
+<li><p><strong>value_id</strong> (<em>str</em><em>, </em><em>optional</em>) – Can be the ID of a user or group.</p></li>
+<li><p><strong>value_name</strong> (<em>str</em><em>, </em><em>optional</em>) – </p></li>
+<li><p><strong>role</strong> (<em>str</em>) – Either ‘admin’, ‘writer’,  or ‘reader’.</p></li>
 </ul>
 </dd>
 </dl>
