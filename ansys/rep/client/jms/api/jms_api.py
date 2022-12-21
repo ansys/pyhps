@@ -159,8 +159,9 @@ class JmsApi(object):
 
     # Task Definition Template Permissions
     def get_task_definition_template_permissions(
-        self, template_id, as_objects=True
+        self, template_id: str, as_objects: bool = True
     ) -> List[Permission]:
+        """Get permissions of a task definition template"""
         return get_objects(
             self.client.session,
             f"{self.url}/task_definition_templates/{template_id}",
@@ -170,10 +171,11 @@ class JmsApi(object):
 
     def update_task_definition_template_permissions(
         self,
-        template_id,
+        template_id: str,
         permissions: List[Permission],
-        as_objects=True,
-    ) -> None:
+        as_objects: bool = True,
+    ) -> List[Permission]:
+        """Update permissions of a task definition template"""
         return update_objects(
             self.client.session,
             f"{self.url}/task_definition_templates/{template_id}",

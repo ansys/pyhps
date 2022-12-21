@@ -145,3 +145,9 @@ Task Definition Template
 
 .. autoclass:: ansys.rep.client.jms.TaskDefinitionTemplate
    :members:
+
+Permissions
+^^^^^^^^^^^
+
+.. autoclass:: ansys.rep.client.jms.Permission
+   :members:
