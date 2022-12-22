@@ -11,19 +11,22 @@ import requests
 from ansys.rep.client.client import Client
 from ansys.rep.client.common import Object
 from ansys.rep.client.exceptions import ClientError, REPError
+from ansys.rep.client.jms.resource import (
+    Algorithm,
+    File,
+    Job,
+    JobDefinition,
+    JobSelection,
+    LicenseContext,
+    ParameterDefinition,
+    ParameterMapping,
+    Permission,
+    Project,
+    Task,
+    TaskDefinition,
+)
+from ansys.rep.client.jms.schema.job import JobSchema
 
-from ..resource.algorithm import Algorithm
-from ..resource.file import File
-from ..resource.job import Job, JobSchema
-from ..resource.job_definition import JobDefinition
-from ..resource.license_context import LicenseContext
-from ..resource.parameter_definition import ParameterDefinition
-from ..resource.parameter_mapping import ParameterMapping
-from ..resource.project import Project
-from ..resource.project_permission import ProjectPermission, ProjectPermissionSchema
-from ..resource.selection import JobSelection
-from ..resource.task import Task
-from ..resource.task_definition import TaskDefinition
 from .base import create_objects, delete_objects, get_objects, update_objects
 from .jms_api import JmsApi, _monitor_operation, get_project
 
@@ -331,12 +334,11 @@ class ProjectApi:
 
     ################################################################
     # Permissions
-    def get_permissions(self, as_objects=True) -> List[ProjectPermission]:
-        return self._get_objects(ProjectPermission, as_objects=as_objects)
+    def get_permissions(self, as_objects=True) -> List[Permission]:
+        return self._get_objects(Permission, as_objects=as_objects, fields=None)
 
-    def update_permissions(self, permissions: List[ProjectPermission]):
-        # the rest api currently doesn't return anything on permissions update
-        update_permissions(self.client, self.url, permissions)
+    def update_permissions(self, permissions: List[Permission], as_objects=True):
+        return self._update_objects(permissions, as_objects=as_objects)
 
     ################################################################
     # License contexts
@@ -558,19 +560,6 @@ def sync_jobs(project_api: ProjectApi, jobs: List[Job]):
     url = f"{project_api.url}/jobs:sync"
     json_data = json.dumps({"job_ids": [obj.id for obj in jobs]})
     r = project_api.client.session.put(f"{url}", data=json_data)
-
-
-def update_permissions(client, project_api_url, permissions):
-
-    if not permissions:
-        return
-
-    url = f"{project_api_url}/permissions"
-
-    schema = ProjectPermissionSchema(many=True)
-    serialized_data = schema.dump(permissions)
-    json_data = json.dumps({"permissions": serialized_data})
-    r = client.session.put(f"{url}", data=json_data)
 
 
 @cached(cache=TTLCache(1024, 60), key=lambda project: project.id)

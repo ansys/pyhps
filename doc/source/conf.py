@@ -33,7 +33,7 @@ extensions = [
     "sphinx.ext.napoleon",
     "sphinx.ext.todo",
     "sphinx.ext.extlinks",
-    # "sphinx.ext.viewcode", # to show pytho source code
+    # "sphinx.ext.viewcode", # to show python source code
     "sphinxcontrib.httpdomain",
     "sphinxcontrib.globalsubs",
     "sphinx.ext.intersphinx",
