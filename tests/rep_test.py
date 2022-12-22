@@ -27,6 +27,8 @@ class REPTestCase(unittest.TestCase):
 
         self.rep_url = os.environ.get("REP_TEST_URL") or "https://localhost:8443/rep"
         self.pat = os.environ.get("REP_TEST_PAT", None)
+        self.username = None
+        self.password = None
 
         if self.pat is None:
             self.username = os.environ.get("REP_TEST_USERNAME") or "repadmin"

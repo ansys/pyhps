@@ -1,11 +1,3 @@
-# ----------------------------------------------------------
-# Copyright (C) 2021 by
-# ANSYS Switzerland GmbH
-# www.ansys.com
-#
-# Author(s): F.Negri
-# ----------------------------------------------------------
-
 import json
 import logging
 import unittest
@@ -169,6 +161,10 @@ class TaskDefinitionTemplateTest(REPTestCase):
         self.assertEqual(permissions[0].role, "admin")
         self.assertIsNotNone(permissions[0].value_id)
 
+        if self.pat:
+            log.warning("The rest of this test is not supported with PAT authentication.")
+            return
+
         # create test user
         auth_api = AuthApi(client)
         user_credentials = {
@@ -261,6 +257,10 @@ class TaskDefinitionTemplateTest(REPTestCase):
         self.assertEqual(permissions[0].permission_type, "user")
         self.assertEqual(permissions[0].role, "admin")
         self.assertIsNotNone(permissions[0].value_id)
+
+        if self.pat:
+            log.warning("The rest of this test is not supported with PAT authentication.")
+            return
 
         # create test user
         auth_api = AuthApi(client)

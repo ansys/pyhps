@@ -147,3 +147,10 @@ def generate_personal_access_token(session: requests.Session, url: str):
     r = session.get(f"{url}/auth/realms/rep/verify-pat/token")
     raise_for_status(r)
     return r.text
+
+
+def get_personal_access_token_info(session: requests.Session, url: str):
+
+    r = session.get(f"{url}/auth/realms/rep/verify-pat/hasToken")
+    raise_for_status(r)
+    return r.json()
