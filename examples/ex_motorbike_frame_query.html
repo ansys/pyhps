@@ -296,7 +296,7 @@
 
 
 <span class="k">def</span> <span class="nf">print_value_stats</span><span class="p">(</span><span class="n">values</span><span class="p">,</span> <span class="n">title</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Print value stats.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Print value stats.&quot;&quot;&quot;</span>
     <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">title</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
     <span class="c1"># log.info(f&quot;Num      : {len(values)}&quot;)</span>
     <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Mean     : </span><span class="si">{</span><span class="n">mean</span><span class="p">(</span><span class="n">values</span><span class="p">)</span><span class="si">}</span><span class="s2"> Stdev: </span><span class="si">{</span><span class="n">stdev</span><span class="p">(</span><span class="n">values</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
@@ -304,7 +304,7 @@
 
 
 <span class="k">def</span> <span class="nf">query_stats</span><span class="p">(</span><span class="n">client</span><span class="p">,</span> <span class="n">project_name</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Query statistics.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Query statistics.&quot;&quot;&quot;</span>
     <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;=== Query values and compoute statistics ===&quot;</span><span class="p">)</span>
     <span class="n">jms_api</span> <span class="o">=</span> <span class="n">JmsApi</span><span class="p">(</span><span class="n">client</span><span class="p">)</span>
     <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;=== Project&quot;</span><span class="p">)</span>
@@ -347,7 +347,7 @@
 
 
 <span class="k">def</span> <span class="nf">download_files</span><span class="p">(</span><span class="n">client</span><span class="p">,</span> <span class="n">project_name</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Download files.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Download files.&quot;&quot;&quot;</span>
     <span class="n">out_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="vm">__file__</span><span class="p">),</span> <span class="s2">&quot;downloads&quot;</span><span class="p">)</span>
     <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Downloading files to </span><span class="si">{</span><span class="n">out_path</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
@@ -436,7 +436,7 @@
   
   <div class="footer-item">
     <p class="copyright">
-    &copy; Copyright (c) 2022 ANSYS, Inc. All rights reserved.<br>
+    &copy; Copyright (c) 2023 ANSYS, Inc. All rights reserved.<br>
 </p>
   </div>
   

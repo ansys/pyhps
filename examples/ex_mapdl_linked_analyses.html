@@ -278,14 +278,14 @@ as a multi-task job to REP. The script shows two possible ways to submit the ind
 <ol class="arabic">
 <li><p>All-at-one: all 3 tasks are defined and included in the job definition before pushing it out to the server. When the job is created, it already has 3 tasks.</p>
 <blockquote>
-<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python project_setup.py
+<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>project_setup.py
 </pre></div>
 </div>
 </div></blockquote>
 </li>
 <li><p>One-by-one: the first task is defined, pushed out to the server and then the job is created and submitted. Then, the second task is added to the job definition and the running job is synced to reflect the changes. The same for the third task.</p>
 <blockquote>
-<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python project_setup.py --incremental
+<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>project_setup.py<span class="w"> </span>--incremental
 </pre></div>
 </div>
 </div></blockquote>
@@ -658,7 +658,7 @@ as a multi-task job to REP. The script shows two possible ways to submit the ind
   
   <div class="footer-item">
     <p class="copyright">
-    &copy; Copyright (c) 2022 ANSYS, Inc. All rights reserved.<br>
+    &copy; Copyright (c) 2023 ANSYS, Inc. All rights reserved.<br>
 </p>
   </div>
   

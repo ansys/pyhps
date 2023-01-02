@@ -281,9 +281,9 @@ This mimics what an application would need to store in order to subsequently mon
 <li><p>The second task runs a little LS-PrePost script to post-process the results of the first task.</p></li>
 </ul>
 <p>Usage:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python lsdyna_job.py submit
-python lsdyna_job.py monitor
-python lsdyna_job.py download
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>lsdyna_job.py<span class="w"> </span>submit
+python<span class="w"> </span>lsdyna_job.py<span class="w"> </span>monitor
+python<span class="w"> </span>lsdyna_job.py<span class="w"> </span>download
 </pre></div>
 </div>
 <div class="admonition note">
@@ -342,7 +342,7 @@ python lsdyna_job.py download
 
 
 <span class="k">class</span> <span class="nc">REPJob</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Simplistic helper class to store job information similarly to</span>
 <span class="sd">    what a pre/post processing application would do.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -365,24 +365,24 @@ python lsdyna_job.py download
 
     <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;REP Job:</span><span class="se">\n</span><span class="s2"> </span><span class="si">{</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="vm">__dict__</span><span class="p">,</span> <span class="n">sort_keys</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;REP Job:</span><span class="se">\n</span><span class="s2"> </span><span class="si">{</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="w"> </span><span class="n">default</span><span class="o">=</span><span class="k">lambda</span><span class="w"> </span><span class="n">x</span><span class="p">:</span><span class="w"> </span><span class="n">x</span><span class="o">.</span><span class="vm">__dict__</span><span class="p">,</span><span class="w"> </span><span class="n">sort_keys</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span><span class="w"> </span><span class="n">indent</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
         <span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">save</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Save job info to JSON file&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Save job info to JSON file&quot;&quot;&quot;</span>
         <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s2">&quot;rep_job.json&quot;</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
             <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="vm">__dict__</span><span class="p">,</span> <span class="n">sort_keys</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">4</span><span class="p">))</span>
 
     <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">load</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Load job info from JSON file&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Load job info from JSON file&quot;&quot;&quot;</span>
         <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s2">&quot;rep_job.json&quot;</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
             <span class="n">job</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">object_hook</span><span class="o">=</span><span class="k">lambda</span> <span class="n">d</span><span class="p">:</span> <span class="bp">cls</span><span class="p">(</span><span class="o">**</span><span class="n">d</span><span class="p">))</span>
         <span class="k">return</span> <span class="n">job</span>
 
 
 <span class="k">def</span> <span class="nf">submit_job</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">REPJob</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Create a REP project running a simple LS-DYNA</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Create a REP project running a simple LS-DYNA</span>
 <span class="sd">    job simulating the impact of a cylinder made of Aluminum</span>
 <span class="sd">    against a plate made of steel.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -551,7 +551,7 @@ python lsdyna_job.py download
 
 
 <span class="k">def</span> <span class="nf">monitor_job</span><span class="p">(</span><span class="n">app_job</span><span class="p">:</span> <span class="n">REPJob</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Monitor the evaluation status of an existing REP job</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -581,7 +581,7 @@ python lsdyna_job.py download
 
 
 <span class="k">def</span> <span class="nf">download_results</span><span class="p">(</span><span class="n">app_job</span><span class="p">:</span> <span class="n">REPJob</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Download the job output files (if any)</span>
 
 <span class="sd">    Requires the packages tqdm and humanize</span>
@@ -619,7 +619,7 @@ python lsdyna_job.py download
             <span class="nb">print</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
         <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
             <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">files</span><span class="p">)</span><span class="si">}</span><span class="s2"> files are available on the server for Task &quot;</span>
-            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">task</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">f</span><span class="o">.</span><span class="n">evaluation_path</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">files</span><span class="p">])</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">task</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">f</span><span class="o">.</span><span class="n">evaluation_path</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">f</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">files</span><span class="p">])</span><span class="si">}</span><span class="s2">&quot;</span>
         <span class="p">)</span>
 
         <span class="k">for</span> <span class="n">file</span> <span class="ow">in</span> <span class="n">files</span><span class="p">:</span>
@@ -710,7 +710,7 @@ python lsdyna_job.py download
   
   <div class="footer-item">
     <p class="copyright">
-    &copy; Copyright (c) 2022 ANSYS, Inc. All rights reserved.<br>
+    &copy; Copyright (c) 2023 ANSYS, Inc. All rights reserved.<br>
 </p>
   </div>
   
