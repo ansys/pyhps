@@ -6,7 +6,7 @@ on:
 
 env:
   MAIN_PYTHON_VERSION: '3.7'
-  DOC_PYTHON_VERSION: '3.8'
+  DOC_PYTHON_VERSION: '3.9'
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
