@@ -567,20 +567,7 @@ def get_fs_url(project: Project):
     if project.file_storages == missing:
         raise REPError(f"The project object has no file storages information.")
     rest_gateways = [fs for fs in project.file_storages if fs["obj_type"] == "RestGateway"]
-    rest_gateways.sort(key=lambda fs: fs["priority"], reverse=True)
-
-    # Local deployments use "https://host.docker.internal:8443/rep/fs/api" as first
-    # FS Rest Gateway address and "https://localhost:8443/rep/fs/api/" only as second.
-    # host.docker.internal is only available from within Docker, causing the first ping
-    # further down to always fail, with a time penalty of 2 seconds. This is particularly
-    # annoying when running tests.
-    # Therefore, we try to detect such case and move the host.docker.internal entry
-    # to the bottom of the list.
-    docker_index = next(
-        (i for i, rg in enumerate(rest_gateways) if "host.docker.internal" in rg["url"]), None
-    )
-    if docker_index is not None:
-        rest_gateways.append(rest_gateways.pop(docker_index))
+    rest_gateways.sort(key=lambda fs: fs["priority"])
 
     if not rest_gateways:
         raise REPError(f"Project {project.name} (id={project.id}) has no Rest Gateway defined.")
