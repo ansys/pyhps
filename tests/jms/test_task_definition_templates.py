@@ -229,6 +229,8 @@ class TaskDefinitionTemplateTest(REPTestCase):
         # Let user1 create a template
         template = TaskDefinitionTemplate(name="my_template", version=uuid.uuid4())
         template = jms_api1.create_task_definition_templates([template])[0]
+        template = jms_api1.get_task_definition_templates(id=template.id)[0]
+        self.assertEqual(template.name, "my_template")
         permissions = jms_api1.get_task_definition_template_permissions(template_id=template.id)
         self.assertEqual(len(permissions), 1)
         self.assertEqual(permissions[0].permission_type, "user")
