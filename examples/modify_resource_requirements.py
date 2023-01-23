@@ -30,7 +30,6 @@ def modify_task_definitions(client, project_name):
     task_defs = project_api.get_task_definitions(fields=["id", "resource_requirements"])
     for td in task_defs:
         log.info(f"Original task definition: {td}")
-        #log.info(f"custom={td.resource_requirements.custom}")
 
         # In case there are no custom requirements yet
         if not td.resource_requirements.custom:
