@@ -48,6 +48,7 @@ def modify_task_definitions(client, project_name):
         assert "target_task_definition" in td.resource_requirements.custom.keys()
         assert td.resource_requirements.custom["target_task_definition"] == td.id
 
+
 if __name__ == "__main__":
 
     parser = argparse.ArgumentParser()
