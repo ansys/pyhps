@@ -8,6 +8,7 @@
 
 import json
 import logging
+from typing import Tuple
 import unittest
 import uuid
 
@@ -21,6 +22,25 @@ from ansys.rep.client.jms.schema.task_definition_template import TaskDefinitionT
 from tests.rep_test import REPTestCase
 
 log = logging.getLogger(__name__)
+
+
+def create_new_user_client(
+    admin_cl: Client,
+    username=None,
+    password="test",
+) -> Tuple[User, Client]:
+
+    if username is None:
+        username = f"testuser-{uuid.uuid4().hex[:8]}"
+
+    auth_api = AuthApi(admin_cl)
+    user = auth_api.create_user(User(username=username, password=password))
+    client = Client(
+        rep_url=admin_cl.rep_url,
+        username=user.username,
+        password=password,
+    )
+    return user, client
 
 
 class TaskDefinitionTemplateTest(REPTestCase):
@@ -171,22 +191,7 @@ class TaskDefinitionTemplateTest(REPTestCase):
 
         # create test user
         auth_api = AuthApi(client)
-        user_credentials = {
-            "user1": {"username": f"testuser-{uuid.uuid4().hex[:8]}", "password": "test"}
-        }
-        user1 = auth_api.create_user(
-            User(
-                username=user_credentials["user1"]["username"],
-                password=user_credentials["user1"]["password"],
-                is_admin=False,
-            )
-        )
-        log.info(f"User 1: {user1}")
-        client1 = Client(
-            rep_url=self.rep_url,
-            username=user1.username,
-            password=user_credentials["user1"]["password"],
-        )
+        user1, client1 = create_new_user_client(client)
         jms_api1 = JmsApi(client1)
 
         # verify test user can't access the template
@@ -266,22 +271,7 @@ class TaskDefinitionTemplateTest(REPTestCase):
 
         # create test user
         auth_api = AuthApi(client)
-        user_credentials = {
-            "user1": {"username": f"testuser-{uuid.uuid4().hex[:8]}", "password": "test"}
-        }
-        user1 = auth_api.create_user(
-            User(
-                username=user_credentials["user1"]["username"],
-                password=user_credentials["user1"]["password"],
-                is_admin=False,
-            )
-        )
-        log.info(f"User 1: {user1}")
-        client1 = Client(
-            rep_url=self.rep_url,
-            username=user1.username,
-            password=user_credentials["user1"]["password"],
-        )
+        user1, client1 = create_new_user_client(client)
         jms_api1 = JmsApi(client1)
 
         # verify test user can't access the template
@@ -326,6 +316,60 @@ class TaskDefinitionTemplateTest(REPTestCase):
 
         # Delete user
         auth_api.delete_user(user1)
+
+    def test_template_delete(self):
+
+        client = self.client()
+        auth_api = AuthApi(client)
+
+        # create 2 non-admin users
+        jms_api = JmsApi(client)
+        user1, client1 = create_new_user_client(client)
+        self.assertFalse(user1.is_admin)
+        jms_api1 = JmsApi(client1)
+        user2, client2 = create_new_user_client(client)
+        self.assertFalse(user2.is_admin)
+        jms_api2 = JmsApi(client2)
+
+        # user1 creates new template
+        template = TaskDefinitionTemplate(name="my_template", version=uuid.uuid4())
+        template = jms_api1.create_task_definition_templates([template])[0]
+        permissions = jms_api1.get_task_definition_template_permissions(template_id=template.id)
+        self.assertEqual(len(permissions), 1)
+        self.assertEqual(permissions[0].permission_type, "user")
+        self.assertEqual(permissions[0].role, "admin")
+        self.assertEqual(permissions[0].value_id, user1.id)
+
+        # verify user2 can't access the template
+        client2_templates = jms_api2.get_task_definition_templates(id=template.id)
+        self.assertEqual(len(client2_templates), 0)
+
+        # user1 grants anyone read permissions
+        permissions.append(Permission(permission_type="anyone", role="reader", value_id=None))
+        permissions = jms_api1.update_task_definition_template_permissions(template.id, permissions)
+        self.assertEqual(len(permissions), 2)
+
+        # verify user2 can now access the template
+        client2_templates = jms_api2.get_task_definition_templates(id=template.id)
+        self.assertEqual(len(client2_templates), 1)
+        self.assertEqual(client2_templates[0].name, template.name)
+
+        # verify user2 can't delete the template
+        except_obj = None
+        try:
+            client2_templates = jms_api2.delete_task_definition_templates(client2_templates)
+        except REPError as e:
+            except_obj = e
+        self.assertIsNotNone(except_obj)
+        self.assertEqual(except_obj.response.status_code, 403)
+        self.assertEqual(except_obj.description, "Access to this resource has been restricted")
+
+        # Delete the template
+        jms_api.delete_task_definition_templates([template])
+
+        # Delete users
+        auth_api.delete_user(user1)
+        auth_api.delete_user(user2)
 
 
 if __name__ == "__main__":
