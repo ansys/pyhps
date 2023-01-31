@@ -8,8 +8,6 @@
 import logging
 import uuid
 
-from keycloak.exceptions import KeycloakError
-
 from ansys.rep.client import Client
 from ansys.rep.client.auth import AuthApi, User
 from tests.rep_test import REPTestCase
@@ -58,7 +56,7 @@ class AuthClientTest(REPTestCase):
         usernames = [x.username for x in users]
         self.assertNotIn(new_user.username, usernames)
 
-    def test_auth_api_exceptions(self):
+    def test_get_users(self):
 
         api = AuthApi(Client(self.rep_url, username=self.username, password=self.password))
         users = api.get_users()
@@ -78,18 +76,14 @@ class AuthClientTest(REPTestCase):
             last_name="User",
         )
         new_user = api.create_user(new_user)
+        users = api.get_users()
 
         # use non-admin user to get users
         api_non_admin = AuthApi(
             Client(self.rep_url, username=username, password="test_auth_client")
         )
-        except_obj = None
-        try:
-            users = api_non_admin.get_users()
-        except KeycloakError as e:
-            except_obj = e
-
-        self.assertEqual(except_obj.response_code, 403)
+        users2 = api_non_admin.get_users()
+        self.assertEqual(len(users), len(users2))
 
         api.delete_user(new_user)
         users = api.get_users()
