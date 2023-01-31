@@ -1,6 +1,6 @@
 import json
 import logging
-from typing import List
+from typing import List, Type
 
 from requests import Session
 
@@ -10,7 +10,9 @@ from ansys.rep.client.exceptions import ClientError
 log = logging.getLogger(__name__)
 
 
-def get_objects(session: Session, url: str, obj_type: Object, as_objects=True, **query_params):
+def get_objects(
+    session: Session, url: str, obj_type: Type[Object], as_objects=True, **query_params
+):
 
     rest_name = obj_type.Meta.rest_name
     url = f"{url}/{rest_name}"
@@ -29,7 +31,7 @@ def get_objects(session: Session, url: str, obj_type: Object, as_objects=True, *
 
 
 def get_object(
-    session: Session, url: str, obj_type: Object, id: str, as_object=True, **query_params
+    session: Session, url: str, obj_type: Type[Object], id: str, as_object=True, **query_params
 ):
 
     rest_name = obj_type.Meta.rest_name
@@ -80,16 +82,21 @@ def create_objects(
 
 
 def update_objects(
-    session: Session, url: str, objects: List[Object], as_objects=True, **query_params
+    session: Session,
+    url: str,
+    objects: List[Object],
+    obj_type: Type[Object],
+    as_objects=True,
+    **query_params,
 ):
-    if not objects:
-        return []
 
-    are_same = [o.__class__ == objects[0].__class__ for o in objects[1:]]
+    if objects is None:
+        raise ClientError("objects can't be None")
+
+    are_same = [o.__class__ == obj_type for o in objects]
     if not all(are_same):
         raise ClientError("Mixed object types")
 
-    obj_type = objects[0].__class__
     rest_name = obj_type.Meta.rest_name
 
     url = f"{url}/{rest_name}"

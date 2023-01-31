@@ -248,6 +248,27 @@ class TaskDefinitionTemplateTest(REPTestCase):
         # Delete user
         auth_api.delete_user(user1)
 
+    def test_template_permissions_update(self):
+
+        client = self.client()
+        jms_api = JmsApi(client)
+
+        # create new template and check default permissions
+        template = TaskDefinitionTemplate(name="my_template", version=uuid.uuid4())
+        template = jms_api.create_task_definition_templates([template])[0]
+        permissions = jms_api.get_task_definition_template_permissions(template_id=template.id)
+        self.assertEqual(len(permissions), 1)
+        self.assertEqual(permissions[0].permission_type, "user")
+
+        # remove permissions
+        permissions = []
+        permissions = jms_api.update_task_definition_template_permissions(
+            template_id=template.id, permissions=permissions
+        )
+        self.assertEqual(len(permissions), 0)
+        permissions = jms_api.get_task_definition_template_permissions(template_id=template.id)
+        self.assertEqual(len(permissions), 0)
+
     def test_template_anyone_permission(self):
 
         client = self.client()

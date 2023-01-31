@@ -113,7 +113,9 @@ class JmsApi(object):
         self, evaluators: List[Evaluator], as_objects=True, **query_params
     ) -> List[Evaluator]:
         """Update evaluators configuration"""
-        return update_objects(self.client.session, self.url, evaluators, as_objects, **query_params)
+        return update_objects(
+            self.client.session, self.url, evaluators, Evaluator, as_objects, **query_params
+        )
 
     ################################################################
     # Task Definition Templates
@@ -146,7 +148,14 @@ class JmsApi(object):
             templates (list of :class:`ansys.rep.client.jms.TaskDefinitionTemplate`):
                 A list of task definition templates
         """
-        return update_objects(self.client.session, self.url, templates, as_objects, **query_params)
+        return update_objects(
+            self.client.session,
+            self.url,
+            templates,
+            TaskDefinitionTemplate,
+            as_objects,
+            *query_params,
+        )
 
     def delete_task_definition_templates(self, templates: List[TaskDefinitionTemplate]):
         """Delete existing task definition templates
@@ -180,6 +189,7 @@ class JmsApi(object):
             self.client.session,
             f"{self.url}/task_definition_templates/{template_id}",
             permissions,
+            Permission,
             as_objects,
         )
 
