@@ -2,7 +2,7 @@ import json
 import logging
 import os
 from pathlib import Path
-from typing import Callable, List
+from typing import Callable, List, Type
 
 from cachetools import TTLCache, cached
 from marshmallow.utils import missing
@@ -170,7 +170,7 @@ class ProjectApi:
     def update_parameter_definitions(
         self, parameter_definitions: List[ParameterDefinition], as_objects=True
     ) -> List[ParameterDefinition]:
-        return self._update_objects(parameter_definitions, as_objects)
+        return self._update_objects(parameter_definitions, ParameterDefinition, as_objects)
 
     def delete_parameter_definitions(self, parameter_definitions: List[ParameterDefinition]):
         return self._delete_objects(parameter_definitions)
@@ -188,7 +188,7 @@ class ProjectApi:
     def update_parameter_mappings(
         self, parameter_mappings: List[ParameterMapping], as_objects=True
     ) -> List[ParameterMapping]:
-        return self._update_objects(parameter_mappings, as_objects=as_objects)
+        return self._update_objects(parameter_mappings, ParameterMapping, as_objects=as_objects)
 
     def delete_parameter_mappings(self, parameter_mappings: List[ParameterMapping]):
         return self._delete_objects(parameter_mappings)
@@ -206,7 +206,7 @@ class ProjectApi:
     def update_task_definitions(
         self, task_definitions: List[TaskDefinition], as_objects=True
     ) -> List[TaskDefinition]:
-        return self._update_objects(task_definitions, as_objects=as_objects)
+        return self._update_objects(task_definitions, TaskDefinition, as_objects=as_objects)
 
     def delete_task_definitions(self, task_definitions: List[TaskDefinition]):
         return self._delete_objects(task_definitions)
@@ -224,7 +224,7 @@ class ProjectApi:
     def update_job_definitions(
         self, job_definitions: List[JobDefinition], as_objects=True
     ) -> List[JobDefinition]:
-        return self._update_objects(job_definitions, as_objects=as_objects)
+        return self._update_objects(job_definitions, JobDefinition, as_objects=as_objects)
 
     def delete_job_definitions(self, job_definitions: List[JobDefinition]):
         return self._delete_objects(job_definitions)
@@ -267,7 +267,7 @@ class ProjectApi:
         Returns:
             List of :class:`ansys.rep.client.jms.Job` or list of dict if `as_objects` is True
         """
-        return self._update_objects(jobs, as_objects=as_objects)
+        return self._update_objects(jobs, Job, as_objects=as_objects)
 
     def delete_jobs(self, jobs: List[Job]):
         """Delete existing jobs
@@ -298,7 +298,7 @@ class ProjectApi:
         return self._get_objects(Task, as_objects=as_objects, **query_params)
 
     def update_tasks(self, tasks: List[Task], as_objects=True) -> List[Task]:
-        return self._update_objects(tasks, as_objects=as_objects)
+        return self._update_objects(tasks, Task, as_objects=as_objects)
 
     ################################################################
     # Selections
@@ -313,7 +313,7 @@ class ProjectApi:
     def update_job_selections(
         self, selections: List[JobSelection], as_objects=True
     ) -> List[JobSelection]:
-        return self._update_objects(selections, as_objects=as_objects)
+        return self._update_objects(selections, JobSelection, as_objects=as_objects)
 
     def delete_job_selections(self, selections: List[JobSelection]):
         return self._delete_objects(selections)
@@ -327,7 +327,7 @@ class ProjectApi:
         return self._create_objects(algorithms, as_objects=as_objects)
 
     def update_algorithms(self, algorithms: List[Algorithm], as_objects=True) -> List[Algorithm]:
-        return self._update_objects(algorithms, as_objects=as_objects)
+        return self._update_objects(algorithms, Algorithm, as_objects=as_objects)
 
     def delete_algorithms(self, algorithms: List[Algorithm]):
         return self._delete_objects(algorithms)
@@ -338,7 +338,7 @@ class ProjectApi:
         return self._get_objects(Permission, as_objects=as_objects, fields=None)
 
     def update_permissions(self, permissions: List[Permission], as_objects=True):
-        return self._update_objects(permissions, as_objects=as_objects)
+        return self._update_objects(permissions, Permission, as_objects=as_objects)
 
     ################################################################
     # License contexts
@@ -357,7 +357,7 @@ class ProjectApi:
         return objects
 
     def update_license_contexts(self, license_contexts, as_objects=True) -> List[LicenseContext]:
-        return self._update_objects(self, license_contexts, as_objects=as_objects)
+        return self._update_objects(self, license_contexts, LicenseContext, as_objects=as_objects)
 
     def delete_license_contexts(self):
         rest_name = LicenseContext.Meta.rest_name
@@ -371,8 +371,12 @@ class ProjectApi:
     def _create_objects(self, objects: List[Object], as_objects=True, **query_params):
         return create_objects(self.client.session, self.url, objects, as_objects, **query_params)
 
-    def _update_objects(self, objects: List[Object], as_objects=True, **query_params):
-        return update_objects(self.client.session, self.url, objects, as_objects, **query_params)
+    def _update_objects(
+        self, objects: List[Object], obj_type: Type[Object], as_objects=True, **query_params
+    ):
+        return update_objects(
+            self.client.session, self.url, objects, obj_type, as_objects, **query_params
+        )
 
     def _delete_objects(self, objects: List[Object]):
         delete_objects(self.client.session, self.url, objects)
@@ -440,7 +444,7 @@ def create_files(project_api: ProjectApi, files, as_objects=True) -> List[File]:
 
         # (4) Update corresponding file resources in JMS with hashes of uploaded files
         created_files = update_objects(
-            project_api.client.session, project_api.url, created_files, as_objects=as_objects
+            project_api.client.session, project_api.url, created_files, File, as_objects=as_objects
         )
 
     return created_files
@@ -450,7 +454,9 @@ def update_files(project_api: ProjectApi, files: List[File], as_objects=True) ->
     # Upload files first if there are any src parameters
     _upload_files(project_api, files)
     # Update file resources in JMS
-    return update_objects(project_api.client.session, project_api.url, files, as_objects=as_objects)
+    return update_objects(
+        project_api.client.session, project_api.url, files, File, as_objects=as_objects
+    )
 
 
 def _download_file(
