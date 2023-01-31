@@ -300,8 +300,11 @@ def _monitor_operation(jms_api: JmsApi, operation_id: str, interval: float = 1.0
         op = jms_api.get_operation(id=operation_id)
         if op:
             done = op.finished
+            progress = None
+            if op.progress is not None:
+                progress = f"{op.progress * 100.0}%"
             log.info(
-                f"Operation {op.name} - progress={op.progress * 100.0}%, "
+                f"Operation {op.name} - progress={progress}, "
                 f"succeeded={op.succeeded}, finished={op.finished}"
             )
         time.sleep(interval)
