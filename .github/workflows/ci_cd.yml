@@ -76,6 +76,7 @@ jobs:
 
       - name: Start services
         run: |
+          docker-compose pull
           LOCALHOST_ADDR=localhost docker-compose up -d keycloak
           echo "Waiting a few sec ..."
           sleep 5
