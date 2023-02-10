@@ -3,6 +3,7 @@ from datetime import datetime
 import os
 import sys
 
+from ansys_sphinx_theme import get_version_match
 from ansys_sphinx_theme import pyansys_logo_black as logo
 
 from ansys.rep.client import __company__, __external_version__, __version__, __version_no_dots__
@@ -15,6 +16,9 @@ sys.path.append(os.path.abspath(os.path.dirname(__file__)))
 project = "Ansys pyrep"
 copyright = f"(c) {datetime.now().year} ANSYS, Inc. All rights reserved"
 author = __company__
+
+cname = os.getenv("DOCUMENTATION_CNAME", "rep.docs.pyansys.com")
+"""The canonical name of the webpage hosting the documentation."""
 
 # The short X.Y version
 release = version = __version__
@@ -123,6 +127,11 @@ html_theme_options = {
     ],
     "collapse_navigation": True,
     "navigation_depth": 4,
+    "switcher": {
+        "json_url": f"https://{cname}/release/versions.json",
+        "version_match": get_version_match(__version__),
+    },
+    "navbar_end": ["version-switcher", "theme-switcher", "navbar-icon-links"],
 }
 
 # A shorter title for the navigation bar.  Default is the same as html_title.
