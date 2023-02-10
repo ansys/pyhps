@@ -2,7 +2,7 @@ name: Nightly Build
 on:
   workflow_dispatch:
   schedule:
-  - cron: "0 2 * * 1-5"
+  - cron: "0 2 * * *"
 
 env:
   MAIN_PYTHON_VERSION: '3.7'
@@ -161,3 +161,9 @@ jobs:
           python -m pip install --upgrade pip setuptools tox
       - name: Generate the documentation with tox
         run: tox -e doc
+      - name: Upload HTML Documentation
+        uses: actions/upload-artifact@v2
+        with:
+          name: documentation-html
+          path: build/sphinx/html
+          retention-days: 5
