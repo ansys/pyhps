@@ -3,8 +3,8 @@ from datetime import datetime
 import os
 import sys
 
-from ansys_sphinx_theme import pyansys_logo_black as logo
 from ansys_sphinx_theme import get_version_match
+from ansys_sphinx_theme import pyansys_logo_black as logo
 
 from ansys.rep.client import __company__, __external_version__, __version__, __version_no_dots__
 
