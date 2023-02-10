@@ -11,6 +11,7 @@ on:
 env:
   MAIN_PYTHON_VERSION: '3.7'
   DOC_PYTHON_VERSION: '3.9'
+  DOCUMENTATION_CNAME: 'rep.docs.pyansys.com'
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -37,7 +38,7 @@ jobs:
     name: Quick tests and coverage
     runs-on: ${{ matrix.os }}
     strategy:
-      # max 1 job at a time running against the server to make it more robust 
+      # max 1 job at a time running against the server to make it more robust
       max-parallel: 1
       matrix:
         os: [ubuntu-latest]
@@ -84,7 +85,7 @@ jobs:
         working-directory: ./rep-deployments/docker-compose
 
       - name: Test with tox
-        run: tox -e ${{ matrix.cfg.toxenv }}-noeval-coverage 
+        run: tox -e ${{ matrix.cfg.toxenv }}-noeval-coverage
         env:
           REP_TEST_URL: https://localhost:8443/rep
           REP_TEST_USERNAME: repadmin
@@ -95,7 +96,7 @@ jobs:
         if: always()
         with:
           report_paths: '**/test*.xml'
-          check_name: Test Report ${{ matrix.os }}:${{ matrix.cfg.python-version }} 
+          check_name: Test Report ${{ matrix.os }}:${{ matrix.cfg.python-version }}
 
   docs:
     name: Documentation
@@ -112,17 +113,24 @@ jobs:
           python -m pip install --upgrade pip setuptools tox
       - name: Generate the documentation with tox
         run: tox -e doc
-      - name: Add gh-pages parameters
-        run: |
-          touch build/sphinx/html/.nojekyll
-          echo "dev.rep.docs.pyansys.com" >> build/sphinx/html/CNAME
-      - name: Deploy Documentation
-        if: github.ref == 'refs/heads/main'
-        uses: JamesIves/github-pages-deploy-action@4.1.4
+      - name: Upload HTML Documentation
+        uses: actions/upload-artifact@v2
         with:
-          branch: gh-pages
-          folder: build/sphinx/html
-          clean: true
+          name: documentation-html
+          path: build/sphinx/html
+          retention-days: 7
+
+  upload_dev_docs:
+    name: "Upload dev documentation"
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    needs: [docs]
+    steps:
+      - name: Deploy the latest documentation
+        uses: pyansys/actions/doc-deploy-dev@v2
+        with:
+          cname: ${{ env.DOCUMENTATION_CNAME }}
+          token: ${{ secrets.GITHUB_TOKEN }}
 
   build:
     name: Build and publish library
