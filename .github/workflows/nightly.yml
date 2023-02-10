@@ -33,10 +33,11 @@ jobs:
     name: Quick tests and coverage
     runs-on: ${{ matrix.os }}
     strategy:
-      # max 1 job at a time running against the server to make it more robust 
-      max-parallel: 1
       matrix:
-        os: [windows-latest, ubuntu-latest]
+        # extend to windows once it's possible to run docker 
+        # on windows runners:
+        # os: [windows-latest, ubuntu-latest]
+        os: [ubuntu-latest]
         cfg:
           - {python-version: "3.7", toxenv: "py37"}
           - {python-version: "3.10", toxenv: "py310"}
@@ -96,7 +97,7 @@ jobs:
 
   end-to-end-tests:
     name: End-to-end tests
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
 
     steps:
       - uses: actions/checkout@v3

@@ -38,8 +38,6 @@ jobs:
     name: Quick tests and coverage
     runs-on: ${{ matrix.os }}
     strategy:
-      # max 1 job at a time running against the server to make it more robust
-      max-parallel: 1
       matrix:
         os: [ubuntu-latest]
         cfg:
