@@ -59,7 +59,7 @@ def create_project(client, name, num_jobs=20, version=__external_version__):
             name="exec_fluent",
             evaluation_path="exec_fluent.py",
             type="application/x-python-code",
-            src=os.path.join(cwd, "..", "exec_scripts", "exec_fluent.py"),
+            src=os.path.join(cwd, "exec_fluent.py"),
         )
     )
 

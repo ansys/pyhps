@@ -247,8 +247,6 @@ Get file definitions from an existing project Job Definition and replace the fir
   file.src = r"D:\local_folder\my_project\input_file.xyz"
   project.update_files([file])
 
-For instructions on how to add a new file to an existing project job_definition, see :ref:`Adding a file to a project <example_adding_files>`.
-
 Modify and create users
 ------------------------------------------
 
