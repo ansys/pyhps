@@ -134,6 +134,7 @@ def archive_examples():
         "mapdl_motorbike_frame": [
             "project_setup.py",
             "project_query.py",
+            "exec_mapdl.py",
             "motorbike_frame_results.txt",
             "motorbike_frame.mac",
         ],
@@ -155,6 +156,7 @@ def archive_examples():
         ],
         "python_two_bar_truss_problem": [
             "project_setup.py",
+            "exec_python.py",
             "evaluate.py",
             "input_parameters.json",
         ],
@@ -165,20 +167,16 @@ def archive_examples():
         ],
         "fluent_nozzle": [
             "project_setup.py",
+            "exec_fluent.py",
             "solve.jou",
             "nozzle.cas",
         ],
         "cfx_static_mixer": [
             "project_setup.py",
+            "exec_cfx.py",
             "runInput.ccl",
             "StaticMixer_001.cfx",
             "StaticMixer_001.def",
-        ],
-        "exec_scripts": [
-            "exec_cfx.py",
-            "exec_mapdl.py",
-            "exec_fluent.py",
-            "exec_python.py",
         ],
     }
 
