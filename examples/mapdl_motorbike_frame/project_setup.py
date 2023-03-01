@@ -89,7 +89,7 @@ def create_project(
                 name="exec_mapdl",
                 evaluation_path="exec_mapdl.py",
                 type="application/x-python-code",
-                src=os.path.join(cwd, "..", "exec_scripts", "exec_mapdl.py"),
+                src=os.path.join(cwd, "exec_mapdl.py"),
             )
         )
 

@@ -67,7 +67,7 @@ def create_project(client, name, num_jobs=20, version=__external_version__):
             name="exec_cfx",
             evaluation_path="exec_cfx.py",
             type="application/x-python-code",
-            src=os.path.join(cwd, "..", "exec_scripts", "exec_cfx.py"),
+            src=os.path.join(cwd, "exec_cfx.py"),
         )
     )
 
