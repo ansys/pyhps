@@ -9,6 +9,7 @@ from ansys.rep.client.client import Client
 from ansys.rep.client.exceptions import REPError
 from ansys.rep.client.jms.resource import (
     Evaluator,
+    EvaluatorConfigurationUpdate,
     Operation,
     Permission,
     Project,
@@ -112,10 +113,52 @@ class JmsApi(object):
     def update_evaluators(
         self, evaluators: List[Evaluator], as_objects=True, **query_params
     ) -> List[Evaluator]:
-        """Update evaluators configuration"""
+        """Update evaluators"""
         return update_objects(
             self.client.session, self.url, evaluators, Evaluator, as_objects, **query_params
         )
+
+    def update_evaluators_configuration(
+        self,
+        configuration_updates: List[EvaluatorConfigurationUpdate],
+        as_objects=True,
+        **query_params,
+    ) -> List[Evaluator]:
+        """Request multiple evaluators configuration updates at once"""
+        return update_objects(
+            self.client.session,
+            f"{self.url}/evaluators",
+            configuration_updates,
+            obj_type=EvaluatorConfigurationUpdate,
+            as_objects=as_objects,
+            collection_name="evaluators",
+            return_obj_type=Evaluator,
+            **query_params,
+        )
+
+    def update_evaluator_configuration(
+        self,
+        evaluator_id: str,
+        configuration_update: EvaluatorConfigurationUpdate,
+        as_objects=True,
+        **query_params,
+    ) -> Evaluator:
+        """Update evaluator's configuration"""
+        r = update_objects(
+            self.client.session,
+            f"{self.url}/evaluators/{evaluator_id}",
+            [configuration_update],
+            obj_type=EvaluatorConfigurationUpdate,
+            as_objects=as_objects,
+            collection_name="evaluators",
+            return_obj_type=Evaluator,
+            **query_params,
+        )
+        if len(r) != 1:
+            raise REPError(
+                f"update_evaluator_configuration returned {len(r)} objects rather than 1."
+            )
+        return r[0]
 
     ################################################################
     # Task Definition Templates

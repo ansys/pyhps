@@ -87,6 +87,8 @@ def update_objects(
     objects: List[Object],
     obj_type: Type[Object],
     as_objects=True,
+    collection_name: str = None,
+    return_obj_type: Type[Object] = None,
     **query_params,
 ):
 
@@ -99,18 +101,27 @@ def update_objects(
 
     rest_name = obj_type.Meta.rest_name
 
+    if collection_name is None:
+        collection_name = rest_name
+
+    if return_obj_type is None:
+        return_obj_type = obj_type
+
     url = f"{url}/{rest_name}"
     query_params.setdefault("fields", "all")
     schema = obj_type.Meta.schema(many=True)
     serialized_data = schema.dump(objects)
-    json_data = json.dumps({rest_name: serialized_data})
+    json_data = json.dumps({collection_name: serialized_data})
     r = session.put(f"{url}", data=json_data, params=query_params)
 
-    data = r.json()[rest_name]
+    data = r.json()[collection_name]
     if not as_objects:
         return data
 
-    return schema.load(data)
+    return_schema = schema
+    if return_obj_type != obj_type:
+        return_schema = return_obj_type.Meta.schema(many=True)
+    return return_schema.load(data)
 
 
 def delete_objects(session: Session, url: str, objects: List[Object]):
