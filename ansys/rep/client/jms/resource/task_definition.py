@@ -16,6 +16,7 @@ class ResourceRequirements(Object):
     memory : int, optional
     cpu_core_usage : float, optional
     disk_space : int, optional
+    distributed : bool, optional
     custom : dict, optional
 
     """
@@ -29,12 +30,14 @@ class ResourceRequirements(Object):
         memory=missing,
         cpu_core_usage=missing,
         disk_space=missing,
+        distributed=missing,
         custom=missing
     ):
         self.platform = platform
         self.memory = memory
         self.cpu_core_usage = cpu_core_usage
         self.disk_space = disk_space
+        self.distributed = distributed
         self.custom = custom
 
         self.obj_type = self.__class__.__name__
