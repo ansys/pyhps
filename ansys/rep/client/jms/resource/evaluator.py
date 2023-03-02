@@ -25,7 +25,7 @@ class EvaluatorConfigurationUpdate(Object):
 
     class Meta:
         schema = EvaluatorConfigurationUpdateSchema
-        rest_name = "configuration"
+        rest_name = "None"
 
     def __init__(self,
         id=missing,

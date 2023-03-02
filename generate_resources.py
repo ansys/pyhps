@@ -26,7 +26,7 @@ JMS_RESOURCES = [
     {
         "schema": "EvaluatorConfigurationUpdateSchema",
         "schema_filename": "evaluator",
-        "rest_name": "configuration",
+        "rest_name": None,
         "additional_fields": [],
         "class": "EvaluatorConfigurationUpdate",
         "resource_filename": "evaluator",
