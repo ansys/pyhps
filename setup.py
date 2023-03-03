@@ -11,7 +11,7 @@ with open(os.path.join(root, "ansys", "rep", "client", "__version__.py"), "r") a
     exec(f.read(), about)
 
 setup(
-    name="ansys-rep",
+    name="ansys-rep-client",
     version=about["__version__"],
     url=about["__url__"],
     author="ANSYS, Inc.",
