@@ -8,7 +8,7 @@ while detailed documentation can be found in the :ref:`Code Documentation <api_r
 
 To reproduce the code samples provided below, you will need:
 
-- A running REP server, see TODO :strike:`the DPS Startup page in the ANSYS Help for detailed instructions`.
+- A running REP server, go to the `REP repository <https://github.com/ansys/rep>`_ for instructions.
 - A Python shell with ``ansys-rep-client`` installed. If you haven't installed it yet, please refer to the :ref:`Installation <installation>` guide.
 
 
@@ -22,7 +22,7 @@ Let's start by connecting to a REP server running on the localhost with default 
     from ansys.rep.client import Client
     from ansys.rep.client.jms import JmsApi, ProjectApi
     
-    client = Client(rep_url="https://localhost:8443/rep", username="repadmin", password="repadmin")  
+    client = Client(rep_url="https://localhost:8443/rep", username="repuser", password="repuser")  
 
     # check which JMS version the server is running    
     jms_api = JmsApi(client)
@@ -31,7 +31,7 @@ Let's start by connecting to a REP server running on the localhost with default 
     # get all projects
     projects = jms_api.get_projects()
 
-Query projects statistics to find out how many design points are currently running
+Query projects statistics to find out how many jobs are currently running
 
 .. code-block:: python
 
@@ -71,13 +71,13 @@ Most ``get`` functions support filtering by query parameters.
     project = jms_api.get_project_by_name(name="Mapdl Motorbike Frame") 
     project_api = ProjectApi(client, project.id)
 
-    # Get all design points with all fields
+    # Get all jobs with all fields
     jobs = project_api.get_jobs()
 
-    # Get id and parameter values for all evaluated design points
+    # Get id and parameter values for all evaluated jobs
     jobs = project_api.get_jobs(fields=["id", "values"], eval_status="evaluated")
 
-    # Get name and elapsed time of max 5 evaluated design points
+    # Get name and elapsed time of max 5 evaluated jobs
     jobs = project_api.get_jobs(fields=["name", "elapsed_time"], 
                         eval_status="evaluated", limit=5)
     for job in jobs:
@@ -96,13 +96,13 @@ Most ``get`` functions support filtering by query parameters.
     # }
     # ...
 
-    # Get all design points sorted by fitness value in ascending order
+    # Get all jobs sorted by fitness value in ascending order
     jobs = project_api.get_jobs(sort="fitness")
 
-    # Get all design points sorted by fitness value in descending order
+    # Get all jobs sorted by fitness value in descending order
     jobs = project_api.get_jobs(sort="-fitness")
 
-    # Get all design points sorted by the parameters tube1 and weight
+    # Get all jobs sorted by the parameters tube1 and weight
     jobs = project_api.get_jobs(sort=["values.tube1", "values.weight"])
     print([(job.values["tube1"], job.values["weight"]) for job in jobs])
 
@@ -139,7 +139,7 @@ such as ``Numpy``, ``Pandas``, etc.
 
     project = jms_api.get_project_by_name(name="Mapdl Motorbike Frame") 
 
-    # Get parameter values for all evaluated design points
+    # Get parameter values for all evaluated jobs
     jobs = project_api.get_jobs(fields=["id", "values"], eval_status="evaluated", as_objects=False)
 
     # Import jobs data into a flat DataFrame
@@ -160,10 +160,10 @@ such as ``Numpy``, ``Pandas``, etc.
     # 10  02qoqedlN1ebRV77zuUVYd                 0.453                       28.0                                      25.5         270.691391  ...             2            2            1            3      8.077236
 
 
-Set failed design points to pending 
+Set failed jobs to pending 
 -----------------------------------
 
-Query a specific project and set its failed design points (if any) to pending.
+Query a specific project and set its failed jobs (if any) to pending.
 
 .. code-block:: python
     
@@ -209,10 +209,10 @@ Query an existing job definition, modify it and send it back to the server.
     project_api.update_parameter_definitions([parameter_def])
 
 
-Delete some design points  
+Delete some jobs  
 -----------------------------------
 
-Query and then delete all design points that timed out.
+Query and then delete all jobs that timed out.
 
 .. code-block:: python
 
@@ -229,9 +229,9 @@ Query the number of evaluators
     
     evaluators = jms_api.get_evaluators()
 
-    # print number of Windows and Linux evaluators connected to the DCS server
+    # print number of Windows and Linux evaluators connected to the REP server
     print( len([e for e in evaluators if e.platform == "windows" ]) )
-    print( len([e for e in evaluators if e.platform == "Linux" ]) )
+    print( len([e for e in evaluators if e.platform == "linux" ]) )
 
 
 Replace a file in a project
@@ -293,7 +293,7 @@ For example, instantiating a client with invalid credentials will return a 401 C
     from ansys.rep.client import Client, REPError
 
     try:
-        client = Client(rep_url="https://localhost:8443/rep/", username="repadmin",  password="wrong_psw")
+        client = Client(rep_url="https://localhost:8443/rep/", username="repuser",  password="wrong_psw")
     except REPError as e:
         print(e)
 

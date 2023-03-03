@@ -24,6 +24,14 @@ JMS_RESOURCES = [
         "resource_filename": "algorithm",
     },
     {
+        "schema": "EvaluatorConfigurationUpdateSchema",
+        "schema_filename": "evaluator",
+        "rest_name": None,
+        "additional_fields": [],
+        "class": "EvaluatorConfigurationUpdate",
+        "resource_filename": "evaluator",
+    },
+    {
         "schema": "EvaluatorSchema",
         "schema_filename": "evaluator",
         "rest_name": "evaluators",
