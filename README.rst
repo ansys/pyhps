@@ -1,4 +1,4 @@
-pyrep
+PyREP
 =====
 |pyansys| |python| |pypi| |GH-CI| |codecov| |MIT| |black|
 
@@ -33,26 +33,17 @@ pyrep
 
 A Python client for Ansys REP - Remote Execution Platform
 
-Note: The following README instructions are not yet fully tested and adapted for pyrep.
-
 How to install
 --------------
 
-.. TODO: Update installation instructions, try to follow this general scheme as much as possible.
-
-At least two installation modes are provided: user and developer.
-
-For users
-^^^^^^^^^
-
-In order to install Pyrep rep, make sure you
+In order to install PyREP, make sure you
 have the latest version of `pip`_. To do so, run:
 
 .. code:: bash
 
     python -m pip install -U pip
 
-Then, as long as pyrep is a private pyAnsys module not published to pypi yet, you can execute:
+Then, as long as PyREP is a private pyAnsys module not published to pypi yet, you can execute:
 
 .. code:: bash
 
@@ -60,22 +51,21 @@ Then, as long as pyrep is a private pyAnsys module not published to pypi yet, yo
 
 .. TODO: Enable this once pyrep is published:  python -m pip install ansys-rep
 
-For developers
-^^^^^^^^^^^^^^
+Contribute
+----------
 
-Installing pyrep in developer mode allows
-you to modify the source and enhance it.
-
-Before contributing to the project, please refer to the `PyAnsys Developer's guide`_. You will 
+Before contributing to the project, ensure that you are thoroughly
+familiar with the `PyAnsys Developer's guide`_. You will 
 need to follow these steps:
 
-#. Start by cloning this repository:
+#. Clone this repository:
 
     .. code:: bash
 
         git clone https://github.com/pyansys/pyrep
+        cd pyrep
 
-#. Create a fresh-clean Python environment and activate it:
+#. Create a new Python environment and activate it:
 
     .. code:: bash
 
@@ -106,13 +96,6 @@ need to follow these steps:
     .. code:: bash
     
         python -m pip install --editable .
-    
-    #. Finally, verify your development installation by running:
-
-    .. code:: bash
-        
-        tox
-
 
 How to testing
 --------------
@@ -131,7 +114,7 @@ order to guarantee project's integrity. The following environments commands are 
 - **tox -e style**: will check for coding style quality.
 - **tox -e py**: checks for unit tests.
 - **tox -e py-coverage**: checks for unit testing and code coverage.
-- **tox -e doc**: checs for documentation building process.
+- **tox -e doc**: checks for documentation building process.
 
 
 Raw testing
@@ -157,14 +140,14 @@ encouraged to install this tool via:
 Documentation
 -------------
 
-For building documentation, you can either run the usual rules provided in the
-`Sphinx`_ Makefile, such us:
+For building documentation, you can manually run:
 
 .. code:: bash
 
-    make -C doc/ html && your_browser_name doc/html/index.html
+    python prepare_documentation.py
+    python -m sphinx -b html doc/source build/sphinx/html
 
-However, the recommended way of checking documentation integrity is using:
+The recommended way of checking documentation integrity is using:
 
 .. code:: bash
 

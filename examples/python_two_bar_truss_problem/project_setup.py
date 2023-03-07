@@ -70,7 +70,7 @@ def main(client, num_jobs, use_exec_script) -> Project:
                 name="exec_python",
                 evaluation_path="exec_python.py",
                 type="application/x-python-code",
-                src=os.path.join(cwd, "..", "exec_scripts", "exec_python.py"),
+                src=os.path.join(cwd, "exec_python.py"),
             )
         )
 

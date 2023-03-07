@@ -7,7 +7,7 @@
 # ----------------------------------------------------------
 
 from .algorithm import Algorithm
-from .evaluator import Evaluator
+from .evaluator import Evaluator, EvaluatorConfigurationUpdate
 from .file import File
 from .fitness_definition import FitnessDefinition, FitnessTermDefinition
 from .job import Job

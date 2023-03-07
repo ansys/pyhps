@@ -11,6 +11,7 @@ from .resource import (
     Algorithm,
     BoolParameterDefinition,
     Evaluator,
+    EvaluatorConfigurationUpdate,
     File,
     FitnessDefinition,
     FitnessTermDefinition,
