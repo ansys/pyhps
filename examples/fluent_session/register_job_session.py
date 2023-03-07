@@ -2,14 +2,11 @@
 Prototype of how to store Fluent Job's data on JMS
 """
 import argparse
-import json
 import logging
-import os
 import time
 
 from ansys.rep.client import Client, REPError
 from ansys.rep.client.jms import (  # ResourceRequirements,
-    File,
     JmsApi,
     Job,
     JobDefinition,
@@ -22,17 +19,10 @@ from ansys.rep.client.jms import (  # ResourceRequirements,
 log = logging.getLogger(__name__)
 
 
-def job_data_file():
-    """Dump to file some Fluent job data
-
-    This is what Fluent Server would want to store in JMS.
-    """
-    cwd = os.path.dirname(__file__)
-    path = os.path.join(cwd, "job_data.json")
+def job_data():
+    """This is what Fluent Server would want to store in JMS."""
     data = {"url": "http://localhost:5000", "some_other_data": "value"}
-    with open(path, "w") as f:
-        json.dump(data, f, indent=4)
-    return path
+    return data
 
 
 def run(client: Client, project_name: str):
@@ -72,16 +62,8 @@ def run(client: Client, project_name: str):
         job_definition_id=job_def.id,
     )
     job = project_api.create_jobs([job])[0]
-
-    session_data_file = File(
-        name="job_data",
-        evaluation_path="job_data.json",
-        type="text/plain",
-        src=job_data_file(),
-    )
-    files = project_api.create_files([session_data_file])
     task = project_api.get_tasks(job_id=job.id)[0]
-    task.input_file_ids = [f.id for f in files]
+    task.custom_data = job_data()
     project_api.update_tasks([task])
 
     log.info(f"You can access your job at {client.rep_url}/jms/#/projects/{proj.id}/jobs/{job.id}")
