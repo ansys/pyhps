@@ -34,7 +34,7 @@ setup(
         "marshmallow>=3.0.0",
         "marshmallow_oneofschema>=2.0.1",
         "cachetools>=4.0.0",
-        "python-keycloak>=1.5.0",
+        "python-keycloak>=1.5.0,<2.12.0",
     ],
     python_requires=">=3.7",
     packages=find_namespace_packages(where=".", include="ansys*"),
