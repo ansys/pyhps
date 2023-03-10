@@ -111,3 +111,8 @@ class TaskSchema(ObjectSchema):
         allow_none=True,
         metadata={"description": "ID of license context in use"},
     )
+
+    custom_data = fields.Dict(
+        allow_none=True,
+        description="Dictionary type field to store custom data.",
+    )

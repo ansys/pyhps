@@ -49,6 +49,8 @@ class Task(Object):
         List of IDs of owned files of task.
     license_context_id : str, optional
         ID of license context in use
+    custom_data : dict, optional
+        Dictionary type field to store custom data.
 
     """
 
@@ -77,7 +79,8 @@ class Task(Object):
         monitored_file_ids=missing,
         inherited_file_ids=missing,
         owned_file_ids=missing,
-        license_context_id=missing
+        license_context_id=missing,
+        custom_data=missing
     ):
         self.id = id
         self.modification_time = modification_time
@@ -100,6 +103,7 @@ class Task(Object):
         self.inherited_file_ids = inherited_file_ids
         self.owned_file_ids = owned_file_ids
         self.license_context_id = license_context_id
+        self.custom_data = custom_data
 
         self.obj_type = self.__class__.__name__
 
