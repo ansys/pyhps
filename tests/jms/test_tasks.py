@@ -56,6 +56,7 @@ class TasksTest(REPTestCase):
                 "02q3zEBtZ0oVfoCAEBDiP5",
                 "02q3zEBtXfh5XvEnWc9c0w",
             ],
+            "custom_data": {"key": "value"},
         }
 
         task = TaskSchema().load(task_dict)
@@ -92,6 +93,7 @@ class TasksTest(REPTestCase):
                 "02q3zEBtXfh5XvEnWc9c0w",
             ],
         )
+        self.assertEqual(task.custom_data, {"key": "value"})
 
     def test_task_integration(self):
 
@@ -280,6 +282,54 @@ class TasksTest(REPTestCase):
         )
 
         JmsApi(client).delete_project(project)
+
+    def test_register_external_job(self):
+        client = self.client()
+
+        jms_api = JmsApi(client)
+        proj_name = f"test_register_external_job"
+        proj = Project(name=proj_name, priority=1, active=True)
+        proj = jms_api.create_project(proj)
+        project_api = ProjectApi(client, proj.id)
+        log.info(f"Created project '{proj.name}', ID='{proj.id}'")
+
+        task_def = TaskDefinition(
+            name="Fluent Session",
+            software_requirements=[
+                Software(name="Ansys Fluent Server", version="2023 R2"),
+            ],
+            execution_level=0,
+            store_output=False,
+        )
+
+        task_def = project_api.create_task_definitions([task_def])[0]
+
+        job_def = JobDefinition(name="JobDefinition", active=True)
+        job_def.task_definition_ids = [task_def.id]
+        job_def = project_api.create_job_definitions([job_def])[0]
+
+        job = Job(
+            name=f"Fluent Session",
+            eval_status="running",
+            job_definition_id=job_def.id,
+        )
+        job = project_api.create_jobs([job])[0]
+
+        # add custom data to the task
+        tasks = project_api.get_tasks(job_id=job.id)
+        self.assertEqual(len(tasks), 1)
+        task = tasks[0]
+        self.assertEqual(task.eval_status, "running")
+
+        task.custom_data = {"url": "http://localhost:5000", "some_other_data": "value"}
+        project_api.update_tasks([task])
+
+        tasks = project_api.get_tasks(job_id=job.id)
+        self.assertEqual(len(tasks), 1)
+        self.assertEqual(tasks[0].custom_data["url"], "http://localhost:5000")
+        self.assertEqual(tasks[0].eval_status, "running")
+
+        JmsApi(client).delete_project(proj)
 
 
 if __name__ == "__main__":
