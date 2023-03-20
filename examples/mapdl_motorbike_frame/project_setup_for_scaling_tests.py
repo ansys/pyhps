@@ -102,18 +102,18 @@ def create_project(
     file_ids = {f.name: f.id for f in files}
 
     log.info("=== Parameter definitions")
-    # Todo: Failed to create parameter definitions and mappings at once for all job definitions, 
-    all_float_input_params=[]
-    all_str_input_params=[]
-    all_output_params=[]
-    all_param_mappings=[]
+    # Todo: Failed to create parameter definitions and mappings at once for all job definitions,
+    all_float_input_params = []
+    all_str_input_params = []
+    all_output_params = []
+    all_param_mappings = []
     for i in range(num_job_defs):
         # Input parameter definitions
-        
+
         # Dimensions of three custom tubes - float params
         param_props = []
         params = []
-        param_mappings=[]
+        param_mappings = []
         for i in range(1, 4):
             p = FloatParameterDefinition(
                 name=f"tube{i}_radius", lower_limit=4.0, upper_limit=20.0, default=12.0
@@ -151,7 +151,7 @@ def create_project(
 
         params = project_api.create_parameter_definitions(params)
         all_str_input_params.append(params)
-        
+
         # Input parameter mappings
         for pd, pr in zip(params, param_props):
             assert pd.name == pr["name"]
@@ -168,14 +168,14 @@ def create_project(
         params = []
 
         # Collect some runtime stats from MAPDL out file
-        param_props=[
+        param_props = [
             {
                 "name": "mapdl_elapsed_time_obtain_license",
                 "key_string": "Elapsed time spent obtaining a license",
                 "tokenizer": ":",
                 "fname": "out",
             },
-                    {
+            {
                 "name": "mapdl_cp_time",
                 "key_string": "CP Time      (sec)",
                 "tokenizer": "=",
@@ -186,7 +186,7 @@ def create_project(
                 "key_string": "Elapsed Time (sec)",
                 "tokenizer": "=",
                 "fname": "out",
-            }
+            },
         ]
         for pr in param_props:
             params.append(FloatParameterDefinition(name=pr["name"]))
@@ -194,7 +194,9 @@ def create_project(
         # Design variables
         for pname in ["weight", "torsion_stiffness", "max_stress"]:
             params.append(FloatParameterDefinition(name=pname))
-            param_props.append({"name": pname, "key_string": pname, "tokenizer":"=", "fname": "results"})
+            param_props.append(
+                {"name": pname, "key_string": pname, "tokenizer": "=", "fname": "results"}
+            )
 
         params = project_api.create_parameter_definitions(params)
         all_output_params.append(params)
@@ -211,7 +213,7 @@ def create_project(
                 )
             )
 
-        all_param_mappings.append( project_api.create_parameter_mappings(param_mappings) )
+        all_param_mappings.append(project_api.create_parameter_mappings(param_mappings))
 
     # # Fitness definition
     fd = FitnessDefinition(error_fitness=10.0)
@@ -279,7 +281,8 @@ def create_project(
         job_def = JobDefinition(name=f"JobDefinition {i}", active=True)
         job_def.fitness_definition = fd
         job_def.parameter_definition_ids = [
-            pd.id for pd in all_float_input_params[i] + all_str_input_params[i] + all_output_params[i]
+            pd.id
+            for pd in all_float_input_params[i] + all_str_input_params[i] + all_output_params[i]
         ]
         job_def.parameter_mapping_ids = [pm.id for pm in all_param_mappings[i]]
         job_def.task_definition_ids = [task_defs[i].id]
@@ -333,7 +336,7 @@ if __name__ == "__main__":
         client = Client(rep_url=args.url, username=args.username, password=args.password)
         log.info(f"REP URL: {client.rep_url}")
         for i in range(args.num_projects):
-            name=f"{args.name} P{i}"
+            name = f"{args.name} P{i}"
             proj = create_project(
                 client=client,
                 name=name,
