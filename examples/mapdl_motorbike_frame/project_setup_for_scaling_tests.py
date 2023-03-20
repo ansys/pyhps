@@ -1,5 +1,5 @@
 """
-Alternative script to setup a simple MAPDL project with parameters in pyrep 
+Alternative script to setup a simple MAPDL project with parameters in pyrep
 used for scalability tests for number of projects, job definitions and jobs
 
 Author(s): O.Koenig
