@@ -9,7 +9,9 @@ import logging
 import unittest
 
 from examples.mapdl_motorbike_frame.project_setup import create_project
+from marshmallow.utils import missing
 
+from ansys.rep.client import Client
 from ansys.rep.client.jms import JmsApi, ProjectApi
 from ansys.rep.client.jms.resource import Job, Project
 from tests.rep_test import REPTestCase
@@ -74,6 +76,49 @@ class REPClientTest(REPTestCase):
 
         # Delete Jobs again
         project_api.delete_jobs(created_jobs)
+
+    def test_fields_query_parameter(self):
+
+        client1 = Client(self.rep_url, self.username, self.password, all_fields=False)
+
+        proj_name = "test_fields_query_parameter"
+        project = create_project(client1, proj_name, num_jobs=2, use_exec_script=False)
+
+        project_api1 = ProjectApi(client1, project.id)
+
+        jobs = project_api1.get_jobs()
+        self.assertEqual(len(jobs), 2)
+        self.assertNotEqual(jobs[0].id, missing)
+        self.assertNotEqual(jobs[0].eval_status, missing)
+        self.assertEqual(jobs[0].values, missing)
+        self.assertEqual(jobs[0].host_ids, missing)
+
+        jobs = project_api1.get_jobs(fields=["id", "eval_status", "host_ids"])
+        self.assertEqual(len(jobs), 2)
+        self.assertNotEqual(jobs[0].id, missing)
+        self.assertNotEqual(jobs[0].eval_status, missing)
+        self.assertNotEqual(jobs[0].host_ids, missing)
+        self.assertEqual(jobs[0].values, missing)
+
+        client2 = Client(self.rep_url, self.username, self.password, all_fields=True)
+        project_api2 = ProjectApi(client2, project.id)
+
+        jobs = project_api2.get_jobs()
+        self.assertEqual(len(jobs), 2)
+        self.assertNotEqual(jobs[0].id, missing)
+        self.assertNotEqual(jobs[0].eval_status, missing)
+        self.assertNotEqual(jobs[0].values, missing)
+        self.assertNotEqual(jobs[0].host_ids, missing)
+
+        jobs = project_api2.get_jobs(fields=["id", "eval_status"])
+        self.assertEqual(len(jobs), 2)
+        self.assertNotEqual(jobs[0].id, missing)
+        self.assertNotEqual(jobs[0].eval_status, missing)
+        self.assertEqual(jobs[0].host_ids, missing)
+        self.assertEqual(jobs[0].values, missing)
+
+        # Delete project
+        JmsApi(client1).delete_project(project)
 
 
 if __name__ == "__main__":
