@@ -16,7 +16,6 @@ def get_objects(
 
     rest_name = obj_type.Meta.rest_name
     url = f"{url}/{rest_name}"
-    query_params.setdefault("fields", "all")
     r = session.get(url, params=query_params)
 
     if query_params.get("count"):
@@ -36,7 +35,6 @@ def get_object(
 
     rest_name = obj_type.Meta.rest_name
     url = f"{url}/{rest_name}/{id}"
-    query_params.setdefault("fields", "all")
     r = session.get(url, params=query_params)
 
     data = r.json()[rest_name]
@@ -68,7 +66,6 @@ def create_objects(
     rest_name = obj_type.Meta.rest_name
 
     url = f"{url}/{rest_name}"
-    query_params.setdefault("fields", "all")
     schema = obj_type.Meta.schema(many=True)
     serialized_data = schema.dump(objects)
     json_data = json.dumps({rest_name: serialized_data})
@@ -100,7 +97,6 @@ def update_objects(
     rest_name = obj_type.Meta.rest_name
 
     url = f"{url}/{rest_name}"
-    query_params.setdefault("fields", "all")
     schema = obj_type.Meta.schema(many=True)
     serialized_data = schema.dump(objects)
     json_data = json.dumps({rest_name: serialized_data})

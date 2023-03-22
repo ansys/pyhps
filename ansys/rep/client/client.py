@@ -37,6 +37,8 @@ class Client(object):
         Refresh Token
     access_token : str, optional
         Access Token
+    always_request_all_fields: bool, optional
+        Set (True by default)
 
     Examples
     --------
@@ -72,6 +74,7 @@ class Client(object):
         access_token: str = None,
         refresh_token: str = None,
         auth_url: str = None,
+        always_request_all_fields=True,
     ):
 
         self.rep_url = rep_url
@@ -103,6 +106,9 @@ class Client(object):
             self.refresh_token = tokens["refresh_token"]
 
         self.session = create_session(self.access_token)
+        if always_request_all_fields:
+            self.session.params = {"fields": "all"}
+
         # register hook to handle expiring of the refresh token
         self.session.hooks["response"] = [self._auto_refresh_token, raise_for_status]
         self._unauthorized_num_retry = 0

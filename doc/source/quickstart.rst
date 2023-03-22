@@ -67,7 +67,7 @@ Query parameters
 Most ``get`` functions support filtering by query parameters.
 
 .. code-block:: python
-    
+
     project = jms_api.get_project_by_name(name="Mapdl Motorbike Frame") 
     project_api = ProjectApi(client, project.id)
 
@@ -77,34 +77,9 @@ Most ``get`` functions support filtering by query parameters.
     # Get id and parameter values for all evaluated jobs
     jobs = project_api.get_jobs(fields=["id", "values"], eval_status="evaluated")
 
-    # Get name and elapsed time of max 5 evaluated jobs
-    jobs = project_api.get_jobs(fields=["name", "elapsed_time"], 
-                        eval_status="evaluated", limit=5)
-    for job in jobs:
-        print(job)
-    # {
-    #   "id": "02qoqedl8QCjkuLcqCi10Q",
-    #   "name": "Job.0",
-    #   "priority": 0,
-    #   "elapsed_time": 35.275044
-    # }
-    # {
-    #   "id": "02qoqedlDMO1LrSGoHQqnT",
-    #   "name": "Job.1",
-    #   "priority": 0,
-    #   "elapsed_time": 34.840801
-    # }
-    # ...
 
-    # Get all jobs sorted by fitness value in ascending order
-    jobs = project_api.get_jobs(sort="fitness")
-
-    # Get all jobs sorted by fitness value in descending order
-    jobs = project_api.get_jobs(sort="-fitness")
-
-    # Get all jobs sorted by the parameters tube1 and weight
-    jobs = project_api.get_jobs(sort=["values.tube1", "values.weight"])
-    print([(job.values["tube1"], job.values["weight"]) for job in jobs])
+Operators
+^^^^^^^^^
 
 In general, query parameters support the following operators: ``lt`` (less than), ``le`` (less or equal), 
 ``=`` (equal), ``ne`` (not equal), ``ge`` (greater or equal), ``gt`` (greater than),  ``in`` (value found in list) and
@@ -125,6 +100,50 @@ In general, query parameters support the following operators: ``lt`` (less than)
     # Less than
     query_params = {"fitness.lt": 1.8}
     jobs = project_api.get_jobs(**query_params)
+
+
+Fields
+^^^^^^
+
+When you query a resource, it returns a set of fields by default. You can specify which fields
+you want returned by using the ``fields`` query parameter (this returns only the fields you specify, 
+and the ID of the resource, which is always returned). Moreover, you can request all fields to be returned by specifying ``fields="all"``.
+
+.. code-block:: python
+    
+    project = jms_api.get_project_by_name(name="Mapdl Motorbike Frame") 
+    project_api = ProjectApi(client, project.id)
+
+    # Get all jobs with all fields
+    jobs = project_api.get_jobs()
+
+    # Get id and parameter values for all evaluated jobs
+    jobs = project_api.get_jobs(fields=["id", "values"], eval_status="evaluated")
+
+Sorting
+^^^^^^^
+
+.. code-block:: python
+    
+    # Get all jobs sorted by fitness value in ascending order
+    jobs = project_api.get_jobs(sort="fitness")
+
+    # Get all jobs sorted by fitness value in descending order
+    jobs = project_api.get_jobs(sort="-fitness")
+
+    # Get all jobs sorted by the parameters tube1 and weight
+    jobs = project_api.get_jobs(sort=["values.tube1", "values.weight"])
+    print([(job.values["tube1"], job.values["weight"]) for job in jobs])
+
+Pagination
+^^^^^^^^^^
+
+.. code-block:: python
+    
+    # Get name and elapsed time of max 5 evaluated jobs
+    jobs = project_api.get_jobs(fields=["name", "elapsed_time"], 
+                        eval_status="evaluated", limit=5)
+
 
 Objects vs dictionaries
 -----------------------------------

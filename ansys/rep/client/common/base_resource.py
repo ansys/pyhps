@@ -67,7 +67,7 @@ class Object(object):
         for attr_name, field_obj in schema.fields.items():
             value = missing
             try:
-                value = field_obj.serialize(attr_name, self, accessor=schema.get_attribute)
+                value = field_obj.get_value(self, attr_name, accessor=schema.get_attribute)
             except:
                 pass
             if value is missing:
