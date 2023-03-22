@@ -190,8 +190,8 @@ def submit_job() -> REPJob:
         max_execution_time=3600.0,
         resource_requirements=ResourceRequirements(
             cpu_core_usage=6,
-            memory=6000,
-            disk_space=4000,
+            memory=6000 * 1024 * 1024,
+            disk_space=4000 * 1024 * 1024,
         ),
         execution_level=0,
         num_trials=1,

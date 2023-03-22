@@ -37,8 +37,10 @@ class Client(object):
         Refresh Token
     access_token : str, optional
         Access Token
-    always_request_all_fields: bool, optional
-        Set (True by default)
+    all_fields: bool, optional
+        If True, the query parameter ``fields="all"`` is applied by default
+        to all requests, so that all available fields are returned for
+        the requested resources.
 
     Examples
     --------
@@ -46,17 +48,17 @@ class Client(object):
     >>> from ansys.rep.client import Client
     >>> # Create client object and connect to REP with username & password
     >>> cl = Client(
-            rep_url="https://localhost:8443/rep", username="repadmin", password="repadmin"
-        )
+    ...     rep_url="https://localhost:8443/rep", username="repuser", password="repuser"
+    ... )
     >>> # Extract refresh token to eventually store it
     >>> refresh_token = cl.refresh_token
     >>> # Alternative: Create client object and connect to REP with refresh token
     >>> cl = Client(
-        rep_url="https://localhost:8443/rep",
-        username="repadmin",
-        refresh_token=refresh_token,
-        grant_type="refresh_token"
-    )
+    ...     rep_url="https://localhost:8443/rep",
+    ...     username="repuser",
+    ...     refresh_token=refresh_token,
+    ...     grant_type="refresh_token"
+    >>> )
 
     """
 
@@ -74,7 +76,7 @@ class Client(object):
         access_token: str = None,
         refresh_token: str = None,
         auth_url: str = None,
-        always_request_all_fields=True,
+        all_fields=True,
     ):
 
         self.rep_url = rep_url
@@ -106,7 +108,7 @@ class Client(object):
             self.refresh_token = tokens["refresh_token"]
 
         self.session = create_session(self.access_token)
-        if always_request_all_fields:
+        if all_fields:
             self.session.params = {"fields": "all"}
 
         # register hook to handle expiring of the refresh token

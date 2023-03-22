@@ -181,8 +181,9 @@ def main(client: Client, name: str, num_jobs: int, version: str) -> Project:
         execution_command="%executable% -b -i %file:mac% -o file.out -np %resource:num_cores%",
         resource_requirements=ResourceRequirements(
             cpu_core_usage=4,
-            memory=4000,
-            disk_space=500,
+            memory=4000 * 1024 * 1024,
+            disk_space=500 * 1024 * 1024,
+            distributed=True,
         ),
         max_execution_time=1800.0,
         execution_level=0,
