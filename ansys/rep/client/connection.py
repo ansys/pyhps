@@ -38,7 +38,7 @@ def create_session(access_token: str = None) -> requests.Session:
     if access_token:
         session.headers.update({"Authorization": "Bearer %s" % access_token})
 
-    retries = Retry(total=10, backoff_factor=1, status_forcelist=[503])
+    retries = Retry(total=5, backoff_factor=0.5, status_forcelist=[502, 503, 504])
     session.mount("http://", HTTPAdapter(max_retries=retries))
     session.mount("https://", HTTPAdapter(max_retries=retries))
     return session

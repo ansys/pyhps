@@ -97,18 +97,10 @@ class TasksTest(REPTestCase):
 
     def test_task_integration(self):
 
-        # This test assumes that the project mapdl_motorbike_frame
-        # already exists on the REP server.
-        # In case, you can create such project running the script
-        # examples/mapdl_motorbike_frame/project_setup.py
-
         client = self.client()
         proj_name = "Mapdl Motorbike Frame"
 
-        jms_api = JmsApi(client)
-        project = jms_api.get_project_by_name(name=proj_name)
-        if not project:
-            project = create_project(client, proj_name, num_jobs=5, use_exec_script=False)
+        project = create_project(client, proj_name, num_jobs=5, use_exec_script=False)
 
         project_api = ProjectApi(client, project.id)
         tasks = project_api.get_tasks(limit=5)

@@ -62,49 +62,26 @@ of a tubular steel trellis motorbike-frame.
 See :ref:`example_mapdl_motorbike_frame` for a detailed description of this example.
 
 Query parameters
------------------------------------
+----------------
 
 Most ``get`` functions support filtering by query parameters.
 
+Properties
+^^^^^^^^^^
+
+You can query resources by the value of their properties.
+
 .. code-block:: python
-    
+
     project = jms_api.get_project_by_name(name="Mapdl Motorbike Frame") 
     project_api = ProjectApi(client, project.id)
 
-    # Get all jobs with all fields
+    # Get all jobs
     jobs = project_api.get_jobs()
 
-    # Get id and parameter values for all evaluated jobs
-    jobs = project_api.get_jobs(fields=["id", "values"], eval_status="evaluated")
+    # Get all evaluated jobs
+    jobs = project_api.get_jobs(eval_status="evaluated")
 
-    # Get name and elapsed time of max 5 evaluated jobs
-    jobs = project_api.get_jobs(fields=["name", "elapsed_time"], 
-                        eval_status="evaluated", limit=5)
-    for job in jobs:
-        print(job)
-    # {
-    #   "id": "02qoqedl8QCjkuLcqCi10Q",
-    #   "name": "Job.0",
-    #   "priority": 0,
-    #   "elapsed_time": 35.275044
-    # }
-    # {
-    #   "id": "02qoqedlDMO1LrSGoHQqnT",
-    #   "name": "Job.1",
-    #   "priority": 0,
-    #   "elapsed_time": 34.840801
-    # }
-    # ...
-
-    # Get all jobs sorted by fitness value in ascending order
-    jobs = project_api.get_jobs(sort="fitness")
-
-    # Get all jobs sorted by fitness value in descending order
-    jobs = project_api.get_jobs(sort="-fitness")
-
-    # Get all jobs sorted by the parameters tube1 and weight
-    jobs = project_api.get_jobs(sort=["values.tube1", "values.weight"])
-    print([(job.values["tube1"], job.values["weight"]) for job in jobs])
 
 In general, query parameters support the following operators: ``lt`` (less than), ``le`` (less or equal), 
 ``=`` (equal), ``ne`` (not equal), ``ge`` (greater or equal), ``gt`` (greater than),  ``in`` (value found in list) and
@@ -125,6 +102,57 @@ In general, query parameters support the following operators: ``lt`` (less than)
     # Less than
     query_params = {"fitness.lt": 1.8}
     jobs = project_api.get_jobs(**query_params)
+
+
+Fields
+^^^^^^
+
+When you query a resource, the REST API returns a set of fields by default. You can specify which fields
+you want returned by using the ``fields`` query parameter (this returns only the fields you specify, 
+and the ID of the resource, which is always returned).
+Moreover, you can request all fields to be returned by specifying ``fields="all"``.
+
+.. code-block:: python
+    
+    # Get all jobs with all fields
+    jobs = project_api.get_jobs(fields="all")
+
+    # Get id and parameter values for all evaluated jobs
+    jobs = project_api.get_jobs(fields=["id", "values"], eval_status="evaluated")
+
+Sorting
+^^^^^^^
+
+You can sort resource collections by their properties.
+Prefixing with ``-`` (minus) denotes descending order.
+
+.. code-block:: python
+    
+    # Get all jobs sorted by fitness value in ascending order
+    jobs = project_api.get_jobs(sort="fitness")
+
+    # Get all jobs sorted by fitness value in descending order
+    jobs = project_api.get_jobs(sort="-fitness")
+
+    # Get all jobs sorted by the parameters tube1 and weight
+    jobs = project_api.get_jobs(sort=["values.tube1", "values.weight"])
+    print([(job.values["tube1"], job.values["weight"]) for job in jobs])
+
+Pagination
+^^^^^^^^^^
+
+You can use the ``offset`` and ``limit`` query parameters to paginate items in a collection.
+
+.. code-block:: python
+    
+    # Get name and elapsed time of max 5 evaluated jobs, sorted by creation time
+    jobs = project_api.get_jobs(fields=["name", "elapsed_time"], sort="-creation_time",
+                eval_status="evaluated", limit=5)
+
+    # Query the next 10 jobs
+    jobs = project_api.get_jobs(fields=["name", "elapsed_time"], sort="-creation_time",
+                eval_status="evaluated", limit=10, offset=5)
+
 
 Objects vs dictionaries
 -----------------------------------

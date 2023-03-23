@@ -549,8 +549,6 @@ def copy_jobs(project_api: ProjectApi, jobs: List[Job], as_objects=True, **query
 
     url = f"{project_api.url}/jobs"
 
-    query_params.setdefault("fields", "all")
-
     json_data = json.dumps({"source_ids": [obj.id for obj in jobs]})
     r = project_api.client.session.post(f"{url}", data=json_data, params=query_params)
 
