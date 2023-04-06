@@ -365,6 +365,40 @@ class ProjectApi:
         r = self.client.session.delete(url)
 
     ################################################################
+    def copy_default_execution_script(self, filename: str) -> File:
+        """Copy a default execution script to the current project
+
+        Example:
+
+            >>> file = project_api.copy_default_execution_script("exec_mapdl.py")
+
+        """
+
+        # create file resource
+        name = os.path.splitext(filename)[0]
+        file = File(name=name, evaluation_path=filename, type="application/x-python-code")
+        file = self.create_files([file])[0]
+
+        # query location of default execution scripts from server
+        jms_api = JmsApi(self.client)
+        info = jms_api.get_api_info()
+        execution_script_default_bucket = info["settings"]["execution_script_default_bucket"]
+
+        # server side copy of the file to project bucket
+        checksum = _fs_copy_file(
+            self.client.session,
+            self.fs_url,
+            execution_script_default_bucket,
+            filename,
+            self.project_id,
+            file.storage_id,
+        )
+
+        # update file resource
+        file.hash = checksum
+        return self.update_files([file])[0]
+
+    ################################################################
     def _get_objects(self, obj_type: Object, as_objects=True, **query_params):
         return get_objects(self.client.session, self.url, obj_type, as_objects, **query_params)
 
@@ -586,3 +620,17 @@ def get_fs_url(project: Project):
         if r.status_code == 200:
             return url
     return None
+
+
+def _fs_copy_file(
+    session: requests.Session,
+    fs_url: str,
+    source_bucket: str,
+    source_name: str,
+    destination_bucket: str,
+    destination_name: str,
+) -> str:
+
+    json_data = json.dumps({"destination": f"ansfs://{destination_bucket}/{destination_name}"})
+    r = session.post(url=f"{fs_url}/{source_bucket}/{source_name}:copy", data=json_data)
+    return r.json()["checksum"]
