@@ -297,6 +297,24 @@ class ProjectsTest(REPTestCase):
         jms_api.delete_project(project)
         jms_api.delete_project(restored_project)
 
+    def test_copy_exec_script(self):
+
+        client = self.client()
+        jms_api = JmsApi(client)
+        proj_name = f"test_copy_exec_script"
+
+        proj = Project(name=proj_name)
+        proj = jms_api.create_project(proj)
+
+        project_api = ProjectApi(client, proj.id)
+        file = project_api.copy_default_execution_script("exec_mapdl.py")
+        self.assertEqual(file.name, "exec_mapdl")
+        self.assertEqual(file.evaluation_path, "exec_mapdl.py")
+        self.assertIsNotNone(file.hash)
+        self.assertIsNotNone(file.storage_id)
+
+        jms_api.delete_project(proj)
+
 
 if __name__ == "__main__":
     unittest.main()
