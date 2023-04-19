@@ -20,8 +20,6 @@ class Project(Object):
         The date and time the project was created.
     modification_time : datetime, optional
         The date and time the project was last modified.
-    file_storages : list
-        List of file storages defined for the project.
     statistics : dict
         Optional dictionary containing various project statistics.
 
@@ -38,7 +36,6 @@ class Project(Object):
         priority=missing,
         creation_time=missing,
         modification_time=missing,
-        file_storages=missing,
         statistics=missing
     ):
         self.id = id
@@ -47,7 +44,6 @@ class Project(Object):
         self.priority = priority
         self.creation_time = creation_time
         self.modification_time = modification_time
-        self.file_storages = file_storages
         self.statistics = statistics
 
         self.obj_type = self.__class__.__name__
