@@ -4,6 +4,7 @@ import os
 import time
 from typing import List, Union
 import uuid
+
 import requests
 
 from ansys.rep.client.client import Client
@@ -242,6 +243,7 @@ class JmsApi(object):
 
     def _monitor_operation(self, operation_id: str, interval: float = 1.0):
         return _monitor_operation(self, operation_id, interval)
+
     ################################################################
     # Storages
     def get_storage(self):
@@ -397,6 +399,7 @@ def restore_project(jms_api, archive_path):
 
     return get_project(jms_api.client, jms_api.url, project_id)
 
+
 def get_storages(client, api_url):
     """
     Returns list of storages
@@ -404,6 +407,7 @@ def get_storages(client, api_url):
     url = f"{api_url}/storage"
     r = client.session.get(url)
     return r.json()["backends"]
+
 
 def get_fs_url(client, api_url):
 
