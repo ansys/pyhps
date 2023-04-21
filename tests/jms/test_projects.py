@@ -44,34 +44,6 @@ class ProjectsTest(REPTestCase):
                 },
                 "num_jobs": 56,
             },
-            "file_storages": [
-                {
-                    "obj_type": "RestGateway",
-                    "name": "dc_fs_gateway",
-                    "url": "https://212.126.163.153:443/dcs/fs/api",
-                    "use_default_url": False,
-                    "priority": 20,
-                    "reference": "file_system_storage",
-                },
-                {
-                    "obj_type": "FileSystemStorage",
-                    "name": "file_system_storage",
-                    "cache": False,
-                    "persistent": True,
-                    "priority": 10,
-                    "storage_directory": "/media/dcp_data/ansft_gateway/default_fs_storage/",
-                    "owner_uuid": "0ea21dc4-37da-46e2-85e2-4f4a78dcdf0a",
-                },
-                {
-                    "obj_type": "FileSystemStorage",
-                    "name": "shared_file_system_storage",
-                    "cache": False,
-                    "persistent": True,
-                    "priority": 5,
-                    "storage_directory": "/media/ansys/tmp_storage/",
-                    "owner_uuid": "0ea21dc4-37da-46e2-85e2-4f4a78dcdf0a",
-                },
-            ],
         }
 
         project = ProjectSchema().load(project_dict)
@@ -89,11 +61,6 @@ class ProjectsTest(REPTestCase):
             project_dict["statistics"]["eval_status"]["failed"],
         )
 
-        self.assertEqual(len(project.file_storages), 3)
-        self.assertEqual(project.file_storages[0]["name"], "dc_fs_gateway")
-        self.assertEqual(project.file_storages[0]["reference"], "file_system_storage")
-        self.assertEqual(project.file_storages[2]["storage_directory"], "/media/ansys/tmp_storage/")
-
     def test_project_serialization(self):
 
         project = Project(name="new_project")
@@ -104,7 +71,6 @@ class ProjectsTest(REPTestCase):
         serialized_project = ProjectSchema().dump(project)
 
         self.assertTrue("name" in serialized_project.keys())
-        self.assertFalse("file_storages" in serialized_project.keys())
         self.assertEqual(serialized_project["name"], "new_project")
 
     def test_project_integration(self):
