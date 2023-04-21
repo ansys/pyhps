@@ -4,8 +4,6 @@ import os
 from pathlib import Path
 from typing import Callable, List, Type
 
-from cachetools import TTLCache, cached
-from marshmallow.utils import missing
 import requests
 
 from ansys.rep.client.client import Client
@@ -21,14 +19,13 @@ from ansys.rep.client.jms.resource import (
     ParameterDefinition,
     ParameterMapping,
     Permission,
-    Project,
     Task,
     TaskDefinition,
 )
 from ansys.rep.client.jms.schema.job import JobSchema
 
 from .base import create_objects, delete_objects, get_objects, update_objects
-from .jms_api import JmsApi, _monitor_operation, get_project
+from .jms_api import JmsApi, _monitor_operation
 
 log = logging.getLogger(__name__)
 
