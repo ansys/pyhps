@@ -4,6 +4,7 @@ import os
 import time
 from typing import List, Union
 import uuid
+import requests
 
 from ansys.rep.client.client import Client
 from ansys.rep.client.exceptions import REPError
@@ -46,11 +47,19 @@ class JmsApi(object):
 
     def __init__(self, client: Client):
         self.client = client
+        self._fs_url = None
 
     @property
     def url(self) -> str:
         """Returns the API url"""
         return f"{self.client.rep_url}/jms/api/v1"
+
+    @property
+    def fs_url(self) -> str:
+        """URL of the file storage gateway"""
+        if self._fs_url is None:
+            self._fs_url = get_fs_url(self.client, self.url)
+        return self._fs_url
 
     def get_api_info(self):
         """Return info like version, build date etc of the JMS API the client is connected to"""
@@ -233,6 +242,11 @@ class JmsApi(object):
 
     def _monitor_operation(self, operation_id: str, interval: float = 1.0):
         return _monitor_operation(self, operation_id, interval)
+    ################################################################
+    # Storages
+    def get_storage(self):
+        """Return a list of storages"""
+        return get_storages(self.client, self.url)
 
 
 def get_projects(client, api_url, as_objects=True, **query_params) -> List[Project]:
@@ -382,3 +396,35 @@ def restore_project(jms_api, archive_path):
     r = jms_api.client.session.put(f"{jms_api.client.rep_url}/fs/api/v1/remove/{bucket}")
 
     return get_project(jms_api.client, jms_api.url, project_id)
+
+def get_storages(client, api_url):
+    """
+    Returns list of storages
+    """
+    url = f"{api_url}/storage"
+    r = client.session.get(url)
+    return r.json()["backends"]
+
+def get_fs_url(client, api_url):
+
+    file_storages = get_storages(client, api_url)
+
+    if not file_storages:
+        raise REPError(f"No file storage information.")
+
+    rest_gateways = [fs for fs in file_storages if fs["obj_type"] == "RestGateway"]
+    rest_gateways.sort(key=lambda fs: fs["priority"])
+
+    if not rest_gateways:
+        raise REPError(f"No Rest Gateway defined.")
+
+    for d in rest_gateways:
+        url = d["url"]
+        try:
+            r = requests.get(url, verify=False, timeout=2)
+        except Exception as ex:
+            log.debug(ex)
+            continue
+        if r.status_code == 200:
+            return url
+    return None

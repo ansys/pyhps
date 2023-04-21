@@ -93,7 +93,7 @@ class ProjectApi:
     def fs_url(self) -> str:
         """URL of the file storage gateway"""
         if self._fs_url is None:
-            self._fs_url = get_fs_url(self)
+            self._fs_url = JmsApi(self.client).fs_url
         return self._fs_url
 
     @property
@@ -596,32 +596,6 @@ def sync_jobs(project_api: ProjectApi, jobs: List[Job]):
     url = f"{project_api.url}/jobs:sync"
     json_data = json.dumps({"job_ids": [obj.id for obj in jobs]})
     r = project_api.client.session.put(f"{url}", data=json_data)
-
-
-def get_fs_url(project_api: ProjectApi):
-
-    response = project_api.client.session.get(f"{project_api.jms_api_url}/storage", verify=False)
-    file_storages = response.json()["backends"]
-
-    if not file_storages:
-        raise REPError(f"No file storage information.")
-
-    rest_gateways = [fs for fs in file_storages if fs["obj_type"] == "RestGateway"]
-    rest_gateways.sort(key=lambda fs: fs["priority"])
-
-    if not rest_gateways:
-        raise REPError(f"No Rest Gateway defined.")
-
-    for d in rest_gateways:
-        url = d["url"]
-        try:
-            r = requests.get(url, verify=False, timeout=2)
-        except Exception as ex:
-            log.debug(ex)
-            continue
-        if r.status_code == 200:
-            return url
-    return None
 
 
 def _fs_copy_file(
