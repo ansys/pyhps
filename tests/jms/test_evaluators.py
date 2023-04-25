@@ -34,6 +34,7 @@ class EvaluatorTest(REPTestCase):
             "name": "dc_evaluator_win10_2019R3_tmp",
             "project_list": [],
             "external_access_port": 443,
+            "username": "repuser",
         }
 
         evaluator = EvaluatorSchema().load(evaluator_dict)
@@ -65,11 +66,14 @@ class EvaluatorTest(REPTestCase):
         if evaluators:
             self.assertTrue(evaluators[0]["id"] is not None)
 
-        evaluators = jms_api.get_evaluators(as_objects=False, fields=["hostname", "platform"])
+        evaluators = jms_api.get_evaluators(
+            as_objects=False, fields=["hostname", "platform", "username"]
+        )
         log.info(f"evaluators={evaluators}")
         if evaluators:
             self.assertTrue("hostname" in evaluators[0].keys())
             self.assertTrue("platform" in evaluators[0].keys())
+            self.assertTrue("username" in evaluators[0].keys())
             self.assertTrue("project_server_select" not in evaluators[0].keys())
             # self.assertEqual(len(evaluators[0].keys()), 2)
 

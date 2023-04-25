@@ -8,6 +8,7 @@ class OperationSchema(ObjectSchema):
         pass
 
     name = fields.String(allow_none=True)
+    target = fields.List(fields.String(), allow_none=True)
     finished = fields.Bool(allow_none=True)
     succeeded = fields.Bool(allow_none=True)
 

@@ -46,6 +46,10 @@ class EvaluatorSchema(ObjectSchema):
         allow_none=True,
         metadata={"description": "Name of the host on which the evaluator is running."},
     )
+    username = fields.String(
+        allow_none=True,
+        metadata={"description": "REP user the evaluator is connected to JMS as."},
+    )
     platform = fields.String(
         allow_none=True,
         metadata={"description": "Operating system on which the evaluator is running."},
