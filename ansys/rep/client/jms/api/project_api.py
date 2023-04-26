@@ -2,7 +2,7 @@ import json
 import logging
 import os
 from pathlib import Path
-from typing import Callable, List, Type
+from typing import Callable, List, Type, Union
 
 import requests
 
@@ -100,9 +100,13 @@ class ProjectApi:
 
     ################################################################
     # Project operations (copy, archive)
-    def copy_project(self, project_target_name: str, wait: bool = True) -> str:
+    def copy_project(self, wait: bool = True) -> str:
         """Duplicate project"""
-        return copy_project(self, self.project_id, project_target_name, wait)
+        r = copy_projects(self, [self.project_id], wait)
+        if wait:
+            return r[0]
+        else:
+            return r
 
     def archive_project(self, path: str, include_job_files: bool = True):
         """Archive an existing project and save it to disk
@@ -514,10 +518,12 @@ def _download_file(
     return download_path
 
 
-def copy_project(project_api: ProjectApi, project_source_id, project_target_name, wait=True) -> str:
+def copy_projects(
+    project_api: ProjectApi, project_source_ids: List[str], wait: bool = True
+) -> Union[str, List[str]]:
 
-    url = f"{project_api.url}/copy"
-    r = project_api.client.session.put(url, params={"project_name": project_target_name})
+    url = f"{project_api.jms_api_url}/projects:copy"
+    r = project_api.client.session.post(url, data=json.dumps({"source_ids": project_source_ids}))
 
     operation_location = r.headers["location"]
     operation_id = operation_location.rsplit("/", 1)[-1]
@@ -527,8 +533,8 @@ def copy_project(project_api: ProjectApi, project_source_id, project_target_name
 
     op = _monitor_operation(JmsApi(project_api.client), operation_id, 1.0)
     if not op.succeeded:
-        raise REPError(f"Failed to copy project {project_source_id}.")
-    return op.result["project_id"]
+        raise REPError(f"Failed to copy projects {project_source_ids}.")
+    return op.result["destination_ids"]
 
 
 def archive_project(project_api: ProjectApi, target_path, include_job_files=True) -> str:

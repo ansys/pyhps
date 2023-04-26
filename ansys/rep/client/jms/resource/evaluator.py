@@ -67,6 +67,8 @@ class Evaluator(Object):
         Name of the evaluator.
     hostname : str, optional
         Name of the host on which the evaluator is running.
+    username : str, optional
+        REP user the evaluator is connected to JMS as.
     platform : str, optional
         Operating system on which the evaluator is running.
     task_manager_type : str, optional
@@ -99,6 +101,7 @@ class Evaluator(Object):
         host_id=missing,
         name=missing,
         hostname=missing,
+        username=missing,
         platform=missing,
         task_manager_type=missing,
         project_server_select=missing,
@@ -114,6 +117,7 @@ class Evaluator(Object):
         self.host_id = host_id
         self.name = name
         self.hostname = hostname
+        self.username = username
         self.platform = platform
         self.task_manager_type = task_manager_type
         self.project_server_select = project_server_select

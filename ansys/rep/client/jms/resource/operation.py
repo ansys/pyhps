@@ -11,6 +11,7 @@ class Operation(Object):
     id : str, optional
         Unique ID to access the resource, generated internally by the server on creation.
     name : str, optional
+    target : list, optional
     finished : bool, optional
     succeeded : bool, optional
     progress : float, optional
@@ -29,6 +30,7 @@ class Operation(Object):
     def __init__(self,
         id=missing,
         name=missing,
+        target=missing,
         finished=missing,
         succeeded=missing,
         progress=missing,
@@ -40,6 +42,7 @@ class Operation(Object):
     ):
         self.id = id
         self.name = name
+        self.target = target
         self.finished = finished
         self.succeeded = succeeded
         self.progress = progress

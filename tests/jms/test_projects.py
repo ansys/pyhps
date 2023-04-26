@@ -130,16 +130,16 @@ class ProjectsTest(REPTestCase):
         proj = Project(name=proj_name, active=True, priority=10)
         proj = jms_api.create_project(proj, replace=True)
 
-        tgt_name = proj_name + "_copy1"
         project_api = ProjectApi(client, proj.id)
-        proj1_id = project_api.copy_project(tgt_name)
+        proj1_id = project_api.copy_project()
         copied_proj1 = jms_api.get_project(id=proj1_id)
         self.assertIsNotNone(copied_proj1)
+        self.assertEqual(copied_proj1.name, f"{proj.name} - copy")
 
-        tgt_name = proj_name + "_copy2"
-        proj2_id = project_api.copy_project(tgt_name)
+        proj2_id = project_api.copy_project()
         copied_proj2 = jms_api.get_project(id=proj2_id)
         self.assertIsNotNone(copied_proj2)
+        self.assertEqual(copied_proj2.name, f"{proj.name} - copy")
 
         # Delete projects
         jms_api.delete_project(copied_proj1)
