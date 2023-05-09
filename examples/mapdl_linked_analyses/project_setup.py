@@ -289,7 +289,7 @@ def create_project(client: Client, name: str, incremental: bool, version: str) -
     if incremental:
         log.info("=== Update Job Definition and Sync job")
         job_definition = project_api.update_job_definitions([job_definition])[0]
-        project_api.sync_jobs([job])
+        project_api._sync_jobs([job])
         set_last_task_to_pending(project_api, job.id)
 
     log.info("=== Create Harmonic task definition")
@@ -300,7 +300,7 @@ def create_project(client: Client, name: str, incremental: bool, version: str) -
     if incremental:
         log.info("=== Update Job Definition and Sync job")
         job_definition = project_api.update_job_definitions([job_definition])[0]
-        project_api.sync_jobs([job])
+        project_api._sync_jobs([job])
         set_last_task_to_pending(project_api, job.id)
 
     else:

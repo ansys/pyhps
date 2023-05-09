@@ -297,8 +297,10 @@ class ProjectApi:
         return sync_jobs(self, jobs)
 
     def _sync_jobs(self, jobs: List[Job]):
-        msg = "ProjectApi._sync_jobs is deprecated and will be removed soon. "
-        "Use ProjectApi.sync_jobs instead."
+        msg = (
+            "ProjectApi._sync_jobs is deprecated and will be removed soon. "
+            "Use ProjectApi.sync_jobs instead."
+        )
         warn(msg, DeprecationWarning)
         log.warning(msg)
         return self.sync_jobs(jobs)
