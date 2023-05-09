@@ -166,7 +166,7 @@ jobs:
   release:
     name: "Release"
     if: github.event_name == 'push' && contains(github.ref, 'refs/tags/v')
-    needs: [quick-tests, build, docs]
+    needs: [build, docs]
     runs-on: ubuntu-latest
     steps:
       - name: "Release to GitHub"
