@@ -163,7 +163,7 @@ class TasksTest(REPTestCase):
 
         # sync jobs individually
         jobs = project_api.get_jobs()
-        project_api._sync_jobs(jobs)
+        project_api.sync_jobs(jobs)
 
         # verify that tasks were added and they're inactive
         for job in jobs:
@@ -202,7 +202,7 @@ class TasksTest(REPTestCase):
         job_def = project_api.update_job_definitions([job_def])[0]
 
         # sync the first 2 design points in bulk
-        project_api._sync_jobs(jobs[:2])
+        project_api.sync_jobs(jobs[:2])
 
         # verify that tasks were added and they're inactive
         for job in jobs[:2]:
@@ -265,7 +265,7 @@ class TasksTest(REPTestCase):
         task_def = project_api.update_task_definitions([task_def])[0]
 
         # the application in the task.task_definition_snapshot should not be modified
-        project_api._sync_jobs([job])
+        project_api.sync_jobs([job])
         tasks = project_api.get_tasks(job_id=job.id)
         self.assertEqual(len(tasks), 1)
         self.assertEqual(tasks[0].eval_status, "evaluated")

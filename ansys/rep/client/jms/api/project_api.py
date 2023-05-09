@@ -3,6 +3,7 @@ import logging
 import os
 from pathlib import Path
 from typing import Callable, List, Type, Union
+from warnings import warn
 
 from cachetools import TTLCache, cached
 from marshmallow.utils import missing
@@ -292,9 +293,15 @@ class ProjectApi:
         """
         return self._delete_objects(jobs)
 
-    def _sync_jobs(self, jobs: List[Job]):
-        log.warning("ProjectApi._sync_jobs is a beta feature. Use with care.")
+    def sync_jobs(self, jobs: List[Job]):
         return sync_jobs(self, jobs)
+
+    def _sync_jobs(self, jobs: List[Job]):
+        msg = "ProjectApi._sync_jobs is deprecated and will be removed soon. "
+        "Use ProjectApi.sync_jobs instead."
+        warn(msg, DeprecationWarning)
+        log.warning(msg)
+        return self.sync_jobs(jobs)
 
     ################################################################
     # Tasks
