@@ -120,6 +120,16 @@ class REPClientTest(REPTestCase):
         # Delete project
         JmsApi(client1).delete_project(project)
 
+    def test_storage_configuration(self):
+
+        client = self.client()
+        jms_api = JmsApi(client)
+        storages = jms_api.get_storage()
+        for storage in storages:
+            self.assertTrue("name" in storage)
+            self.assertTrue("priority" in storage)
+            self.assertTrue("obj_type" in storage)
+
 
 if __name__ == "__main__":
     unittest.main()
