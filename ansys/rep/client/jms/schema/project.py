@@ -31,9 +31,6 @@ class ProjectSchema(BaseSchema):
         description="The date and time the project was last modified.",
     )
 
-    file_storages = fields.List(
-        fields.Dict(), description="List of file storages defined for the project."
-    )
     statistics = fields.Dict(
         load_only=True, description="Optional dictionary containing various project statistics."
     )

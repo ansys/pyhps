@@ -5,8 +5,6 @@ from pathlib import Path
 from typing import Callable, List, Type, Union
 from warnings import warn
 
-from cachetools import TTLCache, cached
-from marshmallow.utils import missing
 import requests
 
 from ansys.rep.client.client import Client
@@ -22,14 +20,13 @@ from ansys.rep.client.jms.resource import (
     ParameterDefinition,
     ParameterMapping,
     Permission,
-    Project,
     Task,
     TaskDefinition,
 )
 from ansys.rep.client.jms.schema.job import JobSchema
 
 from .base import create_objects, delete_objects, get_objects, update_objects
-from .jms_api import JmsApi, _monitor_operation, get_project
+from .jms_api import JmsApi, _monitor_operation
 
 log = logging.getLogger(__name__)
 
@@ -93,10 +90,8 @@ class ProjectApi:
     @property
     def fs_url(self) -> str:
         """URL of the file storage gateway"""
-        if self._fs_url is None or self._fs_project_id != self.project_id:
-            self._fs_project_id = self.project_id
-            project = get_project(self.client, self.jms_api_url, id=self.project_id)
-            self._fs_url = get_fs_url(project)
+        if self._fs_url is None:
+            self._fs_url = JmsApi(self.client).fs_url
         return self._fs_url
 
     @property
@@ -613,28 +608,6 @@ def sync_jobs(project_api: ProjectApi, jobs: List[Job]):
     url = f"{project_api.url}/jobs:sync"
     json_data = json.dumps({"job_ids": [obj.id for obj in jobs]})
     r = project_api.client.session.put(f"{url}", data=json_data)
-
-
-@cached(cache=TTLCache(1024, 60), key=lambda project: project.id)
-def get_fs_url(project: Project):
-    if project.file_storages == missing:
-        raise REPError(f"The project object has no file storages information.")
-    rest_gateways = [fs for fs in project.file_storages if fs["obj_type"] == "RestGateway"]
-    rest_gateways.sort(key=lambda fs: fs["priority"])
-
-    if not rest_gateways:
-        raise REPError(f"Project {project.name} (id={project.id}) has no Rest Gateway defined.")
-
-    for d in rest_gateways:
-        url = d["url"]
-        try:
-            r = requests.get(url, verify=False, timeout=2)
-        except Exception as ex:
-            log.debug(ex)
-            continue
-        if r.status_code == 200:
-            return url
-    return None
 
 
 def _fs_copy_file(
