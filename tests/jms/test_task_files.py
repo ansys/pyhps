@@ -213,10 +213,12 @@ class TaskFilesTest(REPTestCase):
         for t1, t3 in zip(tasks1, tasks3):
             self.assertEqual(t1.id, t3.id)
             self.assertEqual(t3.eval_status, "pending")
-            self.assertEqual(t1.input_file_ids, t3.input_file_ids)
-            self.assertEqual(t1.output_file_ids, t3.output_file_ids)
-            self.assertEqual(t1.inherited_file_ids, t3.inherited_file_ids)
-            self.assertEqual(t1.owned_file_ids, t3.owned_file_ids)
+            # use assertCountEqual to verify that the lists have
+            # the same elements, the same number of times, without regard to order.
+            self.assertCountEqual(t1.input_file_ids, t3.input_file_ids)
+            self.assertCountEqual(t1.output_file_ids, t3.output_file_ids)
+            self.assertCountEqual(t1.inherited_file_ids, t3.inherited_file_ids)
+            self.assertCountEqual(t1.owned_file_ids, t3.owned_file_ids)
 
         # Wait again for the evaluation of all Jobs
         proj.active = True
