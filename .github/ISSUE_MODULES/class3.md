@@ -8,7 +8,7 @@ More information is needed for filling Class 3 defects, in order to be compliant
 _Enter here the description of the bug_
 
 ### Suggested User Action
-_Enter here the sugggested actions for avoiding the bug_
+_Enter here the suggested actions for avoiding the bug_
 
 ### Class 3 Signoffs 
 - Report Writer : _Enter name_
