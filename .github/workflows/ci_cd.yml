@@ -71,7 +71,7 @@ jobs:
         with:
           registry: ghcr.io/ansys-internal
           username: pyansys-ci-bot
-          password: ${{ secrets.PYANSYS_CI_BOT_TOKEN }}
+          password: ${{ secrets.PYANSYS_CI_BOT_PACKAGE_TOKEN }}
 
       - name: Start services
         run: |
