@@ -123,3 +123,22 @@ def delete_objects(session: Session, url: str, objects: List[Object]):
     data = json.dumps({"source_ids": [obj.id for obj in objects]})
 
     r = session.delete(url, data=data)
+
+
+def copy_objects(session: Session, url: str, objects: List[Object], wait: bool = True) -> str:
+
+    are_same = [o.__class__ == objects[0].__class__ for o in objects[1:]]
+    if not all(are_same):
+        raise ClientError("Mixed object types")
+
+    obj_type = objects[0].__class__
+    rest_name = obj_type.Meta.rest_name
+    url = f"{url}/{rest_name}:copy"
+
+    source_ids = [obj.id for obj in objects]
+    r = session.post(url, data=json.dumps({"source_ids": source_ids}))
+
+    operation_location = r.headers["location"]
+    operation_id = operation_location.rsplit("/", 1)[-1]
+
+    return operation_id

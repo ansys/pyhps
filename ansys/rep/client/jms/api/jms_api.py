@@ -8,6 +8,7 @@ import uuid
 import requests
 
 from ansys.rep.client.client import Client
+from ansys.rep.client.common import Object
 from ansys.rep.client.exceptions import REPError
 from ansys.rep.client.jms.resource import (
     Evaluator,
@@ -18,6 +19,7 @@ from ansys.rep.client.jms.resource import (
 )
 from ansys.rep.client.jms.schema.project import ProjectSchema
 
+from .base import copy_objects as base_copy_objects
 from .base import create_objects, delete_objects, get_object, get_objects, update_objects
 
 log = logging.getLogger(__name__)
@@ -353,6 +355,23 @@ def _monitor_operation(jms_api: JmsApi, operation_id: str, interval: float = 1.0
             )
         time.sleep(interval)
     return op
+
+
+def _copy_objects(
+    client: Client, api_url: str, objects: List[Object], wait: bool = True
+) -> Union[str, List[str]]:
+
+    operation_id = base_copy_objects(client.session, api_url, objects)
+
+    if not wait:
+        return operation_id
+
+    op = _monitor_operation(JmsApi(client), operation_id, 1.0)
+    if not op.succeeded:
+        obj_type = objects[0].__class__
+        rest_name = obj_type.Meta.rest_name
+        raise REPError(f"Failed to copy {rest_name} with ids = {[obj.id for obj in objects]}.")
+    return op.result["destination_ids"]
 
 
 def restore_project(jms_api, archive_path):
