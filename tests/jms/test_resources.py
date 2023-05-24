@@ -66,6 +66,10 @@ class REPClientTest(REPTestCase):
         self.assertTrue(td1 == td2)
         self.assertTrue(td2 == td1)
 
+        jd = JobDefinition()
+        td = TaskDefinition()
+        self.assertFalse(jd == td)
+
     def test_job_definitions_equality(self):
 
         fd1 = FitnessDefinition(error_fitness=10.0)
@@ -100,6 +104,7 @@ class REPClientTest(REPTestCase):
         jd2 = JobDefinition(fitness_definition=fd2)
 
         self.assertTrue(jd1 == jd2)
+        self.assertFalse(jd1 is jd2)
 
         jd2.fitness_definition.fitness_term_definitions[0].expression = "_changed_"
 

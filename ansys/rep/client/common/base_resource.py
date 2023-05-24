@@ -55,18 +55,12 @@ class Object(object):
         )
 
     def __eq__(self, other):
-        if isinstance(other, self.__class__):
-            # log.info(f"**eq check for {self.__class__}")
-            for k in self.declared_fields():
-                # log.info(f"***check on {k}")
-                # log.info(f"***self.{k} = {getattr(self, k, None)}")
-                # log.info(f"***other.{k} = {getattr(other, k, None)}")
-                if not hasattr(other, k) or getattr(self, k, None) != getattr(other, k, None):
-                    # log.warning(f"*** Negative check")
-                    return False
-            return True
-        # log.warning(f"**Not an instance of {self.__class__}")
-        return NotImplemented
+        if not isinstance(other, self.__class__):
+            return NotImplemented
+        for k in self.declared_fields():
+            if not hasattr(other, k) or getattr(self, k, None) != getattr(other, k, None):
+                return False
+        return True
 
     def __str__(self):
 
