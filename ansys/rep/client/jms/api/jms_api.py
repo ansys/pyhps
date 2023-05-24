@@ -1,10 +1,10 @@
 import json
 import logging
 import os
-import time
 from typing import List, Union
 import uuid
 
+import backoff
 import requests
 
 from ansys.rep.client.client import Client
@@ -266,8 +266,19 @@ class JmsApi(object):
     def get_operation(self, id, as_object=True) -> Operation:
         return get_object(self.client.session, self.url, Operation, id, as_object=as_object)
 
-    def _monitor_operation(self, operation_id: str, interval: float = 1.0):
-        return _monitor_operation(self, operation_id, interval)
+    def monitor_operation(self, operation_id: str, max_value: float = 5.0, max_time: float = None):
+        """Poll an operation until it's completed using an exponential backoff
+
+        Parameters
+        ----------
+        operation_id : str
+            ID of the operation to be monitored.
+        max_value: float, optional
+            Maximum interval between consecutive calls in seconds.
+        max_time: float, optional
+            The maximum total amount of time (in seconds) to try before giving up.
+        """
+        return _monitor_operation(self, operation_id, max_value, max_time)
 
     ################################################################
     # Storages
@@ -361,22 +372,27 @@ def delete_project(client, api_url, project):
     r = client.session.delete(url)
 
 
-def _monitor_operation(jms_api: JmsApi, operation_id: str, interval: float = 1.0):
-
-    done = False
-    op = None
-    while not done:
+def _monitor_operation(
+    jms_api: JmsApi, operation_id: str, max_value: float = 5.0, max_time: float = None
+) -> Operation:
+    @backoff.on_predicate(
+        backoff.expo,
+        lambda x: x[1] == False,
+        jitter=backoff.full_jitter,
+        max_value=max_value,
+        max_time=max_time,
+    )
+    def _monitor():
+        done = False
         op = jms_api.get_operation(id=operation_id)
         if op:
             done = op.finished
-            progress = None
-            if op.progress is not None:
-                progress = f"{op.progress * 100.0}%"
-            log.info(
-                f"Operation {op.name} - progress={progress}, "
-                f"succeeded={op.succeeded}, finished={op.finished}"
-            )
-        time.sleep(interval)
+        return op, done
+
+    op, done = _monitor()
+
+    if not done:
+        raise REPError(f"Operation {operation_id} did not complete.")
     return op
 
 
@@ -427,7 +443,7 @@ def restore_project(jms_api, archive_path):
     operation_id = operation_location.rsplit("/", 1)[-1]
     log.debug(f"Operation id: {operation_id}")
 
-    op = _monitor_operation(jms_api, operation_id, 1.0)
+    op = jms_api.monitor_operation(operation_id)
 
     if not op.succeeded:
         raise REPError(f"Failed to restore project from archive {archive_path}.")

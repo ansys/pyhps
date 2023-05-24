@@ -26,7 +26,7 @@ from ansys.rep.client.jms.resource import (
 )
 
 from .base import create_objects, delete_objects, get_objects, update_objects
-from .jms_api import JmsApi, _copy_objects, _monitor_operation
+from .jms_api import JmsApi, _copy_objects
 
 log = logging.getLogger(__name__)
 
@@ -610,7 +610,8 @@ def archive_project(project_api: ProjectApi, target_path, include_job_files=True
     log.debug(f"Operation location: {operation_location}")
     operation_id = operation_location.rsplit("/", 1)[-1]
 
-    op = _monitor_operation(JmsApi(project_api.client), operation_id, 1.0)
+    jms_api = JmsApi(project_api.client)
+    op = jms_api.monitor_operation(operation_id)
 
     if not op.succeeded:
         raise REPError(f"Failed to archive project {project_api.project_id}.\n{op}")
