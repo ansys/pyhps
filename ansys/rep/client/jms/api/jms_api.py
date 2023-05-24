@@ -206,6 +206,29 @@ class JmsApi(object):
         """
         return delete_objects(self.client.session, self.url, templates)
 
+    def copy_task_definition_templates(
+        self, templates: List[TaskDefinitionTemplate], wait: bool = True
+    ) -> Union[str, List[str]]:
+        """Create new task definitions templates by copying existing ones
+
+        Parameters
+        ----------
+        templates : List[TaskDefinitionTemplate]
+            A list of template objects. Note that only the ``id`` field of the
+            TaskDefinitionTemplate objects need to be filled; the other fields can be empty.
+
+        wait : bool
+            Whether to wait for the copy to complete or not.
+
+        Returns
+        -------
+        Union[List[str], str]
+            If wait=True, returns the list of newly created template IDs.
+            If wait=False, returns an operation ID that can be used to
+            track progress.
+        """
+        return _copy_objects(self.client, self.url, templates, wait=wait)
+
     # Task Definition Template Permissions
     def get_task_definition_template_permissions(
         self, template_id: str, as_objects: bool = True

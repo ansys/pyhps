@@ -137,8 +137,8 @@ class TaskDefinitionTemplateTest(REPTestCase):
         if templates:
             self.assertTrue(templates[0].software_requirements == missing)
 
-        # Copy template
-        template_name = f"copied_template_{uuid.uuid4()}"
+        # Create new template based on existing one
+        template_name = f"new_template_{uuid.uuid4()}"
         templates = jms_api.get_task_definition_templates(limit=1)
         self.assertEqual(len(templates), 1)
 
@@ -151,7 +151,7 @@ class TaskDefinitionTemplateTest(REPTestCase):
         template = templates[0]
         self.assertEqual(template.name, template_name)
 
-        # Modify copied template
+        # Modify template
         template.software_requirements[0].version = "2.0.1"
         templates = jms_api.update_task_definition_templates([template])
         self.assertEqual(len(templates), 1)
@@ -159,11 +159,26 @@ class TaskDefinitionTemplateTest(REPTestCase):
         self.assertEqual(template.software_requirements[0].version, "2.0.1")
         self.assertEqual(template.name, template_name)
 
-        # Delete copied template
+        # Delete template
         jms_api.delete_task_definition_templates([template])
 
         templates = jms_api.get_task_definition_templates(name=template_name)
         self.assertEqual(len(templates), 0)
+
+        # Copy template
+        templates = jms_api.get_task_definition_templates(limit=1)
+        self.assertEqual(len(templates), 1)
+        original_template = templates[0]
+        new_template_id = jms_api.copy_task_definition_templates(templates)
+        new_template = jms_api.get_task_definition_templates(id=new_template_id)[0]
+
+        self.assertTrue(original_template.name in new_template.name)
+        self.assertEqual(original_template.version, new_template.version)
+        self.assertEqual(original_template.version, new_template.version)
+        self.assertEqual(
+            original_template.software_requirements[0].version,
+            original_template.software_requirements[0].version,
+        )
 
     def test_template_permissions(self):
 

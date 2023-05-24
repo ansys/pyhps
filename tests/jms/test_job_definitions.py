@@ -1,5 +1,7 @@
 import logging
 
+from examples.mapdl_motorbike_frame.project_setup import create_project
+
 from ansys.rep.client.jms import JmsApi, ProjectApi
 from ansys.rep.client.jms.resource import (
     JobDefinition,
@@ -61,5 +63,50 @@ class JobDefinitionsTest(REPTestCase):
         self.assertEqual(task_def.store_output, True)
         self.assertEqual(task_def.resource_requirements.memory, 274877906944)
         self.assertEqual(task_def.resource_requirements.disk_space, 2199023255552)
+
+        jms_api.delete_project(project)
+
+    def test_task_and_job_definition_copy(self):
+
+        # create new project
+        num_jobs = 1
+        project = create_project(
+            self.client(),
+            f"test_task_definition_copy",
+            num_jobs=num_jobs,
+            use_exec_script=False,
+            active=False,
+        )
+        self.assertIsNotNone(project)
+
+        jms_api = JmsApi(self.client())
+        project_api = ProjectApi(self.client(), project.id)
+
+        # copy task definition
+        task_definitions = project_api.get_task_definitions()
+        self.assertEqual(len(task_definitions), 1)
+
+        original_td = task_definitions[0]
+        new_td_id = project_api.copy_task_definitions(task_definitions)
+        new_td = project_api.get_task_definitions(id=new_td_id)[0]
+
+        self.assertTrue(original_td.name in new_td.name)
+        for attr in ["software_requirements", "resource_requirements", "execution_command"]:
+            self.assertEqual(getattr(original_td, attr), getattr(new_td, attr))
+
+        # copy job definition
+        job_definitions = project_api.get_job_definitions()
+        self.assertEqual(len(job_definitions), 1)
+
+        original_jd = job_definitions[0]
+        new_jd_id = project_api.copy_job_definitions(job_definitions)
+        new_jd = project_api.get_job_definitions(id=new_jd_id)[0]
+
+        self.assertTrue(original_jd.name in new_jd.name)
+        self.assertEqual(
+            len(original_jd.parameter_definition_ids), len(new_jd.parameter_definition_ids)
+        )
+        self.assertEqual(len(original_jd.parameter_mapping_ids), len(new_jd.parameter_mapping_ids))
+        self.assertEqual(len(original_jd.task_definition_ids), len(new_jd.task_definition_ids))
 
         jms_api.delete_project(project)

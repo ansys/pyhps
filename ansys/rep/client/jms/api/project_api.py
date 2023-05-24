@@ -211,6 +211,29 @@ class ProjectApi:
     def delete_task_definitions(self, task_definitions: List[TaskDefinition]):
         return self._delete_objects(task_definitions)
 
+    def copy_task_definitions(
+        self, task_definitions: List[TaskDefinition], wait: bool = True
+    ) -> Union[str, List[str]]:
+        """Create new task definitions by copying existing ones
+
+        Parameters
+        ----------
+        task_definitions : List[TaskDefinition]
+            A list of task definition objects. Note that only the ``id`` field of the
+            TaskDefinition objects need to be filled; the other fields can be empty.
+
+        wait : bool
+            Whether to wait for the copy to complete or not.
+
+        Returns
+        -------
+        Union[List[str], str]
+            If wait=True, returns the list of newly created task definition IDs.
+            If wait=False, returns an operation ID that can be used to
+            track progress.
+        """
+        return _copy_objects(self.client, self.url, task_definitions, wait=wait)
+
     ################################################################
     # Job definitions
     def get_job_definitions(self, as_objects=True, **query_params) -> List[JobDefinition]:
@@ -229,6 +252,29 @@ class ProjectApi:
     def delete_job_definitions(self, job_definitions: List[JobDefinition]):
         return self._delete_objects(job_definitions)
 
+    def copy_job_definitions(
+        self, job_definitions: List[JobDefinition], wait: bool = True
+    ) -> Union[str, List[str]]:
+        """Create new job definitions by copying existing ones
+
+        Parameters
+        ----------
+        job_definitions : List[JobDefinition]
+            A list of job definition objects. Note that only the ``id`` field of the
+            JobDefinition objects need to be filled; the other fields can be empty.
+
+        wait : bool
+            Whether to wait for the copy to complete or not.
+
+        Returns
+        -------
+        Union[List[str], str]
+            If wait=True, returns the list of newly created job definition IDs.
+            If wait=False, returns an operation ID that can be used to
+            track progress.
+        """
+        return _copy_objects(self.client, self.url, job_definitions, wait=wait)
+
     ################################################################
     # Jobs
     def get_jobs(self, as_objects=True, **query_params) -> List[Job]:
@@ -246,16 +292,26 @@ class ProjectApi:
         """
         return self._create_objects(jobs, as_objects=as_objects)
 
-    def copy_jobs(self, jobs: List[Job], as_objects=True, **query_params):
+    def copy_jobs(self, jobs: List[Job], wait: bool = True) -> Union[str, List[str]]:
         """Create new jobs by copying existing ones
 
-        Args:
-            jobs (list of :class:`ansys.rep.client.jms.Job`): A list of job objects
+        Parameters
+        ----------
+        jobs : List[Job]
+            A list of job objects. Note that only the ``id`` field of the
+            Job objects need to be filled; the other fields can be empty.
 
-        Note that only the ``id`` field of the Job objects need to be filled;
-        the other fields can be empty.
+        wait : bool
+            Whether to wait for the copy to complete or not.
+
+        Returns
+        -------
+        Union[List[str], str]
+            If wait=True, returns the list of newly created job IDs.
+            If wait=False, returns an operation ID that can be used to
+            track progress.
         """
-        return copy_jobs(self, jobs, as_objects=as_objects, **query_params)
+        return _copy_objects(self.client, self.url, jobs, wait=wait)
 
     def update_jobs(self, jobs: List[Job], as_objects=True) -> List[Job]:
         """Update existing jobs
@@ -585,7 +641,7 @@ def copy_jobs(project_api: ProjectApi, jobs: List[Job], as_objects=True, **query
     """Create new jobs by copying existing ones"""
 
     ids = _copy_objects(client=project_api.client, api_url=project_api.url, objects=jobs, wait=True)
-    return project_api.get_jobs(id=ids, as_objects=as_objects, **query_params)
+    return ids
 
 
 def sync_jobs(project_api: ProjectApi, jobs: List[Job]):
