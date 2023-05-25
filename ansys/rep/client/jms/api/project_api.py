@@ -20,13 +20,13 @@ from ansys.rep.client.jms.resource import (
     ParameterDefinition,
     ParameterMapping,
     Permission,
+    Project,
     Task,
     TaskDefinition,
 )
-from ansys.rep.client.jms.schema.job import JobSchema
 
 from .base import create_objects, delete_objects, get_objects, update_objects
-from .jms_api import JmsApi, _monitor_operation
+from .jms_api import JmsApi, _copy_objects
 
 log = logging.getLogger(__name__)
 
@@ -211,6 +211,29 @@ class ProjectApi:
     def delete_task_definitions(self, task_definitions: List[TaskDefinition]):
         return self._delete_objects(task_definitions)
 
+    def copy_task_definitions(
+        self, task_definitions: List[TaskDefinition], wait: bool = True
+    ) -> Union[str, List[str]]:
+        """Create new task definitions by copying existing ones
+
+        Parameters
+        ----------
+        task_definitions : List[TaskDefinition]
+            A list of task definition objects. Note that only the ``id`` field of the
+            TaskDefinition objects need to be filled; the other fields can be empty.
+
+        wait : bool
+            Whether to wait for the copy to complete or not.
+
+        Returns
+        -------
+        Union[List[str], str]
+            If wait=True, returns the list of newly created task definition IDs.
+            If wait=False, returns an operation ID that can be used to
+            track progress.
+        """
+        return _copy_objects(self.client, self.url, task_definitions, wait=wait)
+
     ################################################################
     # Job definitions
     def get_job_definitions(self, as_objects=True, **query_params) -> List[JobDefinition]:
@@ -229,6 +252,29 @@ class ProjectApi:
     def delete_job_definitions(self, job_definitions: List[JobDefinition]):
         return self._delete_objects(job_definitions)
 
+    def copy_job_definitions(
+        self, job_definitions: List[JobDefinition], wait: bool = True
+    ) -> Union[str, List[str]]:
+        """Create new job definitions by copying existing ones
+
+        Parameters
+        ----------
+        job_definitions : List[JobDefinition]
+            A list of job definition objects. Note that only the ``id`` field of the
+            JobDefinition objects need to be filled; the other fields can be empty.
+
+        wait : bool
+            Whether to wait for the copy to complete or not.
+
+        Returns
+        -------
+        Union[List[str], str]
+            If wait=True, returns the list of newly created job definition IDs.
+            If wait=False, returns an operation ID that can be used to
+            track progress.
+        """
+        return _copy_objects(self.client, self.url, job_definitions, wait=wait)
+
     ################################################################
     # Jobs
     def get_jobs(self, as_objects=True, **query_params) -> List[Job]:
@@ -246,16 +292,26 @@ class ProjectApi:
         """
         return self._create_objects(jobs, as_objects=as_objects)
 
-    def copy_jobs(self, jobs: List[Job], as_objects=True, **query_params):
+    def copy_jobs(self, jobs: List[Job], wait: bool = True) -> Union[str, List[str]]:
         """Create new jobs by copying existing ones
 
-        Args:
-            jobs (list of :class:`ansys.rep.client.jms.Job`): A list of job objects
+        Parameters
+        ----------
+        jobs : List[Job]
+            A list of job objects. Note that only the ``id`` field of the
+            Job objects need to be filled; the other fields can be empty.
 
-        Note that only the ``id`` field of the Job objects need to be filled;
-        the other fields can be empty.
+        wait : bool
+            Whether to wait for the copy to complete or not.
+
+        Returns
+        -------
+        Union[List[str], str]
+            If wait=True, returns the list of newly created job IDs.
+            If wait=False, returns an operation ID that can be used to
+            track progress.
         """
-        return copy_jobs(self, jobs, as_objects=as_objects, **query_params)
+        return _copy_objects(self.client, self.url, jobs, wait=wait)
 
     def update_jobs(self, jobs: List[Job], as_objects=True) -> List[Job]:
         """Update existing jobs
@@ -531,19 +587,12 @@ def copy_projects(
     project_api: ProjectApi, project_source_ids: List[str], wait: bool = True
 ) -> Union[str, List[str]]:
 
-    url = f"{project_api.jms_api_url}/projects:copy"
-    r = project_api.client.session.post(url, data=json.dumps({"source_ids": project_source_ids}))
-
-    operation_location = r.headers["location"]
-    operation_id = operation_location.rsplit("/", 1)[-1]
-
-    if not wait:
-        return operation_location
-
-    op = _monitor_operation(JmsApi(project_api.client), operation_id, 1.0)
-    if not op.succeeded:
-        raise REPError(f"Failed to copy projects {project_source_ids}.")
-    return op.result["destination_ids"]
+    return _copy_objects(
+        project_api.client,
+        project_api.jms_api_url,
+        [Project(id=id) for id in project_source_ids],
+        wait=wait,
+    )
 
 
 def archive_project(project_api: ProjectApi, target_path, include_job_files=True) -> str:
@@ -561,7 +610,8 @@ def archive_project(project_api: ProjectApi, target_path, include_job_files=True
     log.debug(f"Operation location: {operation_location}")
     operation_id = operation_location.rsplit("/", 1)[-1]
 
-    op = _monitor_operation(JmsApi(project_api.client), operation_id, 1.0)
+    jms_api = JmsApi(project_api.client)
+    op = jms_api.monitor_operation(operation_id)
 
     if not op.succeeded:
         raise REPError(f"Failed to archive project {project_api.project_id}.\n{op}")
@@ -591,16 +641,8 @@ def archive_project(project_api: ProjectApi, target_path, include_job_files=True
 def copy_jobs(project_api: ProjectApi, jobs: List[Job], as_objects=True, **query_params):
     """Create new jobs by copying existing ones"""
 
-    url = f"{project_api.url}/jobs"
-
-    json_data = json.dumps({"source_ids": [obj.id for obj in jobs]})
-    r = project_api.client.session.post(f"{url}", data=json_data, params=query_params)
-
-    data = r.json()["jobs"]
-    if not as_objects:
-        return data
-
-    return JobSchema(many=True).load(data)
+    ids = _copy_objects(client=project_api.client, api_url=project_api.url, objects=jobs, wait=True)
+    return ids
 
 
 def sync_jobs(project_api: ProjectApi, jobs: List[Job]):

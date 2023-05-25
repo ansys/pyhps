@@ -54,6 +54,14 @@ class Object(object):
             ",".join(["%s=%r" % (k, getattr(self, k)) for k in self.declared_fields()]),
         )
 
+    def __eq__(self, other):
+        if not isinstance(other, self.__class__):
+            return NotImplemented
+        for k in self.declared_fields():
+            if not hasattr(other, k) or getattr(self, k, None) != getattr(other, k, None):
+                return False
+        return True
+
     def __str__(self):
 
         # Ideally we'd simply do
