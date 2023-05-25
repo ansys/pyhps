@@ -6,10 +6,11 @@
 # Author(s): F.Negri
 # ----------------------------------------------------------
 
+import marshmallow
 from marshmallow import fields
 from marshmallow.validate import OneOf
 
-from ansys.rep.client.common import ObjectSchema
+from ansys.rep.client.common import AnyValue, ObjectSchema
 
 project_assignment_modes = ["disabled", "all_active", "project_list"]
 
@@ -29,6 +30,28 @@ class EvaluatorConfigurationUpdateSchema(ObjectSchema):
         validate=OneOf(["always", "on_success", "never"]), allow_none=True
     )
     custom_resource_properties = fields.Dict(allow_none=True)
+
+
+class EvaluatorRegistrationConfigurationContextSchema(marshmallow.Schema):
+    class Meta:
+        unknown = marshmallow.INCLUDE
+
+    custom = fields.Dict(allow_none=True, keys=fields.Str(), values=AnyValue())
+
+
+class EvaluatorRegistrationConfigurationResourcesSchema(marshmallow.Schema):
+    class Meta:
+        unknown = marshmallow.INCLUDE
+
+    custom = fields.Dict(allow_none=True, keys=fields.Str(), values=AnyValue())
+
+
+class EvaluatorRegistrationConfigurationSchema(marshmallow.Schema):
+    class Meta:
+        unknown = marshmallow.INCLUDE
+
+    context = fields.Nested(EvaluatorRegistrationConfigurationContextSchema, allow_none=True)
+    resources = fields.Nested(EvaluatorRegistrationConfigurationResourcesSchema, allow_none=True)
 
 
 class EvaluatorSchema(ObjectSchema):
@@ -92,7 +115,8 @@ class EvaluatorSchema(ObjectSchema):
         fields.String,
         metadata={"description": "List of projects on which this evaluator should be working."},
     )
-    configuration = fields.Dict(
+    configuration = fields.Nested(
+        EvaluatorRegistrationConfigurationSchema,
         allow_none=True,
         metadata={
             "description": "Details of the evaluator configuration, "
