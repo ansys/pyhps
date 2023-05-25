@@ -85,7 +85,7 @@ class Evaluator(Object):
         Which strategy to use for selecting projects to work on.
     project_list : list
         List of projects on which this evaluator should be working.
-    configuration : dict, optional
+    configuration : object, optional
         Details of the evaluator configuration, including hardware info and available applications.
     configuration_updates : EvaluatorConfigurationUpdate, optional
         Changes to the evaluator configurations.
