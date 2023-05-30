@@ -17,7 +17,7 @@ class ResourceRequirements(Object):
     cpu_core_usage : float, optional
     disk_space : int, optional
     distributed : bool, optional
-    custom : dict, optional
+    custom : dict[str, int | float | str | bool], optional
 
     """
 
@@ -154,9 +154,9 @@ class TaskDefinition(Object):
         Script to execute (command or execution script is required).
     execution_level : int
         Define execution level for this task.
-    execution_context : dict, optional
+    execution_context : dict[str, int | float | str | bool], optional
         Additional arguments to pass to the executing command
-    environment : dict, optional
+    environment : dict[str, str], optional
         Environment variables to set for the executed process
     max_execution_time : float, optional
         Maximum time in seconds for executing the task.
