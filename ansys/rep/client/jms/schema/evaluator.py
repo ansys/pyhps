@@ -10,7 +10,7 @@ import marshmallow
 from marshmallow import fields
 from marshmallow.validate import OneOf
 
-from ansys.rep.client.common import AnyValue, ObjectSchema
+from ansys.rep.client.common import ObjectSchema, RestrictedValue
 
 project_assignment_modes = ["disabled", "all_active", "project_list"]
 
@@ -36,14 +36,14 @@ class EvaluatorRegistrationConfigurationContextSchema(marshmallow.Schema):
     class Meta:
         unknown = marshmallow.INCLUDE
 
-    custom = fields.Dict(allow_none=True, keys=fields.Str(), values=AnyValue())
+    custom = fields.Dict(allow_none=True, keys=fields.Str(), values=RestrictedValue())
 
 
 class EvaluatorRegistrationConfigurationResourcesSchema(marshmallow.Schema):
     class Meta:
         unknown = marshmallow.INCLUDE
 
-    custom = fields.Dict(allow_none=True, keys=fields.Str(), values=AnyValue())
+    custom = fields.Dict(allow_none=True, keys=fields.Str(), values=RestrictedValue())
 
 
 class EvaluatorRegistrationConfigurationSchema(marshmallow.Schema):

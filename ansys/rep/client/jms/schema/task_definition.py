@@ -8,7 +8,7 @@
 
 from marshmallow import fields
 
-from ansys.rep.client.common import AnyValue, BaseSchema, ObjectSchema
+from ansys.rep.client.common import BaseSchema, ObjectSchema, RestrictedValue
 
 from .object_reference import IdReference, IdReferenceList
 
@@ -31,7 +31,7 @@ class ResourceRequirementsSchema(BaseSchema):
     disk_space = fields.Int(allow_none=True)
     distributed = fields.Bool(allow_none=True)
 
-    custom = fields.Dict(allow_none=True, keys=fields.Str(), values=AnyValue())
+    custom = fields.Dict(allow_none=True, keys=fields.Str(), values=RestrictedValue())
 
 
 class SuccessCriteriaSchema(BaseSchema):
@@ -101,7 +101,7 @@ class TaskDefinitionSchema(ObjectSchema):
         allow_none=True,
         description="Additional arguments to pass to the executing command",
         keys=fields.Str(),
-        values=AnyValue(),
+        values=RestrictedValue(),
     )
     environment = fields.Dict(
         allow_none=True,

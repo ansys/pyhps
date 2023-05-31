@@ -9,7 +9,7 @@ import os
 
 import marshmallow
 
-from ansys.rep.client.common.any_value import AnyValue
+from ansys.rep.client.common.restricted_value import RestrictedValue
 from ansys.rep.client.jms.schema.object_reference import IdReference, IdReferenceList
 
 # we define here which resources to auto-generate
@@ -288,7 +288,7 @@ FIELD_MAPPING = {
     marshmallow.fields.Nested: "object",
     IdReferenceList: "list[str]",
     IdReference: "str",
-    AnyValue: "int | float | str | bool",
+    RestrictedValue: "int | float | str | bool",
 }
 
 

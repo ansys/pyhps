@@ -2,8 +2,8 @@ from marshmallow import fields
 from marshmallow.exceptions import ValidationError
 
 
-class AnyValue(fields.Field):
-    any_fields = [
+class RestrictedValue(fields.Field):
+    restricted_fields = [
         fields.Int(strict=True),
         fields.Bool(truthy=[True], falsy=[False]),
         fields.Str(),
@@ -14,7 +14,7 @@ class AnyValue(fields.Field):
         super().__init__(allow_none=True)
 
     def _deserialize(self, value, attr, obj, **kwargs):
-        for field in self.any_fields:
+        for field in self.restricted_fields:
             try:
                 return field._deserialize(value, attr, obj, **kwargs)
             except:
