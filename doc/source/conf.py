@@ -6,7 +6,7 @@ import sys
 from ansys_sphinx_theme import get_version_match
 from ansys_sphinx_theme import pyansys_logo_black as logo
 
-from ansys.rep.client import __company__, __external_version__, __version__, __version_no_dots__
+from ansys.rep.client import __ansys_apps_version__, __company__, __version__, __version_no_dots__
 
 sys.path.append(os.path.abspath(os.path.dirname(__file__)))
 
@@ -251,8 +251,8 @@ texinfo_documents = [
 global_substitutions = {
     "client_version": __version__,
     "version_no_dots": __version_no_dots__,
-    "external_version": __external_version__,
-    "ansys_version": __external_version__,
+    "external_version": __ansys_apps_version__,
+    "ansys_version": __ansys_apps_version__,
 }
 
 # numpydoc configuration

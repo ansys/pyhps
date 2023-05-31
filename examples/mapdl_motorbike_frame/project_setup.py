@@ -9,7 +9,7 @@ import logging
 import os
 import random
 
-from ansys.rep.client import Client, REPError, __external_version__
+from ansys.rep.client import Client, REPError, __ansys_apps_version__
 from ansys.rep.client.jms import (
     File,
     FitnessDefinition,
@@ -32,7 +32,7 @@ log = logging.getLogger(__name__)
 
 
 def create_project(
-    client, name, version=__external_version__, num_jobs=20, use_exec_script=False, active=True
+    client, name, version=__ansys_apps_version__, num_jobs=20, use_exec_script=False, active=True
 ) -> Project:
     """
     Create a REP project consisting of an ANSYS APDL beam model of a motorbike-frame.
@@ -333,7 +333,7 @@ if __name__ == "__main__":
     parser.add_argument("-U", "--url", default="https://127.0.0.1:8443/rep")
     parser.add_argument("-u", "--username", default="repadmin")
     parser.add_argument("-p", "--password", default="repadmin")
-    parser.add_argument("-v", "--ansys-version", default=__external_version__)
+    parser.add_argument("-v", "--ansys-version", default=__ansys_apps_version__)
     args = parser.parse_args()
 
     logger = logging.getLogger()
