@@ -52,7 +52,7 @@ class TemplateResourceRequirements(Object):
     cpu_core_usage : TemplateProperty, optional
     disk_space : TemplateProperty, optional
     distributed : TemplateProperty, optional
-    custom : dict, optional
+    custom : dict[str, TemplateProperty], optional
 
     """
 
@@ -186,9 +186,9 @@ class TaskDefinitionTemplate(Object):
         A list of required software.
     resource_requirements : TemplateResourceRequirements, optional
         Includes hardware requirements such as number of cores, memory and disk space.
-    execution_context : dict, optional
+    execution_context : dict[str, TemplateProperty], optional
         Additional arguments to pass to the executing command.
-    environment : dict, optional
+    environment : dict[str, TemplateProperty], optional
         Environment variables to set for the executed process.
     execution_command : str, optional
         Command to execute (command or execution script is required).

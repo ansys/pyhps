@@ -18,11 +18,11 @@ class Job(Object):
         ID of the linked job definition, see :class:`JobDefinition`.
     priority : int, optional
         Priority with which jobs are evaluated. The default is 0, which is the highest priority. Assigning a higher value to a design point makes it a lower priority.
-    values : dict, optional
+    values : dict[str, any], optional
         Dictionary with (name,value) pairs for all parameters defined in the linked job definition.
     fitness : float, optional
         Fitness value computed.
-    fitness_term_values : dict, optional
+    fitness_term_values : dict[str, float], optional
         Dictionary with (name,value) pairs for all fitness terms computed.
     note : str, optional
         Optional note for this job.
