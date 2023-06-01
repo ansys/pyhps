@@ -24,6 +24,7 @@ class TaskDefinitionTest(REPTestCase):
                 "test_float": 7.7,
                 "test_bool": True,
                 "test_bool2": False,
+                "test_none": None,
             },
             "execution_level": 0,
             "execution_script_id": None,
@@ -49,6 +50,7 @@ class TaskDefinitionTest(REPTestCase):
                     "test_float": 7.7,
                     "test_bool": True,
                     "test_bool2": False,
+                    "test_none": None,
                 },
             },
             "software_requirements": [],
@@ -79,6 +81,7 @@ class TaskDefinitionTest(REPTestCase):
                 "test_float": 7.7,
                 "test_bool": True,
                 "test_bool2": False,
+                "test_none": None,
             },
         )
         self.assertEqual(task_def.environment, {"test_env": "test_env_value"})
@@ -118,6 +121,7 @@ class TaskDefinitionTest(REPTestCase):
                     "test_float": 7.7,
                     "test_bool": True,
                     "test_bool2": False,
+                    "test_none": None,
                 },
             ),
         )
@@ -135,6 +139,7 @@ class TaskDefinitionTest(REPTestCase):
                 "test_float": 7.7,
                 "test_bool": True,
                 "test_bool2": False,
+                "test_none": None,
             },
             execution_level=0,
             id=1,
@@ -154,6 +159,7 @@ class TaskDefinitionTest(REPTestCase):
                     "test_float": 7.7,
                     "test_bool": True,
                     "test_bool2": False,
+                    "test_none": None,
                 },
             ),
             software_requirements=[],
@@ -183,6 +189,7 @@ class TaskDefinitionTest(REPTestCase):
                 "test_float": 7.7,
                 "test_bool": True,
                 "test_bool2": False,
+                "test_none": None,
             },
         )
         self.assertEqual(serialized_task_def["environment"], {"test_env": "test_env_value"})
@@ -227,6 +234,7 @@ class TaskDefinitionTest(REPTestCase):
                         "test_float": 7.7,
                         "test_bool": True,
                         "test_bool2": False,
+                        "test_none": None,
                     },
                 }
             ),
