@@ -9,6 +9,7 @@ import os
 
 import marshmallow
 
+from ansys.rep.client.common.restricted_value import RestrictedValue
 from ansys.rep.client.jms.schema.object_reference import IdReference, IdReferenceList
 
 # we define here which resources to auto-generate
@@ -287,7 +288,62 @@ FIELD_MAPPING = {
     marshmallow.fields.Nested: "object",
     IdReferenceList: "list[str]",
     IdReference: "str",
+    RestrictedValue: "int | float | str | bool",
 }
+
+
+def extract_field_info(name: str, field_object: marshmallow.fields, resources):
+
+    field = name
+    v = field_object
+
+    # Ensure that we use the attribute name if defined
+    if getattr(v, "attribute", None) is not None:
+        field = v.attribute
+
+    # build attribute doc
+    field_doc = f"{field}"
+
+    field_type = _extract_field_type(v, resources)
+    if field_type:
+        field_doc += f" : {field_type}"
+        if v.allow_none:
+            field_doc += ", optional"
+        field_doc += "\n"
+    elif v.allow_none:
+        field_doc += " : any, optional\n"
+    desc = v.metadata.get("description", None)
+    if desc:
+        field_doc += f"        {desc}\n"
+
+    return field, field_doc
+
+
+def _extract_field_type(v, resources) -> str:
+
+    if v.__class__ == marshmallow.fields.Constant:
+        field_type = type(v.constant).__name__
+    elif v.__class__ == marshmallow.fields.Nested:
+        field_type_schema = v.nested.__name__
+        field_type = next(
+            (r["class"] for r in resources if r["schema"] == field_type_schema),
+            "object",
+        )
+    else:
+        field_type = FIELD_MAPPING.get(v.__class__, None)
+    if field_type:
+        if v.__class__ == marshmallow.fields.Dict:
+            if v.key_field:
+                key_field_type = _extract_field_type(v.key_field, resources)
+                if v.value_field:
+                    value_field_type = _extract_field_type(v.value_field, resources)
+                else:
+                    value_field_type = "any"
+                field_type += f"[{key_field_type}, {value_field_type}]"
+        if hasattr(v, "many") and v.many == True:
+            field_type = f"list[{field_type}]"
+
+    return field_type
 
 
 def declared_fields(schema, resources):
@@ -297,37 +353,11 @@ def declared_fields(schema, resources):
     fields = []
     fields_doc = []
     for k, v in schema._declared_fields.items():
-        field = k
-        # Ensure that we use the attribute name if defined
-        if getattr(v, "attribute", None) is not None:
-            field = v.attribute
-        fields.append(field)
 
-        # build attribute doc
-        field_doc = f"{field}"
-        if v.__class__ == marshmallow.fields.Constant:
-            field_type = type(v.constant).__name__
-        elif v.__class__ == marshmallow.fields.Nested:
-            field_type_schema = v.nested.__name__
-            field_type = next(
-                (r["class"] for r in resources if r["schema"] == field_type_schema),
-                "object",
-            )
-        else:
-            field_type = FIELD_MAPPING.get(v.__class__, None)
-        if field_type:
-            if hasattr(v, "many") and v.many == True:
-                field_type = f"list[{field_type}]"
-            field_doc += f" : {field_type}"
-            if v.allow_none:
-                field_doc += ", optional"
-            field_doc += "\n"
-        elif v.allow_none:
-            field_doc += " : any, optional\n"
-        desc = v.metadata.get("description", None)
-        if desc:
-            field_doc += f"        {desc}\n"
+        field, field_doc = extract_field_info(k, v, resources)
+        fields.append(field)
         fields_doc.append(field_doc)
+
     return fields, fields_doc
 
 
