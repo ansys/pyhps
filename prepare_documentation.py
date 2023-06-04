@@ -119,10 +119,6 @@ def generate_openapi_specs():
             else:
                 modified_prop_dict[k] = v
 
-            # User.is_admin is Function field which doesn't get the type
-            if k == "is_admin":
-                v["type"] = "boolean"
-
         with open(f"{os.path.join(tgt_dir, object_name)}.json", "w") as outfile:
             outfile.write(json.dumps({"properties": modified_prop_dict}, indent=4))
 

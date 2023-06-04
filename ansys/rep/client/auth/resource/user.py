@@ -20,11 +20,6 @@ class User(Object):
         Last name
     email : str, optional
         E-mail address (optional).
-    groups : str
-        Groups the user belongs to
-    realm_roles : str
-        Realm roles assigned to the user
-    is_admin        Whether the user has admin rights or not.
 
     """
 
@@ -39,9 +34,6 @@ class User(Object):
         first_name=missing,
         last_name=missing,
         email=missing,
-        groups=missing,
-        realm_roles=missing,
-        is_admin=missing,
         **kwargs
     ):
         self.id = id
@@ -50,9 +42,6 @@ class User(Object):
         self.first_name = first_name
         self.last_name = last_name
         self.email = email
-        self.groups = groups
-        self.realm_roles = realm_roles
-        self.is_admin = is_admin
 
         super().__init__(**kwargs)
 

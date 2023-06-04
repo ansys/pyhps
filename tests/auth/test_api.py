@@ -25,7 +25,7 @@ class AuthClientTest(REPTestCase):
 
         # we run the test only if self.username is an admin user
         for user in users:
-            if user.username == self.username and not user.is_admin:
+            if user.username == self.username and not api.user_is_admin(user.id):
                 return
 
         username = f"test_user_{uuid.uuid4()}"
@@ -66,7 +66,7 @@ class AuthClientTest(REPTestCase):
         self.assertEqual(len(users), 1)
 
         # we run the test only if self.username is an admin user
-        if not users[0].is_admin:
+        if not api.user_is_admin(users[0].id):
             return
 
         # create a new non-admin user

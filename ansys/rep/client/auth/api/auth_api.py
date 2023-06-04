@@ -84,6 +84,44 @@ class AuthApi:
         """Returns the user representation for a given user id."""
         return get_user(self.keycloak_admin_client, id)
 
+    def get_user_groups(self, id: str) -> List[str]:
+        """Get name of groups the user belongs to.
+
+        To get the full list of
+
+        self.keycloak_admin_client.get_user_groups(id)
+
+        """
+        return [g["name"] for g in self.keycloak_admin_client.get_user_groups(id)]
+
+    def get_user_realm_roles(self, id: str) -> List[str]:
+        """Get name of realm roles for a user.
+
+        For more details
+
+        self.keycloak_admin_client.get_user_groups(id)
+
+        """
+        return [r["name"] for r in self.keycloak_admin_client.get_realm_roles_of_user(id)]
+
+    def user_is_admin(self, id: str) -> bool:
+
+        # _admin_keys = {
+        #     "groups": set(["admin"]),
+        #     "realm_roles": set(["admin"]),
+        # }
+
+        group_names = self.get_user_groups(id)
+        roles_names = self.get_user_realm_roles(id)
+
+        if set(["admin"]).intersection(group_names):
+            return True
+
+        if set(["admin"]).intersection(roles_names):
+            return True
+
+        return False
+
     def create_user(self, user: User, as_objects=True) -> User:
         """Create a new user.
 
@@ -138,10 +176,6 @@ def get_users(admin_client: KeycloakAdmin, as_objects=True, **query_params):
     if not as_objects:
         return users
 
-    # force admin check
-    for user in users:
-        user["is_admin"] = user
-
     schema = UserSchema(many=True)
     return schema.load(users)
 
@@ -153,9 +187,6 @@ def get_user(admin_client: KeycloakAdmin, id: str, as_objects=True):
 
     if not as_objects:
         return user
-
-    # force admin check
-    user["is_admin"] = user
 
     schema = UserSchema(many=False)
     return schema.load(user)

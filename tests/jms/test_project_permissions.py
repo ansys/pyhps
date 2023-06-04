@@ -84,7 +84,6 @@ class ProjectPermissionsTest(REPTestCase):
                 User(
                     username=user_credentials["user1"]["username"],
                     password=user_credentials["user1"]["password"],
-                    is_admin=False,
                 )
             )
         else:
@@ -101,7 +100,6 @@ class ProjectPermissionsTest(REPTestCase):
                 User(
                     username=user_credentials["user2"]["username"],
                     password=user_credentials["user2"]["password"],
-                    is_admin=False,
                 )
             )
         else:

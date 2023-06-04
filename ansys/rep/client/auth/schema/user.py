@@ -40,10 +40,3 @@ class UserSchema(BaseSchema):
     firstName = fields.Str(allow_none=True, description="First name", attribute="first_name")
     lastName = fields.Str(allow_none=True, description="Last name", attribute="last_name")
     email = fields.Str(allow_none=True, description="E-mail address (optional).")
-    groups = fields.Str(dump_only=True, many=True, description="Groups the user belongs to")
-    realm_roles = fields.Str(
-        dump_only=True, many=True, description="Realm roles assigned to the user"
-    )
-    is_admin = fields.Function(
-        deserialize=_check_admin, description="Whether the user has admin rights or not."
-    )
