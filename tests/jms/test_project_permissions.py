@@ -51,7 +51,7 @@ def remove_permissions(project_api: ProjectApi, user):
 class ProjectPermissionsTest(REPTestCase):
     def test_get_project_permissions(self):
 
-        client = self.client()
+        client = self.client
         jms_api = JmsApi(client)
         proj_name = f"test_jms_get_permissions_test_{self.run_id}"
 
@@ -75,7 +75,7 @@ class ProjectPermissionsTest(REPTestCase):
         }
         proj_name = f"test_jms_get_permissions_test_{uuid.uuid4().hex[:8]}"
 
-        client = self.client()
+        client = self.client
         auth_api = AuthApi(client)
         existing_users = [u.username for u in auth_api.get_users()]
 

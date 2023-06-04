@@ -22,7 +22,7 @@ log = logging.getLogger(__name__)
 class FilesTest(REPTestCase):
     def test_files(self):
 
-        client = self.client()
+        client = self.client
         jms_api = JmsApi(client)
         proj = jms_api.create_project(
             Project(name=f"rep_client_test_jms_FilesTest_{self.run_id}", active=False), replace=True

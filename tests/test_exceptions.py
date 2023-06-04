@@ -18,7 +18,7 @@ log = logging.getLogger(__name__)
 class ExceptionTest(REPTestCase):
     def test_server_error(self):
 
-        client = self.client()
+        client = self.client
         jms_api = JmsApi(client)
         except_obj = None
         try:
@@ -48,7 +48,7 @@ class ExceptionTest(REPTestCase):
 
         except_obj = None
         try:
-            client = self.client()
+            client = self.client
             jms_api = JmsApi(client)
             jms_api.get_project(id="02q4bg9PVO2OvvhsmClb0E")
         except ClientError as e:

@@ -116,7 +116,7 @@ class REPClientTest(REPTestCase):
         # create new project
         num_jobs = 1
         project = create_project(
-            self.client(),
+            self.client,
             f"test_jobs_equality",
             num_jobs=num_jobs,
             use_exec_script=False,
@@ -124,7 +124,7 @@ class REPClientTest(REPTestCase):
         )
         self.assertIsNotNone(project)
 
-        project_api = ProjectApi(self.client(), project.id)
+        project_api = ProjectApi(self.client, project.id)
 
         job1 = project_api.get_jobs(limit=1)[0]
         job_id = job1.id
@@ -135,7 +135,7 @@ class REPClientTest(REPTestCase):
         job2 = project_api.get_jobs(id=job_id, fields=["id", "name"])[0]
         self.assertNotEqual(job1, job2)
 
-        jms_api = JmsApi(self.client())
+        jms_api = JmsApi(self.client)
         jms_api.delete_project(project)
 
 

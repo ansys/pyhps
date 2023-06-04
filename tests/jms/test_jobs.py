@@ -127,7 +127,7 @@ class JobsTest(REPTestCase):
 
     def test_job_integration(self):
 
-        client = self.client()
+        client = self.client
         proj_name = f"dcs_client_test_jobs_JobTest_{self.run_id}"
 
         proj = Project(name=proj_name, active=True)
@@ -206,7 +206,7 @@ class JobsTest(REPTestCase):
         jms_api.delete_project(proj)
 
     def test_job_update(self):
-        client = self.client()
+        client = self.client
         jms_api = JmsApi(client)
         proj_name = f"test_job_update_{uuid.uuid4().hex[:8]}"
 

@@ -21,7 +21,7 @@ class AlgorithmsTest(REPTestCase):
     def test_algorithms(self):
 
         log.debug("=== Client ===")
-        client = self.client()
+        client = self.client
         jms_api = JmsApi(client)
         proj_name = f"rep_client_test_jms_AlgorithmsTest_{self.run_id}"
 

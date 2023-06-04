@@ -97,7 +97,7 @@ class TasksTest(REPTestCase):
 
     def test_task_integration(self):
 
-        client = self.client()
+        client = self.client
         proj_name = "Mapdl Motorbike Frame"
 
         project = create_project(client, proj_name, num_jobs=5, use_exec_script=False)
@@ -115,7 +115,7 @@ class TasksTest(REPTestCase):
 
         # create base project with 1 task and 3 jobs
         num_jobs = 3
-        client = self.client()
+        client = self.client
         jms_api = JmsApi(client)
         proj_name = f"test_desing_point_sync_{uuid.uuid4().hex[:8]}"
 
@@ -240,7 +240,7 @@ class TasksTest(REPTestCase):
         # verity that the process step snapshot of an evaluated task in not modified
         # on job:sync
 
-        client = self.client()
+        client = self.client
         proj_name = f"test_sync_task_definition_snapshot_{uuid.uuid4().hex[:8]}"
 
         project = create_project(client=client, name=proj_name, num_jobs=1)
@@ -276,7 +276,7 @@ class TasksTest(REPTestCase):
         JmsApi(client).delete_project(project)
 
     def test_register_external_job(self):
-        client = self.client()
+        client = self.client
 
         jms_api = JmsApi(client)
         proj_name = f"test_register_external_job"

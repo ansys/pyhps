@@ -50,6 +50,7 @@ class REPTestCase(unittest.TestCase):
         # self.logger.removeHandler(self._stream_handler)
         pass
 
+    @property
     def client(self):
         if self._client is None:
             self._client = Client(self.rep_url, self.username, self.password)
