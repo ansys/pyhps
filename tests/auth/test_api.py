@@ -10,8 +10,8 @@ import uuid
 
 from keycloak.exceptions import KeycloakError
 
-from ansys.rep.client import Client
-from ansys.rep.client.auth import AuthApi, User
+from ansys.rep.client import Client, REPError
+from ansys.rep.client.auth import AuthApi, User, authenticate
 from tests.rep_test import REPTestCase
 
 log = logging.getLogger(__name__)
@@ -93,3 +93,55 @@ class AuthClientTest(REPTestCase):
             api.get_user(new_user.id)
 
         self.assertEqual(context.exception.response_code, 404)
+
+    def test_impersonate_user(self):
+        """
+        Test token exchange for impersonation, see https://www.rfc-editor.org/rfc/rfc8693.html
+
+        Requires activating the token-exchange feature in keycloak
+        by passing --features=token-exchange to the start command.
+        """
+        if not self.is_admin:
+            self.skipTest(f"{self.username} is not an admin user.")
+
+        api = AuthApi(self.client)
+
+        username = f"test_user_{uuid.uuid4()}"
+        new_user = User(
+            username=username,
+            password="test_auth_client",
+            email=f"{username}@test.com",
+            first_name="Test",
+            last_name="User",
+        )
+        new_user = api.create_user(new_user)
+
+        try:
+            r = authenticate(
+                url=self.rep_url,
+                username=self.username,
+                scope="opendid offline_access",
+                grant_type="urn:ietf:params:oauth:grant-type:token-exchange",
+                subject_token=self.client.access_token,
+                requested_token_type="urn:ietf:params:oauth:token-type:refresh_token",
+                requested_subject=new_user.id,
+            )
+        except REPError as e:
+            if e.response.status_code == 501 and "Feature not enabled" in e.reason:
+                self.skipTest(
+                    f"This test requires to enable the feature 'token-exchange' in keycloak."
+                )
+
+        refresh_token_impersonated = r["refresh_token"]
+
+        client_impersonated = Client(
+            self.rep_url,
+            username=new_user.username,
+            grant_type="refresh_token",
+            refresh_token=refresh_token_impersonated,
+        )
+
+        self.assertTrue(client_impersonated.access_token is not None)
+        self.assertTrue(client_impersonated.refresh_token is not None)
+
+        api.delete_user(new_user)

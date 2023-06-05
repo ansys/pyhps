@@ -26,6 +26,7 @@ def authenticate(
     password: str = None,
     refresh_token: str = None,
     timeout: float = 10.0,
+    **kwargs,
 ):
     """
     Authenticate user with either password or refresh token against REP authentication service.
@@ -71,6 +72,8 @@ def authenticate(
         data["password"] = password
     if refresh_token is not None:
         data["refresh_token"] = refresh_token
+
+    data.update(**kwargs)
 
     log.debug(
         f"Retrieving access token for client {client_id} from {auth_url} using {grant_type} grant"
