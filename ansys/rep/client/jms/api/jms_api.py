@@ -1,13 +1,14 @@
 import json
 import logging
 import os
-import time
 from typing import List, Union
 import uuid
 
+import backoff
 import requests
 
 from ansys.rep.client.client import Client
+from ansys.rep.client.common import Object
 from ansys.rep.client.exceptions import REPError
 from ansys.rep.client.jms.resource import (
     Evaluator,
@@ -18,6 +19,7 @@ from ansys.rep.client.jms.resource import (
 )
 from ansys.rep.client.jms.schema.project import ProjectSchema
 
+from .base import copy_objects as base_copy_objects
 from .base import create_objects, delete_objects, get_object, get_objects, update_objects
 
 log = logging.getLogger(__name__)
@@ -204,6 +206,29 @@ class JmsApi(object):
         """
         return delete_objects(self.client.session, self.url, templates)
 
+    def copy_task_definition_templates(
+        self, templates: List[TaskDefinitionTemplate], wait: bool = True
+    ) -> Union[str, List[str]]:
+        """Create new task definitions templates by copying existing ones
+
+        Parameters
+        ----------
+        templates : List[TaskDefinitionTemplate]
+            A list of template objects. Note that only the ``id`` field of the
+            TaskDefinitionTemplate objects need to be filled; the other fields can be empty.
+
+        wait : bool
+            Whether to wait for the copy to complete or not.
+
+        Returns
+        -------
+        Union[List[str], str]
+            If wait=True, returns the list of newly created template IDs.
+            If wait=False, returns an operation ID that can be used to
+            track progress.
+        """
+        return _copy_objects(self.client, self.url, templates, wait=wait)
+
     # Task Definition Template Permissions
     def get_task_definition_template_permissions(
         self, template_id: str, as_objects: bool = True
@@ -241,8 +266,19 @@ class JmsApi(object):
     def get_operation(self, id, as_object=True) -> Operation:
         return get_object(self.client.session, self.url, Operation, id, as_object=as_object)
 
-    def _monitor_operation(self, operation_id: str, interval: float = 1.0):
-        return _monitor_operation(self, operation_id, interval)
+    def monitor_operation(self, operation_id: str, max_value: float = 5.0, max_time: float = None):
+        """Poll an operation until it's completed using an exponential backoff
+
+        Parameters
+        ----------
+        operation_id : str
+            ID of the operation to be monitored.
+        max_value: float, optional
+            Maximum interval between consecutive calls in seconds.
+        max_time: float, optional
+            The maximum total amount of time (in seconds) to try before giving up.
+        """
+        return _monitor_operation(self, operation_id, max_value, max_time)
 
     ################################################################
     # Storages
@@ -336,23 +372,45 @@ def delete_project(client, api_url, project):
     r = client.session.delete(url)
 
 
-def _monitor_operation(jms_api: JmsApi, operation_id: str, interval: float = 1.0):
-
-    done = False
-    op = None
-    while not done:
+def _monitor_operation(
+    jms_api: JmsApi, operation_id: str, max_value: float = 5.0, max_time: float = None
+) -> Operation:
+    @backoff.on_predicate(
+        backoff.expo,
+        lambda x: x[1] == False,
+        jitter=backoff.full_jitter,
+        max_value=max_value,
+        max_time=max_time,
+    )
+    def _monitor():
+        done = False
         op = jms_api.get_operation(id=operation_id)
         if op:
             done = op.finished
-            progress = None
-            if op.progress is not None:
-                progress = f"{op.progress * 100.0}%"
-            log.info(
-                f"Operation {op.name} - progress={progress}, "
-                f"succeeded={op.succeeded}, finished={op.finished}"
-            )
-        time.sleep(interval)
+        return op, done
+
+    op, done = _monitor()
+
+    if not done:
+        raise REPError(f"Operation {operation_id} did not complete.")
     return op
+
+
+def _copy_objects(
+    client: Client, api_url: str, objects: List[Object], wait: bool = True
+) -> Union[str, List[str]]:
+
+    operation_id = base_copy_objects(client.session, api_url, objects)
+
+    if not wait:
+        return operation_id
+
+    op = _monitor_operation(JmsApi(client), operation_id, 1.0)
+    if not op.succeeded:
+        obj_type = objects[0].__class__
+        rest_name = obj_type.Meta.rest_name
+        raise REPError(f"Failed to copy {rest_name} with ids = {[obj.id for obj in objects]}.")
+    return op.result["destination_ids"]
 
 
 def restore_project(jms_api, archive_path):
@@ -385,7 +443,7 @@ def restore_project(jms_api, archive_path):
     operation_id = operation_location.rsplit("/", 1)[-1]
     log.debug(f"Operation id: {operation_id}")
 
-    op = _monitor_operation(jms_api, operation_id, 1.0)
+    op = jms_api.monitor_operation(operation_id)
 
     if not op.succeeded:
         raise REPError(f"Failed to restore project from archive {archive_path}.")

@@ -8,7 +8,7 @@
 
 from marshmallow import fields
 
-from ansys.rep.client.common import BaseSchema, ObjectSchema
+from ansys.rep.client.common import BaseSchema, ObjectSchema, RestrictedValue
 
 from .object_reference import IdReference, IdReferenceList
 
@@ -31,7 +31,7 @@ class ResourceRequirementsSchema(BaseSchema):
     disk_space = fields.Int(allow_none=True)
     distributed = fields.Bool(allow_none=True)
 
-    custom = fields.Dict(allow_none=True)
+    custom = fields.Dict(allow_none=True, keys=fields.Str(), values=RestrictedValue())
 
 
 class SuccessCriteriaSchema(BaseSchema):
@@ -98,10 +98,16 @@ class TaskDefinitionSchema(ObjectSchema):
 
     execution_level = fields.Int(description="Define execution level for this task.")
     execution_context = fields.Dict(
-        allow_none=True, description="Additional arguments to pass to the executing command"
+        allow_none=True,
+        description="Additional arguments to pass to the executing command",
+        keys=fields.Str(),
+        values=RestrictedValue(),
     )
     environment = fields.Dict(
-        allow_none=True, description="Environment variables to set for the executed process"
+        allow_none=True,
+        description="Environment variables to set for the executed process",
+        keys=fields.Str(),
+        values=fields.Str(),
     )
     max_execution_time = fields.Float(
         allow_none=True, description="Maximum time in seconds for executing the task."

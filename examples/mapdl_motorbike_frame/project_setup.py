@@ -32,7 +32,7 @@ log = logging.getLogger(__name__)
 
 
 def create_project(
-    client, name, version=__external_version__, num_jobs=20, use_exec_script=False
+    client, name, version=__external_version__, num_jobs=20, use_exec_script=False, active=True
 ) -> Project:
     """
     Create a REP project consisting of an ANSYS APDL beam model of a motorbike-frame.
@@ -47,7 +47,7 @@ def create_project(
     """
     jms_api = JmsApi(client)
     log.debug("=== Project")
-    proj = Project(name=name, priority=1, active=True)
+    proj = Project(name=name, priority=1, active=active)
     proj = jms_api.create_project(proj, replace=True)
 
     project_api = ProjectApi(client, proj.id)

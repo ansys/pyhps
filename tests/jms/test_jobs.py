@@ -193,7 +193,8 @@ class JobsTest(REPTestCase):
         jobs = project_api.get_jobs()
         self.assertEqual(len(jobs), 8)
 
-        new_jobs = project_api.copy_jobs([Job(id=job.id) for job in jobs[:3]])
+        new_job_ids = project_api.copy_jobs([Job(id=job.id) for job in jobs[:3]])
+        new_jobs = project_api.get_jobs(id=new_job_ids)
         for i in range(3):
             self.assertEqual(new_jobs[i].creator, jobs[i].creator)
             self.assertEqual(new_jobs[i].note, jobs[i].note)
