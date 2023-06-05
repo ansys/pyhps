@@ -10,6 +10,8 @@ from typing import List
 
 from keycloak import KeycloakAdmin
 
+from ansys.rep.client.jms import JmsApi
+
 from ..resource import User
 from ..schema.user import UserSchema
 
@@ -105,19 +107,21 @@ class AuthApi:
         return [r["name"] for r in self.keycloak_admin_client.get_realm_roles_of_user(id)]
 
     def user_is_admin(self, id: str) -> bool:
+        """Check whether the user is system admin"""
 
-        # _admin_keys = {
-        #     "groups": set(["admin"]),
-        #     "realm_roles": set(["admin"]),
-        # }
+        # the admin keys are configurable settings of JMS
+        # they need to be queried, can't be hardcoded
+        jms_api = JmsApi(self.client)
+        admin_keys = jms_api.get_api_info()["settings"]["admin_keys"]
 
-        group_names = self.get_user_groups(id)
-        roles_names = self.get_user_realm_roles(id)
+        # query user groups and roles and store in the same format
+        # as admin keys
+        user_keys = [f"groups.{name}" for name in self.get_user_groups(id)] + [
+            f"roles.{name}" for name in self.get_user_realm_roles(id)
+        ]
 
-        if set(["admin"]).intersection(group_names):
-            return True
-
-        if set(["admin"]).intersection(roles_names):
+        # match admin and user keys
+        if set(admin_keys).intersection(user_keys):
             return True
 
         return False
