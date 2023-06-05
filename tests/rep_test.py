@@ -11,6 +11,7 @@ import os
 import unittest
 
 from ansys.rep.client import Client
+from ansys.rep.client.auth import AuthApi
 
 
 class REPTestCase(unittest.TestCase):
@@ -45,6 +46,7 @@ class REPTestCase(unittest.TestCase):
         self.run_id = f"{agent_id}_{build_id}".lower()
 
         self._client = None
+        self._is_admin = None
 
     def tearDown(self):
         # self.logger.removeHandler(self._stream_handler)
@@ -55,3 +57,12 @@ class REPTestCase(unittest.TestCase):
         if self._client is None:
             self._client = Client(self.rep_url, self.username, self.password)
         return self._client
+
+    @property
+    def is_admin(self):
+        if self._is_admin is None:
+            api = AuthApi(self.client)
+            users = api.get_users(username=self.username)
+            self.assertEqual(len(users), 1)
+            self._is_admin = api.user_is_admin(users[0].id)
+        return self._is_admin

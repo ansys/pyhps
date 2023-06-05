@@ -20,13 +20,10 @@ log = logging.getLogger(__name__)
 class AuthClientTest(REPTestCase):
     def test_auth_client(self):
 
-        api = AuthApi(self.client)
-        users = api.get_users()
+        if not self.is_admin:
+            self.skipTest(f"{self.username} is not an admin user.")
 
-        # we run the test only if self.username is an admin user
-        for user in users:
-            if user.username == self.username and not api.user_is_admin(user.id):
-                return
+        api = AuthApi(self.client)
 
         username = f"test_user_{uuid.uuid4()}"
         new_user = User(
@@ -60,14 +57,10 @@ class AuthClientTest(REPTestCase):
 
     def test_get_users(self):
 
+        if not self.is_admin:
+            self.skipTest(f"{self.username} is not an admin user.")
+
         api = AuthApi(self.client)
-        users = api.get_users(username=self.username)
-
-        self.assertEqual(len(users), 1)
-
-        # we run the test only if self.username is an admin user
-        if not api.user_is_admin(users[0].id):
-            return
 
         # create a new non-admin user
         username = f"test_user_{uuid.uuid4()}"

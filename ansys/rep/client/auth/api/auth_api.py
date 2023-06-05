@@ -10,8 +10,6 @@ from typing import List
 
 from keycloak import KeycloakAdmin
 
-from ansys.rep.client.jms import JmsApi
-
 from ..resource import User
 from ..schema.user import UserSchema
 
@@ -59,6 +57,7 @@ class AuthApi:
 
     @property
     def url(self):
+        """Returns the API url"""
         return f"{self.client.rep_url}/auth/"
 
     @property
@@ -87,27 +86,17 @@ class AuthApi:
         return get_user(self.keycloak_admin_client, id)
 
     def get_user_groups(self, id: str) -> List[str]:
-        """Get name of groups the user belongs to.
-
-        To get the full list of
-
-        self.keycloak_admin_client.get_user_groups(id)
-
-        """
+        """Get name of groups the user belongs to"""
         return [g["name"] for g in self.keycloak_admin_client.get_user_groups(id)]
 
     def get_user_realm_roles(self, id: str) -> List[str]:
-        """Get name of realm roles for a user.
-
-        For more details
-
-        self.keycloak_admin_client.get_user_groups(id)
-
-        """
+        """Get name of realm roles for a user"""
         return [r["name"] for r in self.keycloak_admin_client.get_realm_roles_of_user(id)]
 
     def user_is_admin(self, id: str) -> bool:
         """Check whether the user is system admin"""
+
+        from ansys.rep.client.jms import JmsApi
 
         # the admin keys are configurable settings of JMS
         # they need to be queried, can't be hardcoded
