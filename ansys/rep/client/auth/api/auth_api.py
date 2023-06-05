@@ -163,8 +163,6 @@ def _admin_client(client):
 def get_users(admin_client: KeycloakAdmin, as_objects=True, **query_params):
 
     users = admin_client.get_users(query=query_params)
-    for user in users:
-        _add_group_and_roles(admin_client, user)
 
     if not as_objects:
         return users
@@ -176,25 +174,12 @@ def get_users(admin_client: KeycloakAdmin, as_objects=True, **query_params):
 def get_user(admin_client: KeycloakAdmin, id: str, as_objects=True):
 
     user = admin_client.get_user(user_id=id)
-    _add_group_and_roles(admin_client, user)
 
     if not as_objects:
         return user
 
     schema = UserSchema(many=False)
     return schema.load(user)
-
-
-def _add_group_and_roles(admin_client: KeycloakAdmin, user: dict):
-    uid = user["id"]
-
-    # query groups
-    groups = admin_client.get_user_groups(uid)
-    user["groups"] = [g["name"] for g in groups]
-
-    # query roles
-    realm_roles = admin_client.get_realm_roles_of_user(uid)
-    user["realm_roles"] = [r["name"] for r in realm_roles]
 
 
 def create_user(admin_client: KeycloakAdmin, user: User, as_objects=True):

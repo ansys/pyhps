@@ -5,26 +5,10 @@
 #
 # Author(s): F.Negri
 # ----------------------------------------------------------
-import logging
 
 from marshmallow import fields
 
 from ansys.rep.client.common.base_schema import BaseSchema
-
-log = logging.getLogger(__name__)
-
-_admin_keys = {
-    "groups": set(["admin"]),
-    "realm_roles": set(["admin"]),
-}
-
-
-def _check_admin(obj):
-    for name, grp in _admin_keys.items():
-        values = obj.get(name, [])
-        if grp.intersection(values):
-            return True
-    return False
 
 
 class UserSchema(BaseSchema):
