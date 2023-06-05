@@ -105,13 +105,12 @@ class Client(object):
         else:
             if username and password:
                 self.grant_type = "password"
-                log.debug("Authenticating with username and password")
             elif refresh_token:
                 self.grant_type = "refresh_token"
-                log.debug("Authenticating with refresh token")
             elif client_secret:
                 self.grant_type = "client_credentials"
-                log.debug("Authenticating with client credentials")
+
+            log.debug(f"Authenticating with '{self.grant_type}' grant type.")
 
             tokens = authenticate(
                 url=auth_url or rep_url,
