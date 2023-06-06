@@ -295,8 +295,7 @@ Users with admin rights (such as the default ``repadmin`` user) can create new u
 
     # create a new non-admin user
     new_user = User(username='test_user', password='dummy', 
-                    email='test_user@test.com', fullname='Test User', 
-                    is_admin=False)
+                    email='test_user@test.com', fullname='Test User')
     new_user = auth_api.create_user(new_user)
     print(new_user)
     # {

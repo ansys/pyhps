@@ -55,7 +55,7 @@ class EvaluatorTest(REPTestCase):
 
     def test_evaluator_integration(self):
 
-        client = self.client()
+        client = self.client
         jms_api = JmsApi(client)
         evaluators = jms_api.get_evaluators()
 
@@ -89,8 +89,8 @@ class EvaluatorTest(REPTestCase):
             self.assertTrue(evaluators[i].project_assignment_mode == missing)
             self.assertTrue(evaluators[i].external_access_port == missing)
             self.assertFalse(evaluators[i].configuration == missing)
-            self.assertGreater(evaluators[i].configuration["system"]["num_cores"], 0)
-            self.assertGreater(evaluators[i].configuration["system"]["memory"], 0)
+            self.assertGreater(evaluators[i].configuration["resources"]["num_cores"], 0)
+            self.assertGreater(evaluators[i].configuration["resources"]["memory"], 0)
             self.assertGreater(evaluators[i].configuration["max_num_parallel_tasks"], 0)
             self.assertGreater(len(evaluators[i].configuration["applications"]), 0)
 

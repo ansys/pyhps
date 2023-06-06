@@ -123,7 +123,7 @@ class FitnessDefitionTest(REPTestCase):
 
     def test_fitness_definition_integration(self):
 
-        client = self.client()
+        client = self.client
         proj_name = f"test_dps_FitnessDefinitionTest_{self.run_id}"
 
         proj = Project(name=proj_name, active=True)

@@ -15,12 +15,12 @@ class REPClientTest(REPTestCase):
 
         num_jobs = 5
         project = create_project(
-            self.client(), f"Test mapdl_motorbike_frame", num_jobs=num_jobs, use_exec_script=False
+            self.client, f"Test mapdl_motorbike_frame", num_jobs=num_jobs, use_exec_script=False
         )
         self.assertIsNotNone(project)
 
-        jms_api = JmsApi(self.client())
-        project_api = ProjectApi(self.client(), project.id)
+        jms_api = JmsApi(self.client)
+        project_api = ProjectApi(self.client, project.id)
 
         self.assertEqual(len(project_api.get_jobs()), num_jobs)
 
@@ -32,12 +32,12 @@ class REPClientTest(REPTestCase):
 
         num_jobs = 5
         project = create_project(
-            self.client(), f"Test mapdl_motorbike_frame", num_jobs=num_jobs, use_exec_script=True
+            self.client, f"Test mapdl_motorbike_frame", num_jobs=num_jobs, use_exec_script=True
         )
         self.assertIsNotNone(project)
 
-        jms_api = JmsApi(self.client())
-        project_api = ProjectApi(self.client(), project.id)
+        jms_api = JmsApi(self.client)
+        project_api = ProjectApi(self.client, project.id)
 
         self.assertEqual(len(project_api.get_jobs()), num_jobs)
 
@@ -49,7 +49,7 @@ class REPClientTest(REPTestCase):
 
         num_jobs = 5
         project = create_project(
-            self.client(),
+            self.client,
             f"Test mapdl_motorbike_frame",
             version="2022 R1",
             num_jobs=num_jobs,
@@ -57,8 +57,8 @@ class REPClientTest(REPTestCase):
         )
         self.assertIsNotNone(project)
 
-        jms_api = JmsApi(self.client())
-        project_api = ProjectApi(self.client(), project.id)
+        jms_api = JmsApi(self.client)
+        project_api = ProjectApi(self.client, project.id)
 
         self.assertEqual(len(project_api.get_jobs()), num_jobs)
 
@@ -75,13 +75,11 @@ class REPClientTest(REPTestCase):
         from examples.mapdl_tyre_performance.project_setup import main
 
         num_jobs = 1
-        project = main(
-            self.client(), f"Test mapdl_tyre_performance", num_jobs, version=ansys_version
-        )
+        project = main(self.client, f"Test mapdl_tyre_performance", num_jobs, version=ansys_version)
         self.assertIsNotNone(project)
 
-        jms_api = JmsApi(self.client())
-        project_api = ProjectApi(self.client(), project.id)
+        jms_api = JmsApi(self.client)
+        project_api = ProjectApi(self.client, project.id)
 
         self.assertEqual(len(project_api.get_jobs()), num_jobs)
 
@@ -92,11 +90,11 @@ class REPClientTest(REPTestCase):
         from examples.python_two_bar_truss_problem.project_setup import main
 
         num_jobs = 10
-        project = main(self.client(), num_jobs, use_exec_script=False)
+        project = main(self.client, num_jobs, use_exec_script=False)
         self.assertIsNotNone(project)
 
-        jms_api = JmsApi(self.client())
-        project_api = ProjectApi(self.client(), project.id)
+        jms_api = JmsApi(self.client)
+        project_api = ProjectApi(self.client, project.id)
 
         self.assertEqual(len(project_api.get_jobs()), num_jobs)
 
@@ -107,11 +105,11 @@ class REPClientTest(REPTestCase):
         from examples.python_two_bar_truss_problem.project_setup import main
 
         num_jobs = 10
-        project = main(self.client(), num_jobs, use_exec_script=True)
+        project = main(self.client, num_jobs, use_exec_script=True)
         self.assertIsNotNone(project)
 
-        jms_api = JmsApi(self.client())
-        project_api = ProjectApi(self.client(), project.id)
+        jms_api = JmsApi(self.client)
+        project_api = ProjectApi(self.client, project.id)
 
         self.assertEqual(len(project_api.get_jobs()), num_jobs)
 
@@ -121,7 +119,7 @@ class REPClientTest(REPTestCase):
 
         from examples.mapdl_linked_analyses.project_setup import create_project
 
-        client = self.client()
+        client = self.client
 
         for incremental_version in [True, False]:
             project = create_project(
@@ -144,11 +142,11 @@ class REPClientTest(REPTestCase):
 
         from examples.fluent_2d_heat_exchanger.project_setup import main
 
-        project = main(self.client(), name="Fluent Test", version=ansys_version)
+        project = main(self.client, name="Fluent Test", version=ansys_version)
         self.assertIsNotNone(project)
 
-        jms_api = JmsApi(self.client())
-        project_api = ProjectApi(self.client(), project.id)
+        jms_api = JmsApi(self.client)
+        project_api = ProjectApi(self.client, project.id)
 
         self.assertEqual(len(project_api.get_jobs()), 1)
         self.assertEqual(jms_api.get_project(id=project.id).name, "Fluent Test")
@@ -160,12 +158,12 @@ class REPClientTest(REPTestCase):
         from examples.fluent_nozzle.project_setup import create_project
 
         project = create_project(
-            self.client(), name="Fluent Nozzle Test", num_jobs=1, version=ansys_version
+            self.client, name="Fluent Nozzle Test", num_jobs=1, version=ansys_version
         )
         self.assertIsNotNone(project)
 
-        jms_api = JmsApi(self.client())
-        project_api = ProjectApi(self.client(), project.id)
+        jms_api = JmsApi(self.client)
+        project_api = ProjectApi(self.client, project.id)
 
         self.assertEqual(len(project_api.get_jobs()), 1)
         self.assertEqual(jms_api.get_project(id=project.id).name, "Fluent Nozzle Test")
@@ -177,12 +175,12 @@ class REPClientTest(REPTestCase):
         from examples.cfx_static_mixer.project_setup import create_project
 
         project = create_project(
-            self.client(), name="CFX Static Mixer Test", num_jobs=1, version=ansys_version
+            self.client, name="CFX Static Mixer Test", num_jobs=1, version=ansys_version
         )
         self.assertIsNotNone(project)
 
-        jms_api = JmsApi(self.client())
-        project_api = ProjectApi(self.client(), project.id)
+        jms_api = JmsApi(self.client)
+        project_api = ProjectApi(self.client, project.id)
 
         self.assertEqual(len(project_api.get_jobs()), 1)
         self.assertEqual(jms_api.get_project(id=project.id).name, "CFX Static Mixer Test")

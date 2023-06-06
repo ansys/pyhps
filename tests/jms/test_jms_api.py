@@ -23,7 +23,7 @@ class REPClientTest(REPTestCase):
     def test_jms_api(self):
 
         log.debug("=== Client ===")
-        client = self.client()
+        client = self.client
         proj_name = "Mapdl Motorbike Frame"
 
         log.debug("=== Projects ===")
@@ -122,7 +122,7 @@ class REPClientTest(REPTestCase):
 
     def test_storage_configuration(self):
 
-        client = self.client()
+        client = self.client
         jms_api = JmsApi(client)
         storages = jms_api.get_storage()
         for storage in storages:

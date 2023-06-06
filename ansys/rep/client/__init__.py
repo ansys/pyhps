@@ -14,5 +14,7 @@ from .__version__ import (
     __version__,
     __version_no_dots__,
 )
+from .auth import AuthApi
 from .client import Client
 from .exceptions import APIError, ClientError, REPError
+from .jms import JmsApi, ProjectApi

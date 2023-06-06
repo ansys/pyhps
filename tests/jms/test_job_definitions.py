@@ -16,7 +16,7 @@ log = logging.getLogger(__name__)
 
 class JobDefinitionsTest(REPTestCase):
     def test_job_definition_delete(self):
-        client = self.client()
+        client = self.client
         proj_name = f"rep_client_test_jms_JobDefinitionTest_{self.run_id}"
 
         proj = Project(name=proj_name, active=True)
@@ -41,7 +41,7 @@ class JobDefinitionsTest(REPTestCase):
         # - store_output is defaulted to True when undefined,
         # - memory and disk_space are correctly stored in bytes
 
-        client = self.client()
+        client = self.client
         jms_api = JmsApi(client)
         proj_name = f"test_store_output"
 
@@ -71,7 +71,7 @@ class JobDefinitionsTest(REPTestCase):
         # create new project
         num_jobs = 1
         project = create_project(
-            self.client(),
+            self.client,
             f"test_task_definition_copy",
             num_jobs=num_jobs,
             use_exec_script=False,
@@ -79,8 +79,8 @@ class JobDefinitionsTest(REPTestCase):
         )
         self.assertIsNotNone(project)
 
-        jms_api = JmsApi(self.client())
-        project_api = ProjectApi(self.client(), project.id)
+        jms_api = JmsApi(self.client)
+        project_api = ProjectApi(self.client, project.id)
 
         # copy task definition
         task_definitions = project_api.get_task_definitions()
