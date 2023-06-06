@@ -1,7 +1,7 @@
 import logging
 import unittest
 
-from ansys.rep.client import __external_version__ as ansys_version
+from ansys.rep.client import __ansys_apps_version__ as ansys_version
 from ansys.rep.client.jms import JmsApi, ProjectApi
 from tests.rep_test import REPTestCase
 
