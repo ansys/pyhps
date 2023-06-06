@@ -1,4 +1,4 @@
-__version__ = "0.2.dev0"
+__version__ = "0.2.0"
 __external_version__ = "2023 R2"
 __version_no_dots__ = "232"
 __company__ = "ANSYS, Inc."
