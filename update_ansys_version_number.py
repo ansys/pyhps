@@ -45,7 +45,7 @@ def main():
 
     replace_regex(version_file_path, internal_version_no_dot, [r'__version_no_dots__ = "(\d+)"'])
 
-    replace_regex(version_file_path, external_version, [r'__external_version__ = "(.*)"'])
+    replace_regex(version_file_path, external_version, [r'__ansys_apps_version__ = "(.*)"'])
 
     replace_regex(
         os.path.join(cwd, "doc", "source", "conf.py"), internal_version_no_dot, [r"corp/v(\d+)"]
