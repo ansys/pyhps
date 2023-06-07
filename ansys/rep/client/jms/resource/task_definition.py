@@ -14,10 +14,11 @@ class ResourceRequirements(Object):
     ----------
     platform : str, optional
     memory : int, optional
-    cpu_core_usage : float, optional
+    num_cores : float, optional
     disk_space : int, optional
     distributed : bool, optional
     custom : dict[str, int | float | str | bool], optional
+    hpc_resources : object, optional
 
     """
 
@@ -28,17 +29,19 @@ class ResourceRequirements(Object):
     def __init__(self,
         platform=missing,
         memory=missing,
-        cpu_core_usage=missing,
+        num_cores=missing,
         disk_space=missing,
         distributed=missing,
-        custom=missing
+        custom=missing,
+        hpc_resources=missing
     ):
         self.platform = platform
         self.memory = memory
-        self.cpu_core_usage = cpu_core_usage
+        self.num_cores = num_cores
         self.disk_space = disk_space
         self.distributed = distributed
         self.custom = custom
+        self.hpc_resources = hpc_resources
 
         self.obj_type = self.__class__.__name__
 
