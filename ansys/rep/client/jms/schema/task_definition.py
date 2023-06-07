@@ -6,7 +6,7 @@
 # Author(s): O.Koenig
 # ----------------------------------------------------------
 
-from marshmallow import fields
+from marshmallow import fields, post_dump, pre_load
 
 from ansys.rep.client.common import BaseSchema, ObjectSchema, RestrictedValue
 
@@ -21,17 +21,36 @@ class SoftwareSchema(BaseSchema):
     version = fields.String(allow_none=True, metadata={"description": "Application's version."})
 
 
+class HPCResourcesSchema(BaseSchema):
+    class Meta:
+        pass
+
+    num_cores_per_node: fields.Int(allow_none=True)
+    num_gpus_per_node: fields.Int(allow_none=True)
+    exclusive: fields.Bool(allow_none=True)
+    queue: fields.Str(allow_none=True)
+
+
 class ResourceRequirementsSchema(BaseSchema):
     class Meta(BaseSchema.Meta):
         pass
 
     platform = fields.String(allow_none=True)
     memory = fields.Int(allow_none=True)
-    cpu_core_usage = fields.Float(allow_none=True)
+    num_cores = fields.Float(allow_none=True)
     disk_space = fields.Int(allow_none=True)
     distributed = fields.Bool(allow_none=True)
-
     custom = fields.Dict(allow_none=True, keys=fields.Str(), values=RestrictedValue())
+
+    @pre_load
+    @post_dump
+    def map_keys(self, data, **kwargs):
+        if data.get("cpu_core_usage") is not None:
+            data["num_cores"] = data["cpu_core_usage"]
+            del data["cpu_core_usage"]
+        return data
+
+    hpc_resources = fields.Nested(HPCResourcesSchema, allow_none=True)
 
 
 class SuccessCriteriaSchema(BaseSchema):
