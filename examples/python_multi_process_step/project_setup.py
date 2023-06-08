@@ -213,7 +213,7 @@ def main(
                 execution_command=cmd,
                 max_execution_time=duration * 1.5,
                 resource_requirements=ResourceRequirements(
-                    cpu_core_usage=0.2,
+                    num_cores=0.2,
                     memory=100,
                     disk_space=1,
                 ),

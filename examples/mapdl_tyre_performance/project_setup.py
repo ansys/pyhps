@@ -180,7 +180,7 @@ def main(client: Client, name: str, num_jobs: int, version: str) -> Project:
         software_requirements=[Software(name="Ansys Mechanical APDL", version=version)],
         execution_command="%executable% -b -i %file:mac% -o file.out -np %resource:num_cores%",
         resource_requirements=ResourceRequirements(
-            cpu_core_usage=4,
+            num_cores=4,
             memory=4000 * 1024 * 1024,
             disk_space=500 * 1024 * 1024,
             distributed=True,

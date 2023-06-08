@@ -77,7 +77,7 @@ def main(client: Client, name: str, version: str) -> Project:
         software_requirements=[Software(name="Ansys Fluent", version=version)],
         execution_command="%executable% 2d -g -tm %resource:num_cores% -i %file:journal%",
         resource_requirements=ResourceRequirements(
-            cpu_core_usage=4,
+            num_cores=4,
             memory=4000,
             disk_space=500,
         ),

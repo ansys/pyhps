@@ -111,7 +111,7 @@ class TaskDefinitionTest(REPTestCase):
         self.assertEqual(
             task_def.resource_requirements,
             ResourceRequirements(
-                cpu_core_usage=1,
+                num_cores=1,
                 disk_space=5,
                 memory=250,
                 custom={
@@ -149,7 +149,7 @@ class TaskDefinitionTest(REPTestCase):
             input_file_ids=["FAKE_FILE_ID"],
             output_file_ids=["FAKE_FILE_ID", "FAKE_FILE_ID", "FAKE_FILE_ID"],
             resource_requirements=ResourceRequirements(
-                cpu_core_usage=1,
+                num_cores=1,
                 disk_space=5,
                 memory=250,
                 custom={
@@ -225,7 +225,7 @@ class TaskDefinitionTest(REPTestCase):
             OrderedDict(
                 {
                     "memory": 250,
-                    "cpu_core_usage": 1,
+                    "num_cores": 1,
                     "disk_space": 5,
                     "custom": {
                         "test_str": "5",

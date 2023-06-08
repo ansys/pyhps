@@ -125,7 +125,7 @@ def create_project(client, name, num_jobs=20, version=__ansys_apps_version__):
         ],
         execution_command=None,  # Only execution currently supported
         resource_requirements=ResourceRequirements(
-            cpu_core_usage=1.0,
+            num_cores=1.0,
             memory=250,
             disk_space=5,
         ),
