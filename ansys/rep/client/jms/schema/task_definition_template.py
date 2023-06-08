@@ -6,7 +6,7 @@
 # Author(s): F. Negri
 # ----------------------------------------------------------
 
-from marshmallow import fields, post_dump, pre_load, validate
+from marshmallow import fields, validate
 
 from ansys.rep.client.common import BaseSchema, ObjectSchema
 
@@ -46,14 +46,6 @@ class TemplateResourceRequirementsSchema(BaseSchema):
     custom = fields.Dict(
         keys=fields.String, values=fields.Nested(TemplatePropertySchema), allow_none=True
     )
-
-    @pre_load
-    @post_dump
-    def map_keys(self, data, **kwargs):
-        if data.get("cpu_core_usage") is not None:
-            data["num_cores"] = data["cpu_core_usage"]
-            del data["cpu_core_usage"]
-        return data
 
 
 class TemplateFileSchema(BaseSchema):
