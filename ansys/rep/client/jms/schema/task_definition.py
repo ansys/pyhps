@@ -6,7 +6,7 @@
 # Author(s): O.Koenig
 # ----------------------------------------------------------
 
-from marshmallow import fields, post_dump, pre_load
+from marshmallow import fields
 
 from ansys.rep.client.common import BaseSchema, ObjectSchema, RestrictedValue
 
@@ -41,14 +41,6 @@ class ResourceRequirementsSchema(BaseSchema):
     disk_space = fields.Int(allow_none=True)
     distributed = fields.Bool(allow_none=True)
     custom = fields.Dict(allow_none=True, keys=fields.Str(), values=RestrictedValue())
-
-    @pre_load
-    @post_dump
-    def map_keys(self, data, **kwargs):
-        if data.get("cpu_core_usage") is not None:
-            data["num_cores"] = data["cpu_core_usage"]
-            del data["cpu_core_usage"]
-        return data
 
     hpc_resources = fields.Nested(HPCResourcesSchema, allow_none=True)
 
