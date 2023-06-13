@@ -41,7 +41,6 @@ class ResourceRequirementsSchema(BaseSchema):
     disk_space = fields.Int(allow_none=True)
     distributed = fields.Bool(allow_none=True)
     custom = fields.Dict(allow_none=True, keys=fields.Str(), values=RestrictedValue())
-
     hpc_resources = fields.Nested(HpcResourcesSchema, allow_none=True)
 
 
