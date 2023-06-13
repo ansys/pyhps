@@ -21,5 +21,5 @@ from .project import Project
 from .permission import Permission
 from .selection import JobSelection
 from .task import Task
-from .task_definition import Licensing, SuccessCriteria, Software, ResourceRequirements, TaskDefinition
+from .task_definition import Licensing, SuccessCriteria, Software, ResourceRequirements, TaskDefinition, HpcResources
 from .task_definition_template import TaskDefinitionTemplate, TemplateInputFile, TemplateOutputFile, TemplateResourceRequirements, TemplateProperty

@@ -21,14 +21,14 @@ class SoftwareSchema(BaseSchema):
     version = fields.String(allow_none=True, metadata={"description": "Application's version."})
 
 
-class HPCResourcesSchema(BaseSchema):
+class HpcResourcesSchema(BaseSchema):
     class Meta:
         pass
 
-    num_cores_per_node: fields.Int(allow_none=True)
-    num_gpus_per_node: fields.Int(allow_none=True)
-    exclusive: fields.Bool(allow_none=True)
-    queue: fields.Str(allow_none=True)
+    num_cores_per_node = fields.Int(allow_none=True)
+    num_gpus_per_node = fields.Int(allow_none=True)
+    exclusive = fields.Bool(allow_none=True)
+    queue = fields.Str(allow_none=True)
 
 
 class ResourceRequirementsSchema(BaseSchema):
@@ -42,7 +42,7 @@ class ResourceRequirementsSchema(BaseSchema):
     distributed = fields.Bool(allow_none=True)
     custom = fields.Dict(allow_none=True, keys=fields.Str(), values=RestrictedValue())
 
-    hpc_resources = fields.Nested(HPCResourcesSchema, allow_none=True)
+    hpc_resources = fields.Nested(HpcResourcesSchema, allow_none=True)
 
 
 class SuccessCriteriaSchema(BaseSchema):
