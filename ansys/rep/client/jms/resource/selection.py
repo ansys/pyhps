@@ -10,12 +10,16 @@ class JobSelection(Object):
     ----------
     id : str, optional
         Unique ID to access the resource, generated internally by the server on creation.
+    creation_time : datetime, optional
+        The date and time the resource was created.
+    modification_time : datetime, optional
+        The date and time the resource was last modified.
+    created_by : str, optional
+        ID of the user who created the object.
+    modified_by : str, optional
+        ID of the user who last modified the object.
     name : str
         Name of the selection.
-    creation_time : datetime, optional
-        The date and time the selection was created.
-    modification_time : datetime, optional
-        The date and time the selection was last modified.
     algorithm_id : str, optional
         ID of the :class:`Algorithm` the selection belongs to (optional).
     jobs : list[str]
@@ -29,16 +33,20 @@ class JobSelection(Object):
 
     def __init__(self,
         id=missing,
-        name=missing,
         creation_time=missing,
         modification_time=missing,
+        created_by=missing,
+        modified_by=missing,
+        name=missing,
         algorithm_id=missing,
         jobs=missing
     ):
         self.id = id
-        self.name = name
         self.creation_time = creation_time
         self.modification_time = modification_time
+        self.created_by = created_by
+        self.modified_by = modified_by
+        self.name = name
         self.algorithm_id = algorithm_id
         self.jobs = jobs
 

@@ -8,13 +8,13 @@
 
 from marshmallow import fields
 
-from ansys.rep.client.common import ObjectSchema
+from ansys.rep.client.common import ObjectSchemaWithModificationInfo
 
 from .object_reference import IdReference
 
 
-class FileSchema(ObjectSchema):
-    class Meta(ObjectSchema.Meta):
+class FileSchema(ObjectSchemaWithModificationInfo):
+    class Meta(ObjectSchemaWithModificationInfo.Meta):
         pass
 
     name = fields.String(description="Name of the file resource.")
@@ -30,16 +30,6 @@ class FileSchema(ObjectSchema):
     size = fields.Int(allow_none=True)
     hash = fields.String(allow_none=True)
 
-    creation_time = fields.DateTime(
-        allow_none=True,
-        load_only=True,
-        description="The date and time the file resource was created.",
-    )
-    modification_time = fields.DateTime(
-        allow_none=True,
-        load_only=True,
-        description="The date and time the file resource was last modified.",
-    )
     expiry_time = fields.DateTime(
         allow_none=True,
         metadata={"description": "File expiration time."},

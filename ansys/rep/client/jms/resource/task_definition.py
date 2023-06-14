@@ -144,6 +144,14 @@ class TaskDefinition(Object):
     ----------
     id : str, optional
         Unique ID to access the resource, generated internally by the server on creation.
+    creation_time : datetime, optional
+        The date and time the resource was created.
+    modification_time : datetime, optional
+        The date and time the resource was last modified.
+    created_by : str, optional
+        ID of the user who created the object.
+    modified_by : str, optional
+        ID of the user who last modified the object.
     name : str, optional
         Name.
     execution_command : str, optional
@@ -184,6 +192,10 @@ class TaskDefinition(Object):
 
     def __init__(self,
         id=missing,
+        creation_time=missing,
+        modification_time=missing,
+        created_by=missing,
+        modified_by=missing,
         name=missing,
         execution_command=missing,
         use_execution_script=missing,
@@ -202,6 +214,10 @@ class TaskDefinition(Object):
         resource_requirements=missing
     ):
         self.id = id
+        self.creation_time = creation_time
+        self.modification_time = modification_time
+        self.created_by = created_by
+        self.modified_by = modified_by
         self.name = name
         self.execution_command = execution_command
         self.use_execution_script = use_execution_script

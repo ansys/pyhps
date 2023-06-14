@@ -8,7 +8,7 @@
 
 from marshmallow import fields
 
-from ansys.rep.client.common import BaseSchema, ObjectSchema, RestrictedValue
+from ansys.rep.client.common import BaseSchema, ObjectSchemaWithModificationInfo, RestrictedValue
 
 from .object_reference import IdReference, IdReferenceList
 
@@ -77,8 +77,8 @@ class LicensingSchema(BaseSchema):
     )
 
 
-class TaskDefinitionSchema(ObjectSchema):
-    class Meta(ObjectSchema.Meta):
+class TaskDefinitionSchema(ObjectSchemaWithModificationInfo):
+    class Meta(ObjectSchemaWithModificationInfo.Meta):
         pass
 
     name = fields.String(allow_none=True, description="Name.")

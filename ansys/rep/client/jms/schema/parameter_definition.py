@@ -10,13 +10,13 @@ import logging
 from marshmallow import fields
 from marshmallow_oneofschema import OneOfSchema
 
-from ansys.rep.client.common import ObjectSchema
+from ansys.rep.client.common import ObjectSchemaWithModificationInfo
 
 log = logging.getLogger(__name__)
 
 
-class ParameterDefinitionBaseSchema(ObjectSchema):
-    class Meta(ObjectSchema.Meta):
+class ParameterDefinitionBaseSchema(ObjectSchemaWithModificationInfo):
+    class Meta(ObjectSchemaWithModificationInfo.Meta):
         pass
 
     name = fields.String(allow_none=True, description="Name (ID) of the parameter.")

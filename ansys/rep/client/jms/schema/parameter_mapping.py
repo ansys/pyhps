@@ -9,15 +9,15 @@ import logging
 
 from marshmallow import fields
 
-from ansys.rep.client.common import ObjectSchema
+from ansys.rep.client.common import ObjectSchemaWithModificationInfo
 
 from .object_reference import IdReference
 
 log = logging.getLogger(__name__)
 
 
-class ParameterMappingSchema(ObjectSchema):
-    class Meta(ObjectSchema.Meta):
+class ParameterMappingSchema(ObjectSchemaWithModificationInfo):
+    class Meta(ObjectSchemaWithModificationInfo.Meta):
         pass
 
     line = fields.Int(allow_none=True)
