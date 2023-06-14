@@ -13,7 +13,7 @@ import uuid
 from examples.mapdl_motorbike_frame.project_setup import create_project
 from marshmallow.utils import missing
 
-from ansys.rep.client.jms import JmsApi, ProjectApi
+from ansys.rep.client import AuthApi, JmsApi, ProjectApi
 from ansys.rep.client.jms.resource import Job, JobDefinition, Project
 from ansys.rep.client.jms.schema.job import JobSchema
 from tests.rep_test import REPTestCase
@@ -138,6 +138,9 @@ class JobsTest(REPTestCase):
         job_def = JobDefinition(name="New Config", active=True)
         job_def = project_api.create_job_definitions([job_def])[0]
 
+        self.assertTrue(job_def.modified_by is not missing)
+        self.assertTrue(job_def.created_by is not missing)
+
         # test creating, update and delete with no jobs
         jobs = project_api.create_jobs([])
         self.assertEqual(len(jobs), 0)
@@ -160,14 +163,21 @@ class JobsTest(REPTestCase):
             self.assertEqual(job.note, None)
             self.assertEqual(job.fitness, None)
             self.assertTrue(job.executed_level is not None)
+            self.assertTrue(job.modified_by is not missing)
+            self.assertTrue(job.created_by is not missing)
 
         jobs = project_api.get_jobs()
+        auth_api = AuthApi(self.client)
         for job in jobs:
             # check that all fields are populated (i.e. request params include fields="all")
             self.assertEqual(job.creator, None)
             self.assertEqual(job.note, None)
             self.assertEqual(job.fitness, None)
             self.assertTrue(job.executed_level is not None)
+            self.assertTrue(job.modified_by is not missing)
+            self.assertTrue(job.created_by is not missing)
+            self.assertTrue(auth_api.get_user(id=job.created_by).username == self.username)
+            self.assertTrue(auth_api.get_user(id=job.modified_by).username == self.username)
             # fill some of them
             job.creator = "rep-client"
             job.note = f"test job{job.id} update"

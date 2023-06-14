@@ -12,6 +12,7 @@ import unittest
 import uuid
 
 from examples.mapdl_motorbike_frame.project_setup import create_project
+from marshmallow.utils import missing
 import pytest
 
 from ansys.rep.client.jms import JmsApi, ProjectApi
@@ -110,6 +111,8 @@ class TasksTest(REPTestCase):
         for job in jobs:
             tasks = project_api.get_tasks(job_id=job.id)
             self.assertEqual(tasks[0].job_id, job.id)
+            self.assertTrue(tasks[0].created_by is not missing)
+            self.assertTrue(tasks[0].modified_by is not missing)
 
     def test_job_sync(self):
 
