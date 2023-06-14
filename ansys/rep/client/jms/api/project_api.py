@@ -9,7 +9,7 @@ import requests
 
 from ansys.rep.client.client import Client
 from ansys.rep.client.common import Object
-from ansys.rep.client.exceptions import ClientError, REPError
+from ansys.rep.client.exceptions import REPError
 from ansys.rep.client.jms.resource import (
     Algorithm,
     File,
@@ -566,7 +566,7 @@ def _download_file(
 ) -> str:
 
     if getattr(file, "hash", None) is None:
-        raise ClientError(f"No hash found. Failed to download file {file.name}")
+        log.warning(f"No hash found for file {file.name}.")
 
     Path(target_path).mkdir(parents=True, exist_ok=True)
     download_link = f"{project_api.fs_bucket_url}/{file.storage_id}"
