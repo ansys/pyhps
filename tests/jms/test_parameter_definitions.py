@@ -178,6 +178,13 @@ class ParameterDefitionTest(REPTestCase):
         ip = project_api.create_parameter_definitions([ip])[0]
         sp = project_api.create_parameter_definitions([sp])[0]
 
+        for pd in [ip, sp]:
+            self.assertTrue(pd.created_by is not missing)
+            self.assertTrue(pd.creation_time is not missing)
+            self.assertTrue(pd.modified_by is not missing)
+            self.assertTrue(pd.modification_time is not missing)
+            self.assertEqual(pd.created_by, pd.modified_by)
+
         job_def = JobDefinition(name="New Config", active=True)
         job_def.parameter_definition_ids = [ip.id, sp.id]
         job_def = project_api.create_job_definitions([job_def])[0]
