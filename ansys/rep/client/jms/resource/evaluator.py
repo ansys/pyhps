@@ -89,6 +89,8 @@ class Evaluator(Object):
         Details of the evaluator configuration, including hardware info and available applications.
     configuration_updates : EvaluatorConfigurationUpdate, optional
         Changes to the evaluator configurations.
+    build_info : dict, optional
+        Evaluator's build information.
 
     """
 
@@ -111,7 +113,8 @@ class Evaluator(Object):
         project_assignment_mode=missing,
         project_list=missing,
         configuration=missing,
-        configuration_updates=missing
+        configuration_updates=missing,
+        build_info=missing
     ):
         self.id = id
         self.host_id = host_id
@@ -128,6 +131,7 @@ class Evaluator(Object):
         self.project_list = project_list
         self.configuration = configuration
         self.configuration_updates = configuration_updates
+        self.build_info = build_info
 
         self.obj_type = self.__class__.__name__
 
