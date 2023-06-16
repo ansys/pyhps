@@ -105,13 +105,14 @@ class JobsTest(REPTestCase):
             job_definition_id=2,
             host_ids=["uuid-4", "uuid-5"],
             values={"p1": "string_value", "p2": 8.9, "p3": True},
-            creator="dcs-client",
+            creator="rep-client",
             elapsed_time=40.8,
         )
 
         self.assertEqual(job.note, missing)
         self.assertEqual(job.priority, missing)
         self.assertEqual(job.elapsed_time, 40.8)
+        self.assertEqual(job.creator, "rep-client")
 
         schema = JobSchema()
         serialized_job = schema.dump(job)
@@ -128,7 +129,7 @@ class JobsTest(REPTestCase):
     def test_job_integration(self):
 
         client = self.client
-        proj_name = f"dcs_client_test_jobs_JobTest_{self.run_id}"
+        proj_name = f"test_jobs_JobTest_{self.run_id}"
 
         proj = Project(name=proj_name, active=True)
         jms_api = JmsApi(client)
