@@ -9,7 +9,7 @@
 from marshmallow import fields
 from marshmallow.validate import OneOf
 
-from ansys.rep.client.common import ObjectSchema
+from ansys.rep.client.common import ObjectSchemaWithModificationInfo
 
 from .object_reference import IdReference, IdReferenceList
 
@@ -25,8 +25,8 @@ valid_eval_status = [
 ]
 
 
-class JobSchema(ObjectSchema):
-    class Meta(ObjectSchema.Meta):
+class JobSchema(ObjectSchemaWithModificationInfo):
+    class Meta(ObjectSchemaWithModificationInfo.Meta):
         pass
 
     name = fields.String(allow_none=True, description="Name of the job.")
@@ -69,16 +69,6 @@ class JobSchema(ObjectSchema):
         "task (-1 if none has been executed yet).",
     )
 
-    creation_time = fields.DateTime(
-        allow_none=True,
-        load_only=True,
-        description="The date and time the job was created.",
-    )
-    modification_time = fields.DateTime(
-        allow_none=True,
-        load_only=True,
-        description="The date and time the job was last modified.",
-    )
     elapsed_time = fields.Float(
         load_only=True,
         description="Number of seconds it took the evaluator(s) to update the job.",

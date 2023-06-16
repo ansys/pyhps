@@ -10,6 +10,14 @@ class Job(Object):
     ----------
     id : str, optional
         Unique ID to access the resource, generated internally by the server on creation.
+    creation_time : datetime, optional
+        The date and time the resource was created.
+    modification_time : datetime, optional
+        The date and time the resource was last modified.
+    created_by : str, optional
+        ID of the user who created the object.
+    modified_by : str, optional
+        ID of the user who last modified the object.
     name : str, optional
         Name of the job.
     eval_status : str
@@ -30,10 +38,6 @@ class Job(Object):
         Optional name/ID of the creator of this job.
     executed_level : int, optional
         Execution level of the last executed task (-1 if none has been executed yet).
-    creation_time : datetime, optional
-        The date and time the job was created.
-    modification_time : datetime, optional
-        The date and time the job was last modified.
     elapsed_time : float
         Number of seconds it took the evaluator(s) to update the job.
     host_ids : list, optional
@@ -49,6 +53,10 @@ class Job(Object):
 
     def __init__(self,
         id=missing,
+        creation_time=missing,
+        modification_time=missing,
+        created_by=missing,
+        modified_by=missing,
         name=missing,
         eval_status=missing,
         job_definition_id=missing,
@@ -59,13 +67,15 @@ class Job(Object):
         note=missing,
         creator=missing,
         executed_level=missing,
-        creation_time=missing,
-        modification_time=missing,
         elapsed_time=missing,
         host_ids=missing,
         file_ids=missing
     ):
         self.id = id
+        self.creation_time = creation_time
+        self.modification_time = modification_time
+        self.created_by = created_by
+        self.modified_by = modified_by
         self.name = name
         self.eval_status = eval_status
         self.job_definition_id = job_definition_id
@@ -76,8 +86,6 @@ class Job(Object):
         self.note = note
         self.creator = creator
         self.executed_level = executed_level
-        self.creation_time = creation_time
-        self.modification_time = modification_time
         self.elapsed_time = elapsed_time
         self.host_ids = host_ids
         self.file_ids = file_ids
