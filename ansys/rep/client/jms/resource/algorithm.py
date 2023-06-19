@@ -10,14 +10,18 @@ class Algorithm(Object):
     ----------
     id : str, optional
         Unique ID to access the resource, generated internally by the server on creation.
+    creation_time : datetime, optional
+        The date and time the resource was created.
+    modification_time : datetime, optional
+        The date and time the resource was last modified.
+    created_by : str, optional
+        ID of the user who created the object.
+    modified_by : str, optional
+        ID of the user who last modified the object.
     name : str, optional
         Name of the algorithm.
     description : str, optional
         Description of the algorithm.
-    creation_time : datetime, optional
-        The date and time the algorithm was created.
-    modification_time : datetime, optional
-        The date and time the algorithm was last modified.
     data : str, optional
         Generic string field to hold arbitrary algorithm configuration data, e.g. as JSON dictionary.
     jobs : list[str]
@@ -31,18 +35,22 @@ class Algorithm(Object):
 
     def __init__(self,
         id=missing,
-        name=missing,
-        description=missing,
         creation_time=missing,
         modification_time=missing,
+        created_by=missing,
+        modified_by=missing,
+        name=missing,
+        description=missing,
         data=missing,
         jobs=missing
     ):
         self.id = id
-        self.name = name
-        self.description = description
         self.creation_time = creation_time
         self.modification_time = modification_time
+        self.created_by = created_by
+        self.modified_by = modified_by
+        self.name = name
+        self.description = description
         self.data = data
         self.jobs = jobs
 

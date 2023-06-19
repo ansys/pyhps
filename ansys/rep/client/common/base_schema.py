@@ -25,6 +25,41 @@ class ObjectSchema(BaseSchema):
     id = fields.String(
         allow_none=True,
         attribute="id",
-        description="Unique ID to access the resource, generated "
-        "internally by the server on creation.",
+        metadata={
+            "description": "Unique ID to access the resource, generated "
+            "internally by the server on creation."
+        },
+    )
+
+
+class ObjectSchemaWithModificationInfo(ObjectSchema):
+
+    creation_time = fields.DateTime(
+        allow_none=True,
+        load_only=True,
+        metadata={
+            "description": "The date and time the resource was created.",
+        },
+    )
+    modification_time = fields.DateTime(
+        allow_none=True,
+        load_only=True,
+        metadata={
+            "description": "The date and time the resource was last modified.",
+        },
+    )
+
+    created_by = fields.String(
+        allow_none=True,
+        load_only=True,
+        metadata={
+            "description": "ID of the user who created the object.",
+        },
+    )
+    modified_by = fields.String(
+        allow_none=True,
+        load_only=True,
+        metadata={
+            "description": "ID of the user who last modified the object.",
+        },
     )

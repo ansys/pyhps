@@ -8,26 +8,17 @@
 
 from marshmallow import fields
 
-from ansys.rep.client.common import ObjectSchema
+from ansys.rep.client.common import ObjectSchemaWithModificationInfo
 
 from .object_reference import IdReferenceList
 
 
-class AlgorithmSchema(ObjectSchema):
-    class Meta(ObjectSchema.Meta):
+class AlgorithmSchema(ObjectSchemaWithModificationInfo):
+    class Meta(ObjectSchemaWithModificationInfo.Meta):
         pass
 
     name = fields.String(allow_none=True, description="Name of the algorithm.")
     description = fields.String(allow_none=True, description="Description of the algorithm.")
-
-    creation_time = fields.DateTime(
-        allow_none=True, load_only=True, description="The date and time the algorithm was created."
-    )
-    modification_time = fields.DateTime(
-        allow_none=True,
-        load_only=True,
-        description="The date and time the algorithm was last modified.",
-    )
 
     data = fields.String(
         allow_none=True,

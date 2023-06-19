@@ -1,8 +1,9 @@
 import logging
 
 from examples.mapdl_motorbike_frame.project_setup import create_project
+from marshmallow.utils import missing
 
-from ansys.rep.client.jms import JmsApi, ProjectApi
+from ansys.rep.client import AuthApi, JmsApi, ProjectApi
 from ansys.rep.client.jms.resource import (
     HpcResources,
     JobDefinition,
@@ -49,6 +50,7 @@ class JobDefinitionsTest(REPTestCase):
         project = Project(name=proj_name, active=False, priority=10)
         project = jms_api.create_project(project)
         project_api = ProjectApi(client, project.id)
+        auth_api = AuthApi(self.client)
 
         task_def = TaskDefinition(
             name="Task.1",
@@ -62,11 +64,16 @@ class JobDefinitionsTest(REPTestCase):
             ),
         )
         self.assertEqual(task_def.resource_requirements.hpc_resources.num_cores_per_node, 2)
+
         task_def = project_api.create_task_definitions([task_def])[0]
         self.assertEqual(task_def.store_output, True)
         self.assertEqual(task_def.resource_requirements.memory, 274877906944)
         self.assertEqual(task_def.resource_requirements.disk_space, 2199023255552)
         self.assertEqual(task_def.resource_requirements.hpc_resources.num_cores_per_node, 2)
+        self.assertTrue(task_def.modified_by is not missing)
+        self.assertTrue(task_def.created_by is not missing)
+        self.assertTrue(auth_api.get_user(id=task_def.created_by).username == self.username)
+        self.assertTrue(auth_api.get_user(id=task_def.modified_by).username == self.username)
 
         jms_api.delete_project(project)
 

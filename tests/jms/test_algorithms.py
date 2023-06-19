@@ -51,6 +51,11 @@ class AlgorithmsTest(REPTestCase):
         for sel in sels:
             self.assertEqual(len(sel.jobs), 5)
             self.assertEqual(sel.algorithm_id, None)
+            self.assertTrue(sel.created_by is not missing)
+            self.assertTrue(sel.creation_time is not missing)
+            self.assertTrue(sel.modified_by is not missing)
+            self.assertTrue(sel.modification_time is not missing)
+            self.assertEqual(sel.created_by, sel.modified_by)
 
         # Create an algorithm
         algo = Algorithm(name="new_algo")
@@ -62,6 +67,11 @@ class AlgorithmsTest(REPTestCase):
         self.assertEqual(len(algo.jobs), 0)
         self.assertEqual(algo.data, None)
         self.assertEqual(algo.description, None)
+        self.assertTrue(algo.created_by is not missing)
+        self.assertTrue(algo.creation_time is not missing)
+        self.assertTrue(algo.modified_by is not missing)
+        self.assertTrue(algo.modification_time is not missing)
+        self.assertEqual(algo.created_by, algo.modified_by)
 
         # Link jobs to algorithm
         algo.jobs = [j.id for j in jobs]

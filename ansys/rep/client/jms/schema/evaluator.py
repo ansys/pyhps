@@ -128,3 +128,7 @@ class EvaluatorSchema(ObjectSchema):
         allow_none=True,
         metadata={"description": "Changes to the evaluator configurations."},
     )
+    build_info = fields.Dict(
+        allow_none=True,
+        metadata={"description": "Evaluator's build information."},
+    )

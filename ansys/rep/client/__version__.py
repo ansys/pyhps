@@ -6,4 +6,4 @@ __url__ = "https://github.com/ansys-internal/pyrep"
 
 # this is only a convenience to default the version
 # of Ansys simulation applications in pyrep examples
-__ansys_apps_version__ = "2023 R2"
+__ansys_apps_version__ = "2024 R1"
