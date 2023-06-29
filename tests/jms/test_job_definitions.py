@@ -5,6 +5,7 @@ from marshmallow.utils import missing
 
 from ansys.rep.client import AuthApi, JmsApi, ProjectApi
 from ansys.rep.client.jms.resource import (
+    HpcResources,
     JobDefinition,
     Project,
     ResourceRequirements,
@@ -59,12 +60,16 @@ class JobDefinitionsTest(REPTestCase):
             resource_requirements=ResourceRequirements(
                 memory=256 * 1024 * 1024 * 1024,  # 256GB
                 disk_space=2 * 1024 * 1024 * 1024 * 1024,  # 2TB
+                hpc_resources=HpcResources(num_cores_per_node=2),
             ),
         )
+        self.assertEqual(task_def.resource_requirements.hpc_resources.num_cores_per_node, 2)
+
         task_def = project_api.create_task_definitions([task_def])[0]
         self.assertEqual(task_def.store_output, True)
         self.assertEqual(task_def.resource_requirements.memory, 274877906944)
         self.assertEqual(task_def.resource_requirements.disk_space, 2199023255552)
+        self.assertEqual(task_def.resource_requirements.hpc_resources.num_cores_per_node, 2)
         self.assertTrue(task_def.modified_by is not missing)
         self.assertTrue(task_def.created_by is not missing)
         self.assertTrue(auth_api.get_user(id=task_def.created_by).username == self.username)

@@ -3,6 +3,7 @@ import unittest
 
 from ansys.rep.client.jms.resource import TaskDefinition
 from ansys.rep.client.jms.resource.task_definition import (
+    HpcResources,
     Licensing,
     ResourceRequirements,
     SuccessCriteria,
@@ -40,7 +41,7 @@ class TaskDefinitionTest(REPTestCase):
                 "FAKE_FILE_ID",
             ],
             "resource_requirements": {
-                "cpu_core_usage": 1,
+                "num_cores": 1,
                 "disk_space": 5,
                 "memory": 250,
                 "custom": {
@@ -51,6 +52,11 @@ class TaskDefinitionTest(REPTestCase):
                     "test_bool": True,
                     "test_bool2": False,
                     "test_none": None,
+                },
+                "hpc_resources": {
+                    "num_cores_per_node": 3,
+                    "exclusive": True,
+                    "queue": "myq",
                 },
             },
             "software_requirements": [],
@@ -111,7 +117,7 @@ class TaskDefinitionTest(REPTestCase):
         self.assertEqual(
             task_def.resource_requirements,
             ResourceRequirements(
-                cpu_core_usage=1,
+                num_cores=1,
                 disk_space=5,
                 memory=250,
                 custom={
@@ -123,6 +129,7 @@ class TaskDefinitionTest(REPTestCase):
                     "test_bool2": False,
                     "test_none": None,
                 },
+                hpc_resources=HpcResources(exclusive=True, queue="myq", num_cores_per_node=3),
             ),
         )
 
@@ -149,7 +156,7 @@ class TaskDefinitionTest(REPTestCase):
             input_file_ids=["FAKE_FILE_ID"],
             output_file_ids=["FAKE_FILE_ID", "FAKE_FILE_ID", "FAKE_FILE_ID"],
             resource_requirements=ResourceRequirements(
-                cpu_core_usage=1,
+                num_cores=1,
                 disk_space=5,
                 memory=250,
                 custom={
@@ -161,6 +168,7 @@ class TaskDefinitionTest(REPTestCase):
                     "test_bool2": False,
                     "test_none": None,
                 },
+                hpc_resources=HpcResources(exclusive=True, num_gpus_per_node=2),
             ),
             software_requirements=[],
             store_output=True,
@@ -225,7 +233,7 @@ class TaskDefinitionTest(REPTestCase):
             OrderedDict(
                 {
                     "memory": 250,
-                    "cpu_core_usage": 1,
+                    "num_cores": 1,
                     "disk_space": 5,
                     "custom": {
                         "test_str": "5",
@@ -236,6 +244,7 @@ class TaskDefinitionTest(REPTestCase):
                         "test_bool2": False,
                         "test_none": None,
                     },
+                    "hpc_resources": {"num_gpus_per_node": 2, "exclusive": True},
                 }
             ),
         )

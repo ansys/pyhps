@@ -97,7 +97,7 @@ def create_prestress_task_definition(
         " -o solve.out -np %resource:num_cores%",
         max_execution_time=360.0,
         resource_requirements=ResourceRequirements(
-            cpu_core_usage=NUM_CORES,
+            num_cores=NUM_CORES,
         ),
         execution_level=0,
         num_trials=1,
@@ -180,7 +180,7 @@ def create_modal_task_definition(
         "-o solve.out -np %resource:num_cores%",
         max_execution_time=360.0,
         resource_requirements=ResourceRequirements(
-            cpu_core_usage=NUM_CORES,
+            num_cores=NUM_CORES,
         ),
         execution_level=1,
         num_trials=1,
@@ -229,7 +229,7 @@ def create_harmonic_task_definition(
         "-o solve.out -np %resource:num_cores%",
         max_execution_time=360.0,
         resource_requirements=ResourceRequirements(
-            cpu_core_usage=NUM_CORES,
+            num_cores=NUM_CORES,
         ),
         execution_level=2,
         num_trials=1,
