@@ -25,6 +25,10 @@ class File(Object):
         The date and time the file resource was created.
     modification_time : datetime, optional
         The date and time the file resource was last modified.
+    created_by : str, optional
+        ID of the user who created the object.
+    modified_by : str, optional
+        ID of the user who last modified the object.
     format : str, optional
     expiry_time : datetime, optional
         File expiration time.
@@ -54,6 +58,8 @@ class File(Object):
         hash=missing,
         creation_time=missing,
         modification_time=missing,
+        created_by=missing,
+        modified_by=missing,
         expiry_time=missing,
         format=missing,
         evaluation_path=missing,
@@ -73,6 +79,8 @@ class File(Object):
         self.hash = hash
         self.creation_time = creation_time
         self.modification_time = modification_time
+        self.created_by = created_by
+        self.modified_by = modified_by
         self.expiry_time = expiry_time
         self.format = format
         self.evaluation_path = evaluation_path

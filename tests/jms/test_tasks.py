@@ -12,6 +12,7 @@ import unittest
 import uuid
 
 from examples.mapdl_motorbike_frame.project_setup import create_project
+from marshmallow.utils import missing
 import pytest
 
 from ansys.rep.client.jms import JmsApi, ProjectApi
@@ -97,7 +98,7 @@ class TasksTest(REPTestCase):
 
     def test_task_integration(self):
 
-        client = self.client()
+        client = self.client
         proj_name = "Mapdl Motorbike Frame"
 
         project = create_project(client, proj_name, num_jobs=5, use_exec_script=False)
@@ -110,12 +111,14 @@ class TasksTest(REPTestCase):
         for job in jobs:
             tasks = project_api.get_tasks(job_id=job.id)
             self.assertEqual(tasks[0].job_id, job.id)
+            self.assertTrue(tasks[0].created_by is not missing)
+            self.assertTrue(tasks[0].modified_by is not missing)
 
     def test_job_sync(self):
 
         # create base project with 1 task and 3 jobs
         num_jobs = 3
-        client = self.client()
+        client = self.client
         jms_api = JmsApi(client)
         proj_name = f"test_desing_point_sync_{uuid.uuid4().hex[:8]}"
 
@@ -240,7 +243,7 @@ class TasksTest(REPTestCase):
         # verity that the process step snapshot of an evaluated task in not modified
         # on job:sync
 
-        client = self.client()
+        client = self.client
         proj_name = f"test_sync_task_definition_snapshot_{uuid.uuid4().hex[:8]}"
 
         project = create_project(client=client, name=proj_name, num_jobs=1)
@@ -276,7 +279,7 @@ class TasksTest(REPTestCase):
         JmsApi(client).delete_project(project)
 
     def test_register_external_job(self):
-        client = self.client()
+        client = self.client
 
         jms_api = JmsApi(client)
         proj_name = f"test_register_external_job"

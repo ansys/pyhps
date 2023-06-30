@@ -111,7 +111,7 @@ class TaskDefinitionTemplateTest(REPTestCase):
 
     def test_template_integration(self):
 
-        client = self.client()
+        client = self.client
         jms_api = JmsApi(client)
 
         # Test get queries
@@ -182,7 +182,7 @@ class TaskDefinitionTemplateTest(REPTestCase):
 
     def test_template_permissions(self):
 
-        client = self.client()
+        client = self.client
         jms_api = JmsApi(client)
 
         templates = jms_api.get_task_definition_templates()
@@ -272,7 +272,7 @@ class TaskDefinitionTemplateTest(REPTestCase):
 
     def test_template_permissions_update(self):
 
-        client = self.client()
+        client = self.client
         jms_api = JmsApi(client)
 
         # create new template and check default permissions
@@ -293,7 +293,7 @@ class TaskDefinitionTemplateTest(REPTestCase):
 
     def test_template_anyone_permission(self):
 
-        client = self.client()
+        client = self.client
         jms_api = JmsApi(client)
 
         # create new template and check default permissions
@@ -355,16 +355,16 @@ class TaskDefinitionTemplateTest(REPTestCase):
 
     def test_template_delete(self):
 
-        client = self.client()
+        client = self.client
         auth_api = AuthApi(client)
 
         # create 2 non-admin users
         jms_api = JmsApi(client)
         user1, client1 = create_new_user_client(client)
-        self.assertFalse(user1.is_admin)
+        self.assertFalse(auth_api.user_is_admin(user1.id))
         jms_api1 = JmsApi(client1)
         user2, client2 = create_new_user_client(client)
-        self.assertFalse(user2.is_admin)
+        self.assertFalse(auth_api.user_is_admin(user2.id))
         jms_api2 = JmsApi(client2)
 
         # user1 creates new template

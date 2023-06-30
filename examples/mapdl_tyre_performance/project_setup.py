@@ -10,7 +10,7 @@ import logging
 import os
 import random
 
-from ansys.rep.client import Client, REPError, __external_version__
+from ansys.rep.client import Client, REPError, __ansys_apps_version__
 from ansys.rep.client.jms import (
     File,
     FloatParameterDefinition,
@@ -180,7 +180,7 @@ def main(client: Client, name: str, num_jobs: int, version: str) -> Project:
         software_requirements=[Software(name="Ansys Mechanical APDL", version=version)],
         execution_command="%executable% -b -i %file:mac% -o file.out -np %resource:num_cores%",
         resource_requirements=ResourceRequirements(
-            cpu_core_usage=4,
+            num_cores=4,
             memory=4000 * 1024 * 1024,
             disk_space=500 * 1024 * 1024,
             distributed=True,
@@ -229,7 +229,7 @@ if __name__ == "__main__":
     parser.add_argument("-U", "--url", default="https://localhost:8443/rep")
     parser.add_argument("-u", "--username", default="repadmin")
     parser.add_argument("-p", "--password", default="repadmin")
-    parser.add_argument("-v", "--ansys-version", default=__external_version__)
+    parser.add_argument("-v", "--ansys-version", default=__ansys_apps_version__)
 
     args = parser.parse_args()
 

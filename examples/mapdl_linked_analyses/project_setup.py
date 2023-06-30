@@ -24,7 +24,7 @@ import logging
 import os
 from typing import List, Tuple
 
-from ansys.rep.client import Client, REPError, __external_version__
+from ansys.rep.client import Client, REPError, __ansys_apps_version__
 from ansys.rep.client.jms import (
     File,
     JmsApi,
@@ -97,7 +97,7 @@ def create_prestress_task_definition(
         " -o solve.out -np %resource:num_cores%",
         max_execution_time=360.0,
         resource_requirements=ResourceRequirements(
-            cpu_core_usage=NUM_CORES,
+            num_cores=NUM_CORES,
         ),
         execution_level=0,
         num_trials=1,
@@ -180,7 +180,7 @@ def create_modal_task_definition(
         "-o solve.out -np %resource:num_cores%",
         max_execution_time=360.0,
         resource_requirements=ResourceRequirements(
-            cpu_core_usage=NUM_CORES,
+            num_cores=NUM_CORES,
         ),
         execution_level=1,
         num_trials=1,
@@ -229,7 +229,7 @@ def create_harmonic_task_definition(
         "-o solve.out -np %resource:num_cores%",
         max_execution_time=360.0,
         resource_requirements=ResourceRequirements(
-            cpu_core_usage=NUM_CORES,
+            num_cores=NUM_CORES,
         ),
         execution_level=2,
         num_trials=1,
@@ -321,7 +321,7 @@ if __name__ == "__main__":
     parser.add_argument("-u", "--username", default="repadmin")
     parser.add_argument("-p", "--password", default="repadmin")
     parser.add_argument("--incremental", action="store_true")
-    parser.add_argument("-v", "--ansys-version", default=__external_version__)
+    parser.add_argument("-v", "--ansys-version", default=__ansys_apps_version__)
 
     args = parser.parse_args()
 

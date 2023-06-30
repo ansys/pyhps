@@ -21,22 +21,34 @@ class AuthApi:
     users as well as modify or delete existing ones. Non-admin users are only allowed
     to query the list of existing users.
 
-    Args:
-        rep_url (str): The base path for the server to call, e.g. "https://127.0.0.1:8443/rep".
-        username (str): Username
-        password (str): Password
+    Parameters
+    ----------
+    client : Client
+        A REP client object.
 
-    Example:
+    Examples
+    --------
 
-        >>> from ansys.rep.client.auth import Client, User
-        >>> cl = Client(
-                rep_url="https://127.0.0.1:8443/rep/", username="repadmin", password="repadmin"
-            )
-        >>> existing_users = cl.get_users()
-        >>> new_user = User(username='test_user', password='dummy',
-        >>>                 email='test_user@test.com', fullname='Test User',
-        >>>                 is_admin=False)
-        >>> cl.create_user(new_user)
+    Get users whose first name contains "john":
+
+    >>> from ansys.rep.client import Client
+    >>> from ansys.rep.client.auth import AuthApi, User
+    >>> cl = Client(
+    ...     rep_url="https://127.0.0.1:8443/rep/", username="repadmin", password="repadmin"
+    ... )
+    >>> auth_api = AuthApi(cl)
+    >>> users = auth_api.get_users(firstName="john", exact=False)
+
+    Create a new user:
+
+    >>> new_user = User(
+    ...     username="new_user",
+    ...     password="dummy",
+    ...     email=f"new_user@test.com",
+    ...     first_name="New",
+    ...     last_name="User",
+    ... )
+    >>> auth_api.create_user(new_user)
 
     """
 
@@ -45,11 +57,63 @@ class AuthApi:
 
     @property
     def url(self):
+        """Returns the API url"""
         return f"{self.client.rep_url}/auth/"
 
-    def get_users(self, as_objects=True) -> List[User]:
-        """Return a list of users."""
-        return get_users(self.client, as_objects=as_objects)
+    @property
+    def keycloak_admin_client(self) -> KeycloakAdmin:
+        """Returns an authenticated client for the Keycloak Admin API"""
+        return _admin_client(self.client)
+
+    def get_users(self, as_objects=True, **query_params) -> List[User]:
+        """Return users, filtered according to query parameters
+
+        Examples of query parameters are:
+        - `username`
+        - `firstName`
+        - `lastName`
+        - `exact`
+
+        Pagination is also supported using the `first` and `max` parameters.
+
+        For the complete list of supported query parameters, please
+        refer to the Keycloak API documentation.
+        """
+        return get_users(self.keycloak_admin_client, as_objects=as_objects, **query_params)
+
+    def get_user(self, id: str) -> User:
+        """Returns the user representation for a given user id."""
+        return get_user(self.keycloak_admin_client, id)
+
+    def get_user_groups(self, id: str) -> List[str]:
+        """Get name of groups the user belongs to"""
+        return [g["name"] for g in self.keycloak_admin_client.get_user_groups(id)]
+
+    def get_user_realm_roles(self, id: str) -> List[str]:
+        """Get name of realm roles for a user"""
+        return [r["name"] for r in self.keycloak_admin_client.get_realm_roles_of_user(id)]
+
+    def user_is_admin(self, id: str) -> bool:
+        """Check whether the user is system admin"""
+
+        from ansys.rep.client.jms import JmsApi
+
+        # the admin keys are configurable settings of JMS
+        # they need to be queried, can't be hardcoded
+        jms_api = JmsApi(self.client)
+        admin_keys = jms_api.get_api_info()["settings"]["admin_keys"]
+
+        # query user groups and roles and store in the same format
+        # as admin keys
+        user_keys = [f"groups.{name}" for name in self.get_user_groups(id)] + [
+            f"roles.{name}" for name in self.get_user_realm_roles(id)
+        ]
+
+        # match admin and user keys
+        if set(admin_keys).intersection(user_keys):
+            return True
+
+        return False
 
     def create_user(self, user: User, as_objects=True) -> User:
         """Create a new user.
@@ -58,7 +122,7 @@ class AuthApi:
             user (:class:`ansys.rep.client.auth.User`): A User object. Defaults to None.
             as_objects (bool, optional): Defaults to True.
         """
-        return create_user(self.client, user, as_objects=as_objects)
+        return create_user(self.keycloak_admin_client, user, as_objects=as_objects)
 
     def update_user(self, user: User, as_objects=True) -> User:
         """Modify an existing user.
@@ -67,7 +131,7 @@ class AuthApi:
             user (:class:`ansys.rep.client.auth.User`): A User object. Defaults to None.
             as_objects (bool, optional): Defaults to True.
         """
-        return update_user(self.client, user, as_objects=as_objects)
+        return update_user(self.keycloak_admin_client, user, as_objects=as_objects)
 
     def delete_user(self, user: User) -> None:
         """Delete an existing user.
@@ -75,7 +139,7 @@ class AuthApi:
         Args:
             user (:class:`ansys.rep.client.auth.User`): A User object. Defaults to None.
         """
-        return delete_user(self.client, user)
+        return self.keycloak_admin_client.delete_user(user.id)
 
 
 def _admin_client(client):
@@ -96,23 +160,29 @@ def _admin_client(client):
     return keycloak_admin
 
 
-def get_users(client, as_objects=True):
-    admin = _admin_client(client)
-    data = admin.get_users({})
-    for d in data:
-        uid = d["id"]
-        groups = admin.get_user_groups(uid)
-        d["groups"] = [g["name"] for g in groups]
-        realm_roles = admin.get_realm_roles_of_user(uid)
-        d["realm_roles"] = [r["name"] for r in realm_roles]
-        d["is_admin"] = d  # Force admin check
+def get_users(admin_client: KeycloakAdmin, as_objects=True, **query_params):
+
+    users = admin_client.get_users(query=query_params)
+
+    if not as_objects:
+        return users
 
     schema = UserSchema(many=True)
-    users = schema.load(data)
-    return users
+    return schema.load(users)
 
 
-def create_user(client, user, as_objects=True):
+def get_user(admin_client: KeycloakAdmin, id: str, as_objects=True):
+
+    user = admin_client.get_user(user_id=id)
+
+    if not as_objects:
+        return user
+
+    schema = UserSchema(many=False)
+    return schema.load(user)
+
+
+def create_user(admin_client: KeycloakAdmin, user: User, as_objects=True):
     schema = UserSchema(many=False)
     data = schema.dump(user)
 
@@ -126,14 +196,11 @@ def create_user(client, user, as_objects=True):
         ]
     data["enabled"] = True
 
-    admin = _admin_client(client)
-    uid = admin.create_user(data)
-    data = admin.get_user(uid)
-    user = schema.load(data)
-    return user
+    uid = admin_client.create_user(data)
+    return get_user(admin_client, uid, as_objects)
 
 
-def update_user(client, user, as_objects=True):
+def update_user(admin_client: KeycloakAdmin, user: User, as_objects=True):
     schema = UserSchema(many=False)
     data = schema.dump(user)
 
@@ -146,12 +213,10 @@ def update_user(client, user, as_objects=True):
             }
         ]
 
-    admin = _admin_client(client)
-    data = admin.update_user(user.id, data)
+    data = admin_client.update_user(user.id, data)
+
+    if not as_objects:
+        return data
+
     user = schema.load(data)
     return user
-
-
-def delete_user(client, user):
-    admin = _admin_client(client)
-    admin.delete_user(user.id)

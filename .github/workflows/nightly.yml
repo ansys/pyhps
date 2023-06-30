@@ -74,11 +74,11 @@ jobs:
 
       - name: Start services
         run: |
-          docker-compose pull
-          LOCALHOST_ADDR=localhost docker-compose up -d keycloak
+          FSGATEWAY_TAG=latest-dev JMS_TAG=latest-dev docker-compose pull
+          FSGATEWAY_TAG=latest-dev JMS_TAG=latest-dev LOCALHOST_ADDR=localhost docker-compose up -d keycloak
           echo "Waiting a few sec ..."
           sleep 5
-          LOCALHOST_ADDR=localhost docker-compose up -d
+          FSGATEWAY_TAG=latest-dev JMS_TAG=latest-dev LOCALHOST_ADDR=localhost docker-compose up -d
         working-directory: ./rep-deployments/docker-compose
 
       - name: Test with tox

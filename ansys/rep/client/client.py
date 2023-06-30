@@ -6,9 +6,13 @@
 # Author(s): F.Negri, O.Koenig
 # ----------------------------------------------------------
 
+import logging
+
 from .auth.authenticate import authenticate
 from .connection import create_session
 from .exceptions import raise_for_status
+
+log = logging.getLogger(__name__)
 
 
 class Client(object):
@@ -19,11 +23,15 @@ class Client(object):
 
     The following authentication workflows are supported:
 
-        - Username and password: the client connects to the OAuth server and
-          requests access and refresh tokens.
-        - Refresh token: the client connects to the OAuth server and
+        1. Access token: no authentication needed.
+        2. Username and password: the client connects to the OAuth server and
+           requests access and refresh tokens.
+        3. Refresh token: the client connects to the OAuth server and
           requests a new access token.
-        - Access token: no authentication needed.
+        4. Client credentials: authenticate with client_id and client_secret to
+          obtain a new access token (a refresh token is not included).
+
+    These alternative workflows are evaluated in the order listed above.
 
     Parameters
     ----------
@@ -45,19 +53,19 @@ class Client(object):
     Examples
     --------
 
+    Create client object and connect to REP with username and password
+
     >>> from ansys.rep.client import Client
-    >>> # Create client object and connect to REP with username & password
     >>> cl = Client(
     ...     rep_url="https://localhost:8443/rep", username="repuser", password="repuser"
     ... )
-    >>> # Extract refresh token to eventually store it
-    >>> refresh_token = cl.refresh_token
-    >>> # Alternative: Create client object and connect to REP with refresh token
+
+    Create client object and connect to REP with refresh token
+
     >>> cl = Client(
     ...     rep_url="https://localhost:8443/rep",
     ...     username="repuser",
-    ...     refresh_token=refresh_token,
-    ...     grant_type="refresh_token"
+    ...     refresh_token="eyJhbGciOiJIUzI1NiIsInR5cC..."
     >>> )
 
     """
@@ -65,11 +73,11 @@ class Client(object):
     def __init__(
         self,
         rep_url: str = "https://127.0.0.1:8443/rep",
-        username: str = "repadmin",
-        password: str = "repadmin",
+        username: str = None,
+        password: str = None,
         *,
         realm: str = "rep",
-        grant_type: str = "password",
+        grant_type: str = None,
         scope="openid",
         client_id: str = "rep-cli",
         client_secret: str = None,
@@ -82,6 +90,7 @@ class Client(object):
         self.rep_url = rep_url
         self.auth_url = auth_url
         self.auth_api_url = (auth_url or rep_url) + f"/auth/"
+        self.access_token = None
         self.refresh_token = None
         self.username = username
         self.realm = realm
@@ -91,12 +100,22 @@ class Client(object):
         self.client_secret = client_secret
 
         if access_token:
+            log.debug("Authenticate with access token")
             self.access_token = access_token
         else:
+            if username and password:
+                self.grant_type = "password"
+            elif refresh_token:
+                self.grant_type = "refresh_token"
+            elif client_secret:
+                self.grant_type = "client_credentials"
+
+            log.debug(f"Authenticating with '{self.grant_type}' grant type.")
+
             tokens = authenticate(
                 url=auth_url or rep_url,
                 realm=realm,
-                grant_type=grant_type,
+                grant_type=self.grant_type,
                 scope=scope,
                 client_id=client_id,
                 client_secret=client_secret,
@@ -105,7 +124,8 @@ class Client(object):
                 refresh_token=refresh_token,
             )
             self.access_token = tokens["access_token"]
-            self.refresh_token = tokens["refresh_token"]
+            # client credentials flow does not return a refresh token
+            self.refresh_token = tokens.get("refresh_token", None)
 
         self.session = create_session(self.access_token)
         if all_fields:
@@ -123,6 +143,7 @@ class Client(object):
             response.status_code == 401
             and self._unauthorized_num_retry < self._unauthorized_max_retry
         ):
+            log.info(f"401 authorization error: trying to get a new access token.")
             self._unauthorized_num_retry += 1
             self.refresh_access_token()
             response.request.headers.update(
@@ -134,13 +155,21 @@ class Client(object):
         return response
 
     def refresh_access_token(self):
-        """Use the refresh token to obtain a new access token"""
-        tokens = authenticate(
-            url=self.auth_url or self.rep_url,
-            refresh_token=self.refresh_token,
-            username=self.username,
-            grant_type="refresh_token",
-        )
+        """Request a new access token"""
+        if self.grant_type == "client_credentials":
+            tokens = authenticate(
+                url=self.auth_url or self.rep_url,
+                client_id=self.client_id,
+                client_secret=self.client_secret,
+                grant_type=self.grant_type,
+            )
+        else:
+            tokens = authenticate(
+                url=self.auth_url or self.rep_url,
+                refresh_token=self.refresh_token,
+                username=self.username,
+                grant_type="refresh_token",
+            )
         self.access_token = tokens["access_token"]
-        self.refresh_token = tokens["refresh_token"]
+        self.refresh_token = tokens.get("refresh_token", None)
         self.session.headers.update({"Authorization": "Bearer %s" % tokens["access_token"]})

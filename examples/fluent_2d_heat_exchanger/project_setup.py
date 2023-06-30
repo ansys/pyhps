@@ -6,7 +6,7 @@ import argparse
 import logging
 import os
 
-from ansys.rep.client import Client, REPError, __external_version__
+from ansys.rep.client import Client, REPError, __ansys_apps_version__
 from ansys.rep.client.jms import (
     File,
     JmsApi,
@@ -77,7 +77,7 @@ def main(client: Client, name: str, version: str) -> Project:
         software_requirements=[Software(name="Ansys Fluent", version=version)],
         execution_command="%executable% 2d -g -tm %resource:num_cores% -i %file:journal%",
         resource_requirements=ResourceRequirements(
-            cpu_core_usage=4,
+            num_cores=4,
             memory=4000,
             disk_space=500,
         ),
@@ -114,7 +114,7 @@ if __name__ == "__main__":
     parser.add_argument("-U", "--url", default="https://localhost:8443/rep")
     parser.add_argument("-u", "--username", default="repadmin")
     parser.add_argument("-p", "--password", default="repadmin")
-    parser.add_argument("-v", "--ansys-version", default=__external_version__)
+    parser.add_argument("-v", "--ansys-version", default=__ansys_apps_version__)
 
     args = parser.parse_args()
 

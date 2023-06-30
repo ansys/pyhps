@@ -10,6 +10,14 @@ class ParameterMapping(Object):
     ----------
     id : str, optional
         Unique ID to access the resource, generated internally by the server on creation.
+    creation_time : datetime, optional
+        The date and time the resource was created.
+    modification_time : datetime, optional
+        The date and time the resource was last modified.
+    created_by : str, optional
+        ID of the user who created the object.
+    modified_by : str, optional
+        ID of the user who last modified the object.
     line : int, optional
     column : int, optional
     key_string : str, optional
@@ -36,6 +44,10 @@ class ParameterMapping(Object):
 
     def __init__(self,
         id=missing,
+        creation_time=missing,
+        modification_time=missing,
+        created_by=missing,
+        modified_by=missing,
         line=missing,
         column=missing,
         key_string=missing,
@@ -53,6 +65,10 @@ class ParameterMapping(Object):
         file_id=missing
     ):
         self.id = id
+        self.creation_time = creation_time
+        self.modification_time = modification_time
+        self.created_by = created_by
+        self.modified_by = modified_by
         self.line = line
         self.column = column
         self.key_string = key_string

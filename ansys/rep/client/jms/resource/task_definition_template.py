@@ -49,7 +49,7 @@ class TemplateResourceRequirements(Object):
     ----------
     platform : TemplateProperty, optional
     memory : TemplateProperty, optional
-    cpu_core_usage : TemplateProperty, optional
+    num_cores : TemplateProperty, optional
     disk_space : TemplateProperty, optional
     distributed : TemplateProperty, optional
     custom : dict[str, TemplateProperty], optional
@@ -63,14 +63,14 @@ class TemplateResourceRequirements(Object):
     def __init__(self,
         platform=missing,
         memory=missing,
-        cpu_core_usage=missing,
+        num_cores=missing,
         disk_space=missing,
         distributed=missing,
         custom=missing
     ):
         self.platform = platform
         self.memory = memory
-        self.cpu_core_usage = cpu_core_usage
+        self.num_cores = num_cores
         self.disk_space = disk_space
         self.distributed = distributed
         self.custom = custom

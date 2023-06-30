@@ -5,7 +5,7 @@ import argparse
 import logging
 import os
 
-from ansys.rep.client import Client, REPError, __external_version__
+from ansys.rep.client import Client, REPError, __ansys_apps_version__
 from ansys.rep.client.jms import (
     File,
     JmsApi,
@@ -23,7 +23,7 @@ from ansys.rep.client.jms import (
 log = logging.getLogger(__name__)
 
 
-def create_project(client, name, num_jobs=20, version=__external_version__):
+def create_project(client, name, num_jobs=20, version=__ansys_apps_version__):
     """
     Create a REP project consisting of an Ansys Fluent model.
     """
@@ -125,7 +125,7 @@ def create_project(client, name, num_jobs=20, version=__external_version__):
         ],
         execution_command=None,  # Only execution currently supported
         resource_requirements=ResourceRequirements(
-            cpu_core_usage=1.0,
+            num_cores=1.0,
             memory=250,
             disk_space=5,
         ),
@@ -187,7 +187,7 @@ if __name__ == "__main__":
     parser.add_argument("-U", "--url", default="https://127.0.0.1:8443/rep")
     parser.add_argument("-u", "--username", default="repadmin")
     parser.add_argument("-p", "--password", default="repadmin")
-    parser.add_argument("-v", "--ansys-version", default=__external_version__)
+    parser.add_argument("-v", "--ansys-version", default=__ansys_apps_version__)
     args = parser.parse_args()
 
     logger = logging.getLogger()

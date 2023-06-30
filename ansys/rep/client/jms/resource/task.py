@@ -10,10 +10,14 @@ class Task(Object):
     ----------
     id : str, optional
         Unique ID to access the resource, generated internally by the server on creation.
-    modification_time : datetime, optional
-        The date and time the task was last modified.
     creation_time : datetime, optional
-        The date and time the task was created.
+        The date and time the resource was created.
+    modification_time : datetime, optional
+        The date and time the resource was last modified.
+    created_by : str, optional
+        ID of the user who created the object.
+    modified_by : str, optional
+        ID of the user who last modified the object.
     pending_time : datetime, optional
         The date and time the task was set to pending.
     prolog_time : datetime, optional
@@ -60,8 +64,10 @@ class Task(Object):
 
     def __init__(self,
         id=missing,
-        modification_time=missing,
         creation_time=missing,
+        modification_time=missing,
+        created_by=missing,
+        modified_by=missing,
         pending_time=missing,
         prolog_time=missing,
         running_time=missing,
@@ -83,8 +89,10 @@ class Task(Object):
         custom_data=missing
     ):
         self.id = id
-        self.modification_time = modification_time
         self.creation_time = creation_time
+        self.modification_time = modification_time
+        self.created_by = created_by
+        self.modified_by = modified_by
         self.pending_time = pending_time
         self.prolog_time = prolog_time
         self.running_time = running_time

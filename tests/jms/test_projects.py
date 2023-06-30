@@ -75,7 +75,7 @@ class ProjectsTest(REPTestCase):
 
     def test_project_integration(self):
 
-        client = self.client()
+        client = self.client
         jms_api = JmsApi(client)
         proj_name = f"test_jms_ProjectTest_{uuid.uuid4()}"
 
@@ -109,7 +109,7 @@ class ProjectsTest(REPTestCase):
     @unittest.expectedFailure
     def test_project_replace(self):
 
-        client = self.client()
+        client = self.client
         jms_api = JmsApi(client)
 
         p = Project(name="Original Project")
@@ -123,7 +123,7 @@ class ProjectsTest(REPTestCase):
 
     def test_project_copy(self):
 
-        client = self.client()
+        client = self.client
         jms_api = JmsApi(client)
         proj_name = f"test_jms_ProjectCopyTest_{self.run_id}"
 
@@ -149,7 +149,7 @@ class ProjectsTest(REPTestCase):
     @unittest.expectedFailure
     def test_project_license_context(self):
 
-        client = self.client()
+        client = self.client
         jms_api = JmsApi(client)
         proj_name = f"test_jms_ProjectTest_license_context_{self.run_id}"
 
@@ -208,7 +208,7 @@ class ProjectsTest(REPTestCase):
 
     def test_project_delete_job_definition(self):
 
-        client = self.client()
+        client = self.client
         jms_api = JmsApi(client)
         proj_name = f"test_jms_ProjectTest_delete_config_{self.run_id}"
 
@@ -228,7 +228,7 @@ class ProjectsTest(REPTestCase):
     def test_project_archive_restore(self):
 
         num_jobs = 2
-        client = self.client()
+        client = self.client
         jms_api = JmsApi(client)
         proj_name = f"test_jms_project_archive_restore_{self.run_id}"
 
@@ -265,7 +265,7 @@ class ProjectsTest(REPTestCase):
 
     def test_copy_exec_script(self):
 
-        client = self.client()
+        client = self.client
         jms_api = JmsApi(client)
         proj_name = f"test_copy_exec_script"
 

@@ -22,7 +22,7 @@ log = logging.getLogger(__name__)
 class FilesTest(REPTestCase):
     def test_files(self):
 
-        client = self.client()
+        client = self.client
         jms_api = JmsApi(client)
         proj = jms_api.create_project(
             Project(name=f"rep_client_test_jms_FilesTest_{self.run_id}", active=False), replace=True
@@ -51,6 +51,12 @@ class FilesTest(REPTestCase):
         files.append(File(name="img", evaluation_path="file000.jpg", type="image/jpeg", hash=None))
         files.append(File(name="out", evaluation_path="file.out", type="text/plain", hash=None))
         files_created = project_api.create_files(files)
+        for file in files_created:
+            self.assertTrue(file.created_by is not missing)
+            self.assertTrue(file.creation_time is not missing)
+            self.assertTrue(file.modified_by is not missing)
+            self.assertTrue(file.modification_time is not missing)
+            self.assertEqual(file.created_by, file.modified_by)
 
         # Get files
         files_queried = project_api.get_files(content=True)

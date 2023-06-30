@@ -25,7 +25,7 @@ class TaskFilesTest(REPTestCase):
     @pytest.mark.requires_evaluator
     def test_task_files_in_single_task_definition_project(self):
         num_jobs = 5
-        client = self.client()
+        client = self.client
         proj_name = f"test_jobs_TaskFilesTest_{self.run_id}"
 
         # Setup MAPDL motorbike frame project to work with

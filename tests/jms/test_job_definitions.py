@@ -1,9 +1,11 @@
 import logging
 
 from examples.mapdl_motorbike_frame.project_setup import create_project
+from marshmallow.utils import missing
 
-from ansys.rep.client.jms import JmsApi, ProjectApi
+from ansys.rep.client import AuthApi, JmsApi, ProjectApi
 from ansys.rep.client.jms.resource import (
+    HpcResources,
     JobDefinition,
     Project,
     ResourceRequirements,
@@ -16,7 +18,7 @@ log = logging.getLogger(__name__)
 
 class JobDefinitionsTest(REPTestCase):
     def test_job_definition_delete(self):
-        client = self.client()
+        client = self.client
         proj_name = f"rep_client_test_jms_JobDefinitionTest_{self.run_id}"
 
         proj = Project(name=proj_name, active=True)
@@ -41,13 +43,14 @@ class JobDefinitionsTest(REPTestCase):
         # - store_output is defaulted to True when undefined,
         # - memory and disk_space are correctly stored in bytes
 
-        client = self.client()
+        client = self.client
         jms_api = JmsApi(client)
         proj_name = f"test_store_output"
 
         project = Project(name=proj_name, active=False, priority=10)
         project = jms_api.create_project(project)
         project_api = ProjectApi(client, project.id)
+        auth_api = AuthApi(self.client)
 
         task_def = TaskDefinition(
             name="Task.1",
@@ -57,12 +60,20 @@ class JobDefinitionsTest(REPTestCase):
             resource_requirements=ResourceRequirements(
                 memory=256 * 1024 * 1024 * 1024,  # 256GB
                 disk_space=2 * 1024 * 1024 * 1024 * 1024,  # 2TB
+                hpc_resources=HpcResources(num_cores_per_node=2),
             ),
         )
+        self.assertEqual(task_def.resource_requirements.hpc_resources.num_cores_per_node, 2)
+
         task_def = project_api.create_task_definitions([task_def])[0]
         self.assertEqual(task_def.store_output, True)
         self.assertEqual(task_def.resource_requirements.memory, 274877906944)
         self.assertEqual(task_def.resource_requirements.disk_space, 2199023255552)
+        self.assertEqual(task_def.resource_requirements.hpc_resources.num_cores_per_node, 2)
+        self.assertTrue(task_def.modified_by is not missing)
+        self.assertTrue(task_def.created_by is not missing)
+        self.assertTrue(auth_api.get_user(id=task_def.created_by).username == self.username)
+        self.assertTrue(auth_api.get_user(id=task_def.modified_by).username == self.username)
 
         jms_api.delete_project(project)
 
@@ -71,7 +82,7 @@ class JobDefinitionsTest(REPTestCase):
         # create new project
         num_jobs = 1
         project = create_project(
-            self.client(),
+            self.client,
             f"test_task_definition_copy",
             num_jobs=num_jobs,
             use_exec_script=False,
@@ -79,8 +90,8 @@ class JobDefinitionsTest(REPTestCase):
         )
         self.assertIsNotNone(project)
 
-        jms_api = JmsApi(self.client())
-        project_api = ProjectApi(self.client(), project.id)
+        jms_api = JmsApi(self.client)
+        project_api = ProjectApi(self.client, project.id)
 
         # copy task definition
         task_definitions = project_api.get_task_definitions()
