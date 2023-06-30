@@ -40,7 +40,7 @@ class TemplateResourceRequirementsSchema(BaseSchema):
 
     platform = fields.Nested(TemplatePropertySchema, allow_none=True)
     memory = fields.Nested(TemplatePropertySchema, allow_none=True)
-    cpu_core_usage = fields.Nested(TemplatePropertySchema, allow_none=True)
+    num_cores = fields.Nested(TemplatePropertySchema, allow_none=True)
     disk_space = fields.Nested(TemplatePropertySchema, allow_none=True)
     distributed = fields.Nested(TemplatePropertySchema, allow_none=True)
     custom = fields.Dict(

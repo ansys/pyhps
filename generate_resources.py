@@ -121,6 +121,14 @@ JMS_RESOURCES = [
         "resource_filename": "permission",
     },
     {
+        "schema": "HpcResourcesSchema",
+        "schema_filename": "task_definition",
+        "rest_name": None,
+        "additional_fields": [],
+        "class": "HpcResources",
+        "resource_filename": "task_definition",
+    },
+    {
         "schema": "ResourceRequirementsSchema",
         "schema_filename": "task_definition",
         "rest_name": None,

@@ -189,7 +189,7 @@ def submit_job() -> REPJob:
         execution_command=ls_dyna_command,
         max_execution_time=3600.0,
         resource_requirements=ResourceRequirements(
-            cpu_core_usage=6,
+            num_cores=6,
             memory=6000 * 1024 * 1024,
             disk_space=4000 * 1024 * 1024,
         ),
@@ -211,7 +211,7 @@ def submit_job() -> REPJob:
         execution_command="%executable% c=%file:post_commands%",
         max_execution_time=600.0,
         resource_requirements=ResourceRequirements(
-            cpu_core_usage=2,
+            num_cores=2,
             memory=3000,
             disk_space=4000,
         ),
