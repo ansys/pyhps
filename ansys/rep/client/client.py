@@ -163,9 +163,10 @@ class Client(object):
             tokens = authenticate(
                 url=self.auth_url or self.rep_url,
                 realm=self.realm,
+                grant_type="client_credentials",
+                scope=self.scope,
                 client_id=self.client_id,
-                client_secret=self.client_secret,
-                grant_type=self.grant_type,
+                client_secret=self.client_secret
             )
         else:
             # Other workflows for authentication generally support refresh_tokens
@@ -177,7 +178,7 @@ class Client(object):
                 client_id=self.client_id,
                 client_secret=self.client_secret,
                 username=self.username,
-                refresh_token=self.refresh_token  
+                refresh_token=self.refresh_token
             )
         self.access_token = tokens["access_token"]
         self.refresh_token = tokens.get("refresh_token", None)
