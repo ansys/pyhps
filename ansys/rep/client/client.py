@@ -158,7 +158,7 @@ class Client(object):
     def refresh_access_token(self):
         """Request a new access token"""
         if self.grant_type == "client_credentials":
-            # Its not reccommended to give refresh tokens to client_credentials grant types
+            # Its not recommended to give refresh tokens to client_credentials grant types
             # as per OAuth 2.0 RFC6749 Section 4.4.3, so handle these specially...
             tokens = authenticate(
                 url=self.auth_url or self.rep_url,
@@ -166,7 +166,7 @@ class Client(object):
                 grant_type="client_credentials",
                 scope=self.scope,
                 client_id=self.client_id,
-                client_secret=self.client_secret
+                client_secret=self.client_secret,
             )
         else:
             # Other workflows for authentication generally support refresh_tokens
@@ -178,7 +178,7 @@ class Client(object):
                 client_id=self.client_id,
                 client_secret=self.client_secret,
                 username=self.username,
-                refresh_token=self.refresh_token
+                refresh_token=self.refresh_token,
             )
         self.access_token = tokens["access_token"]
         self.refresh_token = tokens.get("refresh_token", None)
