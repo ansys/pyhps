@@ -39,7 +39,8 @@ class JobSelection(Object):
         modified_by=missing,
         name=missing,
         algorithm_id=missing,
-        jobs=missing
+        jobs=missing,
+        **kwargs
     ):
         self.id = id
         self.creation_time = creation_time

@@ -86,7 +86,8 @@ class Task(Object):
         inherited_file_ids=missing,
         owned_file_ids=missing,
         license_context_id=missing,
-        custom_data=missing
+        custom_data=missing,
+        **kwargs
     ):
         self.id = id
         self.creation_time = creation_time

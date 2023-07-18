@@ -66,7 +66,8 @@ class File(Object):
         monitor=missing,
         collect=missing,
         collect_interval=missing,
-        reference_id=missing
+        reference_id=missing,
+        **kwargs,
     ):
         self.src = src
         self.content = None

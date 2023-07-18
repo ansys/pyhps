@@ -37,7 +37,8 @@ class EvaluatorConfigurationUpdate(Object):
         local_file_cache=missing,
         local_file_cache_max_size=missing,
         task_directory_cleanup=missing,
-        custom_resource_properties=missing
+        custom_resource_properties=missing,
+        **kwargs
     ):
         self.id = id
         self.name = name
@@ -114,7 +115,8 @@ class Evaluator(Object):
         project_list=missing,
         configuration=missing,
         configuration_updates=missing,
-        build_info=missing
+        build_info=missing,
+        **kwargs
     ):
         self.id = id
         self.host_id = host_id

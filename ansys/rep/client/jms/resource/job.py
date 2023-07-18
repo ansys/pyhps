@@ -69,7 +69,8 @@ class Job(Object):
         executed_level=missing,
         elapsed_time=missing,
         host_ids=missing,
-        file_ids=missing
+        file_ids=missing,
+        **kwargs
     ):
         self.id = id
         self.creation_time = creation_time

@@ -36,7 +36,8 @@ class Project(Object):
         priority=missing,
         creation_time=missing,
         modification_time=missing,
-        statistics=missing
+        statistics=missing,
+        **kwargs
     ):
         self.id = id
         self.name = name
