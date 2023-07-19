@@ -38,7 +38,8 @@ class Operation(Object):
         result=missing,
         messages=missing,
         start_time=missing,
-        end_time=missing
+        end_time=missing,
+        **kwargs
     ):
         self.id = id
         self.name = name

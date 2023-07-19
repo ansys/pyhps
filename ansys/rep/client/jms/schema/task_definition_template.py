@@ -10,7 +10,7 @@ from marshmallow import fields, validate
 
 from ansys.rep.client.common import BaseSchema, ObjectSchema
 
-from .task_definition import SoftwareSchema
+from .task_definition import HpcResourcesSchema, SoftwareSchema
 
 
 class TemplatePropertySchema(BaseSchema):
@@ -46,6 +46,7 @@ class TemplateResourceRequirementsSchema(BaseSchema):
     custom = fields.Dict(
         keys=fields.String, values=fields.Nested(TemplatePropertySchema), allow_none=True
     )
+    hpc_resources = fields.Nested(HpcResourcesSchema, allow_none=True)
 
 
 class TemplateFileSchema(BaseSchema):

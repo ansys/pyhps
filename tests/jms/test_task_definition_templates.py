@@ -17,7 +17,12 @@ from marshmallow.utils import missing
 from ansys.rep.client import Client, REPError
 from ansys.rep.client.auth import AuthApi, User
 from ansys.rep.client.jms import JmsApi
-from ansys.rep.client.jms.resource import Permission, TaskDefinitionTemplate
+from ansys.rep.client.jms.resource import (
+    HpcResources,
+    Permission,
+    TaskDefinitionTemplate,
+    TemplateResourceRequirements,
+)
 from ansys.rep.client.jms.schema.task_definition_template import TaskDefinitionTemplateSchema
 from tests.rep_test import REPTestCase
 
@@ -153,11 +158,15 @@ class TaskDefinitionTemplateTest(REPTestCase):
 
         # Modify template
         template.software_requirements[0].version = "2.0.1"
+        template.resource_requirements = TemplateResourceRequirements(
+            hpc_resources=HpcResources(num_gpus_per_node=2)
+        )
         templates = jms_api.update_task_definition_templates([template])
         self.assertEqual(len(templates), 1)
         template = templates[0]
         self.assertEqual(template.software_requirements[0].version, "2.0.1")
         self.assertEqual(template.name, template_name)
+        self.assertEqual(template.resource_requirements.hpc_resources.num_gpus_per_node, 2)
 
         # Delete template
         jms_api.delete_task_definition_templates([template])

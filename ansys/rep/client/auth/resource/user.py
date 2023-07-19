@@ -43,6 +43,6 @@ class User(Object):
         self.last_name = last_name
         self.email = email
 
-        super().__init__(**kwargs)
+        self.obj_type = self.__class__.__name__
 
 UserSchema.Meta.object_class = User

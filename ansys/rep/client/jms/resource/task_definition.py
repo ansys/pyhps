@@ -28,7 +28,8 @@ class HpcResources(Object):
         num_cores_per_node=missing,
         num_gpus_per_node=missing,
         exclusive=missing,
-        queue=missing
+        queue=missing,
+        **kwargs
     ):
         self.num_cores_per_node = num_cores_per_node
         self.num_gpus_per_node = num_gpus_per_node
@@ -65,7 +66,8 @@ class ResourceRequirements(Object):
         disk_space=missing,
         distributed=missing,
         custom=missing,
-        hpc_resources=missing
+        hpc_resources=missing,
+        **kwargs
     ):
         self.platform = platform
         self.memory = memory
@@ -97,7 +99,8 @@ class Software(Object):
 
     def __init__(self,
         name=missing,
-        version=missing
+        version=missing,
+        **kwargs
     ):
         self.name = name
         self.version = version
@@ -136,7 +139,8 @@ class SuccessCriteria(Object):
         required_output_file_ids=missing,
         require_all_output_files=missing,
         required_output_parameter_ids=missing,
-        require_all_output_parameters=missing
+        require_all_output_parameters=missing,
+        **kwargs
     ):
         self.return_code = return_code
         self.expressions = expressions
@@ -164,7 +168,8 @@ class Licensing(Object):
         rest_name = "None"
 
     def __init__(self,
-        enable_shared_licensing=missing
+        enable_shared_licensing=missing,
+        **kwargs
     ):
         self.enable_shared_licensing = enable_shared_licensing
 
@@ -246,7 +251,8 @@ class TaskDefinition(Object):
         success_criteria=missing,
         licensing=missing,
         software_requirements=missing,
-        resource_requirements=missing
+        resource_requirements=missing,
+        **kwargs
     ):
         self.id = id
         self.creation_time = creation_time
