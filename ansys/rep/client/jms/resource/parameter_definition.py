@@ -20,7 +20,7 @@ class ParameterDefinition(Object):
         rest_name = "parameter_definitions"
 
     def __init__(self,
-
+        **kwargs
     ):
 
         self.obj_type = self.__class__.__name__
@@ -89,7 +89,8 @@ class FloatParameterDefinition(ParameterDefinition):
         upper_limit=missing,
         step=missing,
         cyclic=missing,
-        value_list=missing
+        value_list=missing,
+        **kwargs
     ):
         self.id = id
         self.creation_time = creation_time
@@ -172,7 +173,8 @@ class IntParameterDefinition(ParameterDefinition):
         lower_limit=missing,
         upper_limit=missing,
         step=missing,
-        cyclic=missing
+        cyclic=missing,
+        **kwargs
     ):
         self.id = id
         self.creation_time = creation_time
@@ -242,7 +244,8 @@ class BoolParameterDefinition(ParameterDefinition):
         display_text=missing,
         mode=missing,
         type=missing,
-        default=missing
+        default=missing,
+        **kwargs
     ):
         self.id = id
         self.creation_time = creation_time
@@ -311,7 +314,8 @@ class StringParameterDefinition(ParameterDefinition):
         mode=missing,
         type=missing,
         default=missing,
-        value_list=missing
+        value_list=missing,
+        **kwargs
     ):
         self.id = id
         self.creation_time = creation_time

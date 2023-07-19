@@ -62,7 +62,8 @@ class ParameterMapping(Object):
         false_string=missing,
         parameter_definition_id=missing,
         task_definition_property=missing,
-        file_id=missing
+        file_id=missing,
+        **kwargs
     ):
         self.id = id
         self.creation_time = creation_time

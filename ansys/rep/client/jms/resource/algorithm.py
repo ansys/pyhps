@@ -42,7 +42,8 @@ class Algorithm(Object):
         name=missing,
         description=missing,
         data=missing,
-        jobs=missing
+        jobs=missing,
+        **kwargs
     ):
         self.id = id
         self.creation_time = creation_time
