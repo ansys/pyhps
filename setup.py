@@ -30,7 +30,7 @@ setup(
     long_description=open("README.rst").read(),
     long_description_content_type="text/x-rst",
     install_requires=[
-        "requests>=2.21.0",
+        "requests>=2.31.0",
         "marshmallow>=3.0.0",
         "marshmallow_oneofschema>=2.0.1",
         "cachetools>=4.0.0",
