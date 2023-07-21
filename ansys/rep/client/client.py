@@ -143,12 +143,13 @@ class Client(object):
             response.status_code == 401
             and self._unauthorized_num_retry < self._unauthorized_max_retry
         ):
-            log.info(f"401 authorization error: trying to get a new access token.")
+            log.info(f"401 authorization error: Trying to get a new access token.")
             self._unauthorized_num_retry += 1
             self.refresh_access_token()
             response.request.headers.update(
                 {"Authorization": self.session.headers["Authorization"]}
             )
+            log.debug(f"Retrying request with updated access token.")
             return self.session.send(response.request)
 
         self._unauthorized_num_retry = 0
@@ -157,18 +158,27 @@ class Client(object):
     def refresh_access_token(self):
         """Request a new access token"""
         if self.grant_type == "client_credentials":
+            # Its not recommended to give refresh tokens to client_credentials grant types
+            # as per OAuth 2.0 RFC6749 Section 4.4.3, so handle these specially...
             tokens = authenticate(
                 url=self.auth_url or self.rep_url,
+                realm=self.realm,
+                grant_type="client_credentials",
+                scope=self.scope,
                 client_id=self.client_id,
                 client_secret=self.client_secret,
-                grant_type=self.grant_type,
             )
         else:
+            # Other workflows for authentication generally support refresh_tokens
             tokens = authenticate(
                 url=self.auth_url or self.rep_url,
-                refresh_token=self.refresh_token,
-                username=self.username,
+                realm=self.realm,
                 grant_type="refresh_token",
+                scope=self.scope,
+                client_id=self.client_id,
+                client_secret=self.client_secret,
+                username=self.username,
+                refresh_token=self.refresh_token,
             )
         self.access_token = tokens["access_token"]
         self.refresh_token = tokens.get("refresh_token", None)
