@@ -31,7 +31,8 @@ class TemplateProperty(Object):
         default=missing,
         description=missing,
         type=missing,
-        value_list=missing
+        value_list=missing,
+        **kwargs
     ):
         self.default = default
         self.description = description
@@ -49,10 +50,11 @@ class TemplateResourceRequirements(Object):
     ----------
     platform : TemplateProperty, optional
     memory : TemplateProperty, optional
-    cpu_core_usage : TemplateProperty, optional
+    num_cores : TemplateProperty, optional
     disk_space : TemplateProperty, optional
     distributed : TemplateProperty, optional
     custom : dict[str, TemplateProperty], optional
+    hpc_resources : HpcResources, optional
 
     """
 
@@ -63,17 +65,20 @@ class TemplateResourceRequirements(Object):
     def __init__(self,
         platform=missing,
         memory=missing,
-        cpu_core_usage=missing,
+        num_cores=missing,
         disk_space=missing,
         distributed=missing,
-        custom=missing
+        custom=missing,
+        hpc_resources=missing,
+        **kwargs
     ):
         self.platform = platform
         self.memory = memory
-        self.cpu_core_usage = cpu_core_usage
+        self.num_cores = num_cores
         self.disk_space = disk_space
         self.distributed = distributed
         self.custom = custom
+        self.hpc_resources = hpc_resources
 
         self.obj_type = self.__class__.__name__
 
@@ -106,7 +111,8 @@ class TemplateInputFile(Object):
         type=missing,
         evaluation_path=missing,
         description=missing,
-        required=missing
+        required=missing,
+        **kwargs
     ):
         self.name = name
         self.type = type
@@ -151,7 +157,8 @@ class TemplateOutputFile(Object):
         description=missing,
         required=missing,
         monitor=missing,
-        collect=missing
+        collect=missing,
+        **kwargs
     ):
         self.name = name
         self.type = type
@@ -225,7 +232,8 @@ class TaskDefinitionTemplate(Object):
         execution_script_storage_id=missing,
         execution_script_storage_bucket=missing,
         input_files=missing,
-        output_files=missing
+        output_files=missing,
+        **kwargs
     ):
         self.id = id
         self.modification_time = modification_time

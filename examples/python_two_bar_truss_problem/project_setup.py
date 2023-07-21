@@ -201,7 +201,7 @@ def main(client, num_jobs, use_exec_script) -> Project:
         software_requirements=[Software(name="Python", version="3.10")],
         execution_command="%executable% %file:script% %file:inp%",
         resource_requirements=ResourceRequirements(
-            cpu_core_usage=0.5,
+            num_cores=0.5,
             memory=100,
             disk_space=5,
         ),

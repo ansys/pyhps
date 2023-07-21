@@ -21,7 +21,8 @@ class LicenseContext(Object):
 
     def __init__(self,
         context_id=missing,
-        environment=missing
+        environment=missing,
+        **kwargs
     ):
         self.context_id = context_id
         self.environment = environment

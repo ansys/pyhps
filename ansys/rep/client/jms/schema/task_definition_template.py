@@ -10,7 +10,7 @@ from marshmallow import fields, validate
 
 from ansys.rep.client.common import BaseSchema, ObjectSchema
 
-from .task_definition import SoftwareSchema
+from .task_definition import HpcResourcesSchema, SoftwareSchema
 
 
 class TemplatePropertySchema(BaseSchema):
@@ -40,12 +40,13 @@ class TemplateResourceRequirementsSchema(BaseSchema):
 
     platform = fields.Nested(TemplatePropertySchema, allow_none=True)
     memory = fields.Nested(TemplatePropertySchema, allow_none=True)
-    cpu_core_usage = fields.Nested(TemplatePropertySchema, allow_none=True)
+    num_cores = fields.Nested(TemplatePropertySchema, allow_none=True)
     disk_space = fields.Nested(TemplatePropertySchema, allow_none=True)
     distributed = fields.Nested(TemplatePropertySchema, allow_none=True)
     custom = fields.Dict(
         keys=fields.String, values=fields.Nested(TemplatePropertySchema), allow_none=True
     )
+    hpc_resources = fields.Nested(HpcResourcesSchema, allow_none=True)
 
 
 class TemplateFileSchema(BaseSchema):

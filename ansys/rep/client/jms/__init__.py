@@ -16,6 +16,7 @@ from .resource import (
     FitnessDefinition,
     FitnessTermDefinition,
     FloatParameterDefinition,
+    HpcResources,
     IntParameterDefinition,
     Job,
     JobDefinition,

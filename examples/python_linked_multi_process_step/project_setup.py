@@ -137,7 +137,7 @@ def main(client, num_task_definitions, num_jobs, start, inactive):
                 max_execution_time=10,
                 execution_level=i,
                 resource_requirements=ResourceRequirements(
-                    cpu_core_usage=0.2,
+                    num_cores=0.2,
                     memory=100,
                     disk_space=1,
                 ),

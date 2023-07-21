@@ -47,7 +47,8 @@ class JobDefinition(Object):
         parameter_definition_ids=missing,
         parameter_mapping_ids=missing,
         task_definition_ids=missing,
-        fitness_definition=missing
+        fitness_definition=missing,
+        **kwargs
     ):
         self.id = id
         self.creation_time = creation_time
