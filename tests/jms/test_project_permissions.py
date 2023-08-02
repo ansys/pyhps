@@ -80,7 +80,7 @@ class ProjectPermissionsTest(REPTestCase):
         existing_users = [u.username for u in auth_api.get_users()]
 
         if user_credentials["user1"]["username"] not in existing_users:
-            user1 = auth_api.create_user(
+            user1 = self.create_user(
                 User(
                     username=user_credentials["user1"]["username"],
                     password=user_credentials["user1"]["password"],
@@ -96,7 +96,7 @@ class ProjectPermissionsTest(REPTestCase):
         log.info(f"User 1: {user1}")
 
         if user_credentials["user2"]["username"] not in existing_users:
-            user2 = auth_api.create_user(
+            user2 = self.create_user(
                 User(
                     username=user_credentials["user2"]["username"],
                     password=user_credentials["user2"]["password"],
@@ -178,8 +178,8 @@ class ProjectPermissionsTest(REPTestCase):
         self.assertTrue(except_obj.response.status_code, 403)
 
         root_api1.delete_project(proj)
-        auth_api.delete_user(user1)
-        auth_api.delete_user(user2)
+        self.delete_user(user1)
+        self.delete_user(user2)
 
 
 if __name__ == "__main__":

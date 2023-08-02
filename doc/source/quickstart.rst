@@ -278,7 +278,7 @@ Get file definitions from an existing project Job Definition and replace the fir
 Modify and create users
 ------------------------------------------
 
-Users with admin rights (such as the default ``repadmin`` user) can create new users as well as modify or delete existing ones. 
+Admin users with the Keycloak "manage-users" role can create new users as well as modify or delete existing ones. 
 
 .. code-block:: python
 

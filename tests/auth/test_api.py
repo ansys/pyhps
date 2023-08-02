@@ -8,6 +8,7 @@
 import logging
 import uuid
 
+from keycloak import KeycloakOpenID
 from keycloak.exceptions import KeycloakError
 
 from ansys.rep.client import Client, REPError
@@ -18,47 +19,7 @@ log = logging.getLogger(__name__)
 
 
 class AuthClientTest(REPTestCase):
-    def test_auth_client(self):
-
-        if not self.is_admin:
-            self.skipTest(f"{self.username} is not an admin user.")
-
-        api = AuthApi(self.client)
-
-        username = f"test_user_{uuid.uuid4()}"
-        new_user = User(
-            username=username,
-            password="test_auth_client",
-            email=f"{username}@test.com",
-            first_name="Test",
-            last_name="User",
-        )
-        new_user = api.create_user(new_user)
-
-        self.assertEqual(new_user.username, username)
-        self.assertEqual(new_user.first_name, "Test")
-        self.assertEqual(new_user.last_name, "User")
-        self.assertEqual(new_user.email, f"{username}@test.com")
-
-        new_user.email = "update_email@test.com"
-        new_user.last_name = "Smith"
-        api.update_user(new_user)
-
-        self.assertEqual(new_user.username, username)
-        self.assertEqual(new_user.first_name, "Test")
-        self.assertEqual(new_user.last_name, "Smith")
-        self.assertEqual(new_user.email, "update_email@test.com")
-
-        api.delete_user(new_user)
-
-        users = api.get_users()
-        usernames = [x.username for x in users]
-        self.assertNotIn(new_user.username, usernames)
-
     def test_get_users(self):
-
-        if not self.is_admin:
-            self.skipTest(f"{self.username} is not an admin user.")
 
         api = AuthApi(self.client)
 
@@ -71,7 +32,7 @@ class AuthClientTest(REPTestCase):
             first_name="Test",
             last_name="User",
         )
-        new_user = api.create_user(new_user)
+        new_user = self.create_user(new_user)
         self.assertEqual(new_user.first_name, "Test")
         users = api.get_users(max=10)
 
@@ -85,7 +46,7 @@ class AuthClientTest(REPTestCase):
         new_user2 = api.get_user(new_user.id)
         self.assertEqual(new_user, new_user2)
 
-        api.delete_user(new_user)
+        self.delete_user(new_user)
         users = api.get_users(username=new_user.username)
         self.assertEqual(len(users), 0)
 
@@ -101,10 +62,6 @@ class AuthClientTest(REPTestCase):
         Requires activating the token-exchange feature in keycloak
         by passing --features=token-exchange to the start command.
         """
-        if not self.is_admin:
-            self.skipTest(f"{self.username} is not an admin user.")
-
-        api = AuthApi(self.client)
 
         username = f"test_user_{uuid.uuid4()}"
         new_user = User(
@@ -114,15 +71,28 @@ class AuthClientTest(REPTestCase):
             first_name="Test",
             last_name="User",
         )
-        new_user = api.create_user(new_user)
+        new_user = self.create_user(new_user)
 
+        realm_clients = self.keycloak_client.get_clients()
+        rep_impersonation_client = next(
+            (x for x in realm_clients if x["clientId"] == "rep-impersonation"), None
+        )
+        self.assertTrue(rep_impersonation_client is not None)
+
+        client = Client(
+            client_id=rep_impersonation_client["clientId"],
+            client_secret=rep_impersonation_client["secret"],
+        )
+
+        r = None
         try:
             r = authenticate(
                 url=self.rep_url,
-                username=self.username,
+                client_id=rep_impersonation_client["clientId"],
+                client_secret=rep_impersonation_client["secret"],
                 scope="opendid offline_access",
                 grant_type="urn:ietf:params:oauth:grant-type:token-exchange",
-                subject_token=self.client.access_token,
+                subject_token=client.access_token,
                 requested_token_type="urn:ietf:params:oauth:token-type:refresh_token",
                 requested_subject=new_user.id,
             )
@@ -132,16 +102,40 @@ class AuthClientTest(REPTestCase):
                     f"This test requires to enable the feature 'token-exchange' in keycloak."
                 )
 
+        self.assertTrue(r is not None)
+        self.assertTrue("refresh_token" in r)
+
         refresh_token_impersonated = r["refresh_token"]
 
         client_impersonated = Client(
-            self.rep_url,
+            client.rep_url,
             username=new_user.username,
             grant_type="refresh_token",
             refresh_token=refresh_token_impersonated,
+            client_id=rep_impersonation_client["clientId"],
+            client_secret=rep_impersonation_client["secret"],
         )
 
         self.assertTrue(client_impersonated.access_token is not None)
         self.assertTrue(client_impersonated.refresh_token is not None)
 
-        api.delete_user(new_user)
+        keycloak_openid = KeycloakOpenID(
+            server_url=client.auth_api_url,
+            client_id="account",
+            realm_name="rep",
+            client_secret_key="**********",
+            verify=False,
+        )
+        KEYCLOAK_PUBLIC_KEY = "-----BEGIN PUBLIC KEY-----\n"
+        KEYCLOAK_PUBLIC_KEY += keycloak_openid.public_key()
+        KEYCLOAK_PUBLIC_KEY += "\n-----END PUBLIC KEY-----"
+
+        options = {"verify_signature": True, "verify_aud": True, "verify_exp": True}
+        token_info = keycloak_openid.decode_token(
+            client_impersonated.access_token,
+            key=KEYCLOAK_PUBLIC_KEY,
+            options=options,
+        )
+        self.assertEqual(token_info["preferred_username"], new_user.username)
+
+        self.delete_user(new_user)
