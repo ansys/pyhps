@@ -387,6 +387,8 @@ def _monitor_operation(
         op = jms_api.get_operation(id=operation_id)
         if op:
             done = op.finished
+        else:
+            raise REPError(f"Failed to retrieve operation {operation_id}")
         return op, done
 
     op, done = _monitor()
