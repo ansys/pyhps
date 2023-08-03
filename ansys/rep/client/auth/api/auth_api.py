@@ -17,8 +17,8 @@ from ..schema.user import UserSchema
 class AuthApi:
     """A python interface to the Authorization Service API.
 
-    Users with admin rights (such as the default ``repadmin`` user) can create new
-    users as well as modify or delete existing ones. Non-admin users are only allowed
+    Admin users with the Keycloak "manage-users" role can create new
+    users as well as modify or delete existing ones. Other users are only allowed
     to query the list of existing users.
 
     Parameters
