@@ -42,7 +42,7 @@ def main(client: Client, name: str, num_jobs: int, version: str) -> Project:
 
     files = [
         File(
-            name="mac",
+            name="inp",
             evaluation_path="tire_performance_simulation.mac",
             type="text/plain",
             src=os.path.join(cwd, "tire_performance_simulation.mac"),
@@ -123,25 +123,25 @@ def main(client: Client, name: str, num_jobs: int, version: str) -> Project:
             key_string="camber_angle",
             tokenizer="=",
             parameter_definition_id=input_params[0].id,
-            file_id=file_ids["mac"],
+            file_id=file_ids["inp"],
         ),
         ParameterMapping(
             key_string="inflation_pressure",
             tokenizer="=",
             parameter_definition_id=input_params[1].id,
-            file_id=file_ids["mac"],
+            file_id=file_ids["inp"],
         ),
         ParameterMapping(
             key_string="rotational_velocity",
             tokenizer="=",
             parameter_definition_id=input_params[2].id,
-            file_id=file_ids["mac"],
+            file_id=file_ids["inp"],
         ),
         ParameterMapping(
             key_string="translational_velocity",
             tokenizer="=",
             parameter_definition_id=input_params[3].id,
-            file_id=file_ids["mac"],
+            file_id=file_ids["inp"],
         ),
     ]
 
@@ -172,18 +172,20 @@ def main(client: Client, name: str, num_jobs: int, version: str) -> Project:
     )
     param_mappings = project_api.create_parameter_mappings(param_mappings)
 
-    # TODO, add more
-
-    # Process step
+    # Task definition
+    exec_script_file = project_api.copy_default_execution_script("exec_mapdl.py")
     task_def = TaskDefinition(
         name="MAPDL_run",
         software_requirements=[Software(name="Ansys Mechanical APDL", version=version)],
-        execution_command="%executable% -b -i %file:mac% -o file.out -np %resource:num_cores%",
+        use_execution_script=True,
+        # execution_command="%executable% -b -i %file:inp% -o file.out -np %resource:num_cores%",
+        execution_script_id=exec_script_file.id,
         resource_requirements=ResourceRequirements(
             num_cores=4,
             memory=4000 * 1024 * 1024,
             disk_space=500 * 1024 * 1024,
             distributed=True,
+            custom={},
         ),
         max_execution_time=1800.0,
         execution_level=0,
@@ -193,7 +195,7 @@ def main(client: Client, name: str, num_jobs: int, version: str) -> Project:
     )
     task_def = project_api.create_task_definitions([task_def])[0]
 
-    # Create job_definition in project
+    # Create job definition in project
     job_def = JobDefinition(name="JobDefinition.1", active=True)
     params = input_params + output_params
     job_def.task_definition_ids = [task_def.id]
