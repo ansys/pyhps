@@ -65,8 +65,8 @@ jobs:
       - uses: dawidd6/action-download-artifact@v2
         with:
           workflow: main.yaml
-          name: docker-compose-artifact
-          path: docker-compose-internal/
+          name: docker-compose-internal
+          path: docker-compose-artifact/
           branch: main
           repo: ansys-internal/rep-deployments
           workflow_conclusion: success           
