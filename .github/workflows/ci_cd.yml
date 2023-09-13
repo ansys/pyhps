@@ -94,6 +94,8 @@ jobs:
           echo "Waiting a few sec ..."
           sleep 5
           FSGATEWAY_TAG=latest-dev JMS_TAG=latest-dev LOCALHOST_ADDR=localhost docker-compose up -d
+          echo "Waiting another few sec ..."
+          sleep 10
         working-directory: ./docker-compose-artifact
 
       - name: Test with tox
@@ -111,11 +113,23 @@ jobs:
           check_name: Test Report ${{ matrix.os }}:${{ matrix.cfg.python-version }}
           detailed_summary: true
           include_passed: true
+      
+      - name: fsgateway logs
+        if: always()
+        run: |
+          docker logs ansys-rep-fsgateway-1
+          docker logs ansys-rep-fsgateway-2
+        working-directory: ./docker-compose-artifact/docker-compose
+
+      - name: housekeeper logs
+        if: always()
+        run: |
+          docker logs ansys-rep-housekeeper-1
+        working-directory: ./docker-compose-artifact/docker-compose
 
       - name: Stop services
         if: always()
         run: |
-          docker logs ansys-rep-housekeeper-1
           docker-compose down -v
         working-directory: ./docker-compose-artifact/docker-compose
 
