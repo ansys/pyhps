@@ -115,6 +115,7 @@ jobs:
       - name: Stop services
         if: always()
         run: |
+          docker logs ansys-rep-housekeeper-1
           docker-compose down -v
         working-directory: ./docker-compose-artifact/docker-compose
 
