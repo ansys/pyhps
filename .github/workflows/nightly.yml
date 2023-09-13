@@ -40,7 +40,7 @@ jobs:
         os: [ubuntu-latest]
         cfg:
           - {python-version: "3.7", toxenv: "py37"}
-          - {python-version: "3.10", toxenv: "py310"}
+          - {python-version: "3.11", toxenv: "py311"}
       fail-fast: false
 
     steps:
@@ -53,13 +53,16 @@ jobs:
         run: |
           python -m pip install --upgrade pip setuptools tox tox-gh-actions
 
-      - name: Check out rep-deployments
-        uses: actions/checkout@v3
+      - uses: dawidd6/action-download-artifact@v2
         with:
-          repository: ansys-internal/rep-deployments
-          token: ${{ secrets.PYANSYS_CI_BOT_TOKEN }}
-          submodules: true
-          path: rep-deployments
+          workflow: main.yaml
+          name: docker-compose-artifact
+          path: docker-compose-internal/
+          branch: main
+          repo: ansys-internal/rep-deployments
+          workflow_conclusion: success           
+          search_artifacts: false
+          github_token: ${{secrets.PYANSYS_CI_BOT_TOKEN}}
 
       - uses: KengoTODA/actions-setup-docker-compose@main
         env:
@@ -74,12 +77,15 @@ jobs:
 
       - name: Start services
         run: |
+          ls -la
+          tar -xvzf docker-compose-internal.tar.gz
+          cd docker-compose
           FSGATEWAY_TAG=latest-dev JMS_TAG=latest-dev docker-compose pull
           FSGATEWAY_TAG=latest-dev JMS_TAG=latest-dev LOCALHOST_ADDR=localhost docker-compose up -d keycloak
           echo "Waiting a few sec ..."
           sleep 5
           FSGATEWAY_TAG=latest-dev JMS_TAG=latest-dev LOCALHOST_ADDR=localhost docker-compose up -d
-        working-directory: ./rep-deployments/docker-compose
+        working-directory: ./docker-compose-artifact
 
       - name: Test with tox
         run: tox -e ${{ matrix.cfg.toxenv }}-noeval-coverage 
@@ -94,6 +100,12 @@ jobs:
         with:
           report_paths: '**/test*.xml'
           check_name: Test Report ${{ matrix.os }}:${{ matrix.cfg.python-version }} 
+
+      - name: Stop services
+        if: always()
+        run: |
+          docker-compose down -v
+        working-directory: ./docker-compose-artifact/docker-compose
 
   end-to-end-tests:
     name: End-to-end tests
