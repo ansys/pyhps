@@ -15,6 +15,7 @@ import uuid
 from examples.mapdl_motorbike_frame.project_setup import create_project as motorbike_create_project
 from marshmallow.utils import missing
 
+from ansys.rep.client import __ansys_apps_version__ as ansys_version
 from ansys.rep.client.jms import JmsApi, ProjectApi
 from ansys.rep.client.jms.resource import JobDefinition, LicenseContext, Project
 from ansys.rep.client.jms.schema.project import ProjectSchema
@@ -273,9 +274,11 @@ class ProjectsTest(REPTestCase):
         proj = jms_api.create_project(proj)
 
         project_api = ProjectApi(client, proj.id)
-        file = project_api.copy_default_execution_script("exec_mapdl.py")
-        self.assertEqual(file.name, "exec_mapdl")
-        self.assertEqual(file.evaluation_path, "exec_mapdl.py")
+        ansys_short_version = f"v{ansys_version[2:4]}{ansys_version[6]}"
+        script_name = f"mapdl-{ansys_short_version}-exec_mapdl"
+        file = project_api.copy_default_execution_script(f"{script_name}.py")
+        self.assertEqual(file.name, script_name)
+        self.assertEqual(file.evaluation_path, f"{script_name}.py")
         self.assertIsNotNone(file.hash)
         self.assertIsNotNone(file.storage_id)
 
