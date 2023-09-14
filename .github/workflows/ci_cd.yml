@@ -91,7 +91,7 @@ jobs:
           cd docker-compose
           ls -ltaR
           docker-compose pull
-          LOCALHOST_ADDR=localhost docker-compose up -d
+          ANSYS_JMS_DEBUG=True LOCALHOST_ADDR=localhost docker-compose up -d
           echo "Waiting few sec ..."
           sleep 90
         working-directory: ./docker-compose-artifact
