@@ -90,12 +90,9 @@ jobs:
           tar -xvzf docker-compose-internal.tar.gz
           cd docker-compose
           FSGATEWAY_TAG=latest-dev JMS_TAG=latest-dev docker-compose pull
-          FSGATEWAY_TAG=latest-dev JMS_TAG=latest-dev LOCALHOST_ADDR=localhost docker-compose up -d keycloak
-          echo "Waiting a few sec ..."
-          sleep 5
           FSGATEWAY_TAG=latest-dev JMS_TAG=latest-dev LOCALHOST_ADDR=localhost docker-compose up -d
-          echo "Waiting another few sec ..."
-          sleep 10
+          echo "Waiting few sec ..."
+          sleep 30
         working-directory: ./docker-compose-artifact
 
       - name: file storage content
