@@ -89,36 +89,12 @@ jobs:
           ls -la
           tar -xvzf docker-compose-internal.tar.gz
           cd docker-compose
-          sed -i 's/-v3/-v3 -d/g' docker-compose.yaml
-          ls -ltaR
-          docker-compose pull
-          docker-compose up -d
-          echo "Waiting few sec ..."
-          sleep 90
+          FSGATEWAY_TAG=latest-dev JMS_TAG=latest-dev docker-compose pull
+          FSGATEWAY_TAG=latest-dev JMS_TAG=latest-dev LOCALHOST_ADDR=localhost docker-compose up -d keycloak
+          echo "Waiting a few sec ..."
+          sleep 5
+          FSGATEWAY_TAG=latest-dev JMS_TAG=latest-dev LOCALHOST_ADDR=localhost docker-compose up -d
         working-directory: ./docker-compose-artifact
-
-      - name: file storage content
-        if: always()
-        run: |
-          echo ""
-          echo "====== housekeeper /root/.ansys/rep/jms/templates ====="
-          docker exec ansys-rep-housekeeper-1 sh -c "ls -latR /root/.ansys/rep/jms/templates" 
-          echo ""
-          echo "====== housekeeper /file_storage ====="
-          docker exec ansys-rep-housekeeper-1 sh -c "ls -ltaR /file_storage"
-          docker exec ansys-rep-housekeeper-1 sh -c "cat /file_storage/.owner.uuid"
-          echo ""
-          echo "===================="
-          docker exec ansys-rep-fsgateway-1 sh -c "ls -ltaR /file_storage"
-          docker exec ansys-rep-fsgateway-1 sh -c "cat /file_storage/.owner.uuid"
-          echo ""
-          echo "===================="
-          docker exec ansys-rep-fsgateway-2 sh -c "ls -ltaR /file_storage"
-          docker exec ansys-rep-fsgateway-2 sh -c "cat /file_storage/.owner.uuid"
-          echo ""
-          echo "===================="
-          docker exec ansys-rep-jms-1 sh -c "ls -ltaR /file_storage"
-          docker exec ansys-rep-jms-1 sh -c "cat /file_storage/.owner.uuid"
 
       - name: Test with tox
         run: tox -e ${{ matrix.cfg.toxenv }}-noeval-coverage
@@ -136,42 +112,6 @@ jobs:
           detailed_summary: true
           include_passed: true
   
-      - name: file storage content
-        if: always()
-        run: |
-          echo ""
-          echo "===================="
-          docker exec ansys-rep-fsgateway-1 sh -c "ls -ltaR /file_storage"
-          docker exec ansys-rep-fsgateway-1 sh -c "cat /file_storage/.owner.uuid"
-          echo ""
-          echo "===================="
-          docker exec ansys-rep-fsgateway-2 sh -c "ls -ltaR /file_storage"
-          docker exec ansys-rep-fsgateway-2 sh -c "cat /file_storage/.owner.uuid"
-          echo ""
-          echo "===================="
-          docker exec ansys-rep-jms-1 sh -c "ls -ltaR /file_storage"
-          docker exec ansys-rep-jms-1 sh -c "cat /file_storage/.owner.uuid"
-      
-      - name: jms logs
-        if: always()
-        run: |
-          docker logs ansys-rep-jms-1
-          docker logs ansys-rep-jms-2
-        working-directory: ./docker-compose-artifact/docker-compose
-
-      - name: fsgateway logs
-        if: always()
-        run: |
-          docker logs ansys-rep-fsgateway-1
-          docker logs ansys-rep-fsgateway-2
-        working-directory: ./docker-compose-artifact/docker-compose
-
-      - name: housekeeper logs
-        if: always()
-        run: |
-          docker logs ansys-rep-housekeeper-1
-        working-directory: ./docker-compose-artifact/docker-compose
-
       - name: Stop services
         if: always()
         run: |

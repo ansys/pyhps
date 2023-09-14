@@ -661,11 +661,6 @@ def _fs_copy_file(
     destination_name: str,
 ) -> str:
 
-    # == temporary code for debugging
-    r = session.get(url=f"{fs_url}/list/{source_bucket}")
-    log.info(f"Content of {source_bucket}:\n{json.dumps(r.json(), indent=2)}")
-    # ==
-
     json_data = json.dumps({"destination": f"ansfs://{destination_bucket}/{destination_name}"})
     r = session.post(url=f"{fs_url}/{source_bucket}/{source_name}:copy", data=json_data)
     return r.json()["checksum"]
