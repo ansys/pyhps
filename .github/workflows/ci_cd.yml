@@ -89,9 +89,10 @@ jobs:
           ls -la
           tar -xvzf docker-compose-internal.tar.gz
           cd docker-compose
+          sed -i 's/-v3/-v3 -d/g' docker-compose.yaml
           ls -ltaR
           docker-compose pull
-          ANSYS_JMS_DEBUG=True LOCALHOST_ADDR=localhost docker-compose up -d
+          LOCALHOST_ADDR=localhost docker-compose up -d
           echo "Waiting few sec ..."
           sleep 90
         working-directory: ./docker-compose-artifact
