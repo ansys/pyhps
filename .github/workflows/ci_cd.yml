@@ -98,6 +98,11 @@ jobs:
           sleep 10
         working-directory: ./docker-compose-artifact
 
+      - name: file storage content
+        if: always()
+        run: |
+          docker exec ansys-rep-fsgateway-1 sh -c "ls -ltR /file_storage"
+
       - name: Test with tox
         run: tox -e ${{ matrix.cfg.toxenv }}-noeval-coverage
         env:
@@ -113,7 +118,12 @@ jobs:
           check_name: Test Report ${{ matrix.os }}:${{ matrix.cfg.python-version }}
           detailed_summary: true
           include_passed: true
-      
+  
+      - name: file storage content
+        if: always()
+        run: |
+          docker exec ansys-rep-fsgateway-1 sh -c "ls -ltR /file_storage"
+
       - name: fsgateway logs
         if: always()
         run: |
