@@ -90,10 +90,10 @@ jobs:
           tar -xvzf docker-compose-internal.tar.gz
           cd docker-compose
           ls -ltaR
-          FSGATEWAY_TAG=mpawlik-templates-and-scripts JMS_TAG=mpawlik-templates-and-scripts docker-compose pull
-          FSGATEWAY_TAG=mpawlik-templates-and-scripts JMS_TAG=mpawlik-templates-and-scripts LOCALHOST_ADDR=localhost docker-compose up -d
+          docker-compose pull
+          LOCALHOST_ADDR=localhost docker-compose up -d
           echo "Waiting few sec ..."
-          sleep 30
+          sleep 90
         working-directory: ./docker-compose-artifact
 
       - name: file storage content
