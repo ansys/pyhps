@@ -98,7 +98,15 @@ jobs:
       - name: file storage content
         if: always()
         run: |
-          docker exec ansys-rep-fsgateway-1 sh -c "ls -ltR /file_storage"
+          echo ====================
+          docker exec ansys-rep-fsgateway-1 sh -c "ls -ltaR /file_storage"
+          docker exec ansys-rep-fsgateway-1 sh -c "cat /file_storage/.owner.uuid"
+          echo ====================
+          docker exec ansys-rep-fsgateway-2 sh -c "ls -ltaR /file_storage"
+          docker exec ansys-rep-fsgateway-2 sh -c "cat /file_storage/.owner.uuid"
+          echo ====================
+          docker exec ansys-rep-jms-1 sh -c "ls -ltaR /file_storage"
+          docker exec ansys-rep-jms-1 sh -c "cat /file_storage/.owner.uuid"
 
       - name: Test with tox
         run: tox -e ${{ matrix.cfg.toxenv }}-noeval-coverage
@@ -119,7 +127,15 @@ jobs:
       - name: file storage content
         if: always()
         run: |
-          docker exec ansys-rep-fsgateway-1 sh -c "ls -ltR /file_storage"
+          echo ====================
+          docker exec ansys-rep-fsgateway-1 sh -c "ls -ltaR /file_storage"
+          docker exec ansys-rep-fsgateway-1 sh -c "cat /file_storage/.owner.uuid"
+          echo ====================
+          docker exec ansys-rep-fsgateway-2 sh -c "ls -ltaR /file_storage"
+          docker exec ansys-rep-fsgateway-2 sh -c "cat /file_storage/.owner.uuid"
+          echo ====================
+          docker exec ansys-rep-jms-1 sh -c "ls -ltaR /file_storage"
+          docker exec ansys-rep-jms-1 sh -c "cat /file_storage/.owner.uuid"
 
       - name: fsgateway logs
         if: always()
