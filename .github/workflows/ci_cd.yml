@@ -142,6 +142,13 @@ jobs:
           echo "===================="
           docker exec ansys-rep-jms-1 sh -c "ls -ltaR /file_storage"
           docker exec ansys-rep-jms-1 sh -c "cat /file_storage/.owner.uuid"
+      
+      - name: jms logs
+        if: always()
+        run: |
+          docker logs ansys-rep-jms-1
+          docker logs ansys-rep-jms-2
+        working-directory: ./docker-compose-artifact/docker-compose
 
       - name: fsgateway logs
         if: always()
