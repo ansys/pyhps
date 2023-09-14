@@ -89,6 +89,7 @@ jobs:
           ls -la
           tar -xvzf docker-compose-internal.tar.gz
           cd docker-compose
+          chmod -R a+rwX templates_and_scripts
           ls -ltaR
           FSGATEWAY_TAG=latest-dev JMS_TAG=latest-dev docker-compose pull
           FSGATEWAY_TAG=latest-dev JMS_TAG=latest-dev LOCALHOST_ADDR=localhost docker-compose up -d
