@@ -92,7 +92,7 @@ jobs:
           sed -i 's/-v3/-v3 -d/g' docker-compose.yaml
           ls -ltaR
           docker-compose pull
-          LOCALHOST_ADDR=localhost docker-compose up -d
+          docker-compose up -d
           echo "Waiting few sec ..."
           sleep 90
         working-directory: ./docker-compose-artifact
