@@ -98,13 +98,16 @@ jobs:
       - name: file storage content
         if: always()
         run: |
-          echo ====================
+          echo ""
+          echo "===================="
           docker exec ansys-rep-fsgateway-1 sh -c "ls -ltaR /file_storage"
           docker exec ansys-rep-fsgateway-1 sh -c "cat /file_storage/.owner.uuid"
-          echo ====================
+          echo ""
+          echo "===================="
           docker exec ansys-rep-fsgateway-2 sh -c "ls -ltaR /file_storage"
           docker exec ansys-rep-fsgateway-2 sh -c "cat /file_storage/.owner.uuid"
-          echo ====================
+          echo ""
+          echo "===================="
           docker exec ansys-rep-jms-1 sh -c "ls -ltaR /file_storage"
           docker exec ansys-rep-jms-1 sh -c "cat /file_storage/.owner.uuid"
 
@@ -127,13 +130,16 @@ jobs:
       - name: file storage content
         if: always()
         run: |
-          echo ====================
+          echo ""
+          echo "===================="
           docker exec ansys-rep-fsgateway-1 sh -c "ls -ltaR /file_storage"
           docker exec ansys-rep-fsgateway-1 sh -c "cat /file_storage/.owner.uuid"
-          echo ====================
+          echo ""
+          echo "===================="
           docker exec ansys-rep-fsgateway-2 sh -c "ls -ltaR /file_storage"
           docker exec ansys-rep-fsgateway-2 sh -c "cat /file_storage/.owner.uuid"
-          echo ====================
+          echo ""
+          echo "===================="
           docker exec ansys-rep-jms-1 sh -c "ls -ltaR /file_storage"
           docker exec ansys-rep-jms-1 sh -c "cat /file_storage/.owner.uuid"
 
