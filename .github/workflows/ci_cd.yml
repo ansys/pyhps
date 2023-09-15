@@ -62,6 +62,17 @@ jobs:
           submodules: true
           path: rep-deployments
 
+      - uses: dawidd6/action-download-artifact@v2
+        with:
+          workflow: main.yaml
+          name: docker-compose-internal
+          path: docker-compose-artifact/
+          branch: main
+          repo: ansys-internal/rep-deployments
+          workflow_conclusion: success           
+          search_artifacts: false
+          github_token: ${{secrets.PYANSYS_CI_BOT_TOKEN}}
+
       - uses: KengoTODA/actions-setup-docker-compose@main
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -75,12 +86,15 @@ jobs:
 
       - name: Start services
         run: |
+          ls -la
+          tar -xvzf docker-compose-internal.tar.gz
+          cd docker-compose
           FSGATEWAY_TAG=latest-dev JMS_TAG=latest-dev docker-compose pull
           FSGATEWAY_TAG=latest-dev JMS_TAG=latest-dev LOCALHOST_ADDR=localhost docker-compose up -d keycloak
           echo "Waiting a few sec ..."
           sleep 5
           FSGATEWAY_TAG=latest-dev JMS_TAG=latest-dev LOCALHOST_ADDR=localhost docker-compose up -d
-        working-directory: ./rep-deployments/docker-compose
+        working-directory: ./docker-compose-artifact
 
       - name: Test with tox
         run: tox -e ${{ matrix.cfg.toxenv }}-noeval-coverage
@@ -97,6 +111,12 @@ jobs:
           check_name: Test Report ${{ matrix.os }}:${{ matrix.cfg.python-version }}
           detailed_summary: true
           include_passed: true
+  
+      - name: Stop services
+        if: always()
+        run: |
+          docker-compose down -v
+        working-directory: ./docker-compose-artifact/docker-compose
 
   docs:
     name: Documentation
