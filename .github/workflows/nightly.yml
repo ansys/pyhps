@@ -39,8 +39,8 @@ jobs:
         # os: [windows-latest, ubuntu-latest]
         os: [ubuntu-latest]
         cfg:
-          - {python-version: "3.7", toxenv: "py37"}
-          - {python-version: "3.11", toxenv: "py311"}
+          - {python-version: "3.9", toxenv: "py39"}
+          - {python-version: "3.12", toxenv: "py312"}
       fail-fast: false
 
     steps:
@@ -122,7 +122,7 @@ jobs:
           python -m pip install --upgrade pip setuptools tox tox-gh-actions
 
       - name: Test with tox
-        run: tox -e py37-witheval 
+        run: tox -e py39-witheval 
         env:
           REP_TEST_URL: https://repkube.westeurope.cloudapp.azure.com/dev/rep
           REP_TEST_USERNAME: repbuild

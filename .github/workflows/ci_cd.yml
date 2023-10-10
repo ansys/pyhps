@@ -9,7 +9,7 @@ on:
       - main
 
 env:
-  MAIN_PYTHON_VERSION: '3.7'
+  MAIN_PYTHON_VERSION: '3.9'
   DOC_PYTHON_VERSION: '3.9'
   DOCUMENTATION_CNAME: 'rep.docs.pyansys.com'
 
