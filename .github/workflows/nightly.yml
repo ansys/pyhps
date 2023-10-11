@@ -5,7 +5,7 @@ on:
   - cron: "0 2 * * *"
 
 env:
-  MAIN_PYTHON_VERSION: '3.7'
+  MAIN_PYTHON_VERSION: '3.9'
   DOC_PYTHON_VERSION: '3.9'
 
 concurrency:
@@ -40,7 +40,7 @@ jobs:
         os: [ubuntu-latest]
         cfg:
           - {python-version: "3.9", toxenv: "py39"}
-          - {python-version: "3.12", toxenv: "py312"}
+          - {python-version: "3.11", toxenv: "py311"}
       fail-fast: false
 
     steps:
