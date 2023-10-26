@@ -56,7 +56,7 @@ class SuccessCriteriaSchema(BaseSchema):
         fields.String(), allow_none=True, description="A list of expressions to be evaluated."
     )
 
-    required_output_files = IdReferenceList(
+    required_output_file_ids = IdReferenceList(
         "File",
         attribute="required_output_file_ids",
         allow_none=True,
@@ -66,7 +66,7 @@ class SuccessCriteriaSchema(BaseSchema):
         allow_none=True, description="Flag to require all output files."
     )
 
-    required_output_parameters = IdReferenceList(
+    required_output_parameter_ids = IdReferenceList(
         "ParameterDefinition",
         attribute="required_output_parameter_ids",
         allow_none=True,
