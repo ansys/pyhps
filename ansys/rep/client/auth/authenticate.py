@@ -26,21 +26,41 @@ def authenticate(
     password: str = None,
     refresh_token: str = None,
     timeout: float = 10.0,
+    verify: bool | str = True,
     **kwargs,
 ):
     """
     Authenticate user with either password or refresh token against REP authentication service.
     If successful, the response includes access and refresh tokens.
 
-    Args:
-        url (str): The base path for the server to call, e.g. "https://127.0.0.1:8443/rep".
-        username (str): Username
-        password (str): Password
-        refresh_token (str, optional): Refresh token.
-        timeout (float, optional): Timeout in seconds. Defaults to 10.
-        scope (str, optional): String containing one or more requested scopes.
-                               Defaults to 'openid'.
-        client_id (str, optional): The client type. Defaults to 'rep-cli'.
+    Parameters
+    ----------
+
+    url : str
+        The base path for the server to call, e.g. "https://127.0.0.1:8443/rep".
+    realm : str
+        Keycloak realm, defaults to 'rep'.
+    grant_type: str
+        Authentication method, defaults to 'password'.
+    username : str
+        Username
+    password : str
+        Password
+    refresh_token : str, optional
+        Refresh token.
+    timeout : float, optional
+        Timeout in seconds. Defaults to 10.
+    scope : str, optional
+        String containing one or more requested scopes. Defaults to 'openid'.
+    client_id : str, optional
+        The client type. Defaults to 'rep-cli'.
+    client_secret : str, optional
+        The client secret.
+    verify: bool | str, optional
+        Either a boolean, in which case it controls whether we verify the
+        server's TLS certificate, or a string, in which case it must be
+        a path to a CA bundle to use.
+        See the :class:`requests.Session` doc.
 
     Returns:
         dict: JSON-encoded content of a :class:`requests.Response`
@@ -54,7 +74,7 @@ def authenticate(
     log.debug(f"Authenticating using {auth_url}")
 
     session = requests.Session()
-    session.verify = False
+    session.verify = verify
     session.headers = ({"content-type": "application/x-www-form-urlencoded"},)
 
     token_url = f"{auth_url}/protocol/openid-connect/token"

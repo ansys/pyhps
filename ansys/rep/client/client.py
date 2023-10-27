@@ -49,6 +49,14 @@ class Client(object):
         If True, the query parameter ``fields="all"`` is applied by default
         to all requests, so that all available fields are returned for
         the requested resources.
+    verify: bool | str, optional
+        Either a boolean, in which case it controls whether we verify the
+        server's TLS certificate, or a string, in which case it must be
+        a path to a CA bundle to use. Defaults to False.
+        See the :class:`requests.Session` documentation for more details.
+    disable_insecure_warnings: bool, optional
+        Disable warnings about insecure HTTPS requests. Defaults to True.
+        See urllib3 documentation about TLS Warnings for more details.
 
     Examples
     --------
@@ -85,6 +93,8 @@ class Client(object):
         refresh_token: str = None,
         auth_url: str = None,
         all_fields=True,
+        verify: bool | str = False,
+        disable_insecure_warnings: bool = True,
     ):
 
         self.rep_url = rep_url
@@ -98,6 +108,7 @@ class Client(object):
         self.scope = scope
         self.client_id = client_id
         self.client_secret = client_secret
+        self.verify = verify
 
         if access_token:
             log.debug("Authenticate with access token")
@@ -122,12 +133,17 @@ class Client(object):
                 username=username,
                 password=password,
                 refresh_token=refresh_token,
+                verify=self.verify,
             )
             self.access_token = tokens["access_token"]
             # client credentials flow does not return a refresh token
             self.refresh_token = tokens.get("refresh_token", None)
 
-        self.session = create_session(self.access_token)
+        self.session = create_session(
+            self.access_token,
+            verify=verify,
+            disable_insecure_warnings=disable_insecure_warnings,
+        )
         if all_fields:
             self.session.params = {"fields": "all"}
 
@@ -167,6 +183,7 @@ class Client(object):
                 scope=self.scope,
                 client_id=self.client_id,
                 client_secret=self.client_secret,
+                verify=self.verify,
             )
         else:
             # Other workflows for authentication generally support refresh_tokens
@@ -179,6 +196,7 @@ class Client(object):
                 client_secret=self.client_secret,
                 username=self.username,
                 refresh_token=self.refresh_token,
+                verify=self.verify,
             )
         self.access_token = tokens["access_token"]
         self.refresh_token = tokens.get("refresh_token", None)
