@@ -6,6 +6,7 @@
 # Author(s): F.Negri O.Koenig
 # ----------------------------------------------------------
 import logging
+from typing import Union
 
 import requests
 from requests.adapters import HTTPAdapter, Retry
@@ -15,7 +16,7 @@ log = logging.getLogger(__name__)
 
 def create_session(
     access_token: str = None,
-    verify: bool | str = True,
+    verify: Union[bool, str] = True,
     disable_insecure_warnings=False,
 ) -> requests.Session:
     """Returns a :class:`requests.Session` object configured for REP with given access token
@@ -29,7 +30,7 @@ def create_session(
     -------
     :class:`requests.Session`
         The session object.
-    verify: bool | str, optional
+    verify: Union[bool, str], optional
         Either a boolean, in which case it controls whether we verify the
         server's TLS certificate, or a string, in which case it must be
         a path to a CA bundle to use.

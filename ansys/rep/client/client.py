@@ -7,6 +7,7 @@
 # ----------------------------------------------------------
 
 import logging
+from typing import Union
 
 from .auth.authenticate import authenticate
 from .connection import create_session
@@ -49,7 +50,7 @@ class Client(object):
         If True, the query parameter ``fields="all"`` is applied by default
         to all requests, so that all available fields are returned for
         the requested resources.
-    verify: bool | str, optional
+    verify: Union[bool, str], optional
         Either a boolean, in which case it controls whether we verify the
         server's TLS certificate, or a string, in which case it must be
         a path to a CA bundle to use. Defaults to False.
@@ -93,7 +94,7 @@ class Client(object):
         refresh_token: str = None,
         auth_url: str = None,
         all_fields=True,
-        verify: bool | str = False,
+        verify: Union[bool, str] = False,
         disable_insecure_warnings: bool = True,
     ):
 

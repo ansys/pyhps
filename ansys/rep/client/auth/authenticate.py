@@ -6,6 +6,7 @@
 # Author(s): F.Negri O.Koenig
 # ----------------------------------------------------------
 import logging
+from typing import Union
 import urllib.parse
 
 import requests
@@ -26,7 +27,7 @@ def authenticate(
     password: str = None,
     refresh_token: str = None,
     timeout: float = 10.0,
-    verify: bool | str = True,
+    verify: Union[bool, str] = True,
     **kwargs,
 ):
     """
@@ -56,7 +57,7 @@ def authenticate(
         The client type. Defaults to 'rep-cli'.
     client_secret : str, optional
         The client secret.
-    verify: bool | str, optional
+    verify: Union[bool, str], optional
         Either a boolean, in which case it controls whether we verify the
         server's TLS certificate, or a string, in which case it must be
         a path to a CA bundle to use.
