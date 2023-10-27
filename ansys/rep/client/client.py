@@ -28,9 +28,9 @@ class Client(object):
         2. Username and password: the client connects to the OAuth server and
            requests access and refresh tokens.
         3. Refresh token: the client connects to the OAuth server and
-          requests a new access token.
+           requests a new access token.
         4. Client credentials: authenticate with client_id and client_secret to
-          obtain a new access token (a refresh token is not included).
+           obtain a new access token (a refresh token is not included).
 
     These alternative workflows are evaluated in the order listed above.
 
@@ -66,7 +66,9 @@ class Client(object):
 
     >>> from ansys.rep.client import Client
     >>> cl = Client(
-    ...     rep_url="https://localhost:8443/rep", username="repuser", password="repuser"
+    ...     rep_url="https://localhost:8443/rep",
+    ...     username="repuser",
+    ...     password="repuser"
     ... )
 
     Create client object and connect to REP with refresh token

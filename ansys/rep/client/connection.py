@@ -25,18 +25,18 @@ def create_session(
     ----------
     access_token : str
         The access token provided by :meth:`ansys.rep.client.auth.authenticate`
+    verify: Union[bool, str], optional
+        Either a boolean, in which case it controls whether we verify the
+        server's TLS certificate, or a string, in which case it must be
+        a path to a CA bundle to use.
+        See the :class:`requests.Session` documentation.
+    disable_insecure_warnings: bool, optional
+        Disable warnings about insecure HTTPS requests.
 
     Returns
     -------
     :class:`requests.Session`
         The session object.
-    verify: Union[bool, str], optional
-        Either a boolean, in which case it controls whether we verify the
-        server's TLS certificate, or a string, in which case it must be
-        a path to a CA bundle to use.
-        See the :class:`requests.Session` doc.
-    disable_insecure_warnings: bool, optional
-        Disable warnings about insecure HTTPS requests.
     """
     session = requests.Session()
 

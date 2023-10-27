@@ -61,10 +61,12 @@ def authenticate(
         Either a boolean, in which case it controls whether we verify the
         server's TLS certificate, or a string, in which case it must be
         a path to a CA bundle to use.
-        See the :class:`requests.Session` doc.
+        See the :class:`requests.Session` documentation.
 
-    Returns:
-        dict: JSON-encoded content of a :class:`requests.Response`
+    Returns
+    ----------
+    dict
+        JSON-encoded content of a :class:`requests.Response`
     """
 
     auth_postfix = f"auth/realms/{realm}"
