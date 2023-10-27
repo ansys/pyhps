@@ -176,6 +176,8 @@ class TaskDefinitionTest(REPTestCase):
                 expressions=[],
                 require_all_output_files=False,
                 require_all_output_parameters=True,
+                required_output_file_ids=["id1", "id2"],
+                required_output_parameter_ids=["id3", "id4"],
                 return_code=0,
             ),
             use_execution_script=False,
@@ -213,13 +215,15 @@ class TaskDefinitionTest(REPTestCase):
                 "FAKE_FILE_ID",
             ],
         )
-        self.assertEqual(
+        self.assertDictEqual(
             serialized_task_def["success_criteria"],
             OrderedDict(
                 {
                     "return_code": 0,
                     "expressions": [],
+                    "required_output_file_ids": ["id1", "id2"],
                     "require_all_output_files": False,
+                    "required_output_parameter_ids": ["id3", "id4"],
                     "require_all_output_parameters": True,
                 }
             ),

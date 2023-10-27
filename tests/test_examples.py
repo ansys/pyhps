@@ -23,6 +23,8 @@ class REPClientTest(REPTestCase):
         project_api = ProjectApi(self.client, project.id)
 
         self.assertEqual(len(project_api.get_jobs()), num_jobs)
+        td = project_api.get_task_definitions()[0]
+        self.assertEqual(len(td.success_criteria.required_output_file_ids), 1)
 
         jms_api.delete_project(project)
 
