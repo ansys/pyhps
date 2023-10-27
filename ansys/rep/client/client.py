@@ -8,6 +8,9 @@
 
 import logging
 from typing import Union
+import warnings
+
+import requests
 
 from .auth.authenticate import authenticate
 from .connection import create_session
@@ -55,8 +58,8 @@ class Client(object):
         server's TLS certificate, or a string, in which case it must be
         a path to a CA bundle to use. Defaults to False.
         See the :class:`requests.Session` documentation for more details.
-    disable_insecure_warnings: bool, optional
-        Disable warnings about insecure HTTPS requests. Defaults to True.
+    disable_security_warnings: bool, optional
+        Disable urllib3 warnings about insecure HTTPS requests. Defaults to True.
         See urllib3 documentation about TLS Warnings for more details.
 
     Examples
@@ -96,8 +99,8 @@ class Client(object):
         refresh_token: str = None,
         auth_url: str = None,
         all_fields=True,
-        verify: Union[bool, str] = False,
-        disable_insecure_warnings: bool = True,
+        verify: Union[bool, str] = None,
+        disable_security_warnings: bool = True,
     ):
 
         self.rep_url = rep_url
@@ -112,6 +115,20 @@ class Client(object):
         self.client_id = client_id
         self.client_secret = client_secret
         self.verify = verify
+
+        if self.verify is None:
+            self.verify = False
+            msg = (
+                f"Certificate verification is disabled. "
+                f"Unverified HTTPS requests will be made to {self.rep_url}."
+            )
+            warnings.warn(msg, Warning)
+            log.warning(msg)
+
+        if disable_security_warnings:
+            requests.packages.urllib3.disable_warnings(
+                requests.packages.urllib3.exceptions.InsecureRequestWarning
+            )
 
         if access_token:
             log.debug("Authenticate with access token")
@@ -144,8 +161,7 @@ class Client(object):
 
         self.session = create_session(
             self.access_token,
-            verify=verify,
-            disable_insecure_warnings=disable_insecure_warnings,
+            verify=self.verify,
         )
         if all_fields:
             self.session.params = {"fields": "all"}

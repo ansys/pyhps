@@ -17,7 +17,7 @@ log = logging.getLogger(__name__)
 def create_session(
     access_token: str = None,
     verify: Union[bool, str] = True,
-    disable_insecure_warnings=False,
+    disable_security_warnings=False,
 ) -> requests.Session:
     """Returns a :class:`requests.Session` object configured for REP with given access token
 
@@ -30,7 +30,7 @@ def create_session(
         server's TLS certificate, or a string, in which case it must be
         a path to a CA bundle to use.
         See the :class:`requests.Session` documentation.
-    disable_insecure_warnings: bool, optional
+    disable_security_warnings: bool, optional
         Disable warnings about insecure HTTPS requests.
 
     Returns
@@ -43,7 +43,7 @@ def create_session(
     # Disable SSL certificate verification and warnings about it
     session.verify = verify
 
-    if disable_insecure_warnings:
+    if disable_security_warnings:
         requests.packages.urllib3.disable_warnings(
             requests.packages.urllib3.exceptions.InsecureRequestWarning
         )

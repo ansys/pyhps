@@ -22,7 +22,7 @@ class ConnectionTest(REPTestCase):
         )
         access_token = resp["access_token"]
 
-        with create_session(access_token, verify=False, disable_insecure_warnings=True) as session:
+        with create_session(access_token, verify=False, disable_security_warnings=True) as session:
             jms_api_url = f"{rep_url}/jms/api/v1"
             log.info(f"Ping {jms_api_url}")
             ping(session, jms_api_url)

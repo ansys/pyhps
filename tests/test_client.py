@@ -18,6 +18,12 @@ log = logging.getLogger(__name__)
 
 
 class REPClientTest(REPTestCase):
+    def test_client_ssl_warning(self):
+        with self.assertWarns(Warning) as context:
+            _ = Client(self.rep_url, self.username, self.password)
+        log.info(context)
+        self.assertTrue("Unverified HTTPS requests" in str(context.warning))
+
     def test_client_with_ssl_verification(self):
         with self.assertRaises(requests.exceptions.SSLError) as context:
             _ = Client(self.rep_url, self.username, self.password, verify=True)
