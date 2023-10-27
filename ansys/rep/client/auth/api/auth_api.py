@@ -69,10 +69,10 @@ class AuthApi:
         """Return users, filtered according to query parameters
 
         Examples of query parameters are:
-        - `username`
-        - `firstName`
-        - `lastName`
-        - `exact`
+            - `username`
+            - `firstName`
+            - `lastName`
+            - `exact`
 
         Pagination is also supported using the `first` and `max` parameters.
 

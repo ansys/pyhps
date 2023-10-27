@@ -6,6 +6,7 @@
 # Author(s): F.Negri O.Koenig
 # ----------------------------------------------------------
 import logging
+from typing import Union
 
 import requests
 from requests.adapters import HTTPAdapter, Retry
@@ -13,22 +14,39 @@ from requests.adapters import HTTPAdapter, Retry
 log = logging.getLogger(__name__)
 
 
-def create_session(access_token: str = None) -> requests.Session:
+def create_session(
+    access_token: str = None,
+    verify: Union[bool, str] = True,
+    disable_security_warnings=False,
+) -> requests.Session:
     """Returns a :class:`requests.Session` object configured for REP with given access token
 
-    Args:
-        access_token (str): The access token provided by :meth:`ansys.rep.client.auth.authenticate`
+    Parameters
+    ----------
+    access_token : str
+        The access token provided by :meth:`ansys.rep.client.auth.authenticate`
+    verify: Union[bool, str], optional
+        Either a boolean, in which case it controls whether we verify the
+        server's TLS certificate, or a string, in which case it must be
+        a path to a CA bundle to use.
+        See the :class:`requests.Session` documentation.
+    disable_security_warnings: bool, optional
+        Disable warnings about insecure HTTPS requests.
 
-    Returns:
-        :class:`requests.Session`: The session object.
+    Returns
+    -------
+    :class:`requests.Session`
+        The session object.
     """
     session = requests.Session()
 
     # Disable SSL certificate verification and warnings about it
-    session.verify = False
-    requests.packages.urllib3.disable_warnings(
-        requests.packages.urllib3.exceptions.InsecureRequestWarning
-    )
+    session.verify = verify
+
+    if disable_security_warnings:
+        requests.packages.urllib3.disable_warnings(
+            requests.packages.urllib3.exceptions.InsecureRequestWarning
+        )
 
     # Set basic content type to json
     session.headers = {

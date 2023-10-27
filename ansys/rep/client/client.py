@@ -7,6 +7,10 @@
 # ----------------------------------------------------------
 
 import logging
+from typing import Union
+import warnings
+
+import requests
 
 from .auth.authenticate import authenticate
 from .connection import create_session
@@ -27,9 +31,9 @@ class Client(object):
         2. Username and password: the client connects to the OAuth server and
            requests access and refresh tokens.
         3. Refresh token: the client connects to the OAuth server and
-          requests a new access token.
+           requests a new access token.
         4. Client credentials: authenticate with client_id and client_secret to
-          obtain a new access token (a refresh token is not included).
+           obtain a new access token (a refresh token is not included).
 
     These alternative workflows are evaluated in the order listed above.
 
@@ -49,6 +53,14 @@ class Client(object):
         If True, the query parameter ``fields="all"`` is applied by default
         to all requests, so that all available fields are returned for
         the requested resources.
+    verify: Union[bool, str], optional
+        Either a boolean, in which case it controls whether we verify the
+        server's TLS certificate, or a string, in which case it must be
+        a path to a CA bundle to use. Defaults to False.
+        See the :class:`requests.Session` documentation for more details.
+    disable_security_warnings: bool, optional
+        Disable urllib3 warnings about insecure HTTPS requests. Defaults to True.
+        See urllib3 documentation about TLS Warnings for more details.
 
     Examples
     --------
@@ -57,7 +69,9 @@ class Client(object):
 
     >>> from ansys.rep.client import Client
     >>> cl = Client(
-    ...     rep_url="https://localhost:8443/rep", username="repuser", password="repuser"
+    ...     rep_url="https://localhost:8443/rep",
+    ...     username="repuser",
+    ...     password="repuser"
     ... )
 
     Create client object and connect to REP with refresh token
@@ -85,6 +99,8 @@ class Client(object):
         refresh_token: str = None,
         auth_url: str = None,
         all_fields=True,
+        verify: Union[bool, str] = None,
+        disable_security_warnings: bool = True,
     ):
 
         self.rep_url = rep_url
@@ -98,6 +114,21 @@ class Client(object):
         self.scope = scope
         self.client_id = client_id
         self.client_secret = client_secret
+        self.verify = verify
+
+        if self.verify is None:
+            self.verify = False
+            msg = (
+                f"Certificate verification is disabled. "
+                f"Unverified HTTPS requests will be made to {self.rep_url}."
+            )
+            warnings.warn(msg, Warning)
+            log.warning(msg)
+
+        if disable_security_warnings:
+            requests.packages.urllib3.disable_warnings(
+                requests.packages.urllib3.exceptions.InsecureRequestWarning
+            )
 
         if access_token:
             log.debug("Authenticate with access token")
@@ -122,12 +153,16 @@ class Client(object):
                 username=username,
                 password=password,
                 refresh_token=refresh_token,
+                verify=self.verify,
             )
             self.access_token = tokens["access_token"]
             # client credentials flow does not return a refresh token
             self.refresh_token = tokens.get("refresh_token", None)
 
-        self.session = create_session(self.access_token)
+        self.session = create_session(
+            self.access_token,
+            verify=self.verify,
+        )
         if all_fields:
             self.session.params = {"fields": "all"}
 
@@ -167,6 +202,7 @@ class Client(object):
                 scope=self.scope,
                 client_id=self.client_id,
                 client_secret=self.client_secret,
+                verify=self.verify,
             )
         else:
             # Other workflows for authentication generally support refresh_tokens
@@ -179,6 +215,7 @@ class Client(object):
                 client_secret=self.client_secret,
                 username=self.username,
                 refresh_token=self.refresh_token,
+                verify=self.verify,
             )
         self.access_token = tokens["access_token"]
         self.refresh_token = tokens.get("refresh_token", None)

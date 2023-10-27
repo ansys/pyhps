@@ -95,6 +95,7 @@ class AuthClientTest(REPTestCase):
                 subject_token=client.access_token,
                 requested_token_type="urn:ietf:params:oauth:token-type:refresh_token",
                 requested_subject=new_user.id,
+                verify=False,
             )
         except REPError as e:
             if e.response.status_code == 501 and "Feature not enabled" in e.reason:
