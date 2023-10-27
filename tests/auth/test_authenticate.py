@@ -24,7 +24,7 @@ class AuthenticationTest(REPTestCase):
         self.assertIn("access_token", resp)
         self.assertIn("refresh_token", resp)
 
-    def test_authenticate_with_tls_verification(self):
+    def test_authenticate_with_ssl_verification(self):
 
         with self.assertRaises(requests.exceptions.SSLError) as context:
             _ = authenticate(

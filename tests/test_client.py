@@ -9,6 +9,8 @@ import logging
 import time
 import unittest
 
+import requests
+
 from ansys.rep.client import Client
 from tests.rep_test import REPTestCase
 
@@ -16,6 +18,11 @@ log = logging.getLogger(__name__)
 
 
 class REPClientTest(REPTestCase):
+    def test_client_with_ssl_verification(self):
+        with self.assertRaises(requests.exceptions.SSLError) as context:
+            _ = Client(self.rep_url, self.username, self.password, verify=True)
+        self.assertTrue("CERTIFICATE_VERIFY_FAILED" in str(context.exception))
+
     def test_authentication_workflows(self):
 
         ## Auth with user and password
