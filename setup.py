@@ -38,6 +38,5 @@ setup(
         "backoff>=2.0.0",
     ],
     python_requires=">=3.7",
-    packages=find_namespace_packages(where=".", include="ansys*"),
-    package_dir={"": "."},
+    packages=find_namespace_packages(include=["ansys.*"]),
 )
