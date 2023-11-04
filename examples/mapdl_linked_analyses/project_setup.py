@@ -43,14 +43,14 @@ log = logging.getLogger(__name__)
 
 
 def create_prestress_task_definition(
-    project_api: ProjectApi, version: str
+    project_api: ProjectApi, use_exec_script: bool, version: str
 ) -> Tuple[str, List[File]]:
 
     log.info("=== Files")
     cwd = os.path.dirname(__file__)
     files = [
         File(
-            name="input_deck",
+            name="inp",
             evaluation_path="prestres.dat",
             type="text/plain",
             src=os.path.join(cwd, "prestress.dat"),
@@ -90,27 +90,40 @@ def create_prestress_task_definition(
     files = project_api.create_files(files)
     file_ids = {f.name: f.id for f in files}
 
+    task_defs = []
     task_def = TaskDefinition(
         name="Prestress",
         software_requirements=[Software(name="Ansys Mechanical APDL", version=version)],
-        execution_command="%executable% -b -nolist -i %file:input_deck%"
+        execution_command="%executable% -b -nolist -i %file:inp%"
         " -o solve.out -np %resource:num_cores%",
         max_execution_time=360.0,
         resource_requirements=ResourceRequirements(
             num_cores=NUM_CORES,
+            distributed=True,
         ),
         execution_level=0,
         num_trials=1,
-        input_file_ids=[file_ids["input_deck"]],
-        output_file_ids=[id for name, id in file_ids.items() if name != "input_deck"],
+        input_file_ids=[file_ids["inp"]],
+        output_file_ids=[id for name, id in file_ids.items() if name != "inp"],
     )
-    task_def = project_api.create_task_definitions([task_def])[0]
+
+    if use_exec_script:
+        exec_script_file = project_api.copy_default_execution_script(
+            f"mapdl-v{version[2:4]}{version[6]}-exec_mapdl.py"
+        )
+
+        task_def.use_execution_script = True
+        task_def.execution_script_id = exec_script_file.id
+
+    task_defs.append(task_def)
+
+    task_def = project_api.create_task_definitions(task_defs)[0]
 
     return task_def.id, [f for f in files if f.name in ["rst", "ldhi", "Rnn", "rdb"]]
 
 
 def create_modal_task_definition(
-    project_api: ProjectApi, prestress_files: List[File], version: str
+    project_api: ProjectApi, prestress_files: List[File], use_exec_script: bool, version: str
 ) -> Tuple[str, List[File]]:
 
     log.info("=== Files")
@@ -118,7 +131,7 @@ def create_modal_task_definition(
     # the prestress output files already exist, no need to create them
     files = [
         File(
-            name="input_deck",
+            name="inp",
             evaluation_path="modal.dat",
             type="text/plain",
             src=os.path.join(cwd, "modal.dat"),
@@ -170,30 +183,43 @@ def create_modal_task_definition(
     file_ids = {f.name: f.id for f in files}
 
     # Process step
-    input_file_ids = [file_ids["input_deck"]]
+    input_file_ids = [file_ids["inp"]]
     input_file_ids.extend([f.id for f in prestress_files])
 
+    task_defs = []
     task_def = TaskDefinition(
         name="Modal",
         software_requirements=[Software(name="Ansys Mechanical APDL", version=version)],
-        execution_command="%executable% -b -nolist -i %file:input_deck% "
+        execution_command="%executable% -b -nolist -i %file:inp% "
         "-o solve.out -np %resource:num_cores%",
         max_execution_time=360.0,
         resource_requirements=ResourceRequirements(
             num_cores=NUM_CORES,
+            distributed=True,
         ),
         execution_level=1,
         num_trials=1,
         input_file_ids=input_file_ids,
-        output_file_ids=[id for name, id in file_ids.items() if name != "input_deck"],
+        output_file_ids=[id for name, id in file_ids.items() if name != "inp"],
     )
-    task_def = project_api.create_task_definitions([task_def])[0]
+
+    if use_exec_script:
+        exec_script_file = project_api.copy_default_execution_script(
+            f"mapdl-v{version[2:4]}{version[6]}-exec_mapdl.py"
+        )
+
+        task_def.use_execution_script = True
+        task_def.execution_script_id = exec_script_file.id
+
+    task_defs.append(task_def)
+
+    task_def = project_api.create_task_definitions(task_defs)[0]
 
     return task_def.id, [f for f in files if f.name in ["rst", "mode", "db", "esav", "emat"]]
 
 
 def create_harmonic_task_definition(
-    project_api: ProjectApi, modal_files: List[File], version: str
+    project_api: ProjectApi, modal_files: List[File], use_exec_script: bool, version: str
 ) -> str:
 
     log.info("=== Files")
@@ -202,7 +228,7 @@ def create_harmonic_task_definition(
 
     files = [
         File(
-            name="input_deck",
+            name="inp",
             evaluation_path="harmonic.dat",
             type="text/plain",
             src=os.path.join(cwd, "harmonic.dat"),
@@ -219,25 +245,37 @@ def create_harmonic_task_definition(
     file_ids = {f.name: f.id for f in files}
 
     # Process step
-    input_file_ids = [file_ids["input_deck"]]
+    input_file_ids = [file_ids["inp"]]
     input_file_ids.extend([f.id for f in modal_files])
 
+    task_defs = []
     task_def = TaskDefinition(
         name="Harmonic",
         software_requirements=[Software(name="Ansys Mechanical APDL", version=version)],
-        execution_command="%executable% -b -nolist -i %file:input_deck% "
+        execution_command="%executable% -b -nolist -i %file:inp% "
         "-o solve.out -np %resource:num_cores%",
         max_execution_time=360.0,
         resource_requirements=ResourceRequirements(
             num_cores=NUM_CORES,
+            distributed=True,
         ),
         execution_level=2,
         num_trials=1,
         input_file_ids=input_file_ids,
-        output_file_ids=[id for name, id in file_ids.items() if name != "input_deck"],
+        output_file_ids=[id for name, id in file_ids.items() if name != "inp"],
     )
 
-    task_def = project_api.create_task_definitions([task_def])[0]
+    if use_exec_script:
+        exec_script_file = project_api.copy_default_execution_script(
+            f"mapdl-v{version[2:4]}{version[6]}-exec_mapdl.py"
+        )
+
+        task_def.use_execution_script = True
+        task_def.execution_script_id = exec_script_file.id
+
+    task_defs.append(task_def)
+
+    task_def = project_api.create_task_definitions(task_defs)[0]
 
     return task_def.id
 
@@ -248,7 +286,9 @@ def set_last_task_to_pending(project_api: ProjectApi, job_id: str):
     return project_api.update_tasks([task])
 
 
-def create_project(client: Client, name: str, incremental: bool, version: str) -> Project:
+def create_project(
+    client: Client, name: str, incremental: bool, use_exec_script: bool, version: str
+) -> Project:
 
     log.info("=== REP connection")
     log.info(f"Client connected at {client.rep_url}")
@@ -267,7 +307,9 @@ def create_project(client: Client, name: str, incremental: bool, version: str) -
     job_definition = JobDefinition(name="Linked Analyses", active=True)
 
     log.info("=== Create Prestress task definition")
-    prestress_task_def_id, prestress_files = create_prestress_task_definition(project_api, version)
+    prestress_task_def_id, prestress_files = create_prestress_task_definition(
+        project_api, use_exec_script, version
+    )
 
     job_definition.task_definition_ids = [prestress_task_def_id]
 
@@ -281,7 +323,7 @@ def create_project(client: Client, name: str, incremental: bool, version: str) -
 
     log.info("=== Create Modal task definition")
     modal_task_def_id, modal_files = create_modal_task_definition(
-        project_api, prestress_files, version
+        project_api, prestress_files, use_exec_script, version
     )
 
     job_definition.task_definition_ids.append(modal_task_def_id)
@@ -293,7 +335,9 @@ def create_project(client: Client, name: str, incremental: bool, version: str) -
         set_last_task_to_pending(project_api, job.id)
 
     log.info("=== Create Harmonic task definition")
-    harmonic_task_def_id = create_harmonic_task_definition(project_api, modal_files, version)
+    harmonic_task_def_id = create_harmonic_task_definition(
+        project_api, modal_files, use_exec_script, version
+    )
 
     job_definition.task_definition_ids.append(harmonic_task_def_id)
 
@@ -317,6 +361,7 @@ def create_project(client: Client, name: str, incremental: bool, version: str) -
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("-n", "--name", type=str, default="MAPDL Prestress-Modal-Harmonic")
+    parser.add_argument("-es", "--use-exec-script", default=False, type=bool)
     parser.add_argument("-U", "--url", default="https://localhost:8443/rep")
     parser.add_argument("-u", "--username", default="repadmin")
     parser.add_argument("-p", "--password", default="repadmin")
@@ -333,7 +378,11 @@ if __name__ == "__main__":
 
     try:
         create_project(
-            client, name=args.name, incremental=args.incremental, version=args.ansys_version
+            client,
+            name=args.name,
+            incremental=args.incremental,
+            use_exec_script=args.use_exec_script,
+            version=args.ansys_version,
         )
     except REPError as e:
         log.error(str(e))
