@@ -5,6 +5,7 @@
 #
 # Author(s): O.Koenig
 # ----------------------------------------------------------
+import io
 import logging
 import os
 import tempfile
@@ -50,6 +51,18 @@ class FilesTest(REPTestCase):
         )
         files.append(File(name="img", evaluation_path="file000.jpg", type="image/jpeg", hash=None))
         files.append(File(name="out", evaluation_path="file.out", type="text/plain", hash=None))
+
+        with open(mac_path, "rb") as f:
+            file_object_string = f.read()
+        files.append(
+            File(
+                name="file-object",
+                evaluation_path="my-file.txt",
+                type="text/plain",
+                src=io.BytesIO(file_object_string),
+            )
+        )
+
         files_created = project_api.create_files(files)
         for file in files_created:
             self.assertTrue(file.created_by is not missing)
@@ -72,10 +85,12 @@ class FilesTest(REPTestCase):
             self.assertEqual(f.read(), files_queried[0].content)
         with open(res_path, "rb") as f:
             self.assertEqual(f.read(), files_queried[1].content)
+        self.assertEqual(file_object_string, files_queried[4].content)
 
         # verify that file size was correctly set
         self.assertEqual(os.path.getsize(mac_path), files_queried[0].size)
         self.assertEqual(os.path.getsize(res_path), files_queried[1].size)
+        self.assertEqual(os.path.getsize(mac_path), files_queried[4].size)
 
         with tempfile.TemporaryDirectory() as tpath:
 

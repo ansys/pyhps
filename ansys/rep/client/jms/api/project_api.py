@@ -511,15 +511,24 @@ def _upload_files(project_api: ProjectApi, files):
     fs_headers = {"content-type": "application/octet-stream"}
 
     for f in files:
-        if getattr(f, "src", None) is not None:
-            with open(f.src, "rb") as file_content:
-                r = project_api.client.session.post(
-                    f"{project_api.fs_bucket_url}/{f.storage_id}",
-                    data=file_content,
-                    headers=fs_headers,
-                )
-                f.hash = r.json()["checksum"]
-                f.size = os.path.getsize(f.src)
+        if getattr(f, "src", None) is None:
+            continue
+
+        is_file = isinstance(f.src, str) and os.path.exists(f.src)
+        content = f.src
+        if is_file:
+            content = open(f.src, "rb")
+
+        r = project_api.client.session.post(
+            f"{project_api.fs_bucket_url}/{f.storage_id}",
+            data=content,
+            headers=fs_headers,
+        )
+        f.hash = r.json()["checksum"]
+        f.size = r.request.headers.get("Content-Length", None)
+
+        if is_file:
+            content.close()
 
 
 def create_files(project_api: ProjectApi, files, as_objects=True) -> List[File]:
@@ -647,7 +656,7 @@ def copy_jobs(project_api: ProjectApi, jobs: List[Job], as_objects=True, **query
 
 def sync_jobs(project_api: ProjectApi, jobs: List[Job]):
 
-    url = f"{project_api.url}/jobs:sync"
+    url = f"{project_api.url}/jobs:sync"  # noqa: E231
     json_data = json.dumps({"job_ids": [obj.id for obj in jobs]})
     r = project_api.client.session.put(f"{url}", data=json_data)
 
@@ -661,6 +670,10 @@ def _fs_copy_file(
     destination_name: str,
 ) -> str:
 
-    json_data = json.dumps({"destination": f"ansfs://{destination_bucket}/{destination_name}"})
-    r = session.post(url=f"{fs_url}/{source_bucket}/{source_name}:copy", data=json_data)
+    json_data = json.dumps(
+        {"destination": f"ansfs://{destination_bucket}/{destination_name}"}  # noqa: E231
+    )
+    r = session.post(
+        url=f"{fs_url}/{source_bucket}/{source_name}:copy", data=json_data  # noqa: E231
+    )
     return r.json()["checksum"]
