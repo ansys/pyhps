@@ -18,16 +18,22 @@ class FitnessTermDefinitionSchema(ObjectSchema):
     class Meta(ObjectSchema.Meta):
         pass
 
-    name = fields.String(allow_none=True, description="Name of the fitness term.")
+    name = fields.String(allow_none=True, metadata={"description": "Name of the fitness term."})
     expression = fields.String(
-        allow_none=True, description="The Python expression that defines the fitness term."
+        allow_none=True,
+        metadata={"description": "The Python expression that defines the fitness term."},
     )
     type = fields.String(
-        allow_none=True, validate=OneOf(fitness_term_types), description="Fitness term type."
+        allow_none=True,
+        validate=OneOf(fitness_term_types),
+        metadata={"description": "Fitness term type."},
     )
     weighting_factor = fields.Float(
         allow_none=True,
-        description="Relative importance of the fitness term in comparison to other fitness terms.",
+        metadata={
+            "description": "Relative importance of the fitness "
+            "term in comparison to other fitness terms."
+        },
     )
 
 
@@ -38,6 +44,8 @@ class FitnessDefinitionSchema(ObjectSchema):
     fitness_term_definitions = fields.Nested(
         FitnessTermDefinitionSchema,
         many=True,
-        description="List of :class:`FitnessTermDefinition`.",
+        metadata={"description": "List of :class:`FitnessTermDefinition`."},
     )
-    error_fitness = fields.Float(description="The default fitness value assigned to failed jobs.")
+    error_fitness = fields.Float(
+        metadata={"description": "The default fitness value assigned to failed jobs."}
+    )
