@@ -192,6 +192,7 @@ def submit_job(use_exec_script=False) -> REPJob:
             memory=6000 * 1024 * 1024,
             disk_space=4000 * 1024 * 1024,
             distributed=True,
+            platform="Windows",
         ),
         execution_level=0,
         num_trials=1,

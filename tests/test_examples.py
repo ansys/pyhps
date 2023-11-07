@@ -74,10 +74,12 @@ class REPClientTest(REPTestCase):
 
     def test_mapdl_tyre_performance(self):
 
-        from examples.mapdl_tyre_performance.project_setup import main
+        from examples.mapdl_tyre_performance.project_setup import create_project
 
         num_jobs = 1
-        project = main(self.client, f"Test mapdl_tyre_performance", num_jobs, version=ansys_version)
+        project = create_project(
+            self.client, f"Test mapdl_tyre_performance", ansys_version, num_jobs
+        )
         self.assertIsNotNone(project)
 
         jms_api = JmsApi(self.client)
@@ -128,6 +130,7 @@ class REPClientTest(REPTestCase):
                 client,
                 name="Test Linked Analyses",
                 incremental=incremental_version,
+                use_exec_script=False,
                 version=ansys_version,
             )
             self.assertIsNotNone(project)
@@ -142,9 +145,9 @@ class REPClientTest(REPTestCase):
 
     def test_fluent_2d_heat_exchanger(self):
 
-        from examples.fluent_2d_heat_exchanger.project_setup import main
+        from examples.fluent_2d_heat_exchanger.project_setup import create_project
 
-        project = main(self.client, name="Fluent Test", version=ansys_version)
+        project = create_project(self.client, name="Fluent Test", version=ansys_version)
         self.assertIsNotNone(project)
 
         jms_api = JmsApi(self.client)

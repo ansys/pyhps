@@ -84,6 +84,9 @@ def create_project(
             disk_space=500,
             distributed=True,
         ),
+        execution_context={
+            "dimension": "2d",
+        },
         max_execution_time=600.0,
         execution_level=0,
         num_trials=1,
