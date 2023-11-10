@@ -6,4 +6,4 @@ apispec==6.3.0
 sphinxcontrib-httpdomain==1.8.1
 sphinxcontrib-globalsubs==0.1.1
 sphinxnotes-strike==1.2
-sphinx-autodoc-typehints==1.24.0
+sphinx-autodoc-typehints==1.25.0
