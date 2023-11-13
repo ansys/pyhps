@@ -158,6 +158,23 @@ class REPClientTest(REPTestCase):
 
         jms_api.delete_project(project)
 
+    def test_fluent_2d_heat_exchanger_with_exec_script(self):
+
+        from examples.fluent_2d_heat_exchanger.project_setup import create_project
+
+        project = create_project(
+            self.client, name="Fluent Test", version=ansys_version, use_exec_script=True
+        )
+        self.assertIsNotNone(project)
+
+        jms_api = JmsApi(self.client)
+        project_api = ProjectApi(self.client, project.id)
+
+        self.assertEqual(len(project_api.get_jobs()), 1)
+        self.assertEqual(jms_api.get_project(id=project.id).name, "Fluent Test")
+
+        jms_api.delete_project(project)
+
     def test_fluent_nozzle(self):
 
         from examples.fluent_nozzle.project_setup import create_project
@@ -174,6 +191,38 @@ class REPClientTest(REPTestCase):
         self.assertEqual(jms_api.get_project(id=project.id).name, "Fluent Nozzle Test")
 
         jms_api.delete_project(project)
+
+    def test_lsdyna_cylinder_plate(self):
+
+        from examples.lsdyna_cylinder_plate.lsdyna_job import submit_job
+
+        app_job = submit_job()
+        self.assertIsNotNone(app_job)
+
+        jms_api = JmsApi(self.client)
+        project_api = ProjectApi(self.client, app_job.project_id)
+
+        self.assertEqual(len(project_api.get_jobs()), 1)
+        proj = jms_api.get_project(id=app_job.project_id)
+        self.assertEqual(proj.name, "LS-DYNA Cylinder Plate")
+
+        jms_api.delete_project(proj)
+
+    def test_lsdyna_cylinder_plate_with_exec_script(self):
+
+        from examples.lsdyna_cylinder_plate.lsdyna_job import submit_job
+
+        app_job = submit_job(use_exec_script=True)
+        self.assertIsNotNone(app_job)
+
+        jms_api = JmsApi(self.client)
+        project_api = ProjectApi(self.client, app_job.project_id)
+
+        self.assertEqual(len(project_api.get_jobs()), 1)
+        proj = jms_api.get_project(id=app_job.project_id)
+        self.assertEqual(proj.name, "LS-DYNA Cylinder Plate")
+
+        jms_api.delete_project(proj)
 
     def test_cfx_static_mixer(self):
 
