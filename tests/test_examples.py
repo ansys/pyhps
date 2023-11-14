@@ -74,10 +74,12 @@ class REPClientTest(REPTestCase):
 
     def test_mapdl_tyre_performance(self):
 
-        from examples.mapdl_tyre_performance.project_setup import main
+        from examples.mapdl_tyre_performance.project_setup import create_project
 
         num_jobs = 1
-        project = main(self.client, f"Test mapdl_tyre_performance", num_jobs, version=ansys_version)
+        project = create_project(
+            self.client, f"Test mapdl_tyre_performance", ansys_version, num_jobs
+        )
         self.assertIsNotNone(project)
 
         jms_api = JmsApi(self.client)
@@ -128,6 +130,7 @@ class REPClientTest(REPTestCase):
                 client,
                 name="Test Linked Analyses",
                 incremental=incremental_version,
+                use_exec_script=False,
                 version=ansys_version,
             )
             self.assertIsNotNone(project)
@@ -142,9 +145,26 @@ class REPClientTest(REPTestCase):
 
     def test_fluent_2d_heat_exchanger(self):
 
-        from examples.fluent_2d_heat_exchanger.project_setup import main
+        from examples.fluent_2d_heat_exchanger.project_setup import create_project
 
-        project = main(self.client, name="Fluent Test", version=ansys_version)
+        project = create_project(self.client, name="Fluent Test", version=ansys_version)
+        self.assertIsNotNone(project)
+
+        jms_api = JmsApi(self.client)
+        project_api = ProjectApi(self.client, project.id)
+
+        self.assertEqual(len(project_api.get_jobs()), 1)
+        self.assertEqual(jms_api.get_project(id=project.id).name, "Fluent Test")
+
+        jms_api.delete_project(project)
+
+    def test_fluent_2d_heat_exchanger_with_exec_script(self):
+
+        from examples.fluent_2d_heat_exchanger.project_setup import create_project
+
+        project = create_project(
+            self.client, name="Fluent Test", version=ansys_version, use_exec_script=True
+        )
         self.assertIsNotNone(project)
 
         jms_api = JmsApi(self.client)
@@ -171,6 +191,38 @@ class REPClientTest(REPTestCase):
         self.assertEqual(jms_api.get_project(id=project.id).name, "Fluent Nozzle Test")
 
         jms_api.delete_project(project)
+
+    def test_lsdyna_cylinder_plate(self):
+
+        from examples.lsdyna_cylinder_plate.lsdyna_job import submit_job
+
+        app_job = submit_job()
+        self.assertIsNotNone(app_job)
+
+        jms_api = JmsApi(self.client)
+        project_api = ProjectApi(self.client, app_job.project_id)
+
+        self.assertEqual(len(project_api.get_jobs()), 1)
+        proj = jms_api.get_project(id=app_job.project_id)
+        self.assertEqual(proj.name, "LS-DYNA Cylinder Plate")
+
+        jms_api.delete_project(proj)
+
+    def test_lsdyna_cylinder_plate_with_exec_script(self):
+
+        from examples.lsdyna_cylinder_plate.lsdyna_job import submit_job
+
+        app_job = submit_job(use_exec_script=True)
+        self.assertIsNotNone(app_job)
+
+        jms_api = JmsApi(self.client)
+        project_api = ProjectApi(self.client, app_job.project_id)
+
+        self.assertEqual(len(project_api.get_jobs()), 1)
+        proj = jms_api.get_project(id=app_job.project_id)
+        self.assertEqual(proj.name, "LS-DYNA Cylinder Plate")
+
+        jms_api.delete_project(proj)
 
     def test_cfx_static_mixer(self):
 

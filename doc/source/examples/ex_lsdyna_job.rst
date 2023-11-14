@@ -20,6 +20,9 @@ Usage:
     python lsdyna_job.py download
 
 .. note::
+    This example only runs on Windows platform as the LS-PrePost task requires to open the LS-PREPOST GUI.
+
+.. note::
     The ``download`` action requires ``tqdm`` and ``humanize`` packages to show a progress bar during the result files download. You can install them with ``python -m pip install tqdm humanize``.
 
 .. only:: builder_html
