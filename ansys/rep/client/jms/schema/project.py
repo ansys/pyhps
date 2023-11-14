@@ -16,21 +16,28 @@ class ProjectSchema(BaseSchema):
         pass
 
     id = fields.Str(
-        description="Unique ID to access the project, specified on creation of the project."
+        metadata={
+            "description": "Unique ID to access the project, assigned server side on creation."
+        }
     )
-    name = fields.Str(description="Name of the project.")
-    active = fields.Bool(description="Defines whether the project is active for evaluation.")
-    priority = fields.Int(description="Priority to pick the project for evaluation.")
+    name = fields.Str(metadata={"description": "Name of the project."})
+    active = fields.Bool(
+        metadata={"description": "Defines whether the project is active for evaluation."}
+    )
+    priority = fields.Int(metadata={"description": "Priority to pick the project for evaluation."})
 
     creation_time = fields.DateTime(
-        allow_none=True, load_only=True, description="The date and time the project was created."
+        allow_none=True,
+        load_only=True,
+        metadata={"description": "The date and time the project was created."},
     )
     modification_time = fields.DateTime(
         allow_none=True,
         load_only=True,
-        description="The date and time the project was last modified.",
+        metadata={"description": "The date and time the project was last modified."},
     )
 
     statistics = fields.Dict(
-        load_only=True, description="Optional dictionary containing various project statistics."
+        load_only=True,
+        metadata={"description": "Optional dictionary containing various project statistics."},
     )

@@ -26,7 +26,7 @@ class ParameterMappingSchema(ObjectSchemaWithModificationInfo):
     float_field = fields.String(allow_none=True)
     width = fields.Int(allow_none=True)
     precision = fields.Int(allow_none=True)
-    tokenizer = fields.String(allow_none=True, description="")
+    tokenizer = fields.String(allow_none=True, metadata={"description": ""})
     decimal_symbol = fields.String(allow_none=True)
     digit_grouping_symbol = fields.String(allow_none=True)
     string_quote = fields.String(allow_none=True)
@@ -36,12 +36,15 @@ class ParameterMappingSchema(ObjectSchemaWithModificationInfo):
         allow_none=True,
         attribute="parameter_definition_id",
         referenced_class="ParameterDefinition",
-        description="ID of the linked parameter definition, " "see :class:`ParameterDefinition`.",
+        metadata={
+            "description": "ID of the linked parameter definition, "
+            "see :class:`ParameterDefinition`."
+        },
     )
     task_definition_property = fields.String(allow_none=True)
     file_id = IdReference(
         allow_none=True,
         attribute="file_id",
         referenced_class="File",
-        description="ID of the file resource.",
+        metadata={"description": "ID of the file resource."},
     )

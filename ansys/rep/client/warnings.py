@@ -1,0 +1,2 @@
+class UnverifiedHTTPSRequestsWarning(Warning):
+    pass

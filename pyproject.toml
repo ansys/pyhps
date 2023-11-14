@@ -28,6 +28,6 @@ markers = [
 ]
 filterwarnings = [
     "ignore::urllib3.exceptions.InsecureRequestWarning",
-    "ignore::marshmallow.warnings.RemovedInMarshmallow4Warning",
     "ignore::DeprecationWarning:pkg_resources.*",
+    "ignore::ansys.rep.client.UnverifiedHTTPSRequestsWarning",
 ]
