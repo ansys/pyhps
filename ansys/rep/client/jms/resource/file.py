@@ -1,4 +1,6 @@
 from marshmallow.utils import missing
+from typing import Union
+import io
 
 from ..schema.file import FileSchema
 from ansys.rep.client.common import Object
@@ -9,8 +11,10 @@ class File(Object):
 
     Parameters
     ----------
-    src : str, optional
-        Client-only field to specify the path of an input file.
+    src : Union[str, io.IOBase],  optional
+        Client-only field to specify either the path of an input file
+        or a file-like object. In the latter case, `requests` recommends that
+        you open files in binary mode. 
     id : str, optional
         Unique ID to access the resource, generated internally by the server on creation.
     name : str
@@ -49,7 +53,8 @@ class File(Object):
         schema = FileSchema
         rest_name = "files"
 
-    def __init__(self, src=None,
+    def __init__(self, 
+        src=None,
         id=missing,
         name=missing,
         type=missing,
