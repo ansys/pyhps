@@ -63,7 +63,7 @@ class REPTestCase(unittest.TestCase):
     @property
     def client(self) -> Client:
         if self._client is None:
-            self._client = Client(self.rep_url, self.username, self.password)
+            self._client = Client(self.rep_url, self.username, self.password, verify=False)
         return self._client
 
     @property

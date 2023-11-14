@@ -29,59 +29,69 @@ class JobSchema(ObjectSchemaWithModificationInfo):
     class Meta(ObjectSchemaWithModificationInfo.Meta):
         pass
 
-    name = fields.String(allow_none=True, description="Name of the job.")
-    eval_status = fields.String(validate=OneOf(valid_eval_status), description="Evaluation status.")
+    name = fields.String(allow_none=True, metadata={"description": "Name of the job."})
+    eval_status = fields.String(
+        validate=OneOf(valid_eval_status), metadata={"description": "Evaluation status."}
+    )
     job_definition_id = IdReference(
         allow_none=False,
         attribute="job_definition_id",
         referenced_class="JobDefinition",
-        description="ID of the linked job definition, " "see :class:`JobDefinition`.",
+        metadata={"description": "ID of the linked job definition, " "see :class:`JobDefinition`."},
     )
 
     priority = fields.Integer(
         allow_none=True,
         default=0,
-        description="Priority with which jobs are evaluated. The default is 0, "
-        "which is the highest priority. Assigning a higher value to a design "
-        "point makes it a lower priority.",
+        metadata={
+            "description": "Priority with which jobs are evaluated. The default is 0, "
+            "which is the highest priority. Assigning a higher value to a design "
+            "point makes it a lower priority."
+        },
     )
     values = fields.Dict(
         keys=fields.String(),
         allow_none=True,
-        description="Dictionary with (name,value) pairs for all parameters defined in the "
-        "linked job definition.",
+        metadata={
+            "description": "Dictionary with (name,value) pairs for all parameters defined in the "
+            "linked job definition."
+        },
     )
-    fitness = fields.Float(allow_none=True, description="Fitness value computed.")
+    fitness = fields.Float(allow_none=True, metadata={"description": "Fitness value computed."})
     fitness_term_values = fields.Dict(
         keys=fields.String(),
         values=fields.Float(allow_none=True),
         allow_none=True,
-        description="Dictionary with (name,value) pairs for all fitness terms computed.",
+        metadata={
+            "description": "Dictionary with (name,value) pairs for all fitness terms computed."
+        },
     )
-    note = fields.String(allow_none=True, description="Optional note for this job.")
+    note = fields.String(allow_none=True, metadata={"description": "Optional note for this job."})
     creator = fields.String(
-        allow_none=True, description="Optional name/ID of the creator of this job."
+        allow_none=True, metadata={"description": "Optional name/ID of the creator of this job."}
     )
 
     executed_level = fields.Integer(
         allow_none=True,
-        description="Execution level of the last executed "
-        "task (-1 if none has been executed yet).",
+        metadata={
+            "description": "Execution level of the last executed "
+            "task (-1 if none has been executed yet)."
+        },
     )
 
     elapsed_time = fields.Float(
         load_only=True,
-        description="Number of seconds it took the evaluator(s) to update the job.",
+        metadata={"description": "Number of seconds it took the evaluator(s) to update the job."},
     )
 
     host_ids = fields.List(
         fields.String(allow_none=True),
         allow_none=True,
-        description="List of Host IDs of the evaluators that updated the job.",
+        metadata={"description": "List of Host IDs of the evaluators that updated the job."},
     )
     file_ids = IdReferenceList(
         referenced_class="File",
         attribute="file_ids",
         load_only=True,
-        description="List of IDs of all files of this job.",
+        metadata={"description": "List of IDs of all files of this job."},
     )
