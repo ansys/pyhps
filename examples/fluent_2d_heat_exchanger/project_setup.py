@@ -22,8 +22,9 @@ from ansys.rep.client.jms import (
 log = logging.getLogger(__name__)
 
 
-def main(client: Client, name: str, version: str) -> Project:
-
+def create_project(
+    client, name, version=__ansys_apps_version__, use_exec_script=False, active=True
+) -> Project:
     log.info("=== Create Project")
     jms_api = JmsApi(client)
     proj = Project(name=name, priority=1, active=True)
@@ -36,13 +37,13 @@ def main(client: Client, name: str, version: str) -> Project:
 
     files = [
         File(
-            name="cas_h5",
+            name="case",
             evaluation_path="heat_exchanger.cas.h5",
             type="application/octet-stream",
             src=os.path.join(cwd, "heat_exchanger.cas.h5"),
         ),
         File(
-            name="journal",
+            name="jou",
             evaluation_path="heat_exchanger.jou",
             type="text/plain",
             src=os.path.join(cwd, "heat_exchanger.jou"),
@@ -72,22 +73,37 @@ def main(client: Client, name: str, version: str) -> Project:
     log.debug("=== Job Definition with simulation workflow")
 
     # Task Definition
+    task_defs = []
     task_def = TaskDefinition(
         name="Fluent Run",
         software_requirements=[Software(name="Ansys Fluent", version=version)],
-        execution_command="%executable% 2d -g -tm %resource:num_cores% -i %file:journal%",
+        execution_command="%executable% 2d -g -tm %resource:num_cores% -i %file:jou%",
         resource_requirements=ResourceRequirements(
             num_cores=4,
             memory=4000,
             disk_space=500,
+            distributed=True,
         ),
+        execution_context={
+            "dimension": "2d",
+        },
         max_execution_time=600.0,
         execution_level=0,
         num_trials=1,
-        input_file_ids=[file_ids["cas_h5"], file_ids["journal"]],
+        input_file_ids=[file_ids["case"], file_ids["jou"]],
         output_file_ids=[file_ids["trn"], file_ids["output_cas"], file_ids["output_data"]],
     )
-    task_def = project_api.create_task_definitions([task_def])[0]
+
+    if use_exec_script:
+        task_def.use_execution_script = True
+        exec_script_file = project_api.copy_default_execution_script(
+            f"fluent-v{version[2:4]}{version[6]}-exec_fluent.py"
+        )
+        task_def.execution_script_id = exec_script_file.id
+
+    task_defs.append(task_def)
+
+    task_def = project_api.create_task_definitions(task_defs)[0]
 
     # Create job_definition in project
     job_def = JobDefinition(name="JobDefinition.1", active=True)
@@ -111,6 +127,7 @@ def main(client: Client, name: str, version: str) -> Project:
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("-n", "--name", type=str, default="Fluent 2D Heat Exchanger")
+    parser.add_argument("-es", "--use-exec-script", default=False, type=bool)
     parser.add_argument("-U", "--url", default="https://localhost:8443/rep")
     parser.add_argument("-u", "--username", default="repadmin")
     parser.add_argument("-p", "--password", default="repadmin")
@@ -125,6 +142,12 @@ if __name__ == "__main__":
     client = Client(rep_url=args.url, username=args.username, password=args.password)
 
     try:
-        main(client, name=args.name, version=args.ansys_version)
+        log.info(f"REP URL: {client.rep_url}")
+        proj = create_project(
+            client=client,
+            name=args.name,
+            version=args.ansys_version,
+            use_exec_script=args.use_exec_script,
+        )
     except REPError as e:
         log.error(str(e))
