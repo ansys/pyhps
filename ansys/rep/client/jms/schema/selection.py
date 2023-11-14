@@ -17,12 +17,16 @@ class JobSelectionSchema(ObjectSchemaWithModificationInfo):
     class Meta(ObjectSchemaWithModificationInfo.Meta):
         pass
 
-    name = fields.String(description="Name of the selection.")
+    name = fields.String(metadata={"description": "Name of the selection."})
 
     algorithm_id = IdReference(
         allow_none=True,
         attribute="algorithm_id",
         referenced_class="DesignExplorationAlgorithm",
-        description="ID of the :class:`Algorithm` " "the selection belongs to (optional).",
+        metadata={
+            "description": "ID of the :class:`Algorithm` " "the selection belongs to (optional)."
+        },
     )
-    object_ids = IdReferenceList("Job", attribute="jobs", description="List of job IDs.")
+    object_ids = IdReferenceList(
+        "Job", attribute="jobs", metadata={"description": "List of job IDs."}
+    )

@@ -18,3 +18,4 @@ from .auth import AuthApi
 from .client import Client
 from .exceptions import APIError, ClientError, REPError
 from .jms import JmsApi, ProjectApi
+from .warnings import UnverifiedHTTPSRequestsWarning

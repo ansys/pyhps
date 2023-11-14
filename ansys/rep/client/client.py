@@ -15,6 +15,7 @@ import requests
 from .auth.authenticate import authenticate
 from .connection import create_session
 from .exceptions import raise_for_status
+from .warnings import UnverifiedHTTPSRequestsWarning
 
 log = logging.getLogger(__name__)
 
@@ -122,7 +123,7 @@ class Client(object):
                 f"Certificate verification is disabled. "
                 f"Unverified HTTPS requests will be made to {self.rep_url}."
             )
-            warnings.warn(msg, Warning)
+            warnings.warn(msg, UnverifiedHTTPSRequestsWarning)
             log.warning(msg)
 
         if disable_security_warnings:

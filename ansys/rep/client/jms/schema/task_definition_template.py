@@ -28,9 +28,9 @@ class TemplatePropertySchema(BaseSchema):
     )
     value_list = fields.Raw(
         allow_none=True,
-        many=True,
-        default=[],
-        metadata={"description": "List of possible values for this property."},
+        dump_default=[],
+        load_default=[],
+        metadata={"many": True, "description": "List of possible values for this property."},
     )
 
 
@@ -53,7 +53,7 @@ class TemplateFileSchema(BaseSchema):
     class Meta(BaseSchema.Meta):
         pass
 
-    name = fields.String(description="Name of the file.")
+    name = fields.String(metadata={"description": "Name of the file."})
     type = fields.String(
         allow_none=True, metadata={"description": "MIME type of the file, ie. text/plain."}
     )
@@ -85,15 +85,21 @@ class TaskDefinitionTemplateSchema(ObjectSchema):
         pass
 
     modification_time = fields.DateTime(
-        allow_none=True, load_only=True, description="Last time the object was modified, in UTC."
+        allow_none=True,
+        load_only=True,
+        metadata={"description": "Last time the object was modified, in UTC."},
     )
     creation_time = fields.DateTime(
-        allow_none=True, load_only=True, description="Time when the object was created, in UTC."
+        allow_none=True,
+        load_only=True,
+        metadata={"description": "Time when the object was created, in UTC."},
     )
 
-    name = fields.String(description="Name of the template")
-    version = fields.String(description="Version of the template", allow_none=True)
-    description = fields.String(description="Description of the template", allow_none=True)
+    name = fields.String(metadata={"description": "Name of the template"})
+    version = fields.String(metadata={"description": "Version of the template"}, allow_none=True)
+    description = fields.String(
+        metadata={"description": "Description of the template"}, allow_none=True
+    )
 
     software_requirements = fields.Nested(
         SoftwareSchema,
@@ -114,26 +120,33 @@ class TaskDefinitionTemplateSchema(ObjectSchema):
         keys=fields.String,
         values=fields.Nested(TemplatePropertySchema),
         allow_none=True,
-        description="Additional arguments to pass to the executing command.",
+        metadata={"description": "Additional arguments to pass to the executing command."},
     )
     environment = fields.Dict(
         keys=fields.String,
         values=fields.Nested(TemplatePropertySchema),
         allow_none=True,
-        description="Environment variables to set for the executed process.",
+        metadata={"description": "Environment variables to set for the executed process."},
     )
 
     execution_command = fields.String(
-        allow_none=True, description="Command to execute (command or execution script is required)."
+        allow_none=True,
+        metadata={"description": "Command to execute (command or execution script is required)."},
     )
     use_execution_script = fields.Bool(
         allow_none=True,
-        description="Whether to run task with the execution command or the execution script.",
+        metadata={
+            "description": "Whether to run task with the execution command or the execution script."
+        },
     )
     execution_script_storage_id = fields.String(
         allow_none=True,
-        description="Storage ID of the script to execute "
-        "(command or execution script is required).",
+        metadata={
+            "description": (
+                "Storage ID of the script to execute ",
+                "(command or execution script is required).",
+            )
+        },
     )
     execution_script_storage_bucket = fields.String(
         allow_none=True,
