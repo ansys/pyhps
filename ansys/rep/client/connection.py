@@ -50,7 +50,7 @@ def create_session(
 
     # Set basic content type to json
     session.headers = {
-        "content-type": "text/json",
+        "content-type": "application/json",
     }
 
     if access_token:

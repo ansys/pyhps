@@ -10,13 +10,7 @@ import requests
 from ansys.rep.client.client import Client
 from ansys.rep.client.common import Object
 from ansys.rep.client.exceptions import REPError
-from ansys.rep.client.jms.resource import (
-    Evaluator,
-    Operation,
-    Permission,
-    Project,
-    TaskDefinitionTemplate,
-)
+from ansys.rep.client.jms.resource import Operation, Permission, Project, TaskDefinitionTemplate
 from ansys.rep.client.jms.schema.project import ProjectSchema
 
 from .base import copy_objects as base_copy_objects
@@ -114,48 +108,6 @@ class JmsApi(object):
 
         """
         return restore_project(self, path)
-
-    ################################################################
-    # Evaluators
-    def get_evaluators(self, as_objects=True, **query_params) -> List[Evaluator]:
-        """Return a list of evaluators, optionally filtered by given query parameters"""
-        return get_objects(self.client.session, self.url, Evaluator, as_objects, **query_params)
-
-    def update_evaluators(
-        self, evaluators: List[Evaluator], as_objects=True, **query_params
-    ) -> List[Evaluator]:
-        """Update evaluators
-
-        Examples
-        --------
-
-        You can request multiple evaluators configuration updates at once.
-        This example shows how to set a custom resource property
-        on all Linux evaluators that were active in the past 60 seconds.
-
-        >>> import datetime
-        >>> from ansys.rep.client import Client
-        >>> from ansys.rep.client.jms import JmsApi, EvaluatorConfigurationUpdate
-        >>> cl = Client(
-        ...     rep_url="https://localhost:8443/rep", username="repuser", password="repuser"
-        ... )
-        >>> jms_api = JmsApi(cl)
-        >>> query_params = {
-        ...     "platform" : "linux",
-        ...     "update_time.gt" : datetime.datetime.utcnow() - datetime.timedelta(seconds=60)
-        ... }
-        >>> evaluators = jms_api.get_evaluators(fields=["id", "host_id"], **query_params)
-        >>> config_update = EvaluatorConfigurationUpdate(
-        ...    custom_resource_properties={"disk_type" : "SSD"}
-        ... )
-        >>> for ev in evaluators:
-        ...     ev.configuration_updates = config_update
-        >>> evaluators = jms_api.update_evaluators(evaluators)
-
-        """
-        return update_objects(
-            self.client.session, self.url, evaluators, Evaluator, as_objects, **query_params
-        )
 
     ################################################################
     # Task Definition Templates
@@ -423,7 +375,7 @@ def restore_project(jms_api, archive_path):
 
     bucket = f"rep-client-restore-{uuid.uuid4()}"
     fs_file_url = f"{jms_api.client.rep_url}/fs/api/v1/{bucket}/{archive_name}"
-    ansfs_file_url = f"ansfs://{bucket}/{archive_name}"
+    ansfs_file_url = f"ansfs://{bucket}/{archive_name}"  # noqa: E231
 
     fs_headers = {"content-type": "application/octet-stream"}
 
