@@ -7,12 +7,20 @@ from requests import Session
 
 from ansys.rep.client.exceptions import ClientError
 
-from ..models import EvaluatorConfiguration, EvaluatorConfigurationUpdate, EvaluatorRegistration
+from ..models import (
+    Cluster,
+    ComputeResourceSet,
+    EvaluatorConfigurationUpdate,
+    EvaluatorRegistration,
+    ScalerRegistration,
+)
 
 OBJECT_TYPE_TO_ENDPOINT = {
+    Cluster: "clusters",
     EvaluatorRegistration: "evaluators",
-    EvaluatorConfiguration: "configuration",
-    EvaluatorConfigurationUpdate: "configurtion_updates",
+    EvaluatorConfigurationUpdate: "configuration_updates",
+    ScalerRegistration: "scalers",
+    ComputeResourceSet: "compute_resource_sets",
 }
 
 log = logging.getLogger(__name__)
@@ -41,10 +49,6 @@ def get_objects(
     url = f"{url}/{rest_name}"
     r = session.get(url, params=query_params)
 
-    # todo rms
-    if query_params.get("count"):
-        return r.json()[f"num_{rest_name}"]
-
     data = r.json()[rest_name]
     if not as_objects:
         return data
@@ -52,24 +56,23 @@ def get_objects(
     return json_to_objects(data, obj_type)
 
 
-def get_object(
-    session: Session, url: str, obj_type: Type[BaseModel], id: str, as_object=True, **query_params
-):
+def get_objects_count(session: Session, url: str, obj_type: Type[BaseModel], **query_params):
 
     rest_name = OBJECT_TYPE_TO_ENDPOINT[obj_type]
-    url = f"{url}/{rest_name}/{id}"
+    url = f"{url}/{rest_name}:count"  # noqa: E231
     r = session.get(url, params=query_params)
 
-    data = r.json()[rest_name]
+    return r.json()[f"num_{rest_name}"]
+
+
+def get_object(
+    session: Session, url: str, obj_type: Type[BaseModel], as_object=True, **query_params
+):
+    r = session.get(url, params=query_params)
+    data = r.json()
     if not as_object:
         return data
-
-    if len(data) == 0:
-        return None
-    elif len(data) == 1:
-        return obj_type(**data)
-    elif len(data) > 1:
-        raise ClientError(f"Multiple objects with id={id}")
+    return obj_type(**data)
 
 
 def create_objects(
