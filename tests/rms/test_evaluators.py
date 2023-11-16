@@ -71,7 +71,7 @@ class EvaluatorTest(REPTestCase):
         client = self.client
         rms_api = RmsApi(client)
         query_params = {
-            "update_time.gt": datetime.datetime.now(datetime.UTC) - datetime.timedelta(seconds=20)
+            "last_modified.gt": datetime.datetime.now(datetime.UTC) - datetime.timedelta(seconds=20)
         }
         evaluators = rms_api.get_evaluators(**query_params)
 
