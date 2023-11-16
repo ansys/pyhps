@@ -1,8 +1,9 @@
+import datetime
 import logging
 import unittest
 
 from ansys.rep.client.rms import RmsApi
-from ansys.rep.client.rms.models import EvaluatorRegistration
+from ansys.rep.client.rms.models import EvaluatorConfigurationUpdate, EvaluatorRegistration
 from tests.rep_test import REPTestCase
 
 log = logging.getLogger(__name__)
@@ -65,6 +66,22 @@ class EvaluatorTest(REPTestCase):
             self.assertIsNotNone(config.resources.memory)
             self.assertGreater(config.max_num_parallel_tasks, 0)
             self.assertIsNotNone(config.applications, 0)
+
+    def test_evaluator_configuration_update(self):
+        client = self.client
+        rms_api = RmsApi(client)
+        query_params = {
+            "update_time.gt": datetime.datetime.now(datetime.UTC) - datetime.timedelta(seconds=20)
+        }
+        evaluators = rms_api.get_evaluators(**query_params)
+
+        if len(evaluators) == 0:
+            self.skipTest(f"This test requires running evaluators.")
+
+        ev = evaluators[0]
+        config_update = EvaluatorConfigurationUpdate(loop_interval=4)
+        config_update_response = rms_api.update_evaluator_configuration(ev.id, config_update)
+        assert config_update_response.loop_interval == 4
 
 
 if __name__ == "__main__":

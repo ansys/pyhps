@@ -30,7 +30,7 @@ def objects_to_json(objects: List[BaseModel], rest_name: str):
 
     dicts = []
     for obj in objects:
-        dicts.append(obj.model_dump_json())
+        dicts.append(obj.model_dump(exclude_unset=True))
     return json.dumps({rest_name: dicts})
 
 
