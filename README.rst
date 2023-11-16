@@ -166,6 +166,19 @@ the building requirements and then executing the build module:
     python -m build
     python -m twine check dist/*
 
+How to generate/update RMS models
+---------------------------------
+
+
+To generate RMS Pydantic models: 
+
+1. Download the RMS openapi spec and save it as `rms_openapi.json` at the root of the repository
+2. Run the datamodel generator:
+
+    ```
+    datamodel-codegen  --input .\rms_openapi.json --input-file-type openapi --output ansys/rep/client/rms/models.py
+    ```
+3. [Temporarily] Open the generated file and replace all `const=True, ` instance with an empty string.   
 
 .. LINKS AND REFERENCES
 .. _black: https://github.com/psf/black
