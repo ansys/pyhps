@@ -141,4 +141,5 @@ class RmsApi(object):
             f"{self.url}/compute_resource_sets/{id}",
             ComputeResourceSet,
             as_object,
+            from_collection=True,
         )

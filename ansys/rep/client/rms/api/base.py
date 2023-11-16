@@ -66,10 +66,19 @@ def get_objects_count(session: Session, url: str, obj_type: Type[BaseModel], **q
 
 
 def get_object(
-    session: Session, url: str, obj_type: Type[BaseModel], as_object=True, **query_params
+    session: Session,
+    url: str,
+    obj_type: Type[BaseModel],
+    as_object=True,
+    from_collection=False,
+    **query_params,
 ):
+
     r = session.get(url, params=query_params)
     data = r.json()
+    if from_collection:
+        rest_name = OBJECT_TYPE_TO_ENDPOINT[obj_type]
+        data = data[rest_name][0]
     if not as_object:
         return data
     return obj_type(**data)
