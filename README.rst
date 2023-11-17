@@ -170,18 +170,12 @@ How to generate/update RMS models
 ---------------------------------
 
 
-To generate RMS Pydantic models: 
+To generate RMS Pydantic models, first download the RMS openapi spec and save it as `rms_openapi.json` at the root of the repository.
+Then, run the datamodel generator:
 
-1. Download the RMS openapi spec and save it as `rms_openapi.json` at the root of the repository
-2. Run the datamodel generator:
-
-    ```
-    datamodel-codegen
-        --input .\rms_openapi.json
-        --input-file-type openapi
-        --output ansys/rep/client/rms/models.py
-        --output-model-type pydantic_v2.BaseModel
-    ```
+.. code:: bash
+    
+    datamodel-codegen --input .\rms_openapi.json --input-file-type openapi --output ansys/rep/client/rms/models.py --output-model-type pydantic_v2.BaseModel
 
 .. LINKS AND REFERENCES
 .. _black: https://github.com/psf/black
