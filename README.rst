@@ -176,9 +176,12 @@ To generate RMS Pydantic models:
 2. Run the datamodel generator:
 
     ```
-    datamodel-codegen  --input .\rms_openapi.json --input-file-type openapi --output ansys/rep/client/rms/models.py
+    datamodel-codegen
+        --input .\rms_openapi.json
+        --input-file-type openapi
+        --output ansys/rep/client/rms/models.py
+        --output-model-type pydantic_v2.BaseModel
     ```
-3. [Temporarily] Open the generated file and replace all `const=True, ` instance with an empty string.   
 
 .. LINKS AND REFERENCES
 .. _black: https://github.com/psf/black
