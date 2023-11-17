@@ -1,4 +1,4 @@
-__version__ = "0.3.dev0"
+__version__ = "0.4.0"
 __version_no_dots__ = __version__.replace(".", "")
 __company__ = "ANSYS, Inc."
 __company_short__ = "Ansys"
