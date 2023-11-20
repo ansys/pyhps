@@ -114,5 +114,5 @@ class TaskSchema(ObjectSchemaWithModificationInfo):
 
     custom_data = fields.Dict(
         allow_none=True,
-        dmetadata={"description": "Dictionary type field to store custom data."},
+        metadata={"description": "Dictionary type field to store custom data."},
     )

@@ -255,7 +255,8 @@ Query the number of evaluators
 
 .. code-block:: python
     
-    evaluators = jms_api.get_evaluators()
+    rms_api = RmsApi(client)
+    evaluators = rms_api.get_evaluators()
 
     # print number of Windows and Linux evaluators connected to the REP server
     print( len([e for e in evaluators if e.platform == "windows" ]) )

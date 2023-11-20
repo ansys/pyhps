@@ -42,11 +42,10 @@ class JobSchema(ObjectSchemaWithModificationInfo):
 
     priority = fields.Integer(
         allow_none=True,
-        default=0,
         metadata={
             "description": "Priority with which jobs are evaluated. The default is 0, "
-            "which is the highest priority. Assigning a higher value to a design "
-            "point makes it a lower priority."
+            "which is the highest priority. Assigning a higher value to a job "
+            "makes it a lower priority."
         },
     )
     values = fields.Dict(

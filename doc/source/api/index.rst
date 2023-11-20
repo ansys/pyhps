@@ -11,4 +11,5 @@ If you are looking for information on a specific function, class, or method, thi
   client
   auth
   jms
+  rms
   exceptions
