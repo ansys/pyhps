@@ -36,7 +36,7 @@ setup(
         "cachetools>=4.0.0",
         "python-keycloak>=1.5.0,<=2.12.0",
         "backoff>=2.0.0",
-        "pydantic>=2.0.0",
+        "pydantic>=1.10.0",
     ],
     python_requires=">=3.7",
     packages=find_namespace_packages(include=["ansys.*"]),

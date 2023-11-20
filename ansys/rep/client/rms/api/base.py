@@ -3,6 +3,7 @@ import logging
 from typing import List, Type
 
 from pydantic import BaseModel
+from pydantic import __version__ as pydantic_version
 from requests import Session
 
 from ansys.rep.client.exceptions import ClientError
@@ -26,11 +27,29 @@ OBJECT_TYPE_TO_ENDPOINT = {
 log = logging.getLogger(__name__)
 
 
-def objects_to_json(objects: List[BaseModel], rest_name: str):
+def object_to_dict(object: BaseModel, exclude_unset: bool = True, exclude_defaults: bool = False):
+    if pydantic_version.startswith("1"):
+        return object.dict(exclude_unset=exclude_unset, exclude_defaults=exclude_defaults)
+    elif pydantic_version.startswith("2"):
+        return object.model_dump(exclude_unset=exclude_unset, exclude_defaults=exclude_defaults)
+    else:
+        raise RuntimeError(f"Unsuppoorted Pydantic version {pydantic_version}")
 
+
+def objects_to_json(
+    objects: List[BaseModel],
+    rest_name: str,
+    exclude_unset: bool = True,
+    exclude_defaults: bool = False,
+):
+    # Warning: this is a suboptimal way to serialize a list of objects to JSON.
+    # Ideally, we'd like to use something similar to the marshmallow many=True option.
+    # To achieve that, we could try to create a parent pydantic model at runtime.
     dicts = []
     for obj in objects:
-        dicts.append(obj.model_dump(exclude_unset=True))
+        dicts.append(
+            object_to_dict(obj, exclude_unset=exclude_unset, exclude_defaults=exclude_defaults)
+        )
     return json.dumps({rest_name: dicts})
 
 
