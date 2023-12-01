@@ -210,11 +210,13 @@ jobs:
           files: |
             /tmp/artifacts/*.whl
 
-      - name: Release for latest-dev
+      - name: Release to latest-dev
+        uses: "marvinpinto/action-automatic-releases@latest"
         if: startsWith(github.ref, 'refs/heads/main')
-        uses: softprops/action-gh-release@v1
         with:
-          name: ${{needs.build.outputs.version}}
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          automatic_release_tag: "v${{needs.build.outputs.version}}"
           prerelease: true
+          title: "Release v${{needs.build.outputs.version}}"
           files: |
             /tmp/artifacts/*.whl
