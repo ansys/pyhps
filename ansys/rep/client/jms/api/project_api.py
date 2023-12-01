@@ -577,9 +577,9 @@ def _download_file(
     if getattr(file, "hash", None) is None:
         log.warning(f"No hash found for file {file.name}.")
 
-    Path(target_path).mkdir(parents=True, exist_ok=True)
     download_link = f"{project_api.fs_bucket_url}/{file.storage_id}"
     download_path = os.path.join(target_path, file.evaluation_path)
+    Path(download_path).parent.mkdir(parents=True, exist_ok=True)
 
     with project_api.client.session.get(download_link, stream=stream) as r, open(
         download_path, "wb"
