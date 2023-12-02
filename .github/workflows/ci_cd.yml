@@ -155,6 +155,8 @@ jobs:
   build:
     name: Build and publish library
     runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.build.outputs.version }}
     steps:
       - uses: actions/checkout@v3
       - name: Set up Python
@@ -162,11 +164,14 @@ jobs:
         with:
           python-version: ${{ env.MAIN_PYTHON_VERSION }}
       - name: Install dependencies and build the library
+        id: build
         run: |
           python -m pip install --upgrade pip setuptools
           python -m pip install -r requirements/requirements_build.txt
           python -m build venv wheel
           python -m twine check dist/*
+          version=$(ls dist | grep rep_client | grep -E -o "[0-9]+.[0-9]+.[a-z0-9]+")
+          echo "version=$version" >> $GITHUB_OUTPUT
       #- name: Upload to private PyPi
       #  if: github.ref == 'refs/heads/main'
       #  run: |
@@ -185,14 +190,33 @@ jobs:
 
   release:
     name: "Release"
-    if: github.event_name == 'push' && contains(github.ref, 'refs/tags/v')
+    if: startsWith(github.ref, 'refs/heads/main') || github.ref_type == 'tag'
     needs: [build, docs]
     runs-on: ubuntu-latest
     steps:
-      - name: "Release to GitHub"
+      - uses: actions/download-artifact@v3
+        with:
+          name: pyrep-package
+          path: /tmp/artifacts
+
+      - name: List artifacts
+        run: ls -ltR /tmp/artifacts
+
+      - name: Release for tag
+        if: github.ref_type == 'tag'
         uses: softprops/action-gh-release@v1
         with:
           generate_release_notes: true
-          # files: |
-          #   dist/*.whl
-          #   build/sphinx/html
+          files: |
+            /tmp/artifacts/*.whl
+
+      - name: Release to latest-dev
+        uses: "marvinpinto/action-automatic-releases@latest"
+        if: startsWith(github.ref, 'refs/heads/main')
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          automatic_release_tag: "v${{needs.build.outputs.version}}"
+          prerelease: true
+          title: "Release v${{needs.build.outputs.version}}"
+          files: |
+            /tmp/artifacts/*.whl

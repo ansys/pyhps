@@ -119,6 +119,34 @@ class FilesTest(REPTestCase):
         # Delete project again
         jms_api.delete_project(proj)
 
+    def test_download_file_in_subdir(self):
+
+        client = self.client
+        jms_api = JmsApi(client)
+        proj = jms_api.create_project(
+            Project(name=f"rep_test_download_file_in_subdir", active=False)
+        )
+        project_api = ProjectApi(client, proj.id)
+
+        files = [
+            File(
+                name="file",
+                evaluation_path="subdir/file.txt",
+                type="text/plain",
+                src=io.BytesIO(b"This is my file"),
+            )
+        ]
+
+        file = project_api.create_files(files)[0]
+
+        with tempfile.TemporaryDirectory() as tpath:
+            fpath = project_api.download_file(file, tpath)
+            with open(fpath, "r") as sf:
+                self.assertEqual("This is my file", sf.read())
+
+        # Delete project again
+        jms_api.delete_project(proj)
+
 
 if __name__ == "__main__":
     unittest.main()
