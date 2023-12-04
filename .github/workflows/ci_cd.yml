@@ -217,6 +217,6 @@ jobs:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           automatic_release_tag: "v${{needs.build.outputs.version}}"
           prerelease: true
-          title: "Release v${{needs.build.outputs.version}}"
+          title: "v${{needs.build.outputs.version}}"
           files: |
             /tmp/artifacts/*.whl
