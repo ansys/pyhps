@@ -172,14 +172,15 @@ jobs:
           python -m twine check dist/*
           version=$(ls dist | grep rep_client | grep -E -o "[0-9]+.[0-9]+.[a-z0-9]+")
           echo "version=$version" >> $GITHUB_OUTPUT
-      #- name: Upload to private PyPi
-      #  if: github.ref == 'refs/heads/main'
-      #  run: |
-      #    python -m twine upload --verbose --skip-existing dist/*.whl
-      #  env:
-      #    TWINE_USERNAME: __token__
-      #    TWINE_PASSWORD: ${{ secrets.PYANSYS_PYPI_PRIVATE_PAT }}
-      #    TWINE_REPOSITORY_URL: https://pkgs.dev.azure.com/pyansys/_packaging/pyansys/pypi/upload
+
+      - name: Upload to private PyPi
+        run: |
+          python -m twine upload --verbose --skip-existing dist/*.whl
+        env:
+          TWINE_USERNAME: __token__
+          TWINE_PASSWORD: ${{ secrets.PYANSYS_PYPI_PRIVATE_PAT }}
+          TWINE_REPOSITORY_URL: https://pkgs.dev.azure.com/pyansys/_packaging/pyansys/pypi/upload
+
       - name: Upload artifact
         uses: actions/upload-artifact@v3
         with:
@@ -209,6 +210,15 @@ jobs:
           generate_release_notes: true
           files: |
             /tmp/artifacts/*.whl
+
+      - name: Upload to private PyPi
+        if: github.ref_type == 'tag'
+        run: |
+          python -m twine upload --verbose --skip-existing /tmp/artifacts/*.whl
+        env:
+          TWINE_USERNAME: __token__
+          TWINE_PASSWORD: ${{ secrets.PYANSYS_PYPI_PRIVATE_PAT }}
+          TWINE_REPOSITORY_URL: https://pkgs.dev.azure.com/pyansys/_packaging/pyansys/pypi/upload
 
       - name: Release to latest-dev
         uses: "marvinpinto/action-automatic-releases@latest"
