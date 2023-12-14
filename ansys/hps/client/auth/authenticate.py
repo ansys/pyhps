@@ -31,7 +31,7 @@ def authenticate(
     **kwargs,
 ):
     """
-    Authenticate user with either password or refresh token against REP authentication service.
+    Authenticate user with either password or refresh token against HPS authentication service.
     If successful, the response includes access and refresh tokens.
 
     Parameters
