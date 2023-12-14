@@ -6,8 +6,9 @@
 # Author(s): O.Koenig
 # ----------------------------------------------------------
 
-from ansys.rep.client.common import BaseSchema, ObjectSchemaWithModificationInfo, RestrictedValue
 from marshmallow import fields
+
+from ansys.hps.client.common import BaseSchema, ObjectSchemaWithModificationInfo, RestrictedValue
 
 from .object_reference import IdReference, IdReferenceList
 

@@ -1,5 +1,6 @@
-from ansys.rep.client.common import ObjectSchema
 from marshmallow import fields
+
+from ansys.hps.client.common import ObjectSchema
 
 
 class OperationSchema(ObjectSchema):

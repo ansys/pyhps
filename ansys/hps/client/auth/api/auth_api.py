@@ -31,8 +31,8 @@ class AuthApi:
 
     Get users whose first name contains "john":
 
-    >>> from ansys.rep.client import Client
-    >>> from ansys.rep.client.auth import AuthApi, User
+    >>> from ansys.hps.client import Client
+    >>> from ansys.hps.client.auth import AuthApi, User
     >>> cl = Client(
     ...     rep_url="https://127.0.0.1:8443/rep/", username="repadmin", password="repadmin"
     ... )
@@ -96,7 +96,7 @@ class AuthApi:
     def user_is_admin(self, id: str) -> bool:
         """Check whether the user is system admin"""
 
-        from ansys.rep.client.jms import JmsApi
+        from ansys.hps.client.jms import JmsApi
 
         # the admin keys are configurable settings of JMS
         # they need to be queried, can't be hardcoded
@@ -119,7 +119,7 @@ class AuthApi:
         """Create a new user.
 
         Args:
-            user (:class:`ansys.rep.client.auth.User`): A User object. Defaults to None.
+            user (:class:`ansys.hps.client.auth.User`): A User object. Defaults to None.
             as_objects (bool, optional): Defaults to True.
         """
         return create_user(self.keycloak_admin_client, user, as_objects=as_objects)
@@ -128,7 +128,7 @@ class AuthApi:
         """Modify an existing user.
 
         Args:
-            user (:class:`ansys.rep.client.auth.User`): A User object. Defaults to None.
+            user (:class:`ansys.hps.client.auth.User`): A User object. Defaults to None.
             as_objects (bool, optional): Defaults to True.
         """
         return update_user(self.keycloak_admin_client, user, as_objects=as_objects)
@@ -137,7 +137,7 @@ class AuthApi:
         """Delete an existing user.
 
         Args:
-            user (:class:`ansys.rep.client.auth.User`): A User object. Defaults to None.
+            user (:class:`ansys.hps.client.auth.User`): A User object. Defaults to None.
         """
         return self.keycloak_admin_client.delete_user(user.id)
 

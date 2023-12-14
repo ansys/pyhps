@@ -15,9 +15,9 @@ from examples.mapdl_motorbike_frame.project_setup import create_project
 from marshmallow.utils import missing
 import pytest
 
-from ansys.rep.client.jms import JmsApi, ProjectApi
-from ansys.rep.client.jms.resource import Job, JobDefinition, Project, Software, TaskDefinition
-from ansys.rep.client.jms.schema.task import TaskSchema
+from ansys.hps.client.jms import JmsApi, ProjectApi
+from ansys.hps.client.jms.resource import Job, JobDefinition, Project, Software, TaskDefinition
+from ansys.hps.client.jms.schema.task import TaskSchema
 from tests.rep_test import REPTestCase
 
 log = logging.getLogger(__name__)

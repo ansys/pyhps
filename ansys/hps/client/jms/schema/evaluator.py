@@ -6,10 +6,11 @@
 # Author(s): F.Negri
 # ----------------------------------------------------------
 
-from ansys.rep.client.common import ObjectSchema, RestrictedValue
 import marshmallow
 from marshmallow import fields
 from marshmallow.validate import OneOf
+
+from ansys.hps.client.common import ObjectSchema, RestrictedValue
 
 project_assignment_modes = ["disabled", "all_active", "project_list"]
 

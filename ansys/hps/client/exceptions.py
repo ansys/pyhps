@@ -15,8 +15,8 @@ class REPError(RequestException):
            Derives from :class:`requests.exceptions.RequestException`.
 
         Example:
-            >>> from ansys.rep.client import REPError
-            >>> from ansys.rep.client.jms import Client
+            >>> from ansys.hps.client import REPError
+            >>> from ansys.hps.client.jms import Client
             >>> try:
             >>>     client = Client(rep_url="https://127.0.0.1:8443/rep/",
                                     username="repadmin",

@@ -3,8 +3,8 @@ import argparse
 import logging
 import os
 
-from ansys.rep.client import REPError
-from ansys.rep.client.jms import Client, File
+from ansys.hps.client import REPError
+from ansys.hps.client.jms import Client, File
 
 log = logging.getLogger(__name__)
 

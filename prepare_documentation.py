@@ -13,9 +13,9 @@ from zipfile import ZipFile
 from apispec import APISpec
 from apispec.ext.marshmallow import MarshmallowPlugin
 
-from ansys.rep.client import __version__
-from ansys.rep.client.auth.resource import User
-from ansys.rep.client.jms.resource import (
+from ansys.hps.client import __version__
+from ansys.hps.client.auth.resource import User
+from ansys.hps.client.jms.resource import (
     Algorithm,
     BoolParameterDefinition,
     Evaluator,
@@ -41,7 +41,7 @@ from ansys.rep.client.jms.resource import (
     TaskDefinition,
     TaskDefinitionTemplate,
 )
-from ansys.rep.client.jms.schema.object_reference import IdReference, IdReferenceList
+from ansys.hps.client.jms.schema.object_reference import IdReference, IdReferenceList
 
 
 def custom_field_attributes(self, field, **kwargs):

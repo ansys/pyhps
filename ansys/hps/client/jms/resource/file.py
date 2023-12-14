@@ -3,7 +3,7 @@ from typing import Union
 import io
 
 from ..schema.file import FileSchema
-from ansys.rep.client.common import Object
+from ansys.hps.client.common import Object
 
 
 class File(Object):

@@ -9,8 +9,8 @@ import logging
 import os
 import random
 
-from ansys.rep.client import Client, REPError, __ansys_apps_version__
-from ansys.rep.client.jms import (
+from ansys.hps.client import Client, REPError, __ansys_apps_version__
+from ansys.hps.client.jms import (
     File,
     FitnessDefinition,
     FloatParameterDefinition,

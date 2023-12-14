@@ -17,7 +17,7 @@ import logging
 import os
 from tempfile import NamedTemporaryFile
 
-from ansys.rep.client.jms import File
+from ansys.hps.client.jms import File
 
 log = logging.getLogger(__name__)
 

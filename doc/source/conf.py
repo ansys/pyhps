@@ -6,7 +6,7 @@ import sys
 from ansys_sphinx_theme import get_version_match
 from ansys_sphinx_theme import pyansys_logo_black as logo
 
-from ansys.rep.client import __ansys_apps_version__, __company__, __version__, __version_no_dots__
+from ansys.hps.client import __ansys_apps_version__, __company__, __version__, __version_no_dots__
 
 sys.path.append(os.path.abspath(os.path.dirname(__file__)))
 

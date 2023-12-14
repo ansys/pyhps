@@ -1,14 +1,14 @@
 from collections import OrderedDict
 import unittest
 
-from ansys.rep.client.jms.resource import TaskDefinition
-from ansys.rep.client.jms.resource.task_definition import (
+from ansys.hps.client.jms.resource import TaskDefinition
+from ansys.hps.client.jms.resource.task_definition import (
     HpcResources,
     Licensing,
     ResourceRequirements,
     SuccessCriteria,
 )
-from ansys.rep.client.jms.schema.task_definition import TaskDefinitionSchema
+from ansys.hps.client.jms.schema.task_definition import TaskDefinitionSchema
 from tests.rep_test import REPTestCase
 
 

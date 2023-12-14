@@ -1,8 +1,8 @@
 import logging
 from typing import List
 
-from ansys.rep.client.client import Client
-from ansys.rep.client.rms.models import (
+from ansys.hps.client.client import Client
+from ansys.hps.client.rms.models import (
     Cluster,
     ComputeResourceSet,
     EvaluatorConfiguration,
@@ -78,8 +78,8 @@ class RmsApi(object):
         on a Linux evaluator that was active in the past 60 seconds.
 
         >>> import datetime
-        >>> from ansys.rep.client import Client
-        >>> from ansys.rep.client.jms import RmsApi, EvaluatorConfigurationUpdate
+        >>> from ansys.hps.client import Client
+        >>> from ansys.hps.client.jms import RmsApi, EvaluatorConfigurationUpdate
         >>> cl = Client(
         ...     rep_url="https://localhost:8443/rep", username="repuser", password="repuser"
         ... )

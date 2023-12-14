@@ -13,8 +13,8 @@
 
 import logging
 
-from ansys.rep.client import REPError
-from ansys.rep.client.jms import Client
+from ansys.hps.client import REPError
+from ansys.hps.client.jms import Client
 
 log = logging.getLogger(__name__)
 

@@ -10,7 +10,7 @@ import logging
 from marshmallow.utils import missing
 
 from ..schema.fitness_definition import FitnessDefinitionSchema, FitnessTermDefinitionSchema
-from ansys.rep.client.common import Object
+from ansys.hps.client.common import Object
 
 log = logging.getLogger(__name__)
 
@@ -89,7 +89,7 @@ class FitnessDefinition(Object):
     id : str, optional
         Unique ID to access the resource, generated internally by the server on creation.
     fitness_term_definitions
-        List of :class:`ansys.rep.client.jms.FitnessTermDefinition`.
+        List of :class:`ansys.hps.client.jms.FitnessTermDefinition`.
     error_fitness : float
         The default fitness value assigned to failed design points.
 

@@ -11,9 +11,9 @@ import unittest
 from examples.mapdl_motorbike_frame.project_setup import create_project
 from marshmallow.utils import missing
 
-from ansys.rep.client import Client
-from ansys.rep.client.jms import JmsApi, ProjectApi
-from ansys.rep.client.jms.resource import Job, Project
+from ansys.hps.client import Client
+from ansys.hps.client.jms import JmsApi, ProjectApi
+from ansys.hps.client.jms.resource import Job, Project
 from tests.rep_test import REPTestCase
 
 log = logging.getLogger(__name__)

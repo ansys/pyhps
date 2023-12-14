@@ -7,9 +7,10 @@
 # ----------------------------------------------------------
 import logging
 
-from ansys.rep.client.common import ObjectSchemaWithModificationInfo
 from marshmallow import fields
 from marshmallow_oneofschema import OneOfSchema
+
+from ansys.hps.client.common import ObjectSchemaWithModificationInfo
 
 log = logging.getLogger(__name__)
 

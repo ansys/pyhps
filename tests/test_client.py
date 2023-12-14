@@ -11,7 +11,7 @@ import unittest
 
 import requests
 
-from ansys.rep.client import Client
+from ansys.hps.client import Client
 from tests.rep_test import REPTestCase
 
 log = logging.getLogger(__name__)

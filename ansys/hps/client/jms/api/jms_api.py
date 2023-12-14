@@ -4,13 +4,14 @@ import os
 from typing import List, Union
 import uuid
 
-from ansys.rep.client.client import Client
-from ansys.rep.client.common import Object
-from ansys.rep.client.exceptions import REPError
-from ansys.rep.client.jms.resource import Operation, Permission, Project, TaskDefinitionTemplate
-from ansys.rep.client.jms.schema.project import ProjectSchema
 import backoff
 import requests
+
+from ansys.hps.client.client import Client
+from ansys.hps.client.common import Object
+from ansys.hps.client.exceptions import REPError
+from ansys.hps.client.jms.resource import Operation, Permission, Project, TaskDefinitionTemplate
+from ansys.hps.client.jms.schema.project import ProjectSchema
 
 from .base import copy_objects as base_copy_objects
 from .base import create_objects, delete_objects, get_object, get_objects, update_objects
@@ -31,8 +32,8 @@ class JmsApi(object):
 
     Create a new project
 
-    >>> from ansys.rep.client import Client
-    >>> from ansys.rep.client.jms import JmsApi, Project
+    >>> from ansys.hps.client import Client
+    >>> from ansys.hps.client.jms import JmsApi, Project
     >>> cl = Client(
     ...     rep_url="https://127.0.0.1:8443/rep", username="repadmin", password="repadmin"
     ... )
@@ -125,7 +126,7 @@ class JmsApi(object):
         """Create new task definition templates
 
         Args:
-            templates (list of :class:`ansys.rep.client.jms.TaskDefinitionTemplate`):
+            templates (list of :class:`ansys.hps.client.jms.TaskDefinitionTemplate`):
                 A list of task definition templates
         """
         return create_objects(self.client.session, self.url, templates, as_objects, **query_params)
@@ -136,7 +137,7 @@ class JmsApi(object):
         """Update existing task definition templates
 
         Args:
-            templates (list of :class:`ansys.rep.client.jms.TaskDefinitionTemplate`):
+            templates (list of :class:`ansys.hps.client.jms.TaskDefinitionTemplate`):
                 A list of task definition templates
         """
         return update_objects(
@@ -152,7 +153,7 @@ class JmsApi(object):
         """Delete existing task definition templates
 
         Args:
-            templates (list of :class:`ansys.rep.client.jms.TaskDefinitionTemplate`):
+            templates (list of :class:`ansys.hps.client.jms.TaskDefinitionTemplate`):
                 A list of task definition templates
         """
         return delete_objects(self.client.session, self.url, templates)

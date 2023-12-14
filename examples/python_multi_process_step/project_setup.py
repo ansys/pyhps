@@ -27,8 +27,8 @@ import random
 
 from task_files import update_task_files
 
-from ansys.rep.client import Client, REPError
-from ansys.rep.client.jms import (
+from ansys.hps.client import Client, REPError
+from ansys.hps.client.jms import (
     File,
     IntParameterDefinition,
     JmsApi,
@@ -201,7 +201,7 @@ def main(
         if f"td{i}_results_jpg" in file_ids.keys():
             output_file_ids.append(file_ids[f"td{i}_results_jpg"])
 
-        cmd = f"%executable% %file:td{i}_pyscript% %file:td{i}_input% {i}"
+        cmd = f"%executable% %file:td{i}_pyscript% %file:td{i}_input% {i}"  # noqa: E231
         if images:
             cmd += " --images"
         task_defs.append(

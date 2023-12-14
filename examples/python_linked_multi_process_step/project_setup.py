@@ -8,8 +8,8 @@ import logging
 import os
 import random
 
-from ansys.rep.client import Client, REPError
-from ansys.rep.client.jms import (
+from ansys.hps.client import Client, REPError
+from ansys.hps.client.jms import (
     File,
     FloatParameterDefinition,
     JmsApi,
@@ -117,10 +117,10 @@ def main(client, num_task_definitions, num_jobs, start, inactive):
         input_file_ids = [file_ids[f"td{i}_pyscript"]]
         if i == 0:
             input_file_ids.append(file_ids["input"])
-            cmd = f"%executable% %file:td{i}_pyscript% %file:input% {i}"
+            cmd = f"%executable% %file:td{i}_pyscript% %file:input% {i}"  # noqa: E231
         else:
             input_file_ids.append(file_ids[f"td{i-1}_result"])
-            cmd = f"%executable% %file:td{i}_pyscript% %file:td{i-1}_result% {i}"
+            cmd = f"%executable% %file:td{i}_pyscript% %file:td{i-1}_result% {i}"  # noqa: E231
 
         output_file_ids = [file_ids[f"td{i}_result"]]
 

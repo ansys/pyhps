@@ -6,8 +6,9 @@
 # Author(s): F. Negri
 # ----------------------------------------------------------
 
-from ansys.rep.client.common import BaseSchema, ObjectSchema
 from marshmallow import fields, validate
+
+from ansys.hps.client.common import BaseSchema, ObjectSchema
 
 from .task_definition import HpcResourcesSchema, SoftwareSchema
 

@@ -10,11 +10,11 @@ import time
 import unittest
 import uuid
 
-from ansys.rep.client import Client
-from ansys.rep.client.auth import AuthApi, User
-from ansys.rep.client.exceptions import ClientError
-from ansys.rep.client.jms import JmsApi, ProjectApi
-from ansys.rep.client.jms.resource import JobDefinition, Permission, Project
+from ansys.hps.client import Client
+from ansys.hps.client.auth import AuthApi, User
+from ansys.hps.client.exceptions import ClientError
+from ansys.hps.client.jms import JmsApi, ProjectApi
+from ansys.hps.client.jms.resource import JobDefinition, Permission, Project
 from tests.rep_test import REPTestCase
 
 log = logging.getLogger(__name__)

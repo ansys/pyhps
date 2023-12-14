@@ -68,7 +68,7 @@ class Client(object):
 
     Create client object and connect to REP with username and password
 
-    >>> from ansys.rep.client import Client
+    >>> from ansys.hps.client import Client
     >>> cl = Client(
     ...     rep_url="https://localhost:8443/rep",
     ...     username="repuser",

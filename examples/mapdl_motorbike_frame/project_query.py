@@ -10,8 +10,8 @@ import logging
 import os
 from statistics import mean, stdev
 
-from ansys.rep.client import Client, REPError
-from ansys.rep.client.jms import JmsApi, ProjectApi
+from ansys.hps.client import Client, REPError
+from ansys.hps.client.jms import JmsApi, ProjectApi
 
 log = logging.getLogger(__name__)
 
@@ -21,7 +21,7 @@ def print_value_stats(values, title):
     log.info(f"{title}")
     # log.info(f"Num      : {len(values)}")
     log.info(f"Mean     : {mean(values)} Stdev: {stdev(values)}")
-    log.info(f"(Min,Max): ({min(values)}, {max(values)})")
+    log.info(f"(Min, Max): ({min(values)}, {max(values)})")
 
 
 def query_stats(client, project_name):

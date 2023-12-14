@@ -6,9 +6,10 @@
 # Author(s): O.Koenig
 # ----------------------------------------------------------
 
-from ansys.rep.client.common import ObjectSchemaWithModificationInfo
 from marshmallow import fields
 from marshmallow.validate import OneOf
+
+from ansys.hps.client.common import ObjectSchemaWithModificationInfo
 
 from .object_reference import IdReference, IdReferenceList
 

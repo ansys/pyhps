@@ -5,10 +5,12 @@ from pathlib import Path
 from typing import Callable, List, Type, Union
 from warnings import warn
 
-from ansys.rep.client.client import Client
-from ansys.rep.client.common import Object
-from ansys.rep.client.exceptions import REPError
-from ansys.rep.client.jms.resource import (
+import requests
+
+from ansys.hps.client.client import Client
+from ansys.hps.client.common import Object
+from ansys.hps.client.exceptions import REPError
+from ansys.hps.client.jms.resource import (
     Algorithm,
     File,
     Job,
@@ -22,7 +24,6 @@ from ansys.rep.client.jms.resource import (
     Task,
     TaskDefinition,
 )
-import requests
 
 from .base import create_objects, delete_objects, get_objects, update_objects
 from .jms_api import JmsApi, _copy_objects
@@ -43,8 +44,8 @@ class ProjectApi:
     Examples
     --------
 
-    >>> from ansys.rep.client import Client
-    >>> from ansys.rep.client.jms import JmsApi, Project, ProjectApi
+    >>> from ansys.hps.client import Client
+    >>> from ansys.hps.client.jms import JmsApi, Project, ProjectApi
     >>> cl = Client(
     ...     rep_url="https://127.0.0.1:8443/rep", username="repadmin", password="repadmin"
     ... )
@@ -127,7 +128,7 @@ class ProjectApi:
         """
         Return a list of file resources, optionally filtered by given query parameters.
         If content=True, each files content is downloaded as well and stored in memory
-        as :attr:`ansys.rep.client.jms.File.content`.
+        as :attr:`ansys.hps.client.jms.File.content`.
         """
         return get_files(self, as_objects=as_objects, content=content, **query_params)
 
@@ -283,11 +284,11 @@ class ProjectApi:
         """Create new jobs
 
         Args:
-            jobs (list of :class:`ansys.rep.client.jms.Job`): A list of Job objects
+            jobs (list of :class:`ansys.hps.client.jms.Job`): A list of Job objects
             as_objects (bool): Whether to return jobs as objects or dictionaries
 
         Returns:
-            List of :class:`ansys.rep.client.jms.Job` or list of dict if `as_objects` is False
+            List of :class:`ansys.hps.client.jms.Job` or list of dict if `as_objects` is False
         """
         return self._create_objects(jobs, as_objects=as_objects)
 
@@ -316,11 +317,11 @@ class ProjectApi:
         """Update existing jobs
 
         Args:
-            jobs (list of :class:`ansys.rep.client.jms.Job`): A list of job objects
+            jobs (list of :class:`ansys.hps.client.jms.Job`): A list of job objects
             as_objects (bool): Whether to return jobs as objects or dictionaries
 
         Returns:
-            List of :class:`ansys.rep.client.jms.Job` or list of dict if `as_objects` is True
+            List of :class:`ansys.hps.client.jms.Job` or list of dict if `as_objects` is True
         """
         return self._update_objects(jobs, Job, as_objects=as_objects)
 
@@ -328,7 +329,7 @@ class ProjectApi:
         """Delete existing jobs
 
         Args:
-            jobs (list of :class:`ansys.rep.client.jms.Job`): A list of Job objects
+            jobs (list of :class:`ansys.hps.client.jms.Job`): A list of Job objects
 
         Note that only the ``id`` field of the Job objects need to be filled;
         the other fields can be empty.

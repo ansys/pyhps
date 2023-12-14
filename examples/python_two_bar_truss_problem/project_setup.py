@@ -7,8 +7,8 @@ import logging
 import os
 import random
 
-from ansys.rep.client import Client, REPError
-from ansys.rep.client.jms import (
+from ansys.hps.client import Client, REPError
+from ansys.hps.client.jms import (
     File,
     FitnessDefinition,
     FloatParameterDefinition,
