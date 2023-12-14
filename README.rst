@@ -31,7 +31,7 @@ PyHPS
    :alt: Black
 
 
-A Python client for Ansys REP - Remote Execution Platform
+A Python client library for the Ansys HPC Platform Services.
 
 How to install
 --------------

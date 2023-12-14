@@ -22,7 +22,7 @@ class RmsApi(object):
     Parameters
     ----------
     client : Client
-        A REP client object.
+        An HPS client object.
     """
 
     def __init__(self, client: Client):

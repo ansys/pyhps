@@ -37,7 +37,7 @@ class ProjectApi:
     Parameters
     ----------
     client : Client
-        A REP client object.
+        An HPS client object.
     project_id : str
         ID of the project
 

@@ -24,7 +24,7 @@ class AuthApi:
     Parameters
     ----------
     client : Client
-        A REP client object.
+        An HPS client object.
 
     Examples
     --------

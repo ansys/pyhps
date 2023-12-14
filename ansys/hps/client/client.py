@@ -21,7 +21,7 @@ log = logging.getLogger(__name__)
 
 
 class Client(object):
-    """A python interface to the Remote Execution Platform (REP) API.
+    """A python client to the Ansys HPC Platform Services APIs.
 
     Uses the provided credentials to create and store
     an authorized :class:`requests.Session` object.

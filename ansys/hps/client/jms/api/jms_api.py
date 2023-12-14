@@ -25,7 +25,7 @@ class JmsApi(object):
     Parameters
     ----------
     client : Client
-        A REP client object.
+        An HPS client object.
 
     Examples
     --------
