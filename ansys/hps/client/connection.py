@@ -19,7 +19,7 @@ def create_session(
     verify: Union[bool, str] = True,
     disable_security_warnings=False,
 ) -> requests.Session:
-    """Returns a :class:`requests.Session` object configured for REP with given access token
+    """Returns a :class:`requests.Session` object configured for HPS with given access token
 
     Parameters
     ----------

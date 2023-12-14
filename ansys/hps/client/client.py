@@ -66,7 +66,7 @@ class Client(object):
     Examples
     --------
 
-    Create client object and connect to REP with username and password
+    Create client object and connect to HPS with username and password
 
     >>> from ansys.hps.client import Client
     >>> cl = Client(
@@ -75,7 +75,7 @@ class Client(object):
     ...     password="repuser"
     ... )
 
-    Create client object and connect to REP with refresh token
+    Create client object and connect to HPS with refresh token
 
     >>> cl = Client(
     ...     rep_url="https://localhost:8443/rep",
