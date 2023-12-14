@@ -106,7 +106,7 @@ class Client(object):
     ):
 
         rep_url = kwargs.get("rep_url", None)
-        if url is None and rep_url is not None:
+        if rep_url is not None:
             url = rep_url
             msg = "The 'rep_url'` input argument is deprecated, use 'url' instead."
             warnings.warn(msg, DeprecationWarning)
