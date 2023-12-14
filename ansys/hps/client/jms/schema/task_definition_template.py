@@ -142,10 +142,8 @@ class TaskDefinitionTemplateSchema(ObjectSchema):
     execution_script_storage_id = fields.String(
         allow_none=True,
         metadata={
-            "description": (
-                "Storage ID of the script to execute ",
-                "(command or execution script is required).",
-            )
+            "description": "Storage ID of the script to execute "
+            "(command or execution script is required).",
         },
     )
     execution_script_storage_bucket = fields.String(

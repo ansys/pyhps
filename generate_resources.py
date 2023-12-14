@@ -418,7 +418,7 @@ def get_resource_code(resource, base_class, fields, field_docs):
 
 def process_resources(subpackage, resources, base_class_path="ansys.hps.client"):
 
-    target_folder = os.path.join("ansys", "rep", "client", subpackage, "resource")
+    target_folder = os.path.join("ansys", "hps", "client", subpackage, "resource")
     resources_code = {}
     for resource in resources:
         print(f"Processing resource {resource['class']}")

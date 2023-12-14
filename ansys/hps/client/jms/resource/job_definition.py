@@ -24,8 +24,11 @@ class JobDefinition(Object):
         Defines whether this is the active job definition in the project where evaluators will evaluate pending jobs
     client_hash : str, optional
     parameter_definition_ids : list[str]
+        List of parameter definition IDs.
     parameter_mapping_ids : list[str]
+        List of parameter mapping IDs.
     task_definition_ids : list[str]
+        List of task definition IDs.
     fitness_definition : FitnessDefinitionBase, optional
         A :class:`FitnessDefinition` object.
 

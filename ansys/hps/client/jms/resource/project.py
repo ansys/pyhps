@@ -9,7 +9,7 @@ class Project(Object):
     Parameters
     ----------
     id : str
-        Unique ID to access the project, specified on creation of the project.
+        Unique ID to access the project, assigned server side on creation.
     name : str
         Name of the project.
     active : bool

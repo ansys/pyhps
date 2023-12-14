@@ -69,7 +69,7 @@ class Evaluator(Object):
     hostname : str, optional
         Name of the host on which the evaluator is running.
     username : str, optional
-        REP user the evaluator is connected to JMS as.
+        HPS user the evaluator is connected to JMS as.
     platform : str, optional
         Operating system on which the evaluator is running.
     task_manager_type : str, optional
