@@ -6,9 +6,8 @@
 # Author(s): O.Koenig
 # ----------------------------------------------------------
 
-from marshmallow import fields
-
 from ansys.rep.client.common import BaseSchema, ObjectSchemaWithModificationInfo, RestrictedValue
+from marshmallow import fields
 
 from .object_reference import IdReference, IdReferenceList
 

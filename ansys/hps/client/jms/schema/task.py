@@ -6,9 +6,8 @@
 # Author(s): F.Negri
 # ----------------------------------------------------------
 
-from marshmallow import fields
-
 from ansys.rep.client.common import ObjectSchemaWithModificationInfo
+from marshmallow import fields
 
 from .object_reference import IdReference, IdReferenceList
 from .task_definition import TaskDefinitionSchema

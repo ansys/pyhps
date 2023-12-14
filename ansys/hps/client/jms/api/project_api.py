@@ -5,8 +5,6 @@ from pathlib import Path
 from typing import Callable, List, Type, Union
 from warnings import warn
 
-import requests
-
 from ansys.rep.client.client import Client
 from ansys.rep.client.common import Object
 from ansys.rep.client.exceptions import REPError
@@ -24,6 +22,7 @@ from ansys.rep.client.jms.resource import (
     Task,
     TaskDefinition,
 )
+import requests
 
 from .base import create_objects, delete_objects, get_objects, update_objects
 from .jms_api import JmsApi, _copy_objects

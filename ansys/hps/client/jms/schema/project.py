@@ -6,9 +6,8 @@
 # Author(s): O.Koenig
 # ----------------------------------------------------------
 
-from marshmallow import fields
-
 from ansys.rep.client.common import BaseSchema
+from marshmallow import fields
 
 
 class ProjectSchema(BaseSchema):

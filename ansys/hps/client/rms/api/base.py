@@ -2,12 +2,11 @@ import json
 import logging
 from typing import List, Type
 
+from ansys.rep.client.exceptions import ClientError
 from pydantic import BaseModel
 from pydantic import __version__ as pydantic_version
 from pydantic import create_model
 from requests import Session
-
-from ansys.rep.client.exceptions import ClientError
 
 from ..models import (
     Cluster,

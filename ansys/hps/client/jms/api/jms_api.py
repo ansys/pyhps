@@ -4,14 +4,13 @@ import os
 from typing import List, Union
 import uuid
 
-import backoff
-import requests
-
 from ansys.rep.client.client import Client
 from ansys.rep.client.common import Object
 from ansys.rep.client.exceptions import REPError
 from ansys.rep.client.jms.resource import Operation, Permission, Project, TaskDefinitionTemplate
 from ansys.rep.client.jms.schema.project import ProjectSchema
+import backoff
+import requests
 
 from .base import copy_objects as base_copy_objects
 from .base import create_objects, delete_objects, get_object, get_objects, update_objects

@@ -7,9 +7,8 @@
 # ----------------------------------------------------------
 import logging
 
-from marshmallow import fields
-
 from ansys.rep.client.common import ObjectSchemaWithModificationInfo
+from marshmallow import fields
 
 from .fitness_definition import FitnessDefinitionSchema
 from .object_reference import IdReferenceList

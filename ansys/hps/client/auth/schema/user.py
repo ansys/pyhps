@@ -6,9 +6,8 @@
 # Author(s): F.Negri
 # ----------------------------------------------------------
 
-from marshmallow import fields
-
 from ansys.rep.client.common.base_schema import BaseSchema
+from marshmallow import fields
 
 
 class UserSchema(BaseSchema):
