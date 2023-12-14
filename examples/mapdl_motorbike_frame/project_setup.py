@@ -233,7 +233,7 @@ def create_project(
         ParameterMapping(
             key_string="cpu_core_usage",
             tokenizer="=",
-            task_definition_property="resource_requirements.cpu_core_usage",
+            task_definition_property="resource_requirements.num_cores",
             file_id=file_ids["inp"],
         )
     )
