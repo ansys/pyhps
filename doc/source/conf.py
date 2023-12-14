@@ -279,7 +279,7 @@ numpydoc_validation_checks = {
 extlinks = {
     "ansys_rep_help": (
         """https://ansyshelp.ansys.com/account/
-        secured?returnurl=/Views/Secured/hpcplat/v000/en/rep_ug/%s.html"""
+        secured?returnurl=/Views/Secured/hpcplat/v000/en/rep_ug/%s.html""",
         "ANSYS Help - ",
     ),
 }
