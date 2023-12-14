@@ -311,18 +311,18 @@ Admin users with the Keycloak "manage-users" role can create new users as well a
 Exception handling
 ------------------------------------------
 
-All exceptions that the Ansys REP client explicitly raise inherit from :exc:`ansys.hps.client.REPError`.
+All exceptions that the Ansys REP client explicitly raise inherit from :exc:`ansys.hps.client.HPSError`.
 Client Errors are raised for 4xx HTTP status codes, while API Errors are raised for 5xx HTTP status codes (server side errors).
 
 For example, instantiating a client with invalid credentials will return a 401 Client Error.
 
 .. code-block:: python
 
-    from ansys.hps.client import Client, REPError
+    from ansys.hps.client import Client, HPSError
 
     try:
         client = Client(rep_url="https://localhost:8443/rep/", username="repuser",  password="wrong_psw")
-    except REPError as e:
+    except HPSError as e:
         print(e)
 
     #Output:
@@ -338,7 +338,7 @@ A *get* call on a non-existing resource will return a 404 Client Error.
     jms_api = JmsApi(client)
     try:
         jms_api.get_project(id="non_existing_project")
-    except REPError as e:
+    except HPSError as e:
         print(e)
 
     #Output:

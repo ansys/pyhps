@@ -10,7 +10,7 @@ import logging
 import os
 import random
 
-from ansys.hps.client import Client, REPError, __ansys_apps_version__
+from ansys.hps.client import Client, HPSError, __ansys_apps_version__
 from ansys.hps.client.jms import (
     File,
     FloatParameterDefinition,
@@ -263,5 +263,5 @@ if __name__ == "__main__":
             num_jobs=args.num_jobs,
             use_exec_script=args.use_exec_script,
         )
-    except REPError as e:
+    except HPSError as e:
         log.error(str(e))

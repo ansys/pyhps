@@ -9,7 +9,7 @@ import requests
 
 from ansys.hps.client.client import Client
 from ansys.hps.client.common import Object
-from ansys.hps.client.exceptions import REPError
+from ansys.hps.client.exceptions import HPSError
 from ansys.hps.client.jms.resource import (
     Algorithm,
     File,
@@ -623,7 +623,7 @@ def archive_project(project_api: ProjectApi, target_path, include_job_files=True
     op = jms_api.monitor_operation(operation_id)
 
     if not op.succeeded:
-        raise REPError(f"Failed to archive project {project_api.project_id}.\n{op}")
+        raise HPSError(f"Failed to archive project {project_api.project_id}.\n{op}")
 
     download_link = op.result["backend_path"]
 
@@ -632,7 +632,7 @@ def archive_project(project_api: ProjectApi, target_path, include_job_files=True
     log.info(f"Project archive download link: {download_link}")
 
     if not os.path.isdir(target_path):
-        raise REPError(f"Project archive: target path does not exist {target_path}")
+        raise HPSError(f"Project archive: target path does not exist {target_path}")
 
     file_path = os.path.join(target_path, download_link.rsplit("/")[-1])
     log.info(f"Download archive to {file_path}")

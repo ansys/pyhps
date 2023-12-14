@@ -24,7 +24,7 @@ import logging
 import os
 from typing import List, Tuple
 
-from ansys.hps.client import Client, REPError, __ansys_apps_version__
+from ansys.hps.client import Client, HPSError, __ansys_apps_version__
 from ansys.hps.client.jms import (
     File,
     JmsApi,
@@ -384,5 +384,5 @@ if __name__ == "__main__":
             use_exec_script=args.use_exec_script,
             version=args.ansys_version,
         )
-    except REPError as e:
+    except HPSError as e:
         log.error(str(e))

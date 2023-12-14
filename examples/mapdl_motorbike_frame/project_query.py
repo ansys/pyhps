@@ -10,7 +10,7 @@ import logging
 import os
 from statistics import mean, stdev
 
-from ansys.hps.client import Client, REPError
+from ansys.hps.client import Client, HPSError
 from ansys.hps.client.jms import JmsApi, ProjectApi
 
 log = logging.getLogger(__name__)
@@ -131,5 +131,5 @@ if __name__ == "__main__":
         query_stats(client=client, project_name=args.name)
         download_files(client=client, project_name=args.name)
 
-    except REPError as e:
+    except HPSError as e:
         log.error(str(e))

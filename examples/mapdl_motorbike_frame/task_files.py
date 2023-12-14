@@ -3,7 +3,7 @@ import argparse
 import logging
 import os
 
-from ansys.hps.client import REPError
+from ansys.hps.client import HPSError
 from ansys.hps.client.jms import Client, File
 
 log = logging.getLogger(__name__)
@@ -134,5 +134,5 @@ if __name__ == "__main__":
         log.info(f"HPS URL: {client.rep_url}")
 
         modify_task_files(client=client, project_name=args.name)
-    except REPError as e:
+    except HPSError as e:
         log.error(str(e))

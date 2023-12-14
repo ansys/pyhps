@@ -9,35 +9,35 @@
 from requests.exceptions import RequestException
 
 
-class REPError(RequestException):
+class HPSError(RequestException):
     def __init__(self, *args, **kwargs):
         """Base class for all rep related errors.
            Derives from :class:`requests.exceptions.RequestException`.
 
         Example:
-            >>> from ansys.hps.client import REPError
+            >>> from ansys.hps.client import HPSError
             >>> from ansys.hps.client.jms import Client
             >>> try:
             >>>     client = Client(rep_url="https://127.0.0.1:8443/rep/",
                                     username="repadmin",
                                     password="wrong_psw")
-            >>> except REPError as e:
+            >>> except HPSError as e:
             >>>     print(e)
             401 Client Error: invalid_grant for: POST https://127.0.0.1:8443/rep/auth...
             Invalid user credentials
         """
         self.reason = kwargs.pop("reason", None)
         self.description = kwargs.pop("description", None)
-        super(REPError, self).__init__(*args, **kwargs)
+        super(HPSError, self).__init__(*args, **kwargs)
 
 
-class APIError(REPError):
+class APIError(HPSError):
     def __init__(self, *args, **kwargs):
         """Indicate server side related errors."""
         super(APIError, self).__init__(*args, **kwargs)
 
 
-class ClientError(REPError):
+class ClientError(HPSError):
     def __init__(self, *args, **kwargs):
         """Indicate client side related errors."""
         super(ClientError, self).__init__(*args, **kwargs)

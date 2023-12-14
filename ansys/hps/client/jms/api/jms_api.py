@@ -9,7 +9,7 @@ import requests
 
 from ansys.hps.client.client import Client
 from ansys.hps.client.common import Object
-from ansys.hps.client.exceptions import REPError
+from ansys.hps.client.exceptions import HPSError
 from ansys.hps.client.jms.resource import Operation, Permission, Project, TaskDefinitionTemplate
 from ansys.hps.client.jms.schema.project import ProjectSchema
 
@@ -294,7 +294,7 @@ def create_project(client, api_url, project, replace=False, as_objects=True) -> 
     r = client.session.post(f"{url}", data=json_data)
 
     if not r.json()["projects"]:
-        raise REPError(f"Failed to create the project. Request response: {r.json()}")
+        raise HPSError(f"Failed to create the project. Request response: {r.json()}")
 
     data = r.json()["projects"][0]
     if not as_objects:
@@ -344,7 +344,7 @@ def _monitor_operation(
     op, done = _monitor()
 
     if not done:
-        raise REPError(f"Operation {operation_id} did not complete.")
+        raise HPSError(f"Operation {operation_id} did not complete.")
     return op
 
 
@@ -361,14 +361,14 @@ def _copy_objects(
     if not op.succeeded:
         obj_type = objects[0].__class__
         rest_name = obj_type.Meta.rest_name
-        raise REPError(f"Failed to copy {rest_name} with ids = {[obj.id for obj in objects]}.")
+        raise HPSError(f"Failed to copy {rest_name} with ids = {[obj.id for obj in objects]}.")
     return op.result["destination_ids"]
 
 
 def restore_project(jms_api, archive_path):
 
     if not os.path.exists(archive_path):
-        raise REPError(f"Project archive: path does not exist {archive_path}")
+        raise HPSError(f"Project archive: path does not exist {archive_path}")
 
     # Upload archive to FS API
     archive_name = os.path.basename(archive_path)
@@ -398,7 +398,7 @@ def restore_project(jms_api, archive_path):
     op = jms_api.monitor_operation(operation_id)
 
     if not op.succeeded:
-        raise REPError(f"Failed to restore project from archive {archive_path}.")
+        raise HPSError(f"Failed to restore project from archive {archive_path}.")
 
     project_id = op.result["project_id"]
     log.info(f"Done restoring project, project_id = '{project_id}'")
@@ -424,13 +424,13 @@ def get_fs_url(client, api_url):
     file_storages = get_storages(client, api_url)
 
     if not file_storages:
-        raise REPError(f"No file storage information.")
+        raise HPSError(f"No file storage information.")
 
     rest_gateways = [fs for fs in file_storages if fs["obj_type"] == "RestGateway"]
     rest_gateways.sort(key=lambda fs: fs["priority"])
 
     if not rest_gateways:
-        raise REPError(f"No Rest Gateway defined.")
+        raise HPSError(f"No Rest Gateway defined.")
 
     for d in rest_gateways:
         url = d["url"]

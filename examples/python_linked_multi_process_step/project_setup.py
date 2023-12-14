@@ -8,7 +8,7 @@ import logging
 import os
 import random
 
-from ansys.hps.client import Client, REPError
+from ansys.hps.client import Client, HPSError
 from ansys.hps.client.jms import (
     File,
     FloatParameterDefinition,
@@ -202,5 +202,5 @@ if __name__ == "__main__":
             start=args.start,
             inactive=args.inactive,
         )
-    except REPError as e:
+    except HPSError as e:
         log.error(str(e))

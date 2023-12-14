@@ -11,7 +11,7 @@ import uuid
 from keycloak import KeycloakOpenID
 from keycloak.exceptions import KeycloakError
 
-from ansys.hps.client import Client, REPError
+from ansys.hps.client import Client, HPSError
 from ansys.hps.client.auth import AuthApi, User, authenticate
 from tests.rep_test import REPTestCase
 
@@ -97,7 +97,7 @@ class AuthClientTest(REPTestCase):
                 requested_subject=new_user.id,
                 verify=False,
             )
-        except REPError as e:
+        except HPSError as e:
             if e.response.status_code == 501 and "Feature not enabled" in e.reason:
                 self.skipTest(
                     f"This test requires to enable the feature 'token-exchange' in keycloak."

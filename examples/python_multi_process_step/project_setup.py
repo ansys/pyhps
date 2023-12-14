@@ -27,7 +27,7 @@ import random
 
 from task_files import update_task_files
 
-from ansys.hps.client import Client, REPError
+from ansys.hps.client import Client, HPSError
 from ansys.hps.client.jms import (
     File,
     IntParameterDefinition,
@@ -314,5 +314,5 @@ if __name__ == "__main__":
             inactive=args.inactive,
             sequential=args.sequential,
         )
-    except REPError as e:
+    except HPSError as e:
         log.error(str(e))

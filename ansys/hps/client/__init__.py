@@ -16,7 +16,7 @@ from .__version__ import (
 )
 from .auth import AuthApi
 from .client import Client
-from .exceptions import APIError, ClientError, REPError
+from .exceptions import APIError, ClientError, HPSError
 from .jms import JmsApi, ProjectApi
 from .rms import RmsApi
 from .warnings import UnverifiedHTTPSRequestsWarning

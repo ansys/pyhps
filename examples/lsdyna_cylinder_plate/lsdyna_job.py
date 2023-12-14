@@ -23,7 +23,7 @@ import logging
 import os
 import time
 
-from ansys.hps.client import Client, REPError
+from ansys.hps.client import Client, HPSError
 from ansys.hps.client.jms import (
     File,
     JmsApi,
@@ -406,7 +406,7 @@ if __name__ == "__main__":
             job = REPJob.load()
             log.info(job)
             download_results(job)
-    except REPError as e:
+    except HPSError as e:
         log.error(str(e))
     except KeyboardInterrupt:
         log.warning("Interrupted, stopping ...")

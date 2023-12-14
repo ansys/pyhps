@@ -13,7 +13,7 @@ import uuid
 
 from marshmallow.utils import missing
 
-from ansys.hps.client import REPError
+from ansys.hps.client import HPSError
 from ansys.hps.client.auth import AuthApi
 from ansys.hps.client.jms import JmsApi
 from ansys.hps.client.jms.resource import (
@@ -217,7 +217,7 @@ class TaskDefinitionTemplateTest(REPTestCase):
         except_obj = None
         try:
             client1_templates = jms_api1.update_task_definition_templates(client1_templates)
-        except REPError as e:
+        except HPSError as e:
             except_obj = e
         self.assertEqual(except_obj.response.status_code, 403)
         self.assertEqual(except_obj.description, "Access to this resource has been restricted")
@@ -322,7 +322,7 @@ class TaskDefinitionTemplateTest(REPTestCase):
         except_obj = None
         try:
             client1_templates = jms_api1.update_task_definition_templates(client1_templates)
-        except REPError as e:
+        except HPSError as e:
             except_obj = e
         self.assertEqual(except_obj.response.status_code, 403)
         self.assertEqual(except_obj.description, "Access to this resource has been restricted")
@@ -386,7 +386,7 @@ class TaskDefinitionTemplateTest(REPTestCase):
         except_obj = None
         try:
             client2_templates = jms_api2.delete_task_definition_templates(client2_templates)
-        except REPError as e:
+        except HPSError as e:
             except_obj = e
         self.assertIsNotNone(except_obj)
         self.assertEqual(except_obj.response.status_code, 403)
