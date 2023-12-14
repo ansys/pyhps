@@ -290,7 +290,7 @@ def create_project(
     client: Client, name: str, incremental: bool, use_exec_script: bool, version: str
 ) -> Project:
 
-    log.info("=== REP connection")
+    log.info("=== HPS connection")
     log.info(f"Client connected at {client.rep_url}")
 
     log.info("=== Create new Project")
@@ -373,7 +373,7 @@ if __name__ == "__main__":
     logger = logging.getLogger()
     logging.basicConfig(format="[%(asctime)s | %(levelname)s] %(message)s", level=logging.INFO)
 
-    log.debug("=== REP connection")
+    log.debug("=== HPS connection")
     client = Client(rep_url=args.url, username=args.username, password=args.password)
 
     try:

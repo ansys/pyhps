@@ -129,9 +129,9 @@ if __name__ == "__main__":
     logging.basicConfig(format="%(message)s", level=logging.DEBUG)
 
     try:
-        log.info("Connect to REP JMS")
+        log.info("Connect to HPC Platform Services")
         client = Client(rep_url=args.url, username=args.username, password=args.password)
-        log.info(f"REP URL: {client.rep_url}")
+        log.info(f"HPS URL: {client.rep_url}")
 
         modify_task_files(client=client, project_name=args.name)
     except REPError as e:
