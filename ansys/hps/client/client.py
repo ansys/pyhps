@@ -40,7 +40,7 @@ class Client(object):
 
     Parameters
     ----------
-    rep_url : str
+    url : str
         The base path for the server to call, e.g. "https://127.0.0.1:8443/rep".
     username : str, optional
         Username
@@ -70,7 +70,7 @@ class Client(object):
 
     >>> from ansys.hps.client import Client
     >>> cl = Client(
-    ...     rep_url="https://localhost:8443/rep",
+    ...     url="https://localhost:8443/rep",
     ...     username="repuser",
     ...     password="repuser"
     ... )
@@ -78,7 +78,7 @@ class Client(object):
     Create client object and connect to HPS with refresh token
 
     >>> cl = Client(
-    ...     rep_url="https://localhost:8443/rep",
+    ...     url="https://localhost:8443/rep",
     ...     username="repuser",
     ...     refresh_token="eyJhbGciOiJIUzI1NiIsInR5cC..."
     >>> )
@@ -87,7 +87,7 @@ class Client(object):
 
     def __init__(
         self,
-        rep_url: str = "https://127.0.0.1:8443/rep",
+        url: str = "https://127.0.0.1:8443/rep",
         username: str = None,
         password: str = None,
         *,
@@ -102,11 +102,19 @@ class Client(object):
         all_fields=True,
         verify: Union[bool, str] = None,
         disable_security_warnings: bool = True,
+        **kwargs,
     ):
 
-        self.rep_url = rep_url
+        rep_url = kwargs.get("rep_url", None)
+        if url is None and rep_url is not None:
+            url = rep_url
+            msg = "The 'rep_url'` input argument is deprecated, use 'url' instead."
+            warnings.warn(msg, DeprecationWarning)
+            log.warning(msg)
+
+        self.url = url
         self.auth_url = auth_url
-        self.auth_api_url = (auth_url or rep_url) + f"/auth/"
+        self.auth_api_url = (auth_url or url) + f"/auth/"
         self.access_token = None
         self.refresh_token = None
         self.username = username
@@ -121,7 +129,7 @@ class Client(object):
             self.verify = False
             msg = (
                 f"Certificate verification is disabled. "
-                f"Unverified HTTPS requests will be made to {self.rep_url}."
+                f"Unverified HTTPS requests will be made to {self.url}."
             )
             warnings.warn(msg, UnverifiedHTTPSRequestsWarning)
             log.warning(msg)
@@ -145,7 +153,7 @@ class Client(object):
             log.debug(f"Authenticating with '{self.grant_type}' grant type.")
 
             tokens = authenticate(
-                url=auth_url or rep_url,
+                url=auth_url or url,
                 realm=realm,
                 grant_type=self.grant_type,
                 scope=scope,
@@ -172,6 +180,13 @@ class Client(object):
         self._unauthorized_num_retry = 0
         self._unauthorized_max_retry = 1
 
+    @property
+    def rep_url(self) -> str:
+        msg = "The Client 'rep_url' property is deprecated, use 'url' instead."
+        warnings.warn(msg, DeprecationWarning)
+        log.warning(msg)
+        return self.url
+
     def _auto_refresh_token(self, response, *args, **kwargs):
         """Hook function to automatically refresh the access token and
         re-send the request in case of unauthorized error"""
@@ -197,7 +212,7 @@ class Client(object):
             # Its not recommended to give refresh tokens to client_credentials grant types
             # as per OAuth 2.0 RFC6749 Section 4.4.3, so handle these specially...
             tokens = authenticate(
-                url=self.auth_url or self.rep_url,
+                url=self.auth_url or self.url,
                 realm=self.realm,
                 grant_type="client_credentials",
                 scope=self.scope,
@@ -208,7 +223,7 @@ class Client(object):
         else:
             # Other workflows for authentication generally support refresh_tokens
             tokens = authenticate(
-                url=self.auth_url or self.rep_url,
+                url=self.auth_url or self.url,
                 realm=self.realm,
                 grant_type="refresh_token",
                 scope=self.scope,

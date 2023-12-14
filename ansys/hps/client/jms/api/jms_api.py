@@ -49,7 +49,7 @@ class JmsApi(object):
     @property
     def url(self) -> str:
         """Returns the API url"""
-        return f"{self.client.rep_url}/jms/api/v1"
+        return f"{self.client.url}/jms/api/v1"
 
     @property
     def fs_url(self) -> str:
@@ -374,7 +374,7 @@ def restore_project(jms_api, archive_path):
     archive_name = os.path.basename(archive_path)
 
     bucket = f"rep-client-restore-{uuid.uuid4()}"
-    fs_file_url = f"{jms_api.client.rep_url}/fs/api/v1/{bucket}/{archive_name}"
+    fs_file_url = f"{jms_api.client.url}/fs/api/v1/{bucket}/{archive_name}"
     ansfs_file_url = f"ansfs://{bucket}/{archive_name}"  # noqa: E231
 
     fs_headers = {"content-type": "application/octet-stream"}
@@ -405,7 +405,7 @@ def restore_project(jms_api, archive_path):
 
     # Delete archive file on server
     log.info(f"Delete temporary bucket {bucket}")
-    r = jms_api.client.session.put(f"{jms_api.client.rep_url}/fs/api/v1/remove/{bucket}")
+    r = jms_api.client.session.put(f"{jms_api.client.url}/fs/api/v1/remove/{bucket}")
 
     return get_project(jms_api.client, jms_api.url, project_id)
 

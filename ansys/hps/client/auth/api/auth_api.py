@@ -58,7 +58,7 @@ class AuthApi:
     @property
     def url(self):
         """Returns the API url"""
-        return f"{self.client.rep_url}/auth/"
+        return f"{self.client.url}/auth/"
 
     @property
     def keycloak_admin_client(self) -> KeycloakAdmin:

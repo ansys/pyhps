@@ -32,7 +32,7 @@ class RmsApi(object):
     @property
     def url(self) -> str:
         """Returns the API url"""
-        return f"{self.client.rep_url}/rms/api/v1"
+        return f"{self.client.url}/rms/api/v1"
 
     def get_api_info(self):
         """Return info like version, build date etc of the RMS API the client is connected to"""

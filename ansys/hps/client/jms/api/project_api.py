@@ -80,7 +80,7 @@ class ProjectApi:
 
     @property
     def jms_api_url(self) -> str:
-        return f"{self.client.rep_url}/jms/api/v1"
+        return f"{self.client.url}/jms/api/v1"
 
     @property
     def url(self) -> str:
