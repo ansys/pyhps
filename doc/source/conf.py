@@ -137,7 +137,7 @@ html_theme_options = {
 }
 
 # A shorter title for the navigation bar.  Default is the same as html_title.
-html_short_title = html_title = "PyREP"
+html_short_title = html_title = "PyHPS"
 
 # The name of an image file (relative to this directory) to place at the top
 # of the sidebar.
@@ -180,8 +180,8 @@ latex_elements = {
 latex_documents = [
     (
         "index",
-        "ansys-rep-client.tex",
-        "REP Python Client Documentation",
+        "ansys-pyhps.tex",
+        "Ansys HPS Python Client Documentation",
         author,
         "manual",
     ),
@@ -212,9 +212,7 @@ latex_documents = [
 
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
-man_pages = [
-    ("index", "ansys-rep-client", "REP Python Client Documentation", ["ANSYS Switzerland Gmbh"], 1)
-]
+man_pages = [("index", "ansys-pyhps", "Ansys HPS Python Client Documentation", ["ANSYS, Inc."], 1)]
 
 # If true, show URL addresses after external links.
 # man_show_urls = False
@@ -225,17 +223,17 @@ man_pages = [
 # Grouping the document tree into Texinfo files. List of tuples
 # (source start file, target name, title, author,
 #  dir menu entry, description, category)
-texinfo_documents = [
-    (
-        "index",
-        "ansys-rep-client",
-        "REP Python Client Documentation",
-        "ANSYS Switzerland Gmbh",
-        "DCP",
-        "One line description of project.",
-        "Miscellaneous",
-    ),
-]
+# texinfo_documents = [
+#     (
+#         "index",
+#         "ansys-pyhps",
+#         "Ansys HPS Python Client Documentation",
+#         "ANSYS, Inc.",
+#         "JMS",
+#         "One line description of project.",
+#         "Miscellaneous",
+#     ),
+# ]
 
 # Documents to append as an appendix to all manuals.
 # texinfo_appendices = []
@@ -280,13 +278,10 @@ numpydoc_validation_checks = {
 
 extlinks = {
     "ansys_rep_help": (
+        # """https://ansyshelp.ansys.com/account/
+        # secured?returnurl=/Views/Secured/corp/v231/en/rep_ug/%s.html""",
         """https://ansyshelp.ansys.com/account/
-        secured?returnurl=/Views/Secured/corp/v231/en/rep_ug/%s.html""",
+        secured?returnurl=/Views/Secured/corp/v231/en/rep_ug/%s.html"""  # todo
         "ANSYS Help - ",
-    ),
-    "ansys_dcs_tutorial": (
-        """https://ansyshelp.ansys.com/account/
-        secured?returnurl=/Views/Secured/corp/v231/en/dcs_tut/%s.html""",
-        "REP Tutorial - ",
     ),
 }

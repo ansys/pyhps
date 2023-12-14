@@ -94,7 +94,7 @@ def generate_openapi_specs():
 
         ma_plugin = MarshmallowPlugin()
         spec = APISpec(
-            title="pyrep",
+            title="pyhps",
             version=__version__,
             openapi_version="3.0",
             plugins=[ma_plugin],

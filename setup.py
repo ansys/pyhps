@@ -7,11 +7,11 @@ from setuptools import find_namespace_packages, setup
 # to get the package version.
 root = os.path.abspath(os.path.dirname(__file__))
 about = {}
-with open(os.path.join(root, "ansys", "rep", "client", "__version__.py"), "r") as f:
+with open(os.path.join(root, "ansys", "hps", "client", "__version__.py"), "r") as f:
     exec(f.read(), about)
 
 setup(
-    name="ansys-rep-client",
+    name="ansys-pyhps",
     version=about["__version__"],
     url=about["__url__"],
     author="ANSYS, Inc.",
@@ -26,7 +26,7 @@ setup(
     ],
     license="MIT",
     license_file="LICENSE",
-    description="A python client for Ansys REP - Remote Execution Platform",
+    description="A python client for Ansys HPC Platform Services",
     long_description=open("README.rst").read(),
     long_description_content_type="text/x-rst",
     install_requires=[

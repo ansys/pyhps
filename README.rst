@@ -1,4 +1,4 @@
-PyREP
+PyHPS
 =====
 |pyansys| |python| |pypi| |GH-CI| |codecov| |MIT| |black|
 
@@ -36,14 +36,14 @@ A Python client for Ansys REP - Remote Execution Platform
 How to install
 --------------
 
-In order to install PyREP, make sure you
+In order to install PyHPS, make sure you
 have the latest version of `pip`_. To do so, run:
 
 .. code:: bash
 
     python -m pip install -U pip
 
-Then, as long as PyREP is a private pyAnsys module not published to pypi yet, you can execute:
+Then, as long as PyHPS is a private pyAnsys module not published to pypi yet, you can execute:
 
 .. code:: bash
 

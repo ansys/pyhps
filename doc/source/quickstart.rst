@@ -9,7 +9,7 @@ while detailed documentation can be found in the :ref:`Code Documentation <api_r
 To reproduce the code samples provided below, you will need:
 
 - A running REP server, go to the `REP repository <https://github.com/ansys/rep>`_ for instructions.
-- A Python shell with ``ansys-rep-client`` installed. If you haven't installed it yet, please refer to the :ref:`Installation <installation>` guide.
+- A Python shell with ``ansys-pyhps`` installed. If you haven't installed it yet, please refer to the :ref:`Installation <installation>` guide.
 
 
 Connect to a REP Server 

@@ -170,7 +170,7 @@ jobs:
           python -m pip install -r requirements/requirements_build.txt
           python -m build venv wheel
           python -m twine check dist/*
-          version=$(ls dist | grep rep_client | grep -E -o "[0-9]+.[0-9]+.[a-z0-9]+")
+          version=$(ls dist | grep pyhps | grep -E -o "[0-9]+.[0-9]+.[a-z0-9]+")
           echo "version=$version" >> $GITHUB_OUTPUT
       #- name: Upload to private PyPi
       #  if: github.ref == 'refs/heads/main'
@@ -183,7 +183,7 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-artifact@v3
         with:
-          name: pyrep-package
+          name: ansys-pyhps-package
           path: |
             dist/*.whl
           retention-days: 5
@@ -196,7 +196,7 @@ jobs:
     steps:
       - uses: actions/download-artifact@v3
         with:
-          name: pyrep-package
+          name: ansys-pyhps-package
           path: /tmp/artifacts
 
       - name: List artifacts
