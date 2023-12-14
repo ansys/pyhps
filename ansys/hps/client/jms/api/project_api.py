@@ -114,7 +114,7 @@ class ProjectApi:
 
         Args:
             path (str): Where to save the archive locally.
-            include_job_files (bool, optional): Whether to include design point files in the
+            include_job_files (bool, optional): Whether to include job files in the
                                                 archive. True by default.
 
         Returns:

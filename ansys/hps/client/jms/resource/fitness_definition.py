@@ -91,7 +91,7 @@ class FitnessDefinition(Object):
     fitness_term_definitions
         List of :class:`ansys.hps.client.jms.FitnessTermDefinition`.
     error_fitness : float
-        The default fitness value assigned to failed design points.
+        The default fitness value assigned to failed jobs.
 
     Examples
     --------

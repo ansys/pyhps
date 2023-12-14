@@ -25,7 +25,7 @@ class Job(Object):
     job_definition_id : str
         ID of the linked job definition, see :class:`JobDefinition`.
     priority : int, optional
-        Priority with which jobs are evaluated. The default is 0, which is the highest priority. Assigning a higher value to a design point makes it a lower priority.
+        Priority with which jobs are evaluated. The default is 0, which is the highest priority. Assigning a higher value to a job makes it a lower priority.
     values : dict[str, any], optional
         Dictionary with (name,value) pairs for all parameters defined in the linked job definition.
     fitness : float, optional
