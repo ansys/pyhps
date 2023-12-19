@@ -7,8 +7,8 @@ import logging
 import os
 import random
 
-from ansys.rep.client import Client, REPError
-from ansys.rep.client.jms import (
+from ansys.hps.client import Client, HPSError
+from ansys.hps.client.jms import (
     File,
     FitnessDefinition,
     FloatParameterDefinition,
@@ -280,5 +280,5 @@ if __name__ == "__main__":
 
     try:
         main(client, num_jobs=args.num_jobs, use_exec_script=args.use_exec_script)
-    except REPError as e:
+    except HPSError as e:
         log.error(str(e))

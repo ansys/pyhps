@@ -5,8 +5,8 @@ import argparse
 import logging
 import os
 
-from ansys.rep.client import Client, REPError, __ansys_apps_version__
-from ansys.rep.client.jms import (
+from ansys.hps.client import Client, HPSError, __ansys_apps_version__
+from ansys.hps.client.jms import (
     File,
     JmsApi,
     Job,
@@ -162,12 +162,12 @@ if __name__ == "__main__":
     logging.basicConfig(format="%(message)s", level=logging.DEBUG)
 
     try:
-        log.info("Connect to REP JMS")
+        log.info("Connect to HPC Platform Services")
         client = Client(rep_url=args.url, username=args.username, password=args.password)
-        log.info(f"REP URL: {client.rep_url}")
+        log.info(f"HPS URL: {client.rep_url}")
         proj = create_project(
             client=client, name=args.name, num_jobs=args.num_jobs, version=args.ansys_version
         )
 
-    except REPError as e:
+    except HPSError as e:
         log.error(str(e))

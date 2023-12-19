@@ -20,7 +20,7 @@ Additionally, make sure you have ``pip`` available. You can check this by runnin
 If pip isn't already installed, please refer to the `Installing Packages Tutorial <https://packaging.python.org/tutorials/installing-packages/>`_ from the Python Packaging Authority.
 
 
-As long as PyREP is a private PyAnsys package not published to PyPI yet, you can execute
+As long as PyHPS is a private PyAnsys package not published to PyPI yet, you can execute
 
 .. code:: 
 

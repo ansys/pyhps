@@ -9,8 +9,8 @@ import logging
 import os
 import random
 
-from ansys.rep.client import Client, REPError, __ansys_apps_version__
-from ansys.rep.client.jms import (
+from ansys.hps.client import Client, HPSError, __ansys_apps_version__
+from ansys.hps.client.jms import (
     File,
     FitnessDefinition,
     FloatParameterDefinition,
@@ -340,9 +340,9 @@ if __name__ == "__main__":
     logging.basicConfig(format="%(message)s", level=logging.DEBUG)
 
     try:
-        log.info("Connect to REP JMS")
+        log.info("Connect to HPC Platform Services")
         client = Client(rep_url=args.url, username=args.username, password=args.password)
-        log.info(f"REP URL: {client.rep_url}")
+        log.info(f"HPS URL: {client.rep_url}")
         proj = create_project(
             client=client,
             name=args.name,
@@ -351,5 +351,5 @@ if __name__ == "__main__":
             use_exec_script=args.use_exec_script,
         )
 
-    except REPError as e:
+    except HPSError as e:
         log.error(str(e))

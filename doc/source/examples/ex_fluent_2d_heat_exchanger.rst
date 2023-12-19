@@ -3,7 +3,7 @@
 Fluent 2d Heat Exchanger
 ========================
 
-This example shows how to submit a simple Fluent solve job to REP. The model consists of a 2D heat exchanger.
+This example shows how to submit a simple Fluent solve job to HPS. The model consists of a 2D heat exchanger.
 
 .. only:: builder_html
 

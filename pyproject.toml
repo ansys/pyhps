@@ -29,5 +29,5 @@ markers = [
 filterwarnings = [
     "ignore::urllib3.exceptions.InsecureRequestWarning",
     "ignore::DeprecationWarning:pkg_resources.*",
-    "ignore::ansys.rep.client.UnverifiedHTTPSRequestsWarning",
+    "ignore::ansys.hps.client.UnverifiedHTTPSRequestsWarning",
 ]

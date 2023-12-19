@@ -1,4 +1,4 @@
-PyREP Documentation |version|
+PyHPS Documentation |version|
 =================================
 
 .. toctree::
@@ -16,7 +16,7 @@ Introduction
 Ansys Remote Execution Platform (REP) is a family of applications that enables you to distribute, 
 manage and solve simulations on a variety of compute resources. 
 
-``ansys-rep-client`` brings Ansys REP to your Python application. 
+``ansys-pyhps`` brings Ansys REP to your Python application. 
 Wrapping around the REP REST APIs, it allows you to:
 
 * create new projects and modify existing ones
