@@ -1,5 +1,5 @@
 """
-Example script to setup a simple MAPDL project with parameters in pyrep.
+Example script to setup a simple MAPDL project with parameters in pyhps.
 
 Author(s): O.Koenig
 """

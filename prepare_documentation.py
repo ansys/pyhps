@@ -182,7 +182,7 @@ def archive_examples():
             for file in files:
                 zip_archive.write(os.path.join("examples", name, file), file)
 
-    with ZipFile(os.path.join("build", f"pyrep_examples.zip"), "w") as zip_archive:
+    with ZipFile(os.path.join("build", f"pyhps_examples.zip"), "w") as zip_archive:
         for name, files in examples.items():
             for file in files:
                 zip_archive.write(os.path.join("examples", name, file), os.path.join(name, file))

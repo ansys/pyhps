@@ -1,5 +1,5 @@
 """
-Example script to setup a simple Fluent project in pyrep.
+Example script to setup a simple Fluent project in pyhps.
 """
 import argparse
 import logging

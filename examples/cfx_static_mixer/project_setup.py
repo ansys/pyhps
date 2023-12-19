@@ -1,5 +1,5 @@
 """
-Example script to setup a simple CFX project in pyrep.
+Example script to setup a simple CFX project in pyhps.
 """
 import argparse
 import logging

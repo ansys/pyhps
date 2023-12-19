@@ -125,7 +125,7 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-artifact@v3
         with:
-          name: pyrep-package
+          name: pyhps-package
           path: |
             dist/*.whl
           retention-days: 5
