@@ -22,7 +22,7 @@ Let's start by connecting to a REP server running on the localhost with default 
     from ansys.hps.client import Client
     from ansys.hps.client.jms import JmsApi, ProjectApi
     
-    client = Client(rep_url="https://localhost:8443/rep", username="repuser", password="repuser")  
+    client = Client(rep_url="https://localhost:8443/hps", username="repuser", password="repuser")  
 
     # check which JMS version the server is running    
     jms_api = JmsApi(client)
@@ -286,7 +286,7 @@ Admin users with the Keycloak "manage-users" role can create new users as well a
     from ansys.hps.client import Client
     from ansys.hps.client.auth import AuthApi, User
     
-    client = Client(rep_url="https://localhost:8443/rep/", username="repadmin", password="repadmin")
+    client = Client(rep_url="https://localhost:8443/hps/", username="repadmin", password="repadmin")
     auth_api = AuthApi(client)
 
     # modify the default password of the repadmin user
@@ -321,12 +321,12 @@ For example, instantiating a client with invalid credentials will return a 401 C
     from ansys.hps.client import Client, HPSError
 
     try:
-        client = Client(rep_url="https://localhost:8443/rep/", username="repuser",  password="wrong_psw")
+        client = Client(rep_url="https://localhost:8443/hps/", username="repuser",  password="wrong_psw")
     except HPSError as e:
         print(e)
 
     #Output:
-    # 401 Client Error: invalid_grant for: POST https://localhost:8443/rep/auth/realms/rep/protocol/openid-connect/token
+    # 401 Client Error: invalid_grant for: POST https://localhost:8443/hps/auth/realms/rep/protocol/openid-connect/token
     # Invalid user credentials
 
 A *get* call on a non-existing resource will return a 404 Client Error.
@@ -342,4 +342,4 @@ A *get* call on a non-existing resource will return a 404 Client Error.
         print(e)
 
     #Output:
-    #404 Client Error: Not Found for: GET https://localhost:8443/rep//jms/api/v1/projects/non_existing_project
+    #404 Client Error: Not Found for: GET https://localhost:8443/hps/jms/api/v1/projects/non_existing_project

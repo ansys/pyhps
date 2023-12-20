@@ -3,7 +3,7 @@ Resource Management Service
 
 Ansys REP includes the Resource Management Service (JMS), which is the main service for managing heterogeneous compute resources. 
 
-The Python subpackage ``ansys.hps.client.rms`` wraps around the RMS service REST API available at ``https://hostname:port/rep/rms/api``.
+The Python subpackage ``ansys.hps.client.rms`` wraps around the RMS service REST API available at ``https://hostname:port/hps/rms/api``.
 
 APIs
 --------------------------------------

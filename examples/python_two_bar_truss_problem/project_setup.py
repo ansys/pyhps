@@ -265,7 +265,7 @@ def main(client, num_jobs, use_exec_script) -> Project:
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("-U", "--url", default="https://127.0.0.1:8443/rep")
+    parser.add_argument("-U", "--url", default="https://127.0.0.1:8443/hps")
     parser.add_argument("-u", "--username", default="repadmin")
     parser.add_argument("-p", "--password", default="repadmin")
     parser.add_argument("-n", "--num-jobs", type=int, default=50)

@@ -8,7 +8,7 @@ Examples consist of a Python script plus some data files (e.g. solver input file
 Many of the Python scripts can be executed with the following command line arguments:
 
 * ``-n``, ``--name``: name of the REP project
-* ``-U``, ``--url``: url or the REP server (default: https://localhost:8443/rep)
+* ``-U``, ``--url``: url or the REP server (default: https://localhost:8443/hps)
 * ``-u``, ``--username``: REP username (default: repadmin)
 * ``-p``, ``--password``: REP password (default: repadmin)
 * ``-v``, ``--ansys-version``: Ansys version (default: |ansys_version|)

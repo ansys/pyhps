@@ -81,7 +81,7 @@ class RmsApi(object):
         >>> from ansys.hps.client import Client
         >>> from ansys.hps.client.jms import RmsApi, EvaluatorConfigurationUpdate
         >>> cl = Client(
-        ...     rep_url="https://localhost:8443/rep", username="repuser", password="repuser"
+        ...     rep_url="https://localhost:8443/hps", username="repuser", password="repuser"
         ... )
         >>> rms_api = RmsApi(cl)
         >>> query_params = {

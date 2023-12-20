@@ -18,12 +18,12 @@ class HPSError(RequestException):
             >>> from ansys.hps.client import HPSError
             >>> from ansys.hps.client.jms import Client
             >>> try:
-            >>>     client = Client(rep_url="https://127.0.0.1:8443/rep/",
+            >>>     client = Client(rep_url="https://127.0.0.1:8443/hps/",
                                     username="repadmin",
                                     password="wrong_psw")
             >>> except HPSError as e:
             >>>     print(e)
-            401 Client Error: invalid_grant for: POST https://127.0.0.1:8443/rep/auth...
+            401 Client Error: invalid_grant for: POST https://127.0.0.1:8443/hps/auth...
             Invalid user credentials
         """
         self.reason = kwargs.pop("reason", None)

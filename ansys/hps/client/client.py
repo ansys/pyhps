@@ -41,7 +41,7 @@ class Client(object):
     Parameters
     ----------
     url : str
-        The base path for the server to call, e.g. "https://127.0.0.1:8443/rep".
+        The base path for the server to call, e.g. "https://127.0.0.1:8443/hps".
     username : str, optional
         Username
     password : str, optional
@@ -70,7 +70,7 @@ class Client(object):
 
     >>> from ansys.hps.client import Client
     >>> cl = Client(
-    ...     url="https://localhost:8443/rep",
+    ...     url="https://localhost:8443/hps",
     ...     username="repuser",
     ...     password="repuser"
     ... )
@@ -78,7 +78,7 @@ class Client(object):
     Create client object and connect to HPS with refresh token
 
     >>> cl = Client(
-    ...     url="https://localhost:8443/rep",
+    ...     url="https://localhost:8443/hps",
     ...     username="repuser",
     ...     refresh_token="eyJhbGciOiJIUzI1NiIsInR5cC..."
     >>> )
@@ -87,7 +87,7 @@ class Client(object):
 
     def __init__(
         self,
-        url: str = "https://127.0.0.1:8443/rep",
+        url: str = "https://127.0.0.1:8443/hps",
         username: str = None,
         password: str = None,
         *,

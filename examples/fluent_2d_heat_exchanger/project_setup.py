@@ -128,7 +128,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("-n", "--name", type=str, default="Fluent 2D Heat Exchanger")
     parser.add_argument("-es", "--use-exec-script", default=False, type=bool)
-    parser.add_argument("-U", "--url", default="https://localhost:8443/rep")
+    parser.add_argument("-U", "--url", default="https://localhost:8443/hps")
     parser.add_argument("-u", "--username", default="repadmin")
     parser.add_argument("-p", "--password", default="repadmin")
     parser.add_argument("-v", "--ansys-version", default=__ansys_apps_version__)

@@ -39,7 +39,7 @@ from ansys.hps.client.jms import (
 
 log = logging.getLogger(__name__)
 
-REP_URL = "https://localhost:8443/rep"
+REP_URL = "https://localhost:8443/hps"
 USERNAME = "repadmin"
 PASSWORD = "repadmin"
 USE_LSDYNA_MPP = False

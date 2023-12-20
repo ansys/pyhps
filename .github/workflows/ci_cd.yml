@@ -99,7 +99,7 @@ jobs:
       - name: Test with tox
         run: tox -e ${{ matrix.cfg.toxenv }}-noeval-coverage
         env:
-          REP_TEST_URL: https://localhost:8443/rep
+          REP_TEST_URL: https://localhost:8443/hps
           REP_TEST_USERNAME: repadmin
           REP_TEST_PASSWORD: repadmin
 
