@@ -14,12 +14,12 @@ PyHPS
    :target: https://pypi.org/project/ansys-rep
    :alt: PyPI
 
-.. |codecov| image:: https://codecov.io/gh/pyansys/pyrep/branch/main/graph/badge.svg
-   :target: https://codecov.io/gh/pyansys/pyrep
+.. |codecov| image:: https://codecov.io/gh/pyansys/pyhps/branch/main/graph/badge.svg
+   :target: https://codecov.io/gh/pyansys/pyhps
    :alt: Codecov
 
-.. |GH-CI| image:: https://github.com/pyansys/pyrep/actions/workflows/ci_cd.yml/badge.svg
-   :target: https://github.com/pyansys/pyrep/actions/workflows/ci_cd.yml
+.. |GH-CI| image:: https://github.com/pyansys/pyhps/actions/workflows/ci_cd.yml/badge.svg
+   :target: https://github.com/pyansys/pyhps/actions/workflows/ci_cd.yml
    :alt: GH-CI
 
 .. |MIT| image:: https://img.shields.io/badge/License-MIT-yellow.svg
@@ -47,9 +47,9 @@ Then, as long as PyHPS is a private pyAnsys module not published to pypi yet, yo
 
 .. code:: bash
 
-    python -m pip install git+https://github.com/pyansys/pyrep
+    python -m pip install git+https://github.com/pyansys/pyhps
 
-.. TODO: Enable this once pyrep is published:  python -m pip install ansys-rep
+.. TODO: Enable this once pyhps is published:  python -m pip install ansys-pyhps
 
 Contribute
 ----------
@@ -62,8 +62,8 @@ need to follow these steps:
 
     .. code:: bash
 
-        git clone https://github.com/pyansys/pyrep
-        cd pyrep
+        git clone https://github.com/pyansys/pyhps
+        cd pyhps
 
 #. Create a new Python environment and activate it:
 

@@ -1,5 +1,5 @@
 """
-Example script to setup a simple Fluent project in pyrep.
+Example script to setup a simple Fluent project in pyhps.
 """
 import argparse
 import logging
@@ -25,7 +25,7 @@ log = logging.getLogger(__name__)
 
 def create_project(client, name, num_jobs=20, version=__ansys_apps_version__):
     """
-    Create a REP project consisting of an Ansys Fluent model.
+    Create an HPS project consisting of an Ansys Fluent model.
     """
     jms_api = JmsApi(client)
     log.debug("=== Project")
