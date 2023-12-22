@@ -1,4 +1,4 @@
-PyREP
+PyHPS
 =====
 |pyansys| |python| |pypi| |GH-CI| |codecov| |MIT| |black|
 
@@ -14,12 +14,12 @@ PyREP
    :target: https://pypi.org/project/ansys-rep
    :alt: PyPI
 
-.. |codecov| image:: https://codecov.io/gh/pyansys/pyrep/branch/main/graph/badge.svg
-   :target: https://codecov.io/gh/pyansys/pyrep
+.. |codecov| image:: https://codecov.io/gh/pyansys/pyhps/branch/main/graph/badge.svg
+   :target: https://codecov.io/gh/pyansys/pyhps
    :alt: Codecov
 
-.. |GH-CI| image:: https://github.com/pyansys/pyrep/actions/workflows/ci_cd.yml/badge.svg
-   :target: https://github.com/pyansys/pyrep/actions/workflows/ci_cd.yml
+.. |GH-CI| image:: https://github.com/pyansys/pyhps/actions/workflows/ci_cd.yml/badge.svg
+   :target: https://github.com/pyansys/pyhps/actions/workflows/ci_cd.yml
    :alt: GH-CI
 
 .. |MIT| image:: https://img.shields.io/badge/License-MIT-yellow.svg
@@ -31,25 +31,25 @@ PyREP
    :alt: Black
 
 
-A Python client for Ansys REP - Remote Execution Platform
+A Python client library for the Ansys HPC Platform Services.
 
 How to install
 --------------
 
-In order to install PyREP, make sure you
+In order to install PyHPS, make sure you
 have the latest version of `pip`_. To do so, run:
 
 .. code:: bash
 
     python -m pip install -U pip
 
-Then, as long as PyREP is a private pyAnsys module not published to pypi yet, you can execute:
+Then, as long as PyHPS is a private pyAnsys module not published to pypi yet, you can execute:
 
 .. code:: bash
 
-    python -m pip install git+https://github.com/pyansys/pyrep
+    python -m pip install git+https://github.com/pyansys/pyhps
 
-.. TODO: Enable this once pyrep is published:  python -m pip install ansys-rep
+.. TODO: Enable this once pyhps is published:  python -m pip install ansys-pyhps
 
 Contribute
 ----------
@@ -62,8 +62,8 @@ need to follow these steps:
 
     .. code:: bash
 
-        git clone https://github.com/pyansys/pyrep
-        cd pyrep
+        git clone https://github.com/pyansys/pyhps
+        cd pyhps
 
 #. Create a new Python environment and activate it:
 
@@ -175,7 +175,7 @@ Then, run the datamodel generator:
 
 .. code:: bash
     
-    datamodel-codegen --input .\rms_openapi.json --input-file-type openapi --output ansys/rep/client/rms/models.py --output-model-type pydantic_v2.BaseModel
+    datamodel-codegen --input .\rms_openapi.json --input-file-type openapi --output ansys/hps/client/rms/models.py --output-model-type pydantic_v2.BaseModel
 
 .. LINKS AND REFERENCES
 .. _black: https://github.com/psf/black

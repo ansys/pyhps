@@ -9,7 +9,7 @@ import logging
 
 import requests
 
-from ansys.rep.client.auth import authenticate
+from ansys.hps.client.auth import authenticate
 from tests.rep_test import REPTestCase
 
 log = logging.getLogger(__name__)

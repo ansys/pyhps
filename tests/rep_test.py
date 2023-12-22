@@ -14,9 +14,9 @@ import uuid
 
 from keycloak import KeycloakAdmin
 
-from ansys.rep.client import Client
-from ansys.rep.client.auth import AuthApi, User
-from ansys.rep.client.auth.api.auth_api import create_user
+from ansys.hps.client import Client
+from ansys.hps.client.auth import AuthApi, User
+from ansys.hps.client.auth.api.auth_api import create_user
 
 
 class REPTestCase(unittest.TestCase):

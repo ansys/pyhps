@@ -1,5 +1,5 @@
 """
-Example to submit a nonlinear tyre analysis job in REP.
+Example to submit a nonlinear tyre analysis job to Ansys HPC Platform Services.
 
 ANSYS APDL Tire-Performance Simulation example as included
 in the technology demonstration guide (td-57).
@@ -10,8 +10,8 @@ import logging
 import os
 import random
 
-from ansys.rep.client import Client, REPError, __ansys_apps_version__
-from ansys.rep.client.jms import (
+from ansys.hps.client import Client, HPSError, __ansys_apps_version__
+from ansys.hps.client.jms import (
     File,
     FloatParameterDefinition,
     JmsApi,
@@ -251,11 +251,11 @@ if __name__ == "__main__":
     logger = logging.getLogger()
     logging.basicConfig(format="[%(asctime)s | %(levelname)s] %(message)s", level=logging.DEBUG)
 
-    log.debug("=== REP connection")
+    log.debug("=== HPS connection")
     client = Client(rep_url=args.url, username=args.username, password=args.password)
 
     try:
-        log.info(f"REP URL: {client.rep_url}")
+        log.info(f"HPS URL: {client.rep_url}")
         proj = create_project(
             client=client,
             name=args.name,
@@ -263,5 +263,5 @@ if __name__ == "__main__":
             num_jobs=args.num_jobs,
             use_exec_script=args.use_exec_script,
         )
-    except REPError as e:
+    except HPSError as e:
         log.error(str(e))

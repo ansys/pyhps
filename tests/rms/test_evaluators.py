@@ -2,8 +2,8 @@ import datetime
 import logging
 import unittest
 
-from ansys.rep.client.rms import RmsApi
-from ansys.rep.client.rms.models import EvaluatorConfigurationUpdate, EvaluatorRegistration
+from ansys.hps.client.rms import RmsApi
+from ansys.hps.client.rms.models import EvaluatorConfigurationUpdate, EvaluatorRegistration
 from tests.rep_test import REPTestCase
 
 log = logging.getLogger(__name__)

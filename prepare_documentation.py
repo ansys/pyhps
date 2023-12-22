@@ -13,9 +13,9 @@ from zipfile import ZipFile
 from apispec import APISpec
 from apispec.ext.marshmallow import MarshmallowPlugin
 
-from ansys.rep.client import __version__
-from ansys.rep.client.auth.resource import User
-from ansys.rep.client.jms.resource import (
+from ansys.hps.client import __version__
+from ansys.hps.client.auth.resource import User
+from ansys.hps.client.jms.resource import (
     Algorithm,
     BoolParameterDefinition,
     Evaluator,
@@ -41,7 +41,7 @@ from ansys.rep.client.jms.resource import (
     TaskDefinition,
     TaskDefinitionTemplate,
 )
-from ansys.rep.client.jms.schema.object_reference import IdReference, IdReferenceList
+from ansys.hps.client.jms.schema.object_reference import IdReference, IdReferenceList
 
 
 def custom_field_attributes(self, field, **kwargs):
@@ -94,7 +94,7 @@ def generate_openapi_specs():
 
         ma_plugin = MarshmallowPlugin()
         spec = APISpec(
-            title="pyrep",
+            title="pyhps",
             version=__version__,
             openapi_version="3.0",
             plugins=[ma_plugin],
@@ -182,7 +182,7 @@ def archive_examples():
             for file in files:
                 zip_archive.write(os.path.join("examples", name, file), file)
 
-    with ZipFile(os.path.join("build", f"pyrep_examples.zip"), "w") as zip_archive:
+    with ZipFile(os.path.join("build", f"pyhps_examples.zip"), "w") as zip_archive:
         for name, files in examples.items():
             for file in files:
                 zip_archive.write(os.path.join("examples", name, file), os.path.join(name, file))

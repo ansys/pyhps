@@ -1,5 +1,5 @@
 """
-Script showing how to submit an LS-DYNA job to REP.
+Script showing how to submit an LS-DYNA job to Ansys HPC Platform Services.
 
 Once submitted, minimal job information are serialized to a JSON file rep_job.json.
 This mimics what an application would need to store in order to
@@ -23,8 +23,8 @@ import logging
 import os
 import time
 
-from ansys.rep.client import Client, REPError
-from ansys.rep.client.jms import (
+from ansys.hps.client import Client, HPSError
+from ansys.hps.client.jms import (
     File,
     JmsApi,
     Job,
@@ -69,9 +69,8 @@ class REPJob:
         self.task_ids = task_ids
 
     def __str__(self):
-        return (
-            f"REP Job:\n {json.dumps(self, default=lambda x: x.__dict__, sort_keys=True, indent=4)}"
-        )
+        repr = json.dumps(self, default=lambda x: x.__dict__, sort_keys=True, indent=4)
+        return f"REP Job:\n{repr}"  # noqa: E231
 
     def save(self):
         """Save job info to JSON file"""
@@ -355,7 +354,7 @@ def download_results(app_job: REPJob):
                     continue
                 else:
                     log.warning(
-                        f"{file.evaluation_path} already exists:"
+                        f"{file.evaluation_path} already exists: "
                         f"size on server: {humanize.naturalsize(file.size)}, "
                         f"size on disk {humanize.naturalsize(os.path.getsize(download_path))} MB"
                     )
@@ -407,7 +406,7 @@ if __name__ == "__main__":
             job = REPJob.load()
             log.info(job)
             download_results(job)
-    except REPError as e:
+    except HPSError as e:
         log.error(str(e))
     except KeyboardInterrupt:
         log.warning("Interrupted, stopping ...")

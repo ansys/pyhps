@@ -14,8 +14,8 @@ import unittest
 from examples.mapdl_motorbike_frame.project_setup import create_project
 import pytest
 
-from ansys.rep.client.jms import JmsApi, ProjectApi
-from ansys.rep.client.jms.resource import File
+from ansys.hps.client.jms import JmsApi, ProjectApi
+from ansys.hps.client.jms.resource import File
 from tests.rep_test import REPTestCase
 
 log = logging.getLogger(__name__)

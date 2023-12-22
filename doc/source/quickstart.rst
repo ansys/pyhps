@@ -9,7 +9,7 @@ while detailed documentation can be found in the :ref:`Code Documentation <api_r
 To reproduce the code samples provided below, you will need:
 
 - A running REP server, go to the `REP repository <https://github.com/ansys/rep>`_ for instructions.
-- A Python shell with ``ansys-rep-client`` installed. If you haven't installed it yet, please refer to the :ref:`Installation <installation>` guide.
+- A Python shell with ``ansys-pyhps`` installed. If you haven't installed it yet, please refer to the :ref:`Installation <installation>` guide.
 
 
 Connect to a REP Server 
@@ -19,8 +19,8 @@ Let's start by connecting to a REP server running on the localhost with default 
 
 .. code-block:: python
 
-    from ansys.rep.client import Client
-    from ansys.rep.client.jms import JmsApi, ProjectApi
+    from ansys.hps.client import Client
+    from ansys.hps.client.jms import JmsApi, ProjectApi
     
     client = Client(rep_url="https://localhost:8443/rep", username="repuser", password="repuser")  
 
@@ -283,8 +283,8 @@ Admin users with the Keycloak "manage-users" role can create new users as well a
 
 .. code-block:: python
 
-    from ansys.rep.client import Client
-    from ansys.rep.client.auth import AuthApi, User
+    from ansys.hps.client import Client
+    from ansys.hps.client.auth import AuthApi, User
     
     client = Client(rep_url="https://localhost:8443/rep/", username="repadmin", password="repadmin")
     auth_api = AuthApi(client)
@@ -311,18 +311,18 @@ Admin users with the Keycloak "manage-users" role can create new users as well a
 Exception handling
 ------------------------------------------
 
-All exceptions that the Ansys REP client explicitly raise inherit from :exc:`ansys.rep.client.REPError`.
+All exceptions that the Ansys REP client explicitly raise inherit from :exc:`ansys.hps.client.HPSError`.
 Client Errors are raised for 4xx HTTP status codes, while API Errors are raised for 5xx HTTP status codes (server side errors).
 
 For example, instantiating a client with invalid credentials will return a 401 Client Error.
 
 .. code-block:: python
 
-    from ansys.rep.client import Client, REPError
+    from ansys.hps.client import Client, HPSError
 
     try:
         client = Client(rep_url="https://localhost:8443/rep/", username="repuser",  password="wrong_psw")
-    except REPError as e:
+    except HPSError as e:
         print(e)
 
     #Output:
@@ -333,12 +333,12 @@ A *get* call on a non-existing resource will return a 404 Client Error.
 
 .. code-block:: python
 
-    from ansys.rep.client.jms import JmsApi
+    from ansys.hps.client.jms import JmsApi
 
     jms_api = JmsApi(client)
     try:
         jms_api.get_project(id="non_existing_project")
-    except REPError as e:
+    except HPSError as e:
         print(e)
 
     #Output:

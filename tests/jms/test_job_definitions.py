@@ -3,8 +3,8 @@ import logging
 from examples.mapdl_motorbike_frame.project_setup import create_project
 from marshmallow.utils import missing
 
-from ansys.rep.client import AuthApi, JmsApi, ProjectApi
-from ansys.rep.client.jms.resource import (
+from ansys.hps.client import AuthApi, JmsApi, ProjectApi
+from ansys.hps.client.jms.resource import (
     HpcResources,
     JobDefinition,
     Project,

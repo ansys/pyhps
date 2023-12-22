@@ -1,6 +1,6 @@
 """
 Script showing how to submit an MAPDL linked analysis workflow (prestress-modal-harmonic)
-as a multi-task job to REP.
+as a multi-task job to Ansys HPC Platform Services.
 
 The script shows two possible ways to submit the individual tasks:
     1. All-at-one: all 3 tasks are defined and included in the
@@ -24,8 +24,8 @@ import logging
 import os
 from typing import List, Tuple
 
-from ansys.rep.client import Client, REPError, __ansys_apps_version__
-from ansys.rep.client.jms import (
+from ansys.hps.client import Client, HPSError, __ansys_apps_version__
+from ansys.hps.client.jms import (
     File,
     JmsApi,
     Job,
@@ -290,7 +290,7 @@ def create_project(
     client: Client, name: str, incremental: bool, use_exec_script: bool, version: str
 ) -> Project:
 
-    log.info("=== REP connection")
+    log.info("=== HPS connection")
     log.info(f"Client connected at {client.rep_url}")
 
     log.info("=== Create new Project")
@@ -373,7 +373,7 @@ if __name__ == "__main__":
     logger = logging.getLogger()
     logging.basicConfig(format="[%(asctime)s | %(levelname)s] %(message)s", level=logging.INFO)
 
-    log.debug("=== REP connection")
+    log.debug("=== HPS connection")
     client = Client(rep_url=args.url, username=args.username, password=args.password)
 
     try:
@@ -384,5 +384,5 @@ if __name__ == "__main__":
             use_exec_script=args.use_exec_script,
             version=args.ansys_version,
         )
-    except REPError as e:
+    except HPSError as e:
         log.error(str(e))

@@ -1,7 +1,7 @@
 /COM,ANSYS RELEASE 2019 R1           BUILD 19.3BETA  UP20181008       12S      2
 /NOPR                                                                   S      3
 /PREP7                                                                  S      4
-/TITLE,Tire Performance Simulation for DCS
+/TITLE,Tire Performance Simulation for HPS
 DOF,UX,UY,ROTY,                                                         S      6
 *SET,A1,0.2500000000000E-06                                             S      7
 *SET,M1,9.000000000000                                                  S      8

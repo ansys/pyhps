@@ -7,8 +7,8 @@
 # ----------------------------------------------------------
 import logging
 
-from ansys.rep.client.auth import authenticate
-from ansys.rep.client.connection import create_session, ping
+from ansys.hps.client.auth import authenticate
+from ansys.hps.client.connection import create_session, ping
 from tests.rep_test import REPTestCase
 
 log = logging.getLogger(__name__)

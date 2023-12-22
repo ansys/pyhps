@@ -3,7 +3,7 @@
 CFX Static Mixer
 ================
 
-This example shows how to submit a CFX Static Mixer model to be solved on REP. 
+This example shows how to submit a CFX Static Mixer model to be solved on HPS. 
 
 .. only:: builder_html
 

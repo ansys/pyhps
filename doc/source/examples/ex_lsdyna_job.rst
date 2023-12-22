@@ -3,7 +3,7 @@
 LS-DYNA Job Submission
 ======================
 
-This example shows how to submit an LS-DYNA job to REP. Once submitted, minimal job information are serialized to a JSON file ``rep_job.json``.
+This example shows how to submit an LS-DYNA job to HPS. Once submitted, minimal job information are serialized to a JSON file ``rep_job.json``.
 This mimics what an application would need to store in order to subsequently monitor the job and download results.
 
 The job consists of two tasks:

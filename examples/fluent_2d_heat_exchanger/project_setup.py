@@ -1,13 +1,13 @@
 """
-This example shows how to submit a simple Fluent 2D job to REP.
+This example shows how to submit a simple Fluent 2D job to HPS.
 """
 
 import argparse
 import logging
 import os
 
-from ansys.rep.client import Client, REPError, __ansys_apps_version__
-from ansys.rep.client.jms import (
+from ansys.hps.client import Client, HPSError, __ansys_apps_version__
+from ansys.hps.client.jms import (
     File,
     JmsApi,
     Job,
@@ -138,16 +138,16 @@ if __name__ == "__main__":
     logger = logging.getLogger()
     logging.basicConfig(format="[%(asctime)s | %(levelname)s] %(message)s", level=logging.DEBUG)
 
-    log.debug("=== REP connection")
+    log.debug("=== HPS connection")
     client = Client(rep_url=args.url, username=args.username, password=args.password)
 
     try:
-        log.info(f"REP URL: {client.rep_url}")
+        log.info(f"HPS URL: {client.rep_url}")
         proj = create_project(
             client=client,
             name=args.name,
             version=args.ansys_version,
             use_exec_script=args.use_exec_script,
         )
-    except REPError as e:
+    except HPSError as e:
         log.error(str(e))

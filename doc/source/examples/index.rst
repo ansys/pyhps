@@ -3,7 +3,7 @@
 Examples
 ========
 
-Here you can find some examples showing how to interact with a REP server in Python using the ``ansys-rep-client``. 
+Here you can find some examples showing how to interact with a REP server in Python using the ``ansys-pyhps``. 
 Examples consist of a Python script plus some data files (e.g. solver input files). 
 Many of the Python scripts can be executed with the following command line arguments:
 
@@ -15,7 +15,7 @@ Many of the Python scripts can be executed with the following command line argum
 
 A link to download all the required resources is available at each example page. 
 
-You can also download the entire set of examples :download:`Download All Examples <../../../build/pyrep_examples.zip>`.
+You can also download the entire set of examples :download:`Download All Examples <../../../build/pyhps_examples.zip>`.
 
 .. toctree::
   :hidden:
