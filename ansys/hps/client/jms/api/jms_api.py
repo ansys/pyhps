@@ -3,15 +3,18 @@ import logging
 import os
 from typing import List, Union
 import uuid
+import warnings
 
 import backoff
+from packaging import version
 import requests
 
-from ansys.hps.client.client import Client
+from ansys.hps.client import Client, __version__
 from ansys.hps.client.common import Object
 from ansys.hps.client.exceptions import HPSError
 from ansys.hps.client.jms.resource import Operation, Permission, Project, TaskDefinitionTemplate
 from ansys.hps.client.jms.schema.project import ProjectSchema
+from ansys.hps.client.warnings import UnsupportedAPIVersion
 
 from .base import copy_objects as base_copy_objects
 from .base import create_objects, delete_objects, get_object, get_objects, update_objects
@@ -42,9 +45,12 @@ class JmsApi(object):
 
     """
 
+    _min_api_version = "1.0.10"
+
     def __init__(self, client: Client):
         self.client = client
         self._fs_url = None
+        self.check_version()
 
     @property
     def url(self) -> str:
@@ -62,6 +68,23 @@ class JmsApi(object):
         """Return info like version, build date etc of the JMS API the client is connected to"""
         r = self.client.session.get(self.url)
         return r.json()
+
+    def check_version(self):
+        """Check compatibility between client and server versions"""
+        info = self.get_api_info()
+        try:
+            api_version = info["build"]["version"]
+        except:
+            warnings.warn(f"Failed to retrieve JMS API version.", UnsupportedAPIVersion)
+
+        if version.parse(api_version) < version.parse(JmsApi._min_api_version):
+            msg = (
+                f"The minimum JMS API version officially supported by "
+                f"ansys-pyhps {__version__} is {JmsApi._min_api_version}. "
+                f"You are connecting to JMS API version {api_version}."
+            )
+            warnings.warn(msg, UnsupportedAPIVersion)
+            log.warning(msg)
 
     ################################################################
     # Projects

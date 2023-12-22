@@ -77,6 +77,7 @@ class ProjectApi:
         self.project_id = project_id
         self._fs_url = None
         self._fs_project_id = None
+        self.check_version()
 
     @property
     def jms_api_url(self) -> str:
@@ -98,6 +99,11 @@ class ProjectApi:
     def fs_bucket_url(self) -> str:
         """URL of the project's bucket in the file storage gateway"""
         return f"{self.fs_url}/{self.project_id}"
+
+    def check_version(self):
+        """Check compatibility between client and server versions"""
+        jms_api = JmsApi(self.client)
+        jms_api.check_version()
 
     ################################################################
     # Project operations (copy, archive)
