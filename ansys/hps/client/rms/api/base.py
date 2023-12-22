@@ -10,7 +10,6 @@ from requests import Session
 from ansys.hps.client.exceptions import ClientError
 
 from ..models import (
-    Cluster,
     ComputeResourceSet,
     EvaluatorConfigurationUpdate,
     EvaluatorRegistration,
@@ -18,7 +17,6 @@ from ..models import (
 )
 
 OBJECT_TYPE_TO_ENDPOINT = {
-    Cluster: "clusters",
     EvaluatorRegistration: "evaluators",
     EvaluatorConfigurationUpdate: "configuration_updates",
     ScalerRegistration: "scalers",

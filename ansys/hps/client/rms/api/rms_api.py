@@ -3,7 +3,7 @@ from typing import List
 
 from ansys.hps.client.client import Client
 from ansys.hps.client.rms.models import (
-    Cluster,
+    ClusterInfo,
     ComputeResourceSet,
     EvaluatorConfiguration,
     EvaluatorConfigurationUpdate,
@@ -145,14 +145,12 @@ class RmsApi(object):
             from_collection=True,
         )
 
-    def get_compute_resurce_set_cluster_info(self, id, as_object=True) -> Cluster:
+    def get_cluster_info(self, compute_resource_set_id, as_object=True) -> ClusterInfo:
         """Returns cluster info of a compute resource set."""
 
-        clusters = get_objects(
+        return get_object(
             self.client.session,
-            self.url,
-            ComputeResourceSet,
-            as_object,
-            crs_id=id,
+            f"{self.url}/compute_resource_sets/{compute_resource_set_id}/cluster_info",
+            ClusterInfo,
+            as_object=as_object,
         )
-        return clusters[0]
