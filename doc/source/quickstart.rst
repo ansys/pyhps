@@ -157,7 +157,7 @@ You can use the ``offset`` and ``limit`` query parameters to paginate items in a
 Objects vs dictionaries
 -----------------------------------
 
-Most ``get``, ``create`` and ``update`` functions can optionally return dictionaries rather than class objects by setting ``as_objects=True``.
+Most ``get``, ``create`` and ``update`` functions can optionally return dictionaries rather than class objects by setting ``as_objects=False``.
 This is especially useful when the returned data needs to be further manipulated by popular packages 
 such as ``Numpy``, ``Pandas``, etc.  
 
