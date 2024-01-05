@@ -1,6 +1,6 @@
 Sphinx==7.2.6
 numpydoc==1.6.0
-ansys-sphinx-theme==0.12.5
+ansys-sphinx-theme==0.13.0
 sphinx-copybutton==0.5.2
 apispec==6.3.1
 sphinxcontrib-httpdomain==1.8.1
