@@ -166,6 +166,7 @@ the building requirements and then executing the build module:
     python -m build
     python -m twine check dist/*
 
+
 How to generate/update RMS models
 ---------------------------------
 
@@ -176,6 +177,19 @@ Then, run the datamodel generator:
 .. code:: bash
     
     datamodel-codegen --input .\rms_openapi.json --input-file-type openapi --output ansys/hps/client/rms/models.py --output-model-type pydantic_v2.BaseModel
+
+
+Documentation, Issues, and Support
+----------------------------------
+Documentation for the latest stable release of PyHPS is hosted at `PyHPS documentation
+<https://rep.docs.pyansys.com/dev/>`_.
+
+On the `PyHPS Issues <https://github.com/ansys/pyhps/issues>`_ page,
+you can create issues to report bugs and request new features. On the `PyHPS Discussions
+<https://github.com/ansys/pyhps/discussions>`_ page or the `Discussions <https://discuss.ansys.com/>`_
+page on the Ansys Developer portal, you can post questions, share ideas, and get community feedback. 
+
+To reach the project support team, email `pyansys.core@ansys.com <pyansys.core@ansys.com>`_.
 
 .. LINKS AND REFERENCES
 .. _black: https://github.com/psf/black
