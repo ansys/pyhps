@@ -16,7 +16,7 @@ setup(
     url=about["__url__"],
     author="ANSYS, Inc.",
     author_email="pyansys.support@ansys.com",
-    maintainer="PyAnsys developers",
+    maintainer="ANSYS, Inc.",
     maintainer_email="pyansys.maintainers@ansys.com",
     classifiers=[
         "Development Status :: 4 - Beta",
