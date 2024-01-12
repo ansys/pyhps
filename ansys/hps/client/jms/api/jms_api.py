@@ -129,7 +129,14 @@ class JmsApi(object):
             templates (list of :class:`ansys.hps.client.jms.TaskDefinitionTemplate`):
                 A list of task definition templates
         """
-        return create_objects(self.client.session, self.url, templates, as_objects, **query_params)
+        return create_objects(
+            self.client.session,
+            self.url,
+            templates,
+            TaskDefinitionTemplate,
+            as_objects,
+            **query_params,
+        )
 
     def update_task_definition_templates(
         self, templates: List[TaskDefinitionTemplate], as_objects=True, **query_params
@@ -156,7 +163,7 @@ class JmsApi(object):
             templates (list of :class:`ansys.hps.client.jms.TaskDefinitionTemplate`):
                 A list of task definition templates
         """
-        return delete_objects(self.client.session, self.url, templates)
+        return delete_objects(self.client.session, self.url, templates, TaskDefinitionTemplate)
 
     def copy_task_definition_templates(
         self, templates: List[TaskDefinitionTemplate], wait: bool = True
