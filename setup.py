@@ -38,6 +38,6 @@ setup(
         "backoff>=2.0.0",
         "pydantic>=1.10.0",
     ],
-    python_requires=">=3.7",
+    python_requires=">=3.9",
     packages=find_namespace_packages(include=["ansys.*"]),
 )
