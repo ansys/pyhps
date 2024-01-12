@@ -20,11 +20,5 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-# ----------------------------------------------------------
-# ANSYS Switzerland GmbH
-# www.ansys.com
-#
-# Author(s): F.Negri
-# ----------------------------------------------------------
 
 from .user import User

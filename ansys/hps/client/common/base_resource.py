@@ -20,12 +20,6 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-# ----------------------------------------------------------
-# ANSYS Switzerland GmbH
-# www.ansys.com
-#
-# Author(s): O.Koenig
-# ----------------------------------------------------------
 import json
 import logging
 
