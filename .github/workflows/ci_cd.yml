@@ -82,14 +82,15 @@ jobs:
           tar -xvzf docker-compose-internal.tar.gz
           cd docker-compose
           FSGATEWAY_TAG=latest-dev JMS_TAG=latest-dev docker-compose pull
-          FSGATEWAY_TAG=latest-dev JMS_TAG=latest-dev LOCALHOST_ADDR=localhost docker-compose up -d keycloak
+          FSGATEWAY_TAG=latest-dev JMS_TAG=latest-dev docker-compose up -d keycloak
           echo "Waiting a few sec ..."
           sleep 5
-          FSGATEWAY_TAG=latest-dev JMS_TAG=latest-dev LOCALHOST_ADDR=localhost docker-compose up -d
+          FSGATEWAY_TAG=latest-dev JMS_TAG=latest-dev docker-compose up -d
         working-directory: ./docker-compose-artifact
 
       - name: cat docker-compose.yaml
         run: |
+          cd docker-compose
           echo "=== Docker Compose ==="
           cat docker-compose.yaml
           echo "=== env file ==="
