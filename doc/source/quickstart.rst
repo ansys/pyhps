@@ -22,7 +22,7 @@ Let's start by connecting to an HPS deployment running on the localhost with def
     from ansys.hps.client import Client
     from ansys.hps.client.jms import JmsApi, ProjectApi
     
-    client = Client(rep_url="https://localhost:8443/rep", username="repuser", password="repuser")  
+    client = Client(url="https://localhost:8443/rep", username="repuser", password="repuser")  
 
     # check which JMS version the server is running    
     jms_api = JmsApi(client)
@@ -286,7 +286,7 @@ Admin users with the Keycloak "manage-users" role can create new users as well a
     from ansys.hps.client import Client
     from ansys.hps.client.auth import AuthApi, User
     
-    client = Client(rep_url="https://localhost:8443/rep/", username="repadmin", password="repadmin")
+    client = Client(url="https://localhost:8443/rep/", username="repadmin", password="repadmin")
     auth_api = AuthApi(client)
 
     # modify the default password of the repadmin user
@@ -321,7 +321,7 @@ For example, instantiating a client with invalid credentials will return a 401 C
     from ansys.hps.client import Client, HPSError
 
     try:
-        client = Client(rep_url="https://localhost:8443/rep/", username="repuser",  password="wrong_psw")
+        client = Client(url="https://localhost:8443/rep/", username="repuser",  password="wrong_psw")
     except HPSError as e:
         print(e)
 

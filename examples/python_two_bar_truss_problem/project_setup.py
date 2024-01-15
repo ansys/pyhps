@@ -276,7 +276,7 @@ if __name__ == "__main__":
     logger = logging.getLogger()
     logging.basicConfig(format="[%(asctime)s | %(levelname)s] %(message)s", level=logging.DEBUG)
 
-    client = Client(rep_url=args.url, username=args.username, password=args.password)
+    client = Client(url=args.url, username=args.username, password=args.password)
 
     try:
         main(client, num_jobs=args.num_jobs, use_exec_script=args.use_exec_script)

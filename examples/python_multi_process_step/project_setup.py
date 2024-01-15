@@ -300,7 +300,7 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     log.debug("=== HPS connection")
-    client = Client(rep_url=args.url, username=args.username, password=args.password)
+    client = Client(url=args.url, username=args.username, password=args.password)
 
     try:
         main(
