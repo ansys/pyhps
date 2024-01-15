@@ -88,6 +88,14 @@ jobs:
           FSGATEWAY_TAG=latest-dev JMS_TAG=latest-dev LOCALHOST_ADDR=localhost docker-compose up -d
         working-directory: ./docker-compose-artifact
 
+      - name: cat docker-compose.yaml
+        run: |
+          echo "=== Docker Compose ==="
+          cat docker-compose.yaml
+          echo "=== env file ==="
+          cat .env
+        working-directory: ./docker-compose-artifact
+
       - name: Test with tox
         run: tox -e ${{ matrix.cfg.toxenv }}-noeval-coverage
         env:
