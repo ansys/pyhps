@@ -15,7 +15,7 @@ Many of the Python scripts can be executed with the following command line argum
 
 A link to download all the required resources is available at each example page. 
 
-You can also download the entire set of examples :download:`Download All Examples <../../../build/pyrep_examples.zip>`.
+You can also download the entire set of examples :download:`Download All Examples <../../../build/pyhps_examples.zip>`.
 
 .. toctree::
   :hidden:

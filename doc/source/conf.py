@@ -13,7 +13,7 @@ sys.path.append(os.path.abspath(os.path.dirname(__file__)))
 # -- Project information -----------------------------------------------------
 
 # General information about the project.
-project = "Ansys pyrep"
+project = "Ansys pyhps"
 copyright = f"(c) {datetime.now().year} ANSYS, Inc. All rights reserved"
 author = __company__
 
@@ -120,7 +120,7 @@ html_theme = "ansys_sphinx_theme"
 
 # only for  sphinx_rtd_theme
 html_theme_options = {
-    "github_url": "https://github.com/pyansys/pyrep",
+    "github_url": "https://github.com/pyansys/pyhps",
     "show_prev_next": False,
     "show_breadcrumbs": True,
     "additional_breadcrumbs": [
@@ -160,7 +160,7 @@ html_show_sourcelink = False
 # html_use_opensearch = ''
 
 # Output file base name for HTML help builder.
-htmlhelp_basename = "pyrepdoc"
+htmlhelp_basename = "pyhpsdoc"
 
 
 # -- Options for LaTeX output ---------------------------------------------

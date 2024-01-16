@@ -1,5 +1,5 @@
 """
-Example to submit a nonlinear tyre analysis job in REP.
+Example to submit a nonlinear tyre analysis job to Ansys HPC Platform Services.
 
 ANSYS APDL Tire-Performance Simulation example as included
 in the technology demonstration guide (td-57).

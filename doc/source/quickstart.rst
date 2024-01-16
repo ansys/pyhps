@@ -157,7 +157,7 @@ You can use the ``offset`` and ``limit`` query parameters to paginate items in a
 Objects vs dictionaries
 -----------------------------------
 
-Most ``get``, ``create`` and ``update`` functions can optionally return dictionaries rather than class objects by setting ``as_objects=True``.
+Most ``get``, ``create`` and ``update`` functions can optionally return dictionaries rather than class objects by setting ``as_objects=False``.
 This is especially useful when the returned data needs to be further manipulated by popular packages 
 such as ``Numpy``, ``Pandas``, etc.  
 
@@ -342,4 +342,4 @@ A *get* call on a non-existing resource will return a 404 Client Error.
         print(e)
 
     #Output:
-    #404 Client Error: Not Found for: GET https://localhost:8443/hps/jms/api/v1/projects/non_existing_project
+    #404 Client Error: Not Found for: GET https://localhost:8443/rep/jms/api/v1/projects/non_existing_project

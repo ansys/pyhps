@@ -65,6 +65,13 @@ class ComputeResourceSetTest(REPTestCase):
             rs = rms_api.get_compute_resource_set(resource_sets[0].id)
             assert rs.scaler_id == resource_sets[0].scaler_id
 
+            cluster_info = rms_api.get_cluster_info(rs.id)
+            assert cluster_info.crs_id == rs.id
+            if cluster_info.queues is not None and len(cluster_info.queues) > 0:
+                for queue in cluster_info.queues:
+                    assert queue.name is not None
+                    log.info(f"Compure resource set {rs.name} has queue {queue.name}")
+
 
 if __name__ == "__main__":
     unittest.main()

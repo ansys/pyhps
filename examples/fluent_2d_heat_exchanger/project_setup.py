@@ -1,5 +1,5 @@
 """
-This example shows how to submit a simple Fluent 2D job to REP.
+This example shows how to submit a simple Fluent 2D job to HPS.
 """
 
 import argparse
