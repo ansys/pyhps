@@ -35,7 +35,7 @@ class JmsApi(object):
     >>> from ansys.hps.client import Client
     >>> from ansys.hps.client.jms import JmsApi, Project
     >>> cl = Client(
-    ...     rep_url="https://127.0.0.1:8443/rep", username="repadmin", password="repadmin"
+    ...     url="https://127.0.0.1:8443/rep", username="repadmin", password="repadmin"
     ... )
     >>> jms_api = JmsApi(cl)
     >>> project = jms_api.create_project(Project(name="Example Project"))

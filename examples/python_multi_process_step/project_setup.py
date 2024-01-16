@@ -211,8 +211,8 @@ def main(
                 max_execution_time=duration * 1.5,
                 resource_requirements=ResourceRequirements(
                     num_cores=0.2,
-                    memory=100,
-                    disk_space=1,
+                    memory=100 * 1024 * 1024,  # 100 MB
+                    disk_space=1 * 1024 * 1024,  # 1 MB
                 ),
                 execution_level=i if sequential else 0,
                 input_file_ids=input_file_ids,
@@ -299,7 +299,7 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     log.debug("=== HPS connection")
-    client = Client(rep_url=args.url, username=args.username, password=args.password)
+    client = Client(url=args.url, username=args.username, password=args.password)
 
     try:
         main(
