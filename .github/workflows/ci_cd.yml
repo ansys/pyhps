@@ -12,7 +12,7 @@ env:
   MAIN_PYTHON_VERSION: '3.9'
   DOC_PYTHON_VERSION: '3.9'
   DOCUMENTATION_CNAME: 'hps.docs.pyansys.com'
-  PACKAGE_NAME: 'ansys-hps-client'
+  PACKAGE_NAME: 'ansys-pyhps'
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
