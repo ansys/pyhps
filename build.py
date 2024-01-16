@@ -118,7 +118,7 @@ def _run_tests(context):
 
 steps = [
     ("venv", _do_venv),
-    ("wheel", _do_wheel),
+    # ("wheel", _do_wheel),
     ("documentation", _do_documentation),
     ("tests", _run_tests),
 ]
