@@ -9,8 +9,9 @@ import logging
 
 from marshmallow.utils import missing
 
-from ..schema.fitness_definition import FitnessDefinitionSchema, FitnessTermDefinitionSchema
 from ansys.hps.client.common import Object
+
+from ..schema.fitness_definition import FitnessDefinitionSchema, FitnessTermDefinitionSchema
 
 log = logging.getLogger(__name__)
 
@@ -22,7 +23,7 @@ class FitnessTermDefinition(Object):
     ----------
     id : str, optional
         Unique ID to access the resource, generated internally by the server on creation.
-    name : str, optional 
+    name : str, optional
         Name of the fitness term.
     expression : str, optional
         The Python expression that defines the fitness term.
@@ -35,16 +36,16 @@ class FitnessTermDefinition(Object):
     --------
 
     A fitness term of type objective
-    
+
     >>> ft1 = FitnessTermDefinition(
     ...     name="weight",
     ...     type="design_objective",
     ...     weighting_factor=1.0,
     ...     expression="map_design_objective(values['weight'],7.5,5.5)"
     ... )
-    
+
     A fitness term of type target constraint
-    
+
     >>> ft2 = FitnessTermDefinition(
     ...     name="torsional_stiffness",
     ...     type="target_constraint",
@@ -52,9 +53,9 @@ class FitnessTermDefinition(Object):
     ...     expression="map_target_constraint(
     ...         values['torsion_stiffness'], 1313.0, 5.0, 30.0)"
     ... )
-    
+
     A fitness term of type limit constraint
-    
+
     >>> ft3 = FitnessTermDefinition(
     ...     name="max_stress",
     ...     type="limit_constraint",

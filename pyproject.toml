@@ -1,6 +1,76 @@
 [build-system]
-requires = ["setuptools", "wheel"]
-build-backend = "setuptools.build_meta"
+requires = ["flit_core >=3.2,<4"]
+build-backend = "flit_core.buildapi"
+
+[project]
+# Check https://flit.readthedocs.io/en/latest/pyproject_toml.html for all available sections
+name = "ansys-pyhps"
+version = "0.6.dev0"
+description = "A python client for Ansys HPC Platform Services"
+readme = "README.rst"
+requires-python = ">=3.9,<4.0"
+license = {file = "LICENSE"}
+authors = [
+    {name = "ANSYS, Inc.", email = "pyansys.core@ansys.com"},
+]
+maintainers = [
+    {name = "ANSYS, Inc.", email = "pyansys.core@ansys.com"},
+]
+
+classifiers = [
+    "Development Status :: 4 - Beta",
+    'Intended Audience :: Science/Research',
+    'Topic :: Scientific/Engineering :: Information Analysis',
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]
+
+dependencies = [
+    "requests>=2.21.0",
+    "marshmallow>=3.0.0",
+    "marshmallow_oneofschema>=2.0.1",
+    "python-keycloak>=1.5.0,<=2.12.0",
+    "backoff>=2.0.0",
+    "pydantic>=1.10.0",
+]
+
+[project.optional-dependencies]
+tests = [
+    "pytest==7.4.4",
+    "pytest-cov==4.1.0",
+]
+
+doc = [
+    "Sphinx==7.2.6",
+    "numpydoc==1.6.0",
+    "ansys-sphinx-theme==0.12.5",
+    "sphinx-copybutton==0.5.2",
+    "sphinxcontrib-httpdomain==1.8.1",
+    "sphinxcontrib-globalsubs==0.1.1",
+    "sphinxnotes-strike==1.2",
+    "sphinx-autodoc-typehints==1.25.2",
+    "autodoc_pydantic==2.0.1",
+]
+
+build = [
+    "build==1.0.3",
+    "twine==4.0.2",
+    "wheel",
+    "datamodel-code-generator==0.24.2"
+]
+
+[project.urls]
+Documentation = "https://hps.docs.pyansys.com"
+Source = "https://github.com/ansys/pyhps"
+Homepage = "https://github.com/ansys/pyhps"
+Tracker = "https://github.com/ansys/pyhps/issues"
+
+[tool.flit.module]
+name = "ansys.hps.client"
 
 [tool.black]
 line-length = 100
@@ -10,9 +80,10 @@ profile = "black"
 force_sort_within_sections = true
 line_length = 100
 default_section = "THIRDPARTY"
-src_paths = ["doc", "ansys", "tests"]
+src_paths = ["doc", "src", "tests"]
 
 [tool.coverage.run]
+relative_files = true
 source = ["ansys.rep"]
 
 [tool.coverage.report]

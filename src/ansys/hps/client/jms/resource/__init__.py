@@ -14,12 +14,30 @@ from .job import Job
 from .job_definition import JobDefinition
 from .license_context import LicenseContext
 from .operation import Operation
-from .parameter_definition import ParameterDefinition, FloatParameterDefinition, \
-    IntParameterDefinition, StringParameterDefinition, BoolParameterDefinition
+from .parameter_definition import (
+    BoolParameterDefinition,
+    FloatParameterDefinition,
+    IntParameterDefinition,
+    ParameterDefinition,
+    StringParameterDefinition,
+)
 from .parameter_mapping import ParameterMapping
-from .project import Project
 from .permission import Permission
+from .project import Project
 from .selection import JobSelection
 from .task import Task
-from .task_definition import Licensing, SuccessCriteria, Software, ResourceRequirements, TaskDefinition, HpcResources
-from .task_definition_template import TaskDefinitionTemplate, TemplateInputFile, TemplateOutputFile, TemplateResourceRequirements, TemplateProperty
+from .task_definition import (
+    HpcResources,
+    Licensing,
+    ResourceRequirements,
+    Software,
+    SuccessCriteria,
+    TaskDefinition,
+)
+from .task_definition_template import (
+    TaskDefinitionTemplate,
+    TemplateInputFile,
+    TemplateOutputFile,
+    TemplateProperty,
+    TemplateResourceRequirements,
+)

@@ -86,10 +86,7 @@ need to follow these steps:
     .. code:: bash
 
         python -m pip install -U pip setuptools tox
-        python -m pip install -r requirements/requirements_build.txt
-        python -m pip install -r requirements/requirements_doc.txt
-        python -m pip install -r requirements/requirements_tests.txt
-
+        python -m pip install -e .[tests,doc]
 
 #. Install the project in editable mode:
 
@@ -162,7 +159,6 @@ the building requirements and then executing the build module:
 
 .. code:: bash
 
-    python -m pip install -r requirements/requirements_build.txt
     python -m build
     python -m twine check dist/*
 

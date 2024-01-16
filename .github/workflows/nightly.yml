@@ -121,7 +121,7 @@ jobs:
       - name: Install dependencies and build the library
         run: |
           python -m pip install --upgrade pip setuptools
-          python -m pip install -r requirements/requirements_build.txt
+          python -m pip install -e .[build]
           python -m build venv wheel
           python -m twine check dist/*
       - name: Upload artifact

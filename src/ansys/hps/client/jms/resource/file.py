@@ -1,9 +1,11 @@
-from marshmallow.utils import missing
-from typing import Union
 import io
+from typing import Union
+
+from marshmallow.utils import missing
+
+from ansys.hps.client.common import Object
 
 from ..schema.file import FileSchema
-from ansys.hps.client.common import Object
 
 
 class File(Object):
@@ -14,15 +16,16 @@ class File(Object):
     src : Union[str, io.IOBase],  optional
         Client-only field to specify either the path of an input file
         or a file-like object. In the latter case, `requests` recommends that
-        you open files in binary mode. 
+        you open files in binary mode.
     id : str, optional
         Unique ID to access the resource, generated internally by the server on creation.
     name : str
         Name of the file resource.
     type : str, optional
-        Type of the file. This can be any string but using a correct media type for the given resource is advisable.
+        Type of the file. This can be any string but using a correct media type for
+        the given resource is advisable.
     storage_id : str, optional
-        File's identifier in the (orthogonal) file storage system
+        File's identifier in the (orthogonal) file storage system.
     size : int, optional
     hash : str, optional
     creation_time : datetime, optional
@@ -41,11 +44,13 @@ class File(Object):
     monitor : bool, optional
         Whether to live monitor the file's content.
     collect : bool, optional
-        Whether file should be collected per job
+        Whether file should be collected per job.
     collect_interval : int, optional
-        Collect frequency for a file with collect=True. Min value limited by the evaluator's settings. 0/None - let the evaluator decide, other value - interval in seconds
+        Collect frequency for a file with collect=True. Min value limited by the
+        evaluator's settings.
+        0/None - let the evaluator decide, other value - interval in seconds.
     reference_id : str, optional
-        Reference file from which this one was created
+        Reference file from which this one was created.
 
     """
 
@@ -53,8 +58,9 @@ class File(Object):
         schema = FileSchema
         rest_name = "files"
 
-    def __init__(self, 
-        src=None,
+    def __init__(
+        self,
+        src=Union[str, io.IOBase],
         id=missing,
         name=missing,
         type=missing,
@@ -96,5 +102,6 @@ class File(Object):
         self.reference_id = reference_id
 
         self.obj_type = self.__class__.__name__
+
 
 FileSchema.Meta.object_class = File
