@@ -69,7 +69,7 @@ class ProjectApi:
     >>> from ansys.hps.client import Client
     >>> from ansys.hps.client.jms import JmsApi, Project, ProjectApi
     >>> cl = Client(
-    ...     rep_url="https://127.0.0.1:8443/rep", username="repadmin", password="repadmin"
+    ...     url="https://127.0.0.1:8443/rep", username="repadmin", password="repadmin"
     ... )
     >>> project = Project(name="Example Project")
     >>> print(project)
@@ -161,7 +161,7 @@ class ProjectApi:
         return update_files(self, files, as_objects=as_objects)
 
     def delete_files(self, files: List[File]):
-        return self._delete_objects(files)
+        return self._delete_objects(files, File)
 
     def download_file(
         self,
@@ -185,9 +185,9 @@ class ProjectApi:
         return self._get_objects(ParameterDefinition, as_objects, **query_params)
 
     def create_parameter_definitions(
-        self, parameter_definitions, as_objects=True
+        self, parameter_definitions: List[ParameterDefinition], as_objects=True
     ) -> List[ParameterDefinition]:
-        return self._create_objects(parameter_definitions, as_objects)
+        return self._create_objects(parameter_definitions, ParameterDefinition, as_objects)
 
     def update_parameter_definitions(
         self, parameter_definitions: List[ParameterDefinition], as_objects=True
@@ -195,7 +195,7 @@ class ProjectApi:
         return self._update_objects(parameter_definitions, ParameterDefinition, as_objects)
 
     def delete_parameter_definitions(self, parameter_definitions: List[ParameterDefinition]):
-        return self._delete_objects(parameter_definitions)
+        return self._delete_objects(parameter_definitions, ParameterDefinition)
 
     ################################################################
     # Parameter mappings
@@ -205,7 +205,7 @@ class ProjectApi:
     def create_parameter_mappings(
         self, parameter_mappings: List[ParameterMapping], as_objects=True
     ) -> List[ParameterMapping]:
-        return self._create_objects(parameter_mappings, as_objects=as_objects)
+        return self._create_objects(parameter_mappings, ParameterMapping, as_objects=as_objects)
 
     def update_parameter_mappings(
         self, parameter_mappings: List[ParameterMapping], as_objects=True
@@ -213,7 +213,7 @@ class ProjectApi:
         return self._update_objects(parameter_mappings, ParameterMapping, as_objects=as_objects)
 
     def delete_parameter_mappings(self, parameter_mappings: List[ParameterMapping]):
-        return self._delete_objects(parameter_mappings)
+        return self._delete_objects(parameter_mappings, ParameterMapping)
 
     ################################################################
     # Task definitions
@@ -223,7 +223,7 @@ class ProjectApi:
     def create_task_definitions(
         self, task_definitions: List[TaskDefinition], as_objects=True
     ) -> List[TaskDefinition]:
-        return self._create_objects(task_definitions, as_objects=as_objects)
+        return self._create_objects(task_definitions, TaskDefinition, as_objects=as_objects)
 
     def update_task_definitions(
         self, task_definitions: List[TaskDefinition], as_objects=True
@@ -231,7 +231,7 @@ class ProjectApi:
         return self._update_objects(task_definitions, TaskDefinition, as_objects=as_objects)
 
     def delete_task_definitions(self, task_definitions: List[TaskDefinition]):
-        return self._delete_objects(task_definitions)
+        return self._delete_objects(task_definitions, TaskDefinition)
 
     def copy_task_definitions(
         self, task_definitions: List[TaskDefinition], wait: bool = True
@@ -264,7 +264,7 @@ class ProjectApi:
     def create_job_definitions(
         self, job_definitions: List[JobDefinition], as_objects=True
     ) -> List[JobDefinition]:
-        return self._create_objects(job_definitions, as_objects=as_objects)
+        return self._create_objects(job_definitions, JobDefinition, as_objects=as_objects)
 
     def update_job_definitions(
         self, job_definitions: List[JobDefinition], as_objects=True
@@ -272,7 +272,7 @@ class ProjectApi:
         return self._update_objects(job_definitions, JobDefinition, as_objects=as_objects)
 
     def delete_job_definitions(self, job_definitions: List[JobDefinition]):
-        return self._delete_objects(job_definitions)
+        return self._delete_objects(job_definitions, JobDefinition)
 
     def copy_job_definitions(
         self, job_definitions: List[JobDefinition], wait: bool = True
@@ -312,7 +312,7 @@ class ProjectApi:
         Returns:
             List of :class:`ansys.hps.client.jms.Job` or list of dict if `as_objects` is False
         """
-        return self._create_objects(jobs, as_objects=as_objects)
+        return self._create_objects(jobs, Job, as_objects=as_objects)
 
     def copy_jobs(self, jobs: List[Job], wait: bool = True) -> Union[str, List[str]]:
         """Create new jobs by copying existing ones
@@ -364,7 +364,7 @@ class ProjectApi:
             >>> project_api.delete_jobs(jobs_to_delete)
 
         """
-        return self._delete_objects(jobs)
+        return self._delete_objects(jobs, Job)
 
     def sync_jobs(self, jobs: List[Job]):
         return sync_jobs(self, jobs)
@@ -394,7 +394,7 @@ class ProjectApi:
     def create_job_selections(
         self, selections: List[JobSelection], as_objects=True
     ) -> List[JobSelection]:
-        return self._create_objects(selections, as_objects=as_objects)
+        return self._create_objects(selections, JobSelection, as_objects=as_objects)
 
     def update_job_selections(
         self, selections: List[JobSelection], as_objects=True
@@ -402,7 +402,7 @@ class ProjectApi:
         return self._update_objects(selections, JobSelection, as_objects=as_objects)
 
     def delete_job_selections(self, selections: List[JobSelection]):
-        return self._delete_objects(selections)
+        return self._delete_objects(selections, JobSelection)
 
     ################################################################
     # Algorithms
@@ -410,13 +410,13 @@ class ProjectApi:
         return self._get_objects(Algorithm, as_objects=as_objects, **query_params)
 
     def create_algorithms(self, algorithms: List[Algorithm], as_objects=True) -> List[Algorithm]:
-        return self._create_objects(algorithms, as_objects=as_objects)
+        return self._create_objects(algorithms, Algorithm, as_objects=as_objects)
 
     def update_algorithms(self, algorithms: List[Algorithm], as_objects=True) -> List[Algorithm]:
         return self._update_objects(algorithms, Algorithm, as_objects=as_objects)
 
     def delete_algorithms(self, algorithms: List[Algorithm]):
-        return self._delete_objects(algorithms)
+        return self._delete_objects(algorithms, Algorithm)
 
     ################################################################
     # Permissions
@@ -488,8 +488,12 @@ class ProjectApi:
     def _get_objects(self, obj_type: Object, as_objects=True, **query_params):
         return get_objects(self.client.session, self.url, obj_type, as_objects, **query_params)
 
-    def _create_objects(self, objects: List[Object], as_objects=True, **query_params):
-        return create_objects(self.client.session, self.url, objects, as_objects, **query_params)
+    def _create_objects(
+        self, objects: List[Object], obj_type: Type[Object], as_objects=True, **query_params
+    ):
+        return create_objects(
+            self.client.session, self.url, objects, obj_type, as_objects, **query_params
+        )
 
     def _update_objects(
         self, objects: List[Object], obj_type: Type[Object], as_objects=True, **query_params
@@ -498,8 +502,8 @@ class ProjectApi:
             self.client.session, self.url, objects, obj_type, as_objects, **query_params
         )
 
-    def _delete_objects(self, objects: List[Object]):
-        delete_objects(self.client.session, self.url, objects)
+    def _delete_objects(self, objects: List[Object], obj_type: Type[Object]):
+        delete_objects(self.client.session, self.url, objects, obj_type)
 
 
 def _download_files(project_api: ProjectApi, files: List[File]):
@@ -556,7 +560,7 @@ def _upload_files(project_api: ProjectApi, files):
 def create_files(project_api: ProjectApi, files, as_objects=True) -> List[File]:
     # (1) Create file resources in JMS
     created_files = create_objects(
-        project_api.client.session, project_api.url, files, as_objects=as_objects
+        project_api.client.session, project_api.url, files, File, as_objects=as_objects
     )
 
     # (2) Check if there are src properties, files to upload

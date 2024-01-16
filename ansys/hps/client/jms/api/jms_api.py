@@ -57,7 +57,7 @@ class JmsApi(object):
     >>> from ansys.hps.client import Client
     >>> from ansys.hps.client.jms import JmsApi, Project
     >>> cl = Client(
-    ...     rep_url="https://127.0.0.1:8443/rep", username="repadmin", password="repadmin"
+    ...     url="https://127.0.0.1:8443/rep", username="repadmin", password="repadmin"
     ... )
     >>> jms_api = JmsApi(cl)
     >>> project = jms_api.create_project(Project(name="Example Project"))
@@ -151,7 +151,14 @@ class JmsApi(object):
             templates (list of :class:`ansys.hps.client.jms.TaskDefinitionTemplate`):
                 A list of task definition templates
         """
-        return create_objects(self.client.session, self.url, templates, as_objects, **query_params)
+        return create_objects(
+            self.client.session,
+            self.url,
+            templates,
+            TaskDefinitionTemplate,
+            as_objects,
+            **query_params,
+        )
 
     def update_task_definition_templates(
         self, templates: List[TaskDefinitionTemplate], as_objects=True, **query_params
@@ -178,7 +185,7 @@ class JmsApi(object):
             templates (list of :class:`ansys.hps.client.jms.TaskDefinitionTemplate`):
                 A list of task definition templates
         """
-        return delete_objects(self.client.session, self.url, templates)
+        return delete_objects(self.client.session, self.url, templates, TaskDefinitionTemplate)
 
     def copy_task_definition_templates(
         self, templates: List[TaskDefinitionTemplate], wait: bool = True

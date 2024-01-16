@@ -129,7 +129,7 @@ class ProjectPermissionsTest(REPTestCase):
 
         # user1 creates a project and a job definition
         client1 = Client(
-            rep_url=self.rep_url,
+            url=self.rep_url,
             username=user1.username,
             password=user_credentials["user1"]["password"],
         )
@@ -153,7 +153,7 @@ class ProjectPermissionsTest(REPTestCase):
 
         # user1 appends a job definition to the project
         client2 = Client(
-            rep_url=self.rep_url,
+            url=self.rep_url,
             username=user2.username,
             password=user_credentials["user2"]["password"],
         )
@@ -175,7 +175,7 @@ class ProjectPermissionsTest(REPTestCase):
 
         # user2 reconnects and tries to get the project
         client2 = Client(
-            rep_url=self.rep_url,
+            url=self.rep_url,
             username=user2.username,
             password=user_credentials["user2"]["password"],
         )

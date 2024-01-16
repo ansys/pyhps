@@ -164,8 +164,8 @@ def update_objects(
     **query_params,
 ):
 
-    if objects is None:
-        raise ClientError("objects can't be None")
+    if not objects:
+        return []
 
     are_same = [o.__class__ == obj_type for o in objects]
     if not all(are_same):

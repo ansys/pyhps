@@ -121,7 +121,7 @@ class REPTestCase(unittest.TestCase):
 
         user = self.create_user(User(username=username, password=password))
         client = Client(
-            rep_url=self.rep_url,
+            url=self.rep_url,
             username=user.username,
             password=password,
         )

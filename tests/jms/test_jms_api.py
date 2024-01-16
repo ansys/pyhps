@@ -26,9 +26,15 @@ import unittest
 from examples.mapdl_motorbike_frame.project_setup import create_project
 from marshmallow.utils import missing
 
-from ansys.hps.client import Client
+from ansys.hps.client import Client, ClientError
 from ansys.hps.client.jms import JmsApi, ProjectApi
-from ansys.hps.client.jms.resource import Job, Project
+from ansys.hps.client.jms.resource import (
+    FloatParameterDefinition,
+    IntParameterDefinition,
+    Job,
+    JobDefinition,
+    Project,
+)
 from tests.rep_test import REPTestCase
 
 log = logging.getLogger(__name__)
@@ -144,6 +150,62 @@ class REPClientTest(REPTestCase):
             self.assertTrue("name" in storage)
             self.assertTrue("priority" in storage)
             self.assertTrue("obj_type" in storage)
+
+    def test_objects_type_check(self):
+
+        proj_name = f"test_objects_type_check"
+
+        client = self.client
+
+        proj = Project(name=proj_name, active=True)
+        job_def = JobDefinition(name="Job Def", active=True)
+        job = Job(name="test")
+
+        jms_api = JmsApi(client)
+
+        with self.assertRaises(ClientError) as context:
+            _ = jms_api.create_task_definition_templates([job])
+        assert "Wrong object type" in str(context.exception)
+        assert "got <class 'ansys.hps.client.jms.resource.job.Job'>" in str(context.exception)
+
+        proj = jms_api.create_project(proj, replace=True)
+        project_api = ProjectApi(client, proj.id)
+
+        job_def = JobDefinition(name="New Config", active=True)
+
+        with self.assertRaises(ClientError) as context:
+            _ = project_api.create_jobs([job_def])
+        assert "Wrong object type" in str(context.exception)
+        assert "got <class 'ansys.hps.client.jms.resource.job_definition.JobDefinition'>" in str(
+            context.exception
+        )
+
+        job_def = project_api.create_job_definitions([job_def])[0]
+
+        # verify support for mixed parameter definitions
+        with self.assertRaises(ClientError) as context:
+            _ = project_api.create_parameter_definitions(
+                [
+                    FloatParameterDefinition(),
+                    Job(),
+                ]
+            )
+        msg = str(context.exception)
+        assert "Wrong object type" in msg
+        assert "<class 'ansys.hps.client.jms.resource.job.Job'>" in msg
+        assert (
+            "<class 'ansys.hps.client.jms.resource.parameter_definition.FloatParameterDefinition'>"
+            in msg
+        )
+
+        _ = project_api.create_parameter_definitions(
+            [
+                FloatParameterDefinition(),
+                IntParameterDefinition(),
+            ]
+        )
+
+        JmsApi(client).delete_project(proj)
 
 
 if __name__ == "__main__":

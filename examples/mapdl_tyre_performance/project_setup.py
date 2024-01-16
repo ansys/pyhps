@@ -274,7 +274,7 @@ if __name__ == "__main__":
     logging.basicConfig(format="[%(asctime)s | %(levelname)s] %(message)s", level=logging.DEBUG)
 
     log.debug("=== HPS connection")
-    client = Client(rep_url=args.url, username=args.username, password=args.password)
+    client = Client(url=args.url, username=args.username, password=args.password)
 
     try:
         log.info(f"HPS URL: {client.rep_url}")

@@ -49,7 +49,7 @@ class AuthApi:
     >>> from ansys.hps.client import Client
     >>> from ansys.hps.client.auth import AuthApi, User
     >>> cl = Client(
-    ...     rep_url="https://127.0.0.1:8443/rep/", username="repadmin", password="repadmin"
+    ...     url="https://127.0.0.1:8443/rep/", username="repadmin", password="repadmin"
     ... )
     >>> auth_api = AuthApi(cl)
     >>> users = auth_api.get_users(firstName="john", exact=False)

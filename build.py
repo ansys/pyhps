@@ -127,7 +127,7 @@ def _do_documentation(context):
     target_directory = os.path.join(os.path.dirname(__file__), "build", "sphinx", "html")
     doc_reqs = os.path.join(os.path.dirname(__file__), "requirements", "requirements_doc.txt")
     subprocess.run(f"{context.python_binary} -m pip install -r {doc_reqs}", shell=True, check=True)
-    subprocess.run(f"{context.python_binary} prepare_documentation.py", shell=True, check=True)
+    subprocess.run(f"{context.python_binary} archive_examples.py", shell=True, check=True)
     subprocess.run(
         f"{context.python_binary} -m sphinx -b html {docs_directory} {target_directory}",
         shell=True,

@@ -215,13 +215,33 @@ class ParameterDefitionTest(REPTestCase):
         self.assertTrue(fp.id in job_def.parameter_definition_ids)
         self.assertTrue(bp.id in job_def.parameter_definition_ids)
 
-        # job_def.parameter_definitions[2].upper_limit = 13.0
-        # job_def.parameter_definitions[2].lower_limit = 4.5
-        # job_def = proj.update_job_definitions([job_def])[0]
-        # job_def = proj.get_job_definitions([job_def])[0]
-        # self.assertEqual(len(job_def.parameter_definitions), 4)
-        # self.assertEqual(job_def.parameter_definitions[2].upper_limit, 13.0)
-        # self.assertEqual(job_def.parameter_definitions[2].lower_limit, 4.5)
+        # Delete project
+        jms_api.delete_project(proj)
+
+    def test_mixed_parameter_definition(self):
+
+        client = self.client
+        proj_name = f"test_mixed_parameter_definition"
+
+        proj = Project(name=proj_name, active=True)
+        jms_api = JmsApi(client)
+        proj = jms_api.create_project(proj, replace=True)
+        project_api = ProjectApi(client, proj.id)
+
+        ip = IntParameterDefinition(name="int_param", upper_limit=27)
+        sp = StringParameterDefinition(name="s_param", value_list=["l1", "l2"])
+        fp = FloatParameterDefinition(name="f_param", display_text="A Float Parameter")
+        bp = BoolParameterDefinition(name="b_param", display_text="A Bool Parameter", default=False)
+
+        original_pds = [ip, sp, fp, bp]
+        pds = project_api.create_parameter_definitions(original_pds)
+
+        for pd, original_pd in zip(pds, original_pds):
+            assert type(pd) == type(original_pd)
+            assert pd.name == original_pd.name
+
+        assert pds[0].upper_limit == 27
+        assert pds[1].value_list == ["l1", "l2"]
 
         # Delete project
         jms_api.delete_project(proj)
