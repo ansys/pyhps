@@ -82,12 +82,8 @@ def _do_venv(context):
     subprocess.run(f"{context.python_binary} -m pip install --upgrade pip", shell=True, check=True)
 
     # Install requirements
-    build_reqs = os.path.join(os.path.dirname(__file__), "requirements", "requirements_build.txt")
-    subprocess.run(
-        f"{context.python_binary} -m pip install -r {build_reqs}", shell=True, check=True
-    )
-    test_reqs = os.path.join(os.path.dirname(__file__), "requirements", "requirements_tests.txt")
-    subprocess.run(f"{context.python_binary} -m pip install -r {test_reqs}", shell=True, check=True)
+    subprocess.run(f"{context.python_binary} -m pip install -e .[build]", shell=True, check=True)
+    subprocess.run(f"{context.python_binary} -m pip install -e .[tests]", shell=True, check=True)
 
     # Install client
     subprocess.run(f"{context.python_binary} -m pip install -e .", shell=True, check=True)
@@ -103,8 +99,7 @@ def _do_documentation(context):
 
     docs_directory = os.path.join(os.path.dirname(__file__), "doc", "source")
     target_directory = os.path.join(os.path.dirname(__file__), "build", "sphinx", "html")
-    doc_reqs = os.path.join(os.path.dirname(__file__), "requirements", "requirements_doc.txt")
-    subprocess.run(f"{context.python_binary} -m pip install -r {doc_reqs}", shell=True, check=True)
+    subprocess.run(f"{context.python_binary} -m pip install -e .[doc]", shell=True, check=True)
     subprocess.run(f"{context.python_binary} archive_examples.py", shell=True, check=True)
     subprocess.run(
         f"{context.python_binary} -m sphinx -b html {docs_directory} {target_directory}",
