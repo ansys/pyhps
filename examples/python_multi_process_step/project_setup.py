@@ -1,5 +1,5 @@
 """
-Project setup script for multi process step and task file replacement testing.
+Project setup script for multi steps (task definitions) and task file replacement testing.
 
 Author(s): R.Walker
 
@@ -25,8 +25,6 @@ import logging
 import os
 import random
 
-from task_files import update_task_files
-
 from ansys.hps.client import Client, HPSError
 from ansys.hps.client.jms import (
     File,
@@ -44,6 +42,8 @@ from ansys.hps.client.jms import (
     TaskDefinition,
 )
 
+from .task_files import update_task_files
+
 log = logging.getLogger(__name__)
 
 
@@ -57,8 +57,8 @@ def main(
     change_job_tasks,
     inactive,
     sequential,
-):
-    """Python project implementing multiple process steps and optional image generation."""
+) -> Project:
+    """Python project implementing multiple steps and optional image generation."""
     log.debug("=== Project")
     name = f"Python - {num_task_definitions} Task Defs {' - Img' if images else ''}"
     name += f"{' - Sequential' if sequential else ' - Parallel'}"
@@ -136,23 +136,20 @@ def main(
     params = []
     mappings = []
     for i in range(num_task_definitions):
-        int_params = [
+        new_params = [
             IntParameterDefinition(name=f"period{i}", lower_limit=1, upper_limit=period, units="s"),
             IntParameterDefinition(
                 name=f"duration{i}", lower_limit=0, upper_limit=duration, units="s"
             ),
             IntParameterDefinition(name=f"steps{i}", units=""),
-        ]
-        str_params = [
             StringParameterDefinition(
                 name=f"color{i}",
                 value_list=["red", "blue", "green", "yellow", "cyan"],
                 default='"orange"',
             ),
         ]
-        int_params = project_api.create_parameter_definitions(int_params)
-        str_params = project_api.create_parameter_definitions(str_params)
-        params.extend(int_params + str_params)
+        new_params = project_api.create_parameter_definitions(new_params)
+        params.extend(new_params)
 
         input_file_id = file_ids[f"td{i}_input"]
         result_file_id = file_ids[f"td{i}_results_json"]
@@ -161,7 +158,7 @@ def main(
             ParameterMapping(
                 key_string='"period"',
                 tokenizer=":",
-                parameter_definition_id=int_params[0].id,
+                parameter_definition_id=new_params[0].id,
                 file_id=input_file_id,
             )
         )
@@ -169,7 +166,7 @@ def main(
             ParameterMapping(
                 key_string='"duration"',
                 tokenizer=":",
-                parameter_definition_id=int_params[1].id,
+                parameter_definition_id=new_params[1].id,
                 file_id=input_file_id,
             )
         )
@@ -177,7 +174,7 @@ def main(
             ParameterMapping(
                 key_string='"steps"',
                 tokenizer=":",
-                parameter_definition_id=int_params[2].id,
+                parameter_definition_id=new_params[2].id,
                 file_id=result_file_id,
             )
         )
@@ -186,7 +183,7 @@ def main(
                 key_string='"color"',
                 tokenizer=":",
                 string_quote='"',
-                parameter_definition_id=str_params[0].id,
+                parameter_definition_id=new_params[3].id,
                 file_id=input_file_id,
             )
         )
@@ -259,6 +256,8 @@ def main(
         update_task_files(proj, change_job_tasks, images)
 
     log.info(f"Created project '{proj.name}', ID='{proj.id}'")
+
+    return proj
 
 
 if __name__ == "__main__":

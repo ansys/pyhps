@@ -2,7 +2,12 @@ import logging
 import unittest
 
 from ansys.hps.client import __ansys_apps_version__ as ansys_version
-from ansys.hps.client.jms import JmsApi, ProjectApi
+from ansys.hps.client.jms import (
+    IntParameterDefinition,
+    JmsApi,
+    ProjectApi,
+    StringParameterDefinition,
+)
 from tests.rep_test import REPTestCase
 
 log = logging.getLogger(__name__)
@@ -240,6 +245,42 @@ class REPClientTest(REPTestCase):
         self.assertEqual(jms_api.get_project(id=project.id).name, "CFX Static Mixer Test")
 
         jms_api.delete_project(project)
+
+    def test_python_multi_steps(self):
+
+        from examples.python_multi_process_step.project_setup import main as create_project
+
+        num_jobs = 3
+        num_task_definitions = 2
+        project = create_project(
+            self.client,
+            num_task_definitions=num_task_definitions,
+            num_jobs=num_jobs,
+            duration=10,
+            period=3,
+            images=False,
+            change_job_tasks=0,
+            inactive=True,
+            sequential=False,
+        )
+        self.assertIsNotNone(project)
+
+        project_api = ProjectApi(self.client, project.id)
+
+        self.assertEqual(len(project_api.get_jobs()), num_jobs)
+
+        # verify we created int and string type parameter definitions
+        pds = project_api.get_parameter_definitions()
+        types = [type(pd) for pd in pds]
+
+        assert len(types) == 4 * num_task_definitions
+
+        types = set(types)
+        assert len(types) == 2
+        assert StringParameterDefinition in types
+        assert IntParameterDefinition in types
+
+        JmsApi(self.client).delete_project(project)
 
 
 if __name__ == "__main__":

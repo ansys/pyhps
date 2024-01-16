@@ -52,17 +52,29 @@ def get_object(
         )
 
 
+def _check_object_types(objects: List[Object], obj_type: Type[Object]):
+
+    are_same = [isinstance(o, obj_type) for o in objects]
+    if not all(are_same):
+        actual_types = set([type(o) for o in objects])
+        if len(actual_types) == 1:
+            actual_types = actual_types.pop()
+        raise ClientError(f"Wrong object types: expected '{obj_type}', got {actual_types}.")
+
+
 def create_objects(
-    session: Session, url: str, objects: List[Object], as_objects=True, **query_params
+    session: Session,
+    url: str,
+    objects: List[Object],
+    obj_type: Type[Object],
+    as_objects=True,
+    **query_params,
 ):
     if not objects:
         return []
 
-    are_same = [o.__class__ == objects[0].__class__ for o in objects[1:]]
-    if not all(are_same):
-        raise ClientError("Mixed object types")
+    _check_object_types(objects, obj_type)
 
-    obj_type = objects[0].__class__
     rest_name = obj_type.Meta.rest_name
 
     url = f"{url}/{rest_name}"
@@ -87,12 +99,10 @@ def update_objects(
     **query_params,
 ):
 
-    if objects is None:
-        raise ClientError("objects can't be None")
+    if not objects:
+        return []
 
-    are_same = [o.__class__ == obj_type for o in objects]
-    if not all(are_same):
-        raise ClientError("Mixed object types")
+    _check_object_types(objects, obj_type)
 
     rest_name = obj_type.Meta.rest_name
 
@@ -109,13 +119,12 @@ def update_objects(
     return schema.load(data)
 
 
-def delete_objects(session: Session, url: str, objects: List[Object]):
+def delete_objects(session: Session, url: str, objects: List[Object], obj_type: Type[Object]):
+
     if not objects:
         return
 
-    are_same = [o.__class__ == objects[0].__class__ for o in objects[1:]]
-    if not all(are_same):
-        raise ClientError("Mixed object types")
+    _check_object_types(objects, obj_type)
 
     obj_type = objects[0].__class__
     rest_name = obj_type.Meta.rest_name
