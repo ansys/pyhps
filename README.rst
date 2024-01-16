@@ -141,7 +141,7 @@ For building documentation, you can manually run:
 
 .. code:: bash
 
-    python prepare_documentation.py
+    python archive_examples.py
     python -m sphinx -b html doc/source build/sphinx/html
 
 The recommended way of checking documentation integrity is using:

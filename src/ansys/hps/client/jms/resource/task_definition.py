@@ -19,9 +19,13 @@ class HpcResources(Object):
     Parameters
     ----------
     num_cores_per_node : int, optional
+        Number of cores per node.
     num_gpus_per_node : int, optional
+        Number of GPUs per node.
     exclusive : bool, optional
+        When set, a job can't share resources with other running jobs.
     queue : str, optional
+        Name of job scheduler queue.
 
     """
 
@@ -54,12 +58,19 @@ class ResourceRequirements(Object):
     Parameters
     ----------
     platform : str, optional
+        Basic platform information: 'windows' or 'linux'.
     memory : int, optional
+        Amount of RAM in bytes.
     num_cores : float, optional
+        Number of cores.
     disk_space : int, optional
+        Amount of disk space in bytes.
     distributed : bool, optional
+        Enable distributed parallel processing.
     custom : dict[str, int | float | str | bool], optional
+        Custom resource requirements.
     hpc_resources : HpcResources, optional
+        HPC requirements
 
     """
 
