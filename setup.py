@@ -33,7 +33,6 @@ setup(
         "requests>=2.21.0",
         "marshmallow>=3.0.0",
         "marshmallow_oneofschema>=2.0.1",
-        "cachetools>=4.0.0",
         "python-keycloak>=1.5.0,<=2.12.0",
         "backoff>=2.0.0",
         "pydantic>=1.10.0",

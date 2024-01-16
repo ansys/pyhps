@@ -18,7 +18,7 @@ class HPSError(RequestException):
             >>> from ansys.hps.client import HPSError
             >>> from ansys.hps.client.jms import Client
             >>> try:
-            >>>     client = Client(rep_url="https://127.0.0.1:8443/rep/",
+            >>>     client = Client(url="https://127.0.0.1:8443/rep/",
                                     username="repadmin",
                                     password="wrong_psw")
             >>> except HPSError as e:
