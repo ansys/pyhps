@@ -202,8 +202,6 @@ def main(client, num_jobs, use_exec_script) -> Project:
         execution_command="%executable% %file:script% %file:inp%",
         resource_requirements=ResourceRequirements(
             num_cores=0.5,
-            memory=100,
-            disk_space=5,
         ),
         execution_level=0,
         max_execution_time=30.0,

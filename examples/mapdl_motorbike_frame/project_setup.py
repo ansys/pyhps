@@ -247,8 +247,8 @@ def create_project(
         execution_command="%executable% -b -i %file:inp% -o file.out -np %resource:num_cores%",
         resource_requirements=ResourceRequirements(
             num_cores=1.0,
-            memory=250,
-            disk_space=5,
+            memory=250 * 1024 * 1024,  # 250 MB
+            disk_space=5 * 1024 * 1024,  # 5 MB
         ),
         execution_level=0,
         max_execution_time=50.0,

@@ -138,8 +138,8 @@ def main(client, num_task_definitions, num_jobs, start, inactive):
                 execution_level=i,
                 resource_requirements=ResourceRequirements(
                     num_cores=0.2,
-                    memory=100,
-                    disk_space=1,
+                    memory=100 * 1024 * 1024,  # 100 MB
+                    disk_space=1 * 1024 * 1024,  # 1 MB
                 ),
                 input_file_ids=input_file_ids,
                 output_file_ids=output_file_ids,
