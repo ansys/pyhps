@@ -237,7 +237,7 @@ jobs:
     steps:
       - uses: actions/download-artifact@v3
         with:
-          name: ansys-pyhps-package
+          name: ansys-pyhps-artifacts
           path: /tmp/artifacts
 
       - name: List artifacts
