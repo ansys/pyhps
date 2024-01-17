@@ -21,14 +21,7 @@
 # SOFTWARE.
 
 
-from .__version__ import (
-    __ansys_apps_version__,
-    __company__,
-    __company_short__,
-    __url__,
-    __version__,
-    __version_no_dots__,
-)
+from .__version__ import __ansys_apps_version__, __version__
 from .auth import AuthApi
 from .client import Client
 from .exceptions import APIError, ClientError, HPSError
