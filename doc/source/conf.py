@@ -6,7 +6,7 @@ import sys
 from ansys_sphinx_theme import get_version_match
 from ansys_sphinx_theme import pyansys_logo_black as logo
 
-from ansys.hps.client import __ansys_apps_version__, __company__, __version__, __version_no_dots__
+from ansys.hps.client import __ansys_apps_version__, __version__
 
 sys.path.append(os.path.abspath(os.path.dirname(__file__)))
 
@@ -15,9 +15,8 @@ sys.path.append(os.path.abspath(os.path.dirname(__file__)))
 # General information about the project.
 project = "Ansys pyhps"
 copyright = f"(c) {datetime.now().year} ANSYS, Inc. All rights reserved"
-author = __company__
-
-cname = os.getenv("DOCUMENTATION_CNAME", "rep.docs.pyansys.com")
+author = "ANSYS Inc."
+cname = os.getenv("DOCUMENTATION_CNAME", "hps.docs.pyansys.com")
 """The canonical name of the webpage hosting the documentation."""
 
 # The short X.Y version
@@ -120,7 +119,7 @@ html_theme = "ansys_sphinx_theme"
 
 # only for  sphinx_rtd_theme
 html_theme_options = {
-    "github_url": "https://github.com/pyansys/pyhps",
+    "github_url": "https://github.com/ansys-internal/pyhps",
     "show_prev_next": False,
     "show_breadcrumbs": True,
     "additional_breadcrumbs": [
@@ -249,7 +248,7 @@ man_pages = [("index", "ansys-pyhps", "Ansys HPS Python Client Documentation", [
 
 global_substitutions = {
     "client_version": __version__,
-    "version_no_dots": __version_no_dots__,
+    "version_no_dots": __version__.replace(".", ""),
     "external_version": __ansys_apps_version__,
     "ansys_version": __ansys_apps_version__,
 }

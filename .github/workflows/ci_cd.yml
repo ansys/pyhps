@@ -178,11 +178,47 @@ jobs:
           library-name: ${{ env.PACKAGE_NAME }}
           python-version: ${{ env.MAIN_PYTHON_VERSION }}
 
-      - name: Get version
-        id: build
+  library-version:
+    name: Get library version
+    runs-on: ubuntu-latest
+    steps:
+      - name: "Install the library"
+        shell: bash
         run: |
-          version=$(ls dist | grep ansys_pyhps | grep -E -o "[0-9]+.[0-9]+.[a-z0-9]+")
-          echo "version=$version" >> $GITHUB_OUTPUT
+          python -m pip install -e .
+
+      - name: "Verify if importlib-metadata needs to be installed"
+        shell: bash
+        run: |
+          python_version="${{ env.MAIN_PYTHON_VERSION }}"
+          minor_python_version=$(echo "$python_version" | awk -F "." '{print $2}')
+          major_python_version=$(echo "$python_version" | awk -F "." '{print $1}')
+          if (( $(( $major_python_version == 3 )) )) && (( $(( $minor_python_version < 8 )) )); then
+            echo "needs_importlib_metadata=true" >> $GITHUB_ENV
+          elif (( $(( $major_python_version < 3 )) )); then
+            echo "needs_importlib_metadata=true" >> $GITHUB_ENV
+          else
+            echo "needs_importlib_metadata=false" >> $GITHUB_ENV
+          fi
+
+      - name: "Verify library is properly installed and get its version number"
+        shell: bash
+        run: |
+          library_name=${{ env.PACKAGE_NAME }}
+
+          if [ ${{ env.needs_importlib_metadata }} == 'true' ]; then
+            version=$(python -c "import importlib_metadata; print(importlib_metadata.version('$library_name'))")
+          else
+            version=$(python -c "import importlib.metadata as importlib_metadata; print(importlib_metadata.version('$library_name'))")
+          fi
+
+          if [ -z "$version" ]; then
+              echo "Problem getting the library version"
+              exit 1;
+          else
+              echo "The library version is: $version";
+          fi;
+          echo "library_version=$version" >> $GITHUB_ENV
 
   pre-release:
     name: Pre-release project
@@ -203,11 +239,11 @@ jobs:
         if: startsWith(github.ref, 'refs/heads/main')
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
-          automatic_release_tag: "v${{needs.build.outputs.version}}"
+          automatic_release_tag: "v${{ env.library_version }}"
           prerelease: true
-          title: "v${{needs.build.outputs.version}}"
+          title: "v${{ env.library_version }}"
           files: |
-            /tmp/artifacts/*.whl    
+            /tmp/artifacts/*.whl
 
   release:
     name: Release project
