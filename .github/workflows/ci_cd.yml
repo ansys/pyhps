@@ -172,11 +172,6 @@ jobs:
     needs: [quick-tests, docs]
     runs-on: ubuntu-latest
     steps:
-      - name: Install dependencies
-        run: |
-          cd pyhps
-          python -m pip install -e .[build]
-
       - name: Build library source and wheel artifacts
         uses: ansys/actions/build-library@v5
         with:
