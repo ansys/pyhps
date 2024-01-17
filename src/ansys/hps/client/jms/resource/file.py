@@ -1,6 +1,3 @@
-import io
-from typing import Union
-
 from marshmallow.utils import missing
 
 from ansys.hps.client.common import Object
@@ -60,7 +57,7 @@ class File(Object):
 
     def __init__(
         self,
-        src=Union[str, io.IOBase],
+        src=None,
         id=missing,
         name=missing,
         type=missing,
