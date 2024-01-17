@@ -172,11 +172,46 @@ jobs:
     needs: [quick-tests, docs]
     runs-on: ubuntu-latest
     steps:
+      - name: Install dependencies
+        run: |
+          python -m pip install -e .[build]
+
       - name: Build library source and wheel artifacts
         uses: ansys/actions/build-library@v5
         with:
           library-name: ${{ env.PACKAGE_NAME }}
           python-version: ${{ env.MAIN_PYTHON_VERSION }}
+
+      - name: Get version
+        id: build
+        run: |
+          version=$(ls dist | grep ansys_pyhps | grep -E -o "[0-9]+.[0-9]+.[a-z0-9]+")
+          echo "version=$version" >> $GITHUB_OUTPUT
+
+  pre-release:
+    name: Pre-release project
+    if: startsWith(github.ref, 'refs/heads/main')
+    needs: [package]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v3
+        with:
+          name: ansys-pyhps-package
+          path: /tmp/artifacts
+
+      - name: List artifacts
+        run: ls -ltR /tmp/artifacts
+
+      - name: Release to latest-dev
+        uses: "marvinpinto/action-automatic-releases@latest"
+        if: startsWith(github.ref, 'refs/heads/main')
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          automatic_release_tag: "v${{needs.build.outputs.version}}"
+          prerelease: true
+          title: "v${{needs.build.outputs.version}}"
+          files: |
+            /tmp/artifacts/*.whl    
 
   release:
     name: Release project
@@ -184,8 +219,8 @@ jobs:
     needs: [package]
     runs-on: ubuntu-latest
     steps:
-      - name: Release to the public PyPI repository
-        uses: ansys/actions/release-pypi-public@v5
+      - name: Release to the private PyPI repository
+        uses: ansys/actions/release-pypi-private@v5
         with:
           library-name: ${{ env.PACKAGE_NAME }}
           twine-username: "__token__"
@@ -195,36 +230,3 @@ jobs:
         uses: ansys/actions/release-github@v5
         with:
           library-name: ${{ env.PACKAGE_NAME }}
-
-  # release:
-  #   name: "Release"
-  #   if: startsWith(github.ref, 'refs/heads/main') || github.ref_type == 'tag'
-  #   needs: [smoke-tests, docs]
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - uses: actions/download-artifact@v3
-  #       with:
-  #         name: ansys-pyhps-package
-  #         path: /tmp/artifacts
-
-  #     - name: List artifacts
-  #       run: ls -ltR /tmp/artifacts
-
-  #     - name: Release for tag
-  #       if: github.ref_type == 'tag'
-  #       uses: softprops/action-gh-release@v1
-  #       with:
-  #         generate_release_notes: true
-  #         files: |
-  #           /tmp/artifacts/*.whl
-
-  #     - name: Release to latest-dev
-  #       uses: "marvinpinto/action-automatic-releases@latest"
-  #       if: startsWith(github.ref, 'refs/heads/main')
-  #       with:
-  #         repo_token: ${{ secrets.GITHUB_TOKEN }}
-  #         automatic_release_tag: "v${{needs.build.outputs.version}}"
-  #         prerelease: true
-  #         title: "v${{needs.build.outputs.version}}"
-  #         files: |
-  #           /tmp/artifacts/*.whl
