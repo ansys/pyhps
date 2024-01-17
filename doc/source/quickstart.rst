@@ -3,30 +3,30 @@
 Quickstart
 ==========
 
-This guide will walk you through the basics of interacting with a REP server. More elaborated examples are available in the :ref:`Examples <examples>` chapter, 
+This guide will walk you through the basics of interacting with Ansys HPC Platform Services. More elaborated examples are available in the :ref:`Examples <examples>` chapter, 
 while detailed documentation can be found in the :ref:`Code Documentation <api_reference>`.
 
 To reproduce the code samples provided below, you will need:
 
-- A running REP server, go to the `REP repository <https://github.com/ansys/rep>`_ for instructions.
+- A running HPS installation, go to the `REP repository <https://github.com/ansys/rep>`_ for instructions.
 - A Python shell with ``ansys-pyhps`` installed. If you haven't installed it yet, please refer to the :ref:`Installation <installation>` guide.
 
 
-Connect to a REP Server 
---------------------------
+Connect to HPC Platform Services
+--------------------------------
 
-Let's start by connecting to a REP server running on the localhost with default username and password.
+Let's start by connecting to an HPS deployment running on the localhost with default username and password.
 
 .. code-block:: python
 
     from ansys.hps.client import Client
     from ansys.hps.client.jms import JmsApi, ProjectApi
     
-    client = Client(rep_url="https://localhost:8443/rep", username="repuser", password="repuser")  
+    client = Client(url="https://localhost:8443/rep", username="repuser", password="repuser")  
 
     # check which JMS version the server is running    
     jms_api = JmsApi(client)
-    print(jms_api.get_api_info()['build']['external_version'])
+    print(jms_api.get_api_info()['build']['version'])
 
     # get all projects
     projects = jms_api.get_projects()
@@ -286,7 +286,7 @@ Admin users with the Keycloak "manage-users" role can create new users as well a
     from ansys.hps.client import Client
     from ansys.hps.client.auth import AuthApi, User
     
-    client = Client(rep_url="https://localhost:8443/rep/", username="repadmin", password="repadmin")
+    client = Client(url="https://localhost:8443/rep/", username="repadmin", password="repadmin")
     auth_api = AuthApi(client)
 
     # modify the default password of the repadmin user
@@ -321,7 +321,7 @@ For example, instantiating a client with invalid credentials will return a 401 C
     from ansys.hps.client import Client, HPSError
 
     try:
-        client = Client(rep_url="https://localhost:8443/rep/", username="repuser",  password="wrong_psw")
+        client = Client(url="https://localhost:8443/rep/", username="repuser",  password="wrong_psw")
     except HPSError as e:
         print(e)
 
