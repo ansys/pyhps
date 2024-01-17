@@ -30,6 +30,12 @@ repos:
       )$
     args: [-I, .codespellignore]
 
+- repo: https://github.com/ansys/pre-commit-hooks
+  rev: v0.2.7
+  hooks:
+  - id: add-license-headers
+    files: '(ansys|examples|tests)/.*\.(py)|\.(proto)|generate_resources.py|build.py|archive_examples.py'
+
 # For now we disable some of these checks, can be reenabled later
 # - repo: https://github.com/pycqa/pydocstyle
 #   rev: 6.1.1
