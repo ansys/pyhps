@@ -18,12 +18,11 @@ Usage:
 """
 
 import argparse
-import json
 import logging
+import random
 import os
-import time
 
-from ansys.hps.client import Client, HPSError
+from ansys.hps.client import Client, HPSError, __ansys_apps_version__
 from ansys.hps.client.jms import (
     File,
     JmsApi,
@@ -39,64 +38,24 @@ from ansys.hps.client.jms import (
 
 log = logging.getLogger(__name__)
 
-REP_URL = "https://localhost:8443/rep"
-USERNAME = "repadmin"
-PASSWORD = "repadmin"
 USE_LSDYNA_MPP = False
-ANSYS_VERSION = "2024 R1"
 
 
-class REPJob:
-    """
-    Simplistic helper class to store job information similarly to
-    what a pre/post processing application would do.
-    """
-
-    def __init__(
-        self,
-        rep_url=None,
-        project_id=None,
-        job_definition_id=None,
-        job_id=None,
-        auth_token=None,
-        task_ids=[],
-    ):
-        self.rep_url = rep_url
-        self.project_id = project_id
-        self.job_definition_id = job_definition_id
-        self.job_id = job_id
-        self.auth_token = auth_token
-        self.task_ids = task_ids
-
-    def __str__(self):
-        repr = json.dumps(self, default=lambda x: x.__dict__, sort_keys=True, indent=4)
-        return f"REP Job:\n{repr}"  # noqa: E231
-
-    def save(self):
-        """Save job info to JSON file"""
-        with open("rep_job.json", "w") as f:
-            f.write(json.dumps(self, default=lambda x: x.__dict__, sort_keys=True, indent=4))
-
-    @classmethod
-    def load(cls):
-        """Load job info from JSON file"""
-        with open("rep_job.json", "r") as f:
-            job = json.load(f, object_hook=lambda d: cls(**d))
-        return job
 
 
-def submit_job(use_exec_script=False) -> REPJob:
+def create_project(
+    client, name, version=__ansys_apps_version__, num_jobs=20, use_exec_script=False, active=True
+) -> Project:
     """Create a REP project running a simple LS-DYNA
     job simulating the impact of a cylinder made of Aluminum
     against a plate made of steel.
     """
 
     log.info("=== Connect to the REP server")
-    client = Client(rep_url=REP_URL, username=USERNAME, password=PASSWORD)
     jms_api = JmsApi(client)
 
     log.info("=== Create an empty project")
-    proj = Project(name="LS-DYNA Cylinder Plate", priority=1, active=True)
+    proj = Project(name=name, priority=1, active=True)
     proj = jms_api.create_project(proj)
 
     project_api = ProjectApi(client, proj.id)
@@ -183,7 +142,7 @@ def submit_job(use_exec_script=False) -> REPJob:
     task_defs = []
     task_def1 = TaskDefinition(
         name="LS-DYNA Run",
-        software_requirements=[Software(name="Ansys LS-DYNA", version=ANSYS_VERSION)],
+        software_requirements=[Software(name="Ansys LS-DYNA", version=version)],
         execution_command=ls_dyna_command,
         max_execution_time=3600.0,
         resource_requirements=ResourceRequirements(
@@ -206,7 +165,7 @@ def submit_job(use_exec_script=False) -> REPJob:
 
     if use_exec_script:
         exec_script_file = project_api.copy_default_execution_script(
-            f"lsdyna-v{ANSYS_VERSION[2:4]}{ANSYS_VERSION[6]}-exec_lsdyna.py"
+            f"lsdyna-v{version[2:4]}{version[6]}-exec_lsdyna.py"
         )
 
         task_def1.use_execution_script = True
@@ -216,7 +175,7 @@ def submit_job(use_exec_script=False) -> REPJob:
 
     task_def2 = TaskDefinition(
         name="LS-PrePost Run",
-        software_requirements=[Software(name="Ansys LS-PrePost", version=ANSYS_VERSION)],
+        software_requirements=[Software(name="Ansys LS-PrePost", version=version)],
         execution_command="%executable% c=%file:post_commands%",
         max_execution_time=600.0,
         resource_requirements=ResourceRequirements(
@@ -247,166 +206,54 @@ def submit_job(use_exec_script=False) -> REPJob:
 
     job_def = project_api.create_job_definitions([job_def])[0]
 
-    log.info("=== Submit the job")
-    job = Job(
-        eval_status="pending",
-        name="Nominal: 56.7km/h (30ms sim time)",
-        job_definition_id=job_def.id,
-    )
-    job = project_api.create_jobs([job])[0]
+    # Refresh the parameters
+    params = project_api.get_parameter_definitions(id=job_def.parameter_definition_ids)
 
-    app_job = REPJob()
-    app_job.project_id = proj.id
-    app_job.job_definition_id = job_def.id
-    app_job.job_id = job.id
-    app_job.rep_url = client.rep_url
-    app_job.auth_token = client.refresh_token
-
-    tasks = project_api.get_tasks(job_id=job.id)
-    job.task_ids = [t.id for t in tasks]
-
-    return app_job
-
-
-def monitor_job(app_job: REPJob):
-    """
-    Monitor the evaluation status of an existing REP job
-    """
-
-    # Since we stored the auth token in the job info, there's no need
-    # to enter user and password anymore to connect to the REP server.
-    client = Client(rep_url=app_job.rep_url, refresh_token=app_job.auth_token)
-    project_api = ProjectApi(client, app_job.project_id)
-
-    job = project_api.get_jobs(id=app_job.job_id)[0]
-
-    while job.eval_status not in ["evaluated", "timeout", "failed", "aborted"]:
-        time.sleep(2)
-        log.info(
-            f"Waiting for job {job.name} to complete "
-            f"[{client.rep_url}/jms/#/projects/{app_job.project_id}/jobs/{job.id}] ... "
+    log.debug("=== Jobs")
+    jobs = []
+    for i in range(num_jobs):
+        values = {
+            p.name: p.lower_limit + random.random() * (p.upper_limit - p.lower_limit)
+            for p in params
+            if p.mode == "input"
+        }
+        jobs.append(
+            Job(name=f"Job.{i}", values=values, eval_status="pending", job_definition_id=job_def.id)
         )
-        job = project_api.get_jobs(id=job.id)[0]
+    jobs = project_api.create_jobs(jobs)
 
-        tasks = project_api.get_tasks(job_id=job.id)
-        for task in tasks:
-            log.info(
-                f" Task {task.task_definition_snapshot.name} (id={task.id}) is {task.eval_status}"
-            )
+    log.info(f"Created project '{proj.name}', ID='{proj.id}'")
 
-    log.info(f"Job {job.name} final status: {job.eval_status}")
-    return
-
-
-def download_results(app_job: REPJob):
-    """
-    Download the job output files (if any)
-
-    Requires the packages tqdm and humanize
-    python -m pip install tqdm humanize
-    """
-
-    try:
-        from tqdm import tqdm
-    except ImportError as e:
-        log.error("The 'tqdm' package is not installed. Please pip install it")
-        return
-
-    try:
-        import humanize
-    except ImportError as e:
-        log.error("The 'humanize' package is not installed. Please pip install it")
-        return
-
-    # Since we stored the auth token in the job info, there's no need
-    # to enter user and password anymore to connect to the REP server.
-    client = Client(rep_url=job.rep_url, refresh_token=app_job.auth_token)
-    project_api = ProjectApi(client, app_job.project_id)
-
-    tasks = project_api.get_tasks(job_id=app_job.job_id)
-
-    for task in tasks:
-
-        if not task.output_file_ids:
-            log.info(f"No files are available on the server for Task {task.id}")
-            continue
-
-        query_params = {"id": task.output_file_ids, "hash.ne": "null"}
-        files = project_api.get_files(content=False, **query_params)
-        for f in files:
-            print(f)
-        log.info(
-            f"{len(files)} files are available on the server for Task "
-            f"{task.id}: {', '.join([f.evaluation_path for f in files])}"
-        )
-
-        for file in files:
-
-            target_folder = os.path.join("job_results", task.task_definition_snapshot.name)
-            download_path = os.path.join(target_folder, file.evaluation_path)
-
-            if os.path.exists(download_path):
-                if file.size == os.path.getsize(download_path):
-                    log.info(
-                        f"Skip download of file "
-                        f"{file.evaluation_path} ({humanize.naturalsize(file.size)})"
-                    )
-                    continue
-                else:
-                    log.warning(
-                        f"{file.evaluation_path} already exists: "
-                        f"size on server: {humanize.naturalsize(file.size)}, "
-                        f"size on disk {humanize.naturalsize(os.path.getsize(download_path))} MB"
-                    )
-
-            log.info(
-                f"Start download of file {file.evaluation_path} ({humanize.naturalsize(file.size)})"
-            )
-
-            with tqdm(
-                total=file.size,
-                unit="B",
-                unit_scale=True,
-                desc=file.evaluation_path,
-                initial=0,
-                ascii=True,
-                ncols=100,
-            ) as pbar:
-                project_api.download_file(
-                    file, target_folder, progress_handler=lambda chunk_size: pbar.update(chunk_size)
-                )
+    return proj
 
 
 if __name__ == "__main__":
 
-    logger = logging.getLogger()
-    logging.basicConfig(format="[%(asctime)s | %(levelname)s] %(message)s", level=logging.INFO)
-
     parser = argparse.ArgumentParser()
-    parser.add_argument(
-        "action", default="submit", choices=["submit", "monitor", "download"], help="Action to run"
-    )
-    parser.add_argument(
-        "--exec_script",
-        default=False,
-        type=bool,
-        help="Use default execution script while submitting job",
-    )
+    parser.add_argument("-n", "--name", type=str, default="LS-DYNA Cylinder Plate")
+    parser.add_argument("-j", "--num-jobs", type=int, default=10)
+    parser.add_argument("-es", "--use-exec-script", default=False, type=bool)
+    parser.add_argument("-U", "--url", default="https://localhost:8443/rep")
+    parser.add_argument("-u", "--username", default="repadmin")
+    parser.add_argument("-p", "--password", default="repadmin")
+    parser.add_argument("-v", "--ansys-version", default=__ansys_apps_version__)
 
     args = parser.parse_args()
+
+    logger = logging.getLogger()
+    logging.basicConfig(format="[%(asctime)s | %(levelname)s] %(message)s", level=logging.DEBUG)
+
+    log.debug("=== HPS connection")
+    client = Client(rep_url=args.url, username=args.username, password=args.password)
+
     try:
-        if args.action == "submit":
-            job = submit_job(args.exec_script)
-            job.save()
-        elif args.action == "monitor":
-            job = REPJob.load()
-            log.info(job)
-            monitor_job(job)
-        elif args.action == "download":
-            job = REPJob.load()
-            log.info(job)
-            download_results(job)
+        log.info(f"HPS URL: {client.rep_url}")
+        proj = create_project(
+            client=client,
+            name=args.name,
+            version=args.ansys_version,
+            num_jobs=args.num_jobs,
+            use_exec_script=args.use_exec_script,
+        )
     except HPSError as e:
         log.error(str(e))
-    except KeyboardInterrupt:
-        log.warning("Interrupted, stopping ...")

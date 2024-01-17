@@ -194,16 +194,18 @@ class REPClientTest(REPTestCase):
 
     def test_lsdyna_cylinder_plate(self):
 
-        from examples.lsdyna_cylinder_plate.lsdyna_job import submit_job
+        from examples.lsdyna_cylinder_plate.lsdyna_job import create_project
 
-        app_job = submit_job()
-        self.assertIsNotNone(app_job)
+        project = create_project(
+            self.client, name="LS-DYNA Cylinder Plate", num_jobs=1, version=ansys_version
+        )
+        self.assertIsNotNone(project)
 
         jms_api = JmsApi(self.client)
-        project_api = ProjectApi(self.client, app_job.project_id)
+        project_api = ProjectApi(self.client, project.id)
 
         self.assertEqual(len(project_api.get_jobs()), 1)
-        proj = jms_api.get_project(id=app_job.project_id)
+        proj = jms_api.get_project(id=project.id)
         self.assertEqual(proj.name, "LS-DYNA Cylinder Plate")
 
         jms_api.delete_project(proj)
