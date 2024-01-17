@@ -19,8 +19,8 @@ Usage:
 
 import argparse
 import logging
-import random
 import os
+import random
 
 from ansys.hps.client import Client, HPSError, __ansys_apps_version__
 from ansys.hps.client.jms import (
@@ -39,8 +39,6 @@ from ansys.hps.client.jms import (
 log = logging.getLogger(__name__)
 
 USE_LSDYNA_MPP = False
-
-
 
 
 def create_project(
