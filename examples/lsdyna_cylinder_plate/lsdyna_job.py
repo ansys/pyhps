@@ -64,6 +64,7 @@ log = logging.getLogger(__name__)
 
 USE_LSDYNA_MPP = False
 
+
 class REPJob:
     """
     Simplistic helper class to store job information similarly to
@@ -101,7 +102,6 @@ class REPJob:
         with open("rep_job.json", "r") as f:
             job = json.load(f, object_hook=lambda d: cls(**d))
         return job
-
 
 
 def submit_job(
@@ -319,7 +319,7 @@ def monitor_job(app_job: REPJob):
             tasks = project_api.get_tasks(job_id=job.id)
             for task in tasks:
                 log.info(
-                    f" Task {task.task_definition_snapshot.name} (id={task.id}) is {task.eval_status}"
+                    f"Task {task.task_definition_snapshot.name}(id={task.id}) is {task.eval_status}"
                 )
 
         log.info(f"Job {job.name} final status: {job.eval_status}")
@@ -329,7 +329,6 @@ def monitor_job(app_job: REPJob):
 def download_results(app_job: REPJob):
     """
     Download the job output files (if any)
-
     Requires the packages tqdm and humanize
     python -m pip install tqdm humanize
     """
@@ -429,13 +428,15 @@ if __name__ == "__main__":
 
     try:
         log.info(f"HPS URL: {client.rep_url}")
-        if args.action == "submit":            
-            job = submit_job(client=client,
+        if args.action == "submit":
+            job = submit_job(
+                client=client,
                 name=args.name,
                 version=args.ansys_version,
                 num_jobs=args.num_jobs,
-                use_exec_script=args.use_exec_script,)
-            job.save()           
+                use_exec_script=args.use_exec_script,
+            )
+            job.save()
         elif args.action == "monitor":
             job = REPJob.load()
             log.info(job)

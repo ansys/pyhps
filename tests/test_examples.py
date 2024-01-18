@@ -239,9 +239,9 @@ class REPClientTest(REPTestCase):
 
     def test_lsdyna_cylinder_plate_with_exec_script(self):
 
-        from examples.lsdyna_cylinder_plate.lsdyna_job import create_project
+        from examples.lsdyna_cylinder_plate.lsdyna_job import submit_job
 
-        app_job = create_project(
+        app_job = submit_job(
             self.client,
             name="LS-DYNA Cylinder Plate",
             num_jobs=1,
