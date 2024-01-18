@@ -8,7 +8,7 @@ while detailed documentation can be found in the :ref:`Code documentation <api_r
 
 To reproduce the code samples provided below, you need:
 
-- A running HPS installation, go to the `REP repository <https://github.com/ansys/rep>`_ for instructions.
+- A running HPS installation, go to the `REP repository <https://github.com/ansys-internal/rep>`_ for instructions.
 - A Python shell with ``ansys-pyhps`` installed. If you haven't installed it yet, please refer to the :ref:`Installation <installation>` guide.
 
 

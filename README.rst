@@ -6,20 +6,20 @@ PyHPS
    :target: https://docs.pyansys.com/
    :alt: PyAnsys
 
-.. |python| image:: https://img.shields.io/badge/Python-%3E%3D3.7-blue
-   :target: https://pypi.org/project/ansys-rep/
+.. |python| image:: https://img.shields.io/pypi/pyversions/ansys-pyhps?logo=pypi
+   :target: https://pypi.org/project/ansys-pyhps
    :alt: Python
 
-.. |pypi| image:: https://img.shields.io/pypi/v/ansys-rep.svg?logo=python&logoColor=white
-   :target: https://pypi.org/project/ansys-rep
+.. |pypi| image:: https://img.shields.io/pypi/v/ansys-pyhps.svg?logo=python&logoColor=white
+   :target: https://pypi.org/project/ansys-pyhps
    :alt: PyPI
 
-.. |codecov| image:: https://codecov.io/gh/pyansys/pyhps/branch/main/graph/badge.svg
-   :target: https://codecov.io/gh/pyansys/pyhps
+.. |codecov| image:: https://codecov.io/gh/ansys-internal/pyhps/branch/main/graph/badge.svg
+   :target: https://codecov.io/gh/ansys-internal/ansys-pyhps
    :alt: Codecov
 
-.. |GH-CI| image:: https://github.com/pyansys/pyhps/actions/workflows/ci_cd.yml/badge.svg
-   :target: https://github.com/pyansys/pyhps/actions/workflows/ci_cd.yml
+.. |GH-CI| image:: https://github.com/ansys-internal/pyhps/actions/workflows/ci_cd.yml/badge.svg
+   :target: https://github.com/ansys-internal/pyhps/actions/workflows/ci_cd.yml
    :alt: GH-CI
 
 .. |MIT| image:: https://img.shields.io/badge/License-MIT-yellow.svg
@@ -47,7 +47,7 @@ Then, as long as PyHPS is a private pyAnsys module not published to pypi yet, yo
 
 .. code:: bash
 
-    python -m pip install git+https://github.com/pyansys/pyhps
+    python -m pip install git+https://github.com/ansys-internal/pyhps
 
 .. TODO: Enable this once pyhps is published:  python -m pip install ansys-pyhps
 
@@ -180,9 +180,9 @@ Documentation, Issues, and Support
 Documentation for the latest stable release of PyHPS is hosted at `PyHPS documentation
 <https://hps.docs.pyansys.com/dev/>`_.
 
-On the `PyHPS Issues <https://github.com/ansys/pyhps/issues>`_ page,
+On the `PyHPS Issues <https://github.com/ansys-internal/pyhps/issues>`_ page,
 you can create issues to report bugs and request new features. On the `PyHPS Discussions
-<https://github.com/ansys/pyhps/discussions>`_ page or the `Discussions <https://discuss.ansys.com/>`_
+<https://github.com/ansys-internal/pyhps/discussions>`_ page or the `Discussions <https://discuss.ansys.com/>`_
 page on the Ansys Developer portal, you can post questions, share ideas, and get community feedback. 
 
 To reach the project support team, email `pyansys.core@ansys.com <pyansys.core@ansys.com>`_.
