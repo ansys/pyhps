@@ -40,9 +40,11 @@ Usage:
 """
 
 import argparse
+import json
 import logging
 import os
 import random
+import time
 
 from ansys.hps.client import Client, HPSError, __ansys_apps_version__
 from ansys.hps.client.jms import (
@@ -62,10 +64,49 @@ log = logging.getLogger(__name__)
 
 USE_LSDYNA_MPP = False
 
+class REPJob:
+    """
+    Simplistic helper class to store job information similarly to
+    what a pre/post processing application would do.
+    """
 
-def create_project(
+    def __init__(
+        self,
+        rep_url=None,
+        project_id=None,
+        job_definition_id=None,
+        job_id=None,
+        auth_token=None,
+        task_ids=[],
+    ):
+        self.rep_url = rep_url
+        self.project_id = project_id
+        self.job_definition_id = job_definition_id
+        self.job_id = job_id
+        self.auth_token = auth_token
+        self.task_ids = task_ids
+
+    def __str__(self):
+        repr = json.dumps(self, default=lambda x: x.__dict__, sort_keys=True, indent=4)
+        return f"REP Job:\n{repr}"  # noqa: E231
+
+    def save(self):
+        """Save job info to JSON file"""
+        with open("rep_job.json", "w") as f:
+            f.write(json.dumps(self, default=lambda x: x.__dict__, sort_keys=True, indent=4))
+
+    @classmethod
+    def load(cls):
+        """Load job info from JSON file"""
+        with open("rep_job.json", "r") as f:
+            job = json.load(f, object_hook=lambda d: cls(**d))
+        return job
+
+
+
+def submit_job(
     client, name, version=__ansys_apps_version__, num_jobs=20, use_exec_script=False, active=True
-) -> Project:
+) -> REPJob:
     """Create a REP project running a simple LS-DYNA
     job simulating the impact of a cylinder made of Aluminum
     against a plate made of steel.
@@ -244,12 +285,132 @@ def create_project(
 
     log.info(f"Created project '{proj.name}', ID='{proj.id}'")
 
-    return proj
+    app_job = REPJob()
+    app_job.project_id = proj.id
+    app_job.job_definition_id = job_def.id
+    app_job.job_id = [job.id for job in jobs]
+    app_job.rep_url = client.rep_url
+    app_job.auth_token = client.refresh_token
+
+    return app_job
+
+
+def monitor_job(app_job: REPJob):
+    """
+    Monitor the evaluation status of an existing REP job
+    """
+
+    # Since we stored the auth token in the job info, there's no need
+    # to enter user and password anymore to connect to the REP server.
+    client = Client(rep_url=app_job.rep_url, refresh_token=app_job.auth_token)
+    project_api = ProjectApi(client, app_job.project_id)
+
+    for job_id in app_job.job_id:
+        job = project_api.get_jobs(id=job_id)[0]
+
+        while job.eval_status not in ["evaluated", "timeout", "failed", "aborted"]:
+            time.sleep(2)
+            log.info(
+                f"Waiting for job {job.name} to complete "
+                f"[{client.rep_url}/jms/#/projects/{app_job.project_id}/jobs/{job.id}] ... "
+            )
+            job = project_api.get_jobs(id=job.id)[0]
+
+            tasks = project_api.get_tasks(job_id=job.id)
+            for task in tasks:
+                log.info(
+                    f" Task {task.task_definition_snapshot.name} (id={task.id}) is {task.eval_status}"
+                )
+
+        log.info(f"Job {job.name} final status: {job.eval_status}")
+    return
+
+
+def download_results(app_job: REPJob):
+    """
+    Download the job output files (if any)
+
+    Requires the packages tqdm and humanize
+    python -m pip install tqdm humanize
+    """
+
+    try:
+        from tqdm import tqdm
+    except ImportError as e:
+        log.error("The 'tqdm' package is not installed. Please pip install it")
+        return
+
+    try:
+        import humanize
+    except ImportError as e:
+        log.error("The 'humanize' package is not installed. Please pip install it")
+        return
+
+    # Since we stored the auth token in the job info, there's no need
+    # to enter user and password anymore to connect to the REP server.
+    client = Client(rep_url=job.rep_url, refresh_token=app_job.auth_token)
+    project_api = ProjectApi(client, app_job.project_id)
+
+    tasks = project_api.get_tasks(job_id=app_job.job_id)
+
+    for task in tasks:
+
+        if not task.output_file_ids:
+            log.info(f"No files are available on the server for Task {task.id}")
+            continue
+
+        query_params = {"id": task.output_file_ids, "hash.ne": "null"}
+        files = project_api.get_files(content=False, **query_params)
+        for f in files:
+            print(f)
+        log.info(
+            f"{len(files)} files are available on the server for Task "
+            f"{task.id}: {', '.join([f.evaluation_path for f in files])}"
+        )
+
+        for file in files:
+
+            target_folder = os.path.join("job_results", task.task_definition_snapshot.name)
+            download_path = os.path.join(target_folder, file.evaluation_path)
+
+            if os.path.exists(download_path):
+                if file.size == os.path.getsize(download_path):
+                    log.info(
+                        f"Skip download of file "
+                        f"{file.evaluation_path} ({humanize.naturalsize(file.size)})"
+                    )
+                    continue
+                else:
+                    log.warning(
+                        f"{file.evaluation_path} already exists: "
+                        f"size on server: {humanize.naturalsize(file.size)}, "
+                        f"size on disk {humanize.naturalsize(os.path.getsize(download_path))} MB"
+                    )
+
+            log.info(
+                f"Start download of file {file.evaluation_path} ({humanize.naturalsize(file.size)})"
+            )
+
+            with tqdm(
+                total=file.size,
+                unit="B",
+                unit_scale=True,
+                desc=file.evaluation_path,
+                initial=0,
+                ascii=True,
+                ncols=100,
+            ) as pbar:
+                project_api.download_file(
+                    file, target_folder, progress_handler=lambda chunk_size: pbar.update(chunk_size)
+                )
 
 
 if __name__ == "__main__":
 
     parser = argparse.ArgumentParser()
+    parser.add_argument(
+        "action", default="submit", choices=["submit", "monitor", "download"], help="Action to run"
+    )
     parser.add_argument("-n", "--name", type=str, default="LS-DYNA Cylinder Plate")
     parser.add_argument("-j", "--num-jobs", type=int, default=10)
     parser.add_argument("-es", "--use-exec-script", default=False, type=bool)
@@ -268,12 +429,20 @@ if __name__ == "__main__":
 
     try:
         log.info(f"HPS URL: {client.rep_url}")
-        proj = create_project(
-            client=client,
-            name=args.name,
-            version=args.ansys_version,
-            num_jobs=args.num_jobs,
-            use_exec_script=args.use_exec_script,
-        )
+        if args.action == "submit":            
+            job = submit_job(client=client,
+                name=args.name,
+                version=args.ansys_version,
+                num_jobs=args.num_jobs,
+                use_exec_script=args.use_exec_script,)
+            job.save()           
+        elif args.action == "monitor":
+            job = REPJob.load()
+            log.info(job)
+            monitor_job(job)
+        elif args.action == "download":
+            job = REPJob.load()
+            log.info(job)
+            download_results(job)
     except HPSError as e:
         log.error(str(e))

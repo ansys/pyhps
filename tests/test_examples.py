@@ -221,18 +221,18 @@ class REPClientTest(REPTestCase):
 
     def test_lsdyna_cylinder_plate(self):
 
-        from examples.lsdyna_cylinder_plate.lsdyna_job import create_project
+        from examples.lsdyna_cylinder_plate.lsdyna_job import submit_job
 
-        project = create_project(
+        app_job = submit_job(
             self.client, name="LS-DYNA Cylinder Plate", num_jobs=1, version=ansys_version
         )
-        self.assertIsNotNone(project)
+        self.assertIsNotNone(app_job)
 
         jms_api = JmsApi(self.client)
-        project_api = ProjectApi(self.client, project.id)
+        project_api = ProjectApi(self.client, app_job.project_id)
 
         self.assertEqual(len(project_api.get_jobs()), 1)
-        proj = jms_api.get_project(id=project.id)
+        proj = jms_api.get_project(id=app_job.project_id)
         self.assertEqual(proj.name, "LS-DYNA Cylinder Plate")
 
         jms_api.delete_project(proj)
@@ -241,20 +241,20 @@ class REPClientTest(REPTestCase):
 
         from examples.lsdyna_cylinder_plate.lsdyna_job import create_project
 
-        project = create_project(
+        app_job = create_project(
             self.client,
             name="LS-DYNA Cylinder Plate",
             num_jobs=1,
             version=ansys_version,
             use_exec_script=True,
         )
-        self.assertIsNotNone(project)
+        self.assertIsNotNone(app_job)
 
         jms_api = JmsApi(self.client)
-        project_api = ProjectApi(self.client, project.id)
+        project_api = ProjectApi(self.client, app_job.project_id)
 
         self.assertEqual(len(project_api.get_jobs()), 1)
-        proj = jms_api.get_project(id=project.id)
+        proj = jms_api.get_project(id=app_job.project_id)
         self.assertEqual(proj.name, "LS-DYNA Cylinder Plate")
 
         jms_api.delete_project(proj)
