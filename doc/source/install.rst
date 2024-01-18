@@ -3,7 +3,7 @@
 Installation
 ============
 
-Make sure you have ``Python 3`` and that the expected version is available from your command line. You can check this by running:
+Make sure you have ``Python 3`` and that the expected version is available from your command line. You can check your python version by running:
 
 .. code:: 
 
@@ -11,7 +11,7 @@ Make sure you have ``Python 3`` and that the expected version is available from 
 
 If you do not have Python, please install the latest 3.x version from `python.org <https://python.org>`_.
 
-Additionally, make sure you have ``pip`` available. You can check this by running:
+Additionally, make sure you have ``pip`` available. You can check your pip version by running:
 
 .. code:: 
 

@@ -256,7 +256,7 @@ class REPClientTest(REPTestCase):
         from examples.cfx_static_mixer.project_setup import create_project
 
         project = create_project(
-            self.client, name="CFX Static Mixer Test", num_jobs=1, version=ansys_version
+            self.client, name="CFX static mixer test", num_jobs=1, version=ansys_version
         )
         self.assertIsNotNone(project)
 
@@ -264,7 +264,7 @@ class REPClientTest(REPTestCase):
         project_api = ProjectApi(self.client, project.id)
 
         self.assertEqual(len(project_api.get_jobs()), 1)
-        self.assertEqual(jms_api.get_project(id=project.id).name, "CFX Static Mixer Test")
+        self.assertEqual(jms_api.get_project(id=project.id).name, "CFX static mixer test")
 
         jms_api.delete_project(project)
 

@@ -1,7 +1,7 @@
 .. _example_mapdl_linked_analyses:
 
-MAPDL Linked Analyses Example
-=========================================
+MAPDL linked analyses example
+=============================
 
 This example shows how to submit an MAPDL linked analysis workflow (prestress-modal-harmonic)
 as a multi-task job to REP. The script shows two possible ways to submit the individual tasks:

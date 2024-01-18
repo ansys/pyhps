@@ -1,6 +1,6 @@
 .. _example_mapdl_tire_performance:
 
-MAPDL Tire Performance
+MAPDL tire performance
 =======================
 
 This example shows how to submit an MAPDL solver job to REP. The MAPDL model is the Tire-Performance Simulation example included

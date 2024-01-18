@@ -1,6 +1,6 @@
 .. _example_fluent_nozzle:
 
-Fluent Nozzle
+Fluent nozzle
 =============
 
 This example shows how to submit a Fluent nozzle model to be solved on REP. 

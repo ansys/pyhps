@@ -3,19 +3,19 @@
 Quickstart
 ==========
 
-This guide will walk you through the basics of interacting with Ansys HPC Platform Services. More elaborated examples are available in the :ref:`Examples <examples>` chapter, 
-while detailed documentation can be found in the :ref:`Code Documentation <api_reference>`.
+This guide walks you through the basics of interacting with Ansys HPC Platform Services. More elaborated examples are available in the :ref:`Examples <examples>` section, 
+while detailed documentation can be found in the :ref:`Code documentation <api_reference>`.
 
-To reproduce the code samples provided below, you will need:
+To reproduce the code samples provided below, you need:
 
 - A running HPS installation, go to the `REP repository <https://github.com/ansys/rep>`_ for instructions.
 - A Python shell with ``ansys-pyhps`` installed. If you haven't installed it yet, please refer to the :ref:`Installation <installation>` guide.
 
 
-Connect to HPC Platform Services
+Connect to HPC platform services
 --------------------------------
 
-Let's start by connecting to an HPS deployment running on the localhost with default username and password.
+Start by connecting to an HPS deployment running on the localhost with default username and password.
 
 .. code-block:: python
 
@@ -154,8 +154,8 @@ You can use the ``offset`` and ``limit`` query parameters to paginate items in a
                 eval_status="evaluated", limit=10, offset=5)
 
 
-Objects vs dictionaries
------------------------------------
+Objects vs. dictionaries
+------------------------
 
 Most ``get``, ``create`` and ``update`` functions can optionally return dictionaries rather than class objects by setting ``as_objects=False``.
 This is especially useful when the returned data needs to be further manipulated by popular packages 
@@ -314,7 +314,7 @@ Exception handling
 All exceptions that the Ansys REP client explicitly raise inherit from :exc:`ansys.hps.client.HPSError`.
 Client Errors are raised for 4xx HTTP status codes, while API Errors are raised for 5xx HTTP status codes (server side errors).
 
-For example, instantiating a client with invalid credentials will return a 401 Client Error.
+For example, instantiating a client with invalid credentials returns a 401 Client Error.
 
 .. code-block:: python
 
@@ -329,7 +329,7 @@ For example, instantiating a client with invalid credentials will return a 401 C
     # 401 Client Error: invalid_grant for: POST https://localhost:8443/rep/auth/realms/rep/protocol/openid-connect/token
     # Invalid user credentials
 
-A *get* call on a non-existing resource will return a 404 Client Error.
+A *get* call on a non-existing resource returns a 404 Client Error.
 
 .. code-block:: python
 

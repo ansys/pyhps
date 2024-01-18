@@ -1,5 +1,5 @@
-PyHPS Documentation |version|
-=================================
+PyHPS documentation |version|
+=============================
 
 .. toctree::
     :hidden:
