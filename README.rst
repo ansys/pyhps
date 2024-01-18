@@ -55,8 +55,8 @@ Contribute
 ----------
 
 Before contributing to the project, ensure that you are thoroughly
-familiar with the `PyAnsys Developer's guide`_. You will 
-need to follow these steps:
+familiar with the `PyAnsys Developer's guide`_. To contribute,
+follow these steps:
 
 #. Clone this repository:
 
@@ -178,7 +178,7 @@ Then, run the datamodel generator:
 Documentation, Issues, and Support
 ----------------------------------
 Documentation for the latest stable release of PyHPS is hosted at `PyHPS documentation
-<https://rep.docs.pyansys.com/dev/>`_.
+<https://hps.docs.pyansys.com/dev/>`_.
 
 On the `PyHPS Issues <https://github.com/ansys/pyhps/issues>`_ page,
 you can create issues to report bugs and request new features. On the `PyHPS Discussions

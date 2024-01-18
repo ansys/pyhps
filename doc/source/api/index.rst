@@ -1,7 +1,7 @@
 .. _api_reference:
 
-Code Documentation
-===========================
+Code documentation
+==================
 
 If you are looking for information on a specific function, class, or method, this part of the documentation is for you.
 

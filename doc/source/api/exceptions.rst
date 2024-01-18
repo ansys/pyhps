@@ -1,7 +1,7 @@
 Exceptions
 ===========================
 
-HTTP requests returning an unsuccessful status code will raise:
+HTTP requests returning an unsuccessful status code raise:
 
 * :exc:`ansys.hps.client.ClientError` for client errors (4xx status code. For example, bad syntax or not found)
 * :exc:`ansys.hps.client.APIError` for server errors (5xx status code. For example, internal server error or not implemented)
