@@ -1,45 +1,47 @@
 Job Management Service
-===========================
+======================
 
-Ansys REP includes Job Management Service (JMS), which is the main service for storing and evaluating jobs using multiple heterogeneous compute resources. 
+Ansys REP includes Job Management Service (JMS), which is the main service for storing
+and evaluating jobs using multiple heterogeneous compute resources. 
 
-The Python subpackage ``ansys.hps.client.jms`` wraps around the JMS service REST API available at ``https://hostname:port/rep/jms/api``.
+The ``ansys.hps.client.jms`` Python subpackage  wraps around the JMS service REST API,
+which is available at ``https://hostname:port/rep/jms/api``.
 
 APIs
---------------------------------------
+----
 
-JMS Api
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+JMS API
+^^^^^^^
 .. autoclass:: ansys.hps.client.jms.JmsApi
    :members:
    :undoc-members:
 
-Project Api
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Project API
+^^^^^^^^^^^
 .. autoclass:: ansys.hps.client.jms.ProjectApi
    :members:
    :undoc-members:
 
 
 Resources
---------------------------------------
+---------
 
 File
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^
  
 .. autoclass:: ansys.hps.client.jms.File
    :members:
 
 Project
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^
  
 .. autoclass:: ansys.hps.client.jms.Project
    :members:
    :undoc-members:
    :exclude-members: Meta
 
-Fitness Definition
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Fitness definition
+^^^^^^^^^^^^^^^^^^
  
 .. autoclass:: ansys.hps.client.jms.FitnessTermDefinition
    :members:
@@ -49,7 +51,7 @@ Fitness Definition
 
 
 Parameters
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^
 
 .. autoclass:: ansys.hps.client.jms.FloatParameterDefinition
    :members:
@@ -66,8 +68,8 @@ Parameters
 .. autoclass:: ansys.hps.client.jms.ParameterMapping
    :members:
 
-Task Definition
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Task definition
+^^^^^^^^^^^^^^^
 
 .. autoclass:: ansys.hps.client.jms.Software
    :members:
@@ -85,8 +87,8 @@ Task Definition
    :members:
 
 
-Job Definition
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Job definition
+^^^^^^^^^^^^^^
 
 .. autoclass:: ansys.hps.client.jms.JobDefinition
    :members:
@@ -94,28 +96,28 @@ Job Definition
    :exclude-members: Meta
 
 Task
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^
 
 .. autoclass:: ansys.hps.client.jms.Task
    :members:
 
 
 Job
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^
 
 .. autoclass:: ansys.hps.client.jms.Job
    :members:
 
 
-Job Selection
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Job selection
+^^^^^^^^^^^^^
 
 .. autoclass:: ansys.hps.client.jms.JobSelection
    :members:
 
 
-Design Exploration Algorithm
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Design exploration algorithm
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. autoclass:: ansys.hps.client.jms.Algorithm
    :members:
@@ -128,8 +130,8 @@ Evaluator
    :members:
 
 
-Task Definition Template
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Task definition template
+^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. autoclass:: ansys.hps.client.jms.TemplateProperty
    :members:

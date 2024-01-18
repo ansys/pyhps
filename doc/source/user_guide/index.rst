@@ -1,21 +1,23 @@
-.. _quickstart:
+.. _user_guide:
 
-Quickstart
+User guide
 ==========
 
-This guide will walk you through the basics of interacting with Ansys HPC Platform Services. More elaborated examples are available in the :ref:`Examples <examples>` chapter, 
-while detailed documentation can be found in the :ref:`Code Documentation <api_reference>`.
+This section walks you through the basics of interacting with Ansys HPS.
+For more elaborate examples, see :ref:`Examples <examples>`. For descriptions
+of PyHPS endpoints, see :ref:`API reference <api_reference>`.
 
-To reproduce the code samples provided below, you will need:
+To reproduce the code samples provided in this section, you must have:
 
-- A running HPS installation, go to the `REP repository <https://github.com/ansys/rep>`_ for instructions.
-- A Python shell with ``ansys-pyhps`` installed. If you haven't installed it yet, please refer to the :ref:`Installation <installation>` guide.
+- A running Ansys HPS installation. For instructions, go to the `REP repository <https://github.com/ansys/rep>`_.
+- A Python shell with the ``ansys-pyhps`` package installed. If you haven't installed this package yet,
+  see :ref:`getting_started`.
 
 
-Connect to HPC Platform Services
---------------------------------
+Connect to an Ansys HPS deployment
+----------------------------------
 
-Let's start by connecting to an HPS deployment running on the localhost with default username and password.
+You start by connecting to an Ansys HPS deployment running on the localhost with the default username and password:
 
 .. code-block:: python
 
@@ -31,35 +33,34 @@ Let's start by connecting to an HPS deployment running on the localhost with def
     # get all projects
     projects = jms_api.get_projects()
 
-Query projects statistics to find out how many jobs are currently running
+You can query projects statistics to find out how many jobs are currently running:
 
 .. code-block:: python
 
     projects = jms_api.get_projects(statistics=True)
     num_running_jobs = sum(p.statistics["eval_status"]["running"] for p in projects)
 
-Create a demo project: the MAPDL motorbike frame example
----------------------------------------------------------
+Create a project
+----------------
 
-Create a project consisting of an Ansys Mechanical APDL beam model 
-of a tubular steel trellis motorbike-frame. 
+The MAPDL motorbike frame example consists of an Ansys Mechanical APDL beam model of a
+tubular steel trellis motorbike frame. For more information, see the :ref:`example_mapdl_motorbike_frame`
+example.
 
-.. only:: builder_html
+#. Download the ZIP file for the :download:`MAPDL motorbike frame project <../../build/mapdl_motorbike_frame.zip>`.
 
-     The project setup script as well as the data files can be downloaded here :download:`MAPDL Motorbike Frame Project <../../build/mapdl_motorbike_frame.zip>`.
-     To create the project you only need to run the `project_setup` script:
+   This file contains the project setup script for creating the project and the project's data files.
 
-::
+#. Use a tool like 7Zip to extract the files.
+
+#. To create the project, run the ``project_setup`` script::
 
     $ python path_to_download_folder\mapdl_motorbike_frame\project_setup.py
 
 .. note::
-    By default, the script tries to connect to the REP server running on the localhost with default username and password.
-    If your REP server is hosted at a different URL or you want to specify different credentials,
-    please adjust the script before running it. 
-
-
-See :ref:`example_mapdl_motorbike_frame` for a detailed description of this example.
+    By default, the script tries to connect to the REP server running on the localhost with the default
+    username and password. If your REP server is hosted at a different URL or you want to specify different
+    credentials, adjust the script before running it. 
 
 Query parameters
 ----------------
@@ -69,7 +70,7 @@ Most ``get`` functions support filtering by query parameters.
 Properties
 ^^^^^^^^^^
 
-You can query resources by the value of their properties.
+You can query resources by the value of their properties:
 
 .. code-block:: python
 
@@ -83,9 +84,16 @@ You can query resources by the value of their properties.
     jobs = project_api.get_jobs(eval_status="evaluated")
 
 
-In general, query parameters support the following operators: ``lt`` (less than), ``le`` (less or equal), 
-``=`` (equal), ``ne`` (not equal), ``ge`` (greater or equal), ``gt`` (greater than),  ``in`` (value found in list) and
-``contains`` (property contains the given string). 
+In general, query parameters support these operators:
+
+- ``lt``: Less than
+- ``le``: Less than or equal to 
+- ``=``: Equal to
+- ``ne``: Not equal to
+- ``ge``: Greater than or equal to
+- ``gt``: Greater than
+- ``in``: Value found in list
+- ``contains``: Property contains the given string 
 
 .. code-block:: python
     
@@ -108,16 +116,16 @@ Fields
 ^^^^^^
 
 When you query a resource, the REST API returns a set of fields by default. You can specify which fields
-you want returned by using the ``fields`` query parameter (this returns only the fields you specify, 
-and the ID of the resource, which is always returned).
-Moreover, you can request all fields to be returned by specifying ``fields="all"``.
+you want returned by using the ``fields`` query parameter. (This returns only the fields you specify 
+and the ID of the resource, which is always returned.) Moreover, you can request all fields to be
+returned by specifying ``fields="all"``.
 
 .. code-block:: python
     
     # Get all jobs with all fields
     jobs = project_api.get_jobs(fields="all")
 
-    # Get id and parameter values for all evaluated jobs
+    # Get ID and parameter values for all evaluated jobs
     jobs = project_api.get_jobs(fields=["id", "values"], eval_status="evaluated")
 
 Sorting
@@ -134,7 +142,7 @@ Prefixing with ``-`` (minus) denotes descending order.
     # Get all jobs sorted by fitness value in descending order
     jobs = project_api.get_jobs(sort="-fitness")
 
-    # Get all jobs sorted by the parameters tube1 and weight
+    # Get all jobs sorted by the 'tube1' and 'weight' parameters
     jobs = project_api.get_jobs(sort=["values.tube1", "values.weight"])
     print([(job.values["tube1"], job.values["weight"]) for job in jobs])
 
@@ -145,7 +153,7 @@ You can use the ``offset`` and ``limit`` query parameters to paginate items in a
 
 .. code-block:: python
     
-    # Get name and elapsed time of max 5 evaluated jobs, sorted by creation time
+    # Get the name and elapsed time of a maximum of 5 evaluated jobs, sorted by creation time
     jobs = project_api.get_jobs(fields=["name", "elapsed_time"], sort="-creation_time",
                 eval_status="evaluated", limit=5)
 
@@ -154,12 +162,12 @@ You can use the ``offset`` and ``limit`` query parameters to paginate items in a
                 eval_status="evaluated", limit=10, offset=5)
 
 
-Objects vs dictionaries
------------------------------------
+Objects versus dictionaries
+---------------------------
 
-Most ``get``, ``create`` and ``update`` functions can optionally return dictionaries rather than class objects by setting ``as_objects=False``.
+Most ``get``, ``create``, and ``update`` functions can optionally return dictionaries rather than class objects by setting ``as_objects=False``.
 This is especially useful when the returned data needs to be further manipulated by popular packages 
-such as ``Numpy``, ``Pandas``, etc.  
+such as ``NumPy`` and ``Pandas``.  
 
 .. code-block:: python
     
@@ -170,7 +178,7 @@ such as ``Numpy``, ``Pandas``, etc.
     # Get parameter values for all evaluated jobs
     jobs = project_api.get_jobs(fields=["id", "values"], eval_status="evaluated", as_objects=False)
 
-    # Import jobs data into a flat DataFrame
+    # Import jobs data into a flat dataframe
     df = pandas.json_normalize(jobs)
 
     # Output
@@ -208,7 +216,7 @@ Query a specific project and set its failed jobs (if any) to pending.
 Modify a job definition  
 -----------------------------------
 
-Query an existing job definition, modify it and send it back to the server.
+Query an existing job definition, modify it, and send it back to the server.
 
 .. code-block:: python
 
@@ -237,10 +245,10 @@ Query an existing job definition, modify it and send it back to the server.
     project_api.update_parameter_definitions([parameter_def])
 
 
-Delete some jobs  
------------------------------------
+Delete some jobs
+----------------
 
-Query and then delete all jobs that timed out.
+Query for all jobs that have timed out and then delete them.
 
 .. code-block:: python
 
@@ -266,7 +274,7 @@ Query the number of evaluators
 Replace a file in a project
 ------------------------------------------
 
-Get file definitions from an existing project Job Definition and replace the first one.
+Get file definitions from an existing project's job definition and replace the first file.
 
 .. code-block:: python
 
@@ -277,9 +285,9 @@ Get file definitions from an existing project Job Definition and replace the fir
   project.update_files([file])
 
 Modify and create users
-------------------------------------------
+-----------------------
 
-Admin users with the Keycloak "manage-users" role can create new users as well as modify or delete existing ones. 
+Administrative users with the Keycloak "manage-users" role can create users as well as modify or delete existing ones. 
 
 .. code-block:: python
 
@@ -309,12 +317,13 @@ Admin users with the Keycloak "manage-users" role can create new users as well a
     auth_api.update_user(new_user)
 
 Exception handling
-------------------------------------------
+------------------
 
-All exceptions that the Ansys REP client explicitly raise inherit from :exc:`ansys.hps.client.HPSError`.
-Client Errors are raised for 4xx HTTP status codes, while API Errors are raised for 5xx HTTP status codes (server side errors).
+All exceptions that the Ansys REP client explicitly raises inherit from the :exc:`ansys.hps.client.HPSError`
+exception. Client errors are raised for 4xx HTTP status codes, while API errors are raised for 5xx HTTP
+status codes (server-side errors).
 
-For example, instantiating a client with invalid credentials will return a 401 Client Error.
+For example, instantiating a client with invalid credentials returns a 401 Client Error:
 
 .. code-block:: python
 
@@ -329,7 +338,7 @@ For example, instantiating a client with invalid credentials will return a 401 C
     # 401 Client Error: invalid_grant for: POST https://localhost:8443/rep/auth/realms/rep/protocol/openid-connect/token
     # Invalid user credentials
 
-A *get* call on a non-existing resource will return a 404 Client Error.
+A *get* call on a non-existing resource returns a 404 Client Error:
 
 .. code-block:: python
 

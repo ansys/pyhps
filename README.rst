@@ -31,8 +31,33 @@ PyHPS
    :alt: Black
 
 
-A Python client library for the Ansys HPC Platform Services.
+PyHPS is a Python client library for Ansys HPC Platform Services (HPS), which is
+a set of technology components designed to help you manage the execution of simulations
+while making use of your full range of computing assets.
 
+PyHPS brings Ansys HPS to your Python app. Wrapping around the HPS REST APIs, PyHPS allows you to:
+
+* Create projects and modify existing ones.
+* Monitor and manage jobs.
+* Run your own design exploration algorithms .
+* Retrieve simulation results.
+
+Documentation
+-------------
+The `PyHPS documentation <https://rep.docs.pyansys.com/>`_ contains these sections:
+
+- `Getting started <https://rep.docs.pyansys.com/dev/getting-started/index.html>`_: Explains
+  how to install PyHPS in user mode.
+- `User guide <https://rep.docs.pyansys.com/dev/user_guide/index.html>`_: Describes how to use
+  PyHPS to interact with Ansys HPS.
+- `Examples <https://rep.docs.pyansys.com/dev/examples/index.html>`: Provides examples of how
+  to interact with a REP server in Python using PyHPS.
+- `API reference <https://rep.docs.pyansys.com/dev/api/index.html>`_: Describes PyHPS functions,
+  classes, methods, and their parameters and return values so that you understand how to interact
+  with them programmatically
+- `Contribute <https://rep.docs.pyansys.com/dev/contribute.html>`: Provides information on
+  how to install PyHPS in developer mode and make contributions to the codebase.
+   
 How to install
 --------------
 

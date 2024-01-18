@@ -1,10 +1,10 @@
 Exceptions
-===========================
+==========
 
-HTTP requests returning an unsuccessful status code will raise:
+HTTP requests returning an unsuccessful status code raise one of these exceptions:
 
-* :exc:`ansys.hps.client.ClientError` for client errors (4xx status code, e.g. bad syntax or not found)
-* :exc:`ansys.hps.client.APIError` for server errors (5xx status code, e.g. internal server error or not implemented)
+* :exc:`ansys.hps.client.ClientError` for client errors (4xx status code), such as include bad syntax or not found.
+* :exc:`ansys.hps.client.APIError` for server errors (5xx status code), such as internal server errors or not implemented.
 
 All exceptions that the Ansys REP clients explicitly raise inherit from :exc:`ansys.hps.client.HPSError`.
 

@@ -3,19 +3,19 @@
 Examples
 ========
 
-Here you can find some examples showing how to interact with a REP server in Python using the ``ansys-pyhps``. 
-Examples consist of a Python script plus some data files (e.g. solver input files). 
-Many of the Python scripts can be executed with the following command line arguments:
+The examples in this section show how to interact with a REP server in Python using the
+PyHPS. Each example consists of a Python script plus some data files, such as solver input files. 
+You can execute many of the Python scripts with these command-line arguments:
 
-* ``-n``, ``--name``: name of the REP project
-* ``-U``, ``--url``: url or the REP server (default: https://localhost:8443/rep)
+* ``-n``, ``--name``: Name of the REP project
+* ``-U``, ``--url``: URL or the REP server (default: https://localhost:8443/rep)
 * ``-u``, ``--username``: REP username (default: repadmin)
 * ``-p``, ``--password``: REP password (default: repadmin)
 * ``-v``, ``--ansys-version``: Ansys version (default: |ansys_version|)
 
-A link to download all the required resources is available at each example page. 
-
-You can also download the entire set of examples :download:`Download All Examples <../../../build/pyhps_examples.zip>`.
+A link to download all the required resources is available on each example page. If
+desired, you can download the entire set of examples :download:`download all examples <../../../build/pyhps_examples.zip>`
+in one ZIP file.
 
 .. toctree::
   :hidden:
@@ -45,7 +45,7 @@ You can also download the entire set of examples :download:`Download All Example
    * - :ref:`example_mapdl_linked_analyses`
      - Submit an MAPDL linked analysis workflow as a multi-task job to REP.
    * - :ref:`example_lsdyna_job`
-     - Submit, monitor and download results of an LS-DYNA job. 
+     - Submit, monitor, and download results of an LS-DYNA job. 
    * - :ref:`example_fluent_2d_heat_exchanger`
      - Submit a Fluent solve job to REP.
    * - :ref:`example_fluent_nozzle`
@@ -53,4 +53,4 @@ You can also download the entire set of examples :download:`Download All Example
    * - :ref:`example_cfx_static_mixer`
      - Submit a CFX solve job to REP using an execution script.
    * - :ref:`example_python_two_bar`
-     - Create a REP project solving a Two-Bar Truss problem with Python.
+     - Create a REP project solving a two-bar truss problem with Python.
