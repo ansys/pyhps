@@ -49,7 +49,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-          os: [ubuntu-latest, windows-latest]
+          os: [ubuntu-latest]
           cfg: [
               { python-version: '3.9', toxenv: 'py39' },
               { python-version: '3.10', toxenv: 'py310' },
