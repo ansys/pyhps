@@ -15,17 +15,15 @@ The following contribution information is specific to PyHPS.
 Install in developer mode
 -------------------------
 
-Installing PyHPS in developer mode allows you to modify the source and enhance it.
+Installing PyHPS in developer mode allows you to modify and enhance the source:
 
-To install PyHPS in developer mode, perform these steps:
-
-#. Clone the ``pyhps`` repository:
+#. Clone the repository:
 
    .. code:: bash
 
       git clone https://github.com/pyansys/pyhps
 
-#. Access the ``pyhps`` directory where the repository has been cloned:
+#. Access the directory where you have cloned the repository:
 
    .. code:: bash
 
@@ -41,7 +39,7 @@ To install PyHPS in developer mode, perform these steps:
       # Activate it in a POSIX system
       source .venv/bin/activate
 
-      # Activate it in Windows CMD environment
+      # Activate it in a Windows CMD environment
       .venv\Scripts\activate.bat
 
       # Activate it in Windows Powershell
@@ -65,15 +63,14 @@ To install PyHPS in developer mode, perform these steps:
 
 #. Verify your development installation:
 
-    .. code:: bash
+   .. code:: bash
 
-        tox
-
+      tox
 
 Test PyHPS
 ----------
 
-PyHPS takes advantage of `tox`_. This tool automates common development
+PyHPS takes advantage of `tox`_. This tool allows you to automates common development
 tasks (similar to ``Makefile``), but it is oriented towards Python development.
 
 Using ``tox``
@@ -88,22 +85,22 @@ The following environment commands are provided:
 - ``tox -e style``: Checks for coding style quality.
 - ``tox -e py``: Checks for unit tests.
 - ``tox -e py-coverage``: Checks for unit testing and code coverage.
-- ``tox -e doc``: Checks for the documentation-building process.
-
+- ``tox -e doc``: Checks for documentation building.
 
 Raw testing
 ^^^^^^^^^^^
 
 If required, from the command line, you can call style commands like
-`black`_, `isort`_, and `flake8`_. You can also call unit testing commands like `PyTest`_.
+`Black`_, `isort`_, and `Flake8`_. You can also call unit testing commands like `PyTest`_.
 However, running these commands do not guarantee that your project is being tested
 in an isolated environment, which is the reason why tools like ``tox`` exist.
 
 Code style
 ----------
+
 As indicated in `Coding style <https://dev.docs.pyansys.com/coding-style/index.html>`_
 in the *PyAnsys developer's guide*, PyHPS follows PEP8 guidelines. PyHPS
-implements `pre-commit <https://pre-commit.com/>`_ for style checking.
+implements `pre-commit`_ for style checking.
 
 To ensure your code meets minimum code styling standards, run these commands::
 
@@ -156,9 +153,9 @@ the building requirements and then executing the build module:
 Generate or update RMS models
 -----------------------------
 
-To generate RMS Pydantic models, first download the RMS OpenAPI specification and save it as
-``rms_openapi.json`` in the root of the repository. Then, run the data model generator
-with this command:
+To generate Resource Management Service (RMS) pydantic models, first download the RMS OpenAPI
+specification and save it as ``rms_openapi.json`` in the root of the repository. Then, run the
+data model generator with this command:
 
 .. code:: bash
 
@@ -167,33 +164,22 @@ with this command:
 Post issues
 -----------
 Use the `PyHPS Issues <https://github.com/ansys-internal/pyhps/issues>`_
-page to submit questions, report bugs, and request new features. When possible,
-use these templates:
+page to report bugs and request new features. When possible, use the issue
+templates provided. If your issue does not fit into one of these templates,
+click the link for opening a blank issue.
 
-* Bug report
-* Feature request
-
-If your issue does not fit into one of these template categories, create your own issue.
+On the `PyHPS Discussions <https://github.com/ansys-internal/pyhps/discussions>`_ page
+or the `Discussions <https://discuss.ansys.com/>`_ page on the Ansys Developer portal,
+you can post questions, share ideas, and get community feedback.
 
 To reach the project support team, email `pyansys.core@ansys.com <pyansys.core@ansys.com>`_.
 
-
-View documentation
-------------------
-Documentation for the latest stable release of PyHPS is hosted at
-`PyHPS documentation <https://rep.docs.pyansys.com/dev/>`_.
-
-In the upper right corner of the documentation's title bar, there is an option
-for switching from viewing the documentation for the latest stable release
-to viewing the documentation for the development version or previously
-released versions.
-
 .. LINKS AND REFERENCES
-.. _black: https://github.com/psf/black
-.. _flake8: https://flake8.pycqa.org/en/latest/
+.. _Black: https://github.com/psf/black
 .. _isort: https://github.com/PyCQA/isort
+.. _Flake8: https://flake8.pycqa.org/en/latest/
+.. _pytest: https://docs.pytest.org/en/stable/
 .. _pip: https://pypi.org/project/pip/
 .. _pre-commit: https://pre-commit.com/
-.. _pytest: https://docs.pytest.org/en/stable/
 .. _Sphinx: https://www.sphinx-doc.org/en/master/
 .. _tox: https://tox.wiki/

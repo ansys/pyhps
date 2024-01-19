@@ -11,9 +11,9 @@ Also see `Optimization Methods for Engineering Design <https://apmonitor.com/me5
 .. only:: builder_html
 
      You can download the :download:`ZIP file <../../../build/python_two_bar_truss_problem.zip>` for the two-bar truss
-     example and use a utility such as 7Zip to extract the files.
+     example and use a tool such as 7Zip to extract the files.
 
-Here is the ``project_setup.py`` file for this example:
+Here is the ``project_setup.py`` script for this example:
 
 .. literalinclude:: ../../../examples/python_two_bar_truss_problem/project_setup.py
     :language: python

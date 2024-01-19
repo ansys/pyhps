@@ -31,9 +31,9 @@ The job consists of two tasks:
 .. only:: builder_html
 
      You can dowlonad the :download:`ZIP file <../../../build/lsdyna_cylinder_plate.zip>` for
-     the LS-DYNA job submission example and use a utility such as 7Zip to extract the files.
+     the LS-DYNA job submission example and use a tool such as 7Zip to extract the files.
 
-Here is the ``project_setup.py`` file for this example:
+Here is the ``project_setup.py`` script for this example:
 
 .. literalinclude:: ../../../examples/lsdyna_cylinder_plate/lsdyna_job.py
     :language: python

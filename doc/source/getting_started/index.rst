@@ -18,8 +18,8 @@ You must have Python 3.x and ``pip`` installed.
 
        python --version
 
-#. If a Python 3.x version is not installed, install the latest 3.x version from the
-   `Python organization's Downloads <https://python.org>`_ page.
+#. If you do not have a Python 3.x version installed, install the latest 3.x version from the
+   Python organization's `Downloads <https://python.org>`_ page.
 
 #. To see if you have ``pip`` installed, run this command:
 
@@ -27,10 +27,10 @@ You must have Python 3.x and ``pip`` installed.
 
        pip --version
 
-#. If ``pip`` is not installed, see `Installing Packages <https://packaging.python.org/tutorials/installing-packages/>`_
+#. If you do not have ``pip`` installed, see `Installing Packages <https://packaging.python.org/tutorials/installing-packages/>`_
    in the *Python Packaging User Guide*.
 
-#. To ensure that you are using latest version of ``pip``, run this command:
+#. To ensure that you have the latest version of ``pip``, run this command:
 
    .. code:: 
 
@@ -39,6 +39,7 @@ You must have Python 3.x and ``pip`` installed.
 
 Installation
 ------------
+
 Because PyHPS is a private PyAnsys package not yet published to PyPI, install it by
 running this command:
 
@@ -46,7 +47,7 @@ running this command:
 
     python -m pip install git+https://github.com/ansys-internal/pyhps
 
-The following package dependencies, if not already available, are automatically installed through ``pip``:
+``pip`` automatically installs any of these package dependencies that are not already installed:
 
 - requests_
 - marshmallow_

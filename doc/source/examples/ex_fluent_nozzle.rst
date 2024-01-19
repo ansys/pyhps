@@ -8,9 +8,9 @@ This example shows how to submit a Fluent nozzle model for solving on REP.
 .. only:: builder_html
 
      You can download the :download:`ZIP file <../../../build/fluent_nozzle.zip>` for the
-     Fluent nozzle example and use a utility such as 7Zip to extract the files.
+     Fluent nozzle example and use a tool such as 7Zip to extract the files.
 
-Here is the ``project_setup.py`` file for this example:
+Here is the ``project_setup.py`` script for this example:
 
 
 .. literalinclude:: ../../../examples/fluent_nozzle/project_setup.py
