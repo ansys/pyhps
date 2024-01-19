@@ -4,6 +4,6 @@ ansys-sphinx-theme==0.12.5
 sphinx-copybutton==0.5.2
 sphinxcontrib-httpdomain==1.8.1
 sphinxcontrib-globalsubs==0.1.1
-sphinxnotes-strike==1.2
+sphinxnotes-strike==1.2.1
 sphinx-autodoc-typehints==1.25.2
 autodoc_pydantic==2.0.1
