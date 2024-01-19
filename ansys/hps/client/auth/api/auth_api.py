@@ -30,21 +30,21 @@ from ..schema.user import UserSchema
 
 
 class AuthApi:
-    """A python interface to the Authorization Service API.
+    """Provides the Python interface to the Authorization Service API.
 
-    Admin users with the Keycloak "manage-users" role can create new
-    users as well as modify or delete existing ones. Other users are only allowed
+    Admin users with the Keycloak "manage-users" role can create
+    users as well as modify or delete existing users. Non-admin users are only allowed
     to query the list of existing users.
 
     Parameters
     ----------
     client : Client
-        An HPS client object.
+        HPS client object.
 
     Examples
     --------
 
-    Get users whose first name contains "john":
+    Get users whose first name contains ``john``.
 
     >>> from ansys.hps.client import Client
     >>> from ansys.hps.client.auth import AuthApi, User
@@ -54,7 +54,7 @@ class AuthApi:
     >>> auth_api = AuthApi(cl)
     >>> users = auth_api.get_users(firstName="john", exact=False)
 
-    Create a new user:
+    Create a user:
 
     >>> new_user = User(
     ...     username="new_user",
@@ -72,44 +72,43 @@ class AuthApi:
 
     @property
     def url(self):
-        """Returns the API url"""
+        """API URL."""
         return f"{self.client.url}/auth/"
 
     @property
     def keycloak_admin_client(self) -> KeycloakAdmin:
-        """Returns an authenticated client for the Keycloak Admin API"""
+        """Authenticated client for the Keycloak Admin API."""
         return _admin_client(self.client)
 
     def get_users(self, as_objects=True, **query_params) -> List[User]:
-        """Return users, filtered according to query parameters
+        """Get users, filtered according to query parameters.
 
         Examples of query parameters are:
-            - `username`
-            - `firstName`
-            - `lastName`
-            - `exact`
+        - ``username``
+        - ``firstName``
+        - ``lastName``
+        - ``exact``
 
-        Pagination is also supported using the `first` and `max` parameters.
+        Pagination is also supported using the ``first`` and ``max`` parameters.
 
-        For the complete list of supported query parameters, please
-        refer to the Keycloak API documentation.
+        For a list of supported query parameters, see the Keycloak API documentation.
         """
         return get_users(self.keycloak_admin_client, as_objects=as_objects, **query_params)
 
     def get_user(self, id: str) -> User:
-        """Returns the user representation for a given user id."""
+        """Get the user representation for a given user ID."""
         return get_user(self.keycloak_admin_client, id)
 
     def get_user_groups(self, id: str) -> List[str]:
-        """Get name of groups the user belongs to"""
+        """Get the groups that the user belongs to."""
         return [g["name"] for g in self.keycloak_admin_client.get_user_groups(id)]
 
     def get_user_realm_roles(self, id: str) -> List[str]:
-        """Get name of realm roles for a user"""
+        """Get the realm roles for the user"""
         return [r["name"] for r in self.keycloak_admin_client.get_realm_roles_of_user(id)]
 
     def user_is_admin(self, id: str) -> bool:
-        """Check whether the user is system admin"""
+        """Determine if the user is a system administrator."""
 
         from ansys.hps.client.jms import JmsApi
 
@@ -131,28 +130,36 @@ class AuthApi:
         return False
 
     def create_user(self, user: User, as_objects=True) -> User:
-        """Create a new user.
+        """Create a user.
 
-        Args:
-            user (:class:`ansys.hps.client.auth.User`): A User object. Defaults to None.
-            as_objects (bool, optional): Defaults to True.
+        Parameters
+        ----------
+        user : :class:`ansys.hps.client.auth.User`
+            User object. The default is ``None``.
+        as_objects : bool, optional
+            The default is ``True``.
         """
         return create_user(self.keycloak_admin_client, user, as_objects=as_objects)
 
     def update_user(self, user: User, as_objects=True) -> User:
         """Modify an existing user.
 
-        Args:
-            user (:class:`ansys.hps.client.auth.User`): A User object. Defaults to None.
-            as_objects (bool, optional): Defaults to True.
+        Parameters
+        ----------
+        user : :class:`ansys.hps.client.auth.User`
+            User object. The default is ``None``.
+        as_objects : bool, optional
+            The default is  ``True``.
         """
         return update_user(self.keycloak_admin_client, user, as_objects=as_objects)
 
     def delete_user(self, user: User) -> None:
         """Delete an existing user.
 
-        Args:
-            user (:class:`ansys.hps.client.auth.User`): A User object. Defaults to None.
+        Parameters
+        ----------
+        user : :class:`ansys.hps.client.auth.User`
+            User object. The default is ``None``.
         """
         return self.keycloak_admin_client.delete_user(user.id)
 

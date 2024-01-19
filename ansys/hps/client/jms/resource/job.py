@@ -26,16 +26,16 @@ from ansys.hps.client.common import Object
 from ..schema.job import JobSchema
 
 class Job(Object):
-    """Job resource.
+    """Provides a job resource.
 
     Parameters
     ----------
     id : str, optional
         Unique ID to access the resource, generated internally by the server on creation.
     creation_time : datetime, optional
-        The date and time the resource was created.
+        Date and time that the resource was created.
     modification_time : datetime, optional
-        The date and time the resource was last modified.
+        Date and time that the resource was last modified.
     created_by : str, optional
         ID of the user who created the object.
     modified_by : str, optional
@@ -45,9 +45,10 @@ class Job(Object):
     eval_status : str
         Evaluation status.
     job_definition_id : str
-        ID of the linked job definition, see :class:`JobDefinition`.
+        ID of the linked job definition. For more information, see the :class:`JobDefinition` class.
     priority : int, optional
-        Priority with which jobs are evaluated. The default is 0, which is the highest priority. Assigning a higher value to a job makes it a lower priority.
+        Priority for evaluating the job. The default is ``0``, which is the highest priority.
+        Assigning a higher value to a job makes it a lower priority.
     values : dict[str, any], optional
         Dictionary with (name,value) pairs for all parameters defined in the linked job definition.
     fitness : float, optional
@@ -55,18 +56,18 @@ class Job(Object):
     fitness_term_values : dict[str, float], optional
         Dictionary with (name,value) pairs for all fitness terms computed.
     note : str, optional
-        Optional note for this job.
+        Note for the job.
     creator : str, optional
-        Optional name/ID of the creator of this job.
+        Name and ID of the creator of the job.
     executed_level : int, optional
-        Execution level of the last executed task (-1 if none has been executed yet).
+        Execution level of the last executed task. A value of ``-1`` indicates that no task has been
+        executed yet.
     elapsed_time : float
-        Number of seconds it took the evaluator(s) to update the job.
+        Number of seconds it took the evaluators to update the job.
     host_ids : list, optional
-        List of Host IDs of the evaluators that updated the job.
+        List of host IDs of the evaluators that updated the job.
     file_ids : list[str]
-        List of IDs of all files of this job.
-
+        List of IDs of all files of the job.
     """
 
     class Meta:

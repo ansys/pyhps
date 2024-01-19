@@ -36,52 +36,61 @@ log = logging.getLogger(__name__)
 
 
 class Client(object):
-    """A python client to the Ansys HPC Platform Services APIs.
+    """Provides the Python client to the Ansys HPS APIs.
 
-    Uses the provided credentials to create and store
+    This class uses the provided credentials to create and store
     an authorized :class:`requests.Session` object.
 
-    The following authentication workflows are supported:
+    The following alternative authentication workflows are supported
+    and evaluated in the order listed:
 
-        1. Access token: no authentication needed.
-        2. Username and password: the client connects to the OAuth server and
-           requests access and refresh tokens.
-        3. Refresh token: the client connects to the OAuth server and
-           requests a new access token.
-        4. Client credentials: authenticate with client_id and client_secret to
-           obtain a new access token (a refresh token is not included).
-
-    These alternative workflows are evaluated in the order listed above.
+    - Access token: No authentication is needed.
+    - Username and password: The client connects to the OAuth server and
+      requests access and refresh tokens.
+    - Refresh token: The client connects to the OAuth server and
+      requests a new access token.
+    - Client credentials: The client authenticates with the ``client_id`` and ``client_secret``
+      parameters to obtain a new access token. (A refresh token is not included.)
 
     Parameters
     ----------
     url : str
-        The base path for the server to call, e.g. "https://127.0.0.1:8443/rep".
+        Base path for the server to call. The default is ``'https://127.0.0.1:8443/rep'``.
     username : str, optional
-        Username
+        Username.
     password : str, optional
-        Password
-    refresh_token : str, optional
-        Refresh Token
+        Password.
+    realm : str, optional
+        Keycloak realm. The default is ``'rep'``.
+    grant_type : str, optional
+        Authentication method. The default is ``'password'``.
+    scope : str, optional
+        String containing one or more requested scopes. The default is ``'openid'``.
+    client_id : str, optional
+        Client type. The default is ``'rep-cli'``.
+    client_secret : str, optional
+        Client secret. The default is ``None``.
     access_token : str, optional
-        Access Token
-    all_fields: bool, optional
-        If True, the query parameter ``fields="all"`` is applied by default
-        to all requests, so that all available fields are returned for
-        the requested resources.
-    verify: Union[bool, str], optional
-        Either a boolean, in which case it controls whether we verify the
-        server's TLS certificate, or a string, in which case it must be
-        a path to a CA bundle to use. Defaults to False.
-        See the :class:`requests.Session` documentation for more details.
-    disable_security_warnings: bool, optional
-        Disable urllib3 warnings about insecure HTTPS requests. Defaults to True.
-        See urllib3 documentation about TLS Warnings for more details.
+        Access token.
+    refresh_token : str, optional
+        Refresh token.
+    auth_url : str, optional
+    all_fields : bool, optional
+        Whether to apply the ``fields="all"`` query parameter to all requests so
+        that all available fields are returned for the requested resources. The
+        default is ``True``.
+    verify : Union[bool, str], optional
+        If a Boolean, whether to verify the server's TLS certificate. The default
+        is ``False``. If a string, the path to the CA bundle to use. For more information,
+        see the :class:`requests.Session` documentation.
+    disable_security_warnings : bool, optional
+        Whether to disable urllib3 warnings about insecure HTTPS requests. The default is ``True``.
+        For more information, see urllib3 documentation about TLS warnings.
 
     Examples
     --------
 
-    Create client object and connect to HPS with username and password
+    Create a client object and connect to Ansys HPS with a username and password.
 
     >>> from ansys.hps.client import Client
     >>> cl = Client(
@@ -90,7 +99,7 @@ class Client(object):
     ...     password="repuser"
     ... )
 
-    Create client object and connect to HPS with refresh token
+    Create s client object and connect to Ansys HPS with a refresh token.
 
     >>> cl = Client(
     ...     url="https://localhost:8443/rep",
@@ -123,7 +132,7 @@ class Client(object):
         rep_url = kwargs.get("rep_url", None)
         if rep_url is not None:
             url = rep_url
-            msg = "The 'rep_url' input argument is deprecated, use 'url' instead."
+            msg = "The `rep_url' input argument is deprecated. Use 'url' instead."
             warnings.warn(msg, DeprecationWarning)
             log.warning(msg)
 
@@ -144,7 +153,7 @@ class Client(object):
             self.verify = False
             msg = (
                 f"Certificate verification is disabled. "
-                f"Unverified HTTPS requests will be made to {self.url}."
+                f"Unverified HTTPS requests are made to {self.url}."
             )
             warnings.warn(msg, UnverifiedHTTPSRequestsWarning)
             log.warning(msg)
@@ -197,14 +206,14 @@ class Client(object):
 
     @property
     def rep_url(self) -> str:
-        msg = "The Client 'rep_url' property is deprecated, use 'url' instead."
+        msg = "The client 'rep_url' property is deprecated. Use 'url' instead."
         warnings.warn(msg, DeprecationWarning)
         log.warning(msg)
         return self.url
 
     def _auto_refresh_token(self, response, *args, **kwargs):
-        """Hook function to automatically refresh the access token and
-        re-send the request in case of unauthorized error"""
+        """Automatically refreshes the access token and
+        resends the request in case of an unauthorized error."""
         if (
             response.status_code == 401
             and self._unauthorized_num_retry < self._unauthorized_max_retry

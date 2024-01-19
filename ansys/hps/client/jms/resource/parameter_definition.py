@@ -30,7 +30,7 @@ from ..schema.parameter_definition import BoolParameterDefinitionSchema
 from ..schema.parameter_definition import StringParameterDefinitionSchema
 
 class ParameterDefinition(Object):
-    """ParameterDefinition resource.
+    """Provides the parameter definition resource.
 
     Parameters
     ----------
@@ -50,16 +50,16 @@ class ParameterDefinition(Object):
 ParameterDefinitionSchema.Meta.object_class = ParameterDefinition
 
 class FloatParameterDefinition(ParameterDefinition):
-    """FloatParameterDefinition resource.
+    """Provides the float parameter definition resource.
 
     Parameters
     ----------
     id : str, optional
         Unique ID to access the resource, generated internally by the server on creation.
     creation_time : datetime, optional
-        The date and time the resource was created.
+        Date and time that the resource was created.
     modification_time : datetime, optional
-        The date and time the resource was last modified.
+        Date and time that the resource was last modified.
     created_by : str, optional
         ID of the user who created the object.
     modified_by : str, optional
@@ -67,13 +67,13 @@ class FloatParameterDefinition(ParameterDefinition):
     name : str, optional
         Name (ID) of the parameter.
     quantity_name : str, optional
-        Name of the quantity the parameter represents, e.g. Length.
+        Name of the quantity that the parameter represents. For example, ``Length``.
     units : str, optional
         Units for the parameter.
     display_text : str, optional
         Text to display as the parameter name.
     mode : str
-        Indicates whether it's an input or output parameter. Filled server side.
+        Indicates if it's an input or output parameter. The mode is filled server-side.
     type : str
     default : float, optional
         Default parameter value.
@@ -82,11 +82,12 @@ class FloatParameterDefinition(ParameterDefinition):
     upper_limit : float, optional
         Upper bound for the parameter value.
     step : float, optional
-        If provided, allowable values are given by: AllowableValue = lower_limit + n * step, where n is an integer and AllowableValue <= upper_limit.
+        If provided, allowable values are given by: AllowableValue = lower_limit + n * step, where n
+        is an integer and AllowableValue <= upper_limit.
     cyclic : bool, optional
-        Indicates if the parameter is cyclic.
+        Whether the parameter is cyclic.
     value_list : list, optional
-        A list of allowed values, alternative to providing upper and lower limits.
+        List of allowed values. This parameter provides an alternative to specifying upper and lower limits.
 
     """
 
@@ -137,16 +138,16 @@ class FloatParameterDefinition(ParameterDefinition):
 FloatParameterDefinitionSchema.Meta.object_class = FloatParameterDefinition
 
 class IntParameterDefinition(ParameterDefinition):
-    """IntParameterDefinition resource.
+    """Provides the integer parameter definition resource.
 
     Parameters
     ----------
     id : str, optional
         Unique ID to access the resource, generated internally by the server on creation.
     creation_time : datetime, optional
-        The date and time the resource was created.
+        Date and time that the resource was created.
     modification_time : datetime, optional
-        The date and time the resource was last modified.
+        Date and time that the resource was last modified.
     created_by : str, optional
         ID of the user who created the object.
     modified_by : str, optional
@@ -154,13 +155,13 @@ class IntParameterDefinition(ParameterDefinition):
     name : str, optional
         Name (ID) of the parameter.
     quantity_name : str, optional
-        Name of the quantity the parameter represents, e.g. Length.
+        Name of the quantity that the parameter represents. For example, ``Length``.
     units : str, optional
         Units for the parameter.
     display_text : str, optional
         Text to display as the parameter name.
     mode : str
-        Indicates whether it's an input or output parameter. Filled server side.
+        Indicates if it's an input or output parameter. The mode is filled server-side.
     type : str
     default : int, optional
         Default parameter value.
@@ -169,9 +170,9 @@ class IntParameterDefinition(ParameterDefinition):
     upper_limit : int, optional
         Upper bound for the parameter value.
     step : int, optional
-        Equal to 1 by default.
+        The default is ``1``.
     cyclic : bool, optional
-        Indicates if the parameter is cyclic.
+        Whether the parameter is cyclic.
 
     """
 
@@ -220,16 +221,16 @@ class IntParameterDefinition(ParameterDefinition):
 IntParameterDefinitionSchema.Meta.object_class = IntParameterDefinition
 
 class BoolParameterDefinition(ParameterDefinition):
-    """BoolParameterDefinition resource.
+    """Provides the Boolean parameter definition resource.
 
     Parameters
     ----------
     id : str, optional
         Unique ID to access the resource, generated internally by the server on creation.
     creation_time : datetime, optional
-        The date and time the resource was created.
+        Date and time that the resource was created.
     modification_time : datetime, optional
-        The date and time the resource was last modified.
+        Date and time that the resource was last modified.
     created_by : str, optional
         ID of the user who created the object.
     modified_by : str, optional
@@ -237,17 +238,16 @@ class BoolParameterDefinition(ParameterDefinition):
     name : str, optional
         Name (ID) of the parameter.
     quantity_name : str, optional
-        Name of the quantity the parameter represents, e.g. Length.
+        Name of the quantity that the parameter represents. For example, ``Length``.
     units : str, optional
         Units for the parameter.
     display_text : str, optional
         Text to display as the parameter name.
     mode : str
-        Indicates whether it's an input or output parameter. Filled server side.
+        Indicates whether it's an input or output parameter. The mode is filled server-side.
     type : str
     default : bool, optional
         Default parameter value.
-
     """
 
     class Meta:
@@ -287,16 +287,16 @@ class BoolParameterDefinition(ParameterDefinition):
 BoolParameterDefinitionSchema.Meta.object_class = BoolParameterDefinition
 
 class StringParameterDefinition(ParameterDefinition):
-    """StringParameterDefinition resource.
+    """Provides the string parameter definition resource.
 
     Parameters
     ----------
     id : str, optional
         Unique ID to access the resource, generated internally by the server on creation.
     creation_time : datetime, optional
-        The date and time the resource was created.
+        Date and time that the resource was created.
     modification_time : datetime, optional
-        The date and time the resource was last modified.
+        Date and time that the resource was last modified.
     created_by : str, optional
         ID of the user who created the object.
     modified_by : str, optional
@@ -304,19 +304,18 @@ class StringParameterDefinition(ParameterDefinition):
     name : str, optional
         Name (ID) of the parameter.
     quantity_name : str, optional
-        Name of the quantity the parameter represents, e.g. Length.
+        Name of the quantity that the parameter represents. For example, ``Length``.
     units : str, optional
         Units for the parameter.
     display_text : str, optional
         Text to display as the parameter name.
     mode : str
-        Indicates whether it's an input or output parameter. Filled server side.
+        Indicates whether it's an input or output parameter. The mode is filled server-side.
     type : str
     default : str, optional
         Default parameter value.
     value_list : list, optional
-        A list of allowed values.
-
+        List of allowed values.
     """
 
     class Meta:

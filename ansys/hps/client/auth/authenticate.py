@@ -46,42 +46,42 @@ def authenticate(
     **kwargs,
 ):
     """
-    Authenticate user with either password or refresh token against HPS authentication service.
-    If successful, the response includes access and refresh tokens.
+    Authenticates the user with a password or refresh token against the HPS authentication service.
+
+    If this method is successful, the response includes access and refresh tokens.
 
     Parameters
     ----------
 
-    url : str
-        The base path for the server to call, e.g. "https://127.0.0.1:8443/rep".
-    realm : str
-        Keycloak realm, defaults to 'rep'.
-    grant_type: str
-        Authentication method, defaults to 'password'.
-    username : str
-        Username
+    url : str, optional
+        Base path for the server to call. The default is ``'https://127.0.0.1:8443/rep`''.
+    realm : str, optional
+        Keycloak realm. The default is ``'rep'``.
+    grant_type: str, optional
+        Authentication method. The default is ``'password'``.
+    scope : str, optional
+        String containing one or more requested scopes. The default is ``'openid'``.
+    client_id : str, optional
+        Client type. The default is ``'rep-cli'``.
+    client_secret : str, optional
+        Client secret. The default is ``None``.
+    username : str, optional
+        Username.
     password : str
-        Password
+        Password, optional
     refresh_token : str, optional
         Refresh token.
     timeout : float, optional
-        Timeout in seconds. Defaults to 10.
-    scope : str, optional
-        String containing one or more requested scopes. Defaults to 'openid'.
-    client_id : str, optional
-        The client type. Defaults to 'rep-cli'.
-    client_secret : str, optional
-        The client secret.
+        Timeout in seconds. The default is ``10.0``.
     verify: Union[bool, str], optional
-        Either a boolean, in which case it controls whether we verify the
-        server's TLS certificate, or a string, in which case it must be
-        a path to a CA bundle to use.
-        See the :class:`requests.Session` documentation.
+        If a Boolean, whether to verify the server's TLS certificate. If a string, the
+        path to the CA bundle to use. For more information, see the :class:`requests.Session`
+        documentation.
 
     Returns
-    ----------
+    -------
     dict
-        JSON-encoded content of a :class:`requests.Response`
+        JSON-encoded content of a :class:`requests.Response` object.
     """
 
     auth_postfix = f"auth/realms/{realm}"
@@ -114,7 +114,7 @@ def authenticate(
     data.update(**kwargs)
 
     log.debug(
-        f"Retrieving access token for client {client_id} from {auth_url} using {grant_type} grant"
+        f"Retrieving access token for client {client_id} from {auth_url} using {grant_type} grant."
     )
     r = session.post(token_url, data=data, timeout=timeout)
 

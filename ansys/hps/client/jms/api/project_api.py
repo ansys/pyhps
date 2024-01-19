@@ -54,14 +54,14 @@ log = logging.getLogger(__name__)
 
 
 class ProjectApi:
-    """Exposes the Project endpoints of the Job Management Service
+    """Exposes the project endpoints of the Job Management Service.
 
     Parameters
     ----------
     client : Client
-        An HPS client object.
+        HPS client object.
     project_id : str
-        ID of the project
+        ID of the project.
 
     Examples
     --------
@@ -106,25 +106,25 @@ class ProjectApi:
 
     @property
     def url(self) -> str:
-        """Returns the API url"""
+        """URL of the API."""
         return f"{self.jms_api_url}/projects/{self.project_id}"
 
     @property
     def fs_url(self) -> str:
-        """URL of the file storage gateway"""
+        """URL of the file storage gateway."""
         if self._fs_url is None:
             self._fs_url = JmsApi(self.client).fs_url
         return self._fs_url
 
     @property
     def fs_bucket_url(self) -> str:
-        """URL of the project's bucket in the file storage gateway"""
+        """URL of the project's bucket in the file storage gateway."""
         return f"{self.fs_url}/{self.project_id}"
 
     ################################################################
     # Project operations (copy, archive)
     def copy_project(self, wait: bool = True) -> str:
-        """Duplicate project"""
+        """Duplicate the project."""
         r = copy_projects(self, [self.project_id], wait)
         if wait:
             return r[0]
@@ -132,15 +132,19 @@ class ProjectApi:
             return r
 
     def archive_project(self, path: str, include_job_files: bool = True):
-        """Archive an existing project and save it to disk
+        """Archive a project and save it to disk.
 
-        Args:
-            path (str): Where to save the archive locally.
-            include_job_files (bool, optional): Whether to include job files in the
-                                                archive. True by default.
+        Parameters
+        ----------
+        path : str
+            Path for saving the archive locally.
+        include_job_files : bool, optional
+            Whether to include job files in the archive. The default is ``True``.
 
-        Returns:
-            str: The path to the archive.
+        Returns
+        -------
+        str
+            Path to the archive.
         """
         return archive_project(self, path, include_job_files)
 
@@ -148,9 +152,10 @@ class ProjectApi:
     # Files
     def get_files(self, as_objects=True, content=False, **query_params) -> List[File]:
         """
-        Return a list of file resources, optionally filtered by given query parameters.
-        If content=True, each files content is downloaded as well and stored in memory
-        as :attr:`ansys.hps.client.jms.File.content`.
+        Get a list of file resources, optionally filtered by query parameters.
+
+        If ``content=True``, each file's content is also downloaded and stored in memory
+        as the :attr:`ansys.hps.client.jms.File.content` attribute.
         """
         return get_files(self, as_objects=as_objects, content=content, **query_params)
 
@@ -171,8 +176,9 @@ class ProjectApi:
         progress_handler: Callable[[int], None] = None,
     ) -> str:
         """
-        Download file content and save it to disk. If stream=True,
-        data is retrieved in chunks, avoiding storing the entire content
+        Download file content and save it to disk.
+
+        If ``stream=True``, data is retrieved in chunks, which avoids storing the entire content
         in memory.
         """
         return _download_file(self, file, target_path, progress_handler, stream)
@@ -236,22 +242,21 @@ class ProjectApi:
     def copy_task_definitions(
         self, task_definitions: List[TaskDefinition], wait: bool = True
     ) -> Union[str, List[str]]:
-        """Create new task definitions by copying existing ones
+        """Create task definitions by copying existing definitions.
 
         Parameters
         ----------
         task_definitions : List[TaskDefinition]
-            A list of task definition objects. Note that only the ``id`` field of the
-            TaskDefinition objects need to be filled; the other fields can be empty.
-
+            List of task definitions. Note that only the ``id`` field of
+            ``TaskDefinition`` objects must be filled. Other fields can be empty.
         wait : bool
-            Whether to wait for the copy to complete or not.
+            Whether to wait for the copy to complete. The default is ``True``.
 
         Returns
         -------
         Union[List[str], str]
-            If wait=True, returns the list of newly created task definition IDs.
-            If wait=False, returns an operation ID that can be used to
+            If ``wait=True``, returns the list of newly created task definition IDs.
+            If ``wait=False``, returns an operation ID that can be used to
             track progress.
         """
         return _copy_objects(self.client, self.url, task_definitions, wait=wait)
@@ -282,17 +287,16 @@ class ProjectApi:
         Parameters
         ----------
         job_definitions : List[JobDefinition]
-            A list of job definition objects. Note that only the ``id`` field of the
-            JobDefinition objects need to be filled; the other fields can be empty.
-
+            List of job definition. Note that only the ``id`` field of
+            ``JobDefinition`` objects must be filled. The other fields can be empty.
         wait : bool
-            Whether to wait for the copy to complete or not.
+            Whether to wait for the copy to complete. The default is ``True``.
 
         Returns
         -------
         Union[List[str], str]
-            If wait=True, returns the list of newly created job definition IDs.
-            If wait=False, returns an operation ID that can be used to
+            If ``wait=True``, returns the list of newly created job definition IDs.
+            If ``wait=False``, returns an operation ID that can be used to
             track progress.
         """
         return _copy_objects(self.client, self.url, job_definitions, wait=wait)
@@ -303,58 +307,73 @@ class ProjectApi:
         return self._get_objects(Job, as_objects=as_objects, **query_params)
 
     def create_jobs(self, jobs: List[Job], as_objects=True) -> List[Job]:
-        """Create new jobs
+        """Create jobs.
 
-        Args:
-            jobs (list of :class:`ansys.hps.client.jms.Job`): A list of Job objects
-            as_objects (bool): Whether to return jobs as objects or dictionaries
+        Parameters
+        ----------
+        jobs : list of :class:`ansys.hps.client.jms.Job`
+            List of job.
+        as_objects : bool, optional
+            Whether to return jobs as objects. The default is ``True``. If
+            ``False``, jobs are returned as dictionaries.
 
-        Returns:
-            List of :class:`ansys.hps.client.jms.Job` or list of dict if `as_objects` is False
+        Returns
+        -------
+        list
+            List of :class:`ansys.hps.client.jms.Job` objects if ``as_objects=True`` or
+            a list of dictionaries if ``as_objects=False``.
         """
         return self._create_objects(jobs, Job, as_objects=as_objects)
 
     def copy_jobs(self, jobs: List[Job], wait: bool = True) -> Union[str, List[str]]:
-        """Create new jobs by copying existing ones
+        """Create jobs by copying existing jobs.
 
         Parameters
         ----------
         jobs : List[Job]
-            A list of job objects. Note that only the ``id`` field of the
-            Job objects need to be filled; the other fields can be empty.
-
-        wait : bool
-            Whether to wait for the copy to complete or not.
+            List of jobs. Note that only the ``id`` field of the
+            ``Job`` objects must be filled. The other fields can be empty.
+        wait : bool, optional
+            Whether to wait for the copy to complete. The default is ``True``.
 
         Returns
         -------
         Union[List[str], str]
-            If wait=True, returns the list of newly created job IDs.
-            If wait=False, returns an operation ID that can be used to
+            If ``wait=True``, returns the list of newly created job IDs.
+            If ``wait=False``, returns an operation ID that can be used to
             track progress.
         """
         return _copy_objects(self.client, self.url, jobs, wait=wait)
 
     def update_jobs(self, jobs: List[Job], as_objects=True) -> List[Job]:
-        """Update existing jobs
+        """Update existing jobs.
 
-        Args:
-            jobs (list of :class:`ansys.hps.client.jms.Job`): A list of job objects
-            as_objects (bool): Whether to return jobs as objects or dictionaries
+        Parameters
+        ----------
+        jobs : list of :class:`ansys.hps.client.jms.Job`)
+            List of ``Job`` objects.
+        as_objects : bool, optional
+            Whether to return jobs as objects. The default is ``True``.
+            If ``False``, jobs are returned as dictionaries.
 
-        Returns:
-            List of :class:`ansys.hps.client.jms.Job` or list of dict if `as_objects` is True
+        Returns
+        -------
+        list
+            List of :class:`ansys.hps.client.jms.Job` if ``as_objects=True`` or a list of
+            dictionaries if ``as_objects=False``.
         """
         return self._update_objects(jobs, Job, as_objects=as_objects)
 
     def delete_jobs(self, jobs: List[Job]):
-        """Delete existing jobs
+        """Delete existing jobs.
 
-        Args:
-            jobs (list of :class:`ansys.hps.client.jms.Job`): A list of Job objects
+        Parameters
+        ----------
+        jobs : list of :class:`ansys.hps.client.jms.Job`
+            List of ``Job`` objects.
 
-        Note that only the ``id`` field of the Job objects need to be filled;
-        the other fields can be empty.
+        Note that only the ``id`` field of the ``Job`` objects must be filled.
+        The other fields can be empty.
 
         Example:
 
@@ -371,8 +390,8 @@ class ProjectApi:
 
     def _sync_jobs(self, jobs: List[Job]):
         msg = (
-            "ProjectApi._sync_jobs is deprecated and will be removed soon. "
-            "Use ProjectApi.sync_jobs instead."
+            "'ProjectApi._sync_jobs' is deprecated and is to be removed soon. "
+            "Use 'ProjectApi.sync_jobs' instead."
         )
         warn(msg, DeprecationWarning)
         log.warning(msg)
@@ -452,7 +471,7 @@ class ProjectApi:
 
     ################################################################
     def copy_default_execution_script(self, filename: str) -> File:
-        """Copy a default execution script to the current project
+        """Copy a default execution script to the current project.
 
         Example:
 
@@ -508,8 +527,10 @@ class ProjectApi:
 
 def _download_files(project_api: ProjectApi, files: List[File]):
     """
-    Temporary implementation of file download directly using fs REST gateway.
-    To be replaced with direct ansft calls, when it is available as python pkg
+    Download files directly using the fs REST gateway.
+
+    This is a temporary implementation for downloading files. It is to be
+    replaced with direct ansft calls, when it is available as a Python package.
     """
 
     for f in files:
@@ -531,8 +552,10 @@ def get_files(project_api: ProjectApi, as_objects=True, content=False, **query_p
 
 def _upload_files(project_api: ProjectApi, files):
     """
-    Temporary implementation of file upload directly using fs REST gateway.
-    To be replaced with direct ansft calls, when it is available as python pkg
+    Uploads files directly using the fs REST gateway.
+
+    This is a temporary implementation for uploading files. It is to be
+    replaced with direct ansft calls, when it is available as a Python package.
     """
     fs_headers = {"content-type": "application/octet-stream"}
 
@@ -669,12 +692,12 @@ def archive_project(project_api: ProjectApi, target_path, include_job_files=True
                 if chunk:
                     f.write(chunk)
 
-    log.info(f"Done saving project archive to disk")
+    log.info(f"Done saving project archive to disk.")
     return file_path
 
 
 def copy_jobs(project_api: ProjectApi, jobs: List[Job], as_objects=True, **query_params):
-    """Create new jobs by copying existing ones"""
+    """Create jobs by copying existing jobs."""
 
     ids = _copy_objects(client=project_api.client, api_url=project_api.url, objects=jobs, wait=True)
     return ids

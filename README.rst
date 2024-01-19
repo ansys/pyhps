@@ -54,7 +54,7 @@ for switching from viewing the documentation for the latest stable release
 to viewing the documentation for the development version or previously
 released versions.
 
-The `PyHPS documentation <https://rep.docs.pyansys.com/>`_ contains these sections:
+The PyHPS documentation contains these sections:
 
 - `Getting started <https://rep.docs.pyansys.com/dev/getting_started/index.html>`_: Explains
   how to install PyHPS in user mode.

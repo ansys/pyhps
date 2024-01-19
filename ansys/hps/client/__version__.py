@@ -27,5 +27,5 @@ __company_short__ = "Ansys"
 __url__ = "https://github.com/ansys-internal/pyhps"
 
 # this is only a convenience to default the version
-# of Ansys simulation applications in pyhps examples
+# of Ansys simulation applications in PyHPS examples
 __ansys_apps_version__ = "2024 R1"

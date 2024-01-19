@@ -26,7 +26,7 @@ from ansys.hps.client.common import Object
 from ..schema.operation import OperationSchema
 
 class Operation(Object):
-    """Operation resource.
+    """Provides the operation resource.
 
     Parameters
     ----------
@@ -42,7 +42,6 @@ class Operation(Object):
     messages : list, optional
     start_time : datetime, optional
     end_time : datetime, optional
-
     """
 
     class Meta:

@@ -53,14 +53,14 @@ class ObjectSchemaWithModificationInfo(ObjectSchema):
         allow_none=True,
         load_only=True,
         metadata={
-            "description": "The date and time the resource was created.",
+            "description": "Date and time that the resource was created.",
         },
     )
     modification_time = fields.DateTime(
         allow_none=True,
         load_only=True,
         metadata={
-            "description": "The date and time the resource was last modified.",
+            "description": "Date and time that the resource was last modified.",
         },
     )
 
