@@ -34,7 +34,7 @@ def create_session(
     verify: Union[bool, str] = True,
     disable_security_warnings=False,
 ) -> requests.Session:
-    """Get the :class:`requests.Session` object configured for Ansys HPS with a given access token.
+    """Get the :class:`requests.Session` object configured for HPS with a given access token.
 
     Parameters
     ----------

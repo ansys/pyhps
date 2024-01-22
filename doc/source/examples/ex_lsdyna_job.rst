@@ -3,7 +3,7 @@
 LS-DYNA job submission
 ======================
 
-This example shows how to submit an LS-DYNA job to Ansys HPS. Once submitted, minimal job
+This example shows how to submit an LS-DYNA job to HPS. Once submitted, minimal job
 information is serialized to a ``rep_job.json`` file. This mimics what an app would need
 to store to subsequently monitor the job and download results.
 

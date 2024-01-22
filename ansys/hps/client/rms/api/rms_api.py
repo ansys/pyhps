@@ -57,9 +57,9 @@ class RmsApi(object):
         return f"{self.client.url}/rms/api/v1"
 
     def get_api_info(self):
-        """Get information of the RMS API the client is connected to.
+        """Get information on the RMS API the client is connected to.
 
-        The information include the version and build date.
+        The information includes the version and build date.
         """
         r = self.client.session.get(self.url)
         return r.json()

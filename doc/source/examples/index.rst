@@ -13,9 +13,9 @@ You can execute many Python scripts with these command-line arguments:
 * ``-p``, ``--password``: REP password (default: repadmin)
 * ``-v``, ``--ansys-version``: Ansys version (default: |ansys_version|)
 
-A link to download required resources is available on each example page. If
-desired, you can download the required resources for all examples by :download:`downloading <../../../build/pyhps_examples.zip>`
-one ZIP file.
+A link to download the required resources is available on each example page. If
+desired, you can download the required resources for all examples by downloading
+one :download:`ZIP file <../../../build/pyhps_examples.zip>`.
 
 .. toctree::
   :hidden:

@@ -17,8 +17,7 @@ Introduction
 Ansys HPC Platform Services (HPS) is a set of technology components designed to help you
 manage the execution of simulations while making use of your full range of computing assets.
 
-PyHPS brings Ansys HPS to your Python app. Wrapping around Ansys HPS REST APIs, PyHPS
-allows you to:
+PyHPS brings HPS to your Python app. Wrapping around HPS REST APIs, PyHPS allows you to:
 
 * Create projects and modify existing ones.
 * Monitor and manage jobs.

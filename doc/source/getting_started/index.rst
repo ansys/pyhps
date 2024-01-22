@@ -9,7 +9,7 @@ to PyHPS, see :ref:`contribute` for information on installing in developer mode.
 Prerequisites
 -------------
 
-You must have Python 3.x and ``pip`` installed.
+You must have Python 3.x and pip_ installed.
 
 #. To see if a Python 3.x version is installed and available from your command line,
    run this command:
@@ -56,6 +56,7 @@ running this command:
 - pydantic_
 
 .. LINKS AND REFERENCES
+.. _pip: https://pypi.org/project/pip/
 .. _requests: https://pypi.org/project/requests/
 .. _marshmallow: https://pypi.org/project/marshmallow/
 .. _marshmallow_oneofschema: https://pypi.org/project/marshmallow-oneofschema/

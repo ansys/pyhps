@@ -108,8 +108,8 @@ class JmsApi(object):
         In multiple projects with same name are found, what is returned depends
         on the ``last_created`` value:
 
-         - If ``last_created=True``, the last created project is returned.
-         - If ``last_created=False``, the full list of projects with the given name is returned.
+        - If ``last_created=True``, the last created project is returned.
+        - If ``last_created=False``, the full list of projects with the given name is returned.
 
         """
         return get_project_by_name(self.client, self.url, name, last_created)
@@ -132,7 +132,7 @@ class JmsApi(object):
         Parameters
         ----------
         path : str
-            Path of the archive file to restore.
+            Path of the archive file.
 
         """
         return restore_project(self, path)
@@ -142,8 +142,7 @@ class JmsApi(object):
     def get_task_definition_templates(
         self, as_objects=True, **query_params
     ) -> List[TaskDefinitionTemplate]:
-        """Return a list of task definition templates,
-        optionally filtered by query parameters."""
+        """Get a list of task definition templates, optionally filtered by query parameters."""
         return get_objects(
             self.client.session, self.url, TaskDefinitionTemplate, as_objects, **query_params
         )
@@ -199,7 +198,7 @@ class JmsApi(object):
     def copy_task_definition_templates(
         self, templates: List[TaskDefinitionTemplate], wait: bool = True
     ) -> Union[str, List[str]]:
-        """Create task definitions templates by copying existing templates.
+        """Create task definition templates by copying existing templates.
 
         Parameters
         ----------
@@ -256,7 +255,7 @@ class JmsApi(object):
         return get_object(self.client.session, self.url, Operation, id, as_object=as_object)
 
     def monitor_operation(self, operation_id: str, max_value: float = 5.0, max_time: float = None):
-        """Poll an operation until it's completed using an exponential backoff.
+        """Poll an operation until it is completed using an exponential backoff.
 
         Parameters
         ----------
@@ -265,7 +264,7 @@ class JmsApi(object):
         max_value: float, optional
             Maximum interval in seconds between consecutive calls.
         max_time: float, optional
-            Maximum time in seconds to pool the operatoin before giving up.
+            Maximum time in seconds to pool the operation before giving up.
         """
         return _monitor_operation(self, operation_id, max_value, max_time)
 

@@ -54,7 +54,7 @@ log = logging.getLogger(__name__)
 
 
 class ProjectApi:
-    """Exposes the project endpoints of the Job Management Service.
+    """Exposes the project endpoints of the JMS.
 
     Parameters
     ----------
@@ -242,12 +242,12 @@ class ProjectApi:
     def copy_task_definitions(
         self, task_definitions: List[TaskDefinition], wait: bool = True
     ) -> Union[str, List[str]]:
-        """Create task definitions by copying existing definitions.
+        """Create task definitions by copying existing task definitions.
 
         Parameters
         ----------
         task_definitions : List[TaskDefinition]
-            List of task definitions. Note that only the ``id`` field of
+            List of task definitions. Note that only the ``id`` field of the
             ``TaskDefinition`` objects must be filled. Other fields can be empty.
         wait : bool
             Whether to wait for the copy to complete. The default is ``True``.
@@ -282,12 +282,12 @@ class ProjectApi:
     def copy_job_definitions(
         self, job_definitions: List[JobDefinition], wait: bool = True
     ) -> Union[str, List[str]]:
-        """Create new job definitions by copying existing ones
+        """Create job definitions by copying existing job definitions.
 
         Parameters
         ----------
         job_definitions : List[JobDefinition]
-            List of job definition. Note that only the ``id`` field of
+            List of job definitions. Note that only the ``id`` field of the
             ``JobDefinition`` objects must be filled. The other fields can be empty.
         wait : bool
             Whether to wait for the copy to complete. The default is ``True``.
@@ -312,7 +312,7 @@ class ProjectApi:
         Parameters
         ----------
         jobs : list of :class:`ansys.hps.client.jms.Job`
-            List of job.
+            List of jobs.
         as_objects : bool, optional
             Whether to return jobs as objects. The default is ``True``. If
             ``False``, jobs are returned as dictionaries.
@@ -346,12 +346,12 @@ class ProjectApi:
         return _copy_objects(self.client, self.url, jobs, wait=wait)
 
     def update_jobs(self, jobs: List[Job], as_objects=True) -> List[Job]:
-        """Update existing jobs.
+        """Update jobs.
 
         Parameters
         ----------
         jobs : list of :class:`ansys.hps.client.jms.Job`)
-            List of ``Job`` objects.
+            List of jobs.
         as_objects : bool, optional
             Whether to return jobs as objects. The default is ``True``.
             If ``False``, jobs are returned as dictionaries.
@@ -359,21 +359,19 @@ class ProjectApi:
         Returns
         -------
         list
-            List of :class:`ansys.hps.client.jms.Job` if ``as_objects=True`` or a list of
+            List of :class:`ansys.hps.client.jms.Job` objects if ``as_objects=True`` or a list of
             dictionaries if ``as_objects=False``.
         """
         return self._update_objects(jobs, Job, as_objects=as_objects)
 
     def delete_jobs(self, jobs: List[Job]):
-        """Delete existing jobs.
+        """Delete jobs.
 
         Parameters
         ----------
         jobs : list of :class:`ansys.hps.client.jms.Job`
-            List of ``Job`` objects.
-
-        Note that only the ``id`` field of the ``Job`` objects must be filled.
-        The other fields can be empty.
+            List of `jobs. Note that only the ``id`` field of the ``Job`` objects must be filled.
+            The other fields can be empty.
 
         Example:
 

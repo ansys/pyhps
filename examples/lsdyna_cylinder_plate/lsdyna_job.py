@@ -23,14 +23,14 @@
 """
 Script showing how to submit an LS-DYNA job to HPS.
 
-Once submitted, minimal job information are serialized to a JSON file rep_job.json.
-This mimics what an application would need to store in order to
-subsequently monitor the job and download results.
+Once submitted, minimal job information is serialized to a ``rep_job.json`` file.
+This mimics what an app would need to store to subsequently monitor the job and download results.
 
 The job consists of two tasks:
- - The first task runs the actual LS-DYNA simulation
- - The second task runs a little LS-PrePost script to
-   post-process the results of the first task.
+
+- The first task runs the actual LS-DYNA simulation.
+- The second task runs a small LS-PrePost script to postprocess
+  the results of the first task.
 
 Usage:
 

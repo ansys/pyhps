@@ -12,6 +12,7 @@ marshmallow_oneofschema
 Mises
 postprocess
 [Pp]ydantic
+pytest
 subpackage
 von
 Wintermantel

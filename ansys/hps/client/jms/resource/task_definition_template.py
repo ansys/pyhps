@@ -114,7 +114,7 @@ class TemplateInputFile(Object):
     type : str, optional
         MIME type of the file. For example, ``text/plain``.
     evaluation_path : str, optional
-        Path the file is expected to be found under during evaluation.
+        Path that the file is expected to be found under during evaluation.
     description : str
         Description of the file's purpose.
     required : bool
@@ -153,11 +153,11 @@ class TemplateOutputFile(Object):
     type : str, optional
         MIME type of the file. For example, ``text/plain``.
     evaluation_path : str, optional
-        Path the file is expected to be under during evaluation.
+        Path that the file is expected to be found under during evaluation.
     description : str
         Description of the file's purpose.
     required : bool
-        Whether the file required by the task.
+        Whether the file is required by the task.
     monitor : bool, optional
         Whether to live monitor the file's contents.
     collect : bool, optional
@@ -199,7 +199,7 @@ class TaskDefinitionTemplate(Object):
     id : str, optional
         Unique ID to access the resource, generated internally by the server on creation.
     modification_time : datetime, optional
-        Last time in UTC that the object was modified.
+        Last time in UTC (Coordinated Universal Time) that the object was modified.
     creation_time : datetime, optional
         Time in UTC when the object was created.
     name : str

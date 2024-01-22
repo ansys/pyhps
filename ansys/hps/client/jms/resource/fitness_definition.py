@@ -49,7 +49,7 @@ class FitnessTermDefinition(Object):
     Examples
     --------
 
-    Create a fitness term of of the objective type.
+    Create a fitness term of the objective type.
     
     >>> ft1 = FitnessTermDefinition(
     ...     name="weight",

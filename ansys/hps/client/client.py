@@ -36,7 +36,7 @@ log = logging.getLogger(__name__)
 
 
 class Client(object):
-    """Provides the Python client to the Ansys HPS APIs.
+    """Provides the Python client to the HPS APIs.
 
     This class uses the provided credentials to create and store
     an authorized :class:`requests.Session` object.
@@ -90,7 +90,7 @@ class Client(object):
     Examples
     --------
 
-    Create a client object and connect to Ansys HPS with a username and password.
+    Create a client object and connect to HPS with a username and password.
 
     >>> from ansys.hps.client import Client
     >>> cl = Client(
@@ -99,7 +99,7 @@ class Client(object):
     ...     password="repuser"
     ... )
 
-    Create s client object and connect to Ansys HPS with a refresh token.
+    Create a client object and connect to HPS with a refresh token.
 
     >>> cl = Client(
     ...     url="https://localhost:8443/rep",

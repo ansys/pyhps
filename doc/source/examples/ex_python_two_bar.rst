@@ -5,7 +5,7 @@ Two-bar truss
 
 This example shows how to create a REP project solving a two-bar truss problem with Python.
 
-For the original problem descriptions, see R.L. Fox, *Optimization Methods in Engineering Design*, Addison Wesley, 1971.
+For the original problem description, see R.L. Fox, *Optimization Methods in Engineering Design*, Addison Wesley, 1971.
 Also see `Optimization Methods for Engineering Design <https://apmonitor.com/me575/uploads/Main/optimization_book.pdf>`_.
 
 .. only:: builder_html

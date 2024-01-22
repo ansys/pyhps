@@ -3,22 +3,22 @@
 User guide
 ==========
 
-This section walks you through the basics of how to interact with Ansys HPS.
+This section walks you through the basics of how to interact with HPS.
 For more elaborate examples, see :ref:`Examples <examples>`. For descriptions
 of PyHPS endpoints, see :ref:`API reference <api_reference>`.
 
 To reproduce the code samples provided in this section, you must have these
 prerequisites:
 
-- A running Ansys HPS installation. For instructions, go to the
+- A running Ansys HPS installation. For instructions, see the
   `Remote Execution Platform (REP) repository <https://github.com/ansys/rep>`_.
 - A Python shell with PyHPS installed. For instructions, see :ref:`getting_started`.
 
 
-Connect to an Ansys HPS deployment
-----------------------------------
+Connect to an HPS deployment
+----------------------------
 
-You start by connecting to an Ansys HPS deployment running on the localhost with the default username and password:
+You start by connecting to an HPS deployment running on the localhost with the default username and password:
 
 .. code-block:: python
 
@@ -34,7 +34,7 @@ You start by connecting to an Ansys HPS deployment running on the localhost with
     # get all projects
     projects = jms_api.get_projects()
 
-Once connected, you can query projects statistics to find out how many jobs are currently running:
+Once connected, you can query project statistics to find out how many jobs are currently running:
 
 .. code-block:: python
 
@@ -48,7 +48,7 @@ The MAPDL motorbike frame example consists of an Ansys Mechanical APDL beam mode
 tubular steel trellis motorbike frame. This example is more fully described in the :ref:`example_mapdl_motorbike_frame`
 example.
 
-#. Download the :download:`ZIP file <../../build/mapdl_motorbike_frame.zip>` for the MAPDL motorbike frame example.
+#. Download the :download:`ZIP file <../../../build/mapdl_motorbike_frame.zip>` for the MAPDL motorbike frame example.
 
    This file contains the project setup script for creating the project and the project's data files.
 
@@ -117,9 +117,9 @@ Query by fields
 ^^^^^^^^^^^^^^^
 
 When you query a resource, the REST API returns a set of fields by default. You can specify which fields
-you want returned by using the ``fields`` query parameter. (The query returns all specified fields, in
+you want returned by using the ``fields`` query parameter. (The query returns all specified fields in
 addition to the ID of the resource, which is always returned.) To request that all fields be returned,
-you use ``fields="all"``.
+use ``fields="all"``.
 
 .. code-block:: python
     
@@ -291,7 +291,7 @@ Get file definitions from an existing project's job definition and replace the f
 Modify and create users
 -----------------------
 
-Administrative users with the Keycloak "manage-users" role can create users as well as modify or delete existing users: 
+Administrative users with the Keycloak "manage-users" role can create users as well as modify or delete users: 
 
 .. code-block:: python
 

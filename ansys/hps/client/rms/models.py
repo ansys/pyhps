@@ -79,36 +79,36 @@ class TaskDirectoryCleanupEnum(Enum):
 
 
 class EvaluatorRegistration(BaseModel):
-    id: Optional[str] = Field(None, description='Unique identifier for this worker', title='Id')
-    name: Optional[str] = Field(None, description='User defined name for this worker', title='Name')
+    id: Optional[str] = Field(None, description='Unique ID for this worker.', title='Id')
+    name: Optional[str] = Field(None, description='User-defined name for this worker.', title='Name')
     last_modified: Optional[datetime] = Field(
         None,
-        description='Date and time when the registration was last modified',
+        description='Date and time when the registration was last modified.',
         title='Last Modified',
     )
     host_id: Optional[str] = Field(
-        None, description='Static, hardware and configuration-based UUID', title='Host Id'
+        None, description='Static hardware and configuration-based UUID.', title='Host Id'
     )
     host_name: Optional[str] = Field(
-        None, description='Name of the host the worker is running on', title='Host Name'
+        None, description='Name of the host that the worker is running on.', title='Host Name'
     )
     username: Optional[str] = Field(
-        None, description='Username the evaluator authenticated with', title='Username'
+        None, description='Username that the evaluator authenticated with.', title='Username'
     )
     platform: Optional[str] = Field(
-        None, description='OS the evaluator is running on', title='Platform'
+        None, description='OS that the evaluator is running on.', title='Platform'
     )
     build_info: Optional[Dict[str, Any]] = Field(
-        {}, description='Detailed build information', title='Build Info'
+        {}, description='Detailed build information.', title='Build Info'
     )
     compute_resource_set_id: Optional[str] = Field(
         None,
-        description='ID of the compute resource set that the evaluator belongs to',
+        description='ID of the compute resource set that the evaluator belongs to.',
         title='Compute Resource Set Id',
     )
     change_requested: Optional[datetime] = Field(
         None,
-        description="Date and time of the configuration's last modification request",
+        description="Date and time of the configuration's last modification request.",
         title='Change Requested',
     )
 
@@ -371,26 +371,26 @@ class ScalerApplicationInfo(BaseModel):
 
 class ScalerRegistration(BaseModel):
     id: Optional[str] = Field(None, description='Unique ID for this worker', title='Id')
-    name: Optional[str] = Field(None, description='User-defined name for this worker', title='Name')
+    name: Optional[str] = Field(None, description='User-defined name for this worker.', title='Name')
     last_modified: Optional[datetime] = Field(
         None,
-        description='Date and time when the registration was last modified',
+        description='Date and time when the registration was last modified.',
         title='Last Modified',
     )
     host_id: Optional[str] = Field(
-        None, description='Static, hardware and configuration-based UUID', title='Host Id'
+        None, description='Static hardware and configuration-based UUID.', title='Host Id'
     )
     host_name: Optional[str] = Field(
         None, description='Name of the host on which the worker is running', title='Host Name'
     )
     username: Optional[str] = Field(
-        None, description='Username the evaluator authenticated with', title='Username'
+        None, description='Username that the evaluator authenticated with.', title='Username'
     )
     platform: Optional[str] = Field(
-        None, description='OS the evaluator is running on', title='Platform'
+        None, description='OS that the evaluator is running on.', title='Platform'
     )
     build_info: Optional[Dict[str, Any]] = Field(
-        {}, description='Detailed build information', title='Build Info'
+        {}, description='Detailed build information.', title='Build Info'
     )
     config_modified: Optional[datetime] = Field(
         None,
@@ -523,45 +523,45 @@ class OrchestrationInterfacesBackend(BaseModel):
 
 class ComputeResourceSet(BaseModel):
     name: Optional[str] = Field(
-        'default', description='Name of the compute resource set', title='Name'
+        'default', description='Name of the compute resource set.', title='Name'
     )
-    id: Optional[str] = Field(None, description='Unique ID for this set', title='Id')
+    id: Optional[str] = Field(None, description='Unique ID for this set.', title='Id')
     scaler_id: Optional[str] = Field(
-        None, description='temporary.  removed after transitioning to client_id', title='Scaler Id'
+        None, description='Temporary.  To be removed after transitioning to ``client_id``.', title='Scaler Id'
     )
     last_modified: Optional[datetime] = Field(
-        None, description='Last modified time', title='Last Modified'
+        None, description='Last modified time.', title='Last Modified'
     )
     backend: Optional[
         Union[KubernetesKedaBackend, OrchestrationInterfacesBackend, LocalBackend, MockupBackend]
     ] = Field(
         {'debug': False, 'plugin_name': 'local'},
-        description='Backend to use in this compute resource set',
+        description='Backend to use in this compute resource set.',
         discriminator='plugin_name',
         title='Backend',
     )
     scaling_strategy: Optional[Union[MaxAvailableResourceScaling, KubernetesResourceScaling]] = (
         Field(
             {'match_all_requirements': False, 'plugin_name': 'max_available_resource_scaling'},
-            description='Scaling strategy to use in this compute resource set',
+            description='Scaling strategy to use in this compute resource set.',
             discriminator='plugin_name',
             title='Scaling Strategy',
         )
     )
     available_resources: Optional[Resources] = Field(
-        {'custom': {}}, description='Available resources in the compute resource set'
+        {'custom': {}}, description='Available resources in the compute resource set.'
     )
     available_applications: Optional[List[ScalerApplicationInfo]] = Field(
-        [], description='List of available applications', title='Available Applications'
+        [], description='List of available applications.', title='Available Applications'
     )
     evaluator_requirements_matching: Optional[bool] = Field(
         False,
-        description='Whether the evaluators should do matching of resource and software requirements',
+        description='Whether the evaluators should do matching of resource and software requirements.',
         title='Evaluator Requirements Matching',
     )
     evaluator_task_directory_cleanup: Optional[EvaluatorTaskDirectoryCleanup] = Field(
         'always',
-        description='Cleanup policy for task directories passed to evaluators',
+        description='Cleanup policy for task directories that are passed to evaluators.',
         title='Evaluator Task Directory Cleanup',
     )
     evaluator_auto_shutdown_time: Optional[int] = Field(
@@ -571,7 +571,7 @@ class ComputeResourceSet(BaseModel):
     )
     evaluator_loop_interval: Optional[int] = Field(
         5,
-        description='Main evaluator loop is repeated every loop_interval seconds',
+        description='Main evaluator loop is repeated every ``loop_interval`` seconds.',
         title='Evaluator Loop Interval',
     )
 
@@ -591,15 +591,15 @@ class ComputeResourceSetsResponse(BaseModel):
 class EvaluatorConfiguration(BaseModel):
     id: Optional[str] = Field(None, description='Unique DB ID (read-only)', title='Id')
     evaluator_id: Optional[str] = Field(
-        None, description='ID of the parent evaluator (read-only)', title='Evaluator Id'
+        None, description='ID of the parent evaluator (read-only).', title='Evaluator Id'
     )
     last_modified: Optional[datetime] = Field(
-        None, description='Last modified time', title='Last Modified'
+        None, description='Last modified time.', title='Last Modified'
     )
     working_directory: Optional[str] = Field(None, title='Working Directory')
     local_file_cache_max_size: Optional[int] = Field(
         None,
-        description='Maximum allowed cache size in bytes or None',
+        description='Maximum allowed cache size in bytes or ``None``.',
         title='Local File Cache Max Size',
     )
     max_num_parallel_tasks: Optional[int] = Field(None, title='Max Num Parallel Tasks')
@@ -610,49 +610,49 @@ class EvaluatorConfiguration(BaseModel):
     task_manager_type: Optional[str] = Field(None, title='Task Manager Type')
     loop_interval: Optional[float] = Field(
         5.0,
-        description='Main evaluator loop is repeated every loop_interval seconds',
+        description='Main evaluator loop is repeated every ``loop_interval`` seconds.',
         title='Loop Interval',
     )
     local_file_cache: Optional[bool] = Field(
         True,
-        description='Whether to configure a local file cache in file tool',
+        description='Whether to configure a local file cache in the file tool.',
         title='Local File Cache',
     )
     applications: Optional[List[ApplicationInfo]] = Field(
-        [], description='List of available applications', title='Applications'
+        [], description='List of available applications.', title='Applications'
     )
     project_server_select: Optional[bool] = Field(
         True,
-        description='Get project assignments from the server instead of using the locally set values',
+        description='Get project assignments from the server instead of using the locally set values.',
         title='Project Server Select',
     )
     project_list: Optional[List[str]] = Field(
         [],
-        description='IDs of projects the evaluator should work on in order',
+        description='IDs of the projects that the evaluator should work on in order.',
         title='Project List',
     )
     project_assignment_mode: Optional[str] = Field(
         'all_active',
-        description='How the evaluator is to select projects to work on.             One of: disabled, all_active, list',
+        description='How the evaluator is to select projects to work on.             Options are ``all_active``, ``disabled``, and ``list``.',
         title='Project Assignment Mode',
     )
     context: Optional[Context] = Field(
-        {'custom': {}}, description='Runtime properties to pass to executed tasks'
+        {'custom': {}}, description='Runtime properties to pass to executed tasks.'
     )
 
 
 class EvaluatorConfigurationUpdate(BaseModel):
     id: Optional[str] = Field(None, description='Unique DB ID (read-only)', title='Id')
     evaluator_id: Optional[str] = Field(
-        None, description='ID of the parent evaluator (read-only)', title='Evaluator Id'
+        None, description='ID of the parent evaluator (read-only).', title='Evaluator Id'
     )
     last_modified: Optional[datetime] = Field(
-        None, description='Last modified time', title='Last Modified'
+        None, description='Last modified time.', title='Last Modified'
     )
     working_directory: Optional[str] = Field(None, title='Working Directory')
     local_file_cache_max_size: Optional[int] = Field(
         None,
-        description='Maximum allowed cache size in bytes or None',
+        description='Maximum allowed cache size in bytes or ``None``.',
         title='Local File Cache Max Size',
     )
     max_num_parallel_tasks: Optional[int] = Field(None, title='Max Num Parallel Tasks')
@@ -661,24 +661,24 @@ class EvaluatorConfigurationUpdate(BaseModel):
     )
     resources: Optional[EvaluatorResources] = {'custom': {}}
     name: Optional[str] = Field(
-        None, description='Update the name of the evaluator (updating the registration)', title='Name'
+        None, description='Update the name of the evaluator (updating the registration).', title='Name'
     )
     loop_interval: Optional[float] = Field(
         None,
-        description='Main evaluator loop is repeated every loop_interval seconds',
+        description='Main evaluator loop is repeated every ``loop_interval`` seconds.',
         title='Loop Interval',
     )
     local_file_cache: Optional[bool] = Field(
         None,
-        description='Whether to configure a local file cache in file tool',
+        description='Whether to configure a local file cache in the file tool.',
         title='Local File Cache',
     )
     applications: Optional[List[ApplicationInfo]] = Field(
-        [], description='List of available applications', title='Applications'
+        [], description='List of available applications.', title='Applications'
     )
     project_list: Optional[List[str]] = Field(
         None,
-        description='IDs of projects the evaluator should work on in order',
+        description='IDs of the projects that the evaluator should work on in order.',
         title='Project List',
     )
     project_assignment_mode: Optional[str] = Field(
@@ -687,7 +687,7 @@ class EvaluatorConfigurationUpdate(BaseModel):
         title='Project Assignment Mode',
     )
     context: Optional[ContextUpdate] = Field(
-        {'custom': {}}, description='Runtime properties to pass to executed tasks'
+        {'custom': {}}, description='Runtime properties to pass to executed tasks.'
     )
 
 

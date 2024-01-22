@@ -70,7 +70,7 @@ Installing PyHPS in developer mode allows you to modify and enhance the source:
 Test PyHPS
 ----------
 
-PyHPS takes advantage of `tox`_. This tool allows you to automates common development
+PyHPS takes advantage of `tox`_. This tool allows you to automate common development
 tasks (similar to ``Makefile``), but it is oriented towards Python development.
 
 Using ``tox``
@@ -91,7 +91,7 @@ Raw testing
 ^^^^^^^^^^^
 
 If required, from the command line, you can call style commands like
-`Black`_, `isort`_, and `Flake8`_. You can also call unit testing commands like `PyTest`_.
+`Black`_, `isort`_, and `Flake8`_. You can also call unit testing commands like `pytest`_.
 However, running these commands do not guarantee that your project is being tested
 in an isolated environment, which is the reason why tools like ``tox`` exist.
 

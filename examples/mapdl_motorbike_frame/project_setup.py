@@ -57,12 +57,12 @@ def create_project(
     client, name, version=__ansys_apps_version__, num_jobs=20, use_exec_script=False, active=True
 ) -> Project:
     """
-    Create an HPS project consisting of an ANSYS APDL beam model of a motorbike-frame.
+    Create an HPS project consisting of an ANSYS APDL beam model of a motorbike frame.
 
-    After creating the project job_definition, 10 design points with randomly
+    After creating the project job definition, 10 design points with randomly
     chosen parameter values are created and set to pending.
 
-    For further details about the model and its parametrization, see e.g.
+    For more information on the model and its parametrization, see
     "Using Evolutionary Methods with a Heterogeneous Genotype Representation
     for Design Optimization of a Tubular Steel Trellis Motorbike-Frame", 2003
     by U. M. Fasel, O. Koenig, M. Wintermantel and P. Ermanni.

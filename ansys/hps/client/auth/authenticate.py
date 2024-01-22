@@ -54,7 +54,7 @@ def authenticate(
     ----------
 
     url : str, optional
-        Base path for the server to call. The default is ``'https://127.0.0.1:8443/rep`''.
+        Base path for the server to call. The default is ``'https://127.0.0.1:8443/rep'``.
     realm : str, optional
         Keycloak realm. The default is ``'rep'``.
     grant_type: str, optional
@@ -67,8 +67,8 @@ def authenticate(
         Client secret. The default is ``None``.
     username : str, optional
         Username.
-    password : str
-        Password, optional
+    password : str, optional.
+        Password.
     refresh_token : str, optional
         Refresh token.
     timeout : float, optional

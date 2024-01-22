@@ -36,7 +36,7 @@ class Permission(Object):
         ID of a user or group.
     value_name : str, optional
     role : str
-        Role of oothe user. Options are ``'admin'``, ``'reader'``, and ``'writer'``.
+        Role of the user. Options are ``'admin'``, ``'reader'``, and ``'writer'``.
 
     """
 
