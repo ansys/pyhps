@@ -43,7 +43,6 @@ import argparse
 import json
 import logging
 import os
-import random
 import time
 
 from ansys.hps.client import Client, HPSError, __ansys_apps_version__
@@ -61,6 +60,7 @@ from ansys.hps.client.jms import (
 )
 
 log = logging.getLogger(__name__)
+
 
 class REPJob:
     """
@@ -102,8 +102,12 @@ class REPJob:
 
 
 def submit_job(
-    client, name, version=__ansys_apps_version__, use_exec_script=True, active=True,
-    distributed=False
+    client,
+    name,
+    version=__ansys_apps_version__,
+    use_exec_script=True,
+    active=True,
+    distributed=False,
 ) -> REPJob:
     """Create a REP project running a simple LS-DYNA
     job simulating the impact of a cylinder made of Aluminum
@@ -415,14 +419,12 @@ if __name__ == "__main__":
     logger = logging.getLogger()
     logging.basicConfig(format="[%(asctime)s | %(levelname)s] %(message)s", level=logging.INFO)
 
-    log.debug("=== HPS connection")    
+    log.debug("=== HPS connection")
 
     try:
         log.info(f"HPS URL: {args.url}")
         if args.action == "submit":
-            client = Client(rep_url=args.url,
-                            username=args.username,
-                            password=args.password)
+            client = Client(rep_url=args.url, username=args.username, password=args.password)
             job = submit_job(
                 client=client,
                 name=args.name,
