@@ -224,7 +224,8 @@ class REPClientTest(REPTestCase):
         from examples.lsdyna_cylinder_plate.lsdyna_job import submit_job
 
         app_job = submit_job(
-            self.client, name="LS-DYNA Cylinder Plate", num_jobs=1, version=ansys_version
+            self.client, name="LS-DYNA Cylinder Plate", version=ansys_version,
+            use_exec_script=False
         )
         self.assertIsNotNone(app_job)
 
@@ -244,9 +245,7 @@ class REPClientTest(REPTestCase):
         app_job = submit_job(
             self.client,
             name="LS-DYNA Cylinder Plate",
-            num_jobs=1,
-            version=ansys_version,
-            use_exec_script=True,
+            version=ansys_version            
         )
         self.assertIsNotNone(app_job)
 
