@@ -97,8 +97,3 @@ log_cli_date_format = "%Y-%m-%d %H:%M:%S"
 markers = [
     "requires_evaluator: marks tests as end-to-end requiring a running evaluator (deselect with '-m \"not requires_evaluator\"')",
 ]
-filterwarnings = [
-    "ignore::urllib3.exceptions.InsecureRequestWarning",
-    "ignore::DeprecationWarning:pkg_resources.*",
-    "ignore::ansys.hps.client.UnverifiedHTTPSRequestsWarning",
-]
