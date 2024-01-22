@@ -44,8 +44,8 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
 
-  quick-tests:
-    name: Quick tests and coverage
+  tests:
+    name: Tests and coverage
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
@@ -193,7 +193,7 @@ jobs:
 
   package:
     name: Package library
-    needs: [quick-tests, docs]
+    needs: [tests, docs]
     runs-on: ubuntu-latest
     steps:
       - name: Build library source and wheel artifacts
