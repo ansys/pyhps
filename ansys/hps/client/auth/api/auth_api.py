@@ -104,7 +104,7 @@ class AuthApi:
         return [g["name"] for g in self.keycloak_admin_client.get_user_groups(id)]
 
     def get_user_realm_roles(self, id: str) -> List[str]:
-        """Get the realm roles for the user"""
+        """Get the realm roles for the user."""
         return [r["name"] for r in self.keycloak_admin_client.get_realm_roles_of_user(id)]
 
     def user_is_admin(self, id: str) -> bool:

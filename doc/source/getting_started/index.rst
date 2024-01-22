@@ -3,7 +3,7 @@
 Getting started
 ===============
 
-This section describes how to install PyHPS in user mode. If you are interesting in contributing
+This section describes how to install PyHPS in user mode. If you are interested in contributing
 to PyHPS, see :ref:`contribute` for information on installing in developer mode.
 
 Prerequisites

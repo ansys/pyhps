@@ -24,7 +24,7 @@ The job consists of two tasks:
 
 - This example only runs on the Windows platform as the LS-PrePost task must open the LS-PREPOST GUI.
 - The ``download`` action requires the ``tqdm`` and ``humanize`` packages to show a progress bar during
-  the download of the result files. You can install these packages with this command::
+  the download of the result files. You can install these packages with this command:
 
     m with ``python -m pip install tqdm humanize``
 

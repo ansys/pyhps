@@ -65,5 +65,5 @@ The PyHPS documentation contains these sections:
 - `API reference <https://rep.docs.pyansys.com/dev/api/index.html>`_: Describes PyHPS functions,
   classes, methods, and their parameters and return values so that you can understand how to
   interact with them programmatically
-- `Contribute <https://rep.docs.pyansys.com/dev/contribute.html>`: Provides information on
+- `Contribute <https://rep.docs.pyansys.com/dev/contribute.html>_`: Provides information on
   how to install PyHPS in developer mode and make contributions to the codebase.

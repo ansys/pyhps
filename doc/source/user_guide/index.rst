@@ -129,7 +129,7 @@ use ``fields="all"``.
     # Get all jobs with all fields
     jobs = project_api.get_jobs(fields="all")
 
-Sorting by  property values
+Sorting by property values
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 You can sort resource collections by the values of their properties.
