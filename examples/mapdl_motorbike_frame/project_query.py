@@ -1,3 +1,25 @@
+# Copyright (C) 2024 ANSYS, Inc. and/or its affiliates.
+# SPDX-License-Identifier: MIT
+#
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
+
 """
 Example to query resources from a project.
 
@@ -10,8 +32,8 @@ import logging
 import os
 from statistics import mean, stdev
 
-from ansys.rep.client import Client, REPError
-from ansys.rep.client.jms import JmsApi, ProjectApi
+from ansys.hps.client import Client, HPSError
+from ansys.hps.client.jms import JmsApi, ProjectApi
 
 log = logging.getLogger(__name__)
 
@@ -21,7 +43,7 @@ def print_value_stats(values, title):
     log.info(f"{title}")
     # log.info(f"Num      : {len(values)}")
     log.info(f"Mean     : {mean(values)} Stdev: {stdev(values)}")
-    log.info(f"(Min,Max): ({min(values)}, {max(values)})")
+    log.info(f"(Min, Max): ({min(values)}, {max(values)})")
 
 
 def query_stats(client, project_name):
@@ -124,12 +146,12 @@ if __name__ == "__main__":
     logging.basicConfig(format="%(message)s", level=logging.DEBUG)
 
     try:
-        log.info("Connect to REP JMS")
-        client = Client(rep_url=args.url, username=args.username, password=args.password)
-        log.info(f"REP URL: {client.rep_url}")
+        log.info("Connect to HPC Platform Services")
+        client = Client(url=args.url, username=args.username, password=args.password)
+        log.info(f"HPS URL: {client.rep_url}")
 
         query_stats(client=client, project_name=args.name)
         download_files(client=client, project_name=args.name)
 
-    except REPError as e:
+    except HPSError as e:
         log.error(str(e))

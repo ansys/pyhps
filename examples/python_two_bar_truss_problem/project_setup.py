@@ -1,3 +1,25 @@
+# Copyright (C) 2024 ANSYS, Inc. and/or its affiliates.
+# SPDX-License-Identifier: MIT
+#
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
+
 """
 Python two-bar truss example.
 """
@@ -7,8 +29,8 @@ import logging
 import os
 import random
 
-from ansys.rep.client import Client, REPError
-from ansys.rep.client.jms import (
+from ansys.hps.client import Client, HPSError
+from ansys.hps.client.jms import (
     File,
     FitnessDefinition,
     FloatParameterDefinition,
@@ -201,9 +223,7 @@ def main(client, num_jobs, use_exec_script) -> Project:
         software_requirements=[Software(name="Python", version="3.10")],
         execution_command="%executable% %file:script% %file:inp%",
         resource_requirements=ResourceRequirements(
-            cpu_core_usage=0.5,
-            memory=100,
-            disk_space=5,
+            num_cores=0.5,
         ),
         execution_level=0,
         max_execution_time=30.0,
@@ -276,9 +296,9 @@ if __name__ == "__main__":
     logger = logging.getLogger()
     logging.basicConfig(format="[%(asctime)s | %(levelname)s] %(message)s", level=logging.DEBUG)
 
-    client = Client(rep_url=args.url, username=args.username, password=args.password)
+    client = Client(url=args.url, username=args.username, password=args.password)
 
     try:
         main(client, num_jobs=args.num_jobs, use_exec_script=args.use_exec_script)
-    except REPError as e:
+    except HPSError as e:
         log.error(str(e))

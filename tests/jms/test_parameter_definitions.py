@@ -1,17 +1,32 @@
-# ----------------------------------------------------------
-# Copyright (C) 2019 by
-# ANSYS Switzerland GmbH
-# www.ansys.com
+# Copyright (C) 2024 ANSYS, Inc. and/or its affiliates.
+# SPDX-License-Identifier: MIT
 #
-# Author(s): F.Negri
-# ----------------------------------------------------------
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
+
 import logging
 import unittest
 
 from marshmallow.utils import missing
 
-from ansys.rep.client.jms import JmsApi, ProjectApi
-from ansys.rep.client.jms.resource import (
+from ansys.hps.client.jms import JmsApi, ProjectApi
+from ansys.hps.client.jms.resource import (
     BoolParameterDefinition,
     FloatParameterDefinition,
     IntParameterDefinition,
@@ -19,7 +34,7 @@ from ansys.rep.client.jms.resource import (
     Project,
     StringParameterDefinition,
 )
-from ansys.rep.client.jms.schema.parameter_definition import (
+from ansys.hps.client.jms.schema.parameter_definition import (
     BoolParameterDefinitionSchema,
     FloatParameterDefinitionSchema,
     IntParameterDefinitionSchema,
@@ -165,7 +180,7 @@ class ParameterDefitionTest(REPTestCase):
 
     def test_parameter_definition_integration(self):
 
-        client = self.client()
+        client = self.client
         proj_name = f"test_jms_ParameterDefinitionTest_{self.run_id}"
 
         proj = Project(name=proj_name, active=True)
@@ -177,6 +192,13 @@ class ParameterDefitionTest(REPTestCase):
         sp = StringParameterDefinition(name="s_param", value_list=["l1", "l2"])
         ip = project_api.create_parameter_definitions([ip])[0]
         sp = project_api.create_parameter_definitions([sp])[0]
+
+        for pd in [ip, sp]:
+            self.assertTrue(pd.created_by is not missing)
+            self.assertTrue(pd.creation_time is not missing)
+            self.assertTrue(pd.modified_by is not missing)
+            self.assertTrue(pd.modification_time is not missing)
+            self.assertEqual(pd.created_by, pd.modified_by)
 
         job_def = JobDefinition(name="New Config", active=True)
         job_def.parameter_definition_ids = [ip.id, sp.id]
@@ -193,13 +215,33 @@ class ParameterDefitionTest(REPTestCase):
         self.assertTrue(fp.id in job_def.parameter_definition_ids)
         self.assertTrue(bp.id in job_def.parameter_definition_ids)
 
-        # job_def.parameter_definitions[2].upper_limit = 13.0
-        # job_def.parameter_definitions[2].lower_limit = 4.5
-        # job_def = proj.update_job_definitions([job_def])[0]
-        # job_def = proj.get_job_definitions([job_def])[0]
-        # self.assertEqual(len(job_def.parameter_definitions), 4)
-        # self.assertEqual(job_def.parameter_definitions[2].upper_limit, 13.0)
-        # self.assertEqual(job_def.parameter_definitions[2].lower_limit, 4.5)
+        # Delete project
+        jms_api.delete_project(proj)
+
+    def test_mixed_parameter_definition(self):
+
+        client = self.client
+        proj_name = f"test_mixed_parameter_definition"
+
+        proj = Project(name=proj_name, active=True)
+        jms_api = JmsApi(client)
+        proj = jms_api.create_project(proj, replace=True)
+        project_api = ProjectApi(client, proj.id)
+
+        ip = IntParameterDefinition(name="int_param", upper_limit=27)
+        sp = StringParameterDefinition(name="s_param", value_list=["l1", "l2"])
+        fp = FloatParameterDefinition(name="f_param", display_text="A Float Parameter")
+        bp = BoolParameterDefinition(name="b_param", display_text="A Bool Parameter", default=False)
+
+        original_pds = [ip, sp, fp, bp]
+        pds = project_api.create_parameter_definitions(original_pds)
+
+        for pd, original_pd in zip(pds, original_pds):
+            assert type(pd) == type(original_pd)
+            assert pd.name == original_pd.name
+
+        assert pds[0].upper_limit == 27
+        assert pds[1].value_list == ["l1", "l2"]
 
         # Delete project
         jms_api.delete_project(proj)

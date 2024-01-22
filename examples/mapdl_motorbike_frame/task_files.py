@@ -1,10 +1,32 @@
+# Copyright (C) 2024 ANSYS, Inc. and/or its affiliates.
+# SPDX-License-Identifier: MIT
+#
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
+
 """Example to modify task files in a simple rep task definition."""
 import argparse
 import logging
 import os
 
-from ansys.rep.client import REPError
-from ansys.rep.client.jms import Client, File
+from ansys.hps.client import HPSError
+from ansys.hps.client.jms import Client, File
 
 log = logging.getLogger(__name__)
 
@@ -129,10 +151,10 @@ if __name__ == "__main__":
     logging.basicConfig(format="%(message)s", level=logging.DEBUG)
 
     try:
-        log.info("Connect to REP JMS")
-        client = Client(rep_url=args.url, username=args.username, password=args.password)
-        log.info(f"REP URL: {client.rep_url}")
+        log.info("Connect to HPC Platform Services")
+        client = Client(url=args.url, username=args.username, password=args.password)
+        log.info(f"HPS URL: {client.rep_url}")
 
         modify_task_files(client=client, project_name=args.name)
-    except REPError as e:
+    except HPSError as e:
         log.error(str(e))

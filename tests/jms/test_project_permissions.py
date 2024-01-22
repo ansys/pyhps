@@ -1,20 +1,36 @@
-# ----------------------------------------------------------
 # Copyright (C) 2021 by
-# ANSYS Switzerland GmbH
-# www.ansys.com
+# Copyright (C) 2024 ANSYS, Inc. and/or its affiliates.
+# SPDX-License-Identifier: MIT
 #
-# Author(s): F.Negri
-# ----------------------------------------------------------
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
+
 import logging
 import time
 import unittest
 import uuid
 
-from ansys.rep.client import Client
-from ansys.rep.client.auth import AuthApi, User
-from ansys.rep.client.exceptions import ClientError
-from ansys.rep.client.jms import JmsApi, ProjectApi
-from ansys.rep.client.jms.resource import JobDefinition, Permission, Project
+from ansys.hps.client import Client
+from ansys.hps.client.auth import AuthApi, User
+from ansys.hps.client.exceptions import ClientError
+from ansys.hps.client.jms import JmsApi, ProjectApi
+from ansys.hps.client.jms.resource import JobDefinition, Permission, Project
 from tests.rep_test import REPTestCase
 
 log = logging.getLogger(__name__)
@@ -51,7 +67,7 @@ def remove_permissions(project_api: ProjectApi, user):
 class ProjectPermissionsTest(REPTestCase):
     def test_get_project_permissions(self):
 
-        client = self.client()
+        client = self.client
         jms_api = JmsApi(client)
         proj_name = f"test_jms_get_permissions_test_{self.run_id}"
 
@@ -75,16 +91,15 @@ class ProjectPermissionsTest(REPTestCase):
         }
         proj_name = f"test_jms_get_permissions_test_{uuid.uuid4().hex[:8]}"
 
-        client = self.client()
+        client = self.client
         auth_api = AuthApi(client)
         existing_users = [u.username for u in auth_api.get_users()]
 
         if user_credentials["user1"]["username"] not in existing_users:
-            user1 = auth_api.create_user(
+            user1 = self.create_user(
                 User(
                     username=user_credentials["user1"]["username"],
                     password=user_credentials["user1"]["password"],
-                    is_admin=False,
                 )
             )
         else:
@@ -97,11 +112,10 @@ class ProjectPermissionsTest(REPTestCase):
         log.info(f"User 1: {user1}")
 
         if user_credentials["user2"]["username"] not in existing_users:
-            user2 = auth_api.create_user(
+            user2 = self.create_user(
                 User(
                     username=user_credentials["user2"]["username"],
                     password=user_credentials["user2"]["password"],
-                    is_admin=False,
                 )
             )
         else:
@@ -115,7 +129,7 @@ class ProjectPermissionsTest(REPTestCase):
 
         # user1 creates a project and a job definition
         client1 = Client(
-            rep_url=self.rep_url,
+            url=self.rep_url,
             username=user1.username,
             password=user_credentials["user1"]["password"],
         )
@@ -139,7 +153,7 @@ class ProjectPermissionsTest(REPTestCase):
 
         # user1 appends a job definition to the project
         client2 = Client(
-            rep_url=self.rep_url,
+            url=self.rep_url,
             username=user2.username,
             password=user_credentials["user2"]["password"],
         )
@@ -161,7 +175,7 @@ class ProjectPermissionsTest(REPTestCase):
 
         # user2 reconnects and tries to get the project
         client2 = Client(
-            rep_url=self.rep_url,
+            url=self.rep_url,
             username=user2.username,
             password=user_credentials["user2"]["password"],
         )
@@ -180,8 +194,8 @@ class ProjectPermissionsTest(REPTestCase):
         self.assertTrue(except_obj.response.status_code, 403)
 
         root_api1.delete_project(proj)
-        auth_api.delete_user(user1)
-        auth_api.delete_user(user2)
+        self.delete_user(user1)
+        self.delete_user(user2)
 
 
 if __name__ == "__main__":

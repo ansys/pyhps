@@ -1,5 +1,27 @@
+# Copyright (C) 2024 ANSYS, Inc. and/or its affiliates.
+# SPDX-License-Identifier: MIT
+#
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
+
 """
-Example to submit a nonlinear tyre analysis job in REP.
+Example to submit a nonlinear tyre analysis job to Ansys HPC Platform Services.
 
 ANSYS APDL Tire-Performance Simulation example as included
 in the technology demonstration guide (td-57).
@@ -10,8 +32,8 @@ import logging
 import os
 import random
 
-from ansys.rep.client import Client, REPError, __external_version__
-from ansys.rep.client.jms import (
+from ansys.hps.client import Client, HPSError, __ansys_apps_version__
+from ansys.hps.client.jms import (
     File,
     FloatParameterDefinition,
     JmsApi,
@@ -28,7 +50,9 @@ from ansys.rep.client.jms import (
 log = logging.getLogger(__name__)
 
 
-def main(client: Client, name: str, num_jobs: int, version: str) -> Project:
+def create_project(
+    client, name, version=__ansys_apps_version__, num_jobs=20, use_exec_script=False, active=True
+) -> Project:
 
     log.debug("=== Project")
     jms_api = JmsApi(client)
@@ -42,7 +66,7 @@ def main(client: Client, name: str, num_jobs: int, version: str) -> Project:
 
     files = [
         File(
-            name="mac",
+            name="inp",
             evaluation_path="tire_performance_simulation.mac",
             type="text/plain",
             src=os.path.join(cwd, "tire_performance_simulation.mac"),
@@ -123,25 +147,25 @@ def main(client: Client, name: str, num_jobs: int, version: str) -> Project:
             key_string="camber_angle",
             tokenizer="=",
             parameter_definition_id=input_params[0].id,
-            file_id=file_ids["mac"],
+            file_id=file_ids["inp"],
         ),
         ParameterMapping(
             key_string="inflation_pressure",
             tokenizer="=",
             parameter_definition_id=input_params[1].id,
-            file_id=file_ids["mac"],
+            file_id=file_ids["inp"],
         ),
         ParameterMapping(
             key_string="rotational_velocity",
             tokenizer="=",
             parameter_definition_id=input_params[2].id,
-            file_id=file_ids["mac"],
+            file_id=file_ids["inp"],
         ),
         ParameterMapping(
             key_string="translational_velocity",
             tokenizer="=",
             parameter_definition_id=input_params[3].id,
-            file_id=file_ids["mac"],
+            file_id=file_ids["inp"],
         ),
     ]
 
@@ -174,15 +198,17 @@ def main(client: Client, name: str, num_jobs: int, version: str) -> Project:
 
     # TODO, add more
 
+    task_defs = []
     # Process step
     task_def = TaskDefinition(
         name="MAPDL_run",
         software_requirements=[Software(name="Ansys Mechanical APDL", version=version)],
-        execution_command="%executable% -b -i %file:mac% -o file.out -np %resource:num_cores%",
+        execution_command="%executable% -b -i %file:inp% -o file.out -np %resource:num_cores%",
         resource_requirements=ResourceRequirements(
-            cpu_core_usage=4,
-            memory=4000,
-            disk_space=500,
+            num_cores=4,
+            memory=4000 * 1024 * 1024,
+            disk_space=500 * 1024 * 1024,
+            distributed=True,
         ),
         max_execution_time=1800.0,
         execution_level=0,
@@ -190,7 +216,18 @@ def main(client: Client, name: str, num_jobs: int, version: str) -> Project:
         input_file_ids=[f.id for f in files[:2]],
         output_file_ids=[f.id for f in files[2:]],
     )
-    task_def = project_api.create_task_definitions([task_def])[0]
+
+    if use_exec_script:
+        exec_script_file = project_api.copy_default_execution_script(
+            f"mapdl-v{version[2:4]}{version[6]}-exec_mapdl.py"
+        )
+
+        task_def.use_execution_script = True
+        task_def.execution_script_id = exec_script_file.id
+
+    task_defs.append(task_def)
+
+    task_def = project_api.create_task_definitions(task_defs)[0]
 
     # Create job_definition in project
     job_def = JobDefinition(name="JobDefinition.1", active=True)
@@ -225,20 +262,28 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("-n", "--name", type=str, default="Mapdl Tyre Performance")
     parser.add_argument("-j", "--num-jobs", type=int, default=10)
+    parser.add_argument("-es", "--use-exec-script", default=False, type=bool)
     parser.add_argument("-U", "--url", default="https://localhost:8443/rep")
     parser.add_argument("-u", "--username", default="repadmin")
     parser.add_argument("-p", "--password", default="repadmin")
-    parser.add_argument("-v", "--ansys-version", default=__external_version__)
+    parser.add_argument("-v", "--ansys-version", default=__ansys_apps_version__)
 
     args = parser.parse_args()
 
     logger = logging.getLogger()
     logging.basicConfig(format="[%(asctime)s | %(levelname)s] %(message)s", level=logging.DEBUG)
 
-    log.debug("=== REP connection")
-    client = Client(rep_url=args.url, username=args.username, password=args.password)
+    log.debug("=== HPS connection")
+    client = Client(url=args.url, username=args.username, password=args.password)
 
     try:
-        main(client, name=args.name, num_jobs=args.num_jobs, version=args.ansys_version)
-    except REPError as e:
+        log.info(f"HPS URL: {client.rep_url}")
+        proj = create_project(
+            client=client,
+            name=args.name,
+            version=args.ansys_version,
+            num_jobs=args.num_jobs,
+            use_exec_script=args.use_exec_script,
+        )
+    except HPSError as e:
         log.error(str(e))

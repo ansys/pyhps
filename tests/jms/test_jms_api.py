@@ -1,17 +1,40 @@
-# ----------------------------------------------------------
-# Copyright (C) 2019 by
-# ANSYS Switzerland GmbH
-# www.ansys.com
+# Copyright (C) 2024 ANSYS, Inc. and/or its affiliates.
+# SPDX-License-Identifier: MIT
 #
-# Author(s): O.Koenig
-# ----------------------------------------------------------
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
+
 import logging
 import unittest
 
 from examples.mapdl_motorbike_frame.project_setup import create_project
+from marshmallow.utils import missing
 
-from ansys.rep.client.jms import JmsApi, ProjectApi
-from ansys.rep.client.jms.resource import Job, Project
+from ansys.hps.client import Client, ClientError
+from ansys.hps.client.jms import JmsApi, ProjectApi
+from ansys.hps.client.jms.resource import (
+    FloatParameterDefinition,
+    IntParameterDefinition,
+    Job,
+    JobDefinition,
+    Project,
+)
 from tests.rep_test import REPTestCase
 
 log = logging.getLogger(__name__)
@@ -21,7 +44,7 @@ class REPClientTest(REPTestCase):
     def test_jms_api(self):
 
         log.debug("=== Client ===")
-        client = self.client()
+        client = self.client
         proj_name = "Mapdl Motorbike Frame"
 
         log.debug("=== Projects ===")
@@ -74,6 +97,115 @@ class REPClientTest(REPTestCase):
 
         # Delete Jobs again
         project_api.delete_jobs(created_jobs)
+
+    def test_fields_query_parameter(self):
+
+        client1 = Client(self.rep_url, self.username, self.password, all_fields=False)
+
+        proj_name = "test_fields_query_parameter"
+        project = create_project(client1, proj_name, num_jobs=2, use_exec_script=False)
+
+        project_api1 = ProjectApi(client1, project.id)
+
+        jobs = project_api1.get_jobs()
+        self.assertEqual(len(jobs), 2)
+        self.assertNotEqual(jobs[0].id, missing)
+        self.assertNotEqual(jobs[0].eval_status, missing)
+        self.assertEqual(jobs[0].values, missing)
+        self.assertEqual(jobs[0].host_ids, missing)
+
+        jobs = project_api1.get_jobs(fields=["id", "eval_status", "host_ids"])
+        self.assertEqual(len(jobs), 2)
+        self.assertNotEqual(jobs[0].id, missing)
+        self.assertNotEqual(jobs[0].eval_status, missing)
+        self.assertNotEqual(jobs[0].host_ids, missing)
+        self.assertEqual(jobs[0].values, missing)
+
+        client2 = Client(self.rep_url, self.username, self.password, all_fields=True)
+        project_api2 = ProjectApi(client2, project.id)
+
+        jobs = project_api2.get_jobs()
+        self.assertEqual(len(jobs), 2)
+        self.assertNotEqual(jobs[0].id, missing)
+        self.assertNotEqual(jobs[0].eval_status, missing)
+        self.assertNotEqual(jobs[0].values, missing)
+        self.assertNotEqual(jobs[0].host_ids, missing)
+
+        jobs = project_api2.get_jobs(fields=["id", "eval_status"])
+        self.assertEqual(len(jobs), 2)
+        self.assertNotEqual(jobs[0].id, missing)
+        self.assertNotEqual(jobs[0].eval_status, missing)
+        self.assertEqual(jobs[0].host_ids, missing)
+        self.assertEqual(jobs[0].values, missing)
+
+        # Delete project
+        JmsApi(client1).delete_project(project)
+
+    def test_storage_configuration(self):
+
+        client = self.client
+        jms_api = JmsApi(client)
+        storages = jms_api.get_storage()
+        for storage in storages:
+            self.assertTrue("name" in storage)
+            self.assertTrue("priority" in storage)
+            self.assertTrue("obj_type" in storage)
+
+    def test_objects_type_check(self):
+
+        proj_name = f"test_objects_type_check"
+
+        client = self.client
+
+        proj = Project(name=proj_name, active=True)
+        job_def = JobDefinition(name="Job Def", active=True)
+        job = Job(name="test")
+
+        jms_api = JmsApi(client)
+
+        with self.assertRaises(ClientError) as context:
+            _ = jms_api.create_task_definition_templates([job])
+        assert "Wrong object type" in str(context.exception)
+        assert "got <class 'ansys.hps.client.jms.resource.job.Job'>" in str(context.exception)
+
+        proj = jms_api.create_project(proj, replace=True)
+        project_api = ProjectApi(client, proj.id)
+
+        job_def = JobDefinition(name="New Config", active=True)
+
+        with self.assertRaises(ClientError) as context:
+            _ = project_api.create_jobs([job_def])
+        assert "Wrong object type" in str(context.exception)
+        assert "got <class 'ansys.hps.client.jms.resource.job_definition.JobDefinition'>" in str(
+            context.exception
+        )
+
+        job_def = project_api.create_job_definitions([job_def])[0]
+
+        # verify support for mixed parameter definitions
+        with self.assertRaises(ClientError) as context:
+            _ = project_api.create_parameter_definitions(
+                [
+                    FloatParameterDefinition(),
+                    Job(),
+                ]
+            )
+        msg = str(context.exception)
+        assert "Wrong object type" in msg
+        assert "<class 'ansys.hps.client.jms.resource.job.Job'>" in msg
+        assert (
+            "<class 'ansys.hps.client.jms.resource.parameter_definition.FloatParameterDefinition'>"
+            in msg
+        )
+
+        _ = project_api.create_parameter_definitions(
+            [
+                FloatParameterDefinition(),
+                IntParameterDefinition(),
+            ]
+        )
+
+        JmsApi(client).delete_project(proj)
 
 
 if __name__ == "__main__":

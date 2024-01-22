@@ -1,10 +1,26 @@
-# ----------------------------------------------------------
-# Copyright (C) 2019 by
-# ANSYS Switzerland GmbH
-# www.ansys.com
+# Copyright (C) 2024 ANSYS, Inc. and/or its affiliates.
+# SPDX-License-Identifier: MIT
 #
-# Author(s): O.Koenig
-# ----------------------------------------------------------
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
+
+import io
 import logging
 import os
 import tempfile
@@ -12,8 +28,8 @@ import unittest
 
 from marshmallow.utils import missing
 
-from ansys.rep.client.jms import JmsApi, ProjectApi
-from ansys.rep.client.jms.resource import File, Project
+from ansys.hps.client.jms import JmsApi, ProjectApi
+from ansys.hps.client.jms.resource import File, Project
 from tests.rep_test import REPTestCase
 
 log = logging.getLogger(__name__)
@@ -22,7 +38,7 @@ log = logging.getLogger(__name__)
 class FilesTest(REPTestCase):
     def test_files(self):
 
-        client = self.client()
+        client = self.client
         jms_api = JmsApi(client)
         proj = jms_api.create_project(
             Project(name=f"rep_client_test_jms_FilesTest_{self.run_id}", active=False), replace=True
@@ -50,7 +66,25 @@ class FilesTest(REPTestCase):
         )
         files.append(File(name="img", evaluation_path="file000.jpg", type="image/jpeg", hash=None))
         files.append(File(name="out", evaluation_path="file.out", type="text/plain", hash=None))
+
+        with open(mac_path, "rb") as f:
+            file_object_string = f.read()
+        files.append(
+            File(
+                name="file-object",
+                evaluation_path="my-file.txt",
+                type="text/plain",
+                src=io.BytesIO(file_object_string),
+            )
+        )
+
         files_created = project_api.create_files(files)
+        for file in files_created:
+            self.assertTrue(file.created_by is not missing)
+            self.assertTrue(file.creation_time is not missing)
+            self.assertTrue(file.modified_by is not missing)
+            self.assertTrue(file.modification_time is not missing)
+            self.assertEqual(file.created_by, file.modified_by)
 
         # Get files
         files_queried = project_api.get_files(content=True)
@@ -66,10 +100,12 @@ class FilesTest(REPTestCase):
             self.assertEqual(f.read(), files_queried[0].content)
         with open(res_path, "rb") as f:
             self.assertEqual(f.read(), files_queried[1].content)
+        self.assertEqual(file_object_string, files_queried[4].content)
 
         # verify that file size was correctly set
         self.assertEqual(os.path.getsize(mac_path), files_queried[0].size)
         self.assertEqual(os.path.getsize(res_path), files_queried[1].size)
+        self.assertEqual(os.path.getsize(mac_path), files_queried[4].size)
 
         with tempfile.TemporaryDirectory() as tpath:
 
@@ -94,6 +130,34 @@ class FilesTest(REPTestCase):
             fpath = project_api.download_file(files_queried[0], tpath, progress_handler=handler)
             with open(mac_path, "rb") as f, open(fpath, "rb") as sf:
                 self.assertEqual(f.read(), sf.read())
+
+        # Delete project again
+        jms_api.delete_project(proj)
+
+    def test_download_file_in_subdir(self):
+
+        client = self.client
+        jms_api = JmsApi(client)
+        proj = jms_api.create_project(
+            Project(name=f"rep_test_download_file_in_subdir", active=False)
+        )
+        project_api = ProjectApi(client, proj.id)
+
+        files = [
+            File(
+                name="file",
+                evaluation_path="subdir/file.txt",
+                type="text/plain",
+                src=io.BytesIO(b"This is my file"),
+            )
+        ]
+
+        file = project_api.create_files(files)[0]
+
+        with tempfile.TemporaryDirectory() as tpath:
+            fpath = project_api.download_file(file, tpath)
+            with open(fpath, "r") as sf:
+                self.assertEqual("This is my file", sf.read())
 
         # Delete project again
         jms_api.delete_project(proj)

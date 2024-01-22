@@ -3,7 +3,7 @@
 LS-DYNA Job Submission
 ======================
 
-This example shows how to submit an LS-DYNA job to REP. Once submitted, minimal job information are serialized to a JSON file ``rep_job.json``.
+This example shows how to submit an LS-DYNA job to HPS. Once submitted, minimal job information are serialized to a JSON file ``rep_job.json``.
 This mimics what an application would need to store in order to subsequently monitor the job and download results.
 
 The job consists of two tasks:
@@ -18,6 +18,9 @@ Usage:
     python lsdyna_job.py submit
     python lsdyna_job.py monitor
     python lsdyna_job.py download
+
+.. note::
+    This example only runs on Windows platform as the LS-PrePost task requires to open the LS-PREPOST GUI.
 
 .. note::
     The ``download`` action requires ``tqdm`` and ``humanize`` packages to show a progress bar during the result files download. You can install them with ``python -m pip install tqdm humanize``.

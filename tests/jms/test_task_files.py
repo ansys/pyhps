@@ -1,10 +1,26 @@
-# ----------------------------------------------------------
 # Copyright (C) 2021 by
-# ANSYS Switzerland GmbH
-# www.ansys.com
+# Copyright (C) 2024 ANSYS, Inc. and/or its affiliates.
+# SPDX-License-Identifier: MIT
 #
-# Author(s): F.Negri, O.Koenig
-# ----------------------------------------------------------
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
+
 import datetime
 import logging
 import os
@@ -14,8 +30,8 @@ import unittest
 from examples.mapdl_motorbike_frame.project_setup import create_project
 import pytest
 
-from ansys.rep.client.jms import JmsApi, ProjectApi
-from ansys.rep.client.jms.resource import File
+from ansys.hps.client.jms import JmsApi, ProjectApi
+from ansys.hps.client.jms.resource import File
 from tests.rep_test import REPTestCase
 
 log = logging.getLogger(__name__)
@@ -25,7 +41,7 @@ class TaskFilesTest(REPTestCase):
     @pytest.mark.requires_evaluator
     def test_task_files_in_single_task_definition_project(self):
         num_jobs = 5
-        client = self.client()
+        client = self.client
         proj_name = f"test_jobs_TaskFilesTest_{self.run_id}"
 
         # Setup MAPDL motorbike frame project to work with
@@ -213,10 +229,12 @@ class TaskFilesTest(REPTestCase):
         for t1, t3 in zip(tasks1, tasks3):
             self.assertEqual(t1.id, t3.id)
             self.assertEqual(t3.eval_status, "pending")
-            self.assertEqual(t1.input_file_ids, t3.input_file_ids)
-            self.assertEqual(t1.output_file_ids, t3.output_file_ids)
-            self.assertEqual(t1.inherited_file_ids, t3.inherited_file_ids)
-            self.assertEqual(t1.owned_file_ids, t3.owned_file_ids)
+            # use assertCountEqual to verify that the lists have
+            # the same elements, the same number of times, without regard to order.
+            self.assertCountEqual(t1.input_file_ids, t3.input_file_ids)
+            self.assertCountEqual(t1.output_file_ids, t3.output_file_ids)
+            self.assertCountEqual(t1.inherited_file_ids, t3.inherited_file_ids)
+            self.assertCountEqual(t1.owned_file_ids, t3.owned_file_ids)
 
         # Wait again for the evaluation of all Jobs
         proj.active = True

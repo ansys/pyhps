@@ -1,3 +1,25 @@
+# Copyright (C) 2024 ANSYS, Inc. and/or its affiliates.
+# SPDX-License-Identifier: MIT
+#
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
+
 """
 Script to auto generate (most of the) JMS Resources.
 The main goal is to auto-generate the class docstrings and
@@ -9,7 +31,8 @@ import os
 
 import marshmallow
 
-from ansys.rep.client.jms.schema.object_reference import IdReference, IdReferenceList
+from ansys.hps.client.common.restricted_value import RestrictedValue
+from ansys.hps.client.jms.schema.object_reference import IdReference, IdReferenceList
 
 # we define here which resources to auto-generate
 # some are excluded or done only partially (e.g. File)
@@ -118,6 +141,14 @@ JMS_RESOURCES = [
         "additional_fields": [],
         "class": "Permission",
         "resource_filename": "permission",
+    },
+    {
+        "schema": "HpcResourcesSchema",
+        "schema_filename": "task_definition",
+        "rest_name": None,
+        "additional_fields": [],
+        "class": "HpcResources",
+        "resource_filename": "task_definition",
     },
     {
         "schema": "ResourceRequirementsSchema",
@@ -269,7 +300,6 @@ AUTH_RESOURCES = [
         "additional_fields": [],
         "class": "User",
         "resource_filename": "user",
-        "init_with_kwargs": True,
     },
 ]
 
@@ -287,7 +317,62 @@ FIELD_MAPPING = {
     marshmallow.fields.Nested: "object",
     IdReferenceList: "list[str]",
     IdReference: "str",
+    RestrictedValue: "int | float | str | bool",
 }
+
+
+def extract_field_info(name: str, field_object: marshmallow.fields, resources):
+
+    field = name
+    v = field_object
+
+    # Ensure that we use the attribute name if defined
+    if getattr(v, "attribute", None) is not None:
+        field = v.attribute
+
+    # build attribute doc
+    field_doc = f"{field}"
+
+    field_type = _extract_field_type(v, resources)
+    if field_type:
+        field_doc += f" : {field_type}"
+        if v.allow_none:
+            field_doc += ", optional"
+        field_doc += "\n"
+    elif v.allow_none:
+        field_doc += " : any, optional\n"
+    desc = v.metadata.get("description", None)
+    if desc:
+        field_doc += f"        {desc}\n"
+
+    return field, field_doc
+
+
+def _extract_field_type(v, resources) -> str:
+
+    if v.__class__ == marshmallow.fields.Constant:
+        field_type = type(v.constant).__name__
+    elif v.__class__ == marshmallow.fields.Nested:
+        field_type_schema = v.nested.__name__
+        field_type = next(
+            (r["class"] for r in resources if r["schema"] == field_type_schema),
+            "object",
+        )
+    else:
+        field_type = FIELD_MAPPING.get(v.__class__, None)
+    if field_type:
+        if v.__class__ == marshmallow.fields.Dict:
+            if v.key_field:
+                key_field_type = _extract_field_type(v.key_field, resources)
+                if v.value_field:
+                    value_field_type = _extract_field_type(v.value_field, resources)
+                else:
+                    value_field_type = "any"
+                field_type += f"[{key_field_type}, {value_field_type}]"
+        if hasattr(v, "many") and v.many == True:
+            field_type = f"list[{field_type}]"
+
+    return field_type
 
 
 def declared_fields(schema, resources):
@@ -297,37 +382,11 @@ def declared_fields(schema, resources):
     fields = []
     fields_doc = []
     for k, v in schema._declared_fields.items():
-        field = k
-        # Ensure that we use the attribute name if defined
-        if getattr(v, "attribute", None) is not None:
-            field = v.attribute
-        fields.append(field)
 
-        # build attribute doc
-        field_doc = f"{field}"
-        if v.__class__ == marshmallow.fields.Constant:
-            field_type = type(v.constant).__name__
-        elif v.__class__ == marshmallow.fields.Nested:
-            field_type_schema = v.nested.__name__
-            field_type = next(
-                (r["class"] for r in resources if r["schema"] == field_type_schema),
-                "object",
-            )
-        else:
-            field_type = FIELD_MAPPING.get(v.__class__, None)
-        if field_type:
-            if hasattr(v, "many") and v.many == True:
-                field_type = f"list[{field_type}]"
-            field_doc += f" : {field_type}"
-            if v.allow_none:
-                field_doc += ", optional"
-            field_doc += "\n"
-        elif v.allow_none:
-            field_doc += " : any, optional\n"
-        desc = v.metadata.get("description", None)
-        if desc:
-            field_doc += f"        {desc}\n"
+        field, field_doc = extract_field_info(k, v, resources)
+        fields.append(field)
         fields_doc.append(field_doc)
+
     return fields, fields_doc
 
 
@@ -335,7 +394,7 @@ def get_resource_imports(resource, base_class):
 
     imports = [
         "from marshmallow.utils import missing",
-        "from ansys.rep.client.common import Object",
+        "from ansys.hps.client.common import Object",
         # f"from {base_class['path']}.{base_class['filename']} import {base_class['name']}",
         f"from ..schema.{resource['schema_filename']} import {resource['schema']}",
     ]
@@ -350,9 +409,11 @@ def get_resource_code(resource, base_class, fields, field_docs):
     init_fields_str = ",\n".join([f"        {k}=missing" for k in fields])
 
     additional_initialization = "        self.obj_type = self.__class__.__name__"
-    if "init_with_kwargs" in resource:
-        additional_initialization = "        super().__init__(**kwargs)"
-        init_fields_str += ",\n        **kwargs"
+    if resource.get("init_with_kwargs", True):
+        if init_fields_str:
+            init_fields_str += ",\n        **kwargs"
+        else:
+            init_fields_str = "        **kwargs"
 
     code = f'''class {resource['class']}({base_class["name"]}):
     """{resource['class']} resource.
@@ -377,16 +438,16 @@ def get_resource_code(resource, base_class, fields, field_docs):
     return code
 
 
-def process_resources(subpackage, resources, base_class_path="ansys.rep.client"):
+def process_resources(subpackage, resources, base_class_path="ansys.hps.client"):
 
-    target_folder = os.path.join("ansys", "rep", "client", subpackage, "resource")
+    target_folder = os.path.join("ansys", "hps", "client", subpackage, "resource")
     resources_code = {}
     for resource in resources:
         print(f"Processing resource {resource['class']}")
 
         # dynamically load resource schema
         module = importlib.import_module(
-            f"ansys.rep.client.{subpackage}.schema.{resource['schema_filename']}"
+            f"ansys.hps.client.{subpackage}.schema.{resource['schema_filename']}"
         )
         resource_class = getattr(module, resource["schema"])
 
@@ -404,7 +465,7 @@ def process_resources(subpackage, resources, base_class_path="ansys.rep.client")
         base_class = {"name": "Object", "filename": "common", "path": base_class_path}
         if resource.get("base_class", None):
             base_class["name"] = resource["base_class"]
-            base_class["path"] = "ansys.rep.client.jms.resource"
+            base_class["path"] = "ansys.hps.client.jms.resource"
             base_class["filename"] = next(
                 (r["resource_filename"] for r in resources if r["class"] == resource["base_class"]),
                 None,

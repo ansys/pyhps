@@ -1,10 +1,25 @@
-# ----------------------------------------------------------
-# Copyright (C) 2019 by
-# ANSYS Switzerland GmbH
-# www.ansys.com
+# Copyright (C) 2024 ANSYS, Inc. and/or its affiliates.
+# SPDX-License-Identifier: MIT
 #
-# Author(s): F.Negri
-# ----------------------------------------------------------
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
+
 import datetime
 import logging
 import time
@@ -12,11 +27,12 @@ import unittest
 import uuid
 
 from examples.mapdl_motorbike_frame.project_setup import create_project
+from marshmallow.utils import missing
 import pytest
 
-from ansys.rep.client.jms import JmsApi, ProjectApi
-from ansys.rep.client.jms.resource import Job, JobDefinition, Project, Software, TaskDefinition
-from ansys.rep.client.jms.schema.task import TaskSchema
+from ansys.hps.client.jms import JmsApi, ProjectApi
+from ansys.hps.client.jms.resource import Job, JobDefinition, Project, Software, TaskDefinition
+from ansys.hps.client.jms.schema.task import TaskSchema
 from tests.rep_test import REPTestCase
 
 log = logging.getLogger(__name__)
@@ -97,18 +113,10 @@ class TasksTest(REPTestCase):
 
     def test_task_integration(self):
 
-        # This test assumes that the project mapdl_motorbike_frame
-        # already exists on the REP server.
-        # In case, you can create such project running the script
-        # examples/mapdl_motorbike_frame/project_setup.py
-
-        client = self.client()
+        client = self.client
         proj_name = "Mapdl Motorbike Frame"
 
-        jms_api = JmsApi(client)
-        project = jms_api.get_project_by_name(name=proj_name)
-        if not project:
-            project = create_project(client, proj_name, num_jobs=5, use_exec_script=False)
+        project = create_project(client, proj_name, num_jobs=5, use_exec_script=False)
 
         project_api = ProjectApi(client, project.id)
         tasks = project_api.get_tasks(limit=5)
@@ -118,12 +126,14 @@ class TasksTest(REPTestCase):
         for job in jobs:
             tasks = project_api.get_tasks(job_id=job.id)
             self.assertEqual(tasks[0].job_id, job.id)
+            self.assertTrue(tasks[0].created_by is not missing)
+            self.assertTrue(tasks[0].modified_by is not missing)
 
     def test_job_sync(self):
 
         # create base project with 1 task and 3 jobs
         num_jobs = 3
-        client = self.client()
+        client = self.client
         jms_api = JmsApi(client)
         proj_name = f"test_desing_point_sync_{uuid.uuid4().hex[:8]}"
 
@@ -171,7 +181,7 @@ class TasksTest(REPTestCase):
 
         # sync jobs individually
         jobs = project_api.get_jobs()
-        project_api._sync_jobs(jobs)
+        project_api.sync_jobs(jobs)
 
         # verify that tasks were added and they're inactive
         for job in jobs:
@@ -210,7 +220,7 @@ class TasksTest(REPTestCase):
         job_def = project_api.update_job_definitions([job_def])[0]
 
         # sync the first 2 design points in bulk
-        project_api._sync_jobs(jobs[:2])
+        project_api.sync_jobs(jobs[:2])
 
         # verify that tasks were added and they're inactive
         for job in jobs[:2]:
@@ -248,7 +258,7 @@ class TasksTest(REPTestCase):
         # verity that the process step snapshot of an evaluated task in not modified
         # on job:sync
 
-        client = self.client()
+        client = self.client
         proj_name = f"test_sync_task_definition_snapshot_{uuid.uuid4().hex[:8]}"
 
         project = create_project(client=client, name=proj_name, num_jobs=1)
@@ -273,7 +283,7 @@ class TasksTest(REPTestCase):
         task_def = project_api.update_task_definitions([task_def])[0]
 
         # the application in the task.task_definition_snapshot should not be modified
-        project_api._sync_jobs([job])
+        project_api.sync_jobs([job])
         tasks = project_api.get_tasks(job_id=job.id)
         self.assertEqual(len(tasks), 1)
         self.assertEqual(tasks[0].eval_status, "evaluated")
@@ -284,7 +294,7 @@ class TasksTest(REPTestCase):
         JmsApi(client).delete_project(project)
 
     def test_register_external_job(self):
-        client = self.client()
+        client = self.client
 
         jms_api = JmsApi(client)
         proj_name = f"test_register_external_job"

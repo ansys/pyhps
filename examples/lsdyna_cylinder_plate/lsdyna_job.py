@@ -1,5 +1,27 @@
+# Copyright (C) 2024 ANSYS, Inc. and/or its affiliates.
+# SPDX-License-Identifier: MIT
+#
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
+
 """
-Script showing how to submit an LS-DYNA job to REP.
+Script showing how to submit an LS-DYNA job to Ansys HPC Platform Services.
 
 Once submitted, minimal job information are serialized to a JSON file rep_job.json.
 This mimics what an application would need to store in order to
@@ -23,8 +45,8 @@ import logging
 import os
 import time
 
-from ansys.rep.client import Client, REPError
-from ansys.rep.client.jms import (
+from ansys.hps.client import Client, HPSError
+from ansys.hps.client.jms import (
     File,
     JmsApi,
     Job,
@@ -43,7 +65,7 @@ REP_URL = "https://localhost:8443/rep"
 USERNAME = "repadmin"
 PASSWORD = "repadmin"
 USE_LSDYNA_MPP = False
-ANSYS_VERSION = "2023 R1"
+ANSYS_VERSION = "2024 R1"
 
 
 class REPJob:
@@ -69,9 +91,8 @@ class REPJob:
         self.task_ids = task_ids
 
     def __str__(self):
-        return (
-            f"REP Job:\n {json.dumps(self, default=lambda x: x.__dict__, sort_keys=True, indent=4)}"
-        )
+        repr = json.dumps(self, default=lambda x: x.__dict__, sort_keys=True, indent=4)
+        return f"REP Job:\n{repr}"  # noqa: E231
 
     def save(self):
         """Save job info to JSON file"""
@@ -86,7 +107,7 @@ class REPJob:
         return job
 
 
-def submit_job() -> REPJob:
+def submit_job(use_exec_script=False) -> REPJob:
     """Create a REP project running a simple LS-DYNA
     job simulating the impact of a cylinder made of Aluminum
     against a plate made of steel.
@@ -109,7 +130,7 @@ def submit_job() -> REPJob:
     # input files
     files.append(
         File(
-            name="input_deck",
+            name="inp",
             evaluation_path="cylinder_plate.k",
             type="text/plain",
             src=os.path.join(cwd, "cylinder_plate.k"),
@@ -177,25 +198,25 @@ def submit_job() -> REPJob:
     job_def = JobDefinition(name="JobDefinition.1", active=True)
 
     # Define process steps (task definitions)
-    ls_dyna_command = "%executable% i=%file:input_deck% ncpu=%resource:num_cores% memory=300m"
+    ls_dyna_command = "%executable% i=%file:inp% ncpu=%resource:num_cores% memory=300m"
     if USE_LSDYNA_MPP:
-        ls_dyna_command = (
-            "%executable% -dis -np %resource:num_cores% i=%file:input_deck% memory=300m"
-        )
+        ls_dyna_command = "%executable% -dis -np %resource:num_cores% i=%file:inp% memory=300m"
 
+    task_defs = []
     task_def1 = TaskDefinition(
         name="LS-DYNA Run",
         software_requirements=[Software(name="Ansys LS-DYNA", version=ANSYS_VERSION)],
         execution_command=ls_dyna_command,
         max_execution_time=3600.0,
         resource_requirements=ResourceRequirements(
-            cpu_core_usage=6,
-            memory=6000,
-            disk_space=4000,
+            num_cores=6,
+            memory=6000 * 1024 * 1024,
+            disk_space=4000 * 1024 * 1024,
+            distributed=USE_LSDYNA_MPP,
         ),
         execution_level=0,
         num_trials=1,
-        input_file_ids=[file_ids["input_deck"]],
+        input_file_ids=[file_ids["inp"]],
         output_file_ids=[file_ids["d3hsp"], file_ids["messag"], file_ids["d3plot"]],
         success_criteria=SuccessCriteria(
             return_code=0,
@@ -205,15 +226,27 @@ def submit_job() -> REPJob:
         ),
     )
 
+    if use_exec_script:
+        exec_script_file = project_api.copy_default_execution_script(
+            f"lsdyna-v{ANSYS_VERSION[2:4]}{ANSYS_VERSION[6]}-exec_lsdyna.py"
+        )
+
+        task_def1.use_execution_script = True
+        task_def1.execution_script_id = exec_script_file.id
+
+    task_defs.append(task_def1)
+
     task_def2 = TaskDefinition(
         name="LS-PrePost Run",
         software_requirements=[Software(name="Ansys LS-PrePost", version=ANSYS_VERSION)],
         execution_command="%executable% c=%file:post_commands%",
         max_execution_time=600.0,
         resource_requirements=ResourceRequirements(
-            cpu_core_usage=2,
+            num_cores=2,
             memory=3000,
             disk_space=4000,
+            distributed=False,
+            platform="Windows",
         ),
         execution_level=1,
         num_trials=1,
@@ -226,7 +259,9 @@ def submit_job() -> REPJob:
         ),
     )
 
-    task_definitions = project_api.create_task_definitions([task_def1, task_def2])
+    task_defs.append(task_def2)
+
+    task_definitions = project_api.create_task_definitions(task_defs)
 
     # Create job definition in project
     job_def = JobDefinition(name="JobDefinition.1", active=True)
@@ -341,7 +376,7 @@ def download_results(app_job: REPJob):
                     continue
                 else:
                     log.warning(
-                        f"{file.evaluation_path} already exists:"
+                        f"{file.evaluation_path} already exists: "
                         f"size on server: {humanize.naturalsize(file.size)}, "
                         f"size on disk {humanize.naturalsize(os.path.getsize(download_path))} MB"
                     )
@@ -373,11 +408,17 @@ if __name__ == "__main__":
     parser.add_argument(
         "action", default="submit", choices=["submit", "monitor", "download"], help="Action to run"
     )
+    parser.add_argument(
+        "--exec_script",
+        default=False,
+        type=bool,
+        help="Use default execution script while submitting job",
+    )
 
     args = parser.parse_args()
     try:
         if args.action == "submit":
-            job = submit_job()
+            job = submit_job(args.exec_script)
             job.save()
         elif args.action == "monitor":
             job = REPJob.load()
@@ -387,7 +428,7 @@ if __name__ == "__main__":
             job = REPJob.load()
             log.info(job)
             download_results(job)
-    except REPError as e:
+    except HPSError as e:
         log.error(str(e))
     except KeyboardInterrupt:
         log.warning("Interrupted, stopping ...")

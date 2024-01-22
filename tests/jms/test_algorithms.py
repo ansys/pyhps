@@ -1,17 +1,32 @@
-# ----------------------------------------------------------
-# Copyright (C) 2019 by
-# ANSYS Switzerland GmbH
-# www.ansys.com
+# Copyright (C) 2024 ANSYS, Inc. and/or its affiliates.
+# SPDX-License-Identifier: MIT
 #
-# Author(s): F.Negri
-# ----------------------------------------------------------
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
+
 import logging
 import unittest
 
 from marshmallow.utils import missing
 
-from ansys.rep.client.jms import JmsApi, ProjectApi
-from ansys.rep.client.jms.resource import Algorithm, Job, JobDefinition, JobSelection, Project
+from ansys.hps.client.jms import JmsApi, ProjectApi
+from ansys.hps.client.jms.resource import Algorithm, Job, JobDefinition, JobSelection, Project
 from tests.rep_test import REPTestCase
 
 log = logging.getLogger(__name__)
@@ -21,7 +36,7 @@ class AlgorithmsTest(REPTestCase):
     def test_algorithms(self):
 
         log.debug("=== Client ===")
-        client = self.client()
+        client = self.client
         jms_api = JmsApi(client)
         proj_name = f"rep_client_test_jms_AlgorithmsTest_{self.run_id}"
 
@@ -51,6 +66,11 @@ class AlgorithmsTest(REPTestCase):
         for sel in sels:
             self.assertEqual(len(sel.jobs), 5)
             self.assertEqual(sel.algorithm_id, None)
+            self.assertTrue(sel.created_by is not missing)
+            self.assertTrue(sel.creation_time is not missing)
+            self.assertTrue(sel.modified_by is not missing)
+            self.assertTrue(sel.modification_time is not missing)
+            self.assertEqual(sel.created_by, sel.modified_by)
 
         # Create an algorithm
         algo = Algorithm(name="new_algo")
@@ -62,6 +82,11 @@ class AlgorithmsTest(REPTestCase):
         self.assertEqual(len(algo.jobs), 0)
         self.assertEqual(algo.data, None)
         self.assertEqual(algo.description, None)
+        self.assertTrue(algo.created_by is not missing)
+        self.assertTrue(algo.creation_time is not missing)
+        self.assertTrue(algo.modified_by is not missing)
+        self.assertTrue(algo.modification_time is not missing)
+        self.assertEqual(algo.created_by, algo.modified_by)
 
         # Link jobs to algorithm
         algo.jobs = [j.id for j in jobs]

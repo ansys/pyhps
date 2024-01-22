@@ -1,12 +1,34 @@
+# Copyright (C) 2024 ANSYS, Inc. and/or its affiliates.
+# SPDX-License-Identifier: MIT
+#
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
+
 """
-Example script to setup a simple CFX project in pyrep.
+Example script to setup a simple CFX project in pyhps.
 """
 import argparse
 import logging
 import os
 
-from ansys.rep.client import Client, REPError, __external_version__
-from ansys.rep.client.jms import (
+from ansys.hps.client import Client, HPSError, __ansys_apps_version__
+from ansys.hps.client.jms import (
     File,
     JmsApi,
     Job,
@@ -23,9 +45,9 @@ from ansys.rep.client.jms import (
 log = logging.getLogger(__name__)
 
 
-def create_project(client, name, num_jobs=20, version=__external_version__):
+def create_project(client, name, num_jobs=20, version=__ansys_apps_version__):
     """
-    Create a REP project consisting of an ANSYS CFX model.
+    Create an HPS project consisting of an ANSYS CFX model.
     """
     jms_api = JmsApi(client)
     log.debug("=== Project")
@@ -105,7 +127,7 @@ def create_project(client, name, num_jobs=20, version=__external_version__):
         ],
         execution_command=None,  # only execution script supported initially
         resource_requirements=ResourceRequirements(
-            cpu_core_usage=1.0,
+            num_cores=1.0,
             memory=250,
             disk_space=5,
         ),
@@ -155,19 +177,19 @@ if __name__ == "__main__":
     parser.add_argument("-U", "--url", default="https://127.0.0.1:8443/rep")
     parser.add_argument("-u", "--username", default="repadmin")
     parser.add_argument("-p", "--password", default="repadmin")
-    parser.add_argument("-v", "--ansys-version", default=__external_version__)
+    parser.add_argument("-v", "--ansys-version", default=__ansys_apps_version__)
     args = parser.parse_args()
 
     logger = logging.getLogger()
     logging.basicConfig(format="%(message)s", level=logging.DEBUG)
 
     try:
-        log.info("Connect to REP JMS")
-        client = Client(rep_url=args.url, username=args.username, password=args.password)
-        log.info(f"REP URL: {client.rep_url}")
+        log.info("Connect to HPC Platform Services")
+        client = Client(url=args.url, username=args.username, password=args.password)
+        log.info(f"HPS URL: {client.rep_url}")
         proj = create_project(
             client=client, name=args.name, num_jobs=args.num_jobs, version=args.ansys_version
         )
 
-    except REPError as e:
+    except HPSError as e:
         log.error(str(e))

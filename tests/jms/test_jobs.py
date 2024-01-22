@@ -1,10 +1,25 @@
-# ----------------------------------------------------------
-# Copyright (C) 2019 by
-# ANSYS Switzerland GmbH
-# www.ansys.com
+# Copyright (C) 2024 ANSYS, Inc. and/or its affiliates.
+# SPDX-License-Identifier: MIT
 #
-# Author(s): F.Negri
-# ----------------------------------------------------------
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
+
 import copy
 import logging
 import unittest
@@ -13,9 +28,9 @@ import uuid
 from examples.mapdl_motorbike_frame.project_setup import create_project
 from marshmallow.utils import missing
 
-from ansys.rep.client.jms import JmsApi, ProjectApi
-from ansys.rep.client.jms.resource import Job, JobDefinition, Project
-from ansys.rep.client.jms.schema.job import JobSchema
+from ansys.hps.client import AuthApi, JmsApi, ProjectApi
+from ansys.hps.client.jms.resource import Job, JobDefinition, Project
+from ansys.hps.client.jms.schema.job import JobSchema
 from tests.rep_test import REPTestCase
 
 log = logging.getLogger(__name__)
@@ -105,13 +120,14 @@ class JobsTest(REPTestCase):
             job_definition_id=2,
             host_ids=["uuid-4", "uuid-5"],
             values={"p1": "string_value", "p2": 8.9, "p3": True},
-            creator="dcs-client",
+            creator="rep-client",
             elapsed_time=40.8,
         )
 
         self.assertEqual(job.note, missing)
         self.assertEqual(job.priority, missing)
         self.assertEqual(job.elapsed_time, 40.8)
+        self.assertEqual(job.creator, "rep-client")
 
         schema = JobSchema()
         serialized_job = schema.dump(job)
@@ -127,8 +143,8 @@ class JobsTest(REPTestCase):
 
     def test_job_integration(self):
 
-        client = self.client()
-        proj_name = f"dcs_client_test_jobs_JobTest_{self.run_id}"
+        client = self.client
+        proj_name = f"test_jobs_JobTest_{self.run_id}"
 
         proj = Project(name=proj_name, active=True)
         jms_api = JmsApi(client)
@@ -137,6 +153,9 @@ class JobsTest(REPTestCase):
 
         job_def = JobDefinition(name="New Config", active=True)
         job_def = project_api.create_job_definitions([job_def])[0]
+
+        self.assertTrue(job_def.modified_by is not missing)
+        self.assertTrue(job_def.created_by is not missing)
 
         # test creating, update and delete with no jobs
         jobs = project_api.create_jobs([])
@@ -160,14 +179,21 @@ class JobsTest(REPTestCase):
             self.assertEqual(job.note, None)
             self.assertEqual(job.fitness, None)
             self.assertTrue(job.executed_level is not None)
+            self.assertTrue(job.modified_by is not missing)
+            self.assertTrue(job.created_by is not missing)
 
         jobs = project_api.get_jobs()
+        auth_api = AuthApi(self.client)
         for job in jobs:
             # check that all fields are populated (i.e. request params include fields="all")
             self.assertEqual(job.creator, None)
             self.assertEqual(job.note, None)
             self.assertEqual(job.fitness, None)
             self.assertTrue(job.executed_level is not None)
+            self.assertTrue(job.modified_by is not missing)
+            self.assertTrue(job.created_by is not missing)
+            self.assertTrue(auth_api.get_user(id=job.created_by).username == self.username)
+            self.assertTrue(auth_api.get_user(id=job.modified_by).username == self.username)
             # fill some of them
             job.creator = "rep-client"
             job.note = f"test job{job.id} update"
@@ -193,7 +219,8 @@ class JobsTest(REPTestCase):
         jobs = project_api.get_jobs()
         self.assertEqual(len(jobs), 8)
 
-        new_jobs = project_api.copy_jobs([Job(id=job.id) for job in jobs[:3]])
+        new_job_ids = project_api.copy_jobs([Job(id=job.id) for job in jobs[:3]])
+        new_jobs = project_api.get_jobs(id=new_job_ids)
         for i in range(3):
             self.assertEqual(new_jobs[i].creator, jobs[i].creator)
             self.assertEqual(new_jobs[i].note, jobs[i].note)
@@ -205,7 +232,7 @@ class JobsTest(REPTestCase):
         jms_api.delete_project(proj)
 
     def test_job_update(self):
-        client = self.client()
+        client = self.client
         jms_api = JmsApi(client)
         proj_name = f"test_job_update_{uuid.uuid4().hex[:8]}"
 

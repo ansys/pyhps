@@ -1,13 +1,30 @@
-# ----------------------------------------------------------
-# Copyright (C) 2019 by
-# ANSYS Switzerland GmbH
-# www.ansys.com
+# Copyright (C) 2024 ANSYS, Inc. and/or its affiliates.
+# SPDX-License-Identifier: MIT
 #
-# Author(s): O.Koenig
-# ----------------------------------------------------------
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
+
 import logging
 
-from ansys.rep.client.auth import authenticate
+import requests
+
+from ansys.hps.client.auth import authenticate
 from tests.rep_test import REPTestCase
 
 log = logging.getLogger(__name__)
@@ -15,7 +32,17 @@ log = logging.getLogger(__name__)
 
 class AuthenticationTest(REPTestCase):
     def test_authenticate(self):
-        resp = authenticate(url=self.rep_url, username=self.username, password=self.password)
+        resp = authenticate(
+            url=self.rep_url, username=self.username, password=self.password, verify=False
+        )
 
         self.assertIn("access_token", resp)
         self.assertIn("refresh_token", resp)
+
+    def test_authenticate_with_ssl_verification(self):
+
+        with self.assertRaises(requests.exceptions.SSLError) as context:
+            _ = authenticate(
+                url=self.rep_url, username=self.username, password=self.password, verify=True
+            )
+        self.assertTrue("CERTIFICATE_VERIFY_FAILED" in str(context.exception))

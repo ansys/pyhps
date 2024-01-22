@@ -1,5 +1,27 @@
+# Copyright (C) 2024 ANSYS, Inc. and/or its affiliates.
+# SPDX-License-Identifier: MIT
+#
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
+
 """
-Project setup script for multi process step and task file replacement testing.
+Project setup script for multi steps (task definitions) and task file replacement testing.
 
 Author(s): R.Walker
 
@@ -25,10 +47,8 @@ import logging
 import os
 import random
 
-from task_files import update_task_files
-
-from ansys.rep.client import Client, REPError
-from ansys.rep.client.jms import (
+from ansys.hps.client import Client, HPSError
+from ansys.hps.client.jms import (
     File,
     IntParameterDefinition,
     JmsApi,
@@ -44,6 +64,8 @@ from ansys.rep.client.jms import (
     TaskDefinition,
 )
 
+from .task_files import update_task_files
+
 log = logging.getLogger(__name__)
 
 
@@ -57,8 +79,8 @@ def main(
     change_job_tasks,
     inactive,
     sequential,
-):
-    """Python project implementing multiple process steps and optional image generation."""
+) -> Project:
+    """Python project implementing multiple steps and optional image generation."""
     log.debug("=== Project")
     name = f"Python - {num_task_definitions} Task Defs {' - Img' if images else ''}"
     name += f"{' - Sequential' if sequential else ' - Parallel'}"
@@ -136,23 +158,20 @@ def main(
     params = []
     mappings = []
     for i in range(num_task_definitions):
-        int_params = [
+        new_params = [
             IntParameterDefinition(name=f"period{i}", lower_limit=1, upper_limit=period, units="s"),
             IntParameterDefinition(
                 name=f"duration{i}", lower_limit=0, upper_limit=duration, units="s"
             ),
             IntParameterDefinition(name=f"steps{i}", units=""),
-        ]
-        str_params = [
             StringParameterDefinition(
                 name=f"color{i}",
                 value_list=["red", "blue", "green", "yellow", "cyan"],
                 default='"orange"',
             ),
         ]
-        int_params = project_api.create_parameter_definitions(int_params)
-        str_params = project_api.create_parameter_definitions(str_params)
-        params.extend(int_params + str_params)
+        new_params = project_api.create_parameter_definitions(new_params)
+        params.extend(new_params)
 
         input_file_id = file_ids[f"td{i}_input"]
         result_file_id = file_ids[f"td{i}_results_json"]
@@ -161,7 +180,7 @@ def main(
             ParameterMapping(
                 key_string='"period"',
                 tokenizer=":",
-                parameter_definition_id=int_params[0].id,
+                parameter_definition_id=new_params[0].id,
                 file_id=input_file_id,
             )
         )
@@ -169,7 +188,7 @@ def main(
             ParameterMapping(
                 key_string='"duration"',
                 tokenizer=":",
-                parameter_definition_id=int_params[1].id,
+                parameter_definition_id=new_params[1].id,
                 file_id=input_file_id,
             )
         )
@@ -177,7 +196,7 @@ def main(
             ParameterMapping(
                 key_string='"steps"',
                 tokenizer=":",
-                parameter_definition_id=int_params[2].id,
+                parameter_definition_id=new_params[2].id,
                 file_id=result_file_id,
             )
         )
@@ -186,7 +205,7 @@ def main(
                 key_string='"color"',
                 tokenizer=":",
                 string_quote='"',
-                parameter_definition_id=str_params[0].id,
+                parameter_definition_id=new_params[3].id,
                 file_id=input_file_id,
             )
         )
@@ -201,7 +220,7 @@ def main(
         if f"td{i}_results_jpg" in file_ids.keys():
             output_file_ids.append(file_ids[f"td{i}_results_jpg"])
 
-        cmd = f"%executable% %file:td{i}_pyscript% %file:td{i}_input% {i}"
+        cmd = f"%executable% %file:td{i}_pyscript% %file:td{i}_input% {i}"  # noqa: E231
         if images:
             cmd += " --images"
         task_defs.append(
@@ -213,9 +232,9 @@ def main(
                 execution_command=cmd,
                 max_execution_time=duration * 1.5,
                 resource_requirements=ResourceRequirements(
-                    cpu_core_usage=0.2,
-                    memory=100,
-                    disk_space=1,
+                    num_cores=0.2,
+                    memory=100 * 1024 * 1024,  # 100 MB
+                    disk_space=1 * 1024 * 1024,  # 1 MB
                 ),
                 execution_level=i if sequential else 0,
                 input_file_ids=input_file_ids,
@@ -260,6 +279,8 @@ def main(
 
     log.info(f"Created project '{proj.name}', ID='{proj.id}'")
 
+    return proj
+
 
 if __name__ == "__main__":
 
@@ -299,8 +320,8 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
 
-    log.debug("=== DCS connection")
-    client = Client(rep_url=args.url, username=args.username, password=args.password)
+    log.debug("=== HPS connection")
+    client = Client(url=args.url, username=args.username, password=args.password)
 
     try:
         main(
@@ -314,5 +335,5 @@ if __name__ == "__main__":
             inactive=args.inactive,
             sequential=args.sequential,
         )
-    except REPError as e:
+    except HPSError as e:
         log.error(str(e))

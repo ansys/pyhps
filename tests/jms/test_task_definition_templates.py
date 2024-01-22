@@ -1,46 +1,46 @@
-# ----------------------------------------------------------
 # Copyright (C) 2021 by
-# ANSYS Switzerland GmbH
-# www.ansys.com
+# Copyright (C) 2024 ANSYS, Inc. and/or its affiliates.
+# SPDX-License-Identifier: MIT
 #
-# Author(s): F.Negri
-# ----------------------------------------------------------
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
 
 import json
 import logging
-from typing import Tuple
 import unittest
 import uuid
 
 from marshmallow.utils import missing
 
-from ansys.rep.client import Client, REPError
-from ansys.rep.client.auth import AuthApi, User
-from ansys.rep.client.jms import JmsApi
-from ansys.rep.client.jms.resource import Permission, TaskDefinitionTemplate
-from ansys.rep.client.jms.schema.task_definition_template import TaskDefinitionTemplateSchema
+from ansys.hps.client import HPSError
+from ansys.hps.client.auth import AuthApi
+from ansys.hps.client.jms import JmsApi
+from ansys.hps.client.jms.resource import (
+    HpcResources,
+    Permission,
+    TaskDefinitionTemplate,
+    TemplateResourceRequirements,
+)
+from ansys.hps.client.jms.schema.task_definition_template import TaskDefinitionTemplateSchema
 from tests.rep_test import REPTestCase
 
 log = logging.getLogger(__name__)
-
-
-def create_new_user_client(
-    admin_cl: Client,
-    username=None,
-    password="test",
-) -> Tuple[User, Client]:
-
-    if username is None:
-        username = f"testuser-{uuid.uuid4().hex[:8]}"
-
-    auth_api = AuthApi(admin_cl)
-    user = auth_api.create_user(User(username=username, password=password))
-    client = Client(
-        rep_url=admin_cl.rep_url,
-        username=user.username,
-        password=password,
-    )
-    return user, client
 
 
 class TaskDefinitionTemplateTest(REPTestCase):
@@ -111,7 +111,7 @@ class TaskDefinitionTemplateTest(REPTestCase):
 
     def test_template_integration(self):
 
-        client = self.client()
+        client = self.client
         jms_api = JmsApi(client)
 
         # Test get queries
@@ -137,8 +137,8 @@ class TaskDefinitionTemplateTest(REPTestCase):
         if templates:
             self.assertTrue(templates[0].software_requirements == missing)
 
-        # Copy template
-        template_name = f"copied_template_{uuid.uuid4()}"
+        # Create new template based on existing one
+        template_name = f"new_template_{uuid.uuid4()}"
         templates = jms_api.get_task_definition_templates(limit=1)
         self.assertEqual(len(templates), 1)
 
@@ -151,23 +151,42 @@ class TaskDefinitionTemplateTest(REPTestCase):
         template = templates[0]
         self.assertEqual(template.name, template_name)
 
-        # Modify copied template
+        # Modify template
         template.software_requirements[0].version = "2.0.1"
+        template.resource_requirements = TemplateResourceRequirements(
+            hpc_resources=HpcResources(num_gpus_per_node=2)
+        )
         templates = jms_api.update_task_definition_templates([template])
         self.assertEqual(len(templates), 1)
         template = templates[0]
         self.assertEqual(template.software_requirements[0].version, "2.0.1")
         self.assertEqual(template.name, template_name)
+        self.assertEqual(template.resource_requirements.hpc_resources.num_gpus_per_node, 2)
 
-        # Delete copied template
+        # Delete template
         jms_api.delete_task_definition_templates([template])
 
         templates = jms_api.get_task_definition_templates(name=template_name)
         self.assertEqual(len(templates), 0)
 
+        # Copy template
+        templates = jms_api.get_task_definition_templates(limit=1)
+        self.assertEqual(len(templates), 1)
+        original_template = templates[0]
+        new_template_id = jms_api.copy_task_definition_templates(templates)
+        new_template = jms_api.get_task_definition_templates(id=new_template_id)[0]
+
+        self.assertTrue(original_template.name in new_template.name)
+        self.assertEqual(original_template.version, new_template.version)
+        self.assertEqual(original_template.version, new_template.version)
+        self.assertEqual(
+            original_template.software_requirements[0].version,
+            original_template.software_requirements[0].version,
+        )
+
     def test_template_permissions(self):
 
-        client = self.client()
+        client = self.client
         jms_api = JmsApi(client)
 
         templates = jms_api.get_task_definition_templates()
@@ -190,8 +209,7 @@ class TaskDefinitionTemplateTest(REPTestCase):
         self.assertIsNotNone(permissions[0].value_id)
 
         # create test user
-        auth_api = AuthApi(client)
-        user1, client1 = create_new_user_client(client)
+        user1, client1 = self.create_new_user_client()
         jms_api1 = JmsApi(client1)
 
         # verify test user can't access the template
@@ -214,7 +232,7 @@ class TaskDefinitionTemplateTest(REPTestCase):
         except_obj = None
         try:
             client1_templates = jms_api1.update_task_definition_templates(client1_templates)
-        except REPError as e:
+        except HPSError as e:
             except_obj = e
         self.assertEqual(except_obj.response.status_code, 403)
         self.assertEqual(except_obj.description, "Access to this resource has been restricted")
@@ -243,21 +261,22 @@ class TaskDefinitionTemplateTest(REPTestCase):
         self.assertEqual(permissions[0].value_id, user1.id)
 
         # verify that an admin user can access the template
-        admin_templates = jms_api.get_task_definition_templates(id=template.id)
-        log.info(admin_templates)
-        self.assertEqual(len(admin_templates), 1)
-        self.assertEqual(admin_templates[0].name, template.name)
-        self.assertEqual(admin_templates[0].version, template.version)
+        if self.is_admin:
+            admin_templates = jms_api.get_task_definition_templates(id=template.id)
+            log.info(admin_templates)
+            self.assertEqual(len(admin_templates), 1)
+            self.assertEqual(admin_templates[0].name, template.name)
+            self.assertEqual(admin_templates[0].version, template.version)
 
         # Delete template
         jms_api1.delete_task_definition_templates([template])
 
         # Delete user
-        auth_api.delete_user(user1)
+        self.delete_user(user1)
 
     def test_template_permissions_update(self):
 
-        client = self.client()
+        client = self.client
         jms_api = JmsApi(client)
 
         # create new template and check default permissions
@@ -267,18 +286,22 @@ class TaskDefinitionTemplateTest(REPTestCase):
         self.assertEqual(len(permissions), 1)
         self.assertEqual(permissions[0].permission_type, "user")
 
-        # remove permissions
-        permissions = []
+        # change permissions
+        permissions = [Permission(permission_type="anyone", role="admin", value_id=None)]
         permissions = jms_api.update_task_definition_template_permissions(
             template_id=template.id, permissions=permissions
         )
-        self.assertEqual(len(permissions), 0)
+        self.assertEqual(len(permissions), 1)
         permissions = jms_api.get_task_definition_template_permissions(template_id=template.id)
-        self.assertEqual(len(permissions), 0)
+        self.assertEqual(len(permissions), 1)
+        self.assertEqual(permissions[0].permission_type, "anyone")
+
+        # delete template
+        jms_api.delete_task_definition_templates([template])
 
     def test_template_anyone_permission(self):
 
-        client = self.client()
+        client = self.client
         jms_api = JmsApi(client)
 
         # create new template and check default permissions
@@ -291,8 +314,7 @@ class TaskDefinitionTemplateTest(REPTestCase):
         self.assertIsNotNone(permissions[0].value_id)
 
         # create test user
-        auth_api = AuthApi(client)
-        user1, client1 = create_new_user_client(client)
+        user1, client1 = self.create_new_user_client()
         jms_api1 = JmsApi(client1)
 
         # verify test user can't access the template
@@ -315,7 +337,7 @@ class TaskDefinitionTemplateTest(REPTestCase):
         except_obj = None
         try:
             client1_templates = jms_api1.update_task_definition_templates(client1_templates)
-        except REPError as e:
+        except HPSError as e:
             except_obj = e
         self.assertEqual(except_obj.response.status_code, 403)
         self.assertEqual(except_obj.description, "Access to this resource has been restricted")
@@ -336,20 +358,20 @@ class TaskDefinitionTemplateTest(REPTestCase):
         jms_api.delete_task_definition_templates([template])
 
         # Delete user
-        auth_api.delete_user(user1)
+        self.delete_user(user1)
 
     def test_template_delete(self):
 
-        client = self.client()
+        client = self.client
         auth_api = AuthApi(client)
 
         # create 2 non-admin users
         jms_api = JmsApi(client)
-        user1, client1 = create_new_user_client(client)
-        self.assertFalse(user1.is_admin)
+        user1, client1 = self.create_new_user_client()
+        self.assertFalse(auth_api.user_is_admin(user1.id))
         jms_api1 = JmsApi(client1)
-        user2, client2 = create_new_user_client(client)
-        self.assertFalse(user2.is_admin)
+        user2, client2 = self.create_new_user_client()
+        self.assertFalse(auth_api.user_is_admin(user2.id))
         jms_api2 = JmsApi(client2)
 
         # user1 creates new template
@@ -379,18 +401,18 @@ class TaskDefinitionTemplateTest(REPTestCase):
         except_obj = None
         try:
             client2_templates = jms_api2.delete_task_definition_templates(client2_templates)
-        except REPError as e:
+        except HPSError as e:
             except_obj = e
         self.assertIsNotNone(except_obj)
         self.assertEqual(except_obj.response.status_code, 403)
         self.assertEqual(except_obj.description, "Access to this resource has been restricted")
 
         # Delete the template
-        jms_api.delete_task_definition_templates([template])
+        jms_api1.delete_task_definition_templates([template])
 
         # Delete users
-        auth_api.delete_user(user1)
-        auth_api.delete_user(user2)
+        self.delete_user(user1)
+        self.delete_user(user2)
 
 
 if __name__ == "__main__":

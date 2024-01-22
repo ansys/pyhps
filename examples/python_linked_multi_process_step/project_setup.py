@@ -1,3 +1,25 @@
+# Copyright (C) 2024 ANSYS, Inc. and/or its affiliates.
+# SPDX-License-Identifier: MIT
+#
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
+
 """
 Python example with multiple dependent tasks and linked files in between.
 
@@ -8,8 +30,8 @@ import logging
 import os
 import random
 
-from ansys.rep.client import Client, REPError
-from ansys.rep.client.jms import (
+from ansys.hps.client import Client, HPSError
+from ansys.hps.client.jms import (
     File,
     FloatParameterDefinition,
     JmsApi,
@@ -117,10 +139,10 @@ def main(client, num_task_definitions, num_jobs, start, inactive):
         input_file_ids = [file_ids[f"td{i}_pyscript"]]
         if i == 0:
             input_file_ids.append(file_ids["input"])
-            cmd = f"%executable% %file:td{i}_pyscript% %file:input% {i}"
+            cmd = f"%executable% %file:td{i}_pyscript% %file:input% {i}"  # noqa: E231
         else:
             input_file_ids.append(file_ids[f"td{i-1}_result"])
-            cmd = f"%executable% %file:td{i}_pyscript% %file:td{i-1}_result% {i}"
+            cmd = f"%executable% %file:td{i}_pyscript% %file:td{i-1}_result% {i}"  # noqa: E231
 
         output_file_ids = [file_ids[f"td{i}_result"]]
 
@@ -137,9 +159,9 @@ def main(client, num_task_definitions, num_jobs, start, inactive):
                 max_execution_time=10,
                 execution_level=i,
                 resource_requirements=ResourceRequirements(
-                    cpu_core_usage=0.2,
-                    memory=100,
-                    disk_space=1,
+                    num_cores=0.2,
+                    memory=100 * 1024 * 1024,  # 100 MB
+                    disk_space=1 * 1024 * 1024,  # 1 MB
                 ),
                 input_file_ids=input_file_ids,
                 output_file_ids=output_file_ids,
@@ -192,8 +214,8 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
 
-    log.debug("=== REP connection")
-    client = Client(rep_url=args.url, username=args.username, password=args.password)
+    log.debug("=== HPS connection")
+    client = Client(url=args.url, username=args.username, password=args.password)
     try:
         main(
             client,
@@ -202,5 +224,5 @@ if __name__ == "__main__":
             start=args.start,
             inactive=args.inactive,
         )
-    except REPError as e:
+    except HPSError as e:
         log.error(str(e))

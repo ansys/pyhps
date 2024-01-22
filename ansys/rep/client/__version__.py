@@ -1,6 +1,0 @@
-__version__ = "0.1.dev0"
-__external_version__ = "2023 R2"
-__version_no_dots__ = "232"
-__company__ = "ANSYS, Inc."
-__company_short__ = "Ansys"
-__url__ = "https://github.com/pyansys/pyrep"

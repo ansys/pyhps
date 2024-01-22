@@ -3,20 +3,20 @@ Job Management Service
 
 Ansys REP includes Job Management Service (JMS), which is the main service for storing and evaluating jobs using multiple heterogeneous compute resources. 
 
-The Python subpackage ``ansys.rep.client.jms`` wraps around the JMS service REST API available at ``https://hostname:port/rep/jms/api``.
+The Python subpackage ``ansys.hps.client.jms`` wraps around the JMS service REST API available at ``https://hostname:port/rep/jms/api``.
 
 APIs
 --------------------------------------
 
 JMS Api
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-.. autoclass:: ansys.rep.client.jms.JmsApi
+.. autoclass:: ansys.hps.client.jms.JmsApi
    :members:
    :undoc-members:
 
 Project Api
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-.. autoclass:: ansys.rep.client.jms.ProjectApi
+.. autoclass:: ansys.hps.client.jms.ProjectApi
    :members:
    :undoc-members:
 
@@ -27,13 +27,13 @@ Resources
 File
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
  
-.. autoclass:: ansys.rep.client.jms.File
+.. autoclass:: ansys.hps.client.jms.File
    :members:
 
 Project
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
  
-.. autoclass:: ansys.rep.client.jms.Project
+.. autoclass:: ansys.hps.client.jms.Project
    :members:
    :undoc-members:
    :exclude-members: Meta
@@ -41,54 +41,54 @@ Project
 Fitness Definition
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
  
-.. autoclass:: ansys.rep.client.jms.FitnessTermDefinition
+.. autoclass:: ansys.hps.client.jms.FitnessTermDefinition
    :members:
 
-.. autoclass:: ansys.rep.client.jms.FitnessDefinition
+.. autoclass:: ansys.hps.client.jms.FitnessDefinition
    :members:
 
 
 Parameters
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-.. autoclass:: ansys.rep.client.jms.FloatParameterDefinition
+.. autoclass:: ansys.hps.client.jms.FloatParameterDefinition
    :members:
 
-.. autoclass:: ansys.rep.client.jms.BoolParameterDefinition
+.. autoclass:: ansys.hps.client.jms.BoolParameterDefinition
    :members:
 
-.. autoclass:: ansys.rep.client.jms.IntParameterDefinition
+.. autoclass:: ansys.hps.client.jms.IntParameterDefinition
    :members:
 
-.. autoclass:: ansys.rep.client.jms.StringParameterDefinition
+.. autoclass:: ansys.hps.client.jms.StringParameterDefinition
    :members:
 
-.. autoclass:: ansys.rep.client.jms.ParameterMapping
+.. autoclass:: ansys.hps.client.jms.ParameterMapping
    :members:
 
 Task Definition
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-.. autoclass:: ansys.rep.client.jms.Software
+.. autoclass:: ansys.hps.client.jms.Software
    :members:
 
-.. autoclass:: ansys.rep.client.jms.ResourceRequirements
+.. autoclass:: ansys.hps.client.jms.ResourceRequirements
    :members:
 
-.. autoclass:: ansys.rep.client.jms.SuccessCriteria
+.. autoclass:: ansys.hps.client.jms.SuccessCriteria
    :members:
 
-.. autoclass:: ansys.rep.client.jms.Licensing
+.. autoclass:: ansys.hps.client.jms.Licensing
    :members:
 
-.. autoclass:: ansys.rep.client.jms.TaskDefinition
+.. autoclass:: ansys.hps.client.jms.TaskDefinition
    :members:
 
 
 Job Definition
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-.. autoclass:: ansys.rep.client.jms.JobDefinition
+.. autoclass:: ansys.hps.client.jms.JobDefinition
    :members:
    :undoc-members:
    :exclude-members: Meta
@@ -96,58 +96,58 @@ Job Definition
 Task
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-.. autoclass:: ansys.rep.client.jms.Task
+.. autoclass:: ansys.hps.client.jms.Task
    :members:
 
 
 Job
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-.. autoclass:: ansys.rep.client.jms.Job
+.. autoclass:: ansys.hps.client.jms.Job
    :members:
 
 
 Job Selection
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-.. autoclass:: ansys.rep.client.jms.JobSelection
+.. autoclass:: ansys.hps.client.jms.JobSelection
    :members:
 
 
 Design Exploration Algorithm
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-.. autoclass:: ansys.rep.client.jms.Algorithm
+.. autoclass:: ansys.hps.client.jms.Algorithm
    :members:
 
 
 Evaluator
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-.. autoclass:: ansys.rep.client.jms.Evaluator
+.. autoclass:: ansys.hps.client.jms.Evaluator
    :members:
 
 
 Task Definition Template
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-.. autoclass:: ansys.rep.client.jms.TemplateProperty
+.. autoclass:: ansys.hps.client.jms.TemplateProperty
    :members:
 
-.. autoclass:: ansys.rep.client.jms.TemplateResourceRequirements
+.. autoclass:: ansys.hps.client.jms.TemplateResourceRequirements
    :members:
 
-.. autoclass:: ansys.rep.client.jms.TemplateInputFile
+.. autoclass:: ansys.hps.client.jms.TemplateInputFile
    :members:
 
-.. autoclass:: ansys.rep.client.jms.TemplateOutputFile
+.. autoclass:: ansys.hps.client.jms.TemplateOutputFile
    :members:
 
-.. autoclass:: ansys.rep.client.jms.TaskDefinitionTemplate
+.. autoclass:: ansys.hps.client.jms.TaskDefinitionTemplate
    :members:
 
 Permissions
 ^^^^^^^^^^^
 
-.. autoclass:: ansys.rep.client.jms.Permission
+.. autoclass:: ansys.hps.client.jms.Permission
    :members:

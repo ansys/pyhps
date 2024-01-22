@@ -1,10 +1,25 @@
-# ----------------------------------------------------------
-# Copyright (C) 2019 by
-# ANSYS Switzerland GmbH
-# www.ansys.com
+# Copyright (C) 2024 ANSYS, Inc. and/or its affiliates.
+# SPDX-License-Identifier: MIT
 #
-# Author(s): F.Negri
-# ----------------------------------------------------------
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
+
 import logging
 import os
 import tempfile
@@ -15,9 +30,10 @@ import uuid
 from examples.mapdl_motorbike_frame.project_setup import create_project as motorbike_create_project
 from marshmallow.utils import missing
 
-from ansys.rep.client.jms import JmsApi, ProjectApi
-from ansys.rep.client.jms.resource import JobDefinition, LicenseContext, Project
-from ansys.rep.client.jms.schema.project import ProjectSchema
+from ansys.hps.client import __ansys_apps_version__ as ansys_version
+from ansys.hps.client.jms import JmsApi, ProjectApi
+from ansys.hps.client.jms.resource import JobDefinition, LicenseContext, Project
+from ansys.hps.client.jms.schema.project import ProjectSchema
 from tests.rep_test import REPTestCase
 
 log = logging.getLogger(__name__)
@@ -44,34 +60,6 @@ class ProjectsTest(REPTestCase):
                 },
                 "num_jobs": 56,
             },
-            "file_storages": [
-                {
-                    "obj_type": "RestGateway",
-                    "name": "dc_fs_gateway",
-                    "url": "https://212.126.163.153:443/dcs/fs/api",
-                    "use_default_url": False,
-                    "priority": 20,
-                    "reference": "file_system_storage",
-                },
-                {
-                    "obj_type": "FileSystemStorage",
-                    "name": "file_system_storage",
-                    "cache": False,
-                    "persistent": True,
-                    "priority": 10,
-                    "storage_directory": "/media/dcp_data/ansft_gateway/default_fs_storage/",
-                    "owner_uuid": "0ea21dc4-37da-46e2-85e2-4f4a78dcdf0a",
-                },
-                {
-                    "obj_type": "FileSystemStorage",
-                    "name": "shared_file_system_storage",
-                    "cache": False,
-                    "persistent": True,
-                    "priority": 5,
-                    "storage_directory": "/media/ansys/tmp_storage/",
-                    "owner_uuid": "0ea21dc4-37da-46e2-85e2-4f4a78dcdf0a",
-                },
-            ],
         }
 
         project = ProjectSchema().load(project_dict)
@@ -89,11 +77,6 @@ class ProjectsTest(REPTestCase):
             project_dict["statistics"]["eval_status"]["failed"],
         )
 
-        self.assertEqual(len(project.file_storages), 3)
-        self.assertEqual(project.file_storages[0]["name"], "dc_fs_gateway")
-        self.assertEqual(project.file_storages[0]["reference"], "file_system_storage")
-        self.assertEqual(project.file_storages[2]["storage_directory"], "/media/ansys/tmp_storage/")
-
     def test_project_serialization(self):
 
         project = Project(name="new_project")
@@ -104,12 +87,11 @@ class ProjectsTest(REPTestCase):
         serialized_project = ProjectSchema().dump(project)
 
         self.assertTrue("name" in serialized_project.keys())
-        self.assertFalse("file_storages" in serialized_project.keys())
         self.assertEqual(serialized_project["name"], "new_project")
 
     def test_project_integration(self):
 
-        client = self.client()
+        client = self.client
         jms_api = JmsApi(client)
         proj_name = f"test_jms_ProjectTest_{uuid.uuid4()}"
 
@@ -143,7 +125,7 @@ class ProjectsTest(REPTestCase):
     @unittest.expectedFailure
     def test_project_replace(self):
 
-        client = self.client()
+        client = self.client
         jms_api = JmsApi(client)
 
         p = Project(name="Original Project")
@@ -157,23 +139,23 @@ class ProjectsTest(REPTestCase):
 
     def test_project_copy(self):
 
-        client = self.client()
+        client = self.client
         jms_api = JmsApi(client)
         proj_name = f"test_jms_ProjectCopyTest_{self.run_id}"
 
         proj = Project(name=proj_name, active=True, priority=10)
         proj = jms_api.create_project(proj, replace=True)
 
-        tgt_name = proj_name + "_copy1"
         project_api = ProjectApi(client, proj.id)
-        proj1_id = project_api.copy_project(tgt_name)
+        proj1_id = project_api.copy_project()
         copied_proj1 = jms_api.get_project(id=proj1_id)
         self.assertIsNotNone(copied_proj1)
+        self.assertEqual(copied_proj1.name, f"{proj.name} - copy")
 
-        tgt_name = proj_name + "_copy2"
-        proj2_id = project_api.copy_project(tgt_name)
+        proj2_id = project_api.copy_project()
         copied_proj2 = jms_api.get_project(id=proj2_id)
         self.assertIsNotNone(copied_proj2)
+        self.assertEqual(copied_proj2.name, f"{proj.name} - copy")
 
         # Delete projects
         jms_api.delete_project(copied_proj1)
@@ -183,7 +165,7 @@ class ProjectsTest(REPTestCase):
     @unittest.expectedFailure
     def test_project_license_context(self):
 
-        client = self.client()
+        client = self.client
         jms_api = JmsApi(client)
         proj_name = f"test_jms_ProjectTest_license_context_{self.run_id}"
 
@@ -242,7 +224,7 @@ class ProjectsTest(REPTestCase):
 
     def test_project_delete_job_definition(self):
 
-        client = self.client()
+        client = self.client
         jms_api = JmsApi(client)
         proj_name = f"test_jms_ProjectTest_delete_config_{self.run_id}"
 
@@ -262,7 +244,7 @@ class ProjectsTest(REPTestCase):
     def test_project_archive_restore(self):
 
         num_jobs = 2
-        client = self.client()
+        client = self.client
         jms_api = JmsApi(client)
         proj_name = f"test_jms_project_archive_restore_{self.run_id}"
 
@@ -296,6 +278,26 @@ class ProjectsTest(REPTestCase):
 
         jms_api.delete_project(project)
         jms_api.delete_project(restored_project)
+
+    def test_copy_exec_script(self):
+
+        client = self.client
+        jms_api = JmsApi(client)
+        proj_name = f"test_copy_exec_script"
+
+        proj = Project(name=proj_name)
+        proj = jms_api.create_project(proj)
+
+        project_api = ProjectApi(client, proj.id)
+        ansys_short_version = f"v{ansys_version[2:4]}{ansys_version[6]}"
+        script_name = f"mapdl-{ansys_short_version}-exec_mapdl"
+        file = project_api.copy_default_execution_script(f"{script_name}.py")
+        self.assertEqual(file.name, script_name)
+        self.assertEqual(file.evaluation_path, f"{script_name}.py")
+        self.assertIsNotNone(file.hash)
+        self.assertIsNotNone(file.storage_id)
+
+        jms_api.delete_project(proj)
 
 
 if __name__ == "__main__":
