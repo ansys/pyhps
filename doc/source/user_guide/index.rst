@@ -52,7 +52,7 @@ example.
 
    This file contains the project setup script for creating the project and the project's data files.
 
-#. Use a tool like 7Zip to extract the files.
+#. Use a tool like 7-Zip to extract the files.
 
 #. To create the project, run the ``project_setup.py`` script::
 

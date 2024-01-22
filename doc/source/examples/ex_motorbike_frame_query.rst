@@ -11,7 +11,7 @@ It shows how to query resources of an existing project and how to download outpu
      .. only:: builder_html
 
      You can download the :download:`ZIP file <../../../build/mapdl_motorbike_frame.zip>` for the MAPDL
-     motorbike frame example and use a tool such as 7Zip to extract the files.
+     motorbike frame example and use a tool such as 7-Zip to extract the files.
 
 Here is the ``project_setup.py`` file for this project:
 

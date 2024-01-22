@@ -26,7 +26,7 @@ by U. M. Fasel, O. Koenig, M. Wintermantel and P. Ermanni.
 .. only:: builder_html
 
      You can download the :download:`ZIP file <../../../build/mapdl_motorbike_frame.zip>` for the MAPDL motorbike frame example
-     and use a tool such as 7Zip to extract the files.
+     and use a tool such as 7-Zip to extract the files.
 
 Here is the ``project_setup.py`` script for this example:
  

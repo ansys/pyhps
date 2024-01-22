@@ -21,9 +21,9 @@
 # SOFTWARE.
 
 """
-Example to submit a nonlinear tyre analysis job to Ansys HPC Platform Services.
+Example to submit a nonlinear tyre analysis job to HPS.
 
-ANSYS APDL Tire-Performance Simulation example as included
+This is the Ansys APDL Tire Performance Simulation example included
 in the technology demonstration guide (td-57).
 """
 

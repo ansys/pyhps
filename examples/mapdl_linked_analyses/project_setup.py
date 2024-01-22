@@ -22,7 +22,7 @@
 
 """
 Script showing how to submit an MAPDL linked analysis workflow (prestress-modal-harmonic)
-as a multi-task job to Ansys HPC Platform Services.
+as a multi-task job to HPS.
 
 The script shows two possible ways to submit the individual tasks:
     1. All-at-one: all 3 tasks are defined and included in the

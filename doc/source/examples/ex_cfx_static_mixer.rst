@@ -8,7 +8,7 @@ This example shows how to submit a CFX static mixer model for solving on Ansys H
 .. only:: builder_html
 
      You can download the :download:`ZIP file <../../../build/cfx_static_mixer.zip>` for
-     the CFX static mixer example and use a tool such as 7Zip to extract the files.
+     the CFX static mixer example and use a tool such as 7-Zip to extract the files.
 
 Here is the ``project_setup.py`` script for this example:
 

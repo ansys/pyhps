@@ -21,7 +21,7 @@
 # SOFTWARE.
 
 """
-Example script to setup a simple MAPDL project with parameters in pyhps.
+Example script to set up a simple MAPDL project with parameters in PyHPS.
 
 Author(s): O.Koenig
 """

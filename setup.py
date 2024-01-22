@@ -26,7 +26,7 @@ setup(
     ],
     license="MIT",
     license_file="LICENSE",
-    description="A python client for Ansys HPC Platform Services",
+    description="A Python client for Ansys HPC Platform Services (HPS)",
     long_description=open("README.rst").read(),
     long_description_content_type="text/x-rst",
     install_requires=[

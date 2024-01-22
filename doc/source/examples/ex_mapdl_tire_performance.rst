@@ -11,7 +11,7 @@ while the job is running.
 .. only:: builder_html
 
      You can download the :download:`ZIP file <../../../build/mapdl_tyre_performance.zip>`
-     for the MAPDL tire performance example and use a tool such as 7Zip to extract the files.
+     for the MAPDL tire performance example and use a tool such as 7-Zip to extract the files.
 
 Here is the ``project_setup.py`` file for this project:
 

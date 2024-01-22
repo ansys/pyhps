@@ -21,7 +21,7 @@
 # SOFTWARE.
 
 """
-Example script to setup a simple Fluent project in pyhps.
+Example script to set up a simple Fluent project in PyHPS.
 """
 import argparse
 import logging

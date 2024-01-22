@@ -26,7 +26,7 @@ In both cases, output files from upstream tasks are used as inputs of downstream
 .. only:: builder_html
 
      You can download the :download:`ZIP file <../../../build/mapdl_linked_analyses.zip>` for the
-     MAPDL linked analyses example and use a tool such as 7Zip to extract the files.
+     MAPDL linked analyses example and use a tool such as 7-Zip to extract the files.
 
 Here is the ``project_setup.py`` file for this project:.
 

@@ -248,7 +248,7 @@ class ProjectsTest(REPTestCase):
         jms_api = JmsApi(client)
         proj_name = f"test_jms_project_archive_restore_{self.run_id}"
 
-        # Setup project to work with
+        # Set up project to work with
         project = motorbike_create_project(client=client, name=proj_name, num_jobs=num_jobs)
         project.active = False
         project.priority = 6
