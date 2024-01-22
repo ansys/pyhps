@@ -1,3 +1,25 @@
+# Copyright (C) 2024 ANSYS, Inc. and/or its affiliates.
+# SPDX-License-Identifier: MIT
+#
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
+
 """
 Prototype of how to store Fluent Job's data on JMS
 """
@@ -5,8 +27,8 @@ import argparse
 import logging
 import time
 
-from ansys.rep.client import Client, REPError
-from ansys.rep.client.jms import (  # ResourceRequirements,
+from ansys.hps.client import Client, HPSError
+from ansys.hps.client.jms import (  # ResourceRequirements,
     JmsApi,
     Job,
     JobDefinition,
@@ -66,7 +88,7 @@ def run(client: Client, project_name: str):
     task.custom_data = job_data()
     project_api.update_tasks([task])
 
-    log.info(f"You can access your job at {client.rep_url}/jms/#/projects/{proj.id}/jobs/{job.id}")
+    log.info(f"You can access your job at {client.url}/jms/#/projects/{proj.id}/jobs/{job.id}")
 
     time.sleep(60 * 5)
     log.info(f"The job has completed")
@@ -92,8 +114,10 @@ if __name__ == "__main__":
 
     try:
         log.info("Connect to REP JMS")
-        client = Client(rep_url=args.url, username=args.username, password=args.password)
+        client = Client(url=args.url, username=args.username, password=args.password)
         run(client=client, project_name=args.name)
 
-    except REPError as e:
+    except HPSError as e:
         log.error(str(e))
+    except KeyboardInterrupt:
+        log.warning("Interrupted, stopping ...")
