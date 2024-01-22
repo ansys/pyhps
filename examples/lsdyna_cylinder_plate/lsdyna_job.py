@@ -62,9 +62,6 @@ from ansys.hps.client.jms import (
 
 log = logging.getLogger(__name__)
 
-USE_LSDYNA_MPP = False
-
-
 class REPJob:
     """
     Simplistic helper class to store job information similarly to
@@ -105,7 +102,8 @@ class REPJob:
 
 
 def submit_job(
-    client, name, version=__ansys_apps_version__, num_jobs=20, use_exec_script=False, active=True
+    client, name, version=__ansys_apps_version__, use_exec_script=True, active=True,
+    distributed=False
 ) -> REPJob:
     """Create a REP project running a simple LS-DYNA
     job simulating the impact of a cylinder made of Aluminum
@@ -147,7 +145,7 @@ def submit_job(
     files.append(
         File(name="d3hsp", evaluation_path="d3hsp", type="text/plain", collect=True, monitor=False)
     )
-    if USE_LSDYNA_MPP:
+    if distributed:
         files.append(
             File(
                 name="messag",
@@ -197,7 +195,7 @@ def submit_job(
 
     # Define process steps (task definitions)
     ls_dyna_command = "%executable% i=%file:inp% ncpu=%resource:num_cores% memory=300m"
-    if USE_LSDYNA_MPP:
+    if distributed:
         ls_dyna_command = "%executable% -dis -np %resource:num_cores% i=%file:inp% memory=300m"
 
     task_defs = []
@@ -210,7 +208,7 @@ def submit_job(
             num_cores=6,
             memory=6000 * 1024 * 1024,
             disk_space=4000 * 1024 * 1024,
-            distributed=USE_LSDYNA_MPP,
+            distributed=distributed,
         ),
         execution_level=0,
         num_trials=1,
@@ -271,24 +269,19 @@ def submit_job(
     params = project_api.get_parameter_definitions(id=job_def.parameter_definition_ids)
 
     log.debug("=== Jobs")
-    jobs = []
-    for i in range(num_jobs):
-        values = {
-            p.name: p.lower_limit + random.random() * (p.upper_limit - p.lower_limit)
-            for p in params
-            if p.mode == "input"
-        }
-        jobs.append(
-            Job(name=f"Job.{i}", values=values, eval_status="pending", job_definition_id=job_def.id)
-        )
-    jobs = project_api.create_jobs(jobs)
+    job = Job(
+        eval_status="pending",
+        name="Nominal: 56.7km/h (30ms sim time)",
+        job_definition_id=job_def.id,
+    )
+    job = project_api.create_jobs([job])[0]
 
     log.info(f"Created project '{proj.name}', ID='{proj.id}'")
 
     app_job = REPJob()
     app_job.project_id = proj.id
     app_job.job_definition_id = job_def.id
-    app_job.job_id = [job.id for job in jobs]
+    app_job.job_id = job.id
     app_job.rep_url = client.rep_url
     app_job.auth_token = client.refresh_token
 
@@ -305,24 +298,23 @@ def monitor_job(app_job: REPJob):
     client = Client(rep_url=app_job.rep_url, refresh_token=app_job.auth_token)
     project_api = ProjectApi(client, app_job.project_id)
 
-    for job_id in app_job.job_id:
-        job = project_api.get_jobs(id=job_id)[0]
+    job = project_api.get_jobs(id=app_job.job_id)[0]
 
-        while job.eval_status not in ["evaluated", "timeout", "failed", "aborted"]:
-            time.sleep(2)
+    while job.eval_status not in ["evaluated", "timeout", "failed", "aborted"]:
+        time.sleep(2)
+        log.info(
+            f"Waiting for job {job.name} to complete "
+            f"[{client.rep_url}/jms/#/projects/{app_job.project_id}/jobs/{job.id}] ... "
+        )
+        job = project_api.get_jobs(id=job.id)[0]
+
+        tasks = project_api.get_tasks(job_id=job.id)
+        for task in tasks:
             log.info(
-                f"Waiting for job {job.name} to complete "
-                f"[{client.rep_url}/jms/#/projects/{app_job.project_id}/jobs/{job.id}] ... "
+                f"Task {task.task_definition_snapshot.name}(id={task.id}) is {task.eval_status}"
             )
-            job = project_api.get_jobs(id=job.id)[0]
 
-            tasks = project_api.get_tasks(job_id=job.id)
-            for task in tasks:
-                log.info(
-                    f"Task {task.task_definition_snapshot.name}(id={task.id}) is {task.eval_status}"
-                )
-
-        log.info(f"Job {job.name} final status: {job.eval_status}")
+    log.info(f"Job {job.name} final status: {job.eval_status}")
     return
 
 
@@ -411,8 +403,8 @@ if __name__ == "__main__":
         "action", default="submit", choices=["submit", "monitor", "download"], help="Action to run"
     )
     parser.add_argument("-n", "--name", type=str, default="LS-DYNA Cylinder Plate")
-    parser.add_argument("-j", "--num-jobs", type=int, default=10)
-    parser.add_argument("-es", "--use-exec-script", default=False, type=bool)
+    parser.add_argument("-es", "--use-exec-script", default=True, type=bool)
+    parser.add_argument("-ds", "--distributed", default=False, type=bool)
     parser.add_argument("-U", "--url", default="https://localhost:8443/rep")
     parser.add_argument("-u", "--username", default="repadmin")
     parser.add_argument("-p", "--password", default="repadmin")
@@ -421,20 +413,22 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     logger = logging.getLogger()
-    logging.basicConfig(format="[%(asctime)s | %(levelname)s] %(message)s", level=logging.DEBUG)
+    logging.basicConfig(format="[%(asctime)s | %(levelname)s] %(message)s", level=logging.INFO)
 
-    log.debug("=== HPS connection")
-    client = Client(rep_url=args.url, username=args.username, password=args.password)
+    log.debug("=== HPS connection")    
 
     try:
-        log.info(f"HPS URL: {client.rep_url}")
+        log.info(f"HPS URL: {args.url}")
         if args.action == "submit":
+            client = Client(rep_url=args.url,
+                            username=args.username,
+                            password=args.password)
             job = submit_job(
                 client=client,
                 name=args.name,
                 version=args.ansys_version,
-                num_jobs=args.num_jobs,
                 use_exec_script=args.use_exec_script,
+                distributed=args.distributed,
             )
             job.save()
         elif args.action == "monitor":
