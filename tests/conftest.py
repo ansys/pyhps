@@ -59,7 +59,7 @@ def client(url, username, password):
     return Client(url, username, password, verify=False)
 
 
-@pytest.fixture(scope="session")
+@pytest.fixture()
 def keycloak_client(client: Client, keycloak_username, keycloak_password):
 
     keycloak_client = KeycloakAdmin(
