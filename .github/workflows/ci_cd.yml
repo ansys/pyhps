@@ -44,7 +44,7 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
 
   tests:
-    name: Tests and coverage
+    name: Quick tests and coverage
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
