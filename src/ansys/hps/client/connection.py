@@ -39,7 +39,7 @@ def create_session(
     Parameters
     ----------
     access_token : str
-        The access token provided by :meth:`ansys.hps.core.auth.authenticate`
+        The access token provided by :meth:`ansys.hps.client.auth.authenticate`
     verify: Union[bool, str], optional
         Either a boolean, in which case it controls whether we verify the
         server's TLS certificate, or a string, in which case it must be
