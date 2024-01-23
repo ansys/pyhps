@@ -23,8 +23,8 @@
 import logging
 import time
 
-import requests
 import pytest
+import requests
 
 from ansys.hps.client import Client
 
@@ -37,10 +37,12 @@ def test_client_ssl_warning(url, username, password):
     assert len(record) == 1
     assert "Unverified HTTPS requests" in str(record[0].message)
 
+
 def test_client_with_ssl_verification(url, username, password):
     with pytest.raises(requests.exceptions.SSLError) as ex_info:
         _ = Client(url, username, password, verify=True)
     assert "CERTIFICATE_VERIFY_FAILED" in str(ex_info.value)
+
 
 def test_authentication_workflows(url, username, password):
 

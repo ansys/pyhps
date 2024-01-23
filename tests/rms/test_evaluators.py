@@ -22,6 +22,7 @@
 
 import datetime
 import logging
+
 import pytest
 
 from ansys.hps.client.rms import RmsApi
@@ -48,6 +49,7 @@ def test_evaluator_deserialization():
     assert evaluator.platform is None
     assert evaluator.last_modified is None
     assert evaluator.name == evaluator_dict["name"]
+
 
 def test_evaluator_integration(client):
 
@@ -86,11 +88,10 @@ def test_evaluator_integration(client):
         assert config.max_num_parallel_tasks > 0
         assert config.applications is not None
 
+
 def test_evaluator_configuration_update(client):
     rms_api = RmsApi(client)
-    query_params = {
-        "last_modified.gt": datetime.datetime.utcnow() - datetime.timedelta(seconds=20)
-    }
+    query_params = {"last_modified.gt": datetime.datetime.utcnow() - datetime.timedelta(seconds=20)}
     evaluators = rms_api.get_evaluators(**query_params)
 
     if len(evaluators) == 0:

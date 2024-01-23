@@ -29,9 +29,7 @@ log = logging.getLogger(__name__)
 
 
 def test_connection(url, username, password):
-    resp = authenticate(
-        url=url, username=username, password=password, verify=False
-    )
+    resp = authenticate(url=url, username=username, password=password, verify=False)
     access_token = resp["access_token"]
 
     with create_session(access_token, verify=False, disable_security_warnings=True) as session:

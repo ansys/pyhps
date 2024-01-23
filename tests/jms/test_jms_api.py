@@ -41,7 +41,6 @@ log = logging.getLogger(__name__)
 
 
 class REPClientTest(REPTestCase):
-
     def test_jms_api_info(self):
 
         client = self.client

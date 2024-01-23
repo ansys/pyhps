@@ -60,4 +60,3 @@ def test_serialize_objects_to_json():
     assert data[7]["last_modified"] == "2023-11-20T09:41:07"
     assert data[6]["build_info"]["version"] == "1.0.6"
     assert data[6]["build_info"]["latest"] == True
-

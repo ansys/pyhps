@@ -34,8 +34,10 @@ from ansys.hps.client.auth.api.auth_api import create_user as api_create_user
 def create_user(keycloak_client: KeycloakAdmin, user: User) -> User:
     return api_create_user(keycloak_client, user)
 
+
 def delete_user(keycloak_client: KeycloakAdmin, user: User) -> User:
     return keycloak_client.delete_user(user.id)
+
 
 def create_new_user_client(
     url,

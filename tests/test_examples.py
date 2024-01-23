@@ -52,6 +52,7 @@ def test_mapdl_motorbike_frame(client):
 
     jms_api.delete_project(project)
 
+
 def test_mapdl_motorbike_frame_with_exec_script(client):
 
     from examples.mapdl_motorbike_frame.project_setup import create_project
@@ -68,6 +69,7 @@ def test_mapdl_motorbike_frame_with_exec_script(client):
     assert len(project_api.get_jobs()) == num_jobs
 
     jms_api.delete_project(project)
+
 
 def test_mapdl_motorbike_frame_with_user_defined_version(client):
 
@@ -96,14 +98,13 @@ def test_mapdl_motorbike_frame_with_user_defined_version(client):
 
     jms_api.delete_project(project)
 
+
 def test_mapdl_tyre_performance(client):
 
     from examples.mapdl_tyre_performance.project_setup import create_project
 
     num_jobs = 1
-    project = create_project(
-        client, f"Test mapdl_tyre_performance", ansys_version, num_jobs
-    )
+    project = create_project(client, f"Test mapdl_tyre_performance", ansys_version, num_jobs)
     assert project is not None
 
     jms_api = JmsApi(client)
@@ -112,6 +113,7 @@ def test_mapdl_tyre_performance(client):
     assert len(project_api.get_jobs()) == num_jobs
 
     jms_api.delete_project(project)
+
 
 def test_python_two_bar_truss_problem(client):
 
@@ -128,6 +130,7 @@ def test_python_two_bar_truss_problem(client):
 
     jms_api.delete_project(project)
 
+
 def test_python_two_bar_truss_problem_with_exec_script(client):
 
     from examples.python_two_bar_truss_problem.project_setup import main
@@ -142,6 +145,7 @@ def test_python_two_bar_truss_problem_with_exec_script(client):
     assert len(project_api.get_jobs()) == num_jobs
 
     jms_api.delete_project(project)
+
 
 def test_mapdl_linked_analyses(client):
 
@@ -165,6 +169,7 @@ def test_mapdl_linked_analyses(client):
 
         jms_api.delete_project(project)
 
+
 def test_fluent_2d_heat_exchanger(client):
 
     from examples.fluent_2d_heat_exchanger.project_setup import create_project
@@ -179,6 +184,7 @@ def test_fluent_2d_heat_exchanger(client):
     assert jms_api.get_project(id=project.id).name == "Fluent Test"
 
     jms_api.delete_project(project)
+
 
 def test_fluent_2d_heat_exchanger_with_exec_script(client):
 
@@ -197,13 +203,12 @@ def test_fluent_2d_heat_exchanger_with_exec_script(client):
 
     jms_api.delete_project(project)
 
+
 def test_fluent_nozzle(client):
 
     from examples.fluent_nozzle.project_setup import create_project
 
-    project = create_project(
-        client, name="Fluent Nozzle Test", num_jobs=1, version=ansys_version
-    )
+    project = create_project(client, name="Fluent Nozzle Test", num_jobs=1, version=ansys_version)
     assert project is not None
 
     jms_api = JmsApi(client)
@@ -213,6 +218,7 @@ def test_fluent_nozzle(client):
     assert jms_api.get_project(id=project.id).name == "Fluent Nozzle Test"
 
     jms_api.delete_project(project)
+
 
 def test_lsdyna_cylinder_plate(client):
 
@@ -230,6 +236,7 @@ def test_lsdyna_cylinder_plate(client):
 
     jms_api.delete_project(proj)
 
+
 def test_lsdyna_cylinder_plate_with_exec_script(client):
 
     from examples.lsdyna_cylinder_plate.lsdyna_job import submit_job
@@ -245,6 +252,7 @@ def test_lsdyna_cylinder_plate_with_exec_script(client):
     assert proj.name == "LS-DYNA Cylinder Plate"
 
     jms_api.delete_project(proj)
+
 
 def test_cfx_static_mixer(client):
 
@@ -262,6 +270,7 @@ def test_cfx_static_mixer(client):
     jms_api.get_project(id=project.id).name == "CFX static mixer test"
 
     jms_api.delete_project(project)
+
 
 def test_python_multi_steps(client):
 

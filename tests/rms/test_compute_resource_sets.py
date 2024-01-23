@@ -51,6 +51,7 @@ def test_scaler_integration(client):
         # todo: double check
         # assert scalers[0].id is None
 
+
 def test_crs_integration(client):
 
     rms_api = RmsApi(client)
@@ -88,4 +89,3 @@ def test_crs_integration(client):
             for queue in cluster_info.queues:
                 assert queue.name is not None
                 log.info(f"Compute resource set {rs.name} has queue {queue.name}")
-

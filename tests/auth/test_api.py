@@ -22,14 +22,13 @@
 
 import logging
 import uuid
-import pytest
 
 from keycloak import KeycloakOpenID
 from keycloak.exceptions import KeycloakError
+import pytest
 
 from ansys.hps.client import Client, HPSError
 from ansys.hps.client.auth import AuthApi, User, authenticate
-
 from tests.utils import create_user, delete_user
 
 log = logging.getLogger(__name__)
@@ -53,9 +52,7 @@ def test_get_users(client, keycloak_client):
     users = api.get_users(max=10)
 
     # use non-admin user to get users
-    api_non_admin = AuthApi(
-        Client(client.url, username=username, password="test_auth_client")
-    )
+    api_non_admin = AuthApi(Client(client.url, username=username, password="test_auth_client"))
     users2 = api_non_admin.get_users(max=10)
     assert len(users) == len(users2)
 
@@ -70,6 +67,7 @@ def test_get_users(client, keycloak_client):
         api.get_user(new_user.id)
 
     assert ex_info.value.response_code == 404
+
 
 def test_impersonate_user(url, keycloak_client):
     """
@@ -116,9 +114,7 @@ def test_impersonate_user(url, keycloak_client):
         )
     except HPSError as e:
         if e.response.status_code == 501 and "Feature not enabled" in e.reason:
-            pytest.skip(
-                f"This test requires to enable the feature 'token-exchange' in keycloak."
-            )
+            pytest.skip(f"This test requires to enable the feature 'token-exchange' in keycloak.")
 
     assert r is not None
     assert "refresh_token" in r

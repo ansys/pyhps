@@ -21,42 +21,43 @@
 # SOFTWARE.
 
 
-import logging
 import os
-from typing import Tuple
-import pytest
-import uuid
 
 from keycloak import KeycloakAdmin
+import pytest
 
 from ansys.hps.client import Client
-from ansys.hps.client.auth import AuthApi, User
-from ansys.hps.client.auth.api.auth_api import create_user
 
 
 @pytest.fixture(scope="session")
 def url():
     return os.environ.get("HPS_TEST_URL") or "https://127.0.0.1:8443/rep"
 
+
 @pytest.fixture(scope="session")
 def username():
     return os.environ.get("HPS_TEST_USERNAME") or "repadmin"
+
 
 @pytest.fixture(scope="session")
 def password():
     return os.environ.get("HPS_TEST_PASSWORD") or "repadmin"
 
+
 @pytest.fixture(scope="session")
 def keycloak_username():
     return os.environ.get("HPS_TEST_KEYCLOAK_USERNAME") or "keycloak"
+
 
 @pytest.fixture(scope="session")
 def keycloak_password():
     return os.environ.get("HPS_TEST_KEYCLOAK_PASSWORD") or "keycloak123"
 
+
 @pytest.fixture(scope="session")
 def client(url, username, password):
     return Client(url, username, password, verify=False)
+
 
 @pytest.fixture(scope="session")
 def keycloak_client(client: Client, keycloak_username, keycloak_password):
@@ -73,12 +74,14 @@ def keycloak_client(client: Client, keycloak_username, keycloak_password):
 
     return keycloak_client
 
-@pytest.fixture(scope="session")    
+
+@pytest.fixture(scope="session")
 def is_admin(client: Client):
     api = AuthApi(client)
     users = api.get_users(username=client.username)
     assert len(users) == 1
     return api.user_is_admin(users[0].id)
+
 
 @pytest.fixture()
 def run_id():
