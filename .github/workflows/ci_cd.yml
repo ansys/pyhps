@@ -103,11 +103,11 @@ jobs:
         working-directory: ./docker-compose-artifact
 
       - name: Test with tox
-        run: tox -e ${{ matrix.cfg.toxenv }}-noeval-coverage
+        run: tox -e ${{ matrix.cfg.toxenv }}-coverage
         env:
-          REP_TEST_URL: https://localhost:8443/rep
-          REP_TEST_USERNAME: repadmin
-          REP_TEST_PASSWORD: repadmin
+          HPS_TEST_URL: https://localhost:8443/rep
+          HPS_TEST_USERNAME: repadmin
+          HPS_TEST_PASSWORD: repadmin
 
       - name: "Upload coverage results"
         uses: actions/upload-artifact@v4

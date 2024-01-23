@@ -46,11 +46,11 @@ class REPTestCase(unittest.TestCase):
         # self._stream_handler = logging.StreamHandler(sys.stdout)
         # self.logger.addHandler(self._stream_handler)
 
-        self.rep_url = os.environ.get("REP_TEST_URL") or "https://127.0.0.1:8443/rep"
-        self.username = os.environ.get("REP_TEST_USERNAME") or "repadmin"
-        self.password = os.environ.get("REP_TEST_PASSWORD") or "repadmin"
-        self.keycloak_username = os.environ.get("REP_TEST_KEYCLOAK_USERNAME") or "keycloak"
-        self.keycloak_password = os.environ.get("REP_TEST_KEYCLOAK_PASSWORD") or "keycloak123"
+        self.rep_url = os.environ.get("HPS_TEST_URL") or "https://127.0.0.1:8443/rep"
+        self.username = os.environ.get("HPS_TEST_USERNAME") or "repadmin"
+        self.password = os.environ.get("HPS_TEST_PASSWORD") or "repadmin"
+        self.keycloak_username = os.environ.get("HPS_TEST_KEYCLOAK_USERNAME") or "keycloak"
+        self.keycloak_password = os.environ.get("HPS_TEST_KEYCLOAK_PASSWORD") or "keycloak123"
 
         # Create a unique run_id (to be used when creating new projects)
         # to avoid conflicts in case of

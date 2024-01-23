@@ -253,7 +253,7 @@ class TasksTest(REPTestCase):
 
         return job
 
-    @pytest.mark.requires_evaluator
+    @pytest.mark.skip(reason="Requires an evaluator with MAPDL.")
     def test_sync_task_definition_snapshot(self):
         # verity that the process step snapshot of an evaluated task in not modified
         # on job:sync

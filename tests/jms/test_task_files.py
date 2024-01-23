@@ -38,7 +38,7 @@ log = logging.getLogger(__name__)
 
 
 class TaskFilesTest(REPTestCase):
-    @pytest.mark.requires_evaluator
+    @pytest.mark.skip(reason="Requires an evaluator with MAPDL.")
     def test_task_files_in_single_task_definition_project(self):
         num_jobs = 5
         client = self.client
