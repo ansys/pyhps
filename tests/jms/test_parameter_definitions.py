@@ -25,8 +25,8 @@ import unittest
 
 from marshmallow.utils import missing
 
-from ansys.hps.client.jms import JmsApi, ProjectApi
-from ansys.hps.client.jms.resource import (
+from ansys.hps.core.jms import JmsApi, ProjectApi
+from ansys.hps.core.jms.resource import (
     BoolParameterDefinition,
     FloatParameterDefinition,
     IntParameterDefinition,
@@ -34,7 +34,7 @@ from ansys.hps.client.jms.resource import (
     Project,
     StringParameterDefinition,
 )
-from ansys.hps.client.jms.schema.parameter_definition import (
+from ansys.hps.core.jms.schema.parameter_definition import (
     BoolParameterDefinitionSchema,
     FloatParameterDefinitionSchema,
     IntParameterDefinitionSchema,

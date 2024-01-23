@@ -26,9 +26,9 @@ import unittest
 from examples.mapdl_motorbike_frame.project_setup import create_project
 from marshmallow.utils import missing
 
-from ansys.hps.client import Client, ClientError
-from ansys.hps.client.jms import JmsApi, ProjectApi
-from ansys.hps.client.jms.resource import (
+from ansys.hps.core import Client, ClientError
+from ansys.hps.core.jms import JmsApi, ProjectApi
+from ansys.hps.core.jms.resource import (
     FloatParameterDefinition,
     IntParameterDefinition,
     Job,
@@ -166,7 +166,7 @@ class REPClientTest(REPTestCase):
         with self.assertRaises(ClientError) as context:
             _ = jms_api.create_task_definition_templates([job])
         assert "Wrong object type" in str(context.exception)
-        assert "got <class 'ansys.hps.client.jms.resource.job.Job'>" in str(context.exception)
+        assert "got <class 'ansys.hps.core.jms.resource.job.Job'>" in str(context.exception)
 
         proj = jms_api.create_project(proj, replace=True)
         project_api = ProjectApi(client, proj.id)
@@ -176,7 +176,7 @@ class REPClientTest(REPTestCase):
         with self.assertRaises(ClientError) as context:
             _ = project_api.create_jobs([job_def])
         assert "Wrong object type" in str(context.exception)
-        assert "got <class 'ansys.hps.client.jms.resource.job_definition.JobDefinition'>" in str(
+        assert "got <class 'ansys.hps.core.jms.resource.job_definition.JobDefinition'>" in str(
             context.exception
         )
 
@@ -192,9 +192,9 @@ class REPClientTest(REPTestCase):
             )
         msg = str(context.exception)
         assert "Wrong object type" in msg
-        assert "<class 'ansys.hps.client.jms.resource.job.Job'>" in msg
+        assert "<class 'ansys.hps.core.jms.resource.job.Job'>" in msg
         assert (
-            "<class 'ansys.hps.client.jms.resource.parameter_definition.FloatParameterDefinition'>"
+            "<class 'ansys.hps.core.jms.resource.parameter_definition.FloatParameterDefinition'>"
             in msg
         )
 

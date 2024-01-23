@@ -4,7 +4,7 @@ build-backend = "flit_core.buildapi"
 
 [project]
 # Check https://flit.readthedocs.io/en/latest/pyproject_toml.html for all available sections
-name = "ansys-pyhps"
+name = "ansys-hps-core"
 version = "0.6.dev0"
 description = "A python client for Ansys HPC Platform Services"
 readme = "README.rst"
@@ -71,7 +71,7 @@ Homepage = "https://github.com/ansys-internal/pyhps"
 Tracker = "https://github.com/ansys-internal/pyhps/issues"
 
 [tool.flit.module]
-name = "ansys.hps.client"
+name = "ansys.hps.core"
 
 [tool.black]
 line-length = 100
@@ -109,5 +109,5 @@ markers = [
 filterwarnings = [
     "ignore::urllib3.exceptions.InsecureRequestWarning",
     "ignore::DeprecationWarning:pkg_resources.*",
-    "ignore::ansys.hps.client.UnverifiedHTTPSRequestsWarning",
+    "ignore::ansys.hps.core.UnverifiedHTTPSRequestsWarning",
 ]

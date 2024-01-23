@@ -25,13 +25,10 @@ import unittest
 
 from marshmallow.utils import missing
 
-from ansys.hps.client.jms import JmsApi, ProjectApi
-from ansys.hps.client.jms.resource import JobDefinition, Project
-from ansys.hps.client.jms.resource.fitness_definition import (
-    FitnessDefinition,
-    FitnessTermDefinition,
-)
-from ansys.hps.client.jms.schema.fitness_definition import (
+from ansys.hps.core.jms import JmsApi, ProjectApi
+from ansys.hps.core.jms.resource import JobDefinition, Project
+from ansys.hps.core.jms.resource.fitness_definition import FitnessDefinition, FitnessTermDefinition
+from ansys.hps.core.jms.schema.fitness_definition import (
     FitnessDefinitionSchema,
     FitnessTermDefinitionSchema,
 )

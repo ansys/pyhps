@@ -23,8 +23,8 @@
 import logging
 import unittest
 
-from ansys.hps.client import APIError, Client, ClientError
-from ansys.hps.client.jms import JmsApi
+from ansys.hps.core import APIError, Client, ClientError
+from ansys.hps.core.jms import JmsApi
 from tests.rep_test import REPTestCase
 
 log = logging.getLogger(__name__)

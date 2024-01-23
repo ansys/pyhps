@@ -26,7 +26,7 @@ import unittest
 from examples.mapdl_motorbike_frame.project_setup import create_project
 from marshmallow import missing
 
-from ansys.hps.client.jms import (
+from ansys.hps.core.jms import (
     FitnessDefinition,
     JmsApi,
     JobDefinition,

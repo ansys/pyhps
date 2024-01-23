@@ -4,11 +4,11 @@ Client
 
 Connection module
 ------------------------------------------
-.. automodule:: ansys.hps.client.connection
+.. automodule:: ansys.hps.core.connection
   :members:
 
 
 Client object
 ------------------------------------
-.. autoclass:: ansys.hps.client.Client
+.. autoclass:: ansys.hps.core.Client
    :members:

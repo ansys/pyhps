@@ -27,8 +27,8 @@ import argparse
 import logging
 import os
 
-from ansys.hps.client import Client, HPSError, __ansys_apps_version__
-from ansys.hps.client.jms import (
+from ansys.hps.core import Client, HPSError, __ansys_apps_version__
+from ansys.hps.core.jms import (
     File,
     JmsApi,
     Job,

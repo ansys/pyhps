@@ -12,7 +12,7 @@ env:
   MAIN_PYTHON_VERSION: '3.9'
   DOC_PYTHON_VERSION: '3.9'
   DOCUMENTATION_CNAME: 'hps.docs.pyansys.com'
-  PACKAGE_NAME: 'ansys-pyhps'
+  PACKAGE_NAME: 'ansys-hps-core'
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -242,7 +242,7 @@ jobs:
     steps:
       - uses: actions/download-artifact@v3
         with:
-          name: ansys-pyhps-artifacts
+          name: ansys-hps-core-artifacts
           path: /tmp/artifacts
 
       - name: List artifacts

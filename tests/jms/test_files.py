@@ -28,8 +28,8 @@ import unittest
 
 from marshmallow.utils import missing
 
-from ansys.hps.client.jms import JmsApi, ProjectApi
-from ansys.hps.client.jms.resource import File, Project
+from ansys.hps.core.jms import JmsApi, ProjectApi
+from ansys.hps.core.jms.resource import File, Project
 from tests.rep_test import REPTestCase
 
 log = logging.getLogger(__name__)

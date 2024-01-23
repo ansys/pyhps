@@ -1,4 +1,3 @@
-# Copyright (C) 2021 by
 # Copyright (C) 2024 ANSYS, Inc. and/or its affiliates.
 # SPDX-License-Identifier: MIT
 #
@@ -33,7 +32,7 @@ import logging
 import os
 from tempfile import NamedTemporaryFile
 
-from ansys.hps.client.jms import File
+from ansys.hps.core.jms import File
 
 log = logging.getLogger(__name__)
 

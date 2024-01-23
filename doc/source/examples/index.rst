@@ -3,7 +3,7 @@
 Examples
 ========
 
-Here you can find some examples showing how to interact with a REP server in Python using the ``ansys-pyhps``. 
+Here you can find some examples showing how to interact with a REP server in Python using the ``ansys-hps-core``. 
 Examples consist of a Python script plus some data files (e.g. solver input files). 
 Many of the Python scripts can be executed with the following command line arguments:
 
