@@ -24,21 +24,17 @@ import logging
 
 from ansys.hps.client.auth import authenticate
 from ansys.hps.client.connection import create_session, ping
-from tests.rep_test import REPTestCase
 
 log = logging.getLogger(__name__)
 
 
-class ConnectionTest(REPTestCase):
-    def test_connection(self):
-        rep_url = self.rep_url
-        resp = authenticate(
-            url=rep_url, username=self.username, password=self.password, verify=False
-        )
-        access_token = resp["access_token"]
+def test_connection(url, username, password):
+    resp = authenticate(
+        url=url, username=username, password=password, verify=False
+    )
+    access_token = resp["access_token"]
 
-        with create_session(access_token, verify=False, disable_security_warnings=True) as session:
-            jms_api_url = f"{rep_url}/jms/api/v1"
-            log.info(f"Ping {jms_api_url}")
-            ping(session, jms_api_url)
-            self.assertTrue(ping(session, jms_api_url))
+    with create_session(access_token, verify=False, disable_security_warnings=True) as session:
+        jms_api_url = f"{url}/jms/api/v1"
+        log.info(f"Ping {jms_api_url}")
+        assert ping(session, jms_api_url)

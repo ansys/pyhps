@@ -20,27 +20,35 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-import logging
-import pytest
-import requests
 
-from ansys.hps.client.auth import authenticate
+from typing import Tuple
+import uuid
 
-log = logging.getLogger(__name__)
+from keycloak import KeycloakAdmin
+
+from ansys.hps.client import Client
+from ansys.hps.client.auth import User
+from ansys.hps.client.auth.api.auth_api import create_user as api_create_user
 
 
-def test_authenticate(url, username, password):
-    resp = authenticate(
-        url=url, username=username, password=password, verify=False
+def create_user(keycloak_client: KeycloakAdmin, user: User) -> User:
+    return api_create_user(keycloak_client, user)
+
+def delete_user(keycloak_client: KeycloakAdmin, user: User) -> User:
+    return keycloak_client.delete_user(user.id)
+
+def create_new_user_client(
+    url,
+    keycloak_client: KeycloakAdmin,
+    username=None,
+    password="test",
+) -> Tuple[User, Client]:
+    if username is None:
+        username = f"testuser-{uuid.uuid4().hex[:8]}"
+    user = create_user(keycloak_client, User(username=username, password=password))
+    client = Client(
+        url=url,
+        username=user.username,
+        password=password,
     )
-
-    assert "access_token" in resp
-    assert "refresh_token" in resp
-
-def test_authenticate_with_ssl_verification(url, username, password):
-
-    with pytest.raises(requests.exceptions.SSLError) as ex_info:
-        _ = authenticate(
-            url=url, username=username, password=password, verify=True
-        )
-    assert "CERTIFICATE_VERIFY_FAILED" in str(ex_info.value)
+    return user, client

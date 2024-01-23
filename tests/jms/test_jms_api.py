@@ -41,6 +41,21 @@ log = logging.getLogger(__name__)
 
 
 class REPClientTest(REPTestCase):
+
+    def test_jms_api_info(self):
+
+        client = self.client
+        jms_api = JmsApi(client)
+
+        assert jms_api.url.endswith("/jms/api/v1")
+        assert jms_api.fs_url.endswith("/fs/api/v1")
+
+        info = jms_api.get_api_info()
+        assert "services" in info
+        assert "build" in info
+        assert "settings" in info
+        assert "time" in info
+
     def test_jms_api(self):
 
         log.debug("=== Client ===")
@@ -49,6 +64,7 @@ class REPClientTest(REPTestCase):
 
         log.debug("=== Projects ===")
         jms_api = JmsApi(client)
+
         project = jms_api.get_project_by_name(name=proj_name)
 
         if project:

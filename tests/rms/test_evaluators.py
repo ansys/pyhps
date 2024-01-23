@@ -22,89 +22,81 @@
 
 import datetime
 import logging
-import unittest
+import pytest
 
 from ansys.hps.client.rms import RmsApi
 from ansys.hps.client.rms.models import EvaluatorConfigurationUpdate, EvaluatorRegistration
-from tests.rep_test import REPTestCase
 
 log = logging.getLogger(__name__)
 
 
-class EvaluatorTest(REPTestCase):
-    def test_evaluator_deserialization(self):
+def test_evaluator_deserialization():
 
-        evaluator_dict = {
-            "id": "02q1DiPEP0nanLN5384q8L",
-            # "last_modified": "2019-05-07T05:42:52.493419+00:00",
-            # "platform": "Windows",
-            "host_name": "dc_evaluator_win10_2019R3_tmp",
-            "host_id": "db337a96-ebbb-362a-8c02-1103c15e2b43",
-            "name": "dc_evaluator_win10_2019R3_tmp",
-            "username": "repuser",
-        }
+    evaluator_dict = {
+        "id": "02q1DiPEP0nanLN5384q8L",
+        # "last_modified": "2019-05-07T05:42:52.493419+00:00",
+        # "platform": "Windows",
+        "host_name": "dc_evaluator_win10_2019R3_tmp",
+        "host_id": "db337a96-ebbb-362a-8c02-1103c15e2b43",
+        "name": "dc_evaluator_win10_2019R3_tmp",
+        "username": "repuser",
+    }
 
-        evaluator = EvaluatorRegistration(**evaluator_dict)
+    evaluator = EvaluatorRegistration(**evaluator_dict)
 
-        self.assertEqual(evaluator.__class__.__name__, "EvaluatorRegistration")
-        self.assertIsNone(evaluator.platform)
-        self.assertIsNone(evaluator.last_modified)
-        self.assertEqual(evaluator.name, evaluator_dict["name"])
+    assert evaluator.__class__.__name__ == "EvaluatorRegistration"
+    assert evaluator.platform is None
+    assert evaluator.last_modified is None
+    assert evaluator.name == evaluator_dict["name"]
 
-    def test_evaluator_integration(self):
+def test_evaluator_integration(client):
 
-        client = self.client
-        rms_api = RmsApi(client)
-        evaluators = rms_api.get_evaluators(limit=1000)
+    rms_api = RmsApi(client)
+    evaluators = rms_api.get_evaluators(limit=1000)
 
-        if evaluators:
-            log.debug(f"Found {len(evaluators)} evaluators")
-            assert evaluators[0].id is not None
+    if evaluators:
+        log.debug(f"Found {len(evaluators)} evaluators")
+        assert evaluators[0].id is not None
 
-        num_evals = rms_api.get_evaluators_count(limit=1000)
-        assert num_evals == len(evaluators)
+    num_evals = rms_api.get_evaluators_count(limit=1000)
+    assert num_evals == len(evaluators)
 
-        evaluators = rms_api.get_evaluators(as_objects=False)
-        if evaluators:
-            assert evaluators[0]["id"] is not None
+    evaluators = rms_api.get_evaluators(as_objects=False)
+    if evaluators:
+        assert evaluators[0]["id"] is not None
 
-        evaluators = rms_api.get_evaluators(
-            as_objects=False, fields=["host_name", "platform", "username"]
-        )
+    evaluators = rms_api.get_evaluators(
+        as_objects=False, fields=["host_name", "platform", "username"]
+    )
 
-        if evaluators:
-            assert "host_name" in evaluators[0].keys()
-            assert "platform" in evaluators[0].keys()
-            assert "username" in evaluators[0].keys()
+    if evaluators:
+        assert "host_name" in evaluators[0].keys()
+        assert "platform" in evaluators[0].keys()
+        assert "username" in evaluators[0].keys()
 
-        evaluators = rms_api.get_evaluators(fields=["host_name", "platform"])
+    evaluators = rms_api.get_evaluators(fields=["host_name", "platform"])
 
-        for ev in evaluators:
-            self.assertFalse(ev.host_name is None)
-            self.assertFalse(ev.platform is None)
+    for ev in evaluators:
+        assert ev.host_name is not None
+        assert ev.platform is not None
 
-            config = rms_api.get_evaluator_configuration(ev.id)
-            self.assertGreater(config.resources.num_cores, 0)
-            self.assertIsNotNone(config.resources.memory)
-            self.assertGreater(config.max_num_parallel_tasks, 0)
-            self.assertIsNotNone(config.applications, 0)
+        config = rms_api.get_evaluator_configuration(ev.id)
+        assert config.resources.num_cores > 0
+        assert config.resources.memory is not None
+        assert config.max_num_parallel_tasks > 0
+        assert config.applications is not None
 
-    def test_evaluator_configuration_update(self):
-        client = self.client
-        rms_api = RmsApi(client)
-        query_params = {
-            "last_modified.gt": datetime.datetime.utcnow() - datetime.timedelta(seconds=20)
-        }
-        evaluators = rms_api.get_evaluators(**query_params)
+def test_evaluator_configuration_update(client):
+    rms_api = RmsApi(client)
+    query_params = {
+        "last_modified.gt": datetime.datetime.utcnow() - datetime.timedelta(seconds=20)
+    }
+    evaluators = rms_api.get_evaluators(**query_params)
 
-        if len(evaluators) == 0:
-            self.skipTest(f"This test requires running evaluators.")
+    if len(evaluators) == 0:
+        pytest.skip("This test requires running evaluators.")
 
-        ev = evaluators[0]
-        config_update = EvaluatorConfigurationUpdate(loop_interval=4)
-        config_update_response = rms_api.update_evaluator_configuration(ev.id, config_update)
-        assert config_update_response.loop_interval == 4
-
-
-if __name__ == "__main__":
-    unittest.main()
+    ev = evaluators[0]
+    config_update = EvaluatorConfigurationUpdate(loop_interval=4)
+    config_update_response = rms_api.update_evaluator_configuration(ev.id, config_update)
+    assert config_update_response.loop_interval == 4
