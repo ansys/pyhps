@@ -43,8 +43,8 @@ allows you to:
 * Run your own design exploration algorithms.
 * Retrieve simulation results.
 
-Documentation
--------------
+Documentation and issues
+------------------------
 
 Documentation for the latest stable release of PyHPS is hosted at
 `PyHPS documentation <https://rep.docs.pyansys.com/dev/>`_.
@@ -67,3 +67,24 @@ The PyHPS documentation contains these sections:
   interact with them programmatically
 - `Contribute <https://rep.docs.pyansys.com/dev/contribute.html>_`: Provides information on
   how to install PyHPS in developer mode and make contributions to the codebase.
+
+On the `PyHPS Issues <https://github.com/ansys-internal/pyhps/issues>` page, you can
+create issues to report bugs and request new features. On the
+`PyHPS Discussions <https://github.com/ansys-internal/pyhps/discussions>`_ page or the
+`Discussions <https://discuss.ansys.com/>`_ page on the Ansys Developer portal,
+you can post questions, share ideas, and get community feedback.
+
+To reach the project support team, email `pyansys.core@ansys.com <pyansys.core@ansys.com>`_.
+
+License
+-------
+
+PyHPS is licensed under the MIT license.
+
+PyHPS makes no commercial claim over Ansys whatsoever. This library extends the
+functionality of Ansys HPC Platform Services by adding a Python interface to it
+without changing the core behavior or license of the original software. The use
+of PyHPS requires a legally licensed local copy of AEDT.
+
+To get a copy of AEDT, see the `Ansys HPC Platform Services Guide <https://ansyshelp.ansys.com/account/secured?returnurl=/Views/Secured/hpcplat/v000/en/rep_ug/rep_ug.html>`_`
+in the Ansys Help.

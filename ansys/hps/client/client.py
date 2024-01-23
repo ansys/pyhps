@@ -81,7 +81,8 @@ class Client(object):
         default is ``True``.
     verify : Union[bool, str], optional
         If a Boolean, whether to verify the server's TLS certificate. The default
-        is ``False``. If a string, the path to the CA bundle to use. For more information,
+        is ``None`, which disables certificate validation and warns the user about it.
+        If a string, the path to the CA bundle to use. For more information,
         see the :class:`requests.Session` documentation.
     disable_security_warnings : bool, optional
         Whether to disable urllib3 warnings about insecure HTTPS requests. The default is ``True``.

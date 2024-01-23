@@ -1,14 +1,13 @@
 Authentication Service
 ===========================
 
---TODO Review-- 
+`Keycloak <https://www.keycloak.org>`_ is used for identity and access management. This open source
+solution provides a variety of options for authentication and authorization. Users authenticate
+with Keycloak rather than with the application, allowing flexibility in how the sign-in experience
+is delivered.
 
-The REP Authentication Service processes all REP sign-ins following the credentials flow
-for owner passwords of OAuth 2.0 resources. When you enter your REP credentials, you get an
-access token, which expires after 24 hours, and a refresh token for authenticating all services.
-
-The ``ansys.hps.client.auth`` subpackage wraps around the
-`REP Authentication Service REST API <https://hostname:port/rep/auth/api>`_.
+Keycloak is exposed at ``https://hostname:port/rep/auth/api``, which is what the ``ansys.hps.client.auth``
+module wraps around.
 
 Authentication function
 -----------------------

@@ -10,9 +10,10 @@ of PyHPS endpoints, see :ref:`API reference <api_reference>`.
 To reproduce the code samples provided in this section, you must have these
 prerequisites:
 
-- A running Ansys HPS installation. For instructions, see the
-  `Remote Execution Platform (REP) repository <https://github.com/ansys/rep>`_.
-- A Python shell with PyHPS installed. For instructions, see :ref:`getting_started`.
+- A running Ansys HPS installation. For more information, see the
+  `Ansys HPC Platform Services Guide <https://ansyshelp.ansys.com/account/secured?returnurl=/Views/Secured/prod_page.html?pn=Ansys%20HPC%20Platform%20Services&pid=HpcPlatformServices&lang=en>`_
+  in the Ansys Help.
+- A Python shell with PyHPS installed. For more information, see :ref:`getting_started`.
 
 
 Connect to an HPS deployment

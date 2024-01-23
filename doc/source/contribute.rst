@@ -128,7 +128,7 @@ For building documentation, you can manually run these commands:
 .. code:: bash
 
     python archive_examples.py
-    python -m sphinx -b html doc/source build/sphinx/html
+    make -C doc html
 
 However, the recommended way of checking documentation integrity is to use
 ``tox``:
@@ -145,7 +145,7 @@ the building requirements and then executing the build module:
 
 .. code:: bash
 
-    python -m pip install -r requirements/requirements_build.txt
+    python -m pip install -e .[build]
     python -m build
     python -m twine check dist/*
 
