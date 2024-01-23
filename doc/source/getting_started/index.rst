@@ -9,7 +9,7 @@ to PyHPS, see :ref:`contribute` for information on installing in developer mode.
 Prerequisites
 -------------
 
-You must have Python 3.x and pip_ installed.
+You must have pip_ and Python 3.9, 3.10, 3.11, or 3.12 installed.
 
 #. To see if a Python 3.x version is installed and available from your command line,
    run this command:
