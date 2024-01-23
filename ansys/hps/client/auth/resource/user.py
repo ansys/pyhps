@@ -26,7 +26,7 @@ from ansys.hps.client.common import Object
 from ..schema.user import UserSchema
 
 class User(Object):
-    """User resource.
+    """Provides the user resource.
 
     Parameters
     ----------
@@ -37,11 +37,11 @@ class User(Object):
     password : str
         Password.
     first_name : str, optional
-        First name
+        First name.
     last_name : str, optional
-        Last name
+        Last name.
     email : str, optional
-        E-mail address (optional).
+        E-mail address.
 
     """
 

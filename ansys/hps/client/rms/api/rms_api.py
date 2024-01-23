@@ -39,12 +39,12 @@ log = logging.getLogger(__name__)
 
 
 class RmsApi(object):
-    """Wraps around the Resource Management Service root endpoints.
+    """Wraps around the RMS root endpoints.
 
     Parameters
     ----------
     client : Client
-        An HPS client object.
+        HPS client object.
     """
 
     def __init__(self, client: Client):
@@ -53,33 +53,36 @@ class RmsApi(object):
 
     @property
     def url(self) -> str:
-        """Returns the API url"""
+        """URL of the API."""
         return f"{self.client.url}/rms/api/v1"
 
     def get_api_info(self):
-        """Return info like version, build date etc of the RMS API the client is connected to"""
+        """Get information on the RMS API the client is connected to.
+
+        The information includes the version and build date.
+        """
         r = self.client.session.get(self.url)
         return r.json()
 
     ################################################################
     # Evaluators
     def get_evaluators_count(self, **query_params) -> int:
-        """Return the number of evaluators (optionally filtered by given query parameters)"""
+        """Get the number of evaluators, optionally filtered by query parameters."""
         return get_objects_count(
             self.client.session, self.url, EvaluatorRegistration, **query_params
         )
 
     def get_evaluators(self, as_objects=True, **query_params) -> List[EvaluatorRegistration]:
-        """Return a list of evaluators, optionally filtered by given query parameters.
+        """Get a list of evaluators, optionally filtered by query parameters.
 
-        Note: by default the server only returns the first 10 objects (limit=10).
+        The server only returns the first 10 objects (``limit=10``) by default.
         """
         return get_objects(
             self.client.session, self.url, EvaluatorRegistration, as_objects, **query_params
         )
 
     def get_evaluator_configuration(self, id: str, as_object=True) -> EvaluatorConfiguration:
-        """Return an evaluator's configuration"""
+        """Get an evaluator's configuration"""
         return get_object(
             self.client.session,
             f"{self.url}/evaluators/{id}/configuration",
@@ -91,13 +94,12 @@ class RmsApi(object):
     def update_evaluator_configuration(
         self, id: str, configuration: EvaluatorConfigurationUpdate, as_object=True
     ) -> EvaluatorConfigurationUpdate:
-        """Update evaluators
+        """Update an evaluator configuration.
 
         Examples
         --------
 
-        This example shows how to set a custom resource property
-        on a Linux evaluator that was active in the past 60 seconds.
+        Set a custom resource property on a Linux evaluator that was active in the past 60 seconds.
 
         >>> import datetime
         >>> from ansys.hps.client import Client
@@ -124,13 +126,13 @@ class RmsApi(object):
     ################################################################
     # Scalers
     def get_scalers_count(self, **query_params) -> int:
-        """Return the number of scalers (optionally filtered by given query parameters)"""
+        """Get the number of scalers, optionally filtered by query parameters."""
         return get_objects_count(self.client.session, self.url, ScalerRegistration, **query_params)
 
     def get_scalers(self, as_objects=True, **query_params) -> List[ScalerRegistration]:
-        """Return a list of scalers, optionally filtered by given query parameters.
+        """Get a list of scalers, optionally filtered by query parameters.
 
-        Note: by default the server only returns the first 10 objects (limit=10).
+        The server only returns the first 10 objects (``limit=10``) by default.
         """
         return get_objects(
             self.client.session, self.url, ScalerRegistration, as_objects, **query_params
@@ -139,26 +141,22 @@ class RmsApi(object):
     ################################################################
     # Compute resource sets
     def get_compute_resource_sets_count(self, **query_params) -> int:
-        """Return the number of compute resource sets
-
-        Optionally filtered by given query parameters.
-        """
+        """Get the number of compute resource sets, optionally filtered by query parameters."""
         return get_objects_count(self.client.session, self.url, ComputeResourceSet, **query_params)
 
     def get_compute_resource_sets(
         self, as_objects=True, **query_params
     ) -> List[ComputeResourceSet]:
-        """Return a list of compute resource sets.
+        """Get a list of compute resource sets, optionally filtered by query parameters.
 
-        Optionally filtered by given query parameters.
-        Note: by default the server only returns the first 10 objects (limit=10).
+        The server only returns the first 10 objects (``limit=10``) by default.
         """
         return get_objects(
             self.client.session, self.url, ComputeResourceSet, as_objects, **query_params
         )
 
     def get_compute_resource_set(self, id, as_object=True) -> ComputeResourceSet:
-        """Returns a compute resource set."""
+        """Get a compute resource set."""
         return get_object(
             self.client.session,
             f"{self.url}/compute_resource_sets/{id}",
@@ -168,7 +166,7 @@ class RmsApi(object):
         )
 
     def get_cluster_info(self, compute_resource_set_id, as_object=True) -> ClusterInfo:
-        """Returns cluster info of a compute resource set."""
+        """Get the cluster information of a compute resource set."""
 
         return get_object(
             self.client.session,

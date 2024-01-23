@@ -26,16 +26,16 @@ from ansys.hps.client.common import Object
 from ..schema.parameter_mapping import ParameterMappingSchema
 
 class ParameterMapping(Object):
-    """ParameterMapping resource.
+    """Provides the parameter mapping resource.
 
     Parameters
     ----------
     id : str, optional
         Unique ID to access the resource, generated internally by the server on creation.
     creation_time : datetime, optional
-        The date and time the resource was created.
+        Date and time that the resource was created.
     modification_time : datetime, optional
-        The date and time the resource was last modified.
+        Date and time that the resource was last modified.
     created_by : str, optional
         ID of the user who created the object.
     modified_by : str, optional
@@ -53,11 +53,11 @@ class ParameterMapping(Object):
     true_string : str, optional
     false_string : str, optional
     parameter_definition_id : str, optional
-        ID of the linked parameter definition, see :class:`ParameterDefinition`.
+        ID of the linked parameter definition. For more information, see the
+        :class:`ParameterDefinition` class.
     task_definition_property : str, optional
     file_id : str, optional
         ID of the file resource.
-
     """
 
     class Meta:

@@ -27,13 +27,14 @@ from ..schema.evaluator import EvaluatorConfigurationUpdateSchema
 from ..schema.evaluator import EvaluatorSchema
 
 class EvaluatorConfigurationUpdate(Object):
-    """EvaluatorConfigurationUpdate resource.
+    """Provides for updating an evaluator configuration resource.
 
     Parameters
     ----------
     id : str, optional
         Unique ID to access the resource, generated internally by the server on creation.
     name : str, optional
+        Name of the evaluator.
     applications : list, optional
     max_num_parallel_tasks : int, optional
     loop_interval : float, optional
@@ -78,43 +79,43 @@ class EvaluatorConfigurationUpdate(Object):
 EvaluatorConfigurationUpdateSchema.Meta.object_class = EvaluatorConfigurationUpdate
 
 class Evaluator(Object):
-    """Evaluator resource.
+    """Provides the evaluator resource.
 
     Parameters
     ----------
     id : str, optional
         Unique ID to access the resource, generated internally by the server on creation.
     host_id : str
-        Unique identifier built from hardware information and selected configuration details of an evaluator.
+        Unique ID built from hardware information and the selected configuration information of the evaluator.
     name : str, optional
         Name of the evaluator.
     hostname : str, optional
-        Name of the host on which the evaluator is running.
+        Name of the host that the evaluator is running on.
     username : str, optional
-        HPS user the evaluator is connected to JMS as.
+        HPS user that the evaluator is connected to JMS as.
     platform : str, optional
-        Operating system on which the evaluator is running.
+        Operating system that the evaluator is running on.
     task_manager_type : str, optional
         Type of the task manager used by the evaluator.
     project_server_select : bool, optional
-        Whether the evaluator allows server-driven assignment of projects or uses it's own local settings.
+        Whether the evaluator allows server-driven assignment of projects or uses its own local settings.
     alive_update_interval : int, optional
-        Minimal time (in seconds) between evaluator registration updates.
+        Minimal time in seconds between evaluator registration updates.
     update_time : datetime, optional
-        Last time the evaluator updated it's registration details. Used to check which evaluators are alive.
+        Last time the evaluator updated its registration information. This parameter is used
+        to check which evaluators are alive.
     external_access_port : int, optional
         Port number for external access to the evaluator.
     project_assignment_mode : str, optional
-        Which strategy to use for selecting projects to work on.
+        Strategy to use for selecting projects to work on.
     project_list : list
-        List of projects on which this evaluator should be working.
+        List of projects that this evaluator should be working on.
     configuration : object, optional
-        Details of the evaluator configuration, including hardware info and available applications.
+        Evaluator configuration information, including hardware and available applications.
     configuration_updates : EvaluatorConfigurationUpdate, optional
         Changes to the evaluator configurations.
     build_info : dict, optional
         Evaluator's build information.
-
     """
 
     class Meta:

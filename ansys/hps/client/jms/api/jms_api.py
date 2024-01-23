@@ -42,17 +42,17 @@ log = logging.getLogger(__name__)
 
 
 class JmsApi(object):
-    """Wraps around the Job Management Service root endpoints.
+    """Wraps around the JMS root endpoints.
 
     Parameters
     ----------
     client : Client
-        An HPS client object.
+        HPS client object.
 
     Examples
     --------
 
-    Create a new project
+    Create a project.
 
     >>> from ansys.hps.client import Client
     >>> from ansys.hps.client.jms import JmsApi, Project
@@ -70,63 +70,69 @@ class JmsApi(object):
 
     @property
     def url(self) -> str:
-        """Returns the API url"""
+        """URL of the API."""
         return f"{self.client.url}/jms/api/v1"
 
     @property
     def fs_url(self) -> str:
-        """URL of the file storage gateway"""
+        """URL of the file storage gateway."""
         if self._fs_url is None:
             self._fs_url = get_fs_url(self.client, self.url)
         return self._fs_url
 
     def get_api_info(self):
-        """Return info like version, build date etc of the JMS API the client is connected to"""
+        """Get information of the JMS API that the client is connected to.
+
+        Information includes the version and build date.
+        """
         r = self.client.session.get(self.url)
         return r.json()
 
     ################################################################
     # Projects
     def get_projects(self, as_objects=True, **query_params) -> List[Project]:
-        """Return a list of projects, optionally filtered by given query parameters."""
+        """Get a list of projects, optionally filtered by query parameters."""
         return get_projects(self.client, self.url, as_objects, **query_params)
 
     def get_project(self, id: str) -> Project:
-        """Return a single project for given project id."""
+        """Get a single project for a given project ID."""
         return get_project(self.client, self.url, id)
 
     def get_project_by_name(
         self, name: str, last_created: bool = True
     ) -> Union[Project, List[Project]]:
-        """Query projects by name. If no projects are found, an empty list is returned.
+        """Query projects by name.
 
-        In case of multiple projects with same name:
+        If no projects are found, an empty list is returned.
 
-         - If ``last_created`` = True, the last created project is returned
-         - If ``last_created`` = False, the full list of projects with given name is returned
+        In multiple projects with same name are found, what is returned depends
+        on the ``last_created`` value:
+
+        - If ``last_created=True``, the last created project is returned.
+        - If ``last_created=False``, the full list of projects with the given name is returned.
 
         """
         return get_project_by_name(self.client, self.url, name, last_created)
 
     def create_project(self, project: Project, replace=False, as_objects=True) -> Project:
-        """Create a new project"""
+        """Create a project."""
         return create_project(self.client, self.url, project, replace, as_objects)
 
     def update_project(self, project: Project, as_objects=True) -> Project:
-        """Update an existing project"""
+        """Update a project."""
         return update_project(self.client, self.url, project, as_objects)
 
     def delete_project(self, project):
-        """Delete a project"""
+        """Delete a project."""
         return delete_project(self.client, self.url, project)
 
     def restore_project(self, path: str) -> Project:
-        """Restore a project from an archive
+        """Restore a project from an archive.
 
         Parameters
         ----------
         path : str
-            Path of the archive file to be restored.
+            Path of the archive file.
 
         """
         return restore_project(self, path)
@@ -136,8 +142,7 @@ class JmsApi(object):
     def get_task_definition_templates(
         self, as_objects=True, **query_params
     ) -> List[TaskDefinitionTemplate]:
-        """Return a list of task definition templates,
-        optionally filtered by given query parameters"""
+        """Get a list of task definition templates, optionally filtered by query parameters."""
         return get_objects(
             self.client.session, self.url, TaskDefinitionTemplate, as_objects, **query_params
         )
@@ -145,11 +150,12 @@ class JmsApi(object):
     def create_task_definition_templates(
         self, templates: List[TaskDefinitionTemplate], as_objects=True, **query_params
     ) -> List[TaskDefinitionTemplate]:
-        """Create new task definition templates
+        """Create task definition templates.
 
-        Args:
-            templates (list of :class:`ansys.hps.client.jms.TaskDefinitionTemplate`):
-                A list of task definition templates
+        Parameters
+        ----------
+        templates : list of :class:`ansys.hps.client.jms.TaskDefinitionTemplate`
+            List of task definition templates.
         """
         return create_objects(
             self.client.session,
@@ -163,11 +169,12 @@ class JmsApi(object):
     def update_task_definition_templates(
         self, templates: List[TaskDefinitionTemplate], as_objects=True, **query_params
     ) -> List[TaskDefinitionTemplate]:
-        """Update existing task definition templates
+        """Update task definition templates.
 
-        Args:
-            templates (list of :class:`ansys.hps.client.jms.TaskDefinitionTemplate`):
-                A list of task definition templates
+        Parameters
+        ----------
+        templates : list of :class:`ansys.hps.client.jms.TaskDefinitionTemplate`
+            List of task definition templates.
         """
         return update_objects(
             self.client.session,
@@ -179,33 +186,33 @@ class JmsApi(object):
         )
 
     def delete_task_definition_templates(self, templates: List[TaskDefinitionTemplate]):
-        """Delete existing task definition templates
+        """Delete task definition templates.
 
-        Args:
-            templates (list of :class:`ansys.hps.client.jms.TaskDefinitionTemplate`):
-                A list of task definition templates
+        Parameters
+        ----------
+        templates : list of :class:`ansys.hps.client.jms.TaskDefinitionTemplate`
+            List of task definition templates.
         """
         return delete_objects(self.client.session, self.url, templates, TaskDefinitionTemplate)
 
     def copy_task_definition_templates(
         self, templates: List[TaskDefinitionTemplate], wait: bool = True
     ) -> Union[str, List[str]]:
-        """Create new task definitions templates by copying existing ones
+        """Create task definition templates by copying existing templates.
 
         Parameters
         ----------
         templates : List[TaskDefinitionTemplate]
-            A list of template objects. Note that only the ``id`` field of the
-            TaskDefinitionTemplate objects need to be filled; the other fields can be empty.
-
-        wait : bool
-            Whether to wait for the copy to complete or not.
+            List of task definition template. Note that only the ``id`` field of
+            ``TaskDefinitionTemplate`` objects must be filled. The other fields can be empty.
+        wait : bool, optional
+            Whether to wait for the copy to complete. The default is ``True``.
 
         Returns
         -------
         Union[List[str], str]
-            If wait=True, returns the list of newly created template IDs.
-            If wait=False, returns an operation ID that can be used to
+            If ``wait=True``, returns the list of newly created template IDs.
+            If ``wait=False``, returns an operation ID that can be used to
             track progress.
         """
         return _copy_objects(self.client, self.url, templates, wait=wait)
@@ -214,7 +221,7 @@ class JmsApi(object):
     def get_task_definition_template_permissions(
         self, template_id: str, as_objects: bool = True
     ) -> List[Permission]:
-        """Get permissions of a task definition template"""
+        """Get permissions of a task definition template."""
         return get_objects(
             self.client.session,
             f"{self.url}/task_definition_templates/{template_id}",
@@ -228,7 +235,7 @@ class JmsApi(object):
         permissions: List[Permission],
         as_objects: bool = True,
     ) -> List[Permission]:
-        """Update permissions of a task definition template"""
+        """Update permissions of a task definition template."""
         return update_objects(
             self.client.session,
             f"{self.url}/task_definition_templates/{template_id}",
@@ -248,29 +255,29 @@ class JmsApi(object):
         return get_object(self.client.session, self.url, Operation, id, as_object=as_object)
 
     def monitor_operation(self, operation_id: str, max_value: float = 5.0, max_time: float = None):
-        """Poll an operation until it's completed using an exponential backoff
+        """Poll an operation until it is completed using an exponential backoff.
 
         Parameters
         ----------
         operation_id : str
-            ID of the operation to be monitored.
+            ID of the operation to monitor.
         max_value: float, optional
-            Maximum interval between consecutive calls in seconds.
+            Maximum interval in seconds between consecutive calls.
         max_time: float, optional
-            The maximum total amount of time (in seconds) to try before giving up.
+            Maximum time in seconds to pool the operation before giving up.
         """
         return _monitor_operation(self, operation_id, max_value, max_time)
 
     ################################################################
     # Storages
     def get_storage(self):
-        """Return a list of storages"""
+        """Get a list of storages."""
         return get_storages(self.client, self.url)
 
 
 def get_projects(client, api_url, as_objects=True, **query_params) -> List[Project]:
     """
-    Returns list of projects
+    Get a list of projects.
     """
     url = f"{api_url}/projects"
     r = client.session.get(url, params=query_params)
@@ -285,7 +292,7 @@ def get_projects(client, api_url, as_objects=True, **query_params) -> List[Proje
 
 def get_project(client, api_url, id) -> Project:
     """
-    Return a single project
+    Get a single project.
     """
 
     url = f"{api_url}/projects/{id}"
@@ -299,7 +306,7 @@ def get_project(client, api_url, id) -> Project:
 
 def get_project_by_name(client, api_url, name, last_created=True) -> Union[Project, List[Project]]:
     """
-    Return a single project
+    Get a single project by name.
     """
 
     params = {"name": name}
@@ -441,7 +448,7 @@ def restore_project(jms_api, archive_path):
 
 def get_storages(client, api_url):
     """
-    Returns list of storages
+    Get a list of storages.
     """
     url = f"{api_url}/storage"
     r = client.session.get(url)
@@ -453,13 +460,13 @@ def get_fs_url(client, api_url):
     file_storages = get_storages(client, api_url)
 
     if not file_storages:
-        raise HPSError(f"No file storage information.")
+        raise HPSError(f"There is no file storage information.")
 
     rest_gateways = [fs for fs in file_storages if fs["obj_type"] == "RestGateway"]
     rest_gateways.sort(key=lambda fs: fs["priority"])
 
     if not rest_gateways:
-        raise HPSError(f"No Rest Gateway defined.")
+        raise HPSError(f"There is no REST gateway defined.")
 
     for d in rest_gateways:
         url = d["url"]

@@ -26,16 +26,16 @@ from ansys.hps.client.common import Object
 from ..schema.algorithm import AlgorithmSchema
 
 class Algorithm(Object):
-    """Algorithm resource.
+    """Provides the algorithm resource.
 
     Parameters
     ----------
     id : str, optional
         Unique ID to access the resource, generated internally by the server on creation.
     creation_time : datetime, optional
-        The date and time the resource was created.
+        Date and time that the resource was created.
     modification_time : datetime, optional
-        The date and time the resource was last modified.
+        Date and time that the resource was last modified.
     created_by : str, optional
         ID of the user who created the object.
     modified_by : str, optional
@@ -45,10 +45,10 @@ class Algorithm(Object):
     description : str, optional
         Description of the algorithm.
     data : str, optional
-        Generic string field to hold arbitrary algorithm configuration data, e.g. as JSON dictionary.
+        Generic string field to hold arbitrary algorithm configuration data. For example,
+        as a JSON dictionary.
     jobs : list[str]
         List of job IDs.
-
     """
 
     class Meta:

@@ -45,4 +45,4 @@ class RestrictedValue(fields.Field):
         self.raise_validation_error()
 
     def raise_validation_error():
-        raise ValidationError("Value must be of type float, integer, boolean, or string")
+        raise ValidationError("Value must be a float, integer, Boolean, or string.")

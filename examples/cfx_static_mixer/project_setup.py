@@ -21,7 +21,7 @@
 # SOFTWARE.
 
 """
-Example script to setup a simple CFX project in pyhps.
+Example script to set up a simple CFX project in PyHPS.
 """
 import argparse
 import logging

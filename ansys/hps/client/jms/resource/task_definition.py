@@ -31,7 +31,7 @@ from ..schema.task_definition import LicensingSchema
 from ..schema.task_definition import TaskDefinitionSchema
 
 class HpcResources(Object):
-    """HpcResources resource.
+    """Provides the HPC resource.
 
     Parameters
     ----------
@@ -40,10 +40,9 @@ class HpcResources(Object):
     num_gpus_per_node : int, optional
         Number of GPUs per node.
     exclusive : bool, optional
-        When set, a job can't share resources with other running jobs.
+        Whether a job can't share resources with other running jobs.
     queue : str, optional
-        Name of job scheduler queue.
-
+        Name of the job scheduler queue.
     """
 
     class Meta:
@@ -67,12 +66,12 @@ class HpcResources(Object):
 HpcResourcesSchema.Meta.object_class = HpcResources
 
 class ResourceRequirements(Object):
-    """ResourceRequirements resource.
+    """Provides the resource requirements resource.
 
     Parameters
     ----------
     platform : str, optional
-        Basic platform information: 'windows' or 'linux'.
+        Basic platform information. Options are ``'linux'`` and ``'windows'``.
     memory : int, optional
         Amount of RAM in bytes.
     num_cores : float, optional
@@ -80,12 +79,11 @@ class ResourceRequirements(Object):
     disk_space : int, optional
         Amount of disk space in bytes.
     distributed : bool, optional
-        Enable distributed parallel processing.
+        Whether to enable distributed parallel processing.
     custom : dict[str, int | float | str | bool], optional
-        Custom resource requirements.
+        Dictionary of custom resource requirements.
     hpc_resources : HpcResources, optional
-        HPC requirements
-
+        HPC resources.
     """
 
     class Meta:
@@ -115,14 +113,14 @@ class ResourceRequirements(Object):
 ResourceRequirementsSchema.Meta.object_class = ResourceRequirements
 
 class Software(Object):
-    """Software resource.
+    """Provides the software resource.
 
     Parameters
     ----------
     name : str
-        Application's name.
+        Name of the app.
     version : str, optional
-        Application's version.
+        Version of the app.
 
     """
 
@@ -143,23 +141,22 @@ class Software(Object):
 SoftwareSchema.Meta.object_class = Software
 
 class SuccessCriteria(Object):
-    """SuccessCriteria resource.
+    """Provides the success criteria resource.
 
     Parameters
     ----------
     return_code : int, optional
-        The process exit code that must be returned by the executed command.
+        Process exit code that must be returned by the executed command.
     expressions : list, optional
-        A list of expressions to be evaluated.
+        List of expressions to evaluate.
     required_output_file_ids : list[str], optional
-        List of IDs of required output files.
+        List of IDs of the required output files.
     require_all_output_files : bool, optional
-        Flag to require all output files.
+        Whether to require all output files.
     required_output_parameter_ids : list[str], optional
-        List of names of required output parameters.
+        List of names of the required output parameters.
     require_all_output_parameters : bool, optional
-        Flag to require all output parameters.
-
+        Whether to require all output parameters.
     """
 
     class Meta:
@@ -187,12 +184,12 @@ class SuccessCriteria(Object):
 SuccessCriteriaSchema.Meta.object_class = SuccessCriteria
 
 class Licensing(Object):
-    """Licensing resource.
+    """Provides the licensing resource.
 
     Parameters
     ----------
     enable_shared_licensing : bool, optional
-        Whether to enable shared licensing contexts for Ansys simulations
+        Whether to enable shared licensing contexts for Ansys simulations.
 
     """
 
@@ -211,16 +208,16 @@ class Licensing(Object):
 LicensingSchema.Meta.object_class = Licensing
 
 class TaskDefinition(Object):
-    """TaskDefinition resource.
+    """Provides the task definition resource.
 
     Parameters
     ----------
     id : str, optional
         Unique ID to access the resource, generated internally by the server on creation.
     creation_time : datetime, optional
-        The date and time the resource was created.
+        Date and time that the resource was created.
     modification_time : datetime, optional
-        The date and time the resource was last modified.
+        Date and time that the resource was last modified.
     created_by : str, optional
         ID of the user who created the object.
     modified_by : str, optional
@@ -228,35 +225,34 @@ class TaskDefinition(Object):
     name : str, optional
         Name.
     execution_command : str, optional
-        Command to execute (command or execution script is required).
+        Command to execute. A command or execution script is required.
     use_execution_script : bool, optional
-        Whether to run task with the execution command or the execution script.
+        Whether to run the task with the execution script or the execution command.
     execution_script_id : str, optional
-        Script to execute (command or execution script is required).
+        Script to execute. A command or execution script is required.
     execution_level : int
-        Define execution level for this task.
+        Execution level for the task.
     execution_context : dict[str, int | float | str | bool], optional
-        Additional arguments to pass to the executing command
+        Additional arguments to pass to the executing command.
     environment : dict[str, str], optional
-        Environment variables to set for the executed process
+        Environment variables to set for the executed process.
     max_execution_time : float, optional
         Maximum time in seconds for executing the task.
     num_trials : int, optional
-        Maximum number of attempts to execute the task.
+        Maximum number of attempts for executing the task.
     store_output : bool, optional
-        Specify whether to store the standard output of the task.
+        Whether to store the standard output of the task.
     input_file_ids : list[str]
         List of IDs of input files.
     output_file_ids : list[str]
         List of IDs of output files.
     success_criteria : SuccessCriteria, optional
     licensing : Licensing, optional
-        A :class:`Licensing` object.
+        :class:`Licensing` object.
     software_requirements : list[Software], optional
-        A list of :class:`Software` objects.
+        List of :class:`Software` objects.
     resource_requirements : ResourceRequirements, optional
-        A :class:`ResourceRequirements` object.
-
+        :class:`ResourceRequirements` object.
     """
 
     class Meta:

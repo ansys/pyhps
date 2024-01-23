@@ -26,17 +26,17 @@ from ansys.hps.client.common import Object
 from ..schema.permission import PermissionSchema
 
 class Permission(Object):
-    """Permission resource.
+    """Provides the permission resource.
 
     Parameters
     ----------
     permission_type : str
-        Either 'user', 'group', or 'anyone'.
+        Permission type. Options are ``'anyone'``, ``'group'``, and ``'user'``.
     value_id : str, optional
-        Can be the ID of a user or group.
+        ID of a user or group.
     value_name : str, optional
     role : str
-        Either 'admin', 'writer',  or 'reader'.
+        Role of the user. Options are ``'admin'``, ``'reader'``, and ``'writer'``.
 
     """
 

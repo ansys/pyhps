@@ -3,19 +3,19 @@
 Examples
 ========
 
-Here you can find some examples showing how to interact with a REP server in Python using the ``ansys-pyhps``. 
-Examples consist of a Python script plus some data files (e.g. solver input files). 
-Many of the Python scripts can be executed with the following command line arguments:
+The examples in this section show how to interact with a REP server in Python using
+PyHPS. Each example consists of a Python script plus a data file, such as a solver input file. 
+You can execute many Python scripts with these command-line arguments:
 
-* ``-n``, ``--name``: name of the REP project
-* ``-U``, ``--url``: url or the REP server (default: https://localhost:8443/rep)
+* ``-n``, ``--name``: Name of the REP project
+* ``-U``, ``--url``: URL or the REP server (default: https://localhost:8443/rep)
 * ``-u``, ``--username``: REP username (default: repadmin)
 * ``-p``, ``--password``: REP password (default: repadmin)
 * ``-v``, ``--ansys-version``: Ansys version (default: |ansys_version|)
 
-A link to download all the required resources is available at each example page. 
-
-You can also download the entire set of examples :download:`Download All Examples <../../../build/pyhps_examples.zip>`.
+A link to download the required resources is available on each example page. If
+desired, you can download the required resources for all examples by downloading
+one :download:`ZIP file <../../../build/pyhps_examples.zip>`.
 
 .. toctree::
   :hidden:
@@ -37,20 +37,20 @@ You can also download the entire set of examples :download:`Download All Example
    * - Name
      - Description
    * - :ref:`example_mapdl_motorbike_frame`
-     - Create from scratch a REP project consisting of an Ansys APDL beam model of a tubular steel trellis motorbike-frame. This example shows how to create a parameter study and submit design points.
+     - Create from scratch a REP project consisting of an Ansys APDL beam model of a tubular steel trellis motorbike frame. This example shows how to create a parameter study and submit design points.
    * - :ref:`example_mapdl_motorbike_frame_query`
      - Query an existing project and download output files.
    * - :ref:`example_mapdl_tire_performance`
-     - Submit an MAPDL analysis as a single job. Solution convergence and contacts tracking files are periodically collected. 
+     - Submit an MAPDL analysis as a single job. Solution convergence and contact tracking files are periodically collected. 
    * - :ref:`example_mapdl_linked_analyses`
-     - Submit an MAPDL linked analysis workflow as a multi-task job to REP.
+     - Submit an MAPDL linked analysis workflow as a multi-task job to the REP server.
    * - :ref:`example_lsdyna_job`
-     - Submit, monitor and download results of an LS-DYNA job. 
+     - Submit, monitor, and download results of an LS-DYNA job. 
    * - :ref:`example_fluent_2d_heat_exchanger`
-     - Submit a Fluent solve job to REP.
+     - Submit a Fluent solve job to the REP server.
    * - :ref:`example_fluent_nozzle`
-     - Submit a Fluent solve job to REP using an execution script.
+     - Submit a Fluent solve job to the REP server using an execution script.
    * - :ref:`example_cfx_static_mixer`
-     - Submit a CFX solve job to REP using an execution script.
+     - Submit a CFX solve job to the REP server using an execution script.
    * - :ref:`example_python_two_bar`
-     - Create a REP project solving a Two-Bar Truss problem with Python.
+     - Create a REP project that solves a two-bar truss problem with Python.

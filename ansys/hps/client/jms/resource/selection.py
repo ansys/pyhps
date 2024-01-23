@@ -26,16 +26,16 @@ from ansys.hps.client.common import Object
 from ..schema.selection import JobSelectionSchema
 
 class JobSelection(Object):
-    """JobSelection resource.
+    """Provides the job selection resource.
 
     Parameters
     ----------
     id : str, optional
         Unique ID to access the resource, generated internally by the server on creation.
     creation_time : datetime, optional
-        The date and time the resource was created.
+        Date and time that the resource was created.
     modification_time : datetime, optional
-        The date and time the resource was last modified.
+        Date and time that the resource was last modified.
     created_by : str, optional
         ID of the user who created the object.
     modified_by : str, optional
@@ -43,10 +43,9 @@ class JobSelection(Object):
     name : str
         Name of the selection.
     algorithm_id : str, optional
-        ID of the :class:`Algorithm` the selection belongs to (optional).
+        ID of the :class:`Algorithm` instance that the selection belongs to.
     jobs : list[str]
         List of job IDs.
-
     """
 
     class Meta:
