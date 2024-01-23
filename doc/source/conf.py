@@ -3,8 +3,7 @@ from datetime import datetime
 import os
 import sys
 
-from ansys_sphinx_theme import get_version_match
-from ansys_sphinx_theme import pyansys_logo_black as logo
+from ansys_sphinx_theme import ansys_favicon, get_version_match, pyansys_logo_black
 
 from ansys.hps.core import __ansys_apps_version__, __version__
 
@@ -140,10 +139,10 @@ html_short_title = html_title = "PyHPS"
 
 # The name of an image file (relative to this directory) to place at the top
 # of the sidebar.
-html_logo = logo
+html_logo = pyansys_logo_black
 
 # Favicon
-html_favicon = "favicon.png"
+html_favicon = ansys_favicon
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
