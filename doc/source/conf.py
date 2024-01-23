@@ -5,7 +5,7 @@ import sys
 
 from ansys_sphinx_theme import ansys_favicon, get_version_match, pyansys_logo_black
 
-from ansys.hps.core import __ansys_apps_version__, __version__
+from ansys.hps.client import __ansys_apps_version__, __version__
 
 sys.path.append(os.path.abspath(os.path.dirname(__file__)))
 
@@ -178,7 +178,7 @@ latex_elements = {
 latex_documents = [
     (
         "index",
-        "ansys-hps-core.tex",
+        "ansys-hps-client.tex",
         "Ansys HPS Python Client Documentation",
         author,
         "manual",
@@ -211,7 +211,7 @@ latex_documents = [
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    ("index", "ansys-hps-core", "Ansys HPS Python Client Documentation", ["ANSYS, Inc."], 1)
+    ("index", "ansys-hps-client", "Ansys HPS Python Client Documentation", ["ANSYS, Inc."], 1)
 ]
 
 # If true, show URL addresses after external links.
@@ -226,7 +226,7 @@ man_pages = [
 # texinfo_documents = [
 #     (
 #         "index",
-#         "ansys-hps-core",
+#         "ansys-hps-client",
 #         "Ansys HPS Python Client Documentation",
 #         "ANSYS, Inc.",
 #         "JMS",

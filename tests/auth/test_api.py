@@ -26,8 +26,8 @@ import uuid
 from keycloak import KeycloakOpenID
 from keycloak.exceptions import KeycloakError
 
-from ansys.hps.core import Client, HPSError
-from ansys.hps.core.auth import AuthApi, User, authenticate
+from ansys.hps.client import Client, HPSError
+from ansys.hps.client.auth import AuthApi, User, authenticate
 from tests.rep_test import REPTestCase
 
 log = logging.getLogger(__name__)

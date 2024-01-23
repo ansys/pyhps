@@ -6,16 +6,16 @@ PyHPS
    :target: https://docs.pyansys.com/
    :alt: PyAnsys
 
-.. |python| image:: https://img.shields.io/pypi/pyversions/ansys-hps-core?logo=pypi
-   :target: https://pypi.org/project/ansys-hps-core
+.. |python| image:: https://img.shields.io/pypi/pyversions/ansys-hps-client?logo=pypi
+   :target: https://pypi.org/project/ansys-hps-client
    :alt: Python
 
-.. |pypi| image:: https://img.shields.io/pypi/v/ansys-hps-core.svg?logo=python&logoColor=white
-   :target: https://pypi.org/project/ansys-hps-core
+.. |pypi| image:: https://img.shields.io/pypi/v/ansys-hps-client.svg?logo=python&logoColor=white
+   :target: https://pypi.org/project/ansys-hps-client
    :alt: PyPI
 
 .. |codecov| image:: https://codecov.io/gh/ansys-internal/pyhps/branch/main/graph/badge.svg
-   :target: https://codecov.io/gh/ansys-internal/ansys-hps-core
+   :target: https://codecov.io/gh/ansys-internal/ansys-hps-client
    :alt: Codecov
 
 .. |GH-CI| image:: https://github.com/ansys-internal/pyhps/actions/workflows/ci_cd.yml/badge.svg
@@ -49,7 +49,7 @@ Then, as long as PyHPS is a private pyAnsys module not published to pypi yet, yo
 
     python -m pip install git+https://github.com/ansys-internal/pyhps
 
-.. TODO: Enable this once pyhps is published:  python -m pip install ansys-hps-core
+.. TODO: Enable this once pyhps is published:  python -m pip install ansys-hps-client
 
 Contribute
 ----------

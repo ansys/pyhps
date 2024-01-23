@@ -28,9 +28,9 @@ import uuid
 from examples.mapdl_motorbike_frame.project_setup import create_project
 from marshmallow.utils import missing
 
-from ansys.hps.core import AuthApi, JmsApi, ProjectApi
-from ansys.hps.core.jms.resource import Job, JobDefinition, Project
-from ansys.hps.core.jms.schema.job import JobSchema
+from ansys.hps.client import AuthApi, JmsApi, ProjectApi
+from ansys.hps.client.jms.resource import Job, JobDefinition, Project
+from ansys.hps.client.jms.schema.job import JobSchema
 from tests.rep_test import REPTestCase
 
 log = logging.getLogger(__name__)

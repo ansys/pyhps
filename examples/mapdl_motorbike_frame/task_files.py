@@ -25,8 +25,8 @@ import argparse
 import logging
 import os
 
-from ansys.hps.core import HPSError
-from ansys.hps.core.jms import Client, File
+from ansys.hps.client import HPSError
+from ansys.hps.client.jms import Client, File
 
 log = logging.getLogger(__name__)
 

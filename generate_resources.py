@@ -31,8 +31,8 @@ import os
 
 import marshmallow
 
-from ansys.hps.core.common.restricted_value import RestrictedValue
-from ansys.hps.core.jms.schema.object_reference import IdReference, IdReferenceList
+from ansys.hps.client.common.restricted_value import RestrictedValue
+from ansys.hps.client.jms.schema.object_reference import IdReference, IdReferenceList
 
 # we define here which resources to auto-generate
 # some are excluded or done only partially (e.g. File)
@@ -394,7 +394,7 @@ def get_resource_imports(resource, base_class):
 
     imports = [
         "from marshmallow.utils import missing",
-        "from ansys.hps.core.common import Object",
+        "from ansys.hps.client.common import Object",
         # f"from {base_class['path']}.{base_class['filename']} import {base_class['name']}",
         f"from ..schema.{resource['schema_filename']} import {resource['schema']}",
     ]
@@ -438,7 +438,7 @@ def get_resource_code(resource, base_class, fields, field_docs):
     return code
 
 
-def process_resources(subpackage, resources, base_class_path="ansys.hps.core"):
+def process_resources(subpackage, resources, base_class_path="ansys.hps.client"):
 
     target_folder = os.path.join("ansys", "hps", "client", subpackage, "resource")
     resources_code = {}
@@ -447,7 +447,7 @@ def process_resources(subpackage, resources, base_class_path="ansys.hps.core"):
 
         # dynamically load resource schema
         module = importlib.import_module(
-            f"ansys.hps.core.{subpackage}.schema.{resource['schema_filename']}"
+            f"ansys.hps.client.{subpackage}.schema.{resource['schema_filename']}"
         )
         resource_class = getattr(module, resource["schema"])
 
@@ -465,7 +465,7 @@ def process_resources(subpackage, resources, base_class_path="ansys.hps.core"):
         base_class = {"name": "Object", "filename": "common", "path": base_class_path}
         if resource.get("base_class", None):
             base_class["name"] = resource["base_class"]
-            base_class["path"] = "ansys.hps.core.jms.resource"
+            base_class["path"] = "ansys.hps.client.jms.resource"
             base_class["filename"] = next(
                 (r["resource_filename"] for r in resources if r["class"] == resource["base_class"]),
                 None,

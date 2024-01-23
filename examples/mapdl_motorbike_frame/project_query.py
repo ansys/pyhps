@@ -32,8 +32,8 @@ import logging
 import os
 from statistics import mean, stdev
 
-from ansys.hps.core import Client, HPSError
-from ansys.hps.core.jms import JmsApi, ProjectApi
+from ansys.hps.client import Client, HPSError
+from ansys.hps.client.jms import JmsApi, ProjectApi
 
 log = logging.getLogger(__name__)
 

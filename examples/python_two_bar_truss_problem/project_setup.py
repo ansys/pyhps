@@ -29,8 +29,8 @@ import logging
 import os
 import random
 
-from ansys.hps.core import Client, HPSError
-from ansys.hps.core.jms import (
+from ansys.hps.client import Client, HPSError
+from ansys.hps.client.jms import (
     File,
     FitnessDefinition,
     FloatParameterDefinition,

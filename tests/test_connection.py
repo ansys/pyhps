@@ -22,8 +22,8 @@
 
 import logging
 
-from ansys.hps.core.auth import authenticate
-from ansys.hps.core.connection import create_session, ping
+from ansys.hps.client.auth import authenticate
+from ansys.hps.client.connection import create_session, ping
 from tests.rep_test import REPTestCase
 
 log = logging.getLogger(__name__)

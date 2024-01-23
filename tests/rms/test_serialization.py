@@ -25,8 +25,8 @@ import json
 import logging
 import unittest
 
-from ansys.hps.core.rms.api.base import objects_to_json
-from ansys.hps.core.rms.models import EvaluatorRegistration
+from ansys.hps.client.rms.api.base import objects_to_json
+from ansys.hps.client.rms.models import EvaluatorRegistration
 from tests.rep_test import REPTestCase
 
 log = logging.getLogger(__name__)

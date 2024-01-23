@@ -27,16 +27,16 @@ import uuid
 
 from marshmallow.utils import missing
 
-from ansys.hps.core import HPSError
-from ansys.hps.core.auth import AuthApi
-from ansys.hps.core.jms import JmsApi
-from ansys.hps.core.jms.resource import (
+from ansys.hps.client import HPSError
+from ansys.hps.client.auth import AuthApi
+from ansys.hps.client.jms import JmsApi
+from ansys.hps.client.jms.resource import (
     HpcResources,
     Permission,
     TaskDefinitionTemplate,
     TemplateResourceRequirements,
 )
-from ansys.hps.core.jms.schema.task_definition_template import TaskDefinitionTemplateSchema
+from ansys.hps.client.jms.schema.task_definition_template import TaskDefinitionTemplateSchema
 from tests.rep_test import REPTestCase
 
 log = logging.getLogger(__name__)

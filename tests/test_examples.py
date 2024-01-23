@@ -23,8 +23,13 @@
 import logging
 import unittest
 
-from ansys.hps.core import __ansys_apps_version__ as ansys_version
-from ansys.hps.core.jms import IntParameterDefinition, JmsApi, ProjectApi, StringParameterDefinition
+from ansys.hps.client import __ansys_apps_version__ as ansys_version
+from ansys.hps.client.jms import (
+    IntParameterDefinition,
+    JmsApi,
+    ProjectApi,
+    StringParameterDefinition,
+)
 from tests.rep_test import REPTestCase
 
 log = logging.getLogger(__name__)
