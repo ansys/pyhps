@@ -10,7 +10,6 @@ on:
 
 env:
   MAIN_PYTHON_VERSION: '3.9'
-  DOC_PYTHON_VERSION: '3.9'
   DOCUMENTATION_CNAME: 'hps.docs.pyansys.com'
   PACKAGE_NAME: 'ansys-hps-core'
 
@@ -142,7 +141,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
-          python-version: ${{ env.DOC_PYTHON_VERSION }}
+          python-version: ${{ env.MAIN_PYTHON_VERSION }}
 
       - name: Install dependencies
         run: |
