@@ -26,7 +26,7 @@ import os
 from keycloak import KeycloakAdmin
 import pytest
 
-from ansys.hps.client import Client
+from ansys.hps.client import AuthApi, Client
 
 
 @pytest.fixture(scope="session")

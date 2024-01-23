@@ -21,10 +21,10 @@
 # SOFTWARE.
 
 import logging
-import unittest
 
 from examples.mapdl_motorbike_frame.project_setup import create_project
 from marshmallow.utils import missing
+import pytest
 
 from ansys.hps.client import Client, ClientError
 from ansys.hps.client.jms import JmsApi, ProjectApi
@@ -35,193 +35,186 @@ from ansys.hps.client.jms.resource import (
     JobDefinition,
     Project,
 )
-from tests.rep_test import REPTestCase
 
 log = logging.getLogger(__name__)
 
 
-class REPClientTest(REPTestCase):
-    def test_jms_api_info(self):
+def test_jms_api_info(client):
 
-        client = self.client
-        jms_api = JmsApi(client)
+    jms_api = JmsApi(client)
 
-        assert jms_api.url.endswith("/jms/api/v1")
-        assert jms_api.fs_url.endswith("/fs/api/v1")
+    assert jms_api.url.endswith("/jms/api/v1")
+    assert jms_api.fs_url.endswith("/fs/api/v1")
 
-        info = jms_api.get_api_info()
-        assert "services" in info
-        assert "build" in info
-        assert "settings" in info
-        assert "time" in info
+    info = jms_api.get_api_info()
+    assert "services" in info
+    assert "build" in info
+    assert "settings" in info
+    assert "time" in info
 
-    def test_jms_api(self):
 
-        log.debug("=== Client ===")
-        client = self.client
-        proj_name = "Mapdl Motorbike Frame"
+def test_jms_api(client):
 
-        log.debug("=== Projects ===")
-        jms_api = JmsApi(client)
+    log.debug("=== Client ===")
+    proj_name = "Mapdl Motorbike Frame"
 
-        project = jms_api.get_project_by_name(name=proj_name)
+    log.debug("=== Projects ===")
+    jms_api = JmsApi(client)
 
-        if project:
-            log.debug(f"Project: {project.id}")
-            log.debug(f"project={project}")
-        else:
-            log.debug(f"Project {proj_name} not found. Creating it.")
-            project = create_project(client, proj_name, num_jobs=5, use_exec_script=False)
+    project = jms_api.get_project_by_name(name=proj_name)
 
-        new_proj = Project(name="New project", active=True)
-        new_proj = jms_api.create_project(new_proj, replace=True)
-        # Delete project again
-        jms_api.delete_project(new_proj)
+    if project:
+        log.debug(f"Project: {project.id}")
+        log.debug(f"project={project}")
+    else:
+        log.debug(f"Project {proj_name} not found. Creating it.")
+        project = create_project(client, proj_name, num_jobs=5, use_exec_script=False)
 
-        log.debug("=== JobDefinitions ===")
-        project_api = ProjectApi(client, project.id)
-        job_definitions = project_api.get_job_definitions(active=True)
-        job_def = job_definitions[0]
-        log.debug(f"job_definition={job_def}")
+    new_proj = Project(name="New project", active=True)
+    new_proj = jms_api.create_project(new_proj, replace=True)
+    # Delete project again
+    jms_api.delete_project(new_proj)
 
-        log.debug("=== Jobs ===")
-        all_jobs = project_api.get_jobs(fields="all", limit=50)
-        log.debug(f"# jobs: {len(all_jobs)}")
-        if all_jobs:
-            log.debug(f"dp0={all_jobs[0]}")
+    log.debug("=== JobDefinitions ===")
+    project_api = ProjectApi(client, project.id)
+    job_definitions = project_api.get_job_definitions(active=True)
+    job_def = job_definitions[0]
+    log.debug(f"job_definition={job_def}")
 
-        pending_jobs = project_api.get_jobs(eval_status="pending", limit=50)
-        log.debug(f"Pending jobs: {[j.id for j in pending_jobs]}")
+    log.debug("=== Jobs ===")
+    all_jobs = project_api.get_jobs(fields="all", limit=50)
+    log.debug(f"# jobs: {len(all_jobs)}")
+    if all_jobs:
+        log.debug(f"dp0={all_jobs[0]}")
 
-        # Alternative access with manually instantiated project
-        proj = jms_api.get_projects(id=project.id)[0]
-        project_api = ProjectApi(client, proj.id)
-        evaluated_jobs = project_api.get_jobs(eval_status="evaluated", fields="all", limit=50)
-        log.debug(f"Evaluated jobs: {[j.id for j in evaluated_jobs]}")
+    pending_jobs = project_api.get_jobs(eval_status="pending", limit=50)
+    log.debug(f"Pending jobs: {[j.id for j in pending_jobs]}")
 
-        # Access jobs data without objects
-        dp_data = project_api.get_jobs(limit=3, as_objects=False)
-        log.debug(f"dp_data={dp_data}")
+    # Alternative access with manually instantiated project
+    proj = jms_api.get_projects(id=project.id)[0]
+    project_api = ProjectApi(client, proj.id)
+    evaluated_jobs = project_api.get_jobs(eval_status="evaluated", fields="all", limit=50)
+    log.debug(f"Evaluated jobs: {[j.id for j in evaluated_jobs]}")
 
-        # Create some Jobs
-        new_jobs = [
-            Job(name=f"new_dp_{i}", eval_status="pending", job_definition_id=job_def.id)
-            for i in range(10)
-        ]
-        created_jobs = project_api.create_jobs(new_jobs)
+    # Access jobs data without objects
+    dp_data = project_api.get_jobs(limit=3, as_objects=False)
+    log.debug(f"dp_data={dp_data}")
 
-        # Delete Jobs again
-        project_api.delete_jobs(created_jobs)
+    # Create some Jobs
+    new_jobs = [
+        Job(name=f"new_dp_{i}", eval_status="pending", job_definition_id=job_def.id)
+        for i in range(10)
+    ]
+    created_jobs = project_api.create_jobs(new_jobs)
 
-    def test_fields_query_parameter(self):
+    # Delete Jobs again
+    project_api.delete_jobs(created_jobs)
 
-        client1 = Client(self.rep_url, self.username, self.password, all_fields=False)
 
-        proj_name = "test_fields_query_parameter"
-        project = create_project(client1, proj_name, num_jobs=2, use_exec_script=False)
+def test_fields_query_parameter(url, username, password):
 
-        project_api1 = ProjectApi(client1, project.id)
+    client1 = Client(url, username, password, all_fields=False)
 
-        jobs = project_api1.get_jobs()
-        self.assertEqual(len(jobs), 2)
-        self.assertNotEqual(jobs[0].id, missing)
-        self.assertNotEqual(jobs[0].eval_status, missing)
-        self.assertEqual(jobs[0].values, missing)
-        self.assertEqual(jobs[0].host_ids, missing)
+    proj_name = "test_fields_query_parameter"
+    project = create_project(client1, proj_name, num_jobs=2, use_exec_script=False)
 
-        jobs = project_api1.get_jobs(fields=["id", "eval_status", "host_ids"])
-        self.assertEqual(len(jobs), 2)
-        self.assertNotEqual(jobs[0].id, missing)
-        self.assertNotEqual(jobs[0].eval_status, missing)
-        self.assertNotEqual(jobs[0].host_ids, missing)
-        self.assertEqual(jobs[0].values, missing)
+    project_api1 = ProjectApi(client1, project.id)
 
-        client2 = Client(self.rep_url, self.username, self.password, all_fields=True)
-        project_api2 = ProjectApi(client2, project.id)
+    jobs = project_api1.get_jobs()
+    assert len(jobs) == 2
+    assert jobs[0].id != missing
+    assert jobs[0].eval_status != missing
+    assert jobs[0].values == missing
+    assert jobs[0].host_ids == missing
 
-        jobs = project_api2.get_jobs()
-        self.assertEqual(len(jobs), 2)
-        self.assertNotEqual(jobs[0].id, missing)
-        self.assertNotEqual(jobs[0].eval_status, missing)
-        self.assertNotEqual(jobs[0].values, missing)
-        self.assertNotEqual(jobs[0].host_ids, missing)
+    jobs = project_api1.get_jobs(fields=["id", "eval_status", "host_ids"])
+    assert len(jobs) == 2
+    assert jobs[0].id != missing
+    assert jobs[0].eval_status != missing
+    assert jobs[0].host_ids != missing
+    assert jobs[0].values == missing
 
-        jobs = project_api2.get_jobs(fields=["id", "eval_status"])
-        self.assertEqual(len(jobs), 2)
-        self.assertNotEqual(jobs[0].id, missing)
-        self.assertNotEqual(jobs[0].eval_status, missing)
-        self.assertEqual(jobs[0].host_ids, missing)
-        self.assertEqual(jobs[0].values, missing)
+    client2 = Client(url, username, password, all_fields=True)
+    project_api2 = ProjectApi(client2, project.id)
 
-        # Delete project
-        JmsApi(client1).delete_project(project)
+    jobs = project_api2.get_jobs()
+    assert len(jobs) == 2
+    assert jobs[0].id != missing
+    assert jobs[0].eval_status != missing
+    assert jobs[0].values != missing
+    assert jobs[0].host_ids != missing
 
-    def test_storage_configuration(self):
+    jobs = project_api2.get_jobs(fields=["id", "eval_status"])
+    assert len(jobs) == 2
+    assert jobs[0].id != missing
+    assert jobs[0].eval_status != missing
+    assert jobs[0].host_ids == missing
+    assert jobs[0].values == missing
 
-        client = self.client
-        jms_api = JmsApi(client)
-        storages = jms_api.get_storage()
-        for storage in storages:
-            self.assertTrue("name" in storage)
-            self.assertTrue("priority" in storage)
-            self.assertTrue("obj_type" in storage)
+    # Delete project
+    JmsApi(client1).delete_project(project)
 
-    def test_objects_type_check(self):
 
-        proj_name = f"test_objects_type_check"
+def test_storage_configuration(client):
 
-        client = self.client
+    jms_api = JmsApi(client)
+    storages = jms_api.get_storage()
+    for storage in storages:
+        assert "name" in storage
+        assert "priority" in storage
+        assert "obj_type" in storage
 
-        proj = Project(name=proj_name, active=True)
-        job_def = JobDefinition(name="Job Def", active=True)
-        job = Job(name="test")
 
-        jms_api = JmsApi(client)
+def test_objects_type_check(client):
 
-        with self.assertRaises(ClientError) as context:
-            _ = jms_api.create_task_definition_templates([job])
-        assert "Wrong object type" in str(context.exception)
-        assert "got <class 'ansys.hps.client.jms.resource.job.Job'>" in str(context.exception)
+    proj_name = f"test_objects_type_check"
 
-        proj = jms_api.create_project(proj, replace=True)
-        project_api = ProjectApi(client, proj.id)
+    proj = Project(name=proj_name, active=True)
+    job_def = JobDefinition(name="Job Def", active=True)
+    job = Job(name="test")
 
-        job_def = JobDefinition(name="New Config", active=True)
+    jms_api = JmsApi(client)
 
-        with self.assertRaises(ClientError) as context:
-            _ = project_api.create_jobs([job_def])
-        assert "Wrong object type" in str(context.exception)
-        assert "got <class 'ansys.hps.client.jms.resource.job_definition.JobDefinition'>" in str(
-            context.exception
-        )
+    with pytest.raises(ClientError) as ex_info:
+        _ = jms_api.create_task_definition_templates([job])
+    assert "Wrong object type" in str(ex_info.value)
+    assert "got <class 'ansys.hps.client.jms.resource.job.Job'>" in str(ex_info.value)
 
-        job_def = project_api.create_job_definitions([job_def])[0]
+    proj = jms_api.create_project(proj, replace=True)
+    project_api = ProjectApi(client, proj.id)
 
-        # verify support for mixed parameter definitions
-        with self.assertRaises(ClientError) as context:
-            _ = project_api.create_parameter_definitions(
-                [
-                    FloatParameterDefinition(),
-                    Job(),
-                ]
-            )
-        msg = str(context.exception)
-        assert "Wrong object type" in msg
-        assert "<class 'ansys.hps.client.jms.resource.job.Job'>" in msg
-        assert (
-            "<class 'ansys.hps.client.jms.resource.parameter_definition.FloatParameterDefinition'>"
-            in msg
-        )
+    job_def = JobDefinition(name="New Config", active=True)
 
+    with pytest.raises(ClientError) as ex_info:
+        _ = project_api.create_jobs([job_def])
+    assert "Wrong object type" in str(ex_info.value)
+    assert "got <class 'ansys.hps.client.jms.resource.job_definition.JobDefinition'>" in str(
+        ex_info.value
+    )
+
+    job_def = project_api.create_job_definitions([job_def])[0]
+
+    # verify support for mixed parameter definitions
+    with pytest.raises(ClientError) as ex_info:
         _ = project_api.create_parameter_definitions(
             [
                 FloatParameterDefinition(),
-                IntParameterDefinition(),
+                Job(),
             ]
         )
+    msg = str(ex_info.value)
+    assert "Wrong object type" in msg
+    assert "<class 'ansys.hps.client.jms.resource.job.Job'>" in msg
+    assert (
+        "<class 'ansys.hps.client.jms.resource.parameter_definition.FloatParameterDefinition'>"
+        in msg
+    )
 
-        JmsApi(client).delete_project(proj)
+    _ = project_api.create_parameter_definitions(
+        [
+            FloatParameterDefinition(),
+            IntParameterDefinition(),
+        ]
+    )
 
-
-if __name__ == "__main__":
-    unittest.main()
+    JmsApi(client).delete_project(proj)
