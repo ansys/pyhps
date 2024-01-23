@@ -84,6 +84,9 @@ line_length = 100
 default_section = "THIRDPARTY"
 src_paths = ["doc", "src", "tests"]
 
+[tool.hatch.envs.test.scripts]
+pytest = "coverage run -m pytest {args}"
+
 [tool.coverage.run]
 relative_files = true
 source = ["ansys.hps"]
@@ -102,8 +105,8 @@ log_cli = true
 log_cli_level = "INFO"
 log_cli_format = "%(asctime)s [%(levelname)8s] %(message)s (%(filename)s:%(lineno)s)"
 log_cli_date_format = "%Y-%m-%d %H:%M:%S"
-addopts = """-ra -s --durations=0 --cov=ansys.hps --cov-report html:.cov/html \
- --cov-report xml:.cov/xml --cov-report term -vv"""
+addopts = """-ra -s --durations=0 -p pytest_cov --cov=ansys.hps --cov-report html:.cov/html \
+ --cov-report xml:.cov/xml --cov-report term -vv --cov-append"""
 markers = [
     "requires_evaluator: marks tests as end-to-end requiring a running evaluator (deselect with '-m \"not requires_evaluator\"')",
 ]
