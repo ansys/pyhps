@@ -29,7 +29,7 @@ from ..schema.project import ProjectSchema
 
 
 class Project(Object):
-    """Project resource.
+    """Provides the project resource.
 
     Parameters
     ----------
@@ -40,13 +40,13 @@ class Project(Object):
     active : bool
         Defines whether the project is active for evaluation.
     priority : int
-        Priority to pick the project for evaluation.
+        Priority for picking the project for evaluation.
     creation_time : datetime, optional
-        The date and time the project was created.
+        Date and time that the project was created.
     modification_time : datetime, optional
-        The date and time the project was last modified.
-    statistics : dict
-        Optional dictionary containing various project statistics.
+        Date and time that the project was last modified.
+    statistics : dict, optional
+        Dictionary containing various project statistics.
 
     """
 

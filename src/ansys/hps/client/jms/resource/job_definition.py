@@ -29,16 +29,16 @@ from ..schema.job_definition import JobDefinitionSchema
 
 
 class JobDefinition(Object):
-    """JobDefinition resource.
+    """Provides the job definition resource.
 
     Parameters
     ----------
     id : str, optional
         Unique ID to access the resource, generated internally by the server on creation.
     creation_time : datetime, optional
-        The date and time the resource was created.
+        Date and time that the resource was created.
     modification_time : datetime, optional
-        The date and time the resource was last modified.
+        Date and time that the resource was last modified.
     created_by : str, optional
         ID of the user who created the object.
     modified_by : str, optional
@@ -46,8 +46,8 @@ class JobDefinition(Object):
     name : str, optional
         Name of the job definition.
     active : bool
-        Defines whether this is the active job definition in the project where
-        evaluators will evaluate pending jobs.
+        Whether this is the active job definition in the project where evaluators are evaluating
+        pending jobs.
     client_hash : str, optional
     parameter_definition_ids : list[str]
         List of parameter definition IDs.
@@ -56,8 +56,7 @@ class JobDefinition(Object):
     task_definition_ids : list[str]
         List of task definition IDs.
     fitness_definition : FitnessDefinitionBase, optional
-        A :class:`FitnessDefinition` object.
-
+        :class:`FitnessDefinition` object.
     """
 
     class Meta:

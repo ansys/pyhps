@@ -29,14 +29,14 @@ from ..schema.license_context import LicenseContextSchema
 
 
 class LicenseContext(Object):
-    """LicenseContext resource.
+    """Provides the license context resource.
 
     Parameters
     ----------
     context_id : str, optional
-        License context ID
+        License context ID.
     environment : dict, optional
-        License context environment dict
+        Dictionary of license context environments.
 
     """
 

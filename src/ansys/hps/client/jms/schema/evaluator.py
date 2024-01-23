@@ -86,7 +86,7 @@ class EvaluatorSchema(ObjectSchema):
     )
     username = fields.String(
         allow_none=True,
-        metadata={"description": "HPS user the evaluator is connected to JMS as."},
+        metadata={"description": "HPS user that the evaluator is connected to JMS as."},
     )
     platform = fields.String(
         allow_none=True,

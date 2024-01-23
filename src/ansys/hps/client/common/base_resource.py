@@ -37,7 +37,7 @@ class Object(object):
 
     def declared_fields(self):
         """
-        Helper function to retrieve the fields that will be defined as class members for an object
+        Provides a helper function for retrieving fields to define as class members for an object.
         """
         fields = []
         for k, v in self.Meta.schema._declared_fields.items():

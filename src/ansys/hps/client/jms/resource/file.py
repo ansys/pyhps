@@ -28,7 +28,7 @@ from ..schema.file import FileSchema
 
 
 class File(Object):
-    """File resource.
+    """Provides the file resource.
 
     Parameters
     ----------
@@ -41,16 +41,16 @@ class File(Object):
     name : str
         Name of the file resource.
     type : str, optional
-        Type of the file. This can be any string but using a correct media type for
-        the given resource is advisable.
+        Type of the file. While you can use any string, you should use the correct media type
+        for the given resource.
     storage_id : str, optional
-        File's identifier in the (orthogonal) file storage system.
+        ID of the file in the (orthogonal) file storage system.
     size : int, optional
     hash : str, optional
     creation_time : datetime, optional
-        The date and time the file resource was created.
+        Date and time that the file resource was created.
     modification_time : datetime, optional
-        The date and time the file resource was last modified.
+        Date and time that the file resource was last modified.
     created_by : str, optional
         ID of the user who created the object.
     modified_by : str, optional
@@ -59,18 +59,17 @@ class File(Object):
     expiry_time : datetime, optional
         File expiration time.
     evaluation_path : str, optional
-        Relative path under which the file instance for a job evaluation will be stored.
+        Relative path for the file instance to store the job evaluation under.
     monitor : bool, optional
         Whether to live monitor the file's content.
     collect : bool, optional
-        Whether file should be collected per job.
+        Whether the file should be collected per job.
     collect_interval : int, optional
-        Collect frequency for a file with collect=True. Min value limited by the
-        evaluator's settings.
-        0/None - let the evaluator decide, other value - interval in seconds.
+        Collection frequency for a file with ``collect=True``. The minimum value
+        is limited by the evaluator's settings. A value of ``0`` or ``None`` indicates
+        that the evaluator should decide. Another value indicates the interval in seconds.
     reference_id : str, optional
-        Reference file from which this one was created.
-
+        ID of the reference file that this file was created from.
     """
 
     class Meta:

@@ -35,7 +35,7 @@ from ..schema.task_definition_template import (
 
 
 class TemplateProperty(Object):
-    """TemplateProperty resource.
+    """Provides the template property resource.
 
     Parameters
     ----------
@@ -44,10 +44,9 @@ class TemplateProperty(Object):
     description : str, optional
         Description of the property's purpose.
     type : str, optional
-        Type of the property: either int, float, bool or string.
+        Type of the property. Options are ``bool``, ``float``, ``int``, and ``string``.
     value_list : any, optional
-        List of possible values for this property.
-
+        List of possible values for the property.
     """
 
     class Meta:
@@ -69,7 +68,7 @@ TemplatePropertySchema.Meta.object_class = TemplateProperty
 
 
 class TemplateResourceRequirements(Object):
-    """TemplateResourceRequirements resource.
+    """Provides the template resource requirements resource.
 
     Parameters
     ----------
@@ -80,7 +79,6 @@ class TemplateResourceRequirements(Object):
     distributed : TemplateProperty, optional
     custom : dict[str, TemplateProperty], optional
     hpc_resources : HpcResources, optional
-
     """
 
     class Meta:
@@ -113,21 +111,20 @@ TemplateResourceRequirementsSchema.Meta.object_class = TemplateResourceRequireme
 
 
 class TemplateInputFile(Object):
-    """TemplateInputFile resource.
+    """Provides the template input file resource.
 
     Parameters
     ----------
     name : str
         Name of the file.
     type : str, optional
-        MIME type of the file, ie. text/plain.
+        MIME type of the file. For example, ``text/plain``.
     evaluation_path : str, optional
-        Path under which the file is expected to be found during evaluation.
+        Path that the file is expected to be found under during evaluation.
     description : str
         Description of the file's purpose.
     required : bool
-        Is the file required by the task
-
+        Whether the file is required by the task.
     """
 
     class Meta:
@@ -156,24 +153,24 @@ TemplateInputFileSchema.Meta.object_class = TemplateInputFile
 
 
 class TemplateOutputFile(Object):
-    """TemplateOutputFile resource.
+    """Provides the template output file resource.
 
     Parameters
     ----------
     name : str
         Name of the file.
     type : str, optional
-        MIME type of the file, ie. text/plain.
+        MIME type of the file. For example, ``text/plain``.
     evaluation_path : str, optional
-        Path under which the file is expected to be found during evaluation.
+        Path that the file is expected to be found under during evaluation.
     description : str
         Description of the file's purpose.
     required : bool
-        Is the file required by the task
+        Whether the file is required by the task.
     monitor : bool, optional
-        Should the file's contents be live monitored.
+        Whether to live monitor the file's contents.
     collect : bool, optional
-        Should files be collected per job.
+        Whether to collect files per job.
 
     """
 
@@ -207,34 +204,34 @@ TemplateOutputFileSchema.Meta.object_class = TemplateOutputFile
 
 
 class TaskDefinitionTemplate(Object):
-    """TaskDefinitionTemplate resource.
+    """Provides the task definition template resource.
 
     Parameters
     ----------
     id : str, optional
         Unique ID to access the resource, generated internally by the server on creation.
     modification_time : datetime, optional
-        Last time the object was modified, in UTC.
+        Last time in UTC (Coordinated Universal Time) that the object was modified.
     creation_time : datetime, optional
-        Time when the object was created, in UTC.
+        Time in UTC when the object was created.
     name : str
-        Name of the template
+        Name of the template.
     version : str, optional
-        Version of the template
+        Version of the template.
     description : str, optional
-        Description of the template
+        Description of the template.
     software_requirements : list[Software], optional
-        A list of required software.
+        List of required software.
     resource_requirements : TemplateResourceRequirements, optional
-        Includes hardware requirements such as number of cores, memory and disk space.
+        Hardware requirements such as the number of cores, memory, and disk space.
     execution_context : dict[str, TemplateProperty], optional
-        Additional arguments to pass to the executing command.
+        Dictionary of additional arguments to pass to the executing command.
     environment : dict[str, TemplateProperty], optional
-        Environment variables to set for the executed process.
+        Dictionary of environment variables to set for the executed process.
     execution_command : str, optional
-        Command to execute (command or execution script is required).
+        Command to execute. A command or execution script is required.
     use_execution_script : bool, optional
-        Whether to run task with the execution command or the execution script.
+        Whether to run the task with the execution script or the execution command.
     execution_script_storage_id : str, optional
         Storage ID of the script to execute (command or execution script is required).
     execution_script_storage_bucket : str, optional
@@ -243,7 +240,6 @@ class TaskDefinitionTemplate(Object):
         List of predefined input files.
     output_files : list[TemplateOutputFile], optional
         List of predefined output files.
-
     """
 
     class Meta:

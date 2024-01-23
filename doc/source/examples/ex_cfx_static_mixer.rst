@@ -3,17 +3,20 @@
 CFX static mixer
 ================
 
-This example shows how to submit a CFX static mixer model to be solved on HPS. 
+This example shows how to submit a CFX static mixer model for solving on Ansys HPS. 
 
 .. only:: builder_html
 
-     The project setup script as well as the data files can be downloaded here :download:`CFX static mixer example <../../../build/cfx_static_mixer.zip>`.
+     You can download the :download:`ZIP file <../../../build/cfx_static_mixer.zip>` for
+     the CFX static mixer example and use a tool such as 7-Zip to extract the files.
 
-     The project uses an execution script `exec_cfx.py` instead of a solver command line.  
+Here is the ``project_setup.py`` script for this example:
 
 .. literalinclude:: ../../../examples/cfx_static_mixer/project_setup.py
     :language: python
     :caption: project_setup.py
+
+This example uses this ``exec_cfx.py`` execution script instead of a solver command line:
 
 .. literalinclude:: ../../../examples/cfx_static_mixer/exec_cfx.py
     :language: python

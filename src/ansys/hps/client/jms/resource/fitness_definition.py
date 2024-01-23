@@ -32,7 +32,7 @@ log = logging.getLogger(__name__)
 
 
 class FitnessTermDefinition(Object):
-    """FitnessTermDefinition resource.
+    """Provides the fitness term definition resource.
 
     Parameters
     ----------
@@ -41,7 +41,7 @@ class FitnessTermDefinition(Object):
     name : str, optional
         Name of the fitness term.
     expression : str, optional
-        The Python expression that defines the fitness term.
+        Python expression that defines the fitness term.
     type : str, optional
         Fitness term type.
     weighting_factor : float, optional
@@ -50,7 +50,7 @@ class FitnessTermDefinition(Object):
     Examples
     --------
 
-    A fitness term of type objective
+    Create a fitness term of the objective type.
 
     >>> ft1 = FitnessTermDefinition(
     ...     name="weight",
@@ -59,7 +59,7 @@ class FitnessTermDefinition(Object):
     ...     expression="map_design_objective(values['weight'],7.5,5.5)"
     ... )
 
-    A fitness term of type target constraint
+    Create a fitness term of the target constraint type.
 
     >>> ft2 = FitnessTermDefinition(
     ...     name="torsional_stiffness",
@@ -69,7 +69,7 @@ class FitnessTermDefinition(Object):
     ...         values['torsion_stiffness'], 1313.0, 5.0, 30.0)"
     ... )
 
-    A fitness term of type limit constraint
+    Create a fitness term of the limit constraint type.
 
     >>> ft3 = FitnessTermDefinition(
     ...     name="max_stress",
@@ -98,16 +98,16 @@ FitnessTermDefinitionSchema.Meta.object_class = FitnessTermDefinition
 
 
 class FitnessDefinition(Object):
-    """FitnessDefinition resource.
+    """Provides the fitness definition resource.
 
     Parameters
     ----------
     id : str, optional
         Unique ID to access the resource, generated internally by the server on creation.
     fitness_term_definitions
-        List of :class:`ansys.hps.client.jms.FitnessTermDefinition`.
+        List of :class:`ansys.hps.client.jms.FitnessTermDefinition` objects.
     error_fitness : float
-        The default fitness value assigned to failed jobs.
+        Default fitness value to assign to failed jobs.
 
     Examples
     --------
@@ -138,7 +138,7 @@ class FitnessDefinition(Object):
 
     def add_fitness_term(self, **kwargs):
         """
-        Helper function to easily add a fitness term
+        Add a fitness term easily using a helper function.
         """
         ft = FitnessTermDefinition(**kwargs)
 

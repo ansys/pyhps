@@ -5,20 +5,21 @@ PyHPS documentation |version|
     :hidden:
     :maxdepth: 3
 
-    install
-    quickstart
+    getting_started/index
+    user_guide/index
     examples/index
     api/index
+    contribute
 
 Introduction
 ------------
 
-Ansys HPC Platform Services (HPS) is a set of technology components designed to help you manage the execution of simulations while making use of your full range of computing assets.
+Ansys HPC Platform Services (HPS) is a set of technology components designed to help you
+manage the execution of simulations while making use of your full range of computing assets.
 
-``ansys-hps-client`` brings Ansys HPS to your Python application. 
-Wrapping around the HPS REST APIs, it allows you to:
+PyHPS brings HPS to your Python app. Wrapping around HPS REST APIs, PyHPS allows you to:
 
-* create new projects and modify existing ones
-* monitor and manage jobs
-* run your own design exploration algorithms 
-* retrieve simulation results
+* Create projects and modify existing ones.
+* Monitor and manage jobs.
+* Run your own design exploration algorithms.
+* Retrieve simulation results.

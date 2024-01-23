@@ -50,10 +50,10 @@ log = logging.getLogger(__name__)
 
 def main(client, num_jobs, use_exec_script) -> Project:
     """
-    Create project solving a Two-Bar Truss problem with Python.
+    Create project solving a two-bar truss problem with Python.
 
-    from  R.L. Fox, Optimization Methods in Engineering Design, Addison Wesley, 1971
-    See e.g. https://apmonitor.com/me575/uploads/Main/optimization_book.pdf
+    For the original problem description, see R.L. Fox, Optimization Methods in Engineering Design, Addison Wesley, 1971.
+    Also see `Optimization Methods for Engineering Design <https://apmonitor.com/me575/uploads/Main/optimization_book.pdf>`_.
     """  # noqa
     log.debug("=== Project")
     proj = Project(name="Two-bar Truss Problem", priority=1, active=True)
