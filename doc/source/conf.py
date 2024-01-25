@@ -57,7 +57,7 @@ exclude_patterns = ["_autoapi_templates", "_build", "Thumbs.db", ".DS_Store"]
 # Configuration for Sphinx autoapi
 autoapi_type = "python"
 autoapi_dirs = ["../../src/ansys"]
-# autoapi_root = "api"
+autoapi_root = "api"
 autoapi_options = [
     "members",
     "undoc-members",
