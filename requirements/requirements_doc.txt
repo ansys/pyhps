@@ -5,5 +5,5 @@ sphinx-copybutton==0.5.2
 sphinxcontrib-httpdomain==1.8.1
 sphinxcontrib-globalsubs==0.1.1
 sphinxnotes-strike==1.2
-sphinx-autodoc-typehints==1.25.2
+sphinx-autodoc-typehints==1.25.3
 autodoc_pydantic==2.0.1
