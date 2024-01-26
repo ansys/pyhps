@@ -192,7 +192,7 @@ html_theme_options = {
         ("PyAnsys", "https://docs.pyansys.com/"),
     ],
     "collapse_navigation": True,
-    "navigation_depth": 4,
+    "navigation_depth": 5,
     "check_switcher": False,
     "switcher": {
         "json_url": f"https://{cname}/release/versions.json",  # noqa: E231
