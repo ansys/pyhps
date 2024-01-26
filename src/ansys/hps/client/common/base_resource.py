@@ -64,12 +64,14 @@ class Object(object):
                 setattr(self, k, missing)
 
     def __repr__(self):
+        """Printable representation of the object."""
         return "%s(%s)" % (
             self.__class__.__name__,
             ",".join(["%s=%r" % (k, getattr(self, k)) for k in self.declared_fields()]),
         )
 
     def __eq__(self, other):
+        """Compare instances of the object."""
         if not isinstance(other, self.__class__):
             return NotImplemented
         for k in self.declared_fields():
@@ -78,7 +80,7 @@ class Object(object):
         return True
 
     def __str__(self):
-
+        """String representation of the object."""
         # Ideally we'd simply do
         #   return json.dumps(self.Meta.schema(many=False).dump(self), indent=2)
         # However the schema.dump() function (rightfully) ignores fields marked as load_only.

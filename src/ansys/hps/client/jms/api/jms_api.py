@@ -65,6 +65,7 @@ class JmsApi(object):
     """
 
     def __init__(self, client: Client):
+        """Initialize JMS API."""
         self.client = client
         self._fs_url = None
 
@@ -247,11 +248,13 @@ class JmsApi(object):
     ################################################################
     # Operations
     def get_operations(self, as_objects=True, **query_params) -> List[Operation]:
+        """Get operations."""
         return get_objects(
             self.client.session, self.url, Operation, as_objects=as_objects, **query_params
         )
 
     def get_operation(self, id, as_object=True) -> Operation:
+        """Get an operation."""
         return get_object(self.client.session, self.url, Operation, id, as_object=as_object)
 
     def monitor_operation(self, operation_id: str, max_value: float = 5.0, max_time: float = None):
@@ -322,6 +325,7 @@ def get_project_by_name(client, api_url, name, last_created=True) -> Union[Proje
 
 
 def create_project(client, api_url, project, replace=False, as_objects=True) -> Project:
+    """Create a project."""
     url = f"{api_url}/projects/"
 
     schema = ProjectSchema()
@@ -340,6 +344,7 @@ def create_project(client, api_url, project, replace=False, as_objects=True) -> 
 
 
 def update_project(client, api_url, project, as_objects=True) -> Project:
+    """Update a project."""
     url = f"{api_url}/projects/{project.id}"
 
     schema = ProjectSchema()
@@ -355,7 +360,7 @@ def update_project(client, api_url, project, as_objects=True) -> Project:
 
 
 def delete_project(client, api_url, project):
-
+    """Delete a project."""
     url = f"{api_url}/projects/{project.id}"
     r = client.session.delete(url)
 
@@ -363,6 +368,8 @@ def delete_project(client, api_url, project):
 def _monitor_operation(
     jms_api: JmsApi, operation_id: str, max_value: float = 5.0, max_time: float = None
 ) -> Operation:
+    """Monitor an operation."""
+
     @backoff.on_predicate(
         backoff.expo,
         lambda x: x[1] == False,
@@ -371,6 +378,7 @@ def _monitor_operation(
         max_time=max_time,
     )
     def _monitor():
+        """Monitor the operation with its ID."""
         done = False
         op = jms_api.get_operation(id=operation_id)
         if op:
@@ -387,7 +395,7 @@ def _monitor_operation(
 def _copy_objects(
     client: Client, api_url: str, objects: List[Object], wait: bool = True
 ) -> Union[str, List[str]]:
-
+    """Copy objects."""
     operation_id = base_copy_objects(client.session, api_url, objects)
 
     if not wait:
@@ -402,7 +410,7 @@ def _copy_objects(
 
 
 def restore_project(jms_api, archive_path):
-
+    """Restore an archived project."""
     if not os.path.exists(archive_path):
         raise HPSError(f"Project archive: path does not exist {archive_path}")
 
@@ -456,7 +464,7 @@ def get_storages(client, api_url):
 
 
 def get_fs_url(client, api_url):
-
+    """Get the file storage URL."""
     file_storages = get_storages(client, api_url)
 
     if not file_storages:

@@ -29,7 +29,8 @@ from ..schema.user import UserSchema
 
 
 class User(Object):
-    """Provides the user resource.
+    """
+    Provides the user resource.
 
     Parameters
     ----------
@@ -45,7 +46,6 @@ class User(Object):
         Last name.
     email : str, optional
         E-mail address.
-
     """
 
     class Meta:

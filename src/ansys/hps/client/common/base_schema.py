@@ -25,6 +25,8 @@ from marshmallow import INCLUDE, Schema, fields, post_load
 
 
 class BaseSchema(Schema):
+    """Base schema class."""
+
     class Meta:
         ordered = True
         unknown = INCLUDE
@@ -32,10 +34,12 @@ class BaseSchema(Schema):
 
     @post_load
     def make_object(self, data, **kwargs):
+        """Make object for base schema."""
         return self.Meta.object_class(**data)
 
 
 class ObjectSchema(BaseSchema):
+    """Create object schema with ID."""
 
     id = fields.String(
         allow_none=True,
@@ -48,6 +52,7 @@ class ObjectSchema(BaseSchema):
 
 
 class ObjectSchemaWithModificationInfo(ObjectSchema):
+    """Object schema with creation & modification times, and created & modified by fields."""
 
     creation_time = fields.DateTime(
         allow_none=True,

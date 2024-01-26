@@ -35,7 +35,7 @@ log = logging.getLogger(__name__)
 def get_objects(
     session: Session, url: str, obj_type: Type[Object], as_objects=True, **query_params
 ):
-
+    """Get objects with a session, URL, and object type."""
     rest_name = obj_type.Meta.rest_name
     url = f"{url}/{rest_name}"
     r = session.get(url, params=query_params)
@@ -54,7 +54,7 @@ def get_objects(
 def get_object(
     session: Session, url: str, obj_type: Type[Object], id: str, as_object=True, **query_params
 ):
-
+    """Get an object with a session, URL, object type, and object."""
     rest_name = obj_type.Meta.rest_name
     url = f"{url}/{rest_name}/{id}"
     r = session.get(url, params=query_params)
@@ -75,7 +75,7 @@ def get_object(
 
 
 def _check_object_types(objects: List[Object], obj_type: Type[Object]):
-
+    """Check object types."""
     are_same = [isinstance(o, obj_type) for o in objects]
     if not all(are_same):
         actual_types = set([type(o) for o in objects])
@@ -92,6 +92,7 @@ def create_objects(
     as_objects=True,
     **query_params,
 ):
+    """Create objects."""
     if not objects:
         return []
 
@@ -120,7 +121,7 @@ def update_objects(
     as_objects=True,
     **query_params,
 ):
-
+    """Update objects."""
     if not objects:
         return []
 
@@ -142,7 +143,7 @@ def update_objects(
 
 
 def delete_objects(session: Session, url: str, objects: List[Object], obj_type: Type[Object]):
-
+    """Delete objects."""
     if not objects:
         return
 
@@ -157,7 +158,7 @@ def delete_objects(session: Session, url: str, objects: List[Object], obj_type: 
 
 
 def copy_objects(session: Session, url: str, objects: List[Object], wait: bool = True) -> str:
-
+    """Copy objects."""
     are_same = [o.__class__ == objects[0].__class__ for o in objects[1:]]
     if not all(are_same):
         raise ClientError("Mixed object types")

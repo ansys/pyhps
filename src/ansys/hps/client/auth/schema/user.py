@@ -27,6 +27,8 @@ from ansys.hps.client.common.base_schema import BaseSchema
 
 
 class UserSchema(BaseSchema):
+    """Create user schema with ID, username, password, first name, last name, and email."""
+
     class Meta(BaseSchema.Meta):
         pass
 

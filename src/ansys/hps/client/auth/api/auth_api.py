@@ -30,7 +30,8 @@ from ..schema.user import UserSchema
 
 
 class AuthApi:
-    """Provides the Python interface to the Authorization Service API.
+    """
+    Provides the Python interface to the Authorization Service API.
 
     Admin users with the Keycloak "manage-users" role can create
     users as well as modify or delete existing users. Non-admin users are only allowed
@@ -64,7 +65,6 @@ class AuthApi:
     ...     last_name="User",
     ... )
     >>> auth_api.create_user(new_user)
-
     """
 
     def __init__(self, client):
@@ -81,7 +81,8 @@ class AuthApi:
         return _admin_client(self.client)
 
     def get_users(self, as_objects=True, **query_params) -> List[User]:
-        """Get users, filtered according to query parameters.
+        """
+        Get users, filtered according to query parameters.
 
         Examples of query parameters are:
         - ``username``
@@ -96,19 +97,68 @@ class AuthApi:
         return get_users(self.keycloak_admin_client, as_objects=as_objects, **query_params)
 
     def get_user(self, id: str) -> User:
-        """Get the user representation for a given user ID."""
+        """
+        Get the user representation for a given user ID.
+
+        Parameters
+        ----------
+        id : str
+            User ID.
+
+        Returns
+        -------
+        User
+            User object.
+        """
         return get_user(self.keycloak_admin_client, id)
 
     def get_user_groups(self, id: str) -> List[str]:
-        """Get the groups that the user belongs to."""
+        """
+        Get the groups that the user belongs to.
+
+        Parameters
+        ----------
+        id : str
+            User ID.
+
+        Returns
+        -------
+        List[str]
+            List of groups the user belongs to.
+        """
         return [g["name"] for g in self.keycloak_admin_client.get_user_groups(id)]
 
     def get_user_realm_roles(self, id: str) -> List[str]:
-        """Get the realm roles for the user."""
+        """
+        Get the realm roles for the user.
+
+        Parameters
+        ----------
+        id : str
+            User ID.
+
+        Returns
+        -------
+        List[str]
+            List of realm roles for the user.
+        """
         return [r["name"] for r in self.keycloak_admin_client.get_realm_roles_of_user(id)]
 
     def user_is_admin(self, id: str) -> bool:
-        """Determine if the user is a system administrator."""
+        """
+        Determine if the user is a system administrator.
+
+        Parameters
+        ----------
+        id : str
+            User ID.
+
+        Returns
+        -------
+        bool
+            ``True`` if the user is a system administrator.
+            ``False`` if the user is not a system administrator.
+        """
 
         from ansys.hps.client.jms import JmsApi
 
@@ -130,7 +180,8 @@ class AuthApi:
         return False
 
     def create_user(self, user: User, as_objects=True) -> User:
-        """Create a user.
+        """
+        Create a user.
 
         Parameters
         ----------
@@ -138,11 +189,17 @@ class AuthApi:
             User object. The default is ``None``.
         as_objects : bool, optional
             The default is ``True``.
+
+        Returns
+        -------
+        User
+            User object.
         """
         return create_user(self.keycloak_admin_client, user, as_objects=as_objects)
 
     def update_user(self, user: User, as_objects=True) -> User:
-        """Modify an existing user.
+        """
+        Modify an existing user.
 
         Parameters
         ----------
@@ -150,11 +207,17 @@ class AuthApi:
             User object. The default is ``None``.
         as_objects : bool, optional
             The default is  ``True``.
+
+        Returns
+        -------
+        User
+            User object.
         """
         return update_user(self.keycloak_admin_client, user, as_objects=as_objects)
 
     def delete_user(self, user: User) -> None:
-        """Delete an existing user.
+        """
+        Delete an existing user.
 
         Parameters
         ----------
@@ -165,7 +228,14 @@ class AuthApi:
 
 
 def _admin_client(client):
+    """
+    Set information for admin.
 
+    Parameters
+    ----------
+    client : Client
+        HPS client object.
+    """
     custom_headers = {
         "Authorization": "Bearer " + client.access_token,
         "Content-Type": "application/json",
@@ -183,7 +253,14 @@ def _admin_client(client):
 
 
 def get_users(admin_client: KeycloakAdmin, as_objects=True, **query_params):
+    """
+    Get users as admin.
 
+    Parameters
+    ----------
+    admin_client : KeycloakAdmin
+        Keycloak admin user.
+    """
     users = admin_client.get_users(query=query_params)
 
     if not as_objects:
@@ -194,7 +271,16 @@ def get_users(admin_client: KeycloakAdmin, as_objects=True, **query_params):
 
 
 def get_user(admin_client: KeycloakAdmin, id: str, as_objects=True):
+    """
+    Get user using ID.
 
+    Parameters
+    ----------
+    admin_client: KeycloakAdmin
+        Keycloak admin user.
+    id : str
+        User ID.
+    """
     user = admin_client.get_user(user_id=id)
 
     if not as_objects:
@@ -205,6 +291,16 @@ def get_user(admin_client: KeycloakAdmin, id: str, as_objects=True):
 
 
 def create_user(admin_client: KeycloakAdmin, user: User, as_objects=True):
+    """
+    Create user.
+
+    Parameters
+    ----------
+    admin_client : KeycloakAdmin
+        Keycloak admin user.
+    user : User
+        HPS user object.
+    """
     schema = UserSchema(many=False)
     data = schema.dump(user)
 
@@ -223,6 +319,16 @@ def create_user(admin_client: KeycloakAdmin, user: User, as_objects=True):
 
 
 def update_user(admin_client: KeycloakAdmin, user: User, as_objects=True):
+    """
+    Update user.
+
+    Parameters
+    ----------
+    admin_client : KeycloakAdmin
+        Keycloak admin user.
+    user : User
+        HPS user object.
+    """
     schema = UserSchema(many=False)
     data = schema.dump(user)
 
