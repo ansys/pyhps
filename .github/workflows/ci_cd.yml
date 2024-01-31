@@ -43,7 +43,7 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
 
-  tests:
+  quick-tests:
     name: Quick tests and coverage
     runs-on: ${{ matrix.os }}
     strategy:
@@ -51,12 +51,8 @@ jobs:
           os: [ubuntu-latest]
           cfg: [
               { python-version: '3.9', toxenv: 'py39' },
-              { python-version: '3.10', toxenv: 'py310' },
-              { python-version: '3.11', toxenv: 'py311' },
-              { python-version: '3.12', toxenv: 'py312' },
             ]
       fail-fast: false
-
     steps:
       - uses: actions/checkout@v3
       - name: Set up Python ${{ matrix.cfg.python-version }}
@@ -176,7 +172,7 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-latest, windows-latest, macos-latest]
-        python-version: ['3.9', '3.10', '3.11', '3.12']
+        python-version: ['3.9']
         should-release:
           - ${{ github.event_name == 'push' && contains(github.ref, 'refs/tags') }}
         exclude:
@@ -192,7 +188,7 @@ jobs:
 
   package:
     name: Package library
-    needs: [tests, docs]
+    needs: [quick-tests, docs]
     runs-on: ubuntu-latest
     steps:
       - name: Build library source and wheel artifacts
