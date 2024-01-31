@@ -19,7 +19,8 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
-
+"""Module getting the :class:`requests.Session` object configured for HPS with a given access token
+and pinging a given URL."""
 import logging
 from typing import Union
 
@@ -34,24 +35,23 @@ def create_session(
     verify: Union[bool, str] = True,
     disable_security_warnings=False,
 ) -> requests.Session:
-    """Returns a :class:`requests.Session` object configured for HPS with given access token
+    """Get the :class:`requests.Session` object configured for HPS with a given access token.
 
     Parameters
     ----------
     access_token : str
-        The access token provided by :meth:`ansys.hps.client.auth.authenticate`
+        Access token provided by the :meth:`ansys.hps.client.auth.authenticate` method.
     verify: Union[bool, str], optional
-        Either a boolean, in which case it controls whether we verify the
-        server's TLS certificate, or a string, in which case it must be
-        a path to a CA bundle to use.
-        See the :class:`requests.Session` documentation.
+        If a Boolean, whether to verify the server's TLS certificate. The default is ``True``.
+        If a string, the path to the CA bundle to use. For more information, see the
+        :class:`requests.Session` documentation.
     disable_security_warnings: bool, optional
-        Disable warnings about insecure HTTPS requests.
+        Whether to disable warnings about insecure HTTPS requests. The default is ``False``.
 
     Returns
     -------
     :class:`requests.Session`
-        The session object.
+        Session object.
     """
     session = requests.Session()
 
@@ -78,13 +78,22 @@ def create_session(
 
 
 def ping(session: requests.Session, url: str, timeout=10.0) -> bool:
-    """Ping the given URL, returning true on success
+    """Ping the given URL.
 
-    Args:
-        session: The :class:`requests.Session` object.
-        url (str): The URL address to ping.
-    Returns:
-        bool: True on success.
+    Parameters
+    ----------
+    session : :class:`requests.Session`
+        Session object.
+    url : str
+        URL address to ping.
+    timeout : float, optional
+        Time in seconds to continue pinging the URL before reporting a failure. The
+        default is ``10.0``.
+
+    Returns
+    -------
+    bool
+        ``True`` when successful, ``False`` when failed.
     """
     log.debug("Ping %s ..." % url)
     r = session.get(url, timeout=timeout)

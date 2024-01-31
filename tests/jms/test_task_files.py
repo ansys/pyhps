@@ -1,4 +1,3 @@
-# Copyright (C) 2021 by
 # Copyright (C) 2024 ANSYS, Inc. and/or its affiliates.
 # SPDX-License-Identifier: MIT
 #

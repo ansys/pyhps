@@ -6,16 +6,16 @@ PyHPS
    :target: https://docs.pyansys.com/
    :alt: PyAnsys
 
-.. |python| image:: https://img.shields.io/pypi/pyversions/ansys-pyhps?logo=pypi
-   :target: https://pypi.org/project/ansys-pyhps
+.. |python| image:: https://img.shields.io/pypi/pyversions/ansys-hps-client?logo=pypi
+   :target: https://pypi.org/project/ansys-hps-client
    :alt: Python
 
-.. |pypi| image:: https://img.shields.io/pypi/v/ansys-pyhps.svg?logo=python&logoColor=white
-   :target: https://pypi.org/project/ansys-pyhps
+.. |pypi| image:: https://img.shields.io/pypi/v/ansys-hps-client.svg?logo=python&logoColor=white
+   :target: https://pypi.org/project/ansys-hps-client
    :alt: PyPI
 
 .. |codecov| image:: https://codecov.io/gh/ansys-internal/pyhps/branch/main/graph/badge.svg
-   :target: https://codecov.io/gh/ansys-internal/ansys-pyhps
+   :target: https://codecov.io/gh/ansys-internal/ansys-hps-client
    :alt: Codecov
 
 .. |GH-CI| image:: https://github.com/ansys-internal/pyhps/actions/workflows/ci_cd.yml/badge.svg
@@ -31,169 +31,60 @@ PyHPS
    :alt: Black
 
 
-A Python client library for the Ansys HPC Platform Services.
+PyHPS is a Python client library for Ansys HPC Platform Services (HPS), which is
+a set of technology components designed to help you manage the execution of simulations
+while making use of your full range of computing assets.
 
-How to install
---------------
+PyHPS brings Ansys HPS to your Python app. Wrapping around Ansys HPS REST APIs, PyHPS
+allows you to:
 
-In order to install PyHPS, make sure you
-have the latest version of `pip`_. To do so, run:
+* Create projects and modify existing ones.
+* Monitor and manage jobs.
+* Run your own design exploration algorithms.
+* Retrieve simulation results.
 
-.. code:: bash
+Documentation and issues
+------------------------
 
-    python -m pip install -U pip
+Documentation for the latest stable release of PyHPS is hosted at
+`PyHPS documentation <https://rep.docs.pyansys.com/dev/>`_.
 
-Then, as long as PyHPS is a private pyAnsys module not published to pypi yet, you can execute:
+In the upper right corner of the documentation's title bar, there is an option
+for switching from viewing the documentation for the latest stable release
+to viewing the documentation for the development version or previously
+released versions.
 
-.. code:: bash
+The PyHPS documentation contains these sections:
 
-    python -m pip install git+https://github.com/ansys-internal/pyhps
+- `Getting started <https://rep.docs.pyansys.com/dev/getting_started/index.html>`_: Explains
+  how to install PyHPS in user mode.
+- `User guide <https://rep.docs.pyansys.com/dev/user_guide/index.html>`_: Describes the basics
+  of how to use PyHPS to interact with Ansys HPS.
+- `Examples <https://rep.docs.pyansys.com/dev/examples/index.html>`_: Provides examples of how
+  to interact with a Remote Execution Platform (REP) server in Python using PyHPS.
+- `API reference <https://rep.docs.pyansys.com/dev/api/index.html>`_: Describes PyHPS functions,
+  classes, methods, and their parameters and return values so that you can understand how to
+  interact with them programmatically
+- `Contribute <https://rep.docs.pyansys.com/dev/contribute.html>_`: Provides information on
+  how to install PyHPS in developer mode and make contributions to the codebase.
 
-.. TODO: Enable this once pyhps is published:  python -m pip install ansys-pyhps
-
-Contribute
-----------
-
-Before contributing to the project, ensure that you are thoroughly
-familiar with the `PyAnsys Developer's guide`_. To contribute,
-follow these steps:
-
-#. Clone this repository:
-
-    .. code:: bash
-
-        git clone https://github.com/pyansys/pyhps
-        cd pyhps
-
-#. Create a new Python environment and activate it:
-
-    .. code:: bash
-
-        # Create a virtual environment
-        python -m venv .venv
-
-        # Activate it in a POSIX system
-        source .venv/bin/activate
-
-        # Activate it in Windows CMD environment
-        .venv\Scripts\activate.bat
-
-        # Activate it in Windows Powershell
-        .venv\Scripts\Activate.ps1
-
-#. Make sure you have the latest required build system and doc, testing, and CI tools:
-
-    .. code:: bash
-
-        python -m pip install -U pip setuptools tox
-        python -m pip install -e .[tests,doc]
-
-#. Install the project in editable mode:
-
-    .. code:: bash
-    
-        python -m pip install --editable .
-
-How to testing
---------------
-
-This project takes advantage of `tox`_. This tool allows to automate common
-development tasks (similar to Makefile) but it is oriented towards Python
-development. 
-
-Using tox
-^^^^^^^^^
-
-As Makefile has rules, `tox`_ has environments. In fact, the tool creates its
-own virtual environment so anything being tested is isolated from the project in
-order to guarantee project's integrity. The following environments commands are provided:
-
-- **tox -e style**: will check for coding style quality.
-- **tox -e py**: checks for unit tests.
-- **tox -e py-coverage**: checks for unit testing and code coverage.
-- **tox -e doc**: checks for documentation building process.
-
-
-Raw testing
-^^^^^^^^^^^
-
-If required, you can always call the style commands (`black`_, `isort`_,
-`flake8`_...) or unit testing ones (`pytest`_) from the command line. However,
-this does not guarantee that your project is being tested in an isolated
-environment, which is the reason why tools like `tox`_ exist.
-
-
-A note on pre-commit
-^^^^^^^^^^^^^^^^^^^^
-
-The style checks take advantage of `pre-commit`_. Developers are not forced but
-encouraged to install this tool via:
-
-.. code:: bash
-
-    python -m pip install pre-commit && pre-commit install
-
-
-Documentation
--------------
-
-For building documentation, you can manually run:
-
-.. code:: bash
-
-    python archive_examples.py
-    python -m sphinx -b html doc/source build/sphinx/html
-
-The recommended way of checking documentation integrity is using:
-
-.. code:: bash
-
-    tox -e doc && your_browser_name .tox/doc_out/index.html
-
-
-Distributing
-------------
-
-If you would like to create either source or wheel files, start by installing
-the building requirements and then executing the build module:
-
-.. code:: bash
-
-    python -m build
-    python -m twine check dist/*
-
-
-How to generate/update RMS models
----------------------------------
-
-
-To generate RMS Pydantic models, first download the RMS openapi spec and save it as `rms_openapi.json` at the root of the repository.
-Then, run the datamodel generator:
-
-.. code:: bash
-    
-    datamodel-codegen --input .\rms_openapi.json --input-file-type openapi --output ansys/hps/client/rms/models.py --output-model-type pydantic_v2.BaseModel
-
-
-Documentation, Issues, and Support
-----------------------------------
-Documentation for the latest stable release of PyHPS is hosted at `PyHPS documentation
-<https://hps.docs.pyansys.com/dev/>`_.
-
-On the `PyHPS Issues <https://github.com/ansys-internal/pyhps/issues>`_ page,
-you can create issues to report bugs and request new features. On the `PyHPS Discussions
-<https://github.com/ansys-internal/pyhps/discussions>`_ page or the `Discussions <https://discuss.ansys.com/>`_
-page on the Ansys Developer portal, you can post questions, share ideas, and get community feedback. 
+On the `PyHPS Issues <https://github.com/ansys-internal/pyhps/issues>` page, you can
+create issues to report bugs and request new features. On the
+`PyHPS Discussions <https://github.com/ansys-internal/pyhps/discussions>`_ page or the
+`Discussions <https://discuss.ansys.com/>`_ page on the Ansys Developer portal,
+you can post questions, share ideas, and get community feedback.
 
 To reach the project support team, email `pyansys.core@ansys.com <pyansys.core@ansys.com>`_.
 
-.. LINKS AND REFERENCES
-.. _black: https://github.com/psf/black
-.. _flake8: https://flake8.pycqa.org/en/latest/
-.. _isort: https://github.com/PyCQA/isort
-.. _pip: https://pypi.org/project/pip/
-.. _pre-commit: https://pre-commit.com/
-.. _PyAnsys Developer's guide: https://dev.docs.pyansys.com/
-.. _pytest: https://docs.pytest.org/en/stable/
-.. _Sphinx: https://www.sphinx-doc.org/en/master/
-.. _tox: https://tox.wiki/
+License
+-------
+
+PyHPS is licensed under the MIT license.
+
+PyHPS makes no commercial claim over Ansys whatsoever. This library extends the
+functionality of Ansys HPC Platform Services by adding a Python interface to it
+without changing the core behavior or license of the original software. The use
+of PyHPS requires a legally licensed local copy of AEDT.
+
+To get a copy of AEDT, see the `Ansys HPC Platform Services Guide <https://ansyshelp.ansys.com/account/secured?returnurl=/Views/Secured/hpcplat/v000/en/rep_ug/rep_ug.html>`_`
+in the Ansys Help.

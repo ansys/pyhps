@@ -4,7 +4,7 @@ build-backend = "flit_core.buildapi"
 
 [project]
 # Check https://flit.readthedocs.io/en/latest/pyproject_toml.html for all available sections
-name = "ansys-pyhps"
+name = "ansys-hps-client"
 version = "0.6.dev0"
 description = "A python client for Ansys HPC Platform Services"
 readme = "README.rst"
@@ -46,15 +46,21 @@ tests = [
 ]
 
 doc = [
-    "Sphinx==7.2.6",
-    "numpydoc==1.6.0",
-    "ansys-sphinx-theme==0.12.5",
-    "sphinx-copybutton==0.5.2",
-    "sphinxcontrib-httpdomain==1.8.1",
-    "sphinxcontrib-globalsubs==0.1.1",
-    "sphinxnotes-strike==1.2",
-    "sphinx-autodoc-typehints==1.25.2",
+    "ansys-sphinx-theme==0.13.1",
     "autodoc_pydantic==2.0.1",
+    "jupyter_sphinx==0.5.3",
+    "nbsphinx==0.9.3",
+    "numpydoc==1.6.0",
+    "myst-parser==2.0.0",
+    "Sphinx==7.2.6",
+    "sphinx-autoapi==3.0.0",
+    "sphinx-autodoc-typehints==1.25.2",
+    "sphinxcontrib-globalsubs==0.1.1",
+    "sphinxcontrib-httpdomain==1.8.1",
+    "sphinx-copybutton==0.5.2",
+    "sphinx_design==0.5.0",
+    "sphinx-jinja==2.0.2",
+    "sphinxnotes-strike==1.2",
 ]
 
 build = [
@@ -101,8 +107,8 @@ log_cli = true
 log_cli_level = "INFO"
 log_cli_format = "%(asctime)s [%(levelname)8s] %(message)s (%(filename)s:%(lineno)s)"
 log_cli_date_format = "%Y-%m-%d %H:%M:%S"
-addopts = """-ra -s --durations=0 --cov=ansys.hps --cov-report html:.cov/html \
- --cov-report xml:.cov/xml --cov-report term -vv"""
+addopts = """-ra -s --durations=0 -p pytest_cov --cov=ansys.hps --cov-report html:.cov/html \
+ --cov-report xml:.cov/xml --cov-report term -vv --cov-append"""
 filterwarnings = [
     "ignore::urllib3.exceptions.InsecureRequestWarning",
     "ignore::DeprecationWarning:pkg_resources.*",

@@ -1,9 +1,10 @@
 .. _api_reference:
 
-Code documentation
-==================
+API reference
+=============
 
-If you are looking for information on a specific function, class, or method, this part of the documentation is for you.
+This section describes PyHPS functions, classes, methods, and their parameters and return values
+so that you can understand how to interact with them programmatically.
 
 .. toctree::
   :maxdepth: 3
