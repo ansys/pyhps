@@ -64,7 +64,7 @@ from ansys.hps.client.jms import (
     TaskDefinition,
 )
 
-from .task_files import update_task_files
+from task_files import update_task_files
 
 log = logging.getLogger(__name__)
 
