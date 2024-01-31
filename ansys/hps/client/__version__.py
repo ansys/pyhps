@@ -20,7 +20,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-__version__ = "0.6.dev0"
+__version__ = "0.6.0"
 __version_no_dots__ = __version__.replace(".", "")
 __company__ = "ANSYS, Inc."
 __company_short__ = "Ansys"
