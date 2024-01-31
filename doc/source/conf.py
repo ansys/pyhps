@@ -1,10 +1,15 @@
 # Sphinx documentation configuration file
 from datetime import datetime
 import os
+from pathlib import Path
 import sys
 
-from ansys_sphinx_theme import get_version_match
-from ansys_sphinx_theme import pyansys_logo_black as logo
+from ansys_sphinx_theme import (
+    ansys_favicon,
+    get_autoapi_templates_dir_relative_path,
+    get_version_match,
+    pyansys_logo_black,
+)
 
 from ansys.hps.client import __ansys_apps_version__, __version__
 
@@ -17,6 +22,7 @@ project = "Ansys pyhps"
 copyright = f"(c) {datetime.now().year} ANSYS, Inc. All rights reserved"
 author = "ANSYS Inc."
 cname = os.getenv("DOCUMENTATION_CNAME", "hps.docs.pyansys.com")
+switcher_version = get_version_match(__version__)
 """The canonical name of the webpage hosting the documentation."""
 
 # The short X.Y version
@@ -31,27 +37,87 @@ release = version = __version__
 extensions = [
     "sphinx.ext.autodoc",
     "sphinx.ext.autosummary",
-    "sphinx.ext.intersphinx",
-    "sphinx.ext.coverage",
-    "sphinx.ext.napoleon",
-    "sphinx.ext.todo",
-    "sphinx.ext.extlinks",
-    # "sphinx.ext.viewcode", # to show python source code
-    "sphinxcontrib.httpdomain",
-    "sphinxcontrib.globalsubs",
+    "autoapi.extension",
+    "sphinx_autodoc_typehints",
+    "numpydoc",
     "sphinx.ext.intersphinx",
     "sphinx_copybutton",
-    "sphinxnotes.strike",
-    "sphinx_autodoc_typehints",
-    "sphinxcontrib.autodoc_pydantic",
+    "sphinx_design",
 ]
 
+exclude_patterns = ["_autoapi_templates", "_build", "Thumbs.db", ".DS_Store"]
+
+# Configuration for Sphinx autoapi
+autoapi_type = "python"
+autoapi_dirs = ["../../src/ansys"]
+autoapi_root = "api"
+autoapi_options = [
+    "members",
+    "undoc-members",
+    "show-inheritance",
+    "show-module-summary",
+    "special-members",
+]
+autoapi_template_dir = get_autoapi_templates_dir_relative_path(Path(__file__))
+suppress_warnings = ["autoapi.python_import_resolution"]
+autoapi_python_use_implicit_namespaces = True
+autoapi_keep_files = True
+autoapi_render_in_single_page = ["class", "enum", "exception"]
+
+# Intersphinx mapping
+intersphinx_mapping = {
+    "python": ("https://docs.python.org/3.11", None),
+    "numpy": ("https://numpy.org/doc/stable", None),
+    "scipy": ("https://docs.scipy.org/doc/scipy/", None),
+    "pyvista": ("https://docs.pyvista.org/version/stable", None),
+    "grpc": ("https://grpc.github.io/grpc/python/", None),
+    "pint": ("https://pint.readthedocs.io/en/stable", None),
+    "beartype": ("https://beartype.readthedocs.io/en/stable/", None),
+    "docker": ("https://docker-py.readthedocs.io/en/stable/", None),
+    "pypim": ("https://pypim.docs.pyansys.com/version/stable", None),
+    "ansys.hps.client": (f"https://hps.docs.pyansys.com/version/{switcher_version}", None),
+}
+
+# numpydoc configuration
+numpydoc_show_class_members = False
+numpydoc_xref_param_type = True
+
+# Consider enabling numpydoc validation. See:
+# https://numpydoc.readthedocs.io/en/latest/validation.html#
+numpydoc_validate = True
+numpydoc_validation_checks = {
+    "GL06",  # Found unknown section
+    "GL07",  # Sections are in the wrong order.
+    # "GL08",  # The object does not have a docstring
+    "GL09",  # Deprecation warning should precede extended summary
+    "GL10",  # reST directives {directives} must be followed by two colons
+    "SS01",  # No summary found
+    "SS02",  # Summary does not start with a capital letter
+    # "SS03", # Summary does not end with a period
+    "SS04",  # Summary contains heading whitespaces
+    # "SS05", # Summary must start with infinitive verb, not third person
+    "RT02",  # The first line of the Returns section should contain only the
+    # type, unless multiple values are being returned"
+}
 
 # autodoc/autosummary flags
 autoclass_content = "both"
 # autodoc_default_flags = ["members"]
 autosummary_generate = True
 
+
+def prepare_jinja_env(jinja_env) -> None:
+    """
+    Customize the jinja env.
+
+    Notes
+    -----
+    See https://jinja.palletsprojects.com/en/3.0.x/api/#jinja2.Environment
+    """
+    jinja_env.globals["project_name"] = project
+
+
+autoapi_prepare_jinja_env = prepare_jinja_env
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ["_templates"]
@@ -126,7 +192,7 @@ html_theme_options = {
         ("PyAnsys", "https://docs.pyansys.com/"),
     ],
     "collapse_navigation": True,
-    "navigation_depth": 4,
+    "navigation_depth": 5,
     "check_switcher": False,
     "switcher": {
         "json_url": f"https://{cname}/release/versions.json",  # noqa: E231
@@ -140,10 +206,10 @@ html_short_title = html_title = "PyHPS"
 
 # The name of an image file (relative to this directory) to place at the top
 # of the sidebar.
-html_logo = logo
+html_logo = pyansys_logo_black
 
 # Favicon
-html_favicon = "favicon.png"
+html_favicon = ansys_favicon
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
@@ -179,7 +245,7 @@ latex_elements = {
 latex_documents = [
     (
         "index",
-        "ansys-pyhps.tex",
+        "ansys-hps-client.tex",
         "Ansys HPS Python Client Documentation",
         author,
         "manual",
@@ -211,7 +277,9 @@ latex_documents = [
 
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
-man_pages = [("index", "ansys-pyhps", "Ansys HPS Python Client Documentation", ["ANSYS, Inc."], 1)]
+man_pages = [
+    ("index", "ansys-hps-client", "Ansys HPS Python Client Documentation", ["ANSYS, Inc."], 1)
+]
 
 # If true, show URL addresses after external links.
 # man_show_urls = False
@@ -225,7 +293,7 @@ man_pages = [("index", "ansys-pyhps", "Ansys HPS Python Client Documentation", [
 # texinfo_documents = [
 #     (
 #         "index",
-#         "ansys-pyhps",
+#         "ansys-hps-client",
 #         "Ansys HPS Python Client Documentation",
 #         "ANSYS, Inc.",
 #         "JMS",

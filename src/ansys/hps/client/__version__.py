@@ -27,8 +27,8 @@ except ModuleNotFoundError:  # pragma: no cover
 
 # Read from the pyproject.toml
 # major, minor, patch
-__version__ = importlib_metadata.version("ansys-pyhps")
+__version__ = importlib_metadata.version("ansys-hps-client")
 
 # this is only a convenience to default the version
-# of Ansys simulation applications in pyhps examples
+# of Ansys simulation applications in PyHPS examples
 __ansys_apps_version__ = "2024 R1"

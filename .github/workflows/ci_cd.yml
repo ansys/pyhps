@@ -10,9 +10,8 @@ on:
 
 env:
   MAIN_PYTHON_VERSION: '3.9'
-  DOC_PYTHON_VERSION: '3.9'
   DOCUMENTATION_CNAME: 'hps.docs.pyansys.com'
-  PACKAGE_NAME: 'ansys-pyhps'
+  PACKAGE_NAME: 'ansys-hps-client'
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -45,7 +44,7 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
 
   tests:
-    name: Tests and coverage
+    name: Quick tests and coverage
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
@@ -142,7 +141,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
-          python-version: ${{ env.DOC_PYTHON_VERSION }}
+          python-version: ${{ env.MAIN_PYTHON_VERSION }}
 
       - name: Install dependencies
         run: |
@@ -242,7 +241,7 @@ jobs:
     steps:
       - uses: actions/download-artifact@v3
         with:
-          name: ansys-pyhps-artifacts
+          name: ansys-hps-client-artifacts
           path: /tmp/artifacts
 
       - name: List artifacts

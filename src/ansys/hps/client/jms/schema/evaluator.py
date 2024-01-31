@@ -19,7 +19,7 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
-
+"""Module providing evaluator configuration update schema."""
 
 import marshmallow
 from marshmallow import fields
@@ -86,7 +86,7 @@ class EvaluatorSchema(ObjectSchema):
     )
     username = fields.String(
         allow_none=True,
-        metadata={"description": "HPS user the evaluator is connected to JMS as."},
+        metadata={"description": "HPS user that the evaluator is connected to JMS as."},
     )
     platform = fields.String(
         allow_none=True,

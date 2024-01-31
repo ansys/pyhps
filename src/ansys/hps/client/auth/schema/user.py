@@ -19,7 +19,7 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
-
+"""Module that creates the user schema."""
 
 from marshmallow import fields
 
@@ -27,6 +27,8 @@ from ansys.hps.client.common.base_schema import BaseSchema
 
 
 class UserSchema(BaseSchema):
+    """Create user schema with ID, username, password, first name, last name, and email."""
+
     class Meta(BaseSchema.Meta):
         pass
 

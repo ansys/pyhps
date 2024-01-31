@@ -19,12 +19,14 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
-
+"""Module providing restricted value fields."""
 from marshmallow import fields
 from marshmallow.exceptions import ValidationError
 
 
 class RestrictedValue(fields.Field):
+    """Restricted value fields."""
+
     restricted_fields = [
         fields.Int(strict=True),
         fields.Bool(truthy=[True], falsy=[False]),
@@ -36,6 +38,7 @@ class RestrictedValue(fields.Field):
         super().__init__(allow_none=True)
 
     def _deserialize(self, value, attr, obj, **kwargs):
+        """Convert string to restricted value object."""
         for field in self.restricted_fields:
             try:
                 return field._deserialize(value, attr, obj, **kwargs)
@@ -45,4 +48,5 @@ class RestrictedValue(fields.Field):
         self.raise_validation_error()
 
     def raise_validation_error():
-        raise ValidationError("Value must be of type float, integer, boolean, or string")
+        """Raise validation error if value is not a float, integer, Boolean, or string."""
+        raise ValidationError("Value must be a float, integer, Boolean, or string.")

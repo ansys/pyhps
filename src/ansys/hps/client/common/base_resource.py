@@ -19,7 +19,7 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
-
+"""Module processing class members for an object."""
 import json
 import logging
 
@@ -37,7 +37,7 @@ class Object(object):
 
     def declared_fields(self):
         """
-        Helper function to retrieve the fields that will be defined as class members for an object
+        Provides a helper function for retrieving fields to define as class members for an object.
         """
         fields = []
         for k, v in self.Meta.schema._declared_fields.items():
@@ -64,12 +64,14 @@ class Object(object):
                 setattr(self, k, missing)
 
     def __repr__(self):
+        """Printable representation of the object."""
         return "%s(%s)" % (
             self.__class__.__name__,
             ",".join(["%s=%r" % (k, getattr(self, k)) for k in self.declared_fields()]),
         )
 
     def __eq__(self, other):
+        """Compare instances of the object."""
         if not isinstance(other, self.__class__):
             return NotImplemented
         for k in self.declared_fields():
@@ -78,7 +80,7 @@ class Object(object):
         return True
 
     def __str__(self):
-
+        """String representation of the object."""
         # Ideally we'd simply do
         #   return json.dumps(self.Meta.schema(many=False).dump(self), indent=2)
         # However the schema.dump() function (rightfully) ignores fields marked as load_only.

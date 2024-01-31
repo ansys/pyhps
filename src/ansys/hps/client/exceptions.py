@@ -19,15 +19,17 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
-
+"""Module providing the base class for all client and server REP-related errors."""
 
 from requests.exceptions import RequestException
 
 
 class HPSError(RequestException):
     def __init__(self, *args, **kwargs):
-        """Base class for all rep related errors.
-           Derives from :class:`requests.exceptions.RequestException`.
+        """Provides the base class for all REP-related errors.
+
+        This class derives from the :class:`requests.exceptions.RequestException`
+        base class.
 
         Example:
             >>> from ansys.hps.client import HPSError
@@ -48,19 +50,21 @@ class HPSError(RequestException):
 
 class APIError(HPSError):
     def __init__(self, *args, **kwargs):
-        """Indicate server side related errors."""
+        """Provides server-side related errors."""
         super(APIError, self).__init__(*args, **kwargs)
 
 
 class ClientError(HPSError):
     def __init__(self, *args, **kwargs):
-        """Indicate client side related errors."""
+        """Provides client-side related errors."""
         super(ClientError, self).__init__(*args, **kwargs)
 
 
 def raise_for_status(response, *args, **kwargs):
-    """Hook function to automatically check HTTP errors.
-    Mimics requests.Response.raise_for_status()"""
+    """Automatically checks HTTP errors.
+
+    This method mimics the requests.Response.raise_for_status() method.
+    """
     if 400 <= response.status_code < 600:
 
         r_content = {}
