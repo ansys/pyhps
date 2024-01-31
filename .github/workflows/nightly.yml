@@ -5,8 +5,9 @@ on:
   - cron: "0 2 * * *"
 
 env:
-  MAIN_PYTHON_VERSION: '3.9'
-  DOC_PYTHON_VERSION: '3.9'
+  MAIN_PYTHON_VERSION: '3.10'
+  DOCUMENTATION_CNAME: 'hps.docs.pyansys.com'
+  PACKAGE_NAME: 'ansys-hps-client'
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -38,7 +39,7 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
 
-  quick-tests:
+  tests:
     name: Quick tests and coverage
     runs-on: ${{ matrix.os }}
     strategy:
