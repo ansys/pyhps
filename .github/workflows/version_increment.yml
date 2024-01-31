@@ -1,0 +1,32 @@
+name: Version increment
+
+on:
+  workflow_dispatch:
+    inputs:
+      bump:
+        type: choice
+        default: patch
+        description: Version type to bump
+        options:
+          - major
+          - minor
+          - patch
+      force:
+        type: boolean
+        default: false
+        description: Force push tag
+      dry_run:
+        type: boolean
+        default: false
+        description: Perform a dry run
+
+jobs:
+  bump:
+    name: Bump
+    uses: ansys-internal/rep-job-management/.github/workflows/tag_and_bump_version.yml@main
+    secrets: inherit
+    with:
+      bump: ${{ inputs.bump }}
+      force: ${{ inputs.force }}
+      dry_run: ${{ inputs.dry_run }}
+

@@ -1,0 +1,20 @@
+[bumpver]
+current_version = "0.6.dev0"
+version_pattern = "MAJOR.MINOR.devPATCH"
+commit_message = "bump version {old_version} -> {new_version}"
+tag_message = "{new_version}"
+tag_scope = "default"
+pre_commit_hook = ""
+post_commit_hook = ""
+commit = false
+tag = false
+push = false    
+
+[bumpver.file_patterns]
+"ansys/**/__version__.py" = [
+    '__version__ = "{version}"',
+]
+"bumpver.toml" = [
+    'current_version = "{version}"',
+]
+
