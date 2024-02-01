@@ -27,7 +27,7 @@ jobs:
     name: Code style
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
@@ -58,7 +58,7 @@ jobs:
             ]
       fail-fast: false
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Set up Python ${{ matrix.cfg.python-version }}
         uses: actions/setup-python@v4
         with:
@@ -136,7 +136,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: [doc-style]
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Set up Python
         uses: actions/setup-python@v4
