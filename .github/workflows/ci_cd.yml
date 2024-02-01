@@ -231,7 +231,7 @@ jobs:
           else
               echo "The library version is: $version";
           fi;
-          echo "library_version=$version" >> $GITHUB_ENV
+          echo "library_version=$version" >> "$GITHUB_OUTPUT"
 
   pre-release:
     name: Pre-release project
@@ -247,23 +247,12 @@ jobs:
       - name: List artifacts
         run: ls -ltR /tmp/artifacts
 
-      # - name: Release to latest-dev
-      #   uses: "marvinpinto/action-automatic-releases@latest"
-      #   if: startsWith(github.ref, 'refs/heads/main')
-      #   with:
-      #     repo_token: ${{ secrets.GITHUB_TOKEN }}
-      #     automatic_release_tag: "v${{ env.library_version }}"
-      #     prerelease: true
-      #     title: "v${{ env.library_version }}"
-      #     files: |
-      #       /tmp/artifacts/*.whl
-
       - name: Release to latest-dev
         uses: softprops/action-gh-release@v1
         if: startsWith(github.ref, 'refs/heads/main')
         with:
-          tag_name: "v${{ env.library_version }}"
-          name: "v${{ env.library_version }}"
+          tag_name: "v${{ needs.library_version.outputs.library-version }}"
+          name: "v${{ needs.library_version.outputs.library-version }}"
           prerelease: true
           files: |
             /tmp/artifacts/*.whl
