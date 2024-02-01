@@ -255,10 +255,10 @@ jobs:
             /tmp/artifacts/*.whl
 
   upload_dev_docs:
-    name: "Upload dev documentation"
+    name: "Deploy dev documentation"
     if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
-    needs: [docs]
+    needs: [package]
     steps:
       - name: Deploy the latest documentation
         uses: ansys/actions/doc-deploy-dev@v4
@@ -290,7 +290,7 @@ jobs:
     # Deploy release documentation when creating a new tag
     if: github.event_name == 'push' && contains(github.ref, 'refs/tags')
     runs-on: ubuntu-latest
-    needs: [docs, release]
+    needs: [release]
     steps:
       - uses: ansys/actions/doc-deploy-stable@v4
         with:
