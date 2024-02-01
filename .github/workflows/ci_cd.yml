@@ -251,8 +251,8 @@ jobs:
         uses: softprops/action-gh-release@v1
         if: startsWith(github.ref, 'refs/heads/main')
         with:
-          tag_name: "v${{ needs.library_version.outputs.library-version }}"
-          name: "v${{ needs.library_version.outputs.library-version }}"
+          tag_name: "v${{ needs.library-version.outputs.library_version }}"
+          name: "v${{ needs.library-version.outputs.library_version }}"
           prerelease: true
           files: |
             /tmp/artifacts/*.whl
