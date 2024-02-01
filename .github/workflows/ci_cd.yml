@@ -247,14 +247,24 @@ jobs:
       - name: List artifacts
         run: ls -ltR /tmp/artifacts
 
+      # - name: Release to latest-dev
+      #   uses: "marvinpinto/action-automatic-releases@latest"
+      #   if: startsWith(github.ref, 'refs/heads/main')
+      #   with:
+      #     repo_token: ${{ secrets.GITHUB_TOKEN }}
+      #     automatic_release_tag: "v${{ env.library_version }}"
+      #     prerelease: true
+      #     title: "v${{ env.library_version }}"
+      #     files: |
+      #       /tmp/artifacts/*.whl
+
       - name: Release to latest-dev
-        uses: "marvinpinto/action-automatic-releases@latest"
+        uses: softprops/action-gh-release@v1
         if: startsWith(github.ref, 'refs/heads/main')
         with:
-          repo_token: ${{ secrets.GITHUB_TOKEN }}
-          automatic_release_tag: "v${{ env.library_version }}"
+          tag_name: "v${{ env.library_version }}"
+          name: "v${{ env.library_version }}"
           prerelease: true
-          title: "v${{ env.library_version }}"
           files: |
             /tmp/artifacts/*.whl
 
