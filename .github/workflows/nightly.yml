@@ -5,8 +5,9 @@ on:
   - cron: "0 2 * * *"
 
 env:
-  MAIN_PYTHON_VERSION: '3.9'
-  DOC_PYTHON_VERSION: '3.9'
+  MAIN_PYTHON_VERSION: '3.10'
+  DOCUMENTATION_CNAME: 'hps.docs.pyansys.com'
+  PACKAGE_NAME: 'ansys-hps-client'
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -28,19 +29,28 @@ jobs:
           python -m pip install --upgrade pip setuptools tox
       - name: Test with tox
         run: tox -e style
+  
+  doc-style:
+    name: Documentation Style Check
+    runs-on: ubuntu-latest
+    steps:
+      - name: PyAnsys documentation style checks
+        uses: ansys/actions/doc-style@v5
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
 
-  quick-tests:
+  tests:
     name: Quick tests and coverage
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        # extend to windows once it's possible to run docker 
-        # on windows runners:
-        # os: [windows-latest, ubuntu-latest]
-        os: [ubuntu-latest]
-        cfg:
-          - {python-version: "3.9", toxenv: "py39"}
-          - {python-version: "3.11", toxenv: "py311"}
+          os: [ubuntu-latest]
+          cfg: [
+              { python-version: '3.9', toxenv: 'py39' },
+              { python-version: '3.10', toxenv: 'py310' },
+              { python-version: '3.11', toxenv: 'py311' },
+              { python-version: '3.12', toxenv: 'py312' },
+            ]
       fail-fast: false
 
     steps:
@@ -67,7 +77,7 @@ jobs:
       - uses: KengoTODA/actions-setup-docker-compose@main
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
+      
       - name: Login in Github Container registry
         uses: docker/login-action@v2
         with:
@@ -88,68 +98,90 @@ jobs:
         working-directory: ./docker-compose-artifact
 
       - name: Test with tox
-        run: tox -e ${{ matrix.cfg.toxenv }}-noeval-coverage 
+        run: tox -e ${{ matrix.cfg.toxenv }}-noeval-coverage
         env:
           REP_TEST_URL: https://localhost:8443/rep
           REP_TEST_USERNAME: repadmin
           REP_TEST_PASSWORD: repadmin
+
+      - name: "Upload coverage results"
+        uses: actions/upload-artifact@v4
+        if: matrix.cfg.python-version == env.MAIN_PYTHON_VERSION
+        with:
+          name: coverage-html
+          path: .cov/html
+          retention-days: 7
 
       - name: Publish Test Report
         uses: mikepenz/action-junit-report@v3
         if: always()
         with:
           report_paths: '**/test*.xml'
-          check_name: Test Report ${{ matrix.os }}:${{ matrix.cfg.python-version }} 
+          check_name: Test Report ${{ matrix.os }}:${{ matrix.cfg.python-version }}
           detailed_summary: true
           include_passed: true
-
+  
       - name: Stop services
         if: always()
         run: |
           docker-compose down -v
         working-directory: ./docker-compose-artifact/docker-compose
-
-  build:
-    name: Build wheel
-    runs-on: ubuntu-latest
+      
+  smoke-tests:
+    name: Build and Smoke tests
+    runs-on: ${{ matrix.os }}
+    needs: [style]
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        python-version: ['3.9', '3.10', '3.11', '3.12']
+        should-release:
+          - ${{ github.event_name == 'push' && contains(github.ref, 'refs/tags') }}
+        exclude:
+          - should-release: false 
+            os: macos-latest
     steps:
-      - uses: actions/checkout@v3
-      - name: Set up Python
-        uses: actions/setup-python@v4
+      - name: Build wheelhouse and perform smoke test
+        uses: ansys/actions/build-wheelhouse@v5
         with:
-          python-version: ${{ env.MAIN_PYTHON_VERSION }}
-      - name: Install dependencies and build the library
-        run: |
-          python -m pip install --upgrade pip setuptools
-          python -m pip install -r requirements/requirements_build.txt
-          python -m build venv wheel
-          python -m twine check dist/*
-      - name: Upload artifact
-        uses: actions/upload-artifact@v3
-        with:
-          name: pyhps-package
-          path: |
-            dist/*.whl
-          retention-days: 5
+          library-name: ${{ env.PACKAGE_NAME }}
+          operating-system: ${{ matrix.os }}
+          python-version: ${{ matrix.python-version }}
 
   docs:
     name: Documentation
     runs-on: ubuntu-latest
-    # needs: docs-style
+    needs: [style, doc-style]
     steps:
       - uses: actions/checkout@v3
+
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
-          python-version: ${{ env.DOC_PYTHON_VERSION }}
+          python-version: ${{ env.MAIN_PYTHON_VERSION }}
+
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip setuptools tox
+
+          # Necessary for creating PDF
+          sudo apt-get -y install latexmk
+          sudo apt install texlive-latex-extra
+
       - name: Generate the documentation with tox
         run: tox -e doc
+
       - name: Upload HTML Documentation
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         with:
           name: documentation-html
-          path: build/sphinx/html
-          retention-days: 5
+          path: doc/_build/html
+          retention-days: 7
+
+      - name: Upload PDF Documentation
+        uses: actions/upload-artifact@v4
+        with:
+          name: documentation-pdf
+          path: doc/_build/latex/*.pdf
+          retention-days: 7        

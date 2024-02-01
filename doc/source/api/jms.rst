@@ -124,7 +124,7 @@ Design exploration algorithm
 
 
 Evaluator
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^
 
 .. autoclass:: ansys.hps.client.jms.Evaluator
    :members:

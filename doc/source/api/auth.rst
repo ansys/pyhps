@@ -1,5 +1,5 @@
-Authentication Service
-===========================
+Authentication service
+======================
 
 `Keycloak <https://www.keycloak.org>`_ is used for identity and access management. This open source
 solution provides a variety of options for authentication and authorization. Users authenticate

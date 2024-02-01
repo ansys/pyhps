@@ -6,20 +6,20 @@ PyHPS
    :target: https://docs.pyansys.com/
    :alt: PyAnsys
 
-.. |python| image:: https://img.shields.io/badge/Python-%3E%3D3.7-blue
-   :target: https://pypi.org/project/ansys-rep/
+.. |python| image:: https://img.shields.io/pypi/pyversions/ansys-hps-client?logo=pypi
+   :target: https://pypi.org/project/ansys-hps-client
    :alt: Python
 
-.. |pypi| image:: https://img.shields.io/pypi/v/ansys-rep.svg?logo=python&logoColor=white
-   :target: https://pypi.org/project/ansys-rep
+.. |pypi| image:: https://img.shields.io/pypi/v/ansys-hps-client.svg?logo=python&logoColor=white
+   :target: https://pypi.org/project/ansys-hps-client
    :alt: PyPI
 
-.. |codecov| image:: https://codecov.io/gh/pyansys/pyhps/branch/main/graph/badge.svg
-   :target: https://codecov.io/gh/pyansys/pyhps
+.. |codecov| image:: https://codecov.io/gh/ansys-internal/pyhps/branch/main/graph/badge.svg
+   :target: https://codecov.io/gh/ansys-internal/ansys-hps-client
    :alt: Codecov
 
-.. |GH-CI| image:: https://github.com/pyansys/pyhps/actions/workflows/ci_cd.yml/badge.svg
-   :target: https://github.com/pyansys/pyhps/actions/workflows/ci_cd.yml
+.. |GH-CI| image:: https://github.com/ansys-internal/pyhps/actions/workflows/ci_cd.yml/badge.svg
+   :target: https://github.com/ansys-internal/pyhps/actions/workflows/ci_cd.yml
    :alt: GH-CI
 
 .. |MIT| image:: https://img.shields.io/badge/License-MIT-yellow.svg
