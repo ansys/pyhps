@@ -67,7 +67,7 @@ jobs:
         run: |
           python -m pip install --upgrade pip setuptools tox tox-gh-actions
 
-      - uses: dawidd6/action-download-artifact@v2
+      - uses: dawidd6/action-download-artifact@v3
         with:
           workflow: main.yaml
           name: docker-compose-internal
