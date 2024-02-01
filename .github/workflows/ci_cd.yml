@@ -231,7 +231,7 @@ jobs:
           else
               echo "The library version is: $version";
           fi;
-          echo "library_version=$version" >> "$GITHUB_OUTPUT"
+          echo "library_version=$version" >> $GITHUB_OUTPUT
 
   pre-release:
     name: Pre-release project
