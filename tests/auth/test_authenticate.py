@@ -22,27 +22,23 @@
 
 import logging
 
+import pytest
 import requests
 
 from ansys.hps.client.auth import authenticate
-from tests.rep_test import REPTestCase
 
 log = logging.getLogger(__name__)
 
 
-class AuthenticationTest(REPTestCase):
-    def test_authenticate(self):
-        resp = authenticate(
-            url=self.rep_url, username=self.username, password=self.password, verify=False
-        )
+def test_authenticate(url, username, password):
+    resp = authenticate(url=url, username=username, password=password, verify=False)
 
-        self.assertIn("access_token", resp)
-        self.assertIn("refresh_token", resp)
+    assert "access_token" in resp
+    assert "refresh_token" in resp
 
-    def test_authenticate_with_ssl_verification(self):
 
-        with self.assertRaises(requests.exceptions.SSLError) as context:
-            _ = authenticate(
-                url=self.rep_url, username=self.username, password=self.password, verify=True
-            )
-        self.assertTrue("CERTIFICATE_VERIFY_FAILED" in str(context.exception))
+def test_authenticate_with_ssl_verification(url, username, password):
+
+    with pytest.raises(requests.exceptions.SSLError) as ex_info:
+        _ = authenticate(url=url, username=username, password=password, verify=True)
+    assert "CERTIFICATE_VERIFY_FAILED" in str(ex_info.value)
