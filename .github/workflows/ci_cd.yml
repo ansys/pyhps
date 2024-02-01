@@ -9,9 +9,9 @@ on:
       - main
 
 env:
-  MAIN_PYTHON_VERSION: '3.9'
-  DOC_PYTHON_VERSION: '3.9'
-  DOCUMENTATION_CNAME: 'rep.docs.pyansys.com'
+  MAIN_PYTHON_VERSION: '3.10'
+  DOCUMENTATION_CNAME: 'hps.docs.pyansys.com'
+  PACKAGE_NAME: 'ansys-hps-client'
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -34,16 +34,25 @@ jobs:
       - name: Test with tox
         run: tox -e style
 
-  quick-tests:
+  doc-style:
+    name: Documentation Style Check
+    runs-on: ubuntu-latest
+    steps:
+      - name: PyAnsys documentation style checks
+        uses: ansys/actions/doc-style@v5
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+  tests:
     name: Quick tests and coverage
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ubuntu-latest]
-        cfg:
-          - {python-version: "3.10", toxenv: "py310"}
+          os: [ubuntu-latest]
+          cfg: [
+              { python-version: '3.10', toxenv: 'py310' },
+            ]
       fail-fast: false
-
     steps:
       - uses: actions/checkout@v3
       - name: Set up Python ${{ matrix.cfg.python-version }}
@@ -89,11 +98,19 @@ jobs:
         working-directory: ./docker-compose-artifact
 
       - name: Test with tox
-        run: tox -e ${{ matrix.cfg.toxenv }}-noeval-coverage
+        run: tox -e ${{ matrix.cfg.toxenv }}-coverage
         env:
-          REP_TEST_URL: https://localhost:8443/rep
-          REP_TEST_USERNAME: repadmin
-          REP_TEST_PASSWORD: repadmin
+          HPS_TEST_URL: https://localhost:8443/rep
+          HPS_TEST_USERNAME: repadmin
+          HPS_TEST_PASSWORD: repadmin
+
+      - name: "Upload coverage results"
+        uses: actions/upload-artifact@v4
+        if: matrix.cfg.python-version == env.MAIN_PYTHON_VERSION
+        with:
+          name: coverage-html
+          path: .cov/html
+          retention-days: 7
 
       - name: Publish Test Report
         uses: mikepenz/action-junit-report@v3
@@ -113,102 +130,170 @@ jobs:
   docs:
     name: Documentation
     runs-on: ubuntu-latest
-    # needs: docs-style
+    needs: [doc-style]
     steps:
       - uses: actions/checkout@v3
-      - name: Set up Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: ${{ env.DOC_PYTHON_VERSION }}
-      - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip setuptools tox
-      - name: Generate the documentation with tox
-        run: tox -e doc
-      - name: Upload HTML Documentation
-        uses: actions/upload-artifact@v2
-        with:
-          name: documentation-html
-          path: build/sphinx/html
-          retention-days: 7
 
-  upload_dev_docs:
-    name: "Upload dev documentation"
-    if: github.ref == 'refs/heads/main'
-    runs-on: ubuntu-latest
-    needs: [docs]
-    steps:
-      - name: Deploy the latest documentation
-        uses: ansys/actions/doc-deploy-dev@v2
-        with:
-          cname: ${{ env.DOCUMENTATION_CNAME }}
-          token: ${{ secrets.GITHUB_TOKEN }}
-
-  build:
-    name: Build and publish library
-    runs-on: ubuntu-latest
-    outputs:
-      version: ${{ steps.build.outputs.version }}
-    steps:
-      - uses: actions/checkout@v3
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
           python-version: ${{ env.MAIN_PYTHON_VERSION }}
-      - name: Install dependencies and build the library
-        id: build
-        run: |
-          python -m pip install --upgrade pip setuptools
-          python -m pip install -r requirements/requirements_build.txt
-          python -m build venv wheel
-          python -m twine check dist/*
-          version=$(ls dist | grep ansys_pyhps | grep -E -o "[0-9]+.[0-9]+.[a-z0-9]+")
-          echo "version=$version" >> $GITHUB_OUTPUT
-      #- name: Upload to private PyPi
-      #  if: github.ref == 'refs/heads/main'
-      #  run: |
-      #    python -m twine upload --verbose --skip-existing dist/*.whl
-      #  env:
-      #    TWINE_USERNAME: __token__
-      #    TWINE_PASSWORD: ${{ secrets.PYANSYS_PYPI_PRIVATE_PAT }}
-      #    TWINE_REPOSITORY_URL: https://pkgs.dev.azure.com/pyansys/_packaging/pyansys/pypi/upload
-      - name: Upload artifact
-        uses: actions/upload-artifact@v3
-        with:
-          name: ansys-pyhps-package
-          path: |
-            dist/*.whl
-          retention-days: 5
 
-  release:
-    name: "Release"
-    if: startsWith(github.ref, 'refs/heads/main') || github.ref_type == 'tag'
-    needs: [build, docs]
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip setuptools tox
+
+          # Necessary for creating PDF
+          sudo apt-get -y install latexmk
+          sudo apt install texlive-latex-extra
+
+      - name: Generate the documentation with tox
+        run: tox -e doc
+
+      - name: Upload HTML Documentation
+        uses: actions/upload-artifact@v4
+        with:
+          name: documentation-html
+          path: doc/_build/html
+          retention-days: 7
+
+      - name: Upload PDF Documentation
+        uses: actions/upload-artifact@v4
+        with:
+          name: documentation-pdf
+          path: doc/_build/latex/*.pdf
+          retention-days: 7
+
+  smoke-tests:
+    name: Build and Smoke tests
+    runs-on: ${{ matrix.os }}
+    needs: [style]
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        python-version: ['3.9', '3.10', '3.11', '3.12']
+        should-release:
+          - ${{ github.event_name == 'push' && contains(github.ref, 'refs/tags') }}
+        exclude:
+          - should-release: false 
+            os: macos-latest
+    steps:
+      - name: Build wheelhouse and perform smoke test
+        uses: ansys/actions/build-wheelhouse@v5
+        with:
+          library-name: ${{ env.PACKAGE_NAME }}
+          operating-system: ${{ matrix.os }}
+          python-version: ${{ matrix.python-version }}
+
+  package:
+    name: Package library
+    needs: [tests, docs, smoke-tests]
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/download-artifact@v3
+      - name: Build library source and wheel artifacts
+        uses: ansys/actions/build-library@v5
         with:
-          name: ansys-pyhps-package
+          library-name: ${{ env.PACKAGE_NAME }}
+          python-version: ${{ env.MAIN_PYTHON_VERSION }}
+
+  library-version:
+    name: Get library version
+    runs-on: ubuntu-latest
+    steps:
+      - name: "Install Git and clone project"
+        uses: actions/checkout@v4
+
+      - name: "Set up Python ${{ env.MAIN_PYTHON_VERSION }}"
+        uses: ansys/actions/_setup-python@main
+        with:
+          python-version: ${{ env.MAIN_PYTHON_VERSION }}
+          use-cache: true
+
+      - name: "Install the library"
+        shell: bash
+        run: |
+          python -m pip install -e .
+
+      - name: "Verify library is properly installed and get its version number"
+        shell: bash
+        run: |
+          library_name=${{ env.PACKAGE_NAME }}
+          version=$(python -c "import importlib.metadata as importlib_metadata; print(importlib_metadata.version('$library_name'))")
+
+          if [ -z "$version" ]; then
+              echo "Problem getting the library version"
+              exit 1;
+          else
+              echo "The library version is: $version";
+          fi;
+          echo "library_version=$version" >> $GITHUB_ENV
+
+  pre-release:
+    name: Pre-release project
+    if: startsWith(github.ref, 'refs/heads/main')
+    needs: [package, library-version]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: ansys-hps-client-artifacts
           path: /tmp/artifacts
 
       - name: List artifacts
         run: ls -ltR /tmp/artifacts
-
-      - name: Release for tag
-        if: github.ref_type == 'tag'
-        uses: softprops/action-gh-release@v1
-        with:
-          generate_release_notes: true
-          files: |
-            /tmp/artifacts/*.whl
 
       - name: Release to latest-dev
         uses: "marvinpinto/action-automatic-releases@latest"
         if: startsWith(github.ref, 'refs/heads/main')
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
-          automatic_release_tag: "v${{needs.build.outputs.version}}"
+          automatic_release_tag: "v${{ env.library_version }}"
           prerelease: true
-          title: "v${{needs.build.outputs.version}}"
+          title: "v${{ env.library_version }}"
           files: |
             /tmp/artifacts/*.whl
+
+  upload_dev_docs:
+    name: "Deploy dev documentation"
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    needs: [package]
+    steps:
+      - name: Deploy the latest documentation
+        uses: ansys/actions/doc-deploy-dev@v5
+        with:
+          doc-artifact-name: 'documentation-html'
+          cname: ${{ env.DOCUMENTATION_CNAME }}
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+  release:
+    name: Release project
+    if: github.event_name == 'push' && contains(github.ref, 'refs/tags')
+    needs: [package]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Release to the private PyPI repository
+        uses: ansys/actions/release-pypi-private@v5
+        with:
+          library-name: ${{ env.PACKAGE_NAME }}
+          twine-username: "__token__"
+          twine-token: ${{ secrets.PYANSYS_PYPI_PRIVATE_PAT }}
+
+      - name: Release to GitHub
+        uses: ansys/actions/release-github@v5
+        with:
+          library-name: ${{ env.PACKAGE_NAME }}
+        
+  doc-deploy-stable:
+    name: "Deploy stable documentation"
+    # Deploy release documentation when creating a new tag
+    if: github.event_name == 'push' && contains(github.ref, 'refs/tags')
+    runs-on: ubuntu-latest
+    needs: [release]
+    steps:
+      - uses: ansys/actions/doc-deploy-stable@v5
+        with:
+          doc-artifact-name: 'documentation-html'
+          cname: ${{ env.DOCUMENTATION_CNAME }}
+          token: ${{ secrets.GITHUB_TOKEN }}     

@@ -1,19 +1,23 @@
 .. _example_fluent_nozzle:
 
-Fluent Nozzle
+Fluent nozzle
 =============
 
-This example shows how to submit a Fluent nozzle model to be solved on REP. 
+This example shows how to submit a Fluent nozzle model for solving on REP. 
 
 .. only:: builder_html
 
-     The project setup script as well as the data files can be downloaded here :download:`Fluent Nozzle Example <../../../build/fluent_nozzle.zip>`.
+     You can download the :download:`ZIP file <../../../build/fluent_nozzle.zip>` for the
+     Fluent nozzle example and use a tool such as 7-Zip to extract the files.
 
-     The project uses an execution script `exec_fluent.py` instead of a solver command line.  
+Here is the ``project_setup.py`` script for this example:
+
 
 .. literalinclude:: ../../../examples/fluent_nozzle/project_setup.py
     :language: python
     :caption: project_setup.py
+
+The example uses an ``exec_fluent.py`` execution script instead of a solver command line.  
 
 .. literalinclude:: ../../../examples/fluent_nozzle/exec_fluent.py
     :language: python

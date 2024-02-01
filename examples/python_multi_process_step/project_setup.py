@@ -21,7 +21,7 @@
 # SOFTWARE.
 
 """
-Project setup script for multi steps (task definitions) and task file replacement testing.
+Project set up script for multi-steps (task definitions) and task file replacement testing.
 
 Author(s): R.Walker
 

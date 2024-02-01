@@ -377,7 +377,7 @@ def _extract_field_type(v, resources) -> str:
 
 def declared_fields(schema, resources):
     """
-    Helper function to retrieve the fields that will be defined as class members for an object
+    Helper function to retrieve the fields that is defined as class members for an object
     """
     fields = []
     fields_doc = []

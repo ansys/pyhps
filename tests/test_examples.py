@@ -21,7 +21,6 @@
 # SOFTWARE.
 
 import logging
-import unittest
 
 from ansys.hps.client import __ansys_apps_version__ as ansys_version
 from ansys.hps.client.jms import (
@@ -30,282 +29,281 @@ from ansys.hps.client.jms import (
     ProjectApi,
     StringParameterDefinition,
 )
-from tests.rep_test import REPTestCase
 
 log = logging.getLogger(__name__)
 
 
-class REPClientTest(REPTestCase):
-    def test_mapdl_motorbike_frame(self):
+def test_mapdl_motorbike_frame(client):
 
-        from examples.mapdl_motorbike_frame.project_setup import create_project
+    from examples.mapdl_motorbike_frame.project_setup import create_project
 
-        num_jobs = 5
+    num_jobs = 5
+    project = create_project(
+        client, f"Test mapdl_motorbike_frame", num_jobs=num_jobs, use_exec_script=False
+    )
+    assert project is not None
+
+    jms_api = JmsApi(client)
+    project_api = ProjectApi(client, project.id)
+
+    assert len(project_api.get_jobs()) == num_jobs
+    td = project_api.get_task_definitions()[0]
+    assert len(td.success_criteria.required_output_file_ids) == 1
+
+    jms_api.delete_project(project)
+
+
+def test_mapdl_motorbike_frame_with_exec_script(client):
+
+    from examples.mapdl_motorbike_frame.project_setup import create_project
+
+    num_jobs = 5
+    project = create_project(
+        client, f"Test mapdl_motorbike_frame", num_jobs=num_jobs, use_exec_script=True
+    )
+    assert project is not None
+
+    jms_api = JmsApi(client)
+    project_api = ProjectApi(client, project.id)
+
+    assert len(project_api.get_jobs()) == num_jobs
+
+    jms_api.delete_project(project)
+
+
+def test_mapdl_motorbike_frame_with_user_defined_version(client):
+
+    from examples.mapdl_motorbike_frame.project_setup import create_project
+
+    num_jobs = 5
+    project = create_project(
+        client,
+        f"Test mapdl_motorbike_frame",
+        version="2022 R1",
+        num_jobs=num_jobs,
+        use_exec_script=False,
+    )
+    assert project is not None
+
+    jms_api = JmsApi(client)
+    project_api = ProjectApi(client, project.id)
+
+    assert len(project_api.get_jobs()) == num_jobs
+
+    job_def = project_api.get_job_definitions()[0]
+    task_def = project_api.get_task_definitions(id=job_def.task_definition_ids)[0]
+    app = task_def.software_requirements[0]
+    assert app.name == "Ansys Mechanical APDL"
+    assert app.version == "2022 R1"
+
+    jms_api.delete_project(project)
+
+
+def test_mapdl_tyre_performance(client):
+
+    from examples.mapdl_tyre_performance.project_setup import create_project
+
+    num_jobs = 1
+    project = create_project(client, f"Test mapdl_tyre_performance", ansys_version, num_jobs)
+    assert project is not None
+
+    jms_api = JmsApi(client)
+    project_api = ProjectApi(client, project.id)
+
+    assert len(project_api.get_jobs()) == num_jobs
+
+    jms_api.delete_project(project)
+
+
+def test_python_two_bar_truss_problem(client):
+
+    from examples.python_two_bar_truss_problem.project_setup import main
+
+    num_jobs = 10
+    project = main(client, num_jobs, use_exec_script=False)
+    assert project is not None
+
+    jms_api = JmsApi(client)
+    project_api = ProjectApi(client, project.id)
+
+    assert len(project_api.get_jobs()) == num_jobs
+
+    jms_api.delete_project(project)
+
+
+def test_python_two_bar_truss_problem_with_exec_script(client):
+
+    from examples.python_two_bar_truss_problem.project_setup import main
+
+    num_jobs = 10
+    project = main(client, num_jobs, use_exec_script=True)
+    assert project is not None
+
+    jms_api = JmsApi(client)
+    project_api = ProjectApi(client, project.id)
+
+    assert len(project_api.get_jobs()) == num_jobs
+
+    jms_api.delete_project(project)
+
+
+def test_mapdl_linked_analyses(client):
+
+    from examples.mapdl_linked_analyses.project_setup import create_project
+
+    for incremental_version in [True, False]:
         project = create_project(
-            self.client, f"Test mapdl_motorbike_frame", num_jobs=num_jobs, use_exec_script=False
-        )
-        self.assertIsNotNone(project)
-
-        jms_api = JmsApi(self.client)
-        project_api = ProjectApi(self.client, project.id)
-
-        self.assertEqual(len(project_api.get_jobs()), num_jobs)
-        td = project_api.get_task_definitions()[0]
-        self.assertEqual(len(td.success_criteria.required_output_file_ids), 1)
-
-        jms_api.delete_project(project)
-
-    def test_mapdl_motorbike_frame_with_exec_script(self):
-
-        from examples.mapdl_motorbike_frame.project_setup import create_project
-
-        num_jobs = 5
-        project = create_project(
-            self.client, f"Test mapdl_motorbike_frame", num_jobs=num_jobs, use_exec_script=True
-        )
-        self.assertIsNotNone(project)
-
-        jms_api = JmsApi(self.client)
-        project_api = ProjectApi(self.client, project.id)
-
-        self.assertEqual(len(project_api.get_jobs()), num_jobs)
-
-        jms_api.delete_project(project)
-
-    def test_mapdl_motorbike_frame_with_user_defined_version(self):
-
-        from examples.mapdl_motorbike_frame.project_setup import create_project
-
-        num_jobs = 5
-        project = create_project(
-            self.client,
-            f"Test mapdl_motorbike_frame",
-            version="2022 R1",
-            num_jobs=num_jobs,
+            client,
+            name="Test Linked Analyses",
+            incremental=incremental_version,
             use_exec_script=False,
+            version=ansys_version,
         )
-        self.assertIsNotNone(project)
+        assert project is not None
 
-        jms_api = JmsApi(self.client)
-        project_api = ProjectApi(self.client, project.id)
+        jms_api = JmsApi(client)
+        project_api = ProjectApi(client, project.id)
 
-        self.assertEqual(len(project_api.get_jobs()), num_jobs)
-
-        job_def = project_api.get_job_definitions()[0]
-        task_def = project_api.get_task_definitions(id=job_def.task_definition_ids)[0]
-        app = task_def.software_requirements[0]
-        self.assertEqual(app.name, "Ansys Mechanical APDL")
-        self.assertEqual(app.version, "2022 R1")
+        assert len(project_api.get_jobs()) == 1
+        assert len(project_api.get_tasks()) == 3
 
         jms_api.delete_project(project)
 
-    def test_mapdl_tyre_performance(self):
 
-        from examples.mapdl_tyre_performance.project_setup import create_project
+def test_fluent_2d_heat_exchanger(client):
 
-        num_jobs = 1
-        project = create_project(
-            self.client, f"Test mapdl_tyre_performance", ansys_version, num_jobs
-        )
-        self.assertIsNotNone(project)
+    from examples.fluent_2d_heat_exchanger.project_setup import create_project
 
-        jms_api = JmsApi(self.client)
-        project_api = ProjectApi(self.client, project.id)
+    project = create_project(client, name="Fluent Test", version=ansys_version)
+    assert project is not None
 
-        self.assertEqual(len(project_api.get_jobs()), num_jobs)
+    jms_api = JmsApi(client)
+    project_api = ProjectApi(client, project.id)
 
-        jms_api.delete_project(project)
+    assert len(project_api.get_jobs()) == 1
+    assert jms_api.get_project(id=project.id).name == "Fluent Test"
 
-    def test_python_two_bar_truss_problem(self):
+    jms_api.delete_project(project)
 
-        from examples.python_two_bar_truss_problem.project_setup import main
 
-        num_jobs = 10
-        project = main(self.client, num_jobs, use_exec_script=False)
-        self.assertIsNotNone(project)
+def test_fluent_2d_heat_exchanger_with_exec_script(client):
 
-        jms_api = JmsApi(self.client)
-        project_api = ProjectApi(self.client, project.id)
+    from examples.fluent_2d_heat_exchanger.project_setup import create_project
 
-        self.assertEqual(len(project_api.get_jobs()), num_jobs)
+    project = create_project(
+        client, name="Fluent Test", version=ansys_version, use_exec_script=True
+    )
+    assert project is not None
 
-        jms_api.delete_project(project)
+    jms_api = JmsApi(client)
+    project_api = ProjectApi(client, project.id)
 
-    def test_python_two_bar_truss_problem_with_exec_script(self):
+    assert len(project_api.get_jobs()) == 1
+    assert jms_api.get_project(id=project.id).name == "Fluent Test"
 
-        from examples.python_two_bar_truss_problem.project_setup import main
+    jms_api.delete_project(project)
 
-        num_jobs = 10
-        project = main(self.client, num_jobs, use_exec_script=True)
-        self.assertIsNotNone(project)
 
-        jms_api = JmsApi(self.client)
-        project_api = ProjectApi(self.client, project.id)
+def test_fluent_nozzle(client):
 
-        self.assertEqual(len(project_api.get_jobs()), num_jobs)
+    from examples.fluent_nozzle.project_setup import create_project
 
-        jms_api.delete_project(project)
+    project = create_project(client, name="Fluent Nozzle Test", num_jobs=1, version=ansys_version)
+    assert project is not None
 
-    def test_mapdl_linked_analyses(self):
+    jms_api = JmsApi(client)
+    project_api = ProjectApi(client, project.id)
 
-        from examples.mapdl_linked_analyses.project_setup import create_project
+    assert len(project_api.get_jobs()) == 1
+    assert jms_api.get_project(id=project.id).name == "Fluent Nozzle Test"
 
-        client = self.client
+    jms_api.delete_project(project)
 
-        for incremental_version in [True, False]:
-            project = create_project(
-                client,
-                name="Test Linked Analyses",
-                incremental=incremental_version,
-                use_exec_script=False,
-                version=ansys_version,
-            )
-            self.assertIsNotNone(project)
 
-            jms_api = JmsApi(client)
-            project_api = ProjectApi(client, project.id)
+def test_lsdyna_cylinder_plate(client):
 
-            self.assertEqual(len(project_api.get_jobs()), 1)
-            self.assertEqual(len(project_api.get_tasks()), 3)
+    from examples.lsdyna_cylinder_plate.lsdyna_job import submit_job
 
-            jms_api.delete_project(project)
+    app_job = submit_job()
+    assert app_job is not None
 
-    def test_fluent_2d_heat_exchanger(self):
+    jms_api = JmsApi(client)
+    project_api = ProjectApi(client, app_job.project_id)
 
-        from examples.fluent_2d_heat_exchanger.project_setup import create_project
+    assert len(project_api.get_jobs()) == 1
+    proj = jms_api.get_project(id=app_job.project_id)
+    assert proj.name == "LS-DYNA Cylinder Plate"
 
-        project = create_project(self.client, name="Fluent Test", version=ansys_version)
-        self.assertIsNotNone(project)
+    jms_api.delete_project(proj)
 
-        jms_api = JmsApi(self.client)
-        project_api = ProjectApi(self.client, project.id)
 
-        self.assertEqual(len(project_api.get_jobs()), 1)
-        self.assertEqual(jms_api.get_project(id=project.id).name, "Fluent Test")
+def test_lsdyna_cylinder_plate_with_exec_script(client):
 
-        jms_api.delete_project(project)
+    from examples.lsdyna_cylinder_plate.lsdyna_job import submit_job
 
-    def test_fluent_2d_heat_exchanger_with_exec_script(self):
+    app_job = submit_job(use_exec_script=True)
+    assert app_job is not None
 
-        from examples.fluent_2d_heat_exchanger.project_setup import create_project
+    jms_api = JmsApi(client)
+    project_api = ProjectApi(client, app_job.project_id)
 
-        project = create_project(
-            self.client, name="Fluent Test", version=ansys_version, use_exec_script=True
-        )
-        self.assertIsNotNone(project)
+    assert len(project_api.get_jobs()) == 1
+    proj = jms_api.get_project(id=app_job.project_id)
+    assert proj.name == "LS-DYNA Cylinder Plate"
 
-        jms_api = JmsApi(self.client)
-        project_api = ProjectApi(self.client, project.id)
+    jms_api.delete_project(proj)
 
-        self.assertEqual(len(project_api.get_jobs()), 1)
-        self.assertEqual(jms_api.get_project(id=project.id).name, "Fluent Test")
 
-        jms_api.delete_project(project)
+def test_cfx_static_mixer(client):
 
-    def test_fluent_nozzle(self):
+    from examples.cfx_static_mixer.project_setup import create_project
 
-        from examples.fluent_nozzle.project_setup import create_project
+    project = create_project(
+        client, name="CFX static mixer test", num_jobs=1, version=ansys_version
+    )
+    assert project is not None
 
-        project = create_project(
-            self.client, name="Fluent Nozzle Test", num_jobs=1, version=ansys_version
-        )
-        self.assertIsNotNone(project)
+    jms_api = JmsApi(client)
+    project_api = ProjectApi(client, project.id)
 
-        jms_api = JmsApi(self.client)
-        project_api = ProjectApi(self.client, project.id)
+    len(project_api.get_jobs()) == 1
+    jms_api.get_project(id=project.id).name == "CFX static mixer test"
 
-        self.assertEqual(len(project_api.get_jobs()), 1)
-        self.assertEqual(jms_api.get_project(id=project.id).name, "Fluent Nozzle Test")
+    jms_api.delete_project(project)
 
-        jms_api.delete_project(project)
 
-    def test_lsdyna_cylinder_plate(self):
+def test_python_multi_steps(client):
 
-        from examples.lsdyna_cylinder_plate.lsdyna_job import submit_job
+    from examples.python_multi_process_step.project_setup import main as create_project
 
-        app_job = submit_job(
-            self.client, name="LS-DYNA Cylinder Plate", version=ansys_version, use_exec_script=False
-        )
-        self.assertIsNotNone(app_job)
+    num_jobs = 3
+    num_task_definitions = 2
+    project = create_project(
+        client,
+        num_task_definitions=num_task_definitions,
+        num_jobs=num_jobs,
+        duration=10,
+        period=3,
+        images=False,
+        change_job_tasks=0,
+        inactive=True,
+        sequential=False,
+    )
+    assert project is not None
 
-        jms_api = JmsApi(self.client)
-        project_api = ProjectApi(self.client, app_job.project_id)
+    project_api = ProjectApi(client, project.id)
 
-        self.assertEqual(len(project_api.get_jobs()), 1)
-        proj = jms_api.get_project(id=app_job.project_id)
-        self.assertEqual(proj.name, "LS-DYNA Cylinder Plate")
+    assert len(project_api.get_jobs()) == num_jobs
 
-        jms_api.delete_project(proj)
+    # verify we created int and string type parameter definitions
+    pds = project_api.get_parameter_definitions()
+    types = [type(pd) for pd in pds]
 
-    def test_lsdyna_cylinder_plate_with_exec_script(self):
+    assert len(types) == 4 * num_task_definitions
 
-        from examples.lsdyna_cylinder_plate.lsdyna_job import submit_job
+    types = set(types)
+    assert len(types) == 2
+    assert StringParameterDefinition in types
+    assert IntParameterDefinition in types
 
-        app_job = submit_job(self.client, name="LS-DYNA Cylinder Plate", version=ansys_version)
-        self.assertIsNotNone(app_job)
-
-        jms_api = JmsApi(self.client)
-        project_api = ProjectApi(self.client, app_job.project_id)
-
-        self.assertEqual(len(project_api.get_jobs()), 1)
-        proj = jms_api.get_project(id=app_job.project_id)
-        self.assertEqual(proj.name, "LS-DYNA Cylinder Plate")
-
-        jms_api.delete_project(proj)
-
-    def test_cfx_static_mixer(self):
-
-        from examples.cfx_static_mixer.project_setup import create_project
-
-        project = create_project(
-            self.client, name="CFX Static Mixer Test", num_jobs=1, version=ansys_version
-        )
-        self.assertIsNotNone(project)
-
-        jms_api = JmsApi(self.client)
-        project_api = ProjectApi(self.client, project.id)
-
-        self.assertEqual(len(project_api.get_jobs()), 1)
-        self.assertEqual(jms_api.get_project(id=project.id).name, "CFX Static Mixer Test")
-
-        jms_api.delete_project(project)
-
-    def test_python_multi_steps(self):
-
-        from examples.python_multi_process_step.project_setup import main as create_project
-
-        num_jobs = 3
-        num_task_definitions = 2
-        project = create_project(
-            self.client,
-            num_task_definitions=num_task_definitions,
-            num_jobs=num_jobs,
-            duration=10,
-            period=3,
-            images=False,
-            change_job_tasks=0,
-            inactive=True,
-            sequential=False,
-        )
-        self.assertIsNotNone(project)
-
-        project_api = ProjectApi(self.client, project.id)
-
-        self.assertEqual(len(project_api.get_jobs()), num_jobs)
-
-        # verify we created int and string type parameter definitions
-        pds = project_api.get_parameter_definitions()
-        types = [type(pd) for pd in pds]
-
-        assert len(types) == 4 * num_task_definitions
-
-        types = set(types)
-        assert len(types) == 2
-        assert StringParameterDefinition in types
-        assert IntParameterDefinition in types
-
-        JmsApi(self.client).delete_project(project)
-
-
-if __name__ == "__main__":
-    unittest.main()
+    JmsApi(client).delete_project(project)

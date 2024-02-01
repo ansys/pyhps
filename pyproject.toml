@@ -1,6 +1,83 @@
 [build-system]
-requires = ["setuptools", "wheel"]
-build-backend = "setuptools.build_meta"
+requires = ["flit_core >=3.2,<4"]
+build-backend = "flit_core.buildapi"
+
+[project]
+# Check https://flit.readthedocs.io/en/latest/pyproject_toml.html for all available sections
+name = "ansys-hps-client"
+version = "0.7.dev0"
+description = "A python client for Ansys HPC Platform Services"
+readme = "README.rst"
+requires-python = ">=3.9,<4.0"
+license = {file = "LICENSE"}
+authors = [
+    {name = "ANSYS, Inc.", email = "pyansys.core@ansys.com"},
+]
+maintainers = [
+    {name = "ANSYS, Inc.", email = "pyansys.core@ansys.com"},
+]
+
+classifiers = [
+    "Development Status :: 4 - Beta",
+    'Intended Audience :: Science/Research',
+    'Topic :: Scientific/Engineering :: Information Analysis',
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]
+
+dependencies = [
+    "requests>=2.21.0",
+    "marshmallow>=3.0.0",
+    "marshmallow_oneofschema>=2.0.1",
+    "python-keycloak>=1.5.0,<=2.12.0",
+    "setuptools;python_version>='3.12'", # Python3.12 doesn't include setuptools automatically
+    "backoff>=2.0.0",
+    "pydantic>=1.10.0",
+]
+
+[project.optional-dependencies]
+tests = [
+    "pytest==8.0.0",
+    "pytest-cov==4.1.0",
+]
+
+doc = [
+    "ansys-sphinx-theme==0.13.2",
+    "autodoc_pydantic==2.0.1",
+    "jupyter_sphinx==0.5.3",
+    "nbsphinx==0.9.3",
+    "numpydoc==1.6.0",
+    "myst-parser==2.0.0",
+    "Sphinx==7.2.6",
+    "sphinx-autoapi==3.0.0",
+    "sphinx-autodoc-typehints==1.25.2",
+    "sphinxcontrib-globalsubs==0.1.1",
+    "sphinxcontrib-httpdomain==1.8.1",
+    "sphinx-copybutton==0.5.2",
+    "sphinx_design==0.5.0",
+    "sphinx-jinja==2.0.2",
+    "sphinxnotes-strike==1.2",
+]
+
+build = [
+    "build==1.0.3",
+    "twine==4.0.2",
+    "wheel",
+    "datamodel-code-generator==0.24.2"
+]
+
+[project.urls]
+Documentation = "https://hps.docs.pyansys.com"
+Source = "https://github.com/ansys-internal/pyhps"
+Homepage = "https://github.com/ansys-internal/pyhps"
+Tracker = "https://github.com/ansys-internal/pyhps/issues"
+
+[tool.flit.module]
+name = "ansys.hps.client"
 
 [tool.black]
 line-length = 100
@@ -10,22 +87,28 @@ profile = "black"
 force_sort_within_sections = true
 line_length = 100
 default_section = "THIRDPARTY"
-src_paths = ["doc", "ansys", "tests"]
+src_paths = ["doc", "src", "tests"]
 
 [tool.coverage.run]
-source = ["ansys.rep"]
+relative_files = true
+source = ["ansys.hps"]
 
 [tool.coverage.report]
 show_missing = true
+
+[tool.coverage.html]
+directory = ".cov/html"
+
+[tool.coverage.xml]
+output = ".cov/coverage.xml"
 
 [tool.pytest.ini_options]
 log_cli = true
 log_cli_level = "INFO"
 log_cli_format = "%(asctime)s [%(levelname)8s] %(message)s (%(filename)s:%(lineno)s)"
 log_cli_date_format = "%Y-%m-%d %H:%M:%S"
-markers = [
-    "requires_evaluator: marks tests as end-to-end requiring a running evaluator (deselect with '-m \"not requires_evaluator\"')",
-]
+addopts = """-ra -s --durations=0 -p pytest_cov --cov=ansys.hps --cov-report html:.cov/html \
+ --cov-report xml:.cov/xml --cov-report term -vv --cov-append"""
 filterwarnings = [
     "ignore::urllib3.exceptions.InsecureRequestWarning",
     "ignore::DeprecationWarning:pkg_resources.*",
