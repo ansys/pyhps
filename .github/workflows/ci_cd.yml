@@ -63,9 +63,11 @@ jobs:
         uses: actions/setup-python@v4
         with:
           python-version: ${{ matrix.cfg.python-version }}
+
       - name: Install dependencies
         run: |
-          python -m pip install --upgrade pip setuptools tox tox-gh-actions
+          python -m pip install --upgrade pip setuptools pytest pytest-cov
+          python -m pip install .[tests]
 
       - uses: dawidd6/action-download-artifact@v3
         with:
@@ -102,10 +104,8 @@ jobs:
         working-directory: ./docker-compose-artifact
 
       - name: "Run pytest"
-        uses: ansys/actions/tests-pytest@v4
-        with:
-          python-version: ${{ matrix.cfg.python-version }}
-          pytest-extra-args: "-ra --cov=ansys.hps --cov-report html:.cov/html --cov-report xml:.cov/xml --cov-report term --junitxml test_results-py${{ matrix.cfg.python-version }}-coverage.xml -vv"
+        run: |
+          coverage run -m pytest -ra -s --durations=0 -p pytest_cov --cov=ansys.hps --cov-report html:.cov/html --cov-report xml:.cov/xml --cov-report term --junitxml test_results-py310-coverage.xml -vv --cov-append
         env:
           HPS_TEST_URL: https://localhost:8443/rep
           HPS_TEST_USERNAME: repadmin
