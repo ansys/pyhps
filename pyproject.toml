@@ -9,13 +9,9 @@ version = "0.7.dev0"
 description = "A python client for Ansys HPC Platform Services"
 readme = "README.rst"
 requires-python = ">=3.9,<4.0"
-license = {file = "LICENSE"}
-authors = [
-    {name = "ANSYS, Inc.", email = "pyansys.core@ansys.com"},
-]
-maintainers = [
-    {name = "ANSYS, Inc.", email = "pyansys.core@ansys.com"},
-]
+license = { file = "LICENSE" }
+authors = [{ name = "ANSYS, Inc.", email = "pyansys.core@ansys.com" }]
+maintainers = [{ name = "ANSYS, Inc.", email = "pyansys.core@ansys.com" }]
 
 classifiers = [
     "Development Status :: 4 - Beta",
@@ -40,10 +36,7 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
-tests = [
-    "pytest==8.0.0",
-    "pytest-cov==4.1.0",
-]
+tests = ["pytest==8.0.0", "pytest-cov==4.1.0"]
 
 doc = [
     "ansys-sphinx-theme==0.13.2",
@@ -67,7 +60,7 @@ build = [
     "build==1.0.3",
     "twine==4.0.2",
     "wheel",
-    "datamodel-code-generator==0.24.2"
+    "datamodel-code-generator==0.24.2",
 ]
 
 [project.urls]
@@ -107,8 +100,7 @@ log_cli = true
 log_cli_level = "INFO"
 log_cli_format = "%(asctime)s [%(levelname)8s] %(message)s (%(filename)s:%(lineno)s)"
 log_cli_date_format = "%Y-%m-%d %H:%M:%S"
-addopts = """-ra -s --durations=0 -p pytest_cov --cov=ansys.hps --cov-report html:.cov/html \
- --cov-report xml:.cov/xml --cov-report term -vv --cov-append"""
+addopts = "-ra --cov=ansys.hps --cov-report html:.cov/html --cov-report xml:.cov/xml --cov-report term -vv"
 filterwarnings = [
     "ignore::urllib3.exceptions.InsecureRequestWarning",
     "ignore::DeprecationWarning:pkg_resources.*",
