@@ -101,9 +101,11 @@ jobs:
           FSGATEWAY_TAG=latest-dev JMS_TAG=latest-dev LOCALHOST_ADDR=localhost docker-compose up -d
         working-directory: ./docker-compose-artifact
 
-      - name: Test with pytest
-        run: |
-          pytest -ra --cov=ansys.hps --cov-report html:.cov/html --cov-report xml:.cov/xml --cov-report term --junitxml test_results-py${{ matrix.cfg.python-version }}-coverage.xml -vv
+      - name: "Run pytest"
+        uses: ansys/actions/tests-pytest@v4
+        with:
+          python-version: ${{ matrix.cfg.python-version }}
+          pytest-extra-args: "-ra --cov=ansys.hps --cov-report html:.cov/html --cov-report xml:.cov/xml --cov-report term --junitxml test_results-py${{ matrix.cfg.python-version }}-coverage.xml -vv"
         env:
           HPS_TEST_URL: https://localhost:8443/rep
           HPS_TEST_USERNAME: repadmin
