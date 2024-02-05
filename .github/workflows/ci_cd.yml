@@ -1,6 +1,12 @@
 name: GitHub CI
 on:
   workflow_dispatch:
+    inputs:
+      hps-version:
+        description: HPS version to test against
+        default: '1.0.2'
+        type: string
+
   pull_request:
   push:
     tags:
@@ -61,6 +67,7 @@ jobs:
       python-version: ${{ matrix.cfg.python-version }}   
       toxenv: ${{ matrix.cfg.toxenv }}
       runner: ${{ matrix.os }}
+      hps-version: v${{ inputs.hps-version || '1.0.2' }}
 
   docs:
     name: Documentation

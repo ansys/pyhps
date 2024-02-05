@@ -14,8 +14,11 @@ on:
       runner:
         description: Where to run
         type: string
-        required: true
         default: 'ubuntu-latest'
+      hps-version:
+        description: HPS version to test against
+        type: string
+        default: 'v1.0.2'
 
 jobs:
 
@@ -40,7 +43,7 @@ jobs:
           file: 'docker-compose-internal.tar.gz'
           target: 'docker-compose-artifact/docker-compose-internal.tar.gz'
           repo: ansys-internal/rep-deployments
-          version: 'tags/v1.0.2'
+          version: tags/${{ inputs.hps-version }}
           token: ${{secrets.PYANSYS_CI_BOT_TOKEN}}
 
       - uses: KengoTODA/actions-setup-docker-compose@main
