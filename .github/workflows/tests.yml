@@ -42,7 +42,7 @@ jobs:
         name: Download Services Artifact
         with:
           file: 'docker-compose-internal.tar.gz'
-          target: 'docker-compose-artifact/'
+          target: 'docker-compose-artifact/docker-compose-internal.tar.gz'
           repo: ansys-internal/rep-deployments
           version: 'tags/v1.0.2'
           token: ${{secrets.PYANSYS_CI_BOT_TOKEN}}
