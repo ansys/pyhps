@@ -79,7 +79,7 @@ jobs:
 
       - name: Upload coverage results
         uses: actions/upload-artifact@v4
-        if: github.event.inputs.python-version == env.MAIN_PYTHON_VERSION
+        if: ${{ github.event.inputs.python-version == env.MAIN_PYTHON_VERSION }}
         with:
           name: coverage-html
           path: .cov/html
