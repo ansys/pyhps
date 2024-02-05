@@ -26,7 +26,7 @@ from requests.exceptions import RequestException
 
 class HPSError(RequestException):
     def __init__(self, *args, **kwargs):
-        """Provides the base class for all REP-related errors.
+        """Provides the base class for all HPS-related errors.
 
         This class derives from the :class:`requests.exceptions.RequestException`
         base class.
@@ -35,12 +35,12 @@ class HPSError(RequestException):
             >>> from ansys.hps.client import HPSError
             >>> from ansys.hps.client.jms import Client
             >>> try:
-            >>>     client = Client(url="https://127.0.0.1:8443/rep/",
-                                    username="repadmin",
+            >>>     client = Client(url="https://127.0.0.1:8443/hps/",
+                                    username="repuser",
                                     password="wrong_psw")
             >>> except HPSError as e:
             >>>     print(e)
-            401 Client Error: invalid_grant for: POST https://127.0.0.1:8443/rep/auth...
+            401 Client Error: invalid_grant for: POST https://127.0.0.1:8443/hps/auth...
             Invalid user credentials
         """
         self.reason = kwargs.pop("reason", None)

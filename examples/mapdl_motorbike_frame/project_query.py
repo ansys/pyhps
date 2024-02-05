@@ -138,8 +138,8 @@ if __name__ == "__main__":
     parser.add_argument("-n", "--name", type=str, default="Mapdl Motorbike Frame")
     parser.add_argument("-j", "--num-jobs", type=int, default=500)
     parser.add_argument("-U", "--url", default="https://127.0.0.1:8443/rep")
-    parser.add_argument("-u", "--username", default="repadmin")
-    parser.add_argument("-p", "--password", default="repadmin")
+    parser.add_argument("-u", "--username", default="repuser")
+    parser.add_argument("-p", "--password", default="repuser")
     args = parser.parse_args()
 
     logger = logging.getLogger()
@@ -148,7 +148,7 @@ if __name__ == "__main__":
     try:
         log.info("Connect to HPC Platform Services")
         client = Client(url=args.url, username=args.username, password=args.password)
-        log.info(f"HPS URL: {client.rep_url}")
+        log.info(f"HPS URL: {client.url}")
 
         query_stats(client=client, project_name=args.name)
         download_files(client=client, project_name=args.name)

@@ -14,8 +14,11 @@ on:
       runner:
         description: Where to run
         type: string
-        required: true
         default: 'ubuntu-latest'
+      hps-version:
+        description: HPS version to test against
+        type: string
+        default: 'v1.0.2'
 
 jobs:
 
@@ -37,10 +40,10 @@ jobs:
       - uses: dsaltares/fetch-gh-release-asset@master
         name: Download Services Artifact
         with:
-          file: 'docker-compose-internal.tar.gz'
-          target: 'docker-compose-artifact/docker-compose-internal.tar.gz'
+          file: 'docker-compose-customer.tar.gz'
+          target: 'docker-compose-artifact/docker-compose-customer.tar.gz'
           repo: ansys-internal/rep-deployments
-          version: 'tags/v1.0.2'
+          version: tags/${{ inputs.hps-version }}
           token: ${{secrets.PYANSYS_CI_BOT_TOKEN}}
 
       - uses: KengoTODA/actions-setup-docker-compose@main
@@ -57,19 +60,18 @@ jobs:
       - name: Start services
         run: |
           ls -la
-          tar -xvzf docker-compose-internal.tar.gz
-          cd docker-compose
-          FSGATEWAY_TAG=latest-dev JMS_TAG=latest-dev docker-compose pull
-          FSGATEWAY_TAG=latest-dev JMS_TAG=latest-dev LOCALHOST_ADDR=localhost docker-compose up -d keycloak
+          tar -xvzf docker-compose-customer.tar.gz
+          cd docker-compose-customer
+          docker-compose build
+          docker-compose up -d
           echo "Waiting a few sec ..."
           sleep 5
-          FSGATEWAY_TAG=latest-dev JMS_TAG=latest-dev LOCALHOST_ADDR=localhost docker-compose up -d
         working-directory: ./docker-compose-artifact
 
       - name: Test with tox
         run: tox -e ${{ inputs.toxenv }}-coverage
         env:
-          HPS_TEST_URL: https://localhost:8443/rep
+          HPS_TEST_URL: https://localhost:8443/hps
           HPS_TEST_USERNAME: repadmin
           HPS_TEST_PASSWORD: repadmin
 
@@ -89,9 +91,13 @@ jobs:
           check_name: Test Report ${{ inputs.runner }}:${{ inputs.python-version }}
           detailed_summary: true
           include_passed: true
+
+      - name: Publish services info to summary
+        if: success() || failure()
+        run: cat build_info.md >> $GITHUB_STEP_SUMMARY
   
       - name: Stop services
         if: always()
         run: |
           docker-compose down -v
-        working-directory: ./docker-compose-artifact/docker-compose
+        working-directory: ./docker-compose-artifact/docker-compose-customer

@@ -25,8 +25,6 @@ from .api import JmsApi, ProjectApi
 from .resource import (
     Algorithm,
     BoolParameterDefinition,
-    Evaluator,
-    EvaluatorConfigurationUpdate,
     File,
     FitnessDefinition,
     FitnessTermDefinition,

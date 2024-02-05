@@ -127,7 +127,7 @@ def test_modify_project_permissions(client, keycloak_client):
         username=user1.username,
         password=user_credentials["user1"]["password"],
     )
-    log.info(f"Client connected at {client1.rep_url} with user {user1.username}")
+    log.info(f"Client connected at {client1.url} with user {user1.username}")
 
     root_api1 = JmsApi(client1)
     proj = Project(name=proj_name, priority=1, active=True)

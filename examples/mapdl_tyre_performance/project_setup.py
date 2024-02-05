@@ -264,8 +264,8 @@ if __name__ == "__main__":
     parser.add_argument("-j", "--num-jobs", type=int, default=10)
     parser.add_argument("-es", "--use-exec-script", default=False, type=bool)
     parser.add_argument("-U", "--url", default="https://localhost:8443/rep")
-    parser.add_argument("-u", "--username", default="repadmin")
-    parser.add_argument("-p", "--password", default="repadmin")
+    parser.add_argument("-u", "--username", default="repuser")
+    parser.add_argument("-p", "--password", default="repuser")
     parser.add_argument("-v", "--ansys-version", default=__ansys_apps_version__)
 
     args = parser.parse_args()
@@ -277,7 +277,7 @@ if __name__ == "__main__":
     client = Client(url=args.url, username=args.username, password=args.password)
 
     try:
-        log.info(f"HPS URL: {client.rep_url}")
+        log.info(f"HPS URL: {client.url}")
         proj = create_project(
             client=client,
             name=args.name,

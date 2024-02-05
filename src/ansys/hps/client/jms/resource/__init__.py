@@ -21,7 +21,6 @@
 # SOFTWARE.
 """PyHPS JMS resource subpackage."""
 from .algorithm import Algorithm
-from .evaluator import Evaluator, EvaluatorConfigurationUpdate
 from .file import File
 from .fitness_definition import FitnessDefinition, FitnessTermDefinition
 from .job import Job

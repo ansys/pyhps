@@ -281,7 +281,7 @@ def submit_job(use_exec_script=False) -> REPJob:
     app_job.project_id = proj.id
     app_job.job_definition_id = job_def.id
     app_job.job_id = job.id
-    app_job.rep_url = client.rep_url
+    app_job.rep_url = client.url
     app_job.auth_token = client.refresh_token
 
     tasks = project_api.get_tasks(job_id=job.id)
@@ -306,7 +306,7 @@ def monitor_job(app_job: REPJob):
         time.sleep(2)
         log.info(
             f"Waiting for job {job.name} to complete "
-            f"[{client.rep_url}/jms/#/projects/{app_job.project_id}/jobs/{job.id}] ... "
+            f"[{client.url}/jms/#/projects/{app_job.project_id}/jobs/{job.id}] ... "
         )
         job = project_api.get_jobs(id=job.id)[0]
 
