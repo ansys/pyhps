@@ -40,8 +40,8 @@ jobs:
       - uses: dsaltares/fetch-gh-release-asset@master
         name: Download Services Artifact
         with:
-          file: 'docker-compose-internal.tar.gz'
-          target: 'docker-compose-artifact/docker-compose-internal.tar.gz'
+          file: 'docker-compose-customer.tar.gz'
+          target: 'docker-compose-artifact/docker-compose-customer.tar.gz'
           repo: ansys-internal/rep-deployments
           version: tags/${{ inputs.hps-version }}
           token: ${{secrets.PYANSYS_CI_BOT_TOKEN}}
@@ -62,17 +62,16 @@ jobs:
           ls -la
           tar -xvzf docker-compose-internal.tar.gz
           cd docker-compose
-          FSGATEWAY_TAG=latest-dev JMS_TAG=latest-dev docker-compose pull
-          FSGATEWAY_TAG=latest-dev JMS_TAG=latest-dev LOCALHOST_ADDR=localhost docker-compose up -d keycloak
+          docker-compose build
+          docker-compose up -d
           echo "Waiting a few sec ..."
           sleep 5
-          FSGATEWAY_TAG=latest-dev JMS_TAG=latest-dev LOCALHOST_ADDR=localhost docker-compose up -d
         working-directory: ./docker-compose-artifact
 
       - name: Test with tox
         run: tox -e ${{ inputs.toxenv }}-coverage
         env:
-          HPS_TEST_URL: https://localhost:8443/rep
+          HPS_TEST_URL: https://localhost:8443/hps
           HPS_TEST_USERNAME: repadmin
           HPS_TEST_PASSWORD: repadmin
 
