@@ -61,7 +61,7 @@ jobs:
         run: |
           ls -la
           tar -xvzf docker-compose-customer.tar.gz
-          cd docker-compose
+          cd docker-compose-customer
           docker-compose build
           docker-compose up -d
           echo "Waiting a few sec ..."
@@ -100,4 +100,4 @@ jobs:
         if: always()
         run: |
           docker-compose down -v
-        working-directory: ./docker-compose-artifact/docker-compose
+        working-directory: ./docker-compose-artifact/docker-compose-customer
