@@ -1,0 +1,98 @@
+name: Tests (callable) 
+
+on:
+  workflow_call:
+    inputs:
+      python-version:
+        description: Python version to use
+        type: string
+        default: '3.10'
+      toxenv:
+        description: Name of the tox environment
+        type: string
+        default: 'py310'
+      os:
+        description: Where to run
+        type: string
+        default: ubuntu-latest
+
+
+env:
+  MAIN_PYTHON_VERSION: '3.10'
+
+jobs:
+
+  tests:
+    name: Tests and coverage
+    runs-on: ${{ github.event.inputs.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python ${{ github.event.inputs.python-version }}
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ github.event.inputs.python-version }}
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip setuptools tox tox-gh-actions
+
+      - uses: dsaltares/fetch-gh-release-asset@master
+        name: Download Services Artifact
+        with:
+          file: 'docker-compose-internal.tar.gz'
+          target: 'docker-compose-artifact/'
+          repo: ansys-internal/rep-deployments
+          version: 'tags/v1.0.2'
+          token: ${{secrets.PYANSYS_CI_BOT_TOKEN}}
+
+      - uses: KengoTODA/actions-setup-docker-compose@main
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      
+      - name: Login in Github Container registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io/ansys-internal
+          username: pyansys-ci-bot
+          password: ${{ secrets.PYANSYS_CI_BOT_TOKEN }}
+
+      - name: Start services
+        run: |
+          ls -la
+          tar -xvzf docker-compose-internal.tar.gz
+          cd docker-compose
+          FSGATEWAY_TAG=latest-dev JMS_TAG=latest-dev docker-compose pull
+          FSGATEWAY_TAG=latest-dev JMS_TAG=latest-dev LOCALHOST_ADDR=localhost docker-compose up -d keycloak
+          echo "Waiting a few sec ..."
+          sleep 5
+          FSGATEWAY_TAG=latest-dev JMS_TAG=latest-dev LOCALHOST_ADDR=localhost docker-compose up -d
+        working-directory: ./docker-compose-artifact
+
+      - name: Test with tox
+        run: tox -e ${{ github.event.inputs.toxenv }}-coverage
+        env:
+          HPS_TEST_URL: https://localhost:8443/rep
+          HPS_TEST_USERNAME: repadmin
+          HPS_TEST_PASSWORD: repadmin
+
+      - name: Upload coverage results
+        uses: actions/upload-artifact@v4
+        if: github.event.inputs.python-version == env.MAIN_PYTHON_VERSION
+        with:
+          name: coverage-html
+          path: .cov/html
+          retention-days: 7
+
+      - name: Publish Test Report
+        uses: mikepenz/action-junit-report@v3
+        if: always()
+        with:
+          report_paths: '**/test*.xml'
+          check_name: Test Report ${{ github.event.inputs.os }}:${{ github.event.inputs.python-version }}
+          detailed_summary: true
+          include_passed: true
+  
+      - name: Stop services
+        if: always()
+        run: |
+          docker-compose down -v
+        working-directory: ./docker-compose-artifact/docker-compose
