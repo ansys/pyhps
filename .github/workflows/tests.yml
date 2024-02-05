@@ -60,7 +60,7 @@ jobs:
       - name: Start services
         run: |
           ls -la
-          tar -xvzf docker-compose-internal.tar.gz
+          tar -xvzf docker-compose-customer.tar.gz
           cd docker-compose
           docker-compose build
           docker-compose up -d
