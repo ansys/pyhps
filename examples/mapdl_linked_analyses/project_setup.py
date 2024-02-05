@@ -314,7 +314,7 @@ def create_project(
 ) -> Project:
 
     log.info("=== HPS connection")
-    log.info(f"Client connected at {client.rep_url}")
+    log.info(f"Client connected at {client.url}")
 
     log.info("=== Create new Project")
     if incremental:

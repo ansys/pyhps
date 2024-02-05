@@ -364,7 +364,7 @@ if __name__ == "__main__":
     try:
         log.info("Connect to HPC Platform Services")
         client = Client(url=args.url, username=args.username, password=args.password)
-        log.info(f"HPS URL: {client.rep_url}")
+        log.info(f"HPS URL: {client.url}")
         proj = create_project(
             client=client,
             name=args.name,

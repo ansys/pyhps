@@ -277,7 +277,7 @@ if __name__ == "__main__":
     client = Client(url=args.url, username=args.username, password=args.password)
 
     try:
-        log.info(f"HPS URL: {client.rep_url}")
+        log.info(f"HPS URL: {client.url}")
         proj = create_project(
             client=client,
             name=args.name,
