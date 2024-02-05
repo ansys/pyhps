@@ -32,9 +32,11 @@ jobs:
         uses: actions/setup-python@v4
         with:
           python-version: ${{ inputs.python-version }}
+
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip setuptools tox tox-gh-actions
+          mkdir docker-compose-artifact
 
       - uses: dsaltares/fetch-gh-release-asset@master
         name: Download Services Artifact
