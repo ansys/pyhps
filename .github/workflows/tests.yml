@@ -17,10 +17,6 @@ on:
         required: true
         default: 'ubuntu-latest'
 
-
-env:
-  MAIN_PYTHON_VERSION: '3.10'
-
 jobs:
 
   tests:
