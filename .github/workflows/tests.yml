@@ -92,6 +92,10 @@ jobs:
           check_name: Test Report ${{ inputs.runner }}:${{ inputs.python-version }}
           detailed_summary: true
           include_passed: true
+
+      - name: Publish services info to summary
+        if: success() || failure()
+        run: cat build_info.md >> $GITHUB_STEP_SUMMARY
   
       - name: Stop services
         if: always()
