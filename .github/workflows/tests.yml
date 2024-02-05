@@ -11,10 +11,11 @@ on:
         description: Name of the tox environment
         type: string
         default: 'py310'
-      os:
+      runner:
         description: Where to run
         type: string
-        default: ubuntu-latest
+        required: true
+        default: 'ubuntu-latest'
 
 
 env:
@@ -24,7 +25,7 @@ jobs:
 
   tests:
     name: Tests and coverage
-    runs-on: ${{ github.event.inputs.os }}
+    runs-on: ${{ github.event.inputs.runner }}
     steps:
       - uses: actions/checkout@v4
       - name: Set up Python ${{ github.event.inputs.python-version }}
@@ -87,7 +88,7 @@ jobs:
         if: always()
         with:
           report_paths: '**/test*.xml'
-          check_name: Test Report ${{ github.event.inputs.os }}:${{ github.event.inputs.python-version }}
+          check_name: Test Report ${{ github.event.inputs.runner }}:${{ github.event.inputs.python-version }}
           detailed_summary: true
           include_passed: true
   

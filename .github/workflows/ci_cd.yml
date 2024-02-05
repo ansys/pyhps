@@ -50,7 +50,7 @@ jobs:
   tests:
     strategy:
       matrix:
-          os: [ubuntu-latest]
+          os: ['ubuntu-latest']
           cfg: [
               { python-version: '3.10', toxenv: 'py310' },
             ]
@@ -60,7 +60,7 @@ jobs:
     with:
       python-version: ${{ matrix.cfg.python-version }}   
       toxenv: ${{ matrix.cfg.toxenv }}
-      os: ${{ matrix.os }}
+      runner: ${{ matrix.os }}
 
   docs:
     name: Documentation
