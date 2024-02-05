@@ -203,8 +203,8 @@ if __name__ == "__main__":
 
     parser = argparse.ArgumentParser()
     parser.add_argument("-U", "--url", default="https://127.0.0.1:8443/rep")
-    parser.add_argument("-u", "--username", default="repadmin")
-    parser.add_argument("-p", "--password", default="repadmin")
+    parser.add_argument("-u", "--username", default="repuser")
+    parser.add_argument("-p", "--password", default="repuser")
     parser.add_argument("-j", "--num-jobs", type=int, default=10)
     parser.add_argument("-t", "--num-task-definitions", type=int, default=3)
     parser.add_argument("-f", "--start", type=float, default=10.0)
