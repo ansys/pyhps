@@ -224,7 +224,9 @@ def test_lsdyna_cylinder_plate(client):
 
     from examples.lsdyna_cylinder_plate.lsdyna_job import submit_job
 
-    app_job = submit_job()
+    app_job = submit_job(
+        client, name="LS-DYNA Cylinder Plate", version=ansys_version, use_exec_script=False
+    )
     assert app_job is not None
 
     jms_api = JmsApi(client)
@@ -241,7 +243,7 @@ def test_lsdyna_cylinder_plate_with_exec_script(client):
 
     from examples.lsdyna_cylinder_plate.lsdyna_job import submit_job
 
-    app_job = submit_job(use_exec_script=True)
+    app_job = submit_job(client, name="LS-DYNA Cylinder Plate", version=ansys_version)
     assert app_job is not None
 
     jms_api = JmsApi(client)

@@ -45,7 +45,7 @@ import logging
 import os
 import time
 
-from ansys.hps.client import Client, HPSError
+from ansys.hps.client import Client, HPSError, __ansys_apps_version__
 from ansys.hps.client.jms import (
     File,
     JmsApi,
@@ -60,12 +60,6 @@ from ansys.hps.client.jms import (
 )
 
 log = logging.getLogger(__name__)
-
-REP_URL = "https://localhost:8443/rep"
-USERNAME = "repadmin"
-PASSWORD = "repadmin"
-USE_LSDYNA_MPP = False
-ANSYS_VERSION = "2024 R1"
 
 
 class REPJob:
@@ -107,18 +101,23 @@ class REPJob:
         return job
 
 
-def submit_job(use_exec_script=False) -> REPJob:
+def submit_job(
+    client,
+    name,
+    version=__ansys_apps_version__,
+    use_exec_script=True,
+    distributed=False,
+) -> REPJob:
     """Create a REP project running a simple LS-DYNA
     job simulating the impact of a cylinder made of Aluminum
     against a plate made of steel.
     """
 
     log.info("=== Connect to the REP server")
-    client = Client(rep_url=REP_URL, username=USERNAME, password=PASSWORD)
     jms_api = JmsApi(client)
 
     log.info("=== Create an empty project")
-    proj = Project(name="LS-DYNA Cylinder Plate", priority=1, active=True)
+    proj = Project(name=name, priority=1, active=True)
     proj = jms_api.create_project(proj)
 
     project_api = ProjectApi(client, proj.id)
@@ -149,7 +148,7 @@ def submit_job(use_exec_script=False) -> REPJob:
     files.append(
         File(name="d3hsp", evaluation_path="d3hsp", type="text/plain", collect=True, monitor=False)
     )
-    if USE_LSDYNA_MPP:
+    if distributed:
         files.append(
             File(
                 name="messag",
@@ -199,20 +198,20 @@ def submit_job(use_exec_script=False) -> REPJob:
 
     # Define process steps (task definitions)
     ls_dyna_command = "%executable% i=%file:inp% ncpu=%resource:num_cores% memory=300m"
-    if USE_LSDYNA_MPP:
+    if distributed:
         ls_dyna_command = "%executable% -dis -np %resource:num_cores% i=%file:inp% memory=300m"
 
     task_defs = []
     task_def1 = TaskDefinition(
         name="LS-DYNA Run",
-        software_requirements=[Software(name="Ansys LS-DYNA", version=ANSYS_VERSION)],
+        software_requirements=[Software(name="Ansys LS-DYNA", version=version)],
         execution_command=ls_dyna_command,
         max_execution_time=3600.0,
         resource_requirements=ResourceRequirements(
             num_cores=6,
             memory=6000 * 1024 * 1024,
             disk_space=4000 * 1024 * 1024,
-            distributed=USE_LSDYNA_MPP,
+            distributed=distributed,
         ),
         execution_level=0,
         num_trials=1,
@@ -228,7 +227,7 @@ def submit_job(use_exec_script=False) -> REPJob:
 
     if use_exec_script:
         exec_script_file = project_api.copy_default_execution_script(
-            f"lsdyna-v{ANSYS_VERSION[2:4]}{ANSYS_VERSION[6]}-exec_lsdyna.py"
+            f"lsdyna-v{version[2:4]}{version[6]}-exec_lsdyna.py"
         )
 
         task_def1.use_execution_script = True
@@ -238,7 +237,7 @@ def submit_job(use_exec_script=False) -> REPJob:
 
     task_def2 = TaskDefinition(
         name="LS-PrePost Run",
-        software_requirements=[Software(name="Ansys LS-PrePost", version=ANSYS_VERSION)],
+        software_requirements=[Software(name="Ansys LS-PrePost", version=version)],
         execution_command="%executable% c=%file:post_commands%",
         max_execution_time=600.0,
         resource_requirements=ResourceRequirements(
@@ -269,7 +268,10 @@ def submit_job(use_exec_script=False) -> REPJob:
 
     job_def = project_api.create_job_definitions([job_def])[0]
 
-    log.info("=== Submit the job")
+    # Refresh the parameters
+    params = project_api.get_parameter_definitions(id=job_def.parameter_definition_ids)
+
+    log.debug("=== Jobs")
     job = Job(
         eval_status="pending",
         name="Nominal: 56.7km/h (30ms sim time)",
@@ -277,15 +279,14 @@ def submit_job(use_exec_script=False) -> REPJob:
     )
     job = project_api.create_jobs([job])[0]
 
+    log.info(f"Created project '{proj.name}', ID='{proj.id}'")
+
     app_job = REPJob()
     app_job.project_id = proj.id
     app_job.job_definition_id = job_def.id
     app_job.job_id = job.id
     app_job.rep_url = client.url
     app_job.auth_token = client.refresh_token
-
-    tasks = project_api.get_tasks(job_id=job.id)
-    job.task_ids = [t.id for t in tasks]
 
     return app_job
 
@@ -313,7 +314,7 @@ def monitor_job(app_job: REPJob):
         tasks = project_api.get_tasks(job_id=job.id)
         for task in tasks:
             log.info(
-                f" Task {task.task_definition_snapshot.name} (id={task.id}) is {task.eval_status}"
+                f"Task {task.task_definition_snapshot.name}(id={task.id}) is {task.eval_status}"
             )
 
     log.info(f"Job {job.name} final status: {job.eval_status}")
@@ -323,7 +324,6 @@ def monitor_job(app_job: REPJob):
 def download_results(app_job: REPJob):
     """
     Download the job output files (if any)
-
     Requires the packages tqdm and humanize
     python -m pip install tqdm humanize
     """
@@ -401,24 +401,36 @@ def download_results(app_job: REPJob):
 
 if __name__ == "__main__":
 
-    logger = logging.getLogger()
-    logging.basicConfig(format="[%(asctime)s | %(levelname)s] %(message)s", level=logging.INFO)
-
     parser = argparse.ArgumentParser()
     parser.add_argument(
         "action", default="submit", choices=["submit", "monitor", "download"], help="Action to run"
     )
-    parser.add_argument(
-        "--exec_script",
-        default=False,
-        type=bool,
-        help="Use default execution script while submitting job",
-    )
+    parser.add_argument("-n", "--name", type=str, default="LS-DYNA Cylinder Plate")
+    parser.add_argument("-es", "--use-exec-script", default=True, type=bool)
+    parser.add_argument("-ds", "--distributed", default=False, type=bool)
+    parser.add_argument("-U", "--url", default="https://localhost:8443/rep")
+    parser.add_argument("-u", "--username", default="repadmin")
+    parser.add_argument("-p", "--password", default="repadmin")
+    parser.add_argument("-v", "--ansys-version", default=__ansys_apps_version__)
 
     args = parser.parse_args()
+
+    logger = logging.getLogger()
+    logging.basicConfig(format="[%(asctime)s | %(levelname)s] %(message)s", level=logging.INFO)
+
+    log.debug("=== HPS connection")
+
     try:
+        log.info(f"HPS URL: {args.url}")
         if args.action == "submit":
-            job = submit_job(args.exec_script)
+            client = Client(rep_url=args.url, username=args.username, password=args.password)
+            job = submit_job(
+                client=client,
+                name=args.name,
+                version=args.ansys_version,
+                use_exec_script=args.use_exec_script,
+                distributed=args.distributed,
+            )
             job.save()
         elif args.action == "monitor":
             job = REPJob.load()
@@ -430,5 +442,3 @@ if __name__ == "__main__":
             download_results(job)
     except HPSError as e:
         log.error(str(e))
-    except KeyboardInterrupt:
-        log.warning("Interrupted, stopping ...")
