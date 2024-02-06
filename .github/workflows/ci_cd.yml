@@ -123,7 +123,11 @@ jobs:
           - should-release: false
             os: windows-latest
           - should-release: false
-            python-version: ['3.9', '3.11', '3.12']
+            python-version: '3.9'
+          - should-release: false
+            python-version: '3.11'
+          - should-release: false
+            python-version: '3.12'
 
     steps:
       - name: Build wheelhouse and perform smoke test
