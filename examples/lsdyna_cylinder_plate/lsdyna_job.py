@@ -106,7 +106,6 @@ def submit_job(
     name,
     version=__ansys_apps_version__,
     use_exec_script=True,
-    active=True,
     distributed=False,
 ) -> REPJob:
     """Create a REP project running a simple LS-DYNA
