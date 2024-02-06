@@ -1,11 +1,16 @@
+.. _api_reference:
+
 API reference
 =============
 
-This section describes Ansys pyhps endpoints, their capabilities, and how
-to interact with them programmatically.
+This section describes PyHPS functions, classes, methods, and their parameters and return values
+so that you can understand how to interact with them programmatically.
 
 .. toctree::
-   :titlesonly:
-   :maxdepth: 3
+  :maxdepth: 3
 
-   🖿 ansys.hps.client</api/ansys/hps/client/index>
+  client
+  auth
+  jms
+  rms
+  exceptions
