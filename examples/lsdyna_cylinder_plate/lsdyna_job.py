@@ -23,7 +23,7 @@
 """
 Script showing how to submit an LS-DYNA job to HPS.
 
-Once submitted, minimal job information is serialized to a ``rep_job.json`` file.
+Once submitted, minimal job information is serialized to a ``hps_job.json`` file.
 This mimics what an app would need to store to subsequently monitor the job and download results.
 
 The job consists of two tasks:
@@ -62,7 +62,7 @@ from ansys.hps.client.jms import (
 log = logging.getLogger(__name__)
 
 
-class REPJob:
+class HPSJob:
     """
     Simplistic helper class to store job information similarly to
     what a pre/post processing application would do.
@@ -70,14 +70,14 @@ class REPJob:
 
     def __init__(
         self,
-        rep_url=None,
+        hps_url=None,
         project_id=None,
         job_definition_id=None,
         job_id=None,
         auth_token=None,
         task_ids=[],
     ):
-        self.rep_url = rep_url
+        self.hps_url = hps_url
         self.project_id = project_id
         self.job_definition_id = job_definition_id
         self.job_id = job_id
@@ -86,17 +86,17 @@ class REPJob:
 
     def __str__(self):
         repr = json.dumps(self, default=lambda x: x.__dict__, sort_keys=True, indent=4)
-        return f"REP Job:\n{repr}"  # noqa: E231
+        return f"HPS Job:\n{repr}"  # noqa: E231
 
     def save(self):
         """Save job info to JSON file"""
-        with open("rep_job.json", "w") as f:
+        with open("hps_job.json", "w") as f:
             f.write(json.dumps(self, default=lambda x: x.__dict__, sort_keys=True, indent=4))
 
     @classmethod
     def load(cls):
         """Load job info from JSON file"""
-        with open("rep_job.json", "r") as f:
+        with open("hps_job.json", "r") as f:
             job = json.load(f, object_hook=lambda d: cls(**d))
         return job
 
@@ -107,13 +107,13 @@ def submit_job(
     version=__ansys_apps_version__,
     use_exec_script=True,
     distributed=False,
-) -> REPJob:
-    """Create a REP project running a simple LS-DYNA
+) -> HPSJob:
+    """Create an HPS project running a simple LS-DYNA
     job simulating the impact of a cylinder made of Aluminum
     against a plate made of steel.
     """
 
-    log.info("=== Connect to the REP server")
+    log.info("=== Connect to the HPS server")
     jms_api = JmsApi(client)
 
     log.info("=== Create an empty project")
@@ -245,7 +245,7 @@ def submit_job(
             memory=3000,
             disk_space=4000,
             distributed=False,
-            platform="Windows",
+            platform="windows",
         ),
         execution_level=1,
         num_trials=1,
@@ -281,24 +281,24 @@ def submit_job(
 
     log.info(f"Created project '{proj.name}', ID='{proj.id}'")
 
-    app_job = REPJob()
+    app_job = HPSJob()
     app_job.project_id = proj.id
     app_job.job_definition_id = job_def.id
     app_job.job_id = job.id
-    app_job.rep_url = client.url
+    app_job.hps_url = client.url
     app_job.auth_token = client.refresh_token
 
     return app_job
 
 
-def monitor_job(app_job: REPJob):
+def monitor_job(app_job: HPSJob):
     """
-    Monitor the evaluation status of an existing REP job
+    Monitor the evaluation status of an existing HPS job
     """
 
     # Since we stored the auth token in the job info, there's no need
-    # to enter user and password anymore to connect to the REP server.
-    client = Client(rep_url=app_job.rep_url, refresh_token=app_job.auth_token)
+    # to enter user and password anymore to connect to the HPS server.
+    client = Client(url=app_job.hps_url, refresh_token=app_job.auth_token)
     project_api = ProjectApi(client, app_job.project_id)
 
     job = project_api.get_jobs(id=app_job.job_id)[0]
@@ -321,7 +321,7 @@ def monitor_job(app_job: REPJob):
     return
 
 
-def download_results(app_job: REPJob):
+def download_results(app_job: HPSJob):
     """
     Download the job output files (if any)
     Requires the packages tqdm and humanize
@@ -341,8 +341,8 @@ def download_results(app_job: REPJob):
         return
 
     # Since we stored the auth token in the job info, there's no need
-    # to enter user and password anymore to connect to the REP server.
-    client = Client(rep_url=job.rep_url, refresh_token=app_job.auth_token)
+    # to enter user and password anymore to connect to the HPS server.
+    client = Client(url=job.hps_url, refresh_token=app_job.auth_token)
     project_api = ProjectApi(client, app_job.project_id)
 
     tasks = project_api.get_tasks(job_id=app_job.job_id)
@@ -408,9 +408,9 @@ if __name__ == "__main__":
     parser.add_argument("-n", "--name", type=str, default="LS-DYNA Cylinder Plate")
     parser.add_argument("-es", "--use-exec-script", default=True, type=bool)
     parser.add_argument("-ds", "--distributed", default=False, type=bool)
-    parser.add_argument("-U", "--url", default="https://localhost:8443/rep")
-    parser.add_argument("-u", "--username", default="repadmin")
-    parser.add_argument("-p", "--password", default="repadmin")
+    parser.add_argument("-U", "--url", default="https://localhost:8443/hps")
+    parser.add_argument("-u", "--username", default="repuser")
+    parser.add_argument("-p", "--password", default="repuser")
     parser.add_argument("-v", "--ansys-version", default=__ansys_apps_version__)
 
     args = parser.parse_args()
@@ -423,7 +423,14 @@ if __name__ == "__main__":
     try:
         log.info(f"HPS URL: {args.url}")
         if args.action == "submit":
-            client = Client(rep_url=args.url, username=args.username, password=args.password)
+            # create client with offline_access scope
+            # to persist a long-lived refresh token
+            client = Client(
+                url=args.url,
+                username=args.username,
+                password=args.password,
+                scope="openid offline_access",
+            )
             job = submit_job(
                 client=client,
                 name=args.name,
@@ -433,11 +440,11 @@ if __name__ == "__main__":
             )
             job.save()
         elif args.action == "monitor":
-            job = REPJob.load()
+            job = HPSJob.load()
             log.info(job)
             monitor_job(job)
         elif args.action == "download":
-            job = REPJob.load()
+            job = HPSJob.load()
             log.info(job)
             download_results(job)
     except HPSError as e:
