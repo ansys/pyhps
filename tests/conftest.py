@@ -31,7 +31,7 @@ from ansys.hps.client import AuthApi, Client
 
 @pytest.fixture(scope="session")
 def url():
-    return os.environ.get("HPS_TEST_URL") or "https://127.0.0.1:8443/rep"
+    return os.environ.get("HPS_TEST_URL") or "https://127.0.0.1:8443/hps"
 
 
 @pytest.fixture(scope="session")
