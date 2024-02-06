@@ -47,7 +47,7 @@ Documentation and issues
 ------------------------
 
 Documentation for the latest stable release of PyHPS is hosted at
-`PyHPS documentation <https://rep.docs.pyansys.com/dev/>`_.
+`PyHPS documentation <https://hps.docs.pyansys.com/version/dev/>`_.
 
 In the upper right corner of the documentation's title bar, there is an option
 for switching from viewing the documentation for the latest stable release
@@ -56,19 +56,19 @@ released versions.
 
 The PyHPS documentation contains these sections:
 
-- `Getting started <https://rep.docs.pyansys.com/dev/getting_started/index.html>`_: Explains
+- `Getting started <https://hps.docs.pyansys.com/version/dev/getting_started/index.html>`_: Explains
   how to install PyHPS in user mode.
-- `User guide <https://rep.docs.pyansys.com/dev/user_guide/index.html>`_: Describes the basics
+- `User guide <https://hps.docs.pyansys.com/version/dev/user_guide/index.html>`_: Describes the basics
   of how to use PyHPS to interact with Ansys HPS.
-- `Examples <https://rep.docs.pyansys.com/dev/examples/index.html>`_: Provides examples of how
+- `Examples <https://hps.docs.pyansys.com/version/dev/examples/index.html>`_: Provides examples of how
   to interact with a Remote Execution Platform (REP) server in Python using PyHPS.
-- `API reference <https://rep.docs.pyansys.com/dev/api/index.html>`_: Describes PyHPS functions,
+- `API reference <https://hps.docs.pyansys.com/version/dev/api/index.html>`_: Describes PyHPS functions,
   classes, methods, and their parameters and return values so that you can understand how to
   interact with them programmatically
-- `Contribute <https://rep.docs.pyansys.com/dev/contribute.html>_`: Provides information on
+- `Contribute <https://hps.docs.pyansys.com/version/dev/contribute.html>_`: Provides information on
   how to install PyHPS in developer mode and make contributions to the codebase.
 
-On the `PyHPS Issues <https://github.com/ansys-internal/pyhps/issues>` page, you can
+On the `PyHPS Issues <https://github.com/ansys-internal/pyhps/issues>`_ page, you can
 create issues to report bugs and request new features. On the
 `PyHPS Discussions <https://github.com/ansys-internal/pyhps/discussions>`_ page or the
 `Discussions <https://discuss.ansys.com/>`_ page on the Ansys Developer portal,
@@ -84,7 +84,7 @@ PyHPS is licensed under the MIT license.
 PyHPS makes no commercial claim over Ansys whatsoever. This library extends the
 functionality of Ansys HPC Platform Services by adding a Python interface to it
 without changing the core behavior or license of the original software. The use
-of PyHPS requires a legally licensed local copy of AEDT.
+of PyHPS requires a legally licensed local copy of Ansys HPC Platform Services.
 
-To get a copy of AEDT, see the `Ansys HPC Platform Services Guide <https://ansyshelp.ansys.com/account/secured?returnurl=/Views/Secured/hpcplat/v000/en/rep_ug/rep_ug.html>`_`
+To get a copy of Ansys HPC Platform Services, see the `Ansys HPC Platform Services Guide <https://ansyshelp.ansys.com/account/secured?returnurl=/Views/Secured/hpcplat/v000/en/rep_ug/rep_ug.html>`_
 in the Ansys Help.

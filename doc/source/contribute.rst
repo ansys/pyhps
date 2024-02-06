@@ -159,7 +159,7 @@ data model generator with this command:
 
 .. code:: bash
 
-    datamodel-codegen --input .\rms_openapi.json --input-file-type openapi --output ansys/hps/client/rms/models.py --output-model-type pydantic_v2.BaseModel
+    datamodel-codegen --input .\rms_openapi.json --input-file-type openapi --output src/ansys/hps/client/rms/models.py --output-model-type pydantic_v2.BaseModel
 
 Post issues
 -----------

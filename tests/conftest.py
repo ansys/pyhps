@@ -98,3 +98,8 @@ def run_id():
             agent_id = os.environ.get("HOSTNAME", "localhost")
     build_id = os.environ.get("Build.BuildId", "1")
     return f"{agent_id}_{build_id}".lower()
+
+
+@pytest.fixture
+def build_info_path():
+    return os.path.join(os.getcwd(), "build_info.json")
