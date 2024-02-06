@@ -4,7 +4,7 @@ MAPDL linked analyses
 =====================
 
 This example shows how to submit an MAPDL linked analysis workflow (prestress-modal-harmonic)
-as a multi-task job to REP. The script shows two possible ways to submit the individual tasks:
+as a multi-task job to HPS. The script shows two possible ways to submit the individual tasks:
 
 - All-at-once: All three tasks are defined and included in the job definition before pushing it
   out to the server. When the job is created, it already has three tasks.
@@ -32,4 +32,5 @@ Here is the ``project_setup.py`` file for this project:.
 
 .. literalinclude:: ../../../examples/mapdl_linked_analyses/project_setup.py
     :language: python
+    :lines: 23-
     :caption: project_setup.py

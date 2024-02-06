@@ -3,7 +3,7 @@
 MAPDL motorbike frame: Project creation
 =======================================
 
-This example shows how to create from scratch a REP project consisting of an Ansys APDL beam model
+This example shows how to create from scratch an HPS project consisting of an Ansys APDL beam model
 of a tubular steel trellis motorbike frame. After creating the project's job definition, 10 design
 points with randomly chosen parameter values are created and set to pending.
 
@@ -32,4 +32,5 @@ Here is the ``project_setup.py`` script for this example:
  
 .. literalinclude:: ../../../examples/mapdl_motorbike_frame/project_setup.py
     :language: python
+    :lines: 23-
     :caption: project_setup.py

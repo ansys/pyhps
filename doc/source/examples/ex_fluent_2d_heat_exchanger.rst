@@ -14,4 +14,5 @@ Here is the ``project_setup.py`` script for this example:
 
 .. literalinclude:: ../../../examples/fluent_2d_heat_exchanger/project_setup.py
     :language: python
+    :lines: 23-
     :caption: project_setup.py

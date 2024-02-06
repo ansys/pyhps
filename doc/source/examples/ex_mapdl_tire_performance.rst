@@ -3,7 +3,7 @@
 MAPDL tire performance
 =======================
 
-This example shows how to submit an MAPDL solver job to a REP server. The MAPDL model is the tire
+This example shows how to submit an MAPDL solver job to HPS. The MAPDL model is the tire
 performance simulation example included in the technology demonstration guide (td-57).
 Solution convergence (GST) and contact status (CND) tracking files are periodically collected
 while the job is running. 
@@ -17,4 +17,5 @@ Here is the ``project_setup.py`` file for this project:
 
 .. literalinclude:: ../../../examples/mapdl_tyre_performance/project_setup.py
     :language: python
+    :lines: 23-
     :caption: project_setup.py

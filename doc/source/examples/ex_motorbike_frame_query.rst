@@ -17,4 +17,5 @@ Here is the ``project_setup.py`` file for this project:
 
 .. literalinclude:: ../../../examples/mapdl_motorbike_frame/project_query.py
     :language: python
+    :lines: 23-
     :caption: project_query.py

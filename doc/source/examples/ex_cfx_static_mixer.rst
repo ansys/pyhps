@@ -14,10 +14,12 @@ Here is the ``project_setup.py`` script for this example:
 
 .. literalinclude:: ../../../examples/cfx_static_mixer/project_setup.py
     :language: python
+    :lines: 23-
     :caption: project_setup.py
 
 This example uses this ``exec_cfx.py`` execution script instead of a solver command line:
 
 .. literalinclude:: ../../../examples/cfx_static_mixer/exec_cfx.py
     :language: python
+    :lines: 23-
     :caption: exec_cfx.py
