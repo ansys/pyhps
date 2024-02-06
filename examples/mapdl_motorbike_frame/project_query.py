@@ -74,7 +74,7 @@ def query_stats(client, project_name):
     print_value_stats(values, "=== Elapsed time MAPDL (mapdl_elapsed_time)")
 
     values = [job.elapsed_time for job in jobs]
-    print_value_stats(values, "=== Elapsed time REP (elapsed_time)")
+    print_value_stats(values, "=== Elapsed time HPS (elapsed_time)")
 
     log.info("=== Query tasks")
     tasks = project_api.get_tasks(

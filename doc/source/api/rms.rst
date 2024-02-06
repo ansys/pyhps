@@ -1,11 +1,11 @@
 Resource Management Service (RMS)
 =================================
 
-Ansys REP includes the Resource Management Service (RMS), which is the main service
+Ansys HPS includes the Resource Management Service (RMS), which is the main service
 for managing heterogeneous compute resources. 
 
 The ``ansys.hps.client.rms`` Python subpackage wraps around the RMS REST API, which
-is available at ``https://hostname:port/rep/rms/api``.
+is available at ``https://hostname:port/hps/rms/api``.
 
 APIs
 ----
