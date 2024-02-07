@@ -293,10 +293,10 @@ def submit_job(
 
 def monitor_job(app_job: HPSJob):
     """
-    Monitor the evaluation status of an existing HPS job
+    Monitor the evaluation status of an existing HPS job.
     """
 
-    # Since we stored the auth token in the job info, there's no need
+    # Since the auth token is stored in the job info, there's no need
     # to enter user and password anymore to connect to the HPS server.
     client = Client(url=app_job.hps_url, refresh_token=app_job.auth_token)
     project_api = ProjectApi(client, app_job.project_id)
@@ -323,9 +323,13 @@ def monitor_job(app_job: HPSJob):
 
 def download_results(app_job: HPSJob):
     """
-    Download the job output files (if any)
-    Requires the packages tqdm and humanize
-    python -m pip install tqdm humanize
+    Download the job output files (if any).
+
+    This method requires the packages ``tqdm`` and ``humanize``.
+    You can install them with:
+
+        python -m pip install tqdm humanize
+
     """
 
     try:
@@ -340,7 +344,7 @@ def download_results(app_job: HPSJob):
         log.error("The 'humanize' package is not installed. Please pip install it")
         return
 
-    # Since we stored the auth token in the job info, there's no need
+    # Since the auth token is stored in the job info, there's no need
     # to enter user and password anymore to connect to the HPS server.
     client = Client(url=job.hps_url, refresh_token=app_job.auth_token)
     project_api = ProjectApi(client, app_job.project_id)

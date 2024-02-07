@@ -61,7 +61,7 @@ The PyHPS documentation contains these sections:
 - `User guide <https://hps.docs.pyansys.com/version/dev/user_guide/index.html>`_: Describes the basics
   of how to use PyHPS to interact with Ansys HPS.
 - `Examples <https://hps.docs.pyansys.com/version/dev/examples/index.html>`_: Provides examples of how
-  to interact with Ansys HPC Platform Services in Python using PyHPS.
+  to interact with Ansys HPS in Python using PyHPS.
 - `API reference <https://hps.docs.pyansys.com/version/dev/api/index.html>`_: Describes PyHPS functions,
   classes, methods, and their parameters and return values so that you can understand how to
   interact with them programmatically
