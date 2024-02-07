@@ -26,7 +26,7 @@ You start by connecting to an HPS deployment running on the localhost with the d
     from ansys.hps.client import Client
     from ansys.hps.client.jms import JmsApi, ProjectApi
     
-    client = Client(url="https://localhost:8443/rep", username="repuser", password="repuser")  
+    client = Client(url="https://localhost:8443/hps", username="repuser", password="repuser")  
 
     # check which JMS version the server is running    
     jms_api = JmsApi(client)
@@ -60,8 +60,8 @@ example.
     $ python path_to_download_folder\mapdl_motorbike_frame\project_setup.py
 
 .. note::
-    By default, the script tries to connect to the REP server running on the localhost with the default
-    username and password. If your REP server is hosted at a different URL or you want to specify different
+    By default, the script tries to connect to the HPS server running on the localhost with the default
+    username and password. If your HPS server is hosted at a different URL or you want to specify different
     credentials, adjust the script before running it. 
 
 Query parameters
@@ -264,14 +264,14 @@ Query for all jobs that have timed out and then delete them.
 Query the number of evaluators
 ------------------------------
 
-Query for the number of Windows and Linux evaluators connected to the REP server:
+Query for the number of Windows and Linux evaluators connected to the HPS server:
 
 .. code-block:: python
     
     rms_api = RmsApi(client)
     evaluators = rms_api.get_evaluators()
 
-    # print number of Windows and Linux evaluators connected to the REP server
+    # print number of Windows and Linux evaluators connected to the HPS server
     print( len([e for e in evaluators if e.platform == "windows" ]) )
     print( len([e for e in evaluators if e.platform == "linux" ]) )
 
@@ -299,7 +299,7 @@ Administrative users with the Keycloak "manage-users" role can create users as w
     from ansys.hps.client import Client
     from ansys.hps.client.auth import AuthApi, User
     
-    client = Client(url="https://localhost:8443/rep/", username="repadmin", password="repadmin")
+    client = Client(url="https://localhost:8443/hps/", username="repadmin", password="repadmin")
     auth_api = AuthApi(client)
 
     # modify the default password of the repadmin user
@@ -324,7 +324,7 @@ Administrative users with the Keycloak "manage-users" role can create users as w
 Exception handling
 ------------------
 
-All exceptions that the Ansys REP client explicitly raises inherit from the :exc:`ansys.hps.client.HPSError`
+All exceptions that the Ansys HPS client explicitly raises inherit from the :exc:`ansys.hps.client.HPSError`
 base class. Client errors are raised for 4xx HTTP status codes, while API errors are raised for 5xx HTTP
 status codes (server-side errors).
 
@@ -335,12 +335,12 @@ For example, instantiating a client with invalid credentials returns a 401 clien
     from ansys.hps.client import Client, HPSError
 
     try:
-        client = Client(url="https://localhost:8443/rep/", username="repuser",  password="wrong_psw")
+        client = Client(url="https://localhost:8443/hps/", username="repuser",  password="wrong_psw")
     except HPSError as e:
         print(e)
 
     #Output:
-    # 401 Client Error: invalid_grant for: POST https://localhost:8443/rep/auth/realms/rep/protocol/openid-connect/token
+    # 401 Client Error: invalid_grant for: POST https://localhost:8443/hps/auth/realms/rep/protocol/openid-connect/token
     # Invalid user credentials
 
 A *get* call on a non-existing resource returns a 404 client error:
@@ -356,4 +356,4 @@ A *get* call on a non-existing resource returns a 404 client error:
         print(e)
 
     #Output:
-    #404 Client Error: Not Found for: GET https://localhost:8443/rep//jms/api/v1/projects/non_existing_project
+    #404 Client Error: Not Found for: GET https://localhost:8443/hps//jms/api/v1/projects/non_existing_project

@@ -19,7 +19,7 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
-"""Module providing the base class for all client and server REP-related errors."""
+"""Module providing the base class for all client and server HPS-related errors."""
 
 from requests.exceptions import RequestException
 
