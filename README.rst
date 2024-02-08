@@ -66,7 +66,7 @@ The PyHPS documentation contains these sections:
   classes, methods, and their parameters and return values so that you can understand how to
   interact with them programmatically
 - `Contribute <https://hps.docs.pyansys.com/version/dev/contribute.html>`_: Provides information on
-  how to install PyHPS in developer mode and make contributions to the codebase.
+  how to install PyHPS in developer mode and make contributions to the codebase and documentation.
 
 On the `PyHPS Issues <https://github.com/ansys-internal/pyhps/issues>`_ page, you can
 create issues to report bugs and request new features. On the
