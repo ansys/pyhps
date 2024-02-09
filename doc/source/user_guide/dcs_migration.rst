@@ -1,69 +1,75 @@
 Migrate DCS Python Client scripts
 ===================================
 
-Few words about HPS being the successor of DCS, similarly pyHPS is the successor of the DCS Python Client.
+Just as HPS is the successor to DCS (Distributed Compute Services), PyHPS is the successor to the DCS Python Client.
+For more information, see the latest `DCS Python Client documentation <https://storage.ansys.com/dcs_python_client/v241/index.html>`_.
 
-DCS Python client doc: https://storage.ansys.com/dcs_python_client/v241/index.html
 
-
-Key Terminology and API Changes
+Key terminology and API changes
 -------------------------------
 
+The Design Points Service (DPS) in DCS has evolved into the Job Management Service (JMS) in HPS.
+Some key entities that were part of DPS are renamed in JMS:
 
-The Design Points Service (DPS) from DCS has evolved into the Job Management Service (JMS) as part of HPS.
-Some key entities that were part of the DPS API have been renamed in JMS:
+.. list-table::
+   :header-rows: 1
 
-* Design Point -> Job
-* Configuration -> Job Definition
-* Process Step -> Task Definition
-* Parameter Location -> Parameter Mapping
+   * - DPS
+     - JMS
+   * - Configuration
+     - Job Definition
+   * - Design Point
+     - Job
+   * - Process Step
+     - Task Definition
+   * - Parameter Location
+     - Parameter Mapping
 
-Other key changes that impact the Python client and existing scripts: 
+Other key changes also impact scripts that use the DCS Python Client: 
 
-* All resource IDs are string now (as opposed to integers)
+* All resource IDs are strings now (as opposed to integers).
 * In DCS, the client specifies the ID of the project when creating it. 
-  In HPS, the client only specifies the name of the project. The ID is assigned server-side.
-* Some nested endpoints have been removed, for instance:
+  In HPS, the client specifies only the name of the project. The ID is assigned server-side.
+* Some nested endpoints have been removed. For example, the following endpoints do not have a counterpart in the JMS API:
   
   .. code::
 
      GET /dps/api/projects/{project_id}/configurations/{configuration_id}/design_points
      GET /dps/api/projects/{project_id}/design_points/{design_point_id}/tasks
 
-  do not have a counterpart in the JMS API.
-* In the DPS API, the Configuration resource (now Job Definition) used to include Process Steps, Parameter Definitions and Parameter Locations.
-  These are now separate resources (with corresponding endpoints) in the JMS API, namely Task Definitions, Parameter Definitions and Parameter Mappings.
-* Within a Task Definition (previously Process Step), you can now also specify:
+* In the DPS API, the configuration resource (now job definition) used to include process steps, parameter definitions, and parameter locations.
+  These are now separate resources (with corresponding endpoints) in the JMS API, namely task definitions, parameter definitions, and parameter mappings.
+* Within a task definition (previously process step), you can now also specify the following information:
   
-    - Multiple software requirements
-    - Environment variables
-    - An execution context
-    - Custom resource requirements
-    - HPC resource requirements
+  * Multiple software requirements
+  * Environment variables
+  * Execution context
+  * Custom resource requirements
+  * HPC resource requirements
 
-  The field ``cpu_core_usage`` has been renamed to ``num_cores``.
-  ``memory`` and ``disk_space`` are now expressed in bytes (MB before).
+  The ``cpu_core_usage`` field has been renamed to ``num_cores``.
+  The ``memory`` and ``disk_space`` fields are expressed in bytes rather than MB.
 
 
-Python Client Changes
+Python client changes
 ---------------------
 
 Installation
 ~~~~~~~~~~~~
 
-The DCS Python client used to be distributed as a wheel part of the Ansys installation.
-PyHPS can instead be installed following [ref to how to install]. 
+The DCS Python client used to be distributed as a wheel in the Ansys installation.
+You can install PyHPS as indicated in :ref:`getting_started`.  
 
 
 Client and API objects
 ~~~~~~~~~~~~~~~~~~~~~~
 
-Besides obvious changes to reflect the API changes, we have also done some work to streamline the structure of the package. 
-The main ``Client`` object now only stores the connection, without exposing any service API.
-Similarly, resources like Projects and Jobs do not expose anymore API endpoints. 
-Instead objects like the ``JmsApi``, the ``ProjectApi`` and the ``RmsApi`` wrap around HPS REST APIs.
+With respect to the DCS Python Client, the PyHPS structure has been streamlined.
+The main ``Client`` object stores only the connection, without exposing any service API.
+Similarly, resources like ``Project`` and ``Job`` do not expose API endpoints. 
+Instead, objects like ``JmsApi``, ``ProjectApi``, and ``RmsApi`` wrap around HPS REST APIs.
 
-For instance, this is how you instantiate a Client object and retrieve projects:
+This code shows how to instantiate a ``Client`` object and retrieve projects:
 
 .. .. list-table::
 ..    :widths: 1 1
@@ -97,7 +103,7 @@ For instance, this is how you instantiate a Client object and retrieve projects:
 
 .. tabs::
 
-   .. code-tab:: python DCS Client
+   .. code-tab:: python DCS client
   
         from ansys.dcs.client.dps import Client
 
@@ -123,12 +129,12 @@ For instance, this is how you instantiate a Client object and retrieve projects:
 Project ID
 ~~~~~~~~~~
 
-As mentioned above, in HPS the client only specifies the name of the project.
-The project ID is assigned server-side. This is how you create a project in the two cases:
+As mentioned earlier, in HPS the client only specifies the name of the project.
+The project ID is assigned server-side. This code shows how to create a project:
 
 .. tabs::
 
-   .. code-tab:: python DCS Client
+   .. code-tab:: python DCS client
   
         from ansys.dcs.client.dps import Client, Project
 
@@ -151,7 +157,7 @@ The project ID is assigned server-side. This is how you create a project in the 
         proj = Project(name="My New Project")
         proj = jms_api.create_project(proj)
 
-Removed Nested Endpoints
+Removed nested endpoints
 ~~~~~~~~~~~~~~~~~~~~~~~~
 
 Following the changes in the API, nested endpoints are removed.
@@ -159,11 +165,11 @@ Following the changes in the API, nested endpoints are removed.
 Exceptions
 ~~~~~~~~~~
 
-Exceptions handling works the same. The ``DCSError`` has been renamed to ``HPSError``. 
+Exceptions handling works the same. The ``DCSError`` class has been renamed to ``HPSError``. 
 
 .. tabs::
 
-   .. code-tab:: python DCS Client
+   .. code-tab:: python DCS client
   
         from ansys.dcs.client import DCSError
         from ansys.dcs.client.dps import Client
@@ -198,7 +204,7 @@ This is reflected in PyHPS accordingly.
 
 .. tabs::
 
-   .. code-tab:: python DCS Client
+   .. code-tab:: python DCS client
   
     from ansys.dcs.client.dps import Client
 
@@ -216,14 +222,20 @@ This is reflected in PyHPS accordingly.
         evaluators = rms_api.get_evaluators()
 
 
-Example Project
+Example project
 ---------------
 
-Import modules and instantiate the client.
+This example shows how to migrate a script that creates a DCS project consisting
+of an Ansys APDL beam model of a tubular motorbike-frame.
+The script was originally included in the `DCS Python Client documentation <https://storage.ansys.com/dcs_python_client/v241/ex_motorbike_frame.html>`_ 
+and is now available as a PyHPS script in :ref:`example_mapdl_motorbike_frame`.
+
+Import modules and instantiate the client
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. tabs::
 
-   .. code-tab:: python DCS Client
+   .. code-tab:: python DCS client
   
         import os
 
@@ -272,14 +284,15 @@ Import modules and instantiate the client.
 
 
 Create an empty project and a job definition
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. tabs::
 
-   .. code-tab:: python DCS Client
+   .. code-tab:: python DCS client
   
         proj = Project(
             id="mapdl_motorbike_frame",
-            display_name="MAPDL Motorbike Frame",
+            display_name="MAPDL motorbike frame",
             priority=1,
             active=True
         )
@@ -290,18 +303,19 @@ Create an empty project and a job definition
    .. code-tab:: python PyHPS
 
         jms_api = JmsApi(client)
-        proj = Project(name="MAPDL Motorbike Frame", priority=1, active=True)
+        proj = Project(name="MAPDL motorbike frame", priority=1, active=True)
         proj = jms_api.create_project(proj)
 
         project_api = ProjectApi(client, proj.id)
 
         job_def = JobDefinition(name="JobDefinition.1", active=True)
 
-File resources
+Create file resources
+~~~~~~~~~~~~~~~~~~~~~
 
 .. tabs::
 
-   .. code-tab:: python DCS Client
+   .. code-tab:: python DCS client
   
         cwd = os.path.dirname(__file__)
         files = []
@@ -367,11 +381,12 @@ File resources
         result_file = files[1]
 
 
-Parameters definition
+Create parameter definitions
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. tabs::
 
-   .. code-tab:: python DCS Client
+   .. code-tab:: python DCS client
   
         # Input params: Dimensions of three custom tubes
         float_input_params=[]
@@ -499,11 +514,12 @@ Parameters definition
                 )
             )
 
-Process Step
+Create process steps (now tasks)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. tabs::
 
-   .. code-tab:: python DCS Client
+   .. code-tab:: python DCS client
   
         cfg.add_process_step(
             name="MAPDL_run",
@@ -555,11 +571,12 @@ Process Step
         )
 
 
-Fitness definition
+Add a fitness definition
+~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. tabs::
 
-   .. code-tab:: python DCS Client
+   .. code-tab:: python DCS client
 
         fd = FitnessDefinition(error_fitness=10.0)
         fd.add_fitness_term(name="weight", type="design_objective", weighting_factor=1.0,
@@ -593,11 +610,12 @@ Fitness definition
         )
         job_def.fitness_definition = fd
 
-Create the job definition
+Create a configuration (now job definition)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. tabs::
 
-   .. code-tab:: python DCS Client
+   .. code-tab:: python DCS client
 
         cfg = proj.create_configurations([cfg])[0]
 
@@ -616,11 +634,12 @@ Create the job definition
 
         job_def = project_api.create_job_definitions([job_def])[0]
 
-Design Points
+Create design points (now jobs)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. tabs::
 
-   .. code-tab:: python DCS Client
+   .. code-tab:: python DCS client
 
         import random
 
