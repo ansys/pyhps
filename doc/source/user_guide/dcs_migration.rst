@@ -1,7 +1,7 @@
-Migrate DCS Python Client scripts
-===================================
+Migration of DCS Python client scripts
+======================================
 
-Just as HPS is the successor to DCS (Distributed Compute Services), PyHPS is the successor to the DCS Python Client.
+Just as HPS is the successor to DCS (Distributed Compute Services), PyHPS is the successor to the DCS Python client.
 For more information, see the latest `DCS Python Client documentation <https://storage.ansys.com/dcs_python_client/v241/index.html>`_.
 
 
@@ -25,7 +25,7 @@ Some key entities that were part of DPS are renamed in JMS:
    * - Parameter location
      - Parameter mapping
 
-Other key changes also impact scripts that use the DCS Python Client: 
+Here are some other key changes impacting scripts that use the DCS Python Client: 
 
 * All resource IDs are strings now (as opposed to integers).
 * In DCS, the client specifies the ID of the project when creating it. 
@@ -48,7 +48,7 @@ Other key changes also impact scripts that use the DCS Python Client:
   * HPC resource requirements
 
   The ``cpu_core_usage`` field has been renamed to ``num_cores``.
-  The ``memory`` and ``disk_space`` fields are expressed in bytes rather than MB.
+  The ``memory`` and ``disk_space`` fields are expressed in bytes rather than megabytes.
 
 
 Python client changes
@@ -64,7 +64,7 @@ You can install PyHPS as indicated in :ref:`getting_started`.
 Client and API objects
 ~~~~~~~~~~~~~~~~~~~~~~
 
-With respect to the DCS Python Client, the PyHPS structure has been streamlined.
+With respect to the DCS Python client, the PyHPS structure has been streamlined.
 The main ``Client`` object stores only the connection, without exposing any service API.
 Similarly, resources like ``Project`` and ``Job`` do not expose API endpoints. 
 Instead, objects like ``JmsApi``, ``ProjectApi``, and ``RmsApi`` wrap around HPS REST APIs.
@@ -135,7 +135,7 @@ Following the changes in the API, nested endpoints are removed.
 Exceptions
 ~~~~~~~~~~
 
-Exceptions handling works the same. The ``DCSError`` class has been renamed to ``HPSError``. 
+Exception handling works the same. However,  the ``DCSError`` class has been renamed to ``HPSError``. 
 
 .. tabs::
 
@@ -169,7 +169,7 @@ Exceptions handling works the same. The ``DCSError`` class has been renamed to `
 Evaluators
 ~~~~~~~~~~
 
-The evaluators resources and corresponding endpoints have been moved to the new Resource Management Service (RMS).
+The evaluator resources and corresponding endpoints have been moved to the new Resource Management Service (RMS).
 This is reflected in PyHPS accordingly.
 
 .. tabs::
@@ -198,7 +198,7 @@ Example project
 This example shows how to migrate a script that creates a DCS project consisting
 of an Ansys APDL beam model of a tubular motorbike-frame.
 The script was originally included in the `DCS Python Client documentation <https://storage.ansys.com/dcs_python_client/v241/ex_motorbike_frame.html>`_ 
-and is now available as a PyHPS script in :ref:`example_mapdl_motorbike_frame`.
+and is now available as a PyHPS script in the :ref:`example_mapdl_motorbike_frame` example.
 
 Import modules and instantiate the client
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -309,7 +309,7 @@ Create file resources
         # create file resources on the server
         files = proj.create_files(files)
 
-        # For convenience, we keep a reference to the input and result files.
+        # For convenience, keep a reference to the input and result files.
         mac_file = files[0]
         result_file = files[1]
 
@@ -346,7 +346,7 @@ Create file resources
         # create file resources on the server
         files = project_api.create_files(files)
 
-        # For convenience, we keep a reference to the input and result files.
+        # For convenience, keep a reference to the input and result files.
         mac_file = files[0]
         result_file = files[1]
 

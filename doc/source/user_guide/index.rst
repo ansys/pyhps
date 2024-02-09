@@ -4,8 +4,8 @@ User guide
 ==========
 
 This section walks you through the basics of how to interact with HPS.
-For more elaborate examples, see :ref:`Examples <examples>`. For descriptions
-of PyHPS endpoints, see :ref:`API reference <api_reference>`.
+For more elaborate examples, see :ref:`examples`. For descriptions
+of PyHPS endpoints, see :ref:`api_reference`.
 
 To reproduce the code samples provided in this section, you must have these
 prerequisites:
