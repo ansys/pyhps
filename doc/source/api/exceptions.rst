@@ -8,7 +8,7 @@ HTTP requests returning an unsuccessful status code raise one of these exception
 * :exc:`ansys.hps.client.APIError` for server errors (5xx status code), such as for internal server
   errors or not implemented.
 
-All exceptions that an Ansys REP client explicitly raises are inherited from the :exc:`ansys.hps.client.HPSError`
+All exceptions that a PyHPS client explicitly raises are inherited from the :exc:`ansys.hps.client.HPSError`
 base class.
 
 .. autoexception:: ansys.hps.client.HPSError

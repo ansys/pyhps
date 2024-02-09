@@ -41,7 +41,7 @@ microsoft-azure-active-directory-as-keycloak-identity-provider/
 
 client_id = "rep-cli"
 scope = "openid"
-base_url = "https://localhost:8443/rep/auth/realms/rep"
+base_url = "https://localhost:8443/hps/auth/realms/rep"
 authorization_endpoint = f"{base_url}/protocol/openid-connect/auth"
 token_endpoint = f"{base_url}/protocol/openid-connect/token"
 
@@ -136,7 +136,7 @@ if __name__ == "__main__":
     if args.mode == "web":
         redirect_uri = "http://localhost:9999/token-info"
     else:
-        redirect_uri = "https://localhost:8443/rep/jms/api/v1"
+        redirect_uri = "https://localhost:8443/hps/jms/api/v1"
 
     client = AsyncOAuth2Client(client_id, scope=scope, verify=False)
     uri, state = client.create_authorization_url(authorization_endpoint, redirect_uri=redirect_uri)

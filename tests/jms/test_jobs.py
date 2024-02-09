@@ -116,14 +116,14 @@ def test_job_serialization():
         job_definition_id=2,
         host_ids=["uuid-4", "uuid-5"],
         values={"p1": "string_value", "p2": 8.9, "p3": True},
-        creator="rep-client",
+        creator="hps-client",
         elapsed_time=40.8,
     )
 
     assert job.note == missing
     assert job.priority == missing
     assert job.elapsed_time == 40.8
-    assert job.creator == "rep-client"
+    assert job.creator == "hps-client"
 
     schema = JobSchema()
     serialized_job = schema.dump(job)
@@ -190,7 +190,7 @@ def test_job_integration(client):
         assert auth_api.get_user(id=job.created_by).username == client.username
         assert auth_api.get_user(id=job.modified_by).username == client.username
         # fill some of them
-        job.creator = "rep-client"
+        job.creator = "hps-client"
         job.note = f"test job{job.id} update"
 
     jobs = project_api.update_jobs(jobs)
@@ -206,7 +206,7 @@ def test_job_integration(client):
 
     assert len(jobs) == 2
     for job in jobs:
-        assert job.creator == "rep-client"
+        assert job.creator == "hps-client"
         assert job.note == f"test job{job.id} update"
         assert job.job_definition_id == missing
 

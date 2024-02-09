@@ -1,11 +1,11 @@
 Job Management Service (JMS)
 ============================
 
-Ansys REP includes the Job Management Service (JMS), which is the main service for storing
+Ansys HPS includes the Job Management Service (JMS), which is the main service for storing
 and evaluating jobs using multiple heterogeneous compute resources. 
 
 The ``ansys.hps.client.jms`` Python subpackage  wraps around the JMS REST API,
-which is available at ``https://hostname:port/rep/jms/api``.
+which is available at ``https://hostname:port/hps/jms/api``.
 
 APIs
 ----

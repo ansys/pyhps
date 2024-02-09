@@ -37,7 +37,7 @@ You start by connecting to an HPS deployment running on the localhost with the d
     from ansys.hps.client import Client
     from ansys.hps.client.jms import JmsApi, ProjectApi
     
-    client = Client(url="https://localhost:8443/rep", username="repuser", password="repuser")  
+    client = Client(url="https://localhost:8443/hps", username="repuser", password="repuser")  
 
     # check which JMS version the server is running    
     jms_api = JmsApi(client)
@@ -71,8 +71,8 @@ example.
     $ python path_to_download_folder\mapdl_motorbike_frame\project_setup.py
 
 .. note::
-    By default, the script tries to connect to the REP server running on the localhost with the default
-    username and password. If your REP server is hosted at a different URL or you want to specify different
+    By default, the script tries to connect to the HPS server running on the localhost with the default
+    username and password. If your HPS server is hosted at a different URL or you want to specify different
     credentials, adjust the script before running it. 
 
 
@@ -176,14 +176,14 @@ Query for all jobs that have timed out and then delete them.
 Query the number of evaluators
 ------------------------------
 
-Query for the number of Windows and Linux evaluators connected to the REP server:
+Query for the number of Windows and Linux evaluators connected to the HPS server:
 
 .. code-block:: python
     
     rms_api = RmsApi(client)
     evaluators = rms_api.get_evaluators()
 
-    # print number of Windows and Linux evaluators connected to the REP server
+    # print number of Windows and Linux evaluators connected to the HPS server
     print( len([e for e in evaluators if e.platform == "windows" ]) )
     print( len([e for e in evaluators if e.platform == "linux" ]) )
 
@@ -211,7 +211,7 @@ Administrative users with the Keycloak "manage-users" role can create users as w
     from ansys.hps.client import Client
     from ansys.hps.client.auth import AuthApi, User
     
-    client = Client(url="https://localhost:8443/rep/", username="repadmin", password="repadmin")
+    client = Client(url="https://localhost:8443/hps/", username="repadmin", password="repadmin")
     auth_api = AuthApi(client)
 
     # modify the default password of the repadmin user

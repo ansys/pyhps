@@ -37,4 +37,5 @@ Here is the ``project_setup.py`` script for this example:
 
 .. literalinclude:: ../../../examples/lsdyna_cylinder_plate/lsdyna_job.py
     :language: python
+    :lines: 23-
     :caption: lsdyna_job.py

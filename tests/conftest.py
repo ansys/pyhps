@@ -31,7 +31,7 @@ from ansys.hps.client import AuthApi, Client
 
 @pytest.fixture(scope="session")
 def url():
-    return os.environ.get("HPS_TEST_URL") or "https://127.0.0.1:8443/rep"
+    return os.environ.get("HPS_TEST_URL") or "https://127.0.0.1:8443/hps"
 
 
 @pytest.fixture(scope="session")
@@ -87,7 +87,7 @@ def is_admin(client: Client):
 def run_id():
     # Create a unique run_id (to be used when creating new projects)
     # to avoid conflicts in case of
-    # multiple builds testing against the same REP server.
+    # multiple builds testing against the same HPS server.
     # If tests are run on TFS we create this run_id combining the Agent.Id
     # and Build.BuildId env variables.
     agent_id = os.environ.get("Agent.Id")
