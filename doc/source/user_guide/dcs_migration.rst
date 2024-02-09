@@ -17,13 +17,13 @@ Some key entities that were part of DPS are renamed in JMS:
    * - DPS
      - JMS
    * - Configuration
-     - Job Definition
-   * - Design Point
+     - Job definition
+   * - Design point
      - Job
-   * - Process Step
-     - Task Definition
-   * - Parameter Location
-     - Parameter Mapping
+   * - Process step
+     - Task definition
+   * - Parameter location
+     - Parameter mapping
 
 Other key changes also impact scripts that use the DCS Python Client: 
 
@@ -70,36 +70,6 @@ Similarly, resources like ``Project`` and ``Job`` do not expose API endpoints.
 Instead, objects like ``JmsApi``, ``ProjectApi``, and ``RmsApi`` wrap around HPS REST APIs.
 
 This code shows how to instantiate a ``Client`` object and retrieve projects:
-
-.. .. list-table::
-..    :widths: 1 1
-..    :header-rows: 1
-
-..    *  -  DCS Client
-..       -  PyHPS
-
-..    *  -  .. code-block:: python
-  
-..             from ansys.dcs.client.dps import Client
-
-..             client = Client(
-..                 dcs_url="https://localhost/dcs",
-..                 username="dcadmin",
-..                 password="dcadmin"
-..             )
-..             projects = client.get_projects()
-
-..       -  .. code-block:: python
-
-..             from ansys.rep.client import Client, JmsApi
-
-..             client = Client(
-..                 url="https://localhost:8443/hps",
-..                 username="repadmin",
-..                 password="repadmin"
-..             )
-..             jms_api = JmsApi(client)
-..             projects = jms_api.get_projects()
 
 .. tabs::
 
