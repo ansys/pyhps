@@ -86,12 +86,12 @@ This code shows how to instantiate a ``Client`` object and retrieve projects:
 
    .. code-tab:: python PyHPS
 
-        from ansys.rep.client import Client, JmsApi
+        from ansys.hps.client import Client, JmsApi
 
         client = Client(
             url="https://localhost:8443/hps",
-            username="repadmin",
-            password="repadmin"
+            username="repuser",
+            password="repuser"
         )
         jms_api = JmsApi(client)
         projects = jms_api.get_projects()
