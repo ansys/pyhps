@@ -123,13 +123,6 @@ Design exploration algorithm
    :members:
 
 
-Evaluator
-^^^^^^^^^
-
-.. autoclass:: ansys.hps.client.jms.Evaluator
-   :members:
-
-
 Task definition template
 ^^^^^^^^^^^^^^^^^^^^^^^^
 

@@ -43,6 +43,7 @@ extensions = [
     "sphinx.ext.intersphinx",
     "sphinx_copybutton",
     "sphinx_design",
+    "sphinx_tabs.tabs",
 ]
 
 exclude_patterns = ["_autoapi_templates", "_build", "Thumbs.db", ".DS_Store"]

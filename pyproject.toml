@@ -54,6 +54,7 @@ doc = [
     "sphinx_design==0.5.0",
     "sphinx-jinja==2.0.2",
     "sphinxnotes-strike==1.2.1",
+    "sphinx-tabs==3.4.5",
 ]
 
 build = [
