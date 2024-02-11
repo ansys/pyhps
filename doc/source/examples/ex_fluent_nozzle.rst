@@ -3,7 +3,7 @@
 Fluent nozzle
 =============
 
-This example shows how to submit a Fluent nozzle model for solving on HPS. 
+This example shows how to submit a Fluent nozzle model for solving on Ansys HPC Platform Services. 
 
 .. only:: builder_html
 
@@ -18,9 +18,4 @@ Here is the ``project_setup.py`` script for this example:
     :lines: 23-
     :caption: project_setup.py
 
-The example uses an ``exec_fluent.py`` execution script instead of a solver command line.  
-
-.. literalinclude:: ../../../examples/fluent_nozzle/exec_fluent.py
-    :language: python
-    :lines: 23-
-    :caption: exec_fluent.py
+The example uses an execution script stored server side.

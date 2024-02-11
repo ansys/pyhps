@@ -154,7 +154,7 @@ def test_mapdl_linked_analyses(client):
     for incremental_version in [True, False]:
         project = create_project(
             client,
-            name="Test Linked Analyses",
+            name=f"Test linked analyses (incremental={incremental_version})",
             incremental=incremental_version,
             use_exec_script=False,
             version=ansys_version,
@@ -174,14 +174,14 @@ def test_fluent_2d_heat_exchanger(client):
 
     from examples.fluent_2d_heat_exchanger.project_setup import create_project
 
-    project = create_project(client, name="Fluent Test", version=ansys_version)
+    project = create_project(client, name="Fluent test (command)", version=ansys_version)
     assert project is not None
 
     jms_api = JmsApi(client)
     project_api = ProjectApi(client, project.id)
 
     assert len(project_api.get_jobs()) == 1
-    assert jms_api.get_project(id=project.id).name == "Fluent Test"
+    assert jms_api.get_project(id=project.id).name == "Fluent test (command)"
 
     jms_api.delete_project(project)
 
@@ -191,7 +191,7 @@ def test_fluent_2d_heat_exchanger_with_exec_script(client):
     from examples.fluent_2d_heat_exchanger.project_setup import create_project
 
     project = create_project(
-        client, name="Fluent Test", version=ansys_version, use_exec_script=True
+        client, name="Fluent test (exec script)", version=ansys_version, use_exec_script=True
     )
     assert project is not None
 
@@ -199,7 +199,7 @@ def test_fluent_2d_heat_exchanger_with_exec_script(client):
     project_api = ProjectApi(client, project.id)
 
     assert len(project_api.get_jobs()) == 1
-    assert jms_api.get_project(id=project.id).name == "Fluent Test"
+    assert jms_api.get_project(id=project.id).name == "Fluent test (exec script)"
 
     jms_api.delete_project(project)
 
@@ -208,14 +208,14 @@ def test_fluent_nozzle(client):
 
     from examples.fluent_nozzle.project_setup import create_project
 
-    project = create_project(client, name="Fluent Nozzle Test", num_jobs=1, version=ansys_version)
+    project = create_project(client, name="Fluent nozzle test", num_jobs=1, version=ansys_version)
     assert project is not None
 
     jms_api = JmsApi(client)
     project_api = ProjectApi(client, project.id)
 
     assert len(project_api.get_jobs()) == 1
-    assert jms_api.get_project(id=project.id).name == "Fluent Nozzle Test"
+    assert jms_api.get_project(id=project.id).name == "Fluent nozzle test"
 
     jms_api.delete_project(project)
 
