@@ -38,7 +38,10 @@ class ParameterDefinitionBaseSchema(ObjectSchemaWithModificationInfo):
 
     quantity_name = fields.String(
         allow_none=True,
-        metadata={"description": "Name of the quantity the parameter represents, e.g. Length."},
+        metadata={
+            "description": "Name of the quantity that the parameter represents. "
+            "For example, ``Length``."
+        },
     )
     units = fields.String(allow_none=True, metadata={"description": "Units for the parameter."})
     display_text = fields.String(
@@ -48,8 +51,8 @@ class ParameterDefinitionBaseSchema(ObjectSchemaWithModificationInfo):
     mode = fields.String(
         load_only=True,
         metadata={
-            "description": "Indicates whether it's an input "
-            "or output parameter. Filled server side."
+            "description": "Indicates if it's an input "
+            "or output parameter. The mode is filled server-side."
         },
     )
 
@@ -75,14 +78,14 @@ class FloatParameterDefinitionSchema(ParameterDefinitionBaseSchema):
         },
     )
     cyclic = fields.Bool(
-        allow_none=True, metadata={"description": "Indicates if the parameter is cyclic."}
+        allow_none=True, metadata={"description": "Whether the parameter is cyclic."}
     )
     value_list = fields.List(
         fields.Float(),
         allow_none=True,
         metadata={
-            "description": "A list of allowed values, alternative "
-            "to providing upper and lower limits."
+            "description": "List of allowed values. This parameter provides an alternative "
+            "to specifying upper and lower limits."
         },
     )
 
@@ -99,9 +102,9 @@ class IntParameterDefinitionSchema(ParameterDefinitionBaseSchema):
     upper_limit = fields.Integer(
         allow_none=True, metadata={"description": "Upper bound for the parameter value."}
     )
-    step = fields.Integer(allow_none=True, metadata={"description": "Equal to 1 by default."})
+    step = fields.Integer(allow_none=True, metadata={"description": "The default is ``1``."})
     cyclic = fields.Bool(
-        allow_none=True, metadata={"description": "Indicates if the parameter is cyclic."}
+        allow_none=True, metadata={"description": "Whether the parameter is cyclic."}
     )
 
 
@@ -120,7 +123,7 @@ class StringParameterDefinitionSchema(ParameterDefinitionBaseSchema):
     type = fields.Constant("string")
     default = fields.String(allow_none=True, metadata={"description": "Default parameter value."})
     value_list = fields.List(
-        fields.String(), allow_none=True, metadata={"description": "A list of allowed values."}
+        fields.String(), allow_none=True, metadata={"description": "List of allowed values."}
     )
 
 

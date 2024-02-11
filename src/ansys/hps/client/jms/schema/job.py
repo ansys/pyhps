@@ -52,15 +52,18 @@ class JobSchema(ObjectSchemaWithModificationInfo):
         allow_none=False,
         attribute="job_definition_id",
         referenced_class="JobDefinition",
-        metadata={"description": "ID of the linked job definition, " "see :class:`JobDefinition`."},
+        metadata={
+            "description": "ID of the linked job definition. "
+            "For more information, see the :class:`JobDefinition` class."
+        },
     )
 
     priority = fields.Integer(
         allow_none=True,
         metadata={
-            "description": "Priority with which jobs are evaluated. The default is 0, "
-            "which is the highest priority. Assigning a higher value to a job "
-            "makes it a lower priority."
+            "description": "Priority for evaluating the job. "
+            "The default is ``0``, which is the highest priority. "
+            "Assigning a higher value to a job makes it a lower priority."
         },
     )
     values = fields.Dict(
@@ -80,32 +83,33 @@ class JobSchema(ObjectSchemaWithModificationInfo):
             "description": "Dictionary with (name,value) pairs for all fitness terms computed."
         },
     )
-    note = fields.String(allow_none=True, metadata={"description": "Optional note for this job."})
+    note = fields.String(allow_none=True, metadata={"description": "Note for the job."})
     creator = fields.String(
-        allow_none=True, metadata={"description": "Optional name/ID of the creator of this job."}
+        allow_none=True,
+        metadata={"description": "Additional information about the creator of the job."},
     )
 
     executed_level = fields.Integer(
         allow_none=True,
         metadata={
-            "description": "Execution level of the last executed "
-            "task (-1 if none has been executed yet)."
+            "description": "Execution level of the last executed task. "
+            "A value of ``-1`` indicates that no task has been executed yet."
         },
     )
 
     elapsed_time = fields.Float(
         load_only=True,
-        metadata={"description": "Number of seconds it took the evaluator(s) to update the job."},
+        metadata={"description": "Number of seconds it took the evaluators to update the job."},
     )
 
     host_ids = fields.List(
         fields.String(allow_none=True),
         allow_none=True,
-        metadata={"description": "List of Host IDs of the evaluators that updated the job."},
+        metadata={"description": "List of host IDs of the evaluators that updated the job."},
     )
     file_ids = IdReferenceList(
         referenced_class="File",
         attribute="file_ids",
         load_only=True,
-        metadata={"description": "List of IDs of all files of this job."},
+        metadata={"description": "List of IDs of all files of the job."},
     )

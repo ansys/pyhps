@@ -30,8 +30,8 @@ class LicenseContextSchema(BaseSchema):
         pass
 
     context_id = fields.String(
-        allow_none=True, load_only=True, metadata={"description": "License context ID"}
+        allow_none=True, load_only=True, metadata={"description": "License context ID."}
     )
     environment = fields.Dict(
-        allow_none=True, metadata={"description": "License context environment dict"}
+        allow_none=True, metadata={"description": "License context environment dict."}
     )

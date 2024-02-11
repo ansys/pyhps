@@ -39,7 +39,7 @@ class JobSelectionSchema(ObjectSchemaWithModificationInfo):
         attribute="algorithm_id",
         referenced_class="DesignExplorationAlgorithm",
         metadata={
-            "description": "ID of the :class:`Algorithm` " "the selection belongs to (optional)."
+            "description": "ID of the :class:`Algorithm` instance that the selection belongs to."
         },
     )
     object_ids = IdReferenceList(

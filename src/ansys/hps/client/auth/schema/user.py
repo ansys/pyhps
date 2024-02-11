@@ -39,9 +39,9 @@ class UserSchema(BaseSchema):
     username = fields.Str(metadata={"description": "Username."})
     password = fields.Str(dump_only=True, metadata={"description": "Password."})
     firstName = fields.Str(
-        allow_none=True, metadata={"description": "First name"}, attribute="first_name"
+        allow_none=True, metadata={"description": "First name."}, attribute="first_name"
     )
     lastName = fields.Str(
-        allow_none=True, metadata={"description": "Last name"}, attribute="last_name"
+        allow_none=True, metadata={"description": "Last name."}, attribute="last_name"
     )
-    email = fields.Str(allow_none=True, metadata={"description": "E-mail address (optional)."})
+    email = fields.Str(allow_none=True, metadata={"description": "E-mail address."})

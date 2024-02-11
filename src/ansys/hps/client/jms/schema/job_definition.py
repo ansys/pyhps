@@ -36,13 +36,8 @@ class JobDefinitionSchema(ObjectSchemaWithModificationInfo):
     class Meta(ObjectSchemaWithModificationInfo.Meta):
         pass
 
-    name = fields.String(allow_none=True, metadata={"description": "Name of the job definition"})
-    active = fields.Boolean(
-        metadata={
-            "description": "Defines whether this is the active job definition in the "
-            "project where evaluators will evaluate pending jobs"
-        }
-    )
+    name = fields.String(allow_none=True, metadata={"description": "Name of the job definition."})
+    active = fields.Boolean(metadata={"description": "Whether this job definition is active."})
     client_hash = fields.String(allow_none=True)
 
     parameter_definition_ids = IdReferenceList(

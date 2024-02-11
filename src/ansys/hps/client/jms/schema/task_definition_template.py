@@ -39,13 +39,16 @@ class TemplatePropertySchema(BaseSchema):
     type = fields.String(
         allow_none=True,
         validate=validate.OneOf(["int", "float", "bool", "string"]),
-        metadata={"description": "Type of the property: either int, float, bool or string."},
+        metadata={
+            "description": "Type of the property. "
+            "Options are ``bool``, ``float``, ``int``, and ``string``."
+        },
     )
     value_list = fields.Raw(
         allow_none=True,
         dump_default=[],
         load_default=[],
-        metadata={"many": True, "description": "List of possible values for this property."},
+        metadata={"many": True, "description": "List of possible values for the property."},
     )
 
 
@@ -70,16 +73,17 @@ class TemplateFileSchema(BaseSchema):
 
     name = fields.String(metadata={"description": "Name of the file."})
     type = fields.String(
-        allow_none=True, metadata={"description": "MIME type of the file, ie. text/plain."}
+        allow_none=True,
+        metadata={"description": "MIME type of the file. For example, ``text/plain``."},
     )
     evaluation_path = fields.String(
         allow_none=True,
         metadata={
-            "description": "Path under which the file is expected to be found during evaluation."
+            "description": "Path that the file is expected to be found under during evaluation."
         },
     )
     description = fields.String(metadata={"description": "Description of the file's purpose."})
-    required = fields.Bool(metadata={"description": "Is the file required by the task"})
+    required = fields.Bool(metadata={"description": "Whether the file is required by the task."})
 
 
 class TemplateInputFileSchema(TemplateFileSchema):
@@ -88,10 +92,10 @@ class TemplateInputFileSchema(TemplateFileSchema):
 
 class TemplateOutputFileSchema(TemplateFileSchema):
     monitor = fields.Bool(
-        allow_none=True, metadata={"description": "Should the file's contents be live monitored."}
+        allow_none=True, metadata={"description": "Whether to live monitor the file's contents."}
     )
     collect = fields.Bool(
-        allow_none=True, metadata={"description": "Should files be collected per job."}
+        allow_none=True, metadata={"description": "Whether to collect files per job."}
     )
 
 
@@ -102,32 +106,35 @@ class TaskDefinitionTemplateSchema(ObjectSchema):
     modification_time = fields.DateTime(
         allow_none=True,
         load_only=True,
-        metadata={"description": "Last time the object was modified, in UTC."},
+        metadata={
+            "description": "Last time in UTC (Coordinated Universal Time) "
+            "that the object was modified."
+        },
     )
     creation_time = fields.DateTime(
         allow_none=True,
         load_only=True,
-        metadata={"description": "Time when the object was created, in UTC."},
+        metadata={"description": "Time in UTC when the object was created."},
     )
 
-    name = fields.String(metadata={"description": "Name of the template"})
-    version = fields.String(metadata={"description": "Version of the template"}, allow_none=True)
+    name = fields.String(metadata={"description": "Name of the template."})
+    version = fields.String(metadata={"description": "Version of the template."}, allow_none=True)
     description = fields.String(
-        metadata={"description": "Description of the template"}, allow_none=True
+        metadata={"description": "Description of the template."}, allow_none=True
     )
 
     software_requirements = fields.Nested(
         SoftwareSchema,
         many=True,
         allow_none=True,
-        metadata={"description": "A list of required software."},
+        metadata={"description": "List of required software."},
     )
     resource_requirements = fields.Nested(
         TemplateResourceRequirementsSchema,
         allow_none=True,
         metadata={
-            "description": "Includes hardware requirements such as number of cores,"
-            " memory and disk space."
+            "description": "Hardware requirements such as the number of cores, "
+            "memory, and disk space."
         },
     )
 
@@ -135,23 +142,28 @@ class TaskDefinitionTemplateSchema(ObjectSchema):
         keys=fields.String,
         values=fields.Nested(TemplatePropertySchema),
         allow_none=True,
-        metadata={"description": "Additional arguments to pass to the executing command."},
+        metadata={
+            "description": "Dictionary of additional arguments to pass to the executing command."
+        },
     )
     environment = fields.Dict(
         keys=fields.String,
         values=fields.Nested(TemplatePropertySchema),
         allow_none=True,
-        metadata={"description": "Environment variables to set for the executed process."},
+        metadata={
+            "description": "Dictionary of environment variables to set for the executed process."
+        },
     )
 
     execution_command = fields.String(
         allow_none=True,
-        metadata={"description": "Command to execute (command or execution script is required)."},
+        metadata={"description": "Command to execute. A command or execution script is required."},
     )
     use_execution_script = fields.Bool(
         allow_none=True,
         metadata={
-            "description": "Whether to run task with the execution command or the execution script."
+            "description": "Whether to run the task with the execution script "
+            "or the execution command."
         },
     )
     execution_script_storage_id = fields.String(
