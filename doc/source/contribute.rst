@@ -44,22 +44,14 @@ Installing PyHPS in developer mode allows you to modify and enhance the source:
 
       # Activate it in Windows Powershell
       .venv\Scripts\Activate.ps1
-  
-#. Ensure that you have the latest required build system and documentation,
-   testing, and CI tools:
+
+#. Install the package in editable mode with the required build system, documentation,
+   and testing tools:
 
    .. code:: bash
 
       python -m pip install -U pip setuptools tox
-      python -m pip install -r requirements/requirements_build.txt
-      python -m pip install -r requirements/requirements_doc.txt
-      python -m pip install -r requirements/requirements_tests.txt
-
-#. Install the project in editable mode:
-
-   .. code:: bash
-
-      python -m pip install --editable .
+      python -m pip install --editable .[tests,doc]
 
 #. Verify your development installation:
 
@@ -149,6 +141,17 @@ the building requirements and then executing the build module:
     python -m build
     python -m twine check dist/*
 
+
+Generate or update JMS resources
+--------------------------------
+
+To generate Job Management Service (JMS) resources from the corresponding schemas, run this command::
+
+  python generate_resources.py
+
+To apply code styling standards to the generated code, run this command::
+  
+  pre-commit run --all-files
 
 Generate or update RMS models
 -----------------------------
