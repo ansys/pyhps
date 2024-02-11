@@ -64,7 +64,6 @@ def archive_examples():
         ],
         "fluent_nozzle": [
             "project_setup.py",
-            "exec_fluent.py",
             "solve.jou",
             "nozzle.cas",
         ],
