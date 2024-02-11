@@ -22,6 +22,7 @@
 """PyHPS RMS subpackage."""
 from .api.rms_api import RmsApi
 from .models import (
+    ClusterInfo,
     ComputeResourceSet,
     EvaluatorConfiguration,
     EvaluatorConfigurationUpdate,
