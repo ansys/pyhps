@@ -4,13 +4,13 @@ repos:
   rev: 22.3.0
   hooks:
   - id: black
-    exclude: ^(src/ansys/hps/client/jms/resource/|src/ansys/hps/client/auth/resource/|src/ansys/hps/client/rms/models.py)
+    exclude: ^(src/ansys/hps/client/rms/models.py)
 
 - repo: https://github.com/pycqa/isort
   rev: 5.11.5
   hooks:
   - id: isort
-    exclude: ^(src/ansys/hps/client/jms/resource/|src/ansys/hps/client/auth/resource/)
+    # exclude: ^(src/ansys/hps/client/jms/resource/|src/ansys/hps/client/auth/resource/)
 
 - repo: https://github.com/PyCQA/flake8
   rev: 5.0.4
