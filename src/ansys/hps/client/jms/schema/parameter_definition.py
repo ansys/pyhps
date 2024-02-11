@@ -51,7 +51,7 @@ class ParameterDefinitionBaseSchema(ObjectSchemaWithModificationInfo):
     mode = fields.String(
         load_only=True,
         metadata={
-            "description": "Indicates if it's an input "
+            "description": "Indicates whether it's an input "
             "or output parameter. The mode is filled server-side."
         },
     )

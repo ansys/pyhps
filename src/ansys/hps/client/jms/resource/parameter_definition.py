@@ -79,7 +79,7 @@ class FloatParameterDefinition(ParameterDefinition):
     display_text : str, optional
         Text to display as the parameter name.
     mode : str
-        Indicates if it's an input or output parameter. The mode is filled server-side.
+        Indicates whether it's an input or output parameter. The mode is filled server-side.
     type : str
     default : float, optional
         Default parameter value.
@@ -168,7 +168,7 @@ class IntParameterDefinition(ParameterDefinition):
     display_text : str, optional
         Text to display as the parameter name.
     mode : str
-        Indicates if it's an input or output parameter. The mode is filled server-side.
+        Indicates whether it's an input or output parameter. The mode is filled server-side.
     type : str
     default : int, optional
         Default parameter value.
@@ -253,7 +253,7 @@ class BoolParameterDefinition(ParameterDefinition):
     display_text : str, optional
         Text to display as the parameter name.
     mode : str
-        Indicates if it's an input or output parameter. The mode is filled server-side.
+        Indicates whether it's an input or output parameter. The mode is filled server-side.
     type : str
     default : bool, optional
         Default parameter value.
@@ -322,7 +322,7 @@ class StringParameterDefinition(ParameterDefinition):
     display_text : str, optional
         Text to display as the parameter name.
     mode : str
-        Indicates if it's an input or output parameter. The mode is filled server-side.
+        Indicates whether it's an input or output parameter. The mode is filled server-side.
     type : str
     default : str, optional
         Default parameter value.
