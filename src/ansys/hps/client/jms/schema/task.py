@@ -133,3 +133,8 @@ class TaskSchema(ObjectSchemaWithModificationInfo):
         allow_none=True,
         metadata={"description": "Dictionary type field for storing custom data."},
     )
+
+    working_directory = fields.String(
+        allow_none=True,
+        metadata={"description": "Working directory of the task."},
+    )
