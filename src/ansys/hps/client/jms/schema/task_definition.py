@@ -33,8 +33,8 @@ class SoftwareSchema(BaseSchema):
     class Meta(BaseSchema.Meta):
         pass
 
-    name = fields.String(metadata={"description": "Application's name."})
-    version = fields.String(allow_none=True, metadata={"description": "Application's version."})
+    name = fields.String(metadata={"description": "Name of the app."})
+    version = fields.String(allow_none=True, metadata={"description": "Version of the app."})
 
 
 class HpcResourcesSchema(BaseSchema):
@@ -49,9 +49,11 @@ class HpcResourcesSchema(BaseSchema):
     )
     exclusive = fields.Bool(
         allow_none=True,
-        metadata={"description": "When set, a job can't share resources with other running jobs."},
+        metadata={"description": "Whether a job can't share resources with other running jobs."},
     )
-    queue = fields.Str(allow_none=True, metadata={"description": "Name of job scheduler queue."})
+    queue = fields.Str(
+        allow_none=True, metadata={"description": "Name of the job scheduler queue."}
+    )
 
 
 class ResourceRequirementsSchema(BaseSchema):
@@ -60,7 +62,9 @@ class ResourceRequirementsSchema(BaseSchema):
 
     platform = fields.String(
         allow_none=True,
-        metadata={"description": "Basic platform information: 'windows' or 'linux'."},
+        metadata={
+            "description": "Basic platform information. Options are ``'linux'`` and ``'windows'``."
+        },
     )
     memory = fields.Int(allow_none=True, metadata={"description": "Amount of RAM in bytes."})
     num_cores = fields.Float(allow_none=True, metadata={"description": "Number of cores."})
@@ -68,16 +72,17 @@ class ResourceRequirementsSchema(BaseSchema):
         allow_none=True, metadata={"description": "Amount of disk space in bytes."}
     )
     distributed = fields.Bool(
-        allow_none=True, metadata={"description": "Enable distributed parallel processing."}
+        allow_none=True,
+        metadata={"description": "Whether to enable distributed parallel processing."},
     )
     custom = fields.Dict(
         allow_none=True,
         keys=fields.Str(),
         values=RestrictedValue(),
-        metadata={"description": "Custom resource requirements."},
+        metadata={"description": "Dictionary of custom resource requirements."},
     )
     hpc_resources = fields.Nested(
-        HpcResourcesSchema, allow_none=True, metadata={"description": "HPC requirements"}
+        HpcResourcesSchema, allow_none=True, metadata={"description": "HPC resource requirements."}
     )
 
 
@@ -88,33 +93,33 @@ class SuccessCriteriaSchema(BaseSchema):
     return_code = fields.Int(
         allow_none=True,
         metadata={
-            "description": "The process exit code that must be returned by the executed command."
+            "description": "Process exit code that must be returned by the executed command."
         },
     )
     expressions = fields.List(
         fields.String(),
         allow_none=True,
-        metadata={"description": "A list of expressions to be evaluated."},
+        metadata={"description": "List of expressions to evaluate."},
     )
 
     required_output_file_ids = IdReferenceList(
         "File",
         attribute="required_output_file_ids",
         allow_none=True,
-        metadata={"description": "List of IDs of required output files."},
+        metadata={"description": "List of IDs of the required output files."},
     )
     require_all_output_files = fields.Bool(
-        allow_none=True, metadata={"description": "Flag to require all output files."}
+        allow_none=True, metadata={"description": "Whether to require all output files."}
     )
 
     required_output_parameter_ids = IdReferenceList(
         "ParameterDefinition",
         attribute="required_output_parameter_ids",
         allow_none=True,
-        metadata={"description": "List of names of required output parameters."},
+        metadata={"description": "List of names of the required output parameters."},
     )
     require_all_output_parameters = fields.Bool(
-        allow_none=True, metadata={"description": "Flag to require all output parameters."}
+        allow_none=True, metadata={"description": "Whether to require all output parameters."}
     )
 
 
@@ -125,7 +130,7 @@ class LicensingSchema(BaseSchema):
     enable_shared_licensing = fields.Bool(
         allow_none=True,
         metadata={
-            "description": "Whether to enable shared licensing contexts for Ansys simulations"
+            "description": "Whether to enable shared licensing contexts for Ansys simulations."
         },
     )
 
@@ -138,30 +143,31 @@ class TaskDefinitionSchema(ObjectSchemaWithModificationInfo):
 
     execution_command = fields.String(
         allow_none=True,
-        metadata={"description": "Command to execute (command or execution script is required)."},
+        metadata={"description": "Command to execute. A command or execution script is required."},
     )
     use_execution_script = fields.Bool(
         allow_none=True,
         metadata={
-            "description": "Whether to run task with the execution command or the execution script."
+            "description": "Whether to run the task with the execution script "
+            "or the execution command."
         },
     )
     execution_script_id = IdReference(
         referenced_class="File",
         allow_none=True,
-        metadata={"description": "Script to execute (command or execution script is required)."},
+        metadata={"description": "Script to execute. A command or execution script is required."},
     )
 
-    execution_level = fields.Int(metadata={"description": "Define execution level for this task."})
+    execution_level = fields.Int(metadata={"description": "Execution level for the task."})
     execution_context = fields.Dict(
         allow_none=True,
-        metadata={"description": "Additional arguments to pass to the executing command"},
+        metadata={"description": "Additional arguments to pass to the executing command."},
         keys=fields.Str(),
         values=RestrictedValue(),
     )
     environment = fields.Dict(
         allow_none=True,
-        metadata={"description": "Environment variables to set for the executed process"},
+        metadata={"description": "Environment variables to set for the executed process."},
         keys=fields.Str(),
         values=fields.Str(),
     )
@@ -169,11 +175,12 @@ class TaskDefinitionSchema(ObjectSchemaWithModificationInfo):
         allow_none=True, metadata={"description": "Maximum time in seconds for executing the task."}
     )
     num_trials = fields.Int(
-        allow_none=True, metadata={"description": "Maximum number of attempts to execute the task."}
+        allow_none=True,
+        metadata={"description": "Maximum number of attempts for executing the task."},
     )
     store_output = fields.Bool(
         allow_none=True,
-        metadata={"description": "Specify whether to store the standard output of the task."},
+        metadata={"description": "Whether to store the standard output of the task."},
     )
 
     input_file_ids = IdReferenceList(
@@ -194,17 +201,17 @@ class TaskDefinitionSchema(ObjectSchemaWithModificationInfo):
     licensing = fields.Nested(
         LicensingSchema,
         allow_none=True,
-        metadata={"description": "A :class:`Licensing` object."},
+        metadata={"description": ":class:`Licensing` object."},
     )
 
     software_requirements = fields.Nested(
         SoftwareSchema,
         many=True,
         allow_none=True,
-        metadata={"description": "A list of :class:`Software` objects."},
+        metadata={"description": "List of :class:`Software` objects."},
     )
     resource_requirements = fields.Nested(
         ResourceRequirementsSchema,
         allow_none=True,
-        metadata={"description": "A :class:`ResourceRequirements` object."},
+        metadata={"description": ":class:`ResourceRequirements` object."},
     )

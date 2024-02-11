@@ -52,8 +52,8 @@ class ParameterMappingSchema(ObjectSchemaWithModificationInfo):
         attribute="parameter_definition_id",
         referenced_class="ParameterDefinition",
         metadata={
-            "description": "ID of the linked parameter definition, "
-            "see :class:`ParameterDefinition`."
+            "description": "ID of the linked parameter definition. "
+            "For more information, see the :class:`ParameterDefinition` class."
         },
     )
     task_definition_property = fields.String(allow_none=True)

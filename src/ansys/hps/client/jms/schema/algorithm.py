@@ -40,8 +40,8 @@ class AlgorithmSchema(ObjectSchemaWithModificationInfo):
     data = fields.String(
         allow_none=True,
         metadata={
-            "description": "Generic string field to hold arbitrary algorithm configuration data,"
-            " e.g. as JSON dictionary.",
+            "description": "Generic string field to hold arbitrary algorithm configuration data. "
+            "For example, as a JSON dictionary.",
         },
     )
     job_ids = IdReferenceList("Job", attribute="jobs", metadata={"description": "List of job IDs."})

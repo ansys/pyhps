@@ -39,20 +39,23 @@ class ProjectSchema(BaseSchema):
     active = fields.Bool(
         metadata={"description": "Defines whether the project is active for evaluation."}
     )
-    priority = fields.Int(metadata={"description": "Priority to pick the project for evaluation."})
+    priority = fields.Int(
+        metadata={"description": "Priority for picking the project for evaluation."}
+    )
 
     creation_time = fields.DateTime(
         allow_none=True,
         load_only=True,
-        metadata={"description": "The date and time the project was created."},
+        metadata={"description": "Date and time that the project was created."},
     )
     modification_time = fields.DateTime(
         allow_none=True,
         load_only=True,
-        metadata={"description": "The date and time the project was last modified."},
+        metadata={"description": "Date and time that the project was last modified."},
     )
 
     statistics = fields.Dict(
         load_only=True,
-        metadata={"description": "Optional dictionary containing various project statistics."},
+        allow_none=True,
+        metadata={"description": "Dictionary containing various project statistics."},
     )

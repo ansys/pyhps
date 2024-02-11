@@ -30,12 +30,17 @@ class PermissionSchema(BaseSchema):
         pass
 
     permission_type = fields.String(
-        required=True, metadata={"description": "Either 'user', 'group', or 'anyone'."}
+        required=True,
+        metadata={
+            "description": "Permission type. Options are ``'anyone'``, ``'group'``, and ``'user'``."
+        },
     )
-    value_id = fields.String(
-        allow_none=True, metadata={"description": "Can be the ID of a user or group."}
-    )
+    value_id = fields.String(allow_none=True, metadata={"description": "ID of a user or group."})
     value_name = fields.String(allow_none=True)
     role = fields.String(
-        required=True, metadata={"description": "Either 'admin', 'writer',  or 'reader'."}
+        required=True,
+        metadata={
+            "description": "Role of the user. "
+            "Options are ``'admin'``, ``'reader'``, and ``'writer'``."
+        },
     )
