@@ -1,0 +1,98 @@
+name: 🐞 Bug
+description: Fill a bug report here
+title: "Bug located in ..."
+labels: ["bug"]
+assignees: [""]
+
+body:
+  - type: textarea
+    id: bug-description
+    attributes:
+      label: '🐞 Description of the bug'
+      placeholder: Describe what bug you encountered and what should have happened.
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps-to-reproduce
+    attributes:
+      label: '📝 Steps to reproduce'
+      placeholder: Please write the steps to reproduce the issue.
+    validations:
+      required: true
+      
+  - type: textarea
+    id: installed-packages
+    attributes:
+      label: '📦 Installed packages and configuration'
+      description: Describe the configuration (OS and packages that are being used)
+      placeholder: "Example : OS, package-lock.json..."
+    validations:
+      required: true
+
+  - type: dropdown
+    id: severity
+    attributes:
+      label: '🚦 Defines the severity of the bug. In the case of class-3, [specific information must be added](https://github.com/ansys-internal/QP-2-Template/blob/main/.github/ISSUE_TEMPLATE/class3.md)'
+      options:
+        - "Class 1 - Crash/Major data loss"
+        - "Class 2 - Serious problem"
+        - "Class 2 - Minor problem"
+        - "Class 3 - Hidden error"
+      default: 0
+    validations:
+      required: true
+
+  - type: input
+    id: support-ticket-ID
+    attributes:
+      label: '📦 Support ticket ID'
+      description: Give the CRM ticket ID if it's not an internal defect.
+      placeholder: 
+    validations:
+      required: false
+
+  - type: input
+    id: found-in
+    attributes:
+      label: '🐞 Found in'
+      description: Give the version number the bug has been found.
+      placeholder: 
+    validations:
+      required: false
+
+  - type: input
+    id: fixed-in
+    attributes:
+      label: '🩹 Fixed in'
+      description: Give the version number the bug has been fixed.
+      placeholder: 
+    validations:
+      required: false
+
+  - type: textarea
+    id: root-cause
+    attributes:
+      label: 'Root cause'
+      description: Provide the cause of the bug.
+      placeholder: 
+    validations:
+      required: false
+
+  - type: checkboxes
+    id: third-party
+    attributes:
+      label: Third Party
+      description: 
+      options:
+        - label: This bug is introduced by a third party
+
+  - type: checkboxes
+    id: bug-released
+    attributes:
+      label: Released Bug
+      description: 
+      options:
+        - label: This bug is in a released product
+
+

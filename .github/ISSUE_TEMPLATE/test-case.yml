@@ -1,0 +1,47 @@
+name: 🧪 Test Case
+description: Description of a test scenario covering a story or a feature.
+title: 'Add...'
+labels: ["test case"]
+assignees: [""]
+
+body:
+  - type: textarea
+    id: description
+    attributes:
+      label: "📝 Description"
+      description: "Provide a clear and concise description of the test case."
+      placeholder: "Enter the description here"
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps-to-reproduce
+    attributes:
+      label: "📜 Steps"
+      description: "List the detailed actions to reproduce the test scenario."
+      placeholder: "1. Step 1..."
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected-results
+    attributes:
+      label: "🧪 Expected Results"
+      description: "Describe the expected outcome or behavior at the end of the test case."
+      placeholder: "Enter the expected results here"
+    validations:
+      required: true
+
+  - type: textarea
+    id: test-data
+    attributes:
+      label: "📁 Test Data"
+      description: "Mention any specific data or inputs required for this test case."
+      placeholder: "- Data 1..."
+
+  - type: textarea
+    id: related-issues
+    attributes:
+      label: "🔗 Related Issues"
+      description: "Link to any related stories, features or pull requests, if applicable."
+      placeholder: "- Issue 1..."

@@ -1,7 +1,7 @@
 name: 💡 New feature
-description: Enhancement Request
+description: features should define complete functionality that is testable and capable of adding value for the customer when shipped
 title: "Add ..."
-labels: ["enhancement"]
+labels: ["feature"]
 assignees: [""]
 
 body:
@@ -10,14 +10,23 @@ body:
     id: feature-description
     attributes:
       label: '📝 Description of the feature'
-      placeholder: Describe the feature that you want to be added
+      placeholder: Describe the feature and why it is useful for the project
     validations:
       required: true
 
   - type: textarea
-    id: implementation-description
+    id: acceptanceCriteria
     attributes:
-      label: '💡 Steps for implementing the feature'
+      label: Acceptance Criteria
+      description: List the criteria that must be met for the story to be considered complete.
+      placeholder: "- Given [context], when [action], then [outcome]"
+    validations:
+      required: true
+
+  - type: textarea
+    id: business-value
+    attributes:
+      label: '💵 Business Value'
     validations:
       required: false
 

@@ -1,0 +1,52 @@
+name: 📖 User Story
+description: Stories are pieces of work done in one iteration, they can be of several types, technical, functional...
+title: "[User Story]: <Title of the user story>"
+labels: ["story"]
+body:
+  - type: textarea
+    id: description
+    attributes:
+      label: User Story Description
+      description: Describe the user story in detail, including the desired outcome.
+      placeholder: "As a [type of user], I want [an action] so that [a benefit/a value]"
+    validations:
+      required: true
+
+  - type: textarea
+    id: acceptanceCriteria
+    attributes:
+      label: Acceptance Criteria
+      description: List the criteria that must be met for the story to be considered complete.
+      placeholder: "- Given [context], when [action], then [outcome]"
+    validations:
+      required: true
+
+  - type: textarea
+    id: notes
+    attributes:
+      label: Additional Links
+      description: Links to Test Cases / Features / Other User Stories
+      placeholder: "[Issue #1](https://github.com/ansys-internal/QP-2-Template)"
+    validations:
+      required: false
+
+  - type: dropdown
+    id: third-party
+    attributes:
+      label: Requires new or update to third party ? If "yes" add the name(s) and the version(s) of the Third Party Software.
+      options:
+        - "No"
+        - "Yes, new"
+        - "Yes, update"
+      default: 0
+    validations:
+      required: true
+
+  - type: textarea
+    id: third-party-desc
+    attributes:
+      label: Name and Version for Third Parties
+      description: Name and version of the integrated third party software components
+      placeholder:
+    validations:
+      required: false

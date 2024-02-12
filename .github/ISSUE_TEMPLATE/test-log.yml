@@ -1,0 +1,50 @@
+name: 📊 Test Log
+description: "Template for logging the results of a manually executed test case."
+title: "[Test Log]: <Test Name>"
+labels: ["test log"]
+assignees: [""]
+
+body:
+  - type: input
+    id: related-issues
+    attributes:
+      label: "🔗 Related Test Case"
+      description: "Link to the Test Case this manual result is created from."
+      placeholder: "- Issue 1..."
+    validations:
+      required: true
+
+  - type: textarea
+    id: test-results
+    attributes:
+      label: "📊 Test Results"
+      description: "Log the results of each test step in the form of a table. Use `|` to separate columns and `-` for table headers."
+      placeholder: "| Test Step | Expected Result | Actual Result | Status |\n|-----------|-----------------|---------------|--------|\n| Step 1    | Expected 1      | Actual 1      | Pass   |\n| Step 2    | Expected 2      | Actual 2      | Fail   |"
+    validations:
+      required: true
+
+  - type: textarea
+    id: build-name
+    attributes:
+      label: "Build Tested"
+      description: "Name/Number of the build the test has been executed"
+      placeholder: "Enter the build number here and configuration information"
+    validations:
+      required: true
+
+  - type: textarea
+    id: platform
+    attributes:
+      label: "Platform"
+      description: "OS and version, Browser and version, Job scheduler and versions as relevant"
+      placeholder: "Example : Windows Server 22/Red Hat 8.6...Chrome v117"
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: overall-test-passed
+    attributes:
+      label: Overall result
+      description: 
+      options:
+        - label: Test passed
