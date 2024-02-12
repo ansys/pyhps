@@ -33,7 +33,6 @@ from ansys.hps.client.jms import (
     JmsApi,
     Job,
     JobDefinition,
-    Licensing,
     Project,
     ProjectApi,
     ResourceRequirements,
@@ -61,9 +60,9 @@ def create_project(client, name, num_jobs=20, version=__ansys_apps_version__):
     files = []
     files.append(
         File(
-            name="inp",
+            name="case",
             evaluation_path="nozzle.cas",
-            type="text/plain",
+            type="application/octet-stream",
             src=os.path.join(cwd, "nozzle.cas"),
         )
     )
@@ -73,15 +72,6 @@ def create_project(client, name, num_jobs=20, version=__ansys_apps_version__):
             evaluation_path="solve.jou",
             type="text/plain",
             src=os.path.join(cwd, "solve.jou"),
-        )
-    )
-
-    files.append(
-        File(
-            name="exec_fluent",
-            evaluation_path="exec_fluent.py",
-            type="application/x-python-code",
-            src=os.path.join(cwd, "exec_fluent.py"),
         )
     )
 
@@ -138,30 +128,31 @@ def create_project(client, name, num_jobs=20, version=__ansys_apps_version__):
     log.debug("=== JobDefinition with simulation workflow and parameters")
     job_def = JobDefinition(name="JobDefinition.1", active=True)
 
+    exec_script_file = project_api.copy_default_execution_script(
+        f"fluent-v{version[2:4]}{version[6]}-exec_fluent.py"
+    )
+
     # Task definition
-    num_input_files = 3
+    num_input_files = 2
     task_def = TaskDefinition(
-        name="Fluent_run",
+        name="Fluent Run",
         software_requirements=[
             Software(name="Ansys Fluent", version=version),
         ],
         execution_command=None,  # Only execution currently supported
+        use_execution_script=True,
+        execution_script_id=exec_script_file.id,
         resource_requirements=ResourceRequirements(
-            num_cores=1.0,
-            memory=250,
-            disk_space=5,
+            num_cores=4,
+            distributed=True,
         ),
         execution_level=0,
         execution_context={
-            "fluent_dimension": "3d",
-            "fluent_precision": "dp",
-            "fluent_meshing": False,
-            "fluent_numGPGPUsPerMachine": 0,
-            "fluent_MPIType": "intel",
-            "fluent_otherEnvironment": "{}",
-            "fluent_useGUI": False,
+            "dimension": "3d",
+            "double_precision": True,
+            "mode": "solution",
         },
-        max_execution_time=50.0,
+        max_execution_time=120.0,
         num_trials=1,
         input_file_ids=[f.id for f in files[:num_input_files]],
         output_file_ids=[f.id for f in files[num_input_files:]],
@@ -174,12 +165,7 @@ def create_project(client, name, num_jobs=20, version=__ansys_apps_version__):
             ],
             require_all_output_files=False,
         ),
-        licensing=Licensing(enable_shared_licensing=False),  # Shared licensing disabled by default
     )
-
-    task_def.use_execution_script = True
-    task_def.execution_command = None
-    task_def.execution_script_id = file_ids["exec_fluent"]
 
     task_defs = [task_def]
     task_defs = project_api.create_task_definitions(task_defs)
@@ -203,9 +189,8 @@ def create_project(client, name, num_jobs=20, version=__ansys_apps_version__):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("-n", "--name", type=str, default="fluent_nozzle")
+    parser.add_argument("-n", "--name", type=str, default="Fluent nozzle")
     parser.add_argument("-j", "--num-jobs", type=int, default=1)
-    parser.add_argument("-es", "--use-exec-script", default=True, action="store_true")
     parser.add_argument("-U", "--url", default="https://127.0.0.1:8443/hps")
     parser.add_argument("-u", "--username", default="repuser")
     parser.add_argument("-p", "--password", default="repuser")

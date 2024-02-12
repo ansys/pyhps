@@ -81,6 +81,8 @@ class Task(Object):
         ID of the license context in use.
     custom_data : dict, optional
         Dictionary type field for storing custom data.
+    working_directory : str, optional
+        Working directory of the task.
     """
 
     class Meta:
@@ -113,6 +115,7 @@ class Task(Object):
         owned_file_ids=missing,
         license_context_id=missing,
         custom_data=missing,
+        working_directory=missing,
         **kwargs
     ):
         self.id = id
@@ -139,6 +142,7 @@ class Task(Object):
         self.owned_file_ids = owned_file_ids
         self.license_context_id = license_context_id
         self.custom_data = custom_data
+        self.working_directory = working_directory
 
         self.obj_type = self.__class__.__name__
 
