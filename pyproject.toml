@@ -39,7 +39,7 @@ dependencies = [
 tests = ["pytest==8.0.0", "coverage==7.4.1"]
 
 doc = [
-    "ansys-sphinx-theme==0.13.2",
+    "ansys-sphinx-theme==0.13.4",
     "autodoc_pydantic==2.0.1",
     "jupyter_sphinx==0.5.3",
     "nbsphinx==0.9.3",
