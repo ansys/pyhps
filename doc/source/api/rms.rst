@@ -10,66 +10,78 @@ is available at ``https://hostname:port/hps/rms/api``.
 APIs
 ----
 
-RMS API
-^^^^^^^
-.. autoclass:: ansys.hps.client.rms.RmsApi
-   :members:
-   :undoc-members:
+.. module:: ansys.hps.client.rms.api
 
+.. autosummary::
+   :toctree: _autosummary
+
+   RmsApi
 
 Resources
 ---------
 
-Evaluator registration
-^^^^^^^^^^^^^^^^^^^^^^
- 
-.. autopydantic_model:: ansys.hps.client.rms.EvaluatorRegistration
-   :model-show-json: False
-   :model-show-config-summary: False
-   :model-show-validator-members: False
-   :model-show-validator-summary: False
+.. module:: ansys.hps.client.rms
 
-Evaluator configuration
-^^^^^^^^^^^^^^^^^^^^^^^
- 
-.. autopydantic_model:: ansys.hps.client.rms.EvaluatorConfiguration
-   :model-show-json: False
-   :model-show-config-summary: False
-   :model-show-validator-members: False
-   :model-show-validator-summary: False
+.. autosummary::
+   :toctree: _autosummary
 
-Evaluator configuration update
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
- 
-.. autopydantic_model:: ansys.hps.client.rms.EvaluatorConfigurationUpdate
-   :model-show-json: False
-   :model-show-config-summary: False
-   :model-show-validator-members: False
-   :model-show-validator-summary: False
+   EvaluatorRegistration
+   EvaluatorConfiguration
+   EvaluatorConfigurationUpdate
+   ScalerRegistration
+   ComputeResourceSet
+   ClusterInfo
 
-Scaler configuration
-^^^^^^^^^^^^^^^^^^^^
+.. Evaluator registration
+.. ^^^^^^^^^^^^^^^^^^^^^^
  
-.. autopydantic_model:: ansys.hps.client.rms.ScalerRegistration
-   :model-show-json: False
-   :model-show-config-summary: False
-   :model-show-validator-members: False
-   :model-show-validator-summary: False
+.. .. autopydantic_model:: ansys.hps.client.rms.EvaluatorRegistration
+..    :model-show-json: False
+..    :model-show-config-summary: False
+..    :model-show-validator-members: False
+..    :model-show-validator-summary: False
 
-Compute resource set
-^^^^^^^^^^^^^^^^^^^^
+.. Evaluator configuration
+.. ^^^^^^^^^^^^^^^^^^^^^^^
  
-.. autopydantic_model:: ansys.hps.client.rms.ComputeResourceSet
-   :model-show-json: False
-   :model-show-config-summary: False
-   :model-show-validator-members: False
-   :model-show-validator-summary: False
+.. .. autopydantic_model:: ansys.hps.client.rms.EvaluatorConfiguration
+..    :model-show-json: False
+..    :model-show-config-summary: False
+..    :model-show-validator-members: False
+..    :model-show-validator-summary: False
 
-Cluster info
-^^^^^^^^^^^^^^^^^^^^
+.. Evaluator configuration update
+.. ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
  
-.. autopydantic_model:: ansys.hps.client.rms.ClusterInfo
-   :model-show-json: False
-   :model-show-config-summary: False
-   :model-show-validator-members: False
-   :model-show-validator-summary: False
+.. .. autopydantic_model:: ansys.hps.client.rms.EvaluatorConfigurationUpdate
+..    :model-show-json: False
+..    :model-show-config-summary: False
+..    :model-show-validator-members: False
+..    :model-show-validator-summary: False
+
+.. Scaler configuration
+.. ^^^^^^^^^^^^^^^^^^^^
+ 
+.. .. autopydantic_model:: ansys.hps.client.rms.ScalerRegistration
+..    :model-show-json: False
+..    :model-show-config-summary: False
+..    :model-show-validator-members: False
+..    :model-show-validator-summary: False
+
+.. Compute resource set
+.. ^^^^^^^^^^^^^^^^^^^^
+ 
+.. .. autopydantic_model:: ansys.hps.client.rms.ComputeResourceSet
+..    :model-show-json: False
+..    :model-show-config-summary: False
+..    :model-show-validator-members: False
+..    :model-show-validator-summary: False
+
+.. Cluster info
+.. ^^^^^^^^^^^^^^^^^^^^
+ 
+.. .. autopydantic_model:: ansys.hps.client.rms.ClusterInfo
+..    :model-show-json: False
+..    :model-show-config-summary: False
+..    :model-show-validator-members: False
+..    :model-show-validator-summary: False

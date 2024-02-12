@@ -2,7 +2,7 @@ Migration of DCS Python client scripts
 ======================================
 
 Just as HPS is the successor to DCS (Distributed Compute Services), PyHPS is the successor to the DCS Python client.
-For more information, see the latest `DCS Python Client documentation <https://storage.ansys.com/dcs_python_client/v241/index.html>`_.
+For more information, see the latest `DCS Python Client documentation <https://storage.ansys.com/dcs_python_client/v241/index.html>`__.
 
 
 Key terminology and API changes
@@ -197,7 +197,7 @@ Example project
 
 This example shows how to migrate a script that creates a DCS project consisting
 of an Ansys APDL beam model of a tubular motorbike-frame.
-The script was originally included in the `DCS Python Client documentation <https://storage.ansys.com/dcs_python_client/v241/ex_motorbike_frame.html>`_ 
+The script was originally included in the `DCS Python Client documentation <https://storage.ansys.com/dcs_python_client/v241/ex_motorbike_frame.html>`__
 and is now available as a PyHPS script in the :ref:`example_mapdl_motorbike_frame` example.
 
 Import modules and instantiate the client

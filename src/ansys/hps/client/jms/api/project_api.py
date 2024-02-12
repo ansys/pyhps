@@ -71,17 +71,17 @@ class ProjectApi:
     >>> cl = Client(
     ...     url="https://127.0.0.1:8443/hps", username="repuser", password="repuser"
     ... )
-    >>> project = Project(name="Example Project")
+    >>> project = Project(name="Example project")
     >>> print(project)
     {
-        "name": "Example Project"
+        "name": "Example project"
     }
     >>> jms_api = JmsApi(cl)
     >>> project = jms_api.create_project(project)
     >>> print(project)
     {
         "id": "02qtyJfpfAQ0fr3zkoIAfC",
-        "name": "Example Project",
+        "name": "Example project",
         "active": false,
         "priority": 1,
         "creation_time": ...

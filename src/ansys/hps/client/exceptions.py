@@ -25,38 +25,41 @@ from requests.exceptions import RequestException
 
 
 class HPSError(RequestException):
+    """Provides the base class for all HPS-related errors.
+
+    This class derives from the :class:`requests.exceptions.RequestException`
+    base class.
+
+    Example:
+        >>> from ansys.hps.client import HPSError
+        >>> from ansys.hps.client.jms import Client
+        >>> try:
+        >>>     client = Client(url="https://127.0.0.1:8443/hps/",
+                                username="repuser",
+                                password="wrong_psw")
+        >>> except HPSError as e:
+        >>>     print(e)
+        401 Client Error: invalid_grant for: POST https://127.0.0.1:8443/hps/auth...
+        Invalid user credentials
+    """
+
     def __init__(self, *args, **kwargs):
-        """Provides the base class for all HPS-related errors.
-
-        This class derives from the :class:`requests.exceptions.RequestException`
-        base class.
-
-        Example:
-            >>> from ansys.hps.client import HPSError
-            >>> from ansys.hps.client.jms import Client
-            >>> try:
-            >>>     client = Client(url="https://127.0.0.1:8443/hps/",
-                                    username="repuser",
-                                    password="wrong_psw")
-            >>> except HPSError as e:
-            >>>     print(e)
-            401 Client Error: invalid_grant for: POST https://127.0.0.1:8443/hps/auth...
-            Invalid user credentials
-        """
         self.reason = kwargs.pop("reason", None)
         self.description = kwargs.pop("description", None)
         super(HPSError, self).__init__(*args, **kwargs)
 
 
 class APIError(HPSError):
+    """Provides server-side related errors."""
+
     def __init__(self, *args, **kwargs):
-        """Provides server-side related errors."""
         super(APIError, self).__init__(*args, **kwargs)
 
 
 class ClientError(HPSError):
+    """Provides client-side related errors."""
+
     def __init__(self, *args, **kwargs):
-        """Provides client-side related errors."""
         super(ClientError, self).__init__(*args, **kwargs)
 
 

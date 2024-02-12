@@ -292,12 +292,9 @@ man_pages = [
 # If true, do not generate a @detailmenu in the "Top" node's menu.
 # texinfo_no_detailmenu = False
 
-global_substitutions = {
-    "client_version": __version__,
-    "version_no_dots": __version__.replace(".", ""),
-    "external_version": __ansys_apps_version__,
-    "ansys_version": __ansys_apps_version__,
-}
+rst_prolog = f"""
+.. |ansys_version| replace:: {__ansys_apps_version__}
+"""
 
 # numpydoc configuration
 numpydoc_show_class_members = False

@@ -60,7 +60,7 @@ class JmsApi(object):
     ...     url="https://127.0.0.1:8443/hps", username="repuser", password="repuser"
     ... )
     >>> jms_api = JmsApi(cl)
-    >>> project = jms_api.create_project(Project(name="Example Project"))
+    >>> project = jms_api.create_project(Project(name="Example project"))
 
     """
 

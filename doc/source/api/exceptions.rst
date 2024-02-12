@@ -11,8 +11,11 @@ HTTP requests returning an unsuccessful status code raise one of these exception
 All exceptions that a PyHPS client explicitly raises are inherited from the :exc:`ansys.hps.client.HPSError`
 base class.
 
-.. autoexception:: ansys.hps.client.HPSError
-   :members:
-   
-.. autoexception:: ansys.hps.client.APIError
-.. autoexception:: ansys.hps.client.ClientError
+.. module:: ansys.hps.client.exceptions
+
+.. autosummary::
+   :toctree: _autosummary
+
+   HPSError
+   APIError
+   ClientError

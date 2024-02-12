@@ -19,13 +19,5 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
-"""PyHPS RMS subpackage."""
-from .api import RmsApi
-from .models import (
-    ClusterInfo,
-    ComputeResourceSet,
-    EvaluatorConfiguration,
-    EvaluatorConfigurationUpdate,
-    EvaluatorRegistration,
-    ScalerRegistration,
-)
+"""PyHPS RMS API submodule."""
+from .rms_api import RmsApi
