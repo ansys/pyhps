@@ -1,14 +1,18 @@
-
 Client
 ===========================
 
 Connection module
 ------------------------------------------
-.. automodule:: ansys.hps.client.connection
-  :members:
 
+.. module:: ansys.hps.client.connection
+
+.. autosummary::
+   :toctree: _autosummary
+
+   create_session
+   ping
 
 Client object
 ------------------------------------
-.. autoclass:: ansys.hps.client.Client
+.. autoclass:: ansys.hps.client.client.Client
    :members:

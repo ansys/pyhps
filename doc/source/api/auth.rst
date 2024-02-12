@@ -16,11 +16,20 @@ Authentication function
 
 Auth API
 --------
-.. autoclass:: ansys.hps.client.auth.AuthApi
-   :members:
 
+.. module:: ansys.hps.client.auth.api
 
-User
-----
-.. autoclass:: ansys.hps.client.auth.User
-   :members:
+.. autosummary::
+   :toctree: _autosummary
+
+   AuthApi
+
+Resources
+---------
+
+.. module:: ansys.hps.client.auth
+
+.. autosummary::
+   :toctree: _autosummary
+
+   User
