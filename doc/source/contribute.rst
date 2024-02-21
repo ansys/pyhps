@@ -21,7 +21,7 @@ Installing PyHPS in developer mode allows you to modify and enhance the source:
 
    .. code:: bash
 
-      git clone https://github.com/pyansys/pyhps
+      git clone https://github.com/ansys-internal/pyhps
 
 #. Access the directory where you have cloned the repository:
 
@@ -111,6 +111,7 @@ This way, it's not possible for you to push code that fails the style checks::
   isort....................................................................Passed
   flake8...................................................................Passed
   codespell................................................................Passed
+  Add License Headers......................................................Passed
 
 Documentation
 -------------
