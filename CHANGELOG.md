@@ -1,5 +1,89 @@
 # CHANGELOG
 
+## [Unreleased]()
+
+### Added
+
+### Fixed
+
+### Changed
+
+### Dependencies
+- Bump version to 0.8.dev0 in pyproject.toml [#341](https://github.com/ansys/pyhps/pull/341)
+
+## [0.7.0](https://github.com/ansys/pyhps/releases/tag/v0.7.0) - February 21 2024
+
+### Added
+- feat: needed permissions for junit action
+- feat: update license start year (#334)
+- Add codecov to the repository (#339)
+
+### Fixed
+- fix: followup tech review (#300)
+- fix: workflow permissions (#301)
+- fix: github output instead of env var (#303)
+- fix: outputs
+- Fix coverage (#307)
+- fix: stage dependencies (#313)
+- fix: solve badges (#340)
+
+### Changed
+- Technical review [#273](https://github.com/ansys/pyhps/pull/273)
+- Replace unittest with pytest (#298)
+- cicd: proposing different action (#302)
+- Cleanup workflows (#306)
+- Update RMS models (#308)
+- Additional cleanup (#312)
+- Update tests for LS-DYNA example (#276)
+- More docs and url renaming (#316)
+- Update README.rst (#317)
+- DCS migration guide (#314)
+- Adjust schemas docstrings (#318)
+- Expose task work dir (#320)
+- Update fluent nozzle example (#319)
+- Rework Doc API Reference (#321)
+- Remove issue templates (#327)
+- docs: installation steps (#336)
+- Post tech-review updates (#338)
+
+### Dependencies
+- Bump ansys-sphinx-theme from 0.13.1 to 0.13.2 (#297)
+- Bump docker/login-action from 2 to 3 (#292)
+- Bump dawidd6/action-download-artifact from 2 to 3 (#290)
+- Bump peter-evans/create-or-update-comment from 2 to 4 (#295)
+- Bump actions/checkout from 3 to 4 (#293)
+- Bump sphinxnotes-strike from 1.2 to 1.2.1 (#296)
+- Bump sphinx-autodoc-typehints from 1.25.2 to 1.25.3 (#291)
+- Bump actions/setup-python from 4 to 5 (#310)
+- Bump mikepenz/action-junit-report from 3 to 4 (#309)
+- Bump ansys-sphinx-theme from 0.13.2 to 0.13.4 (#324)
+- Bump twine from 4.0.2 to 5.0.0 (#323)
+- Bump sphinx-autodoc-typehints from 1.25.3 to 2.0.0 (#325)
+- Bump pytest from 8.0.0 to 8.0.1 (#328)
+- Bump ansys-sphinx-theme from 0.13.4 to 0.14.0 (#330)
+- Bump coverage from 7.4.1 to 7.4.2 (#337)
+
+## [0.6.0](https://github.com/ansys/pyhps/releases/tag/v0.6.0) - January 31 2024
+
+### Added
+- Add license headers to files [#270](https://github.com/ansys/pyhps/pull/270)
+
+### Fixed
+- Fix small typo in Objects vs Dictionaries [#259](https://github.com/ansys/pyhps/pull/259)
+- Improve type checking for create, update and delete methods [#271](https://github.com/ansys/pyhps/pull/271)
+- Improvements from testing session [#275](https://github.com/ansys/pyhps/pull/275)
+
+### Changed
+- Rename to PyHPS [#258](https://github.com/ansys/pyhps/pull/258)
+- More renaming [#260](https://github.com/ansys/pyhps/pull/260)
+- Update RMS models and API [#262](https://github.com/ansys/pyhps/pull/262)
+- Overall doc edit for public release [#278](https://github.com/ansys/pyhps/pull/268)
+
+### Dependencies
+- Bump apispec from 6.3.0 to 6.3.1 in /requirements [#264](https://github.com/ansys/pyhps/pull/264)
+- Bump pytest from 7.4.3 to 7.4.4 in /requirements [#266](https://github.com/ansys/pyhps/pull/266)
+- Update add-license-headers version [#277](https://github.com/ansys/pyhps/pull/277)
+
 ## [0.5.0](https://github.com/ansys/pyhps/releases/tag/v0.5.0) - December 14 2023
 
 ### Added
