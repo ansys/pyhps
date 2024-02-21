@@ -40,14 +40,13 @@ You must have pip_ and Python 3.9, 3.10, 3.11, or 3.12 installed.
 Installation
 ------------
 
-Because PyHPS is a private PyAnsys package not yet published to PyPI, install it by
-running this command:
+To install PyHPS in user mode, run this command:
 
-.. code:: 
+.. code:: bash
 
-    python -m pip install git+https://github.com/ansys-internal/pyhps
+   python -m pip install ansys-hps-client
 
-``pip`` automatically installs any of these package dependencies that are not already installed:
+``pip`` automatically installs these package dependencies in case they are not already installed:
 
 - requests_
 - marshmallow_
