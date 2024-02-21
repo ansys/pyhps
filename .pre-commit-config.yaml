@@ -35,6 +35,8 @@ repos:
   hooks:
   - id: add-license-headers
     files: '(ansys|examples|tests)/.*\.(py)|\.(proto)|generate_resources.py|archive_examples.py'
+    args:
+    - --start_year=2022
 
 # For now we disable some of these checks, can be reenabled later
 # - repo: https://github.com/pycqa/pydocstyle
