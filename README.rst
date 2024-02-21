@@ -1,6 +1,6 @@
 PyHPS
 =====
-|pyansys| |python| |pypi| |GH-CI| |codecov| |MIT| |black|
+|pyansys| |python| |pypi| |GH-CI| |codecov| |MIT| |black| |pre-commit|
 
 .. |pyansys| image:: https://img.shields.io/badge/Py-Ansys-ffc107.svg?logo=data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAIAAACQkWg2AAABDklEQVQ4jWNgoDfg5mD8vE7q/3bpVyskbW0sMRUwofHD7Dh5OBkZGBgW7/3W2tZpa2tLQEOyOzeEsfumlK2tbVpaGj4N6jIs1lpsDAwMJ278sveMY2BgCA0NFRISwqkhyQ1q/Nyd3zg4OBgYGNjZ2ePi4rB5loGBhZnhxTLJ/9ulv26Q4uVk1NXV/f///////69du4Zdg78lx//t0v+3S88rFISInD59GqIH2esIJ8G9O2/XVwhjzpw5EAam1xkkBJn/bJX+v1365hxxuCAfH9+3b9/+////48cPuNehNsS7cDEzMTAwMMzb+Q2u4dOnT2vWrMHu9ZtzxP9vl/69RVpCkBlZ3N7enoDXBwEAAA+YYitOilMVAAAAAElFTkSuQmCC
    :target: https://docs.pyansys.com/
@@ -15,7 +15,7 @@ PyHPS
    :alt: PyPI
 
 .. |codecov| image:: https://codecov.io/gh/ansys/pyhps/branch/main/graph/badge.svg
-   :target: https://codecov.io/gh/ansys/ansys-hps-client
+   :target: https://codecov.io/gh/ansys/pyhps
    :alt: Codecov
 
 .. |GH-CI| image:: https://github.com/ansys/pyhps/actions/workflows/ci_cd.yml/badge.svg
@@ -30,6 +30,9 @@ PyHPS
    :target: https://github.com/psf/black
    :alt: Black
 
+.. |pre-commit| image:: https://results.pre-commit.ci/badge/github/ansys/pyhps/main.svg
+   :target: https://results.pre-commit.ci/latest/github/ansys/pyhps/main
+   :alt: pre-commit.ci status
 
 PyHPS is a Python client library for Ansys HPC Platform Services (HPS), which is
 a set of technology components designed to help you manage the execution of simulations
