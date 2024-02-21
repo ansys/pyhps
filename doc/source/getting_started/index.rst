@@ -44,7 +44,7 @@ To install PyHPS in user mode, run this command:
 
 .. code:: bash
 
-   python -m pip install ansys-hps-client
+    python -m pip install ansys-hps-client
 
 ``pip`` automatically installs these package dependencies in case they are not already installed:
 
