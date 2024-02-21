@@ -65,9 +65,9 @@ build = [
 
 [project.urls]
 Documentation = "https://hps.docs.pyansys.com"
-Source = "https://github.com/ansys-internal/pyhps"
-Homepage = "https://github.com/ansys-internal/pyhps"
-Tracker = "https://github.com/ansys-internal/pyhps/issues"
+Source = "https://github.com/ansys/pyhps"
+Homepage = "https://github.com/ansys/pyhps"
+Tracker = "https://github.com/ansys/pyhps/issues"
 
 [tool.flit.module]
 name = "ansys.hps.client"

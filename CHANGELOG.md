@@ -1,6 +1,6 @@
 # CHANGELOG
 
-## [0.5.0](https://github.com/ansys-internal/pyhps/releases/tag/v0.5.0) - December 14 2023
+## [0.5.0](https://github.com/ansys/pyhps/releases/tag/v0.5.0) - December 14 2023
 
 ### Added
 * Expose the resource management service (RMS) API by @FedericoNegri in #247
@@ -17,7 +17,7 @@
 ### Dependencies 
 * Bump datamodel-code-generator from 0.24.1 to 0.25.1 in /requirements by @dependabot in #249
 
-## [0.4.0](https://github.com/ansys-internal/pyhps/releases/tag/v0.4.0) - November 17 2023
+## [0.4.0](https://github.com/ansys/pyhps/releases/tag/v0.4.0) - November 17 2023
 
 ### Added
 * Add HPC resources by @wehrler in #186
@@ -42,7 +42,7 @@
 * Bump pytest from 7.3.2 to 7.4.3 in /requirements by @dependabot in #192, #232
 * Bump docs requirements by @FedericoNegri in #245
 
-## [0.3.0](https://github.com/ansys-internal/pyhps/releases/tag/v0.3.0) - June 29 2023
+## [0.3.0](https://github.com/ansys/pyhps/releases/tag/v0.3.0) - June 29 2023
 
 ### Added
 * Add build_info to evaluator's schema by @FedericoNegri in #190
@@ -58,7 +58,7 @@
 * Bump ``pytest`` from 7.3.1 to 7.3.2 in /requirements by @dependabot in #188
 * Bump ``pytest-cov`` from 4.0.0 to 4.1.0 in /requirements by @dependabot in #183
 
-## [0.2.0](https://github.com/ansys-internal/pyhps/releases/tag/v0.2.0) - June 6 2023
+## [0.2.0](https://github.com/ansys/pyhps/releases/tag/v0.2.0) - June 6 2023
 
 ### Added
 * Objects copy by @FedericoNegri in #181
@@ -73,7 +73,7 @@
 * Adjust schemas to match jms and evaluator by @wehrler in #182
 * Remove file storage from project schema by @wehrler in #160
 
-## [0.1.0](https://github.com/ansys-internal/pyhps/releases/tag/v0.1.0) - May 9 2023
+## [0.1.0](https://github.com/ansys/pyhps/releases/tag/v0.1.0) - May 9 2023
 
 ### Added
 

@@ -14,12 +14,12 @@ PyHPS
    :target: https://pypi.org/project/ansys-hps-client
    :alt: PyPI
 
-.. |codecov| image:: https://codecov.io/gh/ansys-internal/pyhps/branch/main/graph/badge.svg
-   :target: https://codecov.io/gh/ansys-internal/ansys-hps-client
+.. |codecov| image:: https://codecov.io/gh/ansys/pyhps/branch/main/graph/badge.svg
+   :target: https://codecov.io/gh/ansys/ansys-hps-client
    :alt: Codecov
 
-.. |GH-CI| image:: https://github.com/ansys-internal/pyhps/actions/workflows/ci_cd.yml/badge.svg
-   :target: https://github.com/ansys-internal/pyhps/actions/workflows/ci_cd.yml
+.. |GH-CI| image:: https://github.com/ansys/pyhps/actions/workflows/ci_cd.yml/badge.svg
+   :target: https://github.com/ansys/pyhps/actions/workflows/ci_cd.yml
    :alt: GH-CI
 
 .. |MIT| image:: https://img.shields.io/badge/License-MIT-yellow.svg
@@ -68,9 +68,9 @@ The PyHPS documentation contains these sections:
 - `Contribute <https://hps.docs.pyansys.com/version/dev/contribute.html>`_: Provides information on
   how to install PyHPS in developer mode and make contributions to the codebase and documentation.
 
-On the `PyHPS Issues <https://github.com/ansys-internal/pyhps/issues>`_ page, you can
+On the `PyHPS Issues <https://github.com/ansys/pyhps/issues>`_ page, you can
 create issues to report bugs and request new features. On the
-`PyHPS Discussions <https://github.com/ansys-internal/pyhps/discussions>`_ page or the
+`PyHPS Discussions <https://github.com/ansys/pyhps/discussions>`_ page or the
 `Discussions <https://discuss.ansys.com/>`_ page on the Ansys Developer portal,
 you can post questions, share ideas, and get community feedback.
 

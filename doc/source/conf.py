@@ -163,7 +163,7 @@ html_theme = "ansys_sphinx_theme"
 
 # only for  sphinx_rtd_theme
 html_theme_options = {
-    "github_url": "https://github.com/ansys-internal/pyhps",
+    "github_url": "https://github.com/ansys/pyhps",
     "show_prev_next": False,
     "show_breadcrumbs": True,
     "additional_breadcrumbs": [

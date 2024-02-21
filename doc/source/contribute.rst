@@ -21,7 +21,7 @@ Installing PyHPS in developer mode allows you to modify and enhance the source:
 
    .. code:: bash
 
-      git clone https://github.com/ansys-internal/pyhps
+      git clone https://github.com/ansys/pyhps
 
 #. Access the directory where you have cloned the repository:
 
@@ -167,12 +167,12 @@ data model generator with this command:
 
 Post issues
 -----------
-Use the `PyHPS Issues <https://github.com/ansys-internal/pyhps/issues>`_
+Use the `PyHPS Issues <https://github.com/ansys/pyhps/issues>`_
 page to report bugs and request new features. When possible, use the issue
 templates provided. If your issue does not fit into one of these templates,
 click the link for opening a blank issue.
 
-On the `PyHPS Discussions <https://github.com/ansys-internal/pyhps/discussions>`_ page
+On the `PyHPS Discussions <https://github.com/ansys/pyhps/discussions>`_ page
 or the `Discussions <https://discuss.ansys.com/>`_ page on the Ansys Developer portal,
 you can post questions, share ideas, and get community feedback.
 
