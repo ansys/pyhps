@@ -1,5 +1,10 @@
 # CHANGELOG
 
+## [0.7.1](https://github.com/ansys/pyhps/releases/tag/v0.7.1) - February 22 2024
+
+## Fixed
+- docs: switcher link broken (#344)
+
 ## [0.7.0](https://github.com/ansys/pyhps/releases/tag/v0.7.0) - February 21 2024
 
 ### Added
