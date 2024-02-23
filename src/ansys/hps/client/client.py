@@ -25,6 +25,7 @@ import logging
 from typing import Union
 import warnings
 
+import jwt
 import requests
 
 from .auth.authenticate import authenticate
@@ -190,6 +191,13 @@ class Client(object):
                 verify=self.verify,
             )
             self.access_token = tokens["access_token"]
+
+            try:
+                parsed_jwt = jwt.decode(self.access_token, options={"verify_signature": False})
+                self.username = parsed_jwt.get("preferred_username", self.username)
+            except:
+                log.warning("Could not retrieve username from access token")
+
             # client credentials flow does not return a refresh token
             self.refresh_token = tokens.get("refresh_token", None)
 
