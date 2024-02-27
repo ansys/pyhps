@@ -198,7 +198,7 @@ class Client(object):
                 parsed_jwt = jwt.decode(self.access_token, options={"verify_signature": False})
                 parsed_username = parsed_jwt["preferred_username"]
             except:
-                log.warning("Could not retrieve preferred_username from access token.")
+                log.warning("Could not retrieve 'preferred_username' from access token.")
 
             if parsed_username != None:
                 if self.username != None and self.username != parsed_username:
