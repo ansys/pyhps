@@ -192,16 +192,20 @@ class Client(object):
             )
             self.access_token = tokens["access_token"]
 
+            parsed_username = None
+
             try:
                 parsed_jwt = jwt.decode(self.access_token, options={"verify_signature": False})
-                parsed_username = parsed_jwt.get("preferred_username", None)
+                parsed_username = parsed_jwt["preferred_username"]
+            except:
+                log.warning("Could not retrieve preferred_username from access token.")
+
+            if parsed_username != None:
                 if self.username != None and self.username != parsed_username:
                     raise HPSError(
                         "Username and preferred_username from access token do not match."
                     )
                 self.username = parsed_username
-            except:
-                log.warning("Could not retrieve preferred_username from access token.")
 
             # client credentials flow does not return a refresh token
             self.refresh_token = tokens.get("refresh_token", None)
