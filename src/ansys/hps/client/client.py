@@ -30,7 +30,7 @@ import requests
 
 from .auth.authenticate import authenticate
 from .connection import create_session
-from .exceptions import raise_for_status
+from .exceptions import HPSError, raise_for_status
 from .warnings import UnverifiedHTTPSRequestsWarning
 
 log = logging.getLogger(__name__)
@@ -194,9 +194,14 @@ class Client(object):
 
             try:
                 parsed_jwt = jwt.decode(self.access_token, options={"verify_signature": False})
-                self.username = parsed_jwt.get("preferred_username", self.username)
+                parsed_username = parsed_jwt.get("preferred_username", None)
+                if self.username != None and self.username != parsed_username:
+                    raise HPSError(
+                        "Username and preferred_username from access token do not match."
+                    )
+                self.username = parsed_username
             except:
-                log.warning("Could not retrieve username from access token")
+                log.warning("Could not retrieve preferred_username from access token.")
 
             # client credentials flow does not return a refresh token
             self.refresh_token = tokens.get("refresh_token", None)
