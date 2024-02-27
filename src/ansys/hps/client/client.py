@@ -203,7 +203,11 @@ class Client(object):
             if parsed_username != None:
                 if self.username != None and self.username != parsed_username:
                     raise HPSError(
-                        "Username and preferred_username from access token do not match."
+                        (
+                            f"Username: '{self.username}' and "
+                            f"preferred_username: '{parsed_username}' "
+                            "from access token do not match."
+                        )
                     )
                 self.username = parsed_username
 
