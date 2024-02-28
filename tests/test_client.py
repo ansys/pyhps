@@ -27,6 +27,7 @@ import pytest
 import requests
 
 from ansys.hps.client import Client
+from ansys.hps.client.exceptions import HPSError
 
 log = logging.getLogger(__name__)
 
@@ -76,3 +77,40 @@ def test_authentication_workflows(url, username, password):
     assert client2.access_token is not None
     assert client2.refresh_token != client0.refresh_token
     client2.refresh_access_token()
+
+
+def test_authentication_username(url, username, password, keycloak_client):
+
+    # Password workflow
+    client0 = Client(url, username, password)
+    assert client0.username == username
+
+    # Impersonation
+    realm_clients = keycloak_client.get_clients()
+    rep_impersonation_client = next(
+        (x for x in realm_clients if x["clientId"] == "rep-impersonation"), None
+    )
+    assert rep_impersonation_client is not None
+    client1 = Client(
+        url=url,
+        client_id=rep_impersonation_client["clientId"],
+        client_secret=rep_impersonation_client["secret"],
+    )
+    assert client1.username == "service-account-rep-impersonation"
+
+
+def test_authentication_username_exception(url, username, keycloak_client):
+
+    # Impersonation
+    realm_clients = keycloak_client.get_clients()
+    rep_impersonation_client = next(
+        (x for x in realm_clients if x["clientId"] == "rep-impersonation"), None
+    )
+    assert rep_impersonation_client is not None
+    with pytest.raises(HPSError):
+        Client(
+            url=url,
+            username=username,
+            client_id=rep_impersonation_client["clientId"],
+            client_secret=rep_impersonation_client["secret"],
+        )
