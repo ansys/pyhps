@@ -25,11 +25,12 @@ import logging
 from typing import Union
 import warnings
 
+import jwt
 import requests
 
 from .auth.authenticate import authenticate
 from .connection import create_session
-from .exceptions import raise_for_status
+from .exceptions import HPSError, raise_for_status
 from .warnings import UnverifiedHTTPSRequestsWarning
 
 log = logging.getLogger(__name__)
@@ -192,6 +193,25 @@ class Client(object):
             self.access_token = tokens["access_token"]
             # client credentials flow does not return a refresh token
             self.refresh_token = tokens.get("refresh_token", None)
+
+        parsed_username = None
+
+        try:
+            parsed_jwt = jwt.decode(self.access_token, options={"verify_signature": False})
+            parsed_username = parsed_jwt["preferred_username"]
+        except:
+            log.warning("Could not retrieve preferred_username from access token.")
+
+        if parsed_username is not None:
+            if self.username is not None and self.username != parsed_username:
+                raise HPSError(
+                    (
+                        f"Username: '{self.username}' and "
+                        f"preferred_username: '{parsed_username}' "
+                        "from access token do not match."
+                    )
+                )
+            self.username = parsed_username
 
         self.session = create_session(
             self.access_token,
