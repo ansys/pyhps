@@ -114,3 +114,40 @@ def test_authentication_username_exception(url, username, keycloak_client):
             client_id=rep_impersonation_client["clientId"],
             client_secret=rep_impersonation_client["secret"],
         )
+
+
+def test_decoded_tokens(url, username, password):
+
+    # client with access and refresh tokens
+    client = Client(url, username, password)
+
+    assert client.refresh_token is not None
+    assert client.access_token is not None
+
+    assert client._decoded_access_token is not None
+    assert client._decoded_refresh_token is None
+
+    jwt = client.decoded_access_token
+    assert "exp" in jwt
+    assert "iss" in jwt
+    assert client._decoded_access_token is not None
+
+    jwt = client.decoded_refresh_token
+    assert "exp" in jwt
+    assert "iss" in jwt
+    assert client._decoded_refresh_token is not None
+
+    # client with access token only
+    client2 = Client(url, access_token=client.access_token)
+
+    assert client2.refresh_token is None
+    assert client2._decoded_access_token is not None
+    assert client2._decoded_refresh_token is None
+
+    jwt = client2.decoded_access_token
+    assert "exp" in jwt
+    assert "iss" in jwt
+    assert client2._decoded_access_token is not None
+
+    jwt = client2.decoded_refresh_token
+    assert jwt is None
