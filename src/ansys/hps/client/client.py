@@ -22,7 +22,7 @@
 """Module providing the Python client to the HPS APIs."""
 
 import logging
-from typing import Union
+from typing import Any, Union
 import warnings
 
 import jwt
@@ -151,6 +151,9 @@ class Client(object):
         self.client_secret = client_secret
         self.verify = verify
 
+        self._decoded_access_token = None
+        self._decoded_refresh_token = None
+
         if self.verify is None:
             self.verify = False
             msg = (
@@ -197,10 +200,9 @@ class Client(object):
         parsed_username = None
 
         try:
-            parsed_jwt = jwt.decode(self.access_token, options={"verify_signature": False})
-            parsed_username = parsed_jwt["preferred_username"]
-        except:
-            log.warning("Could not retrieve preferred_username from access token.")
+            parsed_username = self.decoded_access_token["preferred_username"]
+        except Exception as e:
+            log.warning(f"Could not retrieve preferred_username from access token. {str(e)}")
 
         if parsed_username is not None:
             if self.username is not None and self.username != parsed_username:
@@ -231,6 +233,23 @@ class Client(object):
         warnings.warn(msg, DeprecationWarning)
         log.warning(msg)
         return self.url
+
+    def _decode_token(self, token: str) -> Any:
+        return jwt.decode(token, options={"verify_signature": False})
+
+    @property
+    def decoded_access_token(self) -> Any:
+        """Decoded access token."""
+        if self._decoded_access_token is None:
+            self._decoded_access_token = self._decode_token(self.access_token)
+        return self._decoded_access_token
+
+    @property
+    def decoded_refresh_token(self) -> Any:
+        """Decoded refresh token (if available)."""
+        if self._decoded_refresh_token is None and self.refresh_token is not None:
+            self._decoded_refresh_token = self._decode_token(self.refresh_token)
+        return self._decoded_refresh_token
 
     def _auto_refresh_token(self, response, *args, **kwargs):
         """Automatically refreshes the access token and
@@ -279,5 +298,7 @@ class Client(object):
                 verify=self.verify,
             )
         self.access_token = tokens["access_token"]
+        self._decoded_access_token = None
         self.refresh_token = tokens.get("refresh_token", None)
+        self._decoded_refresh_token = None
         self.session.headers.update({"Authorization": "Bearer %s" % tokens["access_token"]})

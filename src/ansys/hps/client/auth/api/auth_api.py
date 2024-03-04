@@ -21,7 +21,11 @@
 # SOFTWARE.
 """Module providing the Python interface to the Authorization Service API."""
 
-from typing import List
+from datetime import datetime
+from typing import TYPE_CHECKING, List
+
+if TYPE_CHECKING:
+    from ansys.hps.client import Client
 
 from keycloak import KeycloakAdmin
 
@@ -164,7 +168,7 @@ class AuthApi:
         return self.keycloak_admin_client.delete_user(user.id)
 
 
-def _admin_client(client):
+def _admin_client(client: "Client"):
     """Set information for admin.
 
     Parameters
@@ -172,10 +176,12 @@ def _admin_client(client):
     client : Client
         HPS client object.
     """
-    custom_headers = {
-        "Authorization": "Bearer " + client.access_token,
-        "Content-Type": "application/json",
-    }
+
+    # inject access token from an authenticated PyHPS client
+    # into a keycloak client
+    access_token_expire_time = datetime.fromtimestamp(client.decoded_access_token["exp"])
+    expires_in = (access_token_expire_time - datetime.now()).seconds
+
     keycloak_admin = KeycloakAdmin(
         server_url=client.auth_api_url,
         username=None,
@@ -183,7 +189,7 @@ def _admin_client(client):
         realm_name=client.realm,
         client_id=client.client_id,
         verify=False,
-        custom_headers=custom_headers,
+        token={"access_token": client.access_token, "expires_in": expires_in},
     )
     return keycloak_admin
 
