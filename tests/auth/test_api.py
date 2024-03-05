@@ -93,16 +93,30 @@ def test_get_user_permissions(client):
         # if r["composite"]:
         #     log.info(api.get_composite_realm_roles_of_role(r["name"]))
 
-    username = f"test_user_{uuid.uuid4()}"
-    new_user = User(
-        username=username,
-        password="test_auth_client",
-        email=f"{username}@test.com",
-        first_name="Test",
-        last_name="User",
+    # get role mappings
+    r = api.client.session.get(
+        url=f"{api.realm_url}/users/{user.id}/role-mappings",
     )
-    new_user = api.create_user(new_user)
-    log.info(new_user)
+
+    data = r.json()
+    can_manage_users = False
+    if "clientMappings" in data and "realm-management" in data["clientMappings"]:
+        roles = data["clientMappings"]["realm-management"]["mappings"]
+        for r in roles:
+            if r["name"] == "manage-users":
+                can_manage_users = True
+
+    if can_manage_users:
+        username = f"test_user_{uuid.uuid4()}"
+        new_user = User(
+            username=username,
+            password="test_auth_client",
+            email=f"{username}@test.com",
+            first_name="Test",
+            last_name="User",
+        )
+        new_user = api.create_user(new_user)
+        log.info(f"created new user: {new_user}")
 
 
 def test_impersonate_user(url, keycloak_client):

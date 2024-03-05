@@ -21,9 +21,10 @@
 # SOFTWARE.
 """Module providing the Python interface to the Authorization Service API."""
 
+import json
 from typing import Dict, List
 
-from ansys.hps.client import Client
+from ansys.hps.client.client import Client
 
 from ..resource import User
 from ..schema.user import UserSchema
@@ -32,9 +33,9 @@ from ..schema.user import UserSchema
 class AuthApi:
     """Provides the Python interface to the Authorization Service API.
 
-    Admin users with the Keycloak "manage-users" role can create
-    users as well as modify or delete existing users. Non-admin users are only allowed
-    to query the list of existing users.
+    Users with the Keycloak realm management "manage-users" role
+    can create users as well as modify or delete existing users.
+    Otherwise, users are only allowed to query the list of existing users.
 
     Parameters
     ----------
@@ -136,13 +137,6 @@ class AuthApi:
         )
         return r.json()
 
-    # def get_composite_realm_roles_of_role(self, role_name: str) -> list[str]:
-    #     r = self.client.session.get(
-    #         url=f"{self.realm_url}/roles/{role_name}/composites",
-    #         params={"fields": None},
-    #     )
-    #     return r.json()
-
     def user_is_admin(self, id: str) -> bool:
         """Determine if the user is a system administrator."""
 
@@ -190,7 +184,7 @@ class AuthApi:
 
         r = self.client.session.post(
             url=f"{self.realm_url}/users",
-            data=data,
+            data=json.dumps(data),
         )
 
         _last_slash_idx = r.headers["Location"].rindex("/")  # todo rewrite
@@ -219,7 +213,7 @@ class AuthApi:
             ]
         r = self.client.session.post(
             url=f"{self.realm_url}/users/{user.id}",
-            data=data,
+            data=json.dumps(data),
         )
         data = r.json()
 
