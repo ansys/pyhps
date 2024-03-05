@@ -27,7 +27,7 @@ import urllib.parse
 
 import requests
 
-from ..exceptions import raise_for_status
+from .exceptions import raise_for_status
 
 log = logging.getLogger(__name__)
 

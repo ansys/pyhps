@@ -26,8 +26,8 @@ import uuid
 from keycloak import KeycloakOpenID
 import pytest
 
-from ansys.hps.client import Client, ClientError, HPSError
-from ansys.hps.client.auth import AuthApi, User, authenticate
+from ansys.hps.client import Client, ClientError, HPSError, authenticate
+from ansys.hps.client.auth import AuthApi, User
 from tests.utils import create_user, delete_user
 
 log = logging.getLogger(__name__)
@@ -36,6 +36,8 @@ log = logging.getLogger(__name__)
 def test_get_users(client, keycloak_client):
 
     api = AuthApi(client)
+
+    assert "rep" in api.realm_url
 
     # create a new non-admin user
     username = f"test_user_{uuid.uuid4()}"
@@ -66,6 +68,41 @@ def test_get_users(client, keycloak_client):
         api.get_user(new_user.id)
 
     assert ex_info.value.response.status_code == 404
+
+
+def test_get_user_permissions(client):
+
+    api = AuthApi(client)
+
+    user = api.get_users(username=client.username)[0]
+
+    groups = api.get_user_groups_names(user.id)
+    log.info(f"groups = {groups}")
+    for g in groups:
+        assert g is not None
+        assert type(g) == str
+
+    roles = api.get_user_realm_roles_names(user.id)
+    for r in roles:
+        assert r is not None
+        assert type(r) == str
+    log.info(f"roles = {roles}")
+
+    for r in api.get_user_realm_roles(user.id):
+        log.warning(r)
+        # if r["composite"]:
+        #     log.info(api.get_composite_realm_roles_of_role(r["name"]))
+
+    username = f"test_user_{uuid.uuid4()}"
+    new_user = User(
+        username=username,
+        password="test_auth_client",
+        email=f"{username}@test.com",
+        first_name="Test",
+        last_name="User",
+    )
+    new_user = api.create_user(new_user)
+    log.info(new_user)
 
 
 def test_impersonate_user(url, keycloak_client):

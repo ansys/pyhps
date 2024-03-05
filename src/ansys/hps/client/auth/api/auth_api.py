@@ -21,7 +21,9 @@
 # SOFTWARE.
 """Module providing the Python interface to the Authorization Service API."""
 
-from typing import List
+from typing import Dict, List
+
+from ansys.hps.client import Client
 
 from ..resource import User
 from ..schema.user import UserSchema
@@ -65,16 +67,16 @@ class AuthApi:
 
     """
 
-    def __init__(self, client):
+    def __init__(self, client: Client):
         self.client = client
 
     @property
-    def url(self):
+    def url(self) -> str:
         """API URL."""
         return f"{self.client.url}/auth"
 
     @property
-    def realm_url(self):
+    def realm_url(self) -> str:
         """Realm URL."""
         return f"{self.url}/admin/realms/{self.client.realm}"
 
@@ -91,19 +93,55 @@ class AuthApi:
 
         For a list of supported query parameters, see the Keycloak API documentation.
         """
-        return _get_users(self, as_objects=as_objects, **query_params)
+        r = self.client.session.get(url=f"{self.realm_url}/users", params=query_params)
+        data = r.json()
 
-    def get_user(self, id: str) -> User:
+        if not as_objects:
+            return data
+
+        schema = UserSchema(many=True)
+        return schema.load(data)
+
+    def get_user(self, id: str, as_object: bool = True) -> User:
         """Get the user representation for a given user ID."""
-        return _get_user(self, id)
+        r = self.client.session.get(
+            url=f"{self.realm_url}/users/{id}",
+        )
+        data = r.json()
+        if not as_object:
+            return data
 
-    def get_user_groups(self, id: str) -> List[str]:
+        schema = UserSchema(many=False)
+        return schema.load(data)
+
+    def get_user_groups_names(self, id: str) -> List[str]:
+        """Get the name of the groups that the user belongs to."""
+        return [g["name"] for g in self.get_user_groups(id)]
+
+    def get_user_realm_roles_names(self, id: str) -> List[str]:
+        """Get the name of the realm roles for the user."""
+        return [r["name"] for r in self.get_user_realm_roles(id)]
+
+    def get_user_groups(self, id: str) -> List[Dict]:
         """Get the groups that the user belongs to."""
-        return [g["name"] for g in _get_user_groups(self, id)]
+        r = self.client.session.get(
+            url=f"{self.realm_url}/users/{id}/groups",
+        )
+        return r.json()
 
-    def get_user_realm_roles(self, id: str) -> List[str]:
+    def get_user_realm_roles(self, id: str) -> List[Dict]:
         """Get the realm roles for the user."""
-        return [r["name"] for r in _get_realm_roles_of_user(self, id)]
+        r = self.client.session.get(
+            url=f"{self.realm_url}/users/{id}/role-mappings/realm",
+        )
+        return r.json()
+
+    # def get_composite_realm_roles_of_role(self, role_name: str) -> list[str]:
+    #     r = self.client.session.get(
+    #         url=f"{self.realm_url}/roles/{role_name}/composites",
+    #         params={"fields": None},
+    #     )
+    #     return r.json()
 
     def user_is_admin(self, id: str) -> bool:
         """Determine if the user is a system administrator."""
@@ -117,8 +155,8 @@ class AuthApi:
 
         # query user groups and roles and store in the same format
         # as admin keys
-        user_keys = [f"groups.{name}" for name in self.get_user_groups(id)] + [
-            f"roles.{name}" for name in self.get_user_realm_roles(id)
+        user_keys = [f"groups.{name}" for name in self.get_user_groups_names(id)] + [
+            f"roles.{name}" for name in self.get_user_realm_roles_names(id)
         ]
 
         # match admin and user keys
@@ -137,7 +175,27 @@ class AuthApi:
         as_objects : bool, optional
             The default is ``True``.
         """
-        return _create_user(self, user, as_objects=as_objects)
+        schema = UserSchema(many=False)
+        data = schema.dump(user)
+
+        pwd = data.pop("password", None)
+        if pwd is not None:
+            data["credentials"] = [
+                {
+                    "type": "password",
+                    "value": pwd,
+                }
+            ]
+        data["enabled"] = True
+
+        r = self.client.session.post(
+            url=f"{self.realm_url}/users",
+            data=data,
+        )
+
+        _last_slash_idx = r.headers["Location"].rindex("/")  # todo rewrite
+        uid = r.headers["Location"][_last_slash_idx + 1 :]
+        return self.get_user(uid, as_objects)
 
     def update_user(self, user: User, as_objects=True) -> User:
         """Modify an existing user.
@@ -149,7 +207,27 @@ class AuthApi:
         as_objects : bool, optional
             The default is  ``True``.
         """
-        return _update_user(self, user, as_objects=as_objects)
+        schema = UserSchema(many=False)
+        data = schema.dump(user)
+        pwd = data.pop("password", None)
+        if pwd is not None:
+            data["credentials"] = [
+                {
+                    "type": "password",
+                    "value": pwd,
+                }
+            ]
+        r = self.client.session.post(
+            url=f"{self.realm_url}/users/{user.id}",
+            data=data,
+        )
+        data = r.json()
+
+        if not as_objects:
+            return data
+
+        user = schema.load(data)
+        return user
 
     def delete_user(self, user: User) -> None:
         """Delete an existing user.
@@ -159,99 +237,7 @@ class AuthApi:
         user : :class:`ansys.hps.client.auth.User`
             User object. The default is ``None``.
         """
-        _delete_user(self, user.id)
-
-
-def _get_users(api: AuthApi, as_objects=True, **query_params):
-    r = api.client.session.get(url=f"{api.realm_url}/users", params=query_params)
-    users = r.json()
-
-    if not as_objects:
-        return users
-
-    schema = UserSchema(many=True)
-    return schema.load(users)
-
-
-def _get_user(api: AuthApi, id: str, as_objects=True):
-    r = api.client.session.get(
-        url=f"{api.realm_url}/users/{id}",
-    )
-    user = r.json()
-
-    if not as_objects:
-        return user
-
-    schema = UserSchema(many=False)
-    return schema.load(user)
-
-
-def _create_user(api: AuthApi, user: User, as_objects=True):
-    schema = UserSchema(many=False)
-    data = schema.dump(user)
-
-    pwd = data.pop("password", None)
-    if pwd is not None:
-        data["credentials"] = [
-            {
-                "type": "password",
-                "value": pwd,
-            }
-        ]
-    data["enabled"] = True
-
-    r = api.client.session.post(
-        url=f"{api.realm_url}/users",
-        data=data,
-    )
-
-    _last_slash_idx = r.headers["Location"].rindex("/")  # todo rewrite
-    uid = r.headers["Location"][_last_slash_idx + 1 :]
-    return _get_user(api, uid, as_objects)
-
-
-def _update_user(api: AuthApi, user: User, as_objects=True):
-    schema = UserSchema(many=False)
-    data = schema.dump(user)
-
-    pwd = data.pop("password", None)
-    if pwd is not None:
-        data["credentials"] = [
-            {
-                "type": "password",
-                "value": pwd,
-            }
-        ]
-
-    r = api.client.session.post(
-        url=f"{api.realm_url}/users/{user.id}",
-        data=data,
-    )
-
-    data = r.json()
-
-    if not as_objects:
-        return data
-
-    user = schema.load(data)
-    return user
-
-
-def _delete_user(api: AuthApi, id: str):
-    _ = api.client.session.delete(
-        url=f"{api.realm_url}/users/{id}",
-    )
-
-
-def _get_user_groups(api: AuthApi, id: str):
-    r = api.client.session.get(
-        url=f"{api.realm_url}/users/{id}/groups",
-    )
-    return r.json()
-
-
-def _get_realm_roles_of_user(api: AuthApi, id: str):
-    r = api.client.session.get(
-        url=f"{api.realm_url}/users/{id}/role-mappings/realm",
-    )
-    return r.json()
+        _ = self.client.session.delete(
+            url=f"{self.realm_url}/users/{user.id}",
+        )
+        return

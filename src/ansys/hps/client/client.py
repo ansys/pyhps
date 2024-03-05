@@ -28,7 +28,7 @@ import warnings
 import jwt
 import requests
 
-from .auth.authenticate import authenticate
+from .authenticate import authenticate
 from .connection import create_session
 from .exceptions import HPSError, raise_for_status
 from .warnings import UnverifiedHTTPSRequestsWarning

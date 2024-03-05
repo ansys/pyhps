@@ -23,6 +23,7 @@
 
 from .__version__ import __ansys_apps_version__, __version__
 from .auth import AuthApi
+from .authenticate import authenticate
 from .client import Client
 from .exceptions import APIError, ClientError, HPSError
 from .jms import JmsApi, ProjectApi

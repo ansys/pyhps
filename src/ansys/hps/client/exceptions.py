@@ -78,7 +78,7 @@ def raise_for_status(response, *args, **kwargs):
 
         reason = r_content.get("title", None)  # jms api
         if not reason:
-            reason = r_content.get("error", None)  # auth api
+            reason = r_content.get("message", None)  # auth api
         if not reason:
             reason = response.reason
 
