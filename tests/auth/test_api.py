@@ -24,10 +24,9 @@ import logging
 import uuid
 
 from keycloak import KeycloakOpenID
-from keycloak.exceptions import KeycloakError
 import pytest
 
-from ansys.hps.client import Client, HPSError
+from ansys.hps.client import Client, ClientError, HPSError
 from ansys.hps.client.auth import AuthApi, User, authenticate
 from tests.utils import create_user, delete_user
 
@@ -63,10 +62,10 @@ def test_get_users(client, keycloak_client):
     users = api.get_users(username=new_user.username)
     assert len(users) == 0
 
-    with pytest.raises(KeycloakError) as ex_info:
+    with pytest.raises(ClientError) as ex_info:
         api.get_user(new_user.id)
 
-    assert ex_info.value.response_code == 404
+    assert ex_info.value.response.status_code == 404
 
 
 def test_impersonate_user(url, keycloak_client):

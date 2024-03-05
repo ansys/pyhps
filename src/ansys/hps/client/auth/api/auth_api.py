@@ -23,8 +23,6 @@
 
 from typing import List
 
-from keycloak import KeycloakAdmin
-
 from ..resource import User
 from ..schema.user import UserSchema
 
@@ -73,12 +71,12 @@ class AuthApi:
     @property
     def url(self):
         """API URL."""
-        return f"{self.client.url}/auth/"
+        return f"{self.client.url}/auth"
 
     @property
-    def keycloak_admin_client(self) -> KeycloakAdmin:
-        """Authenticated client for the Keycloak Admin API."""
-        return _admin_client(self.client)
+    def realm_url(self):
+        """Realm URL."""
+        return f"{self.url}/admin/realms/{self.client.realm}"
 
     def get_users(self, as_objects=True, **query_params) -> List[User]:
         """Get users, filtered according to query parameters.
@@ -93,19 +91,19 @@ class AuthApi:
 
         For a list of supported query parameters, see the Keycloak API documentation.
         """
-        return get_users(self.keycloak_admin_client, as_objects=as_objects, **query_params)
+        return _get_users(self, as_objects=as_objects, **query_params)
 
     def get_user(self, id: str) -> User:
         """Get the user representation for a given user ID."""
-        return get_user(self.keycloak_admin_client, id)
+        return _get_user(self, id)
 
     def get_user_groups(self, id: str) -> List[str]:
         """Get the groups that the user belongs to."""
-        return [g["name"] for g in self.keycloak_admin_client.get_user_groups(id)]
+        return [g["name"] for g in _get_user_groups(self, id)]
 
     def get_user_realm_roles(self, id: str) -> List[str]:
         """Get the realm roles for the user."""
-        return [r["name"] for r in self.keycloak_admin_client.get_realm_roles_of_user(id)]
+        return [r["name"] for r in _get_realm_roles_of_user(self, id)]
 
     def user_is_admin(self, id: str) -> bool:
         """Determine if the user is a system administrator."""
@@ -139,7 +137,7 @@ class AuthApi:
         as_objects : bool, optional
             The default is ``True``.
         """
-        return create_user(self.keycloak_admin_client, user, as_objects=as_objects)
+        return _create_user(self, user, as_objects=as_objects)
 
     def update_user(self, user: User, as_objects=True) -> User:
         """Modify an existing user.
@@ -151,7 +149,7 @@ class AuthApi:
         as_objects : bool, optional
             The default is  ``True``.
         """
-        return update_user(self.keycloak_admin_client, user, as_objects=as_objects)
+        return _update_user(self, user, as_objects=as_objects)
 
     def delete_user(self, user: User) -> None:
         """Delete an existing user.
@@ -161,42 +159,12 @@ class AuthApi:
         user : :class:`ansys.hps.client.auth.User`
             User object. The default is ``None``.
         """
-        return self.keycloak_admin_client.delete_user(user.id)
+        _delete_user(self, user.id)
 
 
-def _admin_client(client):
-    """Set information for admin.
-
-    Parameters
-    ----------
-    client : Client
-        HPS client object.
-    """
-    custom_headers = {
-        "Authorization": "Bearer " + client.access_token,
-        "Content-Type": "application/json",
-    }
-    keycloak_admin = KeycloakAdmin(
-        server_url=client.auth_api_url,
-        username=None,
-        password=None,
-        realm_name=client.realm,
-        client_id=client.client_id,
-        verify=False,
-        custom_headers=custom_headers,
-    )
-    return keycloak_admin
-
-
-def get_users(admin_client: KeycloakAdmin, as_objects=True, **query_params):
-    """Get users as admin.
-
-    Parameters
-    ----------
-    admin_client : KeycloakAdmin
-        Keycloak admin user.
-    """
-    users = admin_client.get_users(query=query_params)
+def _get_users(api: AuthApi, as_objects=True, **query_params):
+    r = api.client.session.get(url=f"{api.realm_url}/users", params=query_params)
+    users = r.json()
 
     if not as_objects:
         return users
@@ -205,17 +173,11 @@ def get_users(admin_client: KeycloakAdmin, as_objects=True, **query_params):
     return schema.load(users)
 
 
-def get_user(admin_client: KeycloakAdmin, id: str, as_objects=True):
-    """Get user using ID.
-
-    Parameters
-    ----------
-    admin_client: KeycloakAdmin
-        Keycloak admin user.
-    id : str
-        User ID.
-    """
-    user = admin_client.get_user(user_id=id)
+def _get_user(api: AuthApi, id: str, as_objects=True):
+    r = api.client.session.get(
+        url=f"{api.realm_url}/users/{id}",
+    )
+    user = r.json()
 
     if not as_objects:
         return user
@@ -224,16 +186,7 @@ def get_user(admin_client: KeycloakAdmin, id: str, as_objects=True):
     return schema.load(user)
 
 
-def create_user(admin_client: KeycloakAdmin, user: User, as_objects=True):
-    """Create user.
-
-    Parameters
-    ----------
-    admin_client : KeycloakAdmin
-        Keycloak admin user.
-    user : User
-        HPS user object.
-    """
+def _create_user(api: AuthApi, user: User, as_objects=True):
     schema = UserSchema(many=False)
     data = schema.dump(user)
 
@@ -247,20 +200,17 @@ def create_user(admin_client: KeycloakAdmin, user: User, as_objects=True):
         ]
     data["enabled"] = True
 
-    uid = admin_client.create_user(data)
-    return get_user(admin_client, uid, as_objects)
+    r = api.client.session.post(
+        url=f"{api.realm_url}/users",
+        data=data,
+    )
+
+    _last_slash_idx = r.headers["Location"].rindex("/")  # todo rewrite
+    uid = r.headers["Location"][_last_slash_idx + 1 :]
+    return _get_user(api, uid, as_objects)
 
 
-def update_user(admin_client: KeycloakAdmin, user: User, as_objects=True):
-    """Update user.
-
-    Parameters
-    ----------
-    admin_client : KeycloakAdmin
-        Keycloak admin user.
-    user : User
-        HPS user object.
-    """
+def _update_user(api: AuthApi, user: User, as_objects=True):
     schema = UserSchema(many=False)
     data = schema.dump(user)
 
@@ -273,10 +223,35 @@ def update_user(admin_client: KeycloakAdmin, user: User, as_objects=True):
             }
         ]
 
-    data = admin_client.update_user(user.id, data)
+    r = api.client.session.post(
+        url=f"{api.realm_url}/users/{user.id}",
+        data=data,
+    )
+
+    data = r.json()
 
     if not as_objects:
         return data
 
     user = schema.load(data)
     return user
+
+
+def _delete_user(api: AuthApi, id: str):
+    _ = api.client.session.delete(
+        url=f"{api.realm_url}/users/{id}",
+    )
+
+
+def _get_user_groups(api: AuthApi, id: str):
+    r = api.client.session.get(
+        url=f"{api.realm_url}/users/{id}/groups",
+    )
+    return r.json()
+
+
+def _get_realm_roles_of_user(api: AuthApi, id: str):
+    r = api.client.session.get(
+        url=f"{api.realm_url}/users/{id}/role-mappings/realm",
+    )
+    return r.json()

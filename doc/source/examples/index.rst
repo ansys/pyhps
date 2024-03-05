@@ -11,7 +11,7 @@ You can execute many Python scripts with these command-line arguments:
 * ``-U``, ``--url``: URL or the HPS server (default: https://localhost:8443/hps)
 * ``-u``, ``--username``: HPS username (default: repuser)
 * ``-p``, ``--password``: HPS password (default: repuser)
-* ``-v``, ``--ansys-version``: Ansys version (default: |ansys_version|)
+* ``-v``, ``--ansys-version``: Ansys version
 
 A link to download the required resources is available on each example page. If
 desired, you can download the required resources for all examples by downloading

@@ -5,7 +5,7 @@ import sys
 
 from ansys_sphinx_theme import ansys_favicon, get_version_match, pyansys_logo_black
 
-from ansys.hps.client import __ansys_apps_version__, __version__
+from ansys.hps.client import __version__
 
 sys.path.append(os.path.abspath(os.path.dirname(__file__)))
 
@@ -292,9 +292,10 @@ man_pages = [
 # If true, do not generate a @detailmenu in the "Top" node's menu.
 # texinfo_no_detailmenu = False
 
-rst_prolog = f"""
-.. |ansys_version| replace:: {__ansys_apps_version__}
-"""
+# disabled because of side effects
+# rst_prolog = f"""
+# .. |ansys_version| replace:: {__ansys_apps_version__}
+# """
 
 # numpydoc configuration
 numpydoc_show_class_members = False
