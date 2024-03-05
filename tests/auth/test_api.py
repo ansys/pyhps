@@ -41,21 +41,25 @@ def test_get_users(client, keycloak_client):
 
     # create a new non-admin user
     username = f"test_user_{uuid.uuid4()}"
+    first_name = f"Test-{uuid.uuid4()}"
     new_user = User(
         username=username,
         password="test_auth_client",
         email=f"{username}@test.com",
-        first_name="Test",
+        first_name=first_name,
         last_name="User",
     )
     new_user = create_user(keycloak_client, new_user)
-    assert new_user.first_name == "Test"
+    assert new_user.first_name == first_name
     users = api.get_users(max=10)
 
     # use non-admin user to get users
     api_non_admin = AuthApi(Client(client.url, username=username, password="test_auth_client"))
     users2 = api_non_admin.get_users(max=10)
     assert len(users) == len(users2)
+
+    users_with_test_name = api_non_admin.get_users(firstName=first_name)
+    assert len(users_with_test_name) == 1
 
     new_user2 = api.get_user(new_user.id)
     assert new_user == new_user2
@@ -76,8 +80,17 @@ def test_get_user_permissions(client):
 
     user = api.get_users(username=client.username)[0]
 
+    groups = api.get_user_groups(user.id)
+    for g in groups:
+        assert g is not None
+        assert type(g) == dict
+
+    roles = api.get_user_realm_roles(user.id)
+    for r in roles:
+        assert r is not None
+        assert type(r) == dict
+
     groups = api.get_user_groups_names(user.id)
-    log.info(f"groups = {groups}")
     for g in groups:
         assert g is not None
         assert type(g) == str
@@ -86,37 +99,8 @@ def test_get_user_permissions(client):
     for r in roles:
         assert r is not None
         assert type(r) == str
-    log.info(f"roles = {roles}")
 
-    for r in api.get_user_realm_roles(user.id):
-        log.warning(r)
-        # if r["composite"]:
-        #     log.info(api.get_composite_realm_roles_of_role(r["name"]))
-
-    # get role mappings
-    r = api.client.session.get(
-        url=f"{api.realm_url}/users/{user.id}/role-mappings",
-    )
-
-    data = r.json()
-    can_manage_users = False
-    if "clientMappings" in data and "realm-management" in data["clientMappings"]:
-        roles = data["clientMappings"]["realm-management"]["mappings"]
-        for r in roles:
-            if r["name"] == "manage-users":
-                can_manage_users = True
-
-    if can_manage_users:
-        username = f"test_user_{uuid.uuid4()}"
-        new_user = User(
-            username=username,
-            password="test_auth_client",
-            email=f"{username}@test.com",
-            first_name="Test",
-            last_name="User",
-        )
-        new_user = api.create_user(new_user)
-        log.info(f"created new user: {new_user}")
+    assert api.user_is_admin is not None
 
 
 def test_impersonate_user(url, keycloak_client):

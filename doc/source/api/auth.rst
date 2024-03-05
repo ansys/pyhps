@@ -6,7 +6,7 @@ solution provides a variety of options for authentication and authorization. Use
 with Keycloak rather than with the application, allowing flexibility in how the sign-in experience
 is delivered.
 
-Keycloak is exposed at ``https://hostname:port/hps/auth/api``, which is what the ``ansys.hps.client.auth``
+The Keycloak API is exposed at ``https://hostname:port/hps/auth/api``, which is what the ``ansys.hps.client.auth``
 module wraps around.
 
 Authentication function

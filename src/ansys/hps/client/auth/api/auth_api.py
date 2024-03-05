@@ -21,7 +21,6 @@
 # SOFTWARE.
 """Module providing the Python interface to the Authorization Service API."""
 
-import json
 from typing import Dict, List
 
 from ansys.hps.client.client import Client
@@ -31,11 +30,7 @@ from ..schema.user import UserSchema
 
 
 class AuthApi:
-    """Provides the Python interface to the Authorization Service API.
-
-    Users with the Keycloak realm management "manage-users" role
-    can create users as well as modify or delete existing users.
-    Otherwise, users are only allowed to query the list of existing users.
+    """Minimal wrapper around the Keycloak API to query users info.
 
     Parameters
     ----------
@@ -54,17 +49,6 @@ class AuthApi:
     ... )
     >>> auth_api = AuthApi(cl)
     >>> users = auth_api.get_users(firstName="john", exact=False)
-
-    Create a user:
-
-    >>> new_user = User(
-    ...     username="new_user",
-    ...     password="dummy",
-    ...     email=f"new_user@test.com",
-    ...     first_name="New",
-    ...     last_name="User",
-    ... )
-    >>> auth_api.create_user(new_user)
 
     """
 
@@ -158,80 +142,3 @@ class AuthApi:
             return True
 
         return False
-
-    def create_user(self, user: User, as_objects=True) -> User:
-        """Create a user.
-
-        Parameters
-        ----------
-        user : :class:`ansys.hps.client.auth.User`
-            User object. The default is ``None``.
-        as_objects : bool, optional
-            The default is ``True``.
-        """
-        schema = UserSchema(many=False)
-        data = schema.dump(user)
-
-        pwd = data.pop("password", None)
-        if pwd is not None:
-            data["credentials"] = [
-                {
-                    "type": "password",
-                    "value": pwd,
-                }
-            ]
-        data["enabled"] = True
-
-        r = self.client.session.post(
-            url=f"{self.realm_url}/users",
-            data=json.dumps(data),
-        )
-
-        _last_slash_idx = r.headers["Location"].rindex("/")  # todo rewrite
-        uid = r.headers["Location"][_last_slash_idx + 1 :]
-        return self.get_user(uid, as_objects)
-
-    def update_user(self, user: User, as_objects=True) -> User:
-        """Modify an existing user.
-
-        Parameters
-        ----------
-        user : :class:`ansys.hps.client.auth.User`
-            User object. The default is ``None``.
-        as_objects : bool, optional
-            The default is  ``True``.
-        """
-        schema = UserSchema(many=False)
-        data = schema.dump(user)
-        pwd = data.pop("password", None)
-        if pwd is not None:
-            data["credentials"] = [
-                {
-                    "type": "password",
-                    "value": pwd,
-                }
-            ]
-        r = self.client.session.post(
-            url=f"{self.realm_url}/users/{user.id}",
-            data=json.dumps(data),
-        )
-        data = r.json()
-
-        if not as_objects:
-            return data
-
-        user = schema.load(data)
-        return user
-
-    def delete_user(self, user: User) -> None:
-        """Delete an existing user.
-
-        Parameters
-        ----------
-        user : :class:`ansys.hps.client.auth.User`
-            User object. The default is ``None``.
-        """
-        _ = self.client.session.delete(
-            url=f"{self.realm_url}/users/{user.id}",
-        )
-        return
