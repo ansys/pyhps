@@ -65,9 +65,10 @@ Client and API objects
 ~~~~~~~~~~~~~~~~~~~~~~
 
 With respect to the DCS Python client, the PyHPS structure has been streamlined.
-The main ``Client`` object stores only the connection, without exposing any service API.
-Similarly, resources like ``Project`` and ``Job`` do not expose API endpoints. 
-Instead, objects like ``JmsApi``, ``ProjectApi``, and ``RmsApi`` wrap around HPS REST APIs.
+The main :exc:`Client <ansys.hps.client.client.Client>` object stores only the connection, without exposing any service API.
+Similarly, resources like :exc:`Project <ansys.hps.client.jms.Project>` and :exc:`Job <ansys.hps.client.jms.Job>` do not expose API endpoints. 
+Instead, objects like :exc:`JmsApi <ansys.hps.client.jms.api.JmsApi>`, :exc:`ProjectApi <ansys.hps.client.jms.api.ProjectApi>`, 
+and :exc:`RmsApi <ansys.hps.client.rms.api.RmsApi>` wrap around HPS REST APIs.
 
 This code shows how to instantiate a ``Client`` object and retrieve projects:
 

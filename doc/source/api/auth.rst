@@ -9,10 +9,6 @@ is delivered.
 The Keycloak API is exposed at ``https://hostname:port/hps/auth/api``, which is what the ``ansys.hps.client.auth``
 module wraps around.
 
-Authentication function
------------------------
-.. autofunction:: ansys.hps.client.auth.authenticate
-
 
 Auth API
 --------
