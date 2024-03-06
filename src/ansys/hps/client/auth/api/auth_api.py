@@ -69,6 +69,7 @@ class AuthApi:
         """Get users, filtered according to query parameters.
 
         Examples of query parameters are:
+
         - ``username``
         - ``firstName``
         - ``lastName``
@@ -76,7 +77,9 @@ class AuthApi:
 
         Pagination is also supported using the ``first`` and ``max`` parameters.
 
-        For a list of supported query parameters, see the Keycloak API documentation.
+        For a list of supported query parameters, see the
+        `Keycloak API documentation <https://www.keycloak.org/documentation>`__.
+
         """
         r = self.client.session.get(url=f"{self.realm_url}/users", params=query_params)
         data = r.json()
