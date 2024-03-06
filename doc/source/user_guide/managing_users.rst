@@ -106,8 +106,8 @@ Modify the password of a default user
     keycloak_client.update_user(user["id"], user)
 
 
-Create a new user with a temporary password
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Create a user with a temporary password
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. code-block:: python
 
