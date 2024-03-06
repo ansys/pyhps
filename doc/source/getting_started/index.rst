@@ -49,7 +49,7 @@ To install PyHPS in user mode, run this command:
 Dependencies
 ~~~~~~~~~~~~
 
-The following packages are required dependencies of PyHPS:
+PyHPS requires these packages as dependencies:
 
 * `requests <https://pypi.org/project/requests/>`_
 * `marshmallow <https://pypi.org/project/marshmallow/>`_
