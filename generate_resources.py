@@ -274,6 +274,22 @@ JMS_RESOURCES = [
         "class": "StringParameterDefinition",
         "resource_filename": "parameter_definition",
     },
+    {
+        "schema": "TaskCommandDefinitionSchema",
+        "schema_filename": "task_command_definition",
+        "rest_name": "command_definitions",
+        "additional_fields": [],
+        "class": "TaskCommandDefinition",
+        "resource_filename": "task_command_definition",
+    },
+    {
+        "schema": "TaskCommandSchema",
+        "schema_filename": "task_command",
+        "rest_name": "commands",
+        "additional_fields": [],
+        "class": "TaskCommand",
+        "resource_filename": "task_command",
+    },
 ]
 
 AUTH_RESOURCES = [
