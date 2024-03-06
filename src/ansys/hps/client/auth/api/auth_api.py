@@ -30,7 +30,7 @@ from ..schema.user import UserSchema
 
 
 class AuthApi:
-    """Minimal wrapper around the Keycloak API to query users info.
+    """Provides a minimal wrapper around the Keycloak API to query user information.
 
     Parameters
     ----------
