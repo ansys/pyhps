@@ -1,4 +1,4 @@
-Managing Users
+Managing users
 ==============
 
 Query user information
