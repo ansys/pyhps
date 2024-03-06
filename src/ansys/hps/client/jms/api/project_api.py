@@ -287,11 +287,19 @@ class ProjectApi:
         scaler_ids: list[str] = None,
         analytics: bool = True,
     ) -> AnalyzeResponse:
-
-        from ansys.hps.client.rms.models import RequiredSoftware, ResourceRequirements
+        """Compare resource requirements against available compute resources."""
+        from ansys.hps.client.rms.models import (
+            AnsysRepRmsRoutersAnalyzeHpcResources,
+            RequiredSoftware,
+            ResourceRequirements,
+        )
 
         td = self.get_task_definitions(id=task_definition_id, fields="all")[0]
         rms_api = RmsApi(self.client)
+
+        queue = None
+        if td.resource_requirements.hpc_resources:
+            queue = td.resource_requirements.hpc_resources.queue or None
 
         requirements = AnalyzeRequirements(
             project_id=self.project_id,
@@ -303,8 +311,10 @@ class ProjectApi:
                 num_cores=td.resource_requirements.num_cores or None,
                 disk_space=td.resource_requirements.disk_space or None,
                 platform=td.resource_requirements.platform or None,
-                # custom
-                # hpc_resources
+                custom=td.resource_requirements.custom or None,
+                hpc_resources=AnsysRepRmsRoutersAnalyzeHpcResources(
+                    queue=queue,
+                ),
             ),
             evaluator_ids=evaluator_ids,
             scaler_ids=scaler_ids,

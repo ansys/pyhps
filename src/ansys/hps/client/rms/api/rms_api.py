@@ -184,7 +184,7 @@ class RmsApi(object):
     def analyze(
         self, requirements: AnalyzeRequirements, analytics: bool = False, as_object: bool = True
     ) -> AnalyzeResponse:
-        """Compare resource requirements against compute resources."""
+        """Compare resource requirements against available compute resources."""
         if requirements is None:
             raise ClientError(f"requirements can't be None.")
 
