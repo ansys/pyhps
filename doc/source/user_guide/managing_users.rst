@@ -60,7 +60,7 @@ The following examples show how to modify and create users using the
 Connect to the Keycloak Admin API
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Connecting as Keycloak administrator (using default credentials) gives you full control:
+Connecting as a Keycloak administrator (using default credentials) gives you full control:
 
 .. code-block:: python
 
