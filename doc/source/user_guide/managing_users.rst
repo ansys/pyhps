@@ -51,8 +51,8 @@ Using ``python-keycloak`` to modify and create users
 
 Administrative users with the Keycloak realm management ``manage-users`` role
 can create, modify, and delete users.
-This functionality is not exposed in the :exc:`AuthApi <ansys.hps.client.auth.api.AuthApi>`.
-However, third-party Python packages can be used. 
+This functionality is not exposed in :exc:`AuthApi <ansys.hps.client.auth.api.AuthApi>`.
+However, you can use third-party Python packages. 
 
 The following examples show how to modify and create users using the
 `python-keycloak <https://pypi.org/project/python-keycloak/>`_ package.
