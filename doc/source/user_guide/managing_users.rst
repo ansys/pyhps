@@ -22,7 +22,7 @@ For example, you can search for a user given their first name:
     auth_api = AuthApi(cl)
     users = auth_api.get_users(firstName="john", exact=False)
 
-You can also use it to find the email of the user that created and last modified a resource in JMS, for instance a job:
+You can also find the email of the user that created and last modified a resource in JMS, for instance a job:
 
 .. code-block:: python
     
