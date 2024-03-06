@@ -39,6 +39,8 @@ from .permission import Permission
 from .project import Project
 from .selection import JobSelection
 from .task import Task
+from .task_command import TaskCommand
+from .task_command_definition import TaskCommandDefinition
 from .task_definition import (
     HpcResources,
     Licensing,

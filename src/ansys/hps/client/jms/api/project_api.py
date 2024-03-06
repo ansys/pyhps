@@ -31,7 +31,7 @@ import requests
 
 from ansys.hps.client.client import Client
 from ansys.hps.client.common import Object
-from ansys.hps.client.exceptions import HPSError
+from ansys.hps.client.exceptions import ClientError, HPSError
 from ansys.hps.client.jms.resource import (
     Algorithm,
     File,
@@ -44,6 +44,8 @@ from ansys.hps.client.jms.resource import (
     Permission,
     Project,
     Task,
+    TaskCommand,
+    TaskCommandDefinition,
     TaskDefinition,
 )
 
@@ -278,6 +280,18 @@ class ProjectApi:
         """
         return _copy_objects(self.client, self.url, task_definitions, wait=wait)
 
+    def get_task_definition_commands(
+        self, task_definition_id: str, as_objects: bool = True, **query_params
+    ) -> List[TaskCommandDefinition]:
+        """Get the list of commands of a task definition."""
+        return get_objects(
+            self.client.session,
+            f"{self.url}/task_definitions/{task_definition_id}",
+            TaskCommandDefinition,
+            as_objects=as_objects,
+            **query_params,
+        )
+
     ################################################################
     # Job definitions
     def get_job_definitions(self, as_objects=True, **query_params) -> List[JobDefinition]:
@@ -428,6 +442,59 @@ class ProjectApi:
     def update_tasks(self, tasks: List[Task], as_objects=True) -> List[Task]:
         """Update a list of tasks."""
         return self._update_objects(tasks, Task, as_objects=as_objects)
+
+    def get_task_commands(
+        self, task_id: str, as_objects: bool = True, **query_params
+    ) -> List[TaskCommand]:
+        """Get a list of task commands."""
+        return self.get_commands(task_id=task_id, as_objects=as_objects, **query_params)
+
+    def send_task_command(self, task_id: str, name: str, **command_arguments) -> TaskCommand:
+        """Send a command to a task."""
+
+        # get the task definition id
+        task = self.get_tasks(id=task_id, fields=["id", "task_definition_id"])[0]
+
+        # get the command definition
+        command_definitions = self.get_task_definition_commands(
+            task_definition_id=task.task_definition_id, name=name
+        )
+
+        if not command_definitions:
+            raise ClientError(f"Could not find a command named '{name}' for task {task_id}.")
+
+        command_definition = None
+        for cd in command_definitions:
+            if not cd.arguments:
+                continue
+            if set(command_arguments.keys()) == set(cd.arguments.keys()):
+                command_definition = cd
+                break
+
+        if command_definition is None:
+            raise ClientError(
+                f"Could not find a command '{name}' with matching arguments for task {task_id}."
+            )
+
+        # create the command object
+        command = TaskCommand(
+            task_id=task_id,
+            command_def_id=command_definition.id,
+            arguments=command_arguments,
+        )
+        return self.create_commands([command])
+
+    ################################################################
+    # Commands
+    def get_commands(self, as_objects: bool = True, **query_params) -> List[TaskCommand]:
+        """Get a list of task commands."""
+        return self._get_objects(TaskCommand, as_objects=as_objects, **query_params)
+
+    def create_commands(
+        self, commands: List[TaskCommand], as_objects: bool = True
+    ) -> List[TaskCommand]:
+        """Create task commands."""
+        return self._create_objects(commands, TaskCommand, as_objects=as_objects)
 
     ################################################################
     # Selections
