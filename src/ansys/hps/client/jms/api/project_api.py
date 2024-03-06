@@ -46,6 +46,8 @@ from ansys.hps.client.jms.resource import (
     Task,
     TaskDefinition,
 )
+from ansys.hps.client.rms.api import RmsApi
+from ansys.hps.client.rms.models import AnalyzeRequirements, AnalyzeResponse
 
 from .base import create_objects, delete_objects, get_objects, update_objects
 from .jms_api import JmsApi, _copy_objects
@@ -277,6 +279,38 @@ class ProjectApi:
             track progress.
         """
         return _copy_objects(self.client, self.url, task_definitions, wait=wait)
+
+    def analyze_task_definition(
+        self,
+        task_definition_id: str,
+        evaluator_ids: list[str] = None,
+        scaler_ids: list[str] = None,
+        analytics: bool = True,
+    ) -> AnalyzeResponse:
+
+        from ansys.hps.client.rms.models import RequiredSoftware, ResourceRequirements
+
+        td = self.get_task_definitions(id=task_definition_id, fields="all")[0]
+        rms_api = RmsApi(self.client)
+
+        requirements = AnalyzeRequirements(
+            project_id=self.project_id,
+            software_requirements=[
+                RequiredSoftware(name=x.name, version=x.version) for x in td.software_requirements
+            ],
+            resource_requirements=ResourceRequirements(
+                memory=td.resource_requirements.memory or None,
+                num_cores=td.resource_requirements.num_cores or None,
+                disk_space=td.resource_requirements.disk_space or None,
+                platform=td.resource_requirements.platform or None,
+                # custom
+                # hpc_resources
+            ),
+            evaluator_ids=evaluator_ids,
+            scaler_ids=scaler_ids,
+        )
+
+        return rms_api.analyze(requirements=requirements, analytics=analytics)
 
     ################################################################
     # Job definitions

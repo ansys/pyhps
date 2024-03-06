@@ -24,7 +24,10 @@ import logging
 from typing import List
 
 from ansys.hps.client.client import Client
+from ansys.hps.client.exceptions import ClientError
 from ansys.hps.client.rms.models import (
+    AnalyzeRequirements,
+    AnalyzeResponse,
     ClusterInfo,
     ComputeResourceSet,
     EvaluatorConfiguration,
@@ -33,7 +36,7 @@ from ansys.hps.client.rms.models import (
     ScalerRegistration,
 )
 
-from .base import create_objects, get_object, get_objects, get_objects_count
+from .base import create_objects, get_object, get_objects, get_objects_count, object_to_json
 
 log = logging.getLogger(__name__)
 
@@ -174,3 +177,25 @@ class RmsApi(object):
             ClusterInfo,
             as_object=as_object,
         )
+
+    ################################################################
+    # Analyze
+
+    def analyze(
+        self, requirements: AnalyzeRequirements, analytics: bool = False, as_object: bool = True
+    ) -> AnalyzeResponse:
+        """Compare resource requirements against compute resources."""
+        if requirements is None:
+            raise ClientError(f"requirements can't be None.")
+
+        r = self.client.session.post(
+            f"{self.url}/analyze",
+            data=object_to_json(requirements),
+            params={"analytics": analytics},
+        )
+
+        data = r.json()
+        if not as_object:
+            return data
+
+        return AnalyzeResponse(**data)
