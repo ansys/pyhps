@@ -75,7 +75,7 @@ Connecting as a Keycloak administrator (using default credentials) gives you ful
         verify=False,
     )
 
-Alternatively, you can also connect as a regular user:
+Alternatively, you can connect as a regular user:
 
 .. code-block:: python
 
