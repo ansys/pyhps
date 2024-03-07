@@ -1,4 +1,0 @@
-authlib
-httpx
-uvicorn
-falcon

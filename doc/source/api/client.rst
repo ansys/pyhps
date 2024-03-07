@@ -1,6 +1,16 @@
 Client
 ===========================
 
+Authentication module
+----------------------
+
+.. module:: ansys.hps.client.authenticate
+
+.. autosummary::
+   :toctree: _autosummary
+
+   authenticate
+
 Connection module
 ------------------------------------------
 
@@ -14,5 +24,10 @@ Connection module
 
 Client object
 ------------------------------------
-.. autoclass:: ansys.hps.client.client.Client
-   :members:
+
+.. module:: ansys.hps.client.client
+
+.. autosummary::
+   :toctree: _autosummary
+
+   Client

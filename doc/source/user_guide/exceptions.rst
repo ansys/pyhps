@@ -1,7 +1,7 @@
 Exception handling
 ------------------
 
-All exceptions that the Ansys HPS client explicitly raises inherit from the :exc:`ansys.hps.client.HPSError`
+All exceptions that the Ansys HPS client explicitly raises inherit from the :exc:`HPSError <ansys.hps.client.exceptions.HPSError>`
 base class. Client errors are raised for 4xx HTTP status codes, while API errors are raised for 5xx HTTP
 status codes (server-side errors).
 

@@ -28,11 +28,29 @@ from keycloak import KeycloakAdmin
 
 from ansys.hps.client import Client
 from ansys.hps.client.auth import User
-from ansys.hps.client.auth.api.auth_api import create_user as api_create_user
+from ansys.hps.client.auth.schema.user import UserSchema
 
 
 def create_user(keycloak_client: KeycloakAdmin, user: User) -> User:
-    return api_create_user(keycloak_client, user)
+
+    schema = UserSchema(many=False)
+    data = schema.dump(user)
+
+    pwd = data.pop("password", None)
+    if pwd is not None:
+        data["credentials"] = [
+            {
+                "type": "password",
+                "value": pwd,
+            }
+        ]
+    data["enabled"] = True
+
+    uid = keycloak_client.create_user(data)
+
+    user = keycloak_client.get_user(user_id=uid)
+    schema = UserSchema(many=False)
+    return schema.load(user)
 
 
 def delete_user(keycloak_client: KeycloakAdmin, user: User) -> User:

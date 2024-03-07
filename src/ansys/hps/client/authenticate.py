@@ -27,13 +27,13 @@ import urllib.parse
 
 import requests
 
-from ..exceptions import raise_for_status
+from .exceptions import raise_for_status
 
 log = logging.getLogger(__name__)
 
 
 def authenticate(
-    url: str = "https://127.0.0.1:8443/rep",
+    url: str = "https://127.0.0.1:8443/hps",
     realm: str = "rep",
     grant_type: str = "password",
     scope="openid",

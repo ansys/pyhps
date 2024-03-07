@@ -22,7 +22,7 @@
 
 import logging
 
-from ansys.hps.client.auth import authenticate
+from ansys.hps.client import authenticate
 from ansys.hps.client.connection import create_session, ping
 
 log = logging.getLogger(__name__)
