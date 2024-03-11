@@ -24,11 +24,10 @@ import logging
 import uuid
 
 from keycloak import KeycloakOpenID
-from keycloak.exceptions import KeycloakError
 import pytest
 
-from ansys.hps.client import Client, HPSError
-from ansys.hps.client.auth import AuthApi, User, authenticate
+from ansys.hps.client import Client, ClientError, HPSError, authenticate
+from ansys.hps.client.auth import AuthApi, User
 from tests.utils import create_user, delete_user
 
 log = logging.getLogger(__name__)
@@ -38,23 +37,29 @@ def test_get_users(client, keycloak_client):
 
     api = AuthApi(client)
 
+    assert "rep" in api.realm_url
+
     # create a new non-admin user
     username = f"test_user_{uuid.uuid4()}"
+    first_name = f"Test-{uuid.uuid4()}"
     new_user = User(
         username=username,
         password="test_auth_client",
         email=f"{username}@test.com",
-        first_name="Test",
+        first_name=first_name,
         last_name="User",
     )
     new_user = create_user(keycloak_client, new_user)
-    assert new_user.first_name == "Test"
+    assert new_user.first_name == first_name
     users = api.get_users(max=10)
 
     # use non-admin user to get users
     api_non_admin = AuthApi(Client(client.url, username=username, password="test_auth_client"))
     users2 = api_non_admin.get_users(max=10)
     assert len(users) == len(users2)
+
+    users_with_test_name = api_non_admin.get_users(firstName=first_name)
+    assert len(users_with_test_name) == 1
 
     new_user2 = api.get_user(new_user.id)
     assert new_user == new_user2
@@ -63,10 +68,39 @@ def test_get_users(client, keycloak_client):
     users = api.get_users(username=new_user.username)
     assert len(users) == 0
 
-    with pytest.raises(KeycloakError) as ex_info:
+    with pytest.raises(ClientError) as ex_info:
         api.get_user(new_user.id)
 
-    assert ex_info.value.response_code == 404
+    assert ex_info.value.response.status_code == 404
+
+
+def test_get_user_permissions(client):
+
+    api = AuthApi(client)
+
+    user = api.get_users(username=client.username)[0]
+
+    groups = api.get_user_groups(user.id)
+    for g in groups:
+        assert g is not None
+        assert type(g) == dict
+
+    roles = api.get_user_realm_roles(user.id)
+    for r in roles:
+        assert r is not None
+        assert type(r) == dict
+
+    groups = api.get_user_groups_names(user.id)
+    for g in groups:
+        assert g is not None
+        assert type(g) == str
+
+    roles = api.get_user_realm_roles_names(user.id)
+    for r in roles:
+        assert r is not None
+        assert type(r) == str
+
+    assert api.user_is_admin is not None
 
 
 def test_impersonate_user(url, keycloak_client):

@@ -46,19 +46,16 @@ To install PyHPS in user mode, run this command:
 
     python -m pip install ansys-hps-client
 
-``pip`` automatically installs these package dependencies in case they are not already installed:
+Dependencies
+~~~~~~~~~~~~
 
-- requests_
-- marshmallow_
-- marshmallow_oneofschema_
-- python-keycloak_
-- pydantic_
+PyHPS requires these packages as dependencies:
+
+* `requests <https://pypi.org/project/requests/>`_
+* `marshmallow <https://pypi.org/project/marshmallow/>`_
+* `marshmallow_oneofschema <https://pypi.org/project/marshmallow-oneofschema/>`_
+* `pydantic <https://pypi.org/project/pydantic/>`_
+* `PyJWT <https://pypi.org/project/PyJWT/>`_
 
 .. LINKS AND REFERENCES
 .. _pip: https://pypi.org/project/pip/
-.. _requests: https://pypi.org/project/requests/
-.. _marshmallow: https://pypi.org/project/marshmallow/
-.. _marshmallow_oneofschema: https://pypi.org/project/marshmallow-oneofschema/
-.. _cachetools: https://pypi.org/project/cachetools/
-.. _python-keycloak: https://pypi.org/project/python-keycloak/
-.. _pydantic: https://pypi.org/project/pydantic/

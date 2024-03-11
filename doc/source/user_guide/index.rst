@@ -25,6 +25,7 @@ prerequisites:
 
    query_parameters
    exceptions
+   managing_users
    dcs_migration
 
 Connect to an HPS deployment
@@ -201,34 +202,3 @@ Get file definitions from an existing project's job definition and replace the f
   file.src = r"D:\local_folder\my_project\input_file.xyz"
   project.update_files([file])
 
-Modify and create users
------------------------
-
-Administrative users with the Keycloak "manage-users" role can create users as well as modify or delete users: 
-
-.. code-block:: python
-
-    from ansys.hps.client import Client
-    from ansys.hps.client.auth import AuthApi, User
-    
-    client = Client(url="https://localhost:8443/hps/", username="repadmin", password="repadmin")
-    auth_api = AuthApi(client)
-
-    # modify the default password of the repadmin user
-    default_user = auth_api.get_users()[0]
-    default_user.password = 'new_password'
-    auth_api.update_user(default_user)
-
-    # create a new non-admin user
-    new_user = User(username='test_user', password='dummy', 
-                    email='test_user@test.com', fullname='Test User')
-    new_user = auth_api.create_user(new_user)
-    print(new_user)
-    # {
-    #   "id": "f9e068d7-4962-45dc-92a4-2273246039da",
-    #   "username": "test_user",
-    #   "email": "test_user@test.com"
-    # }
-
-    new_user.password = "new_password"
-    auth_api.update_user(new_user)
