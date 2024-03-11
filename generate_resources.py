@@ -26,8 +26,10 @@ The main goal is to auto-generate the class docstrings and
 allow code completion.
 """
 
+from dataclasses import dataclass
 import importlib
 import os
+from typing import List, Tuple
 
 import marshmallow
 
@@ -61,6 +63,9 @@ JMS_RESOURCES = [
         "additional_fields": [],
         "class": "FitnessDefinitionBase",
         "resource_filename": "fitness_definition_base",
+        "additional_imports": [
+            "from .fitness_term_definition_base import FitnessTermDefinitionBase",
+        ],
     },
     {
         "schema": "FitnessTermDefinitionSchema",
@@ -85,6 +90,9 @@ JMS_RESOURCES = [
         "additional_fields": [],
         "class": "JobDefinition",
         "resource_filename": "job_definition",
+        "additional_imports": [
+            "from .fitness_definition_base import FitnessDefinitionBase",
+        ],
     },
     {
         "schema": "LicenseContextSchema",
@@ -221,6 +229,7 @@ JMS_RESOURCES = [
         "additional_fields": [],
         "class": "TaskDefinitionTemplate",
         "resource_filename": "task_definition_template",
+        "additional_imports": ["from .task_definition import HpcResources, Software"],
     },
     {
         "schema": "TaskSchema",
@@ -229,6 +238,7 @@ JMS_RESOURCES = [
         "additional_fields": [],
         "class": "Task",
         "resource_filename": "task",
+        "additional_imports": ["from .task_definition import TaskDefinition"],
     },
     {
         "schema": "ParameterDefinitionSchema",
@@ -305,17 +315,23 @@ FIELD_MAPPING = {
 }
 
 
-def extract_field_info(name: str, field_object: marshmallow.fields, resources):
+@dataclass
+class Field:
+    name: str
+    type: str = "Any"
 
-    field = name
+
+def extract_field_info(name: str, field_object: marshmallow.fields, resources) -> Tuple[Field, str]:
+
+    field = Field(name=name)
     v = field_object
 
     # Ensure that we use the attribute name if defined
     if getattr(v, "attribute", None) is not None:
-        field = v.attribute
+        field.name = v.attribute
 
     # build attribute doc
-    field_doc = f"{field}"
+    field_doc = f"{field.name}"
 
     field_type = _extract_field_type(v, resources)
     if field_type:
@@ -323,6 +339,7 @@ def extract_field_info(name: str, field_object: marshmallow.fields, resources):
         if v.allow_none:
             field_doc += ", optional"
         field_doc += "\n"
+        field.type = field_type.replace("list", "List").replace("dict", "Dict")
     elif v.allow_none:
         field_doc += " : any, optional\n"
     desc = v.metadata.get("description", None)
@@ -359,7 +376,7 @@ def _extract_field_type(v, resources) -> str:
     return field_type
 
 
-def declared_fields(schema, resources):
+def declared_fields(schema, resources) -> Tuple[List[Field], List[str]]:
     """
     Helper function to retrieve the fields that is defined as class members for an object
     """
@@ -377,11 +394,15 @@ def declared_fields(schema, resources):
 def get_resource_imports(resource, base_class):
 
     imports = [
+        "from datetime import datetime",
+        "from typing import List, Dict, Any",
         "from marshmallow.utils import missing",
         "from ansys.hps.client.common import Object",
         # f"from {base_class['path']}.{base_class['filename']} import {base_class['name']}",
         f"from ..schema.{resource['schema_filename']} import {resource['schema']}",
     ]
+    if "additional_imports" in resource:
+        imports.extend(resource["additional_imports"])
     return imports
 
 
@@ -405,12 +426,12 @@ def get_module_docstring(file_name: str) -> str:
     return code
 
 
-def get_resource_code(resource, base_class, fields, field_docs):
+def get_resource_code(resource, base_class, fields: List[Field], field_docs: List[str]):
 
     fields_str = ""
     for k in fields:
-        fields_str += f"        self.{k} = {k}\n"
-    init_fields_str = ",\n".join([f"        {k}=missing" for k in fields])
+        fields_str += f"        self.{k.name} = {k.name}\n"
+    init_fields_str = ",\n".join([f"        {k.name}: {k.type} = missing" for k in fields])
 
     additional_initialization = "        self.obj_type = self.__class__.__name__"
     if resource.get("init_with_kwargs", True):
