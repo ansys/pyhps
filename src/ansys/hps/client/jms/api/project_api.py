@@ -289,9 +289,9 @@ class ProjectApi:
     ) -> AnalyzeResponse:
         """Compare resource requirements against available compute resources."""
         from ansys.hps.client.rms.models import (
-            AnsysRepRmsRoutersAnalyzeHpcResources,
-            RequiredSoftware,
-            ResourceRequirements,
+            AnalyzeHpcResources,
+            AnalyzeRequiredSoftware,
+            AnalyzeResourceRequirements,
         )
 
         td = self.get_task_definitions(id=task_definition_id, fields="all")[0]
@@ -304,15 +304,16 @@ class ProjectApi:
         requirements = AnalyzeRequirements(
             project_id=self.project_id,
             software_requirements=[
-                RequiredSoftware(name=x.name, version=x.version) for x in td.software_requirements
+                AnalyzeRequiredSoftware(name=x.name, version=x.version)
+                for x in td.software_requirements
             ],
-            resource_requirements=ResourceRequirements(
+            resource_requirements=AnalyzeResourceRequirements(
                 memory=td.resource_requirements.memory or None,
                 num_cores=td.resource_requirements.num_cores or None,
                 disk_space=td.resource_requirements.disk_space or None,
                 platform=td.resource_requirements.platform or None,
                 custom=td.resource_requirements.custom or None,
-                hpc_resources=AnsysRepRmsRoutersAnalyzeHpcResources(
+                hpc_resources=AnalyzeHpcResources(
                     queue=queue,
                 ),
             ),
