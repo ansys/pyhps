@@ -21,6 +21,7 @@
 # SOFTWARE.
 """Module providing the fitness definition and fitness term definition resources."""
 import logging
+from typing import List
 
 from marshmallow.utils import missing
 
@@ -84,14 +85,22 @@ class FitnessTermDefinition(Object):
         schema = FitnessTermDefinitionSchema
         rest_name = "None"
 
-    def __init__(self, **kwargs):
-        self.id = missing
-        self.name = missing
-        self.expression = missing
-        self.type = missing
-        self.weighting_factor = missing
+    def __init__(
+        self,
+        id: str = missing,
+        name: str = missing,
+        expression: str = missing,
+        type: str = missing,
+        weighting_factor: float = missing,
+        **kwargs
+    ):
+        self.id = id
+        self.name = name
+        self.expression = expression
+        self.type = type
+        self.weighting_factor = weighting_factor
 
-        super().__init__(**kwargs)
+        self.obj_type = self.__class__.__name__
 
 
 FitnessTermDefinitionSchema.Meta.object_class = FitnessTermDefinition
@@ -129,12 +138,18 @@ class FitnessDefinition(Object):
         schema = FitnessDefinitionSchema
         rest_name = "None"
 
-    def __init__(self, **kwargs):
-        self.id = missing
-        self.fitness_term_definitions = missing
-        self.error_fitness = missing
+    def __init__(
+        self,
+        id: str = missing,
+        fitness_term_definitions: List[FitnessTermDefinition] = missing,
+        error_fitness: float = missing,
+        **kwargs
+    ):
+        self.id = id
+        self.fitness_term_definitions = fitness_term_definitions
+        self.error_fitness = error_fitness
 
-        super().__init__(**kwargs)
+        self.obj_type = self.__class__.__name__
 
     def add_fitness_term(self, **kwargs):
         """
