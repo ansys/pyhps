@@ -311,7 +311,7 @@ FIELD_MAPPING = {
     marshmallow.fields.Nested: "object",
     IdReferenceList: "list[str]",
     IdReference: "str",
-    RestrictedValue: "int | float | str | bool",
+    RestrictedValue: "Union[int, float, str, bool]",
 }
 
 
@@ -395,7 +395,7 @@ def get_resource_imports(resource, base_class):
 
     imports = [
         "from datetime import datetime",
-        "from typing import List, Dict, Any",
+        "from typing import List, Dict, Any, Union",
         "from marshmallow.utils import missing",
         "from ansys.hps.client.common import Object",
         # f"from {base_class['path']}.{base_class['filename']} import {base_class['name']}",
