@@ -30,7 +30,7 @@ from marshmallow.utils import missing
 from ansys.hps.client.common import Object
 
 from ..schema.job_definition import JobDefinitionSchema
-from .fitness_definition_base import FitnessDefinitionBase
+from .fitness_definition import FitnessDefinition
 
 
 class JobDefinition(Object):
@@ -59,7 +59,7 @@ class JobDefinition(Object):
         List of parameter mapping IDs.
     task_definition_ids : list[str]
         List of task definition IDs.
-    fitness_definition : FitnessDefinitionBase, optional
+    fitness_definition : FitnessDefinition, optional
         A :class:`FitnessDefinition` object.
     """
 
@@ -80,7 +80,7 @@ class JobDefinition(Object):
         parameter_definition_ids: List[str] = missing,
         parameter_mapping_ids: List[str] = missing,
         task_definition_ids: List[str] = missing,
-        fitness_definition: FitnessDefinitionBase = missing,
+        fitness_definition: FitnessDefinition = missing,
         **kwargs
     ):
         self.id = id

@@ -37,7 +37,7 @@ from ansys.hps.client.common.restricted_value import RestrictedValue
 from ansys.hps.client.jms.schema.object_reference import IdReference, IdReferenceList
 
 # we define here which resources to auto-generate
-# some are excluded or done only partially (e.g. File)
+# some are excluded or done only partially (File and FitnessDefinition)
 # because they require more customization
 JMS_RESOURCES = [
     {
@@ -53,7 +53,7 @@ JMS_RESOURCES = [
         "schema_filename": "file",
         "rest_name": "files",
         "additional_fields": [],
-        "class": "FileBase",
+        "class": "File",
         "resource_filename": "file_base",
     },
     {
@@ -61,10 +61,10 @@ JMS_RESOURCES = [
         "schema_filename": "fitness_definition",
         "rest_name": None,
         "additional_fields": [],
-        "class": "FitnessDefinitionBase",
+        "class": "FitnessDefinition",
         "resource_filename": "fitness_definition_base",
         "additional_imports": [
-            "from .fitness_term_definition_base import FitnessTermDefinitionBase",
+            "from .fitness_term_definition_base import FitnessTermDefinition",
         ],
     },
     {
@@ -72,7 +72,7 @@ JMS_RESOURCES = [
         "schema_filename": "fitness_definition",
         "rest_name": None,
         "additional_fields": [],
-        "class": "FitnessTermDefinitionBase",
+        "class": "FitnessTermDefinition",
         "resource_filename": "fitness_term_definition_base",
     },
     {
@@ -91,7 +91,7 @@ JMS_RESOURCES = [
         "class": "JobDefinition",
         "resource_filename": "job_definition",
         "additional_imports": [
-            "from .fitness_definition_base import FitnessDefinitionBase",
+            "from .fitness_definition import FitnessDefinition",
         ],
     },
     {
