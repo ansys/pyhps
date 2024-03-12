@@ -182,7 +182,7 @@ jobs:
         run: ls -ltR /tmp/artifacts
 
       - name: Release to latest-dev
-        uses: softprops/action-gh-release@v1
+        uses: softprops/action-gh-release@v2
         if: startsWith(github.ref, 'refs/heads/main')
         with:
           tag_name: "v${{ needs.library-version.outputs.library_version }}"
