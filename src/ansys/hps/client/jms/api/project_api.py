@@ -31,7 +31,7 @@ import requests
 
 from ansys.hps.client.client import Client
 from ansys.hps.client.common import Object
-from ansys.hps.client.exceptions import HPSError
+from ansys.hps.client.exceptions import ClientError, HPSError
 from ansys.hps.client.jms.resource import (
     Algorithm,
     File,
@@ -294,7 +294,11 @@ class ProjectApi:
             AnalyzeResourceRequirements,
         )
 
-        td = self.get_task_definitions(id=task_definition_id, fields="all")[0]
+        tds = self.get_task_definitions(id=task_definition_id, fields="all")
+        if not tds:
+            raise ClientError(f"Could not retrieve task definition {task_definition_id}")
+        td = tds[0]
+
         rms_api = RmsApi(self.client)
 
         queue = None
