@@ -69,7 +69,7 @@ class JobSelection(Object):
         name: str = missing,
         algorithm_id: str = missing,
         jobs: List[str] = missing,
-        **kwargs
+        **kwargs,
     ):
         self.id = id
         self.creation_time = creation_time

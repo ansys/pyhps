@@ -92,7 +92,7 @@ class FitnessTermDefinition(Object):
         expression: str = missing,
         type: str = missing,
         weighting_factor: float = missing,
-        **kwargs
+        **kwargs,
     ):
         self.id = id
         self.name = name
@@ -143,7 +143,7 @@ class FitnessDefinition(Object):
         id: str = missing,
         fitness_term_definitions: List[FitnessTermDefinition] = missing,
         error_fitness: float = missing,
-        **kwargs
+        **kwargs,
     ):
         self.id = id
         self.fitness_term_definitions = fitness_term_definitions

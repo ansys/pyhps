@@ -64,7 +64,7 @@ class HpcResources(Object):
         num_gpus_per_node: int = missing,
         exclusive: bool = missing,
         queue: str = missing,
-        **kwargs
+        **kwargs,
     ):
         self.num_cores_per_node = num_cores_per_node
         self.num_gpus_per_node = num_gpus_per_node
@@ -111,7 +111,7 @@ class ResourceRequirements(Object):
         distributed: bool = missing,
         custom: Dict[str, Union[int, float, str, bool]] = missing,
         hpc_resources: HpcResources = missing,
-        **kwargs
+        **kwargs,
     ):
         self.platform = platform
         self.memory = memory
@@ -183,7 +183,7 @@ class SuccessCriteria(Object):
         require_all_output_files: bool = missing,
         required_output_parameter_ids: List[str] = missing,
         require_all_output_parameters: bool = missing,
-        **kwargs
+        **kwargs,
     ):
         self.return_code = return_code
         self.expressions = expressions
@@ -295,7 +295,7 @@ class TaskDefinition(Object):
         licensing: Licensing = missing,
         software_requirements: List[Software] = missing,
         resource_requirements: ResourceRequirements = missing,
-        **kwargs
+        **kwargs,
     ):
         self.id = id
         self.creation_time = creation_time

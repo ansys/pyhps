@@ -68,7 +68,7 @@ class Operation(Object):
         messages: List = missing,
         start_time: datetime = missing,
         end_time: datetime = missing,
-        **kwargs
+        **kwargs,
     ):
         self.id = id
         self.name = name

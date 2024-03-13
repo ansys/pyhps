@@ -81,7 +81,7 @@ class JobDefinition(Object):
         parameter_mapping_ids: List[str] = missing,
         task_definition_ids: List[str] = missing,
         fitness_definition: FitnessDefinition = missing,
-        **kwargs
+        **kwargs,
     ):
         self.id = id
         self.creation_time = creation_time

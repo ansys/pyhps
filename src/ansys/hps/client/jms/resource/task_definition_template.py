@@ -64,7 +64,7 @@ class TemplateProperty(Object):
         description: str = missing,
         type: str = missing,
         value_list: Any = missing,
-        **kwargs
+        **kwargs,
     ):
         self.default = default
         self.description = description
@@ -104,7 +104,7 @@ class TemplateResourceRequirements(Object):
         distributed: TemplateProperty = missing,
         custom: Dict[str, TemplateProperty] = missing,
         hpc_resources: HpcResources = missing,
-        **kwargs
+        **kwargs,
     ):
         self.platform = platform
         self.memory = memory
@@ -148,7 +148,7 @@ class TemplateInputFile(Object):
         evaluation_path: str = missing,
         description: str = missing,
         required: bool = missing,
-        **kwargs
+        **kwargs,
     ):
         self.name = name
         self.type = type
@@ -196,7 +196,7 @@ class TemplateOutputFile(Object):
         required: bool = missing,
         monitor: bool = missing,
         collect: bool = missing,
-        **kwargs
+        **kwargs,
     ):
         self.name = name
         self.type = type
@@ -273,7 +273,7 @@ class TaskDefinitionTemplate(Object):
         execution_script_storage_bucket: str = missing,
         input_files: List[TemplateInputFile] = missing,
         output_files: List[TemplateOutputFile] = missing,
-        **kwargs
+        **kwargs,
     ):
         self.id = id
         self.modification_time = modification_time
