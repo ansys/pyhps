@@ -120,7 +120,7 @@ class Task(Object):
         license_context_id: str = missing,
         custom_data: Dict = missing,
         working_directory: str = missing,
-        **kwargs
+        **kwargs,
     ):
         self.id = id
         self.creation_time = creation_time

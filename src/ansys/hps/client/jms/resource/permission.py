@@ -56,7 +56,7 @@ class Permission(Object):
         value_id: str = missing,
         value_name: str = missing,
         role: str = missing,
-        **kwargs
+        **kwargs,
     ):
         self.permission_type = permission_type
         self.value_id = value_id

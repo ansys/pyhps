@@ -92,7 +92,7 @@ class ParameterMapping(Object):
         parameter_definition_id: str = missing,
         task_definition_property: str = missing,
         file_id: str = missing,
-        **kwargs
+        **kwargs,
     ):
         self.id = id
         self.creation_time = creation_time

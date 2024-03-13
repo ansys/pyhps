@@ -121,7 +121,7 @@ class FloatParameterDefinition(ParameterDefinition):
         step: float = missing,
         cyclic: bool = missing,
         value_list: List = missing,
-        **kwargs
+        **kwargs,
     ):
         self.id = id
         self.creation_time = creation_time
@@ -207,7 +207,7 @@ class IntParameterDefinition(ParameterDefinition):
         upper_limit: int = missing,
         step: int = missing,
         cyclic: bool = missing,
-        **kwargs
+        **kwargs,
     ):
         self.id = id
         self.creation_time = creation_time
@@ -280,7 +280,7 @@ class BoolParameterDefinition(ParameterDefinition):
         mode: str = missing,
         type: str = missing,
         default: bool = missing,
-        **kwargs
+        **kwargs,
     ):
         self.id = id
         self.creation_time = creation_time
@@ -352,7 +352,7 @@ class StringParameterDefinition(ParameterDefinition):
         type: str = missing,
         default: str = missing,
         value_list: List = missing,
-        **kwargs
+        **kwargs,
     ):
         self.id = id
         self.creation_time = creation_time

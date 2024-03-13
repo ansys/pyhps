@@ -63,7 +63,7 @@ class User(Object):
         first_name: str = missing,
         last_name: str = missing,
         email: str = missing,
-        **kwargs
+        **kwargs,
     ):
         self.id = id
         self.username = username

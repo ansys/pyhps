@@ -99,7 +99,7 @@ class Job(Object):
         elapsed_time: float = missing,
         host_ids: List = missing,
         file_ids: List[str] = missing,
-        **kwargs
+        **kwargs,
     ):
         self.id = id
         self.creation_time = creation_time

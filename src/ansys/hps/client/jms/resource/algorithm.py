@@ -72,7 +72,7 @@ class Algorithm(Object):
         description: str = missing,
         data: str = missing,
         jobs: List[str] = missing,
-        **kwargs
+        **kwargs,
     ):
         self.id = id
         self.creation_time = creation_time

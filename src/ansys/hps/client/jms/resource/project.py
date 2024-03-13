@@ -66,7 +66,7 @@ class Project(Object):
         creation_time: datetime = missing,
         modification_time: datetime = missing,
         statistics: Dict = missing,
-        **kwargs
+        **kwargs,
     ):
         self.id = id
         self.name = name
