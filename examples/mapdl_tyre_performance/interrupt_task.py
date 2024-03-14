@@ -57,12 +57,14 @@ def interrupt_running_task(client, project_id) -> Project:
 
     task_def = project_api.get_task_definitions()[0]
 
-    running_tasks = project_api.get_tasks({"task_definition_id": task_def.id, "eval_status": "running"})
+    running_tasks = project_api.get_tasks(
+        {"task_definition_id": task_def.id, "eval_status": "running"}
+    )
     if not running_tasks:
         log.info("No running Tasks")
 
     task = running_tasks[0]
-    if not task.eval_status == 'running':
+    if not task.eval_status == "running":
         log.info("Task is not running")
         return
 
@@ -70,22 +72,22 @@ def interrupt_running_task(client, project_id) -> Project:
     command_defs_url = f"{project_url}/task_definitions/{task_def.id}/command_definitions"
 
     resp = client.session.get(command_defs_url)
-    command_defs = resp.json()['task_command_definitions']
-    
+    command_defs = resp.json()["task_command_definitions"]
+
     command_url = f"{project_url}/tasks/{task.id}/commands"
-    data_str = f'{{"task_commands" : [{{"name": \"{command_defs[0]["name"]}\", "command_definition_id": \"{command_defs[0]["id"]}\", "arguments": {{"immediately": true}}}}]}}'
+    data_str = f'{{"task_commands" : [{{"name": "{command_defs[0]["name"]}", "command_definition_id": "{command_defs[0]["id"]}", "arguments": {{"immediately": true}}}}]}}'
 
     resp = client.session.post(command_url, data=data_str)
     if not resp.status_code == 201:
         log.info("Failed to submit Task command")
         return
-    
-    cmd = resp.json()['task_commands'][0]
-    while not cmd['status'] == 'executed' and not cmd['status'] == 'failed':
-        resp = client.session.get(command_url, params={"id": cmd['id']})
+
+    cmd = resp.json()["task_commands"][0]
+    while not cmd["status"] == "executed" and not cmd["status"] == "failed":
+        resp = client.session.get(command_url, params={"id": cmd["id"]})
         if not resp.status_code == 200:
             log.info("Failed to check Task command status")
-        cmd = resp.json()['task_commands'][0]
+        cmd = resp.json()["task_commands"][0]
         log.info(f"Command status: {cmd['status']}")
         time.sleep(0.5)
 

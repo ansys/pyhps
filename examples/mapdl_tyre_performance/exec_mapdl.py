@@ -35,7 +35,7 @@ from ansys.rep.evaluator.task_manager import ApplicationExecution
 
 class MAPDLExecution(ApplicationExecution):
     class Meta(ApplicationExecution.Meta):
-        available_commands = ['interrupt']
+        available_commands = ["interrupt"]
 
     def execute(self):
 
@@ -75,6 +75,6 @@ class MAPDLExecution(ApplicationExecution):
 
     def interrupt(self):
         log.info("Interrupting MAPDL")
-        with open('file.abt', 'w') as file:
+        with open("file.abt", "w") as file:
             file.write("nonlinear")
         log.info("Created file.abt")
