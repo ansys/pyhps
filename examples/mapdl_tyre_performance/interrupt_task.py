@@ -73,7 +73,7 @@ def interrupt_running_task(client, project_id) -> Project:
     command_defs = resp.json()['task_command_definitions']
     
     command_url = f"{project_url}/tasks/{task.id}/commands"
-    data_str = f'{{"task_commands" : [{{"name": \"{command_defs[0]["name"]}\", "command_def_id": \"{command_defs[0]["id"]}\", "arguments": {{"immediately": true}}}}]}}'
+    data_str = f'{{"task_commands" : [{{"name": \"{command_defs[0]["name"]}\", "command_definition_id": \"{command_defs[0]["id"]}\", "arguments": {{"immediately": true}}}}]}}'
 
     resp = client.session.post(command_url, data=data_str)
     if not resp.status_code == 201:
