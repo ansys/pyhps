@@ -39,7 +39,7 @@ class MAPDLExecution(ApplicationExecution):
 
     def execute(self):
 
-        log.info("Starting MAPDL execution script")
+        log.info("Starting MAPDL execution script.")
 
         # Identify files
         inp_file = next((f for f in self.context.input_files if f["name"] == "inp"), None)
@@ -71,10 +71,10 @@ class MAPDLExecution(ApplicationExecution):
         log.info(f"Executing: {cmd}")
         subprocess.run(cmd, shell=True, check=True, env=env)
 
-        log.info("End MAPDL execution script")
+        log.info("End MAPDL execution script.")
 
     def interrupt(self):
-        log.info("Interrupting MAPDL")
+        log.info("Interrupting MAPDL.")
         with open("file.abt", "w") as file:
             file.write("nonlinear")
-        log.info("Created file.abt")
+        log.info("Created file.abt.")

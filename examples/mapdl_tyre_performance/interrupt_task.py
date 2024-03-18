@@ -49,11 +49,11 @@ def interrupt_running_task(client, project_id) -> Project:
         {"task_definition_id": task_def.id, "eval_status": "running"}
     )
     if not running_tasks:
-        log.info("No running Tasks")
+        log.info("No tasks are running.")
 
     task = running_tasks[0]
     if not task.eval_status == "running":
-        log.info("Task is not running")
+        log.info("Task is not running.")
         return
 
     project_url = f"{client.url}/jms/api/v1/projects/{project_id}"
@@ -71,14 +71,14 @@ def interrupt_running_task(client, project_id) -> Project:
 
     resp = client.session.post(command_url, data=data_str)
     if not resp.status_code == 201:
-        log.info("Failed to submit Task command")
+        log.info("Failed to submit task command.")
         return
 
     cmd = resp.json()["task_commands"][0]
     while not cmd["status"] == "executed" and not cmd["status"] == "failed":
         resp = client.session.get(command_url, params={"id": cmd["id"]})
         if not resp.status_code == 200:
-            log.info("Failed to check Task command status")
+            log.info("Failed to check task command status.")
         cmd = resp.json()["task_commands"][0]
         log.info(f"Command status: {cmd['status']}")
         time.sleep(0.5)
