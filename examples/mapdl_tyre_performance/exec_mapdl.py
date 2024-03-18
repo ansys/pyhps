@@ -71,7 +71,7 @@ class MAPDLExecution(ApplicationExecution):
         log.info(f"Executing: {cmd}")
         subprocess.run(cmd, shell=True, check=True, env=env)
 
-        log.info("End MAPDL execution script.")
+        log.info("End of MAPDL execution script.")
 
     def interrupt(self):
         log.info("Interrupting MAPDL.")
