@@ -39,7 +39,7 @@ class MAPDLExecution(ApplicationExecution):
 
     def execute(self):
 
-        log.info("Starting MAPDL execution script.")
+        log.info("Start of MAPDL execution script.")
 
         # Identify files
         inp_file = next((f for f in self.context.input_files if f["name"] == "inp"), None)
