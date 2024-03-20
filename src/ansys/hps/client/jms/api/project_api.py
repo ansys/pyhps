@@ -281,16 +281,10 @@ class ProjectApi:
         return _copy_objects(self.client, self.url, task_definitions, wait=wait)
 
     def get_task_definition_commands(
-        self, task_definition_id: str, as_objects: bool = True, **query_params
+        self, as_objects: bool = True, **query_params
     ) -> List[TaskCommandDefinition]:
         """Get the list of commands of a task definition."""
-        return get_objects(
-            self.client.session,
-            f"{self.url}/task_definitions/{task_definition_id}",
-            TaskCommandDefinition,
-            as_objects=as_objects,
-            **query_params,
-        )
+        return self._get_objects(TaskCommandDefinition, as_objects=as_objects, **query_params)
 
     ################################################################
     # Job definitions
@@ -465,9 +459,9 @@ class ProjectApi:
 
         command_definition = None
         for cd in command_definitions:
-            if not cd.arguments:
+            if not cd.parameters:
                 continue
-            if set(command_arguments.keys()) == set(cd.arguments.keys()):
+            if set(command_arguments.keys()) == set(cd.parameters.keys()):
                 command_definition = cd
                 break
 
@@ -479,7 +473,7 @@ class ProjectApi:
         # create the command object
         command = TaskCommand(
             task_id=task_id,
-            command_def_id=command_definition.id,
+            command_definition_id=command_definition.id,
             arguments=command_arguments,
         )
         return self.create_commands([command])

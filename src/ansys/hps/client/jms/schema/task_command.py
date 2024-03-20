@@ -35,7 +35,7 @@ class TaskCommandSchema(ObjectSchemaWithModificationInfo):
         allow_none=False,
         metadata={"description": "ID of the :class:`Task` instance that the command is linked to."},
     )
-    command_def_id = fields.String(  # todo better: command_definition_id
+    command_definition_id = fields.String(
         allow_none=False,
         metadata={
             "description": "ID of the :class:`TaskCommandDefinition` instance"
@@ -43,21 +43,10 @@ class TaskCommandSchema(ObjectSchemaWithModificationInfo):
         },
     )
 
-    # todo, name what for??
-    name = fields.String(
-        allow_none=False,
-        load_only=True,
-        metadata={
-            "description": "Name of the command (corresponds to the "
-            "function name in the execution script)."
-        },
-    )
-
-    # todo: maybe argument values?
     arguments = fields.Dict(
         allow_none=True,
         load_only=True,
-        metadata={"description": "Values of the command arguments."},
+        metadata={"description": "Command arguments."},
     )
 
     running_time = fields.DateTime(

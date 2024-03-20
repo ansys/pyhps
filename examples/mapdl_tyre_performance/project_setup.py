@@ -78,7 +78,7 @@ def create_project(
             src=os.path.join(cwd, "2d_tire_geometry.iges"),
         ),
         File(name="results", evaluation_path="tire_performance_results.txt", type="text/plain"),
-        File(name="img", evaluation_path="**.png", type="image/png", collect=True),
+        File(name="img", evaluation_path="**.png", type="image/png", collect=True, monitor=False),
         File(name="out", evaluation_path="file.out", type="text/plain", collect=True, monitor=True),
         File(
             name="mntr", evaluation_path="file.mntr", type="text/plain", collect=True, monitor=True
@@ -261,7 +261,7 @@ def create_project(
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("-n", "--name", type=str, default="Mapdl Tyre Performance")
-    parser.add_argument("-j", "--num-jobs", type=int, default=10)
+    parser.add_argument("-j", "--num-jobs", type=int, default=2)
     parser.add_argument("-es", "--use-exec-script", default=False, type=bool)
     parser.add_argument("-U", "--url", default="https://localhost:8443/hps")
     parser.add_argument("-u", "--username", default="repuser")

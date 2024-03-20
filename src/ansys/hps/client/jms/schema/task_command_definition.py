@@ -52,6 +52,6 @@ class TaskCommandDefinitionSchema(ObjectSchemaWithModificationInfo):
             "function name in the execution script)."
         },
     )
-    arguments = fields.Dict(
-        allow_none=True, load_only=True, metadata={"description": "Command arguments."}
+    parameters = fields.Dict(
+        allow_none=True, load_only=True, metadata={"description": "Command parameters."}
     )

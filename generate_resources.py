@@ -287,7 +287,7 @@ JMS_RESOURCES = [
     {
         "schema": "TaskCommandDefinitionSchema",
         "schema_filename": "task_command_definition",
-        "rest_name": "command_definitions",
+        "rest_name": "task_command_definitions",
         "additional_fields": [],
         "class": "TaskCommandDefinition",
         "resource_filename": "task_command_definition",
@@ -295,7 +295,7 @@ JMS_RESOURCES = [
     {
         "schema": "TaskCommandSchema",
         "schema_filename": "task_command",
-        "rest_name": "commands",
+        "rest_name": "task_commands",
         "additional_fields": [],
         "class": "TaskCommand",
         "resource_filename": "task_command",
