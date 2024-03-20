@@ -70,9 +70,11 @@ jobs:
         run: |
           python -m pip install --upgrade pip setuptools tox
 
+      - name: Install OS dependencies
+        run: |
           # Necessary for creating PDF
-          sudo apt-get -y install latexmk
-          sudo apt install texlive-latex-extra
+          sudo apt update
+          sudo apt install latexmk texlive-latex-extra
 
       - name: Generate the documentation with tox
         run: tox -e doc
@@ -182,7 +184,7 @@ jobs:
         run: ls -ltR /tmp/artifacts
 
       - name: Release to latest-dev
-        uses: softprops/action-gh-release@v1
+        uses: softprops/action-gh-release@v2
         if: startsWith(github.ref, 'refs/heads/main')
         with:
           tag_name: "v${{ needs.library-version.outputs.library_version }}"

@@ -25,7 +25,7 @@ import logging
 import pytest
 import requests
 
-from ansys.hps.client.auth import authenticate
+from ansys.hps.client import authenticate
 
 log = logging.getLogger(__name__)
 

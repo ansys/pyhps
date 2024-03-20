@@ -83,6 +83,13 @@ def is_admin(client: Client):
     return api.user_is_admin(users[0].id)
 
 
+# @pytest.fixture(scope="session")
+# def has_manage_users_role(client: Client, is_admin):
+#     if not is_admin:
+#         return False
+#     return api.user_is_admin(users[0].id)
+
+
 @pytest.fixture()
 def run_id():
     # Create a unique run_id (to be used when creating new projects)

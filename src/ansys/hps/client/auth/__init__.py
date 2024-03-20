@@ -21,5 +21,4 @@
 # SOFTWARE.
 """PyHPS authentication subpackage."""
 from .api import AuthApi
-from .authenticate import authenticate
 from .resource import User

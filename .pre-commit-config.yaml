@@ -1,37 +1,38 @@
 repos:
 
 - repo: https://github.com/psf/black
-  rev: 22.3.0
+  rev: 24.3.0
   hooks:
   - id: black
     exclude: ^(src/ansys/hps/client/rms/models.py)
 
 - repo: https://github.com/pycqa/isort
-  rev: 5.11.5
+  rev: 5.13.2
   hooks:
   - id: isort
     # exclude: ^(src/ansys/hps/client/jms/resource/|src/ansys/hps/client/auth/resource/)
 
 - repo: https://github.com/PyCQA/flake8
-  rev: 5.0.4
+  rev: 7.0.0
   hooks:
   - id: flake8
     exclude: ^(src/ansys/hps/client/jms/resource/|src/ansys/hps/client/auth/resource/)
 
 - repo: https://github.com/codespell-project/codespell
-  rev: v2.1.0
+  rev: v2.2.6
   hooks:
   - id: codespell
     exclude: >
       (?x)^(
           .*\.dat|
           .*\.mac|
-          .*\.k
+          .*\.k|
+          .*\.cas
       )$
     args: [-I, .codespellignore]
 
 - repo: https://github.com/ansys/pre-commit-hooks
-  rev: v0.2.8
+  rev: v0.2.9
   hooks:
   - id: add-license-headers
     files: '(ansys|examples|tests)/.*\.(py)|\.(proto)|generate_resources.py|archive_examples.py'
