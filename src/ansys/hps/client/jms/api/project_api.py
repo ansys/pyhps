@@ -723,9 +723,10 @@ def _download_file(
     download_path = os.path.join(target_path, file.evaluation_path)
     Path(download_path).parent.mkdir(parents=True, exist_ok=True)
 
-    with project_api.client.session.get(download_link, stream=stream) as r, open(
-        download_path, "wb"
-    ) as f:
+    with (
+        project_api.client.session.get(download_link, stream=stream) as r,
+        open(download_path, "wb") as f,
+    ):
         for chunk in r.iter_content(chunk_size=None):
             f.write(chunk)
             if progress_handler is not None:

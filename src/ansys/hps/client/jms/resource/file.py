@@ -20,6 +20,10 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 """Module providing the file resource."""
+from datetime import datetime
+import io
+from typing import Union
+
 from marshmallow.utils import missing
 
 from ansys.hps.client.common import Object
@@ -78,24 +82,24 @@ class File(Object):
 
     def __init__(
         self,
-        src=None,
-        id=missing,
-        name=missing,
-        type=missing,
-        storage_id=missing,
-        size=missing,
-        hash=missing,
-        creation_time=missing,
-        modification_time=missing,
-        created_by=missing,
-        modified_by=missing,
-        expiry_time=missing,
-        format=missing,
-        evaluation_path=missing,
-        monitor=missing,
-        collect=missing,
-        collect_interval=missing,
-        reference_id=missing,
+        src: Union[str, io.IOBase] = None,
+        id: str = missing,
+        creation_time: datetime = missing,
+        modification_time: datetime = missing,
+        created_by: str = missing,
+        modified_by: str = missing,
+        name: str = missing,
+        type: str = missing,
+        storage_id: str = missing,
+        size: int = missing,
+        hash: str = missing,
+        expiry_time: datetime = missing,
+        format: str = missing,
+        evaluation_path: str = missing,
+        monitor: bool = missing,
+        collect: bool = missing,
+        collect_interval: int = missing,
+        reference_id: str = missing,
         **kwargs,
     ):
         self.src = src
