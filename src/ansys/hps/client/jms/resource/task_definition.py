@@ -36,6 +36,7 @@ from ..schema.task_definition import (
     SoftwareSchema,
     SuccessCriteriaSchema,
     TaskDefinitionSchema,
+    WorkerContextSchema,
 )
 
 
@@ -52,6 +53,10 @@ class HpcResources(Object):
         Whether a job can't share resources with other running jobs.
     queue : str, optional
         Name of the job scheduler queue.
+    native_submit_options : str, optional
+        Additional command line options to pass directly to the scheduler.
+    custom_orchestration_options : dict[str, Union[int, float, str, bool]], optional
+        A set of custom options to pass through to control the orchestration customization.
     """
 
     class Meta:
@@ -64,12 +69,16 @@ class HpcResources(Object):
         num_gpus_per_node: int = missing,
         exclusive: bool = missing,
         queue: str = missing,
+        native_submit_options: str = missing,
+        custom_orchestration_options: Dict[str, Union[int, float, str, bool]] = missing,
         **kwargs,
     ):
         self.num_cores_per_node = num_cores_per_node
         self.num_gpus_per_node = num_gpus_per_node
         self.exclusive = exclusive
         self.queue = queue
+        self.native_submit_options = native_submit_options
+        self.custom_orchestration_options = custom_orchestration_options
 
         self.obj_type = self.__class__.__name__
 
@@ -92,6 +101,10 @@ class ResourceRequirements(Object):
         Amount of disk space in bytes.
     distributed : bool, optional
         Whether to enable distributed parallel processing.
+    compute_resource_set_id : str, optional
+        ID of the compute resource set this task should run on.
+    evaluator_id : str, optional
+        ID of the evaluator this task should run on.
     custom : dict[str, Union[int, float, str, bool]], optional
         Dictionary of custom resource requirements.
     hpc_resources : HpcResources, optional
@@ -109,6 +122,8 @@ class ResourceRequirements(Object):
         num_cores: float = missing,
         disk_space: int = missing,
         distributed: bool = missing,
+        compute_resource_set_id: str = missing,
+        evaluator_id: str = missing,
         custom: Dict[str, Union[int, float, str, bool]] = missing,
         hpc_resources: HpcResources = missing,
         **kwargs,
@@ -118,6 +133,8 @@ class ResourceRequirements(Object):
         self.num_cores = num_cores
         self.disk_space = disk_space
         self.distributed = distributed
+        self.compute_resource_set_id = compute_resource_set_id
+        self.evaluator_id = evaluator_id
         self.custom = custom
         self.hpc_resources = hpc_resources
 
@@ -150,6 +167,31 @@ class Software(Object):
 
 
 SoftwareSchema.Meta.object_class = Software
+
+
+class WorkerContext(Object):
+    """Provides the worker context resource.
+
+    Parameters
+    ----------
+    max_runtime : int, optional
+        Maximum lifetime (in seconds) for an ephemeral worker.
+    max_num_parallel_tasks : int, optional
+        Maximum number of tasks a worker can run in parallel.
+    """
+
+    class Meta:
+        schema = WorkerContextSchema
+        rest_name = "None"
+
+    def __init__(self, max_runtime: int = missing, max_num_parallel_tasks: int = missing, **kwargs):
+        self.max_runtime = max_runtime
+        self.max_num_parallel_tasks = max_num_parallel_tasks
+
+        self.obj_type = self.__class__.__name__
+
+
+WorkerContextSchema.Meta.object_class = WorkerContext
 
 
 class SuccessCriteria(Object):
@@ -266,6 +308,8 @@ class TaskDefinition(Object):
         List of :class:`Software` objects.
     resource_requirements : ResourceRequirements, optional
         :class:`ResourceRequirements` object.
+    worker_context : WorkerContext, optional
+        :class:`WorkerContext` object.
     """
 
     class Meta:
@@ -295,6 +339,7 @@ class TaskDefinition(Object):
         licensing: Licensing = missing,
         software_requirements: List[Software] = missing,
         resource_requirements: ResourceRequirements = missing,
+        worker_context: WorkerContext = missing,
         **kwargs,
     ):
         self.id = id
@@ -318,6 +363,7 @@ class TaskDefinition(Object):
         self.licensing = licensing
         self.software_requirements = software_requirements
         self.resource_requirements = resource_requirements
+        self.worker_context = worker_context
 
         self.obj_type = self.__class__.__name__
 

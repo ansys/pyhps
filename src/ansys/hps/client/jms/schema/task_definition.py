@@ -54,6 +54,35 @@ class HpcResourcesSchema(BaseSchema):
     queue = fields.Str(
         allow_none=True, metadata={"description": "Name of the job scheduler queue."}
     )
+    native_submit_options = fields.Str(
+        allow_none=True,
+        metadata={
+            "description": "Additional command line options to pass directly to the scheduler."
+        },
+    )
+    custom_orchestration_options = fields.Dict(
+        allow_none=True,
+        keys=fields.Str(),
+        values=RestrictedValue(),
+        metadata={
+            "description": "A set of custom options to pass through "
+            "to control the orchestration customization."
+        },
+    )
+
+
+class WorkerContextSchema(BaseSchema):
+    class Meta(BaseSchema.Meta):
+        pass
+
+    max_runtime = fields.Int(
+        allow_none=True,
+        metadata={"description": "Maximum run time (in seconds) for an ephemeral worker."},
+    )
+    max_num_parallel_tasks = fields.Int(
+        allow_none=True,
+        metadata={"description": "Maximum number of tasks a worker can run in parallel."},
+    )
 
 
 class ResourceRequirementsSchema(BaseSchema):
@@ -74,6 +103,14 @@ class ResourceRequirementsSchema(BaseSchema):
     distributed = fields.Bool(
         allow_none=True,
         metadata={"description": "Whether to enable distributed parallel processing."},
+    )
+    compute_resource_set_id = fields.String(
+        allow_none=True,
+        metadata={"description": "ID of the compute resource set this task should run on."},
+    )
+    evaluator_id = fields.String(
+        allow_none=True,
+        metadata={"description": "ID of the evaluator this task should run on."},
     )
     custom = fields.Dict(
         allow_none=True,
@@ -214,4 +251,9 @@ class TaskDefinitionSchema(ObjectSchemaWithModificationInfo):
         ResourceRequirementsSchema,
         allow_none=True,
         metadata={"description": ":class:`ResourceRequirements` object."},
+    )
+    worker_context = fields.Nested(
+        WorkerContextSchema,
+        allow_none=True,
+        metadata={"description": ":class:`WorkerContext` object."},
     )

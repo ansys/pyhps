@@ -36,7 +36,7 @@ from ..schema.task_definition_template import (
     TemplatePropertySchema,
     TemplateResourceRequirementsSchema,
 )
-from .task_definition import HpcResources, Software
+from .task_definition import HpcResources, Software, WorkerContext
 
 
 class TemplateProperty(Object):
@@ -87,6 +87,8 @@ class TemplateResourceRequirements(Object):
     num_cores : TemplateProperty, optional
     disk_space : TemplateProperty, optional
     distributed : TemplateProperty, optional
+    compute_resource_set_id : str, optional
+    evaluator_id : str, optional
     custom : dict[str, TemplateProperty], optional
     hpc_resources : HpcResources, optional
     """
@@ -102,6 +104,8 @@ class TemplateResourceRequirements(Object):
         num_cores: TemplateProperty = missing,
         disk_space: TemplateProperty = missing,
         distributed: TemplateProperty = missing,
+        compute_resource_set_id: str = missing,
+        evaluator_id: str = missing,
         custom: Dict[str, TemplateProperty] = missing,
         hpc_resources: HpcResources = missing,
         **kwargs,
@@ -111,6 +115,8 @@ class TemplateResourceRequirements(Object):
         self.num_cores = num_cores
         self.disk_space = disk_space
         self.distributed = distributed
+        self.compute_resource_set_id = compute_resource_set_id
+        self.evaluator_id = evaluator_id
         self.custom = custom
         self.hpc_resources = hpc_resources
 
@@ -233,6 +239,8 @@ class TaskDefinitionTemplate(Object):
         List of required software.
     resource_requirements : TemplateResourceRequirements, optional
         Hardware requirements such as the number of cores, memory, and disk space.
+    worker_context : WorkerContext, optional
+        :class:`WorkerContext` object.
     execution_context : dict[str, TemplateProperty], optional
         Dictionary of additional arguments to pass to the executing command.
     environment : dict[str, TemplateProperty], optional
@@ -265,6 +273,7 @@ class TaskDefinitionTemplate(Object):
         description: str = missing,
         software_requirements: List[Software] = missing,
         resource_requirements: TemplateResourceRequirements = missing,
+        worker_context: WorkerContext = missing,
         execution_context: Dict[str, TemplateProperty] = missing,
         environment: Dict[str, TemplateProperty] = missing,
         execution_command: str = missing,
@@ -283,6 +292,7 @@ class TaskDefinitionTemplate(Object):
         self.description = description
         self.software_requirements = software_requirements
         self.resource_requirements = resource_requirements
+        self.worker_context = worker_context
         self.execution_context = execution_context
         self.environment = environment
         self.execution_command = execution_command
