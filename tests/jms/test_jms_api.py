@@ -26,8 +26,9 @@ from examples.mapdl_motorbike_frame.project_setup import create_project
 from marshmallow.utils import missing
 import pytest
 
-from ansys.hps.client import Client, ClientError
+from ansys.hps.client import Client, ClientError, HPSError
 from ansys.hps.client.jms import JmsApi, ProjectApi
+from ansys.hps.client.jms.api.jms_api import _find_available_fs_url
 from ansys.hps.client.jms.resource import (
     FloatParameterDefinition,
     IntParameterDefinition,
@@ -51,6 +52,20 @@ def test_jms_api_info(client):
     assert "build" in info
     assert "settings" in info
     assert "time" in info
+
+
+def test_unavailable_fs_url(client):
+
+    storage_config = JmsApi(client).get_storage()
+
+    for config in storage_config:
+        if config["obj_type"] == "RestGateway":
+            config["url"] = config["url"].replace("v1", "v234")
+
+    with pytest.raises(HPSError) as ex_info:
+        _find_available_fs_url(storage_config)
+
+    assert "unavailable" in str(ex_info.value)
 
 
 def test_jms_api(client):
