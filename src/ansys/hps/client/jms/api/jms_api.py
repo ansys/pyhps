@@ -23,7 +23,7 @@
 import json
 import logging
 import os
-from typing import List, Union
+from typing import Dict, List, Union
 import uuid
 
 import backoff
@@ -78,7 +78,7 @@ class JmsApi(object):
     def fs_url(self) -> str:
         """URL of the file storage gateway."""
         if self._fs_url is None:
-            self._fs_url = get_fs_url(self.client, self.url)
+            self._fs_url = _find_available_fs_url(self.get_storage())
         return self._fs_url
 
     def get_api_info(self):
@@ -136,7 +136,7 @@ class JmsApi(object):
             Path of the archive file.
 
         """
-        return restore_project(self, path)
+        return _restore_project(self, path)
 
     ################################################################
     # Task Definition Templates
@@ -275,7 +275,7 @@ class JmsApi(object):
     # Storages
     def get_storage(self):
         """Get a list of storages."""
-        return get_storages(self.client, self.url)
+        return _get_storages(self.client, self.url)
 
 
 def get_projects(client, api_url, as_objects=True, **query_params) -> List[Project]:
@@ -409,7 +409,7 @@ def _copy_objects(
     return op.result["destination_ids"]
 
 
-def restore_project(jms_api, archive_path):
+def _restore_project(jms_api, archive_path):
     """Restore an archived project."""
     if not os.path.exists(archive_path):
         raise HPSError(f"Project archive: path does not exist {archive_path}")
@@ -454,7 +454,7 @@ def restore_project(jms_api, archive_path):
     return get_project(jms_api.client, jms_api.url, project_id)
 
 
-def get_storages(client, api_url):
+def _get_storages(client: Client, api_url: str) -> List[Dict]:
     """
     Get a list of storages.
     """
@@ -463,26 +463,30 @@ def get_storages(client, api_url):
     return r.json()["backends"]
 
 
-def get_fs_url(client, api_url):
-    """Get the file storage URL."""
-    file_storages = get_storages(client, api_url)
+def _find_available_fs_url(file_storages: Dict) -> str:
+    """Find first available file storage URL."""
 
     if not file_storages:
-        raise HPSError(f"There is no file storage information.")
+        raise HPSError("There is no file storage information.")
 
     rest_gateways = [fs for fs in file_storages if fs["obj_type"] == "RestGateway"]
     rest_gateways.sort(key=lambda fs: fs["priority"])
 
     if not rest_gateways:
-        raise HPSError(f"There is no REST gateway defined.")
+        raise HPSError("There is no file storage gateway defined.")
 
     for d in rest_gateways:
         url = d["url"]
         try:
             r = requests.get(url, verify=False, timeout=2)
+            is_ansft = r.json()["ansft"]
         except Exception as ex:
             log.debug(ex)
             continue
-        if r.status_code == 200:
+        if r.status_code == 200 and is_ansft:
             return url
-    return None
+
+    raise HPSError(
+        f"All defined file storage gateways are unavailable"
+        f" ({', '.join([d['url'] for d in rest_gateways])})."
+    )
