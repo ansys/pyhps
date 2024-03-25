@@ -45,7 +45,6 @@ class TaskCommandSchema(ObjectSchemaWithModificationInfo):
 
     arguments = fields.Dict(
         allow_none=True,
-        load_only=True,
         metadata={"description": "Command arguments."},
     )
 

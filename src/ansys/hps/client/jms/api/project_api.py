@@ -280,10 +280,10 @@ class ProjectApi:
         """
         return _copy_objects(self.client, self.url, task_definitions, wait=wait)
 
-    def get_task_definition_commands(
+    def get_task_command_definitions(
         self, as_objects: bool = True, **query_params
     ) -> List[TaskCommandDefinition]:
-        """Get the list of commands of a task definition."""
+        """Get the list of task command definitions."""
         return self._get_objects(TaskCommandDefinition, as_objects=as_objects, **query_params)
 
     ################################################################
@@ -450,7 +450,7 @@ class ProjectApi:
         task = self.get_tasks(id=task_id, fields=["id", "task_definition_id"])[0]
 
         # get the command definition
-        command_definitions = self.get_task_definition_commands(
+        command_definitions = self.get_task_command_definitions(
             task_definition_id=task.task_definition_id, name=name
         )
 
@@ -459,7 +459,7 @@ class ProjectApi:
 
         command_definition = None
         for cd in command_definitions:
-            if not cd.parameters:
+            if cd.parameters is None:
                 continue
             if set(command_arguments.keys()) == set(cd.parameters.keys()):
                 command_definition = cd
@@ -476,15 +476,15 @@ class ProjectApi:
             command_definition_id=command_definition.id,
             arguments=command_arguments,
         )
-        return self.create_commands([command])
+        return self.create_task_commands([command])
 
     ################################################################
     # Commands
-    def get_commands(self, as_objects: bool = True, **query_params) -> List[TaskCommand]:
+    def get_task_commands(self, as_objects: bool = True, **query_params) -> List[TaskCommand]:
         """Get a list of task commands."""
         return self._get_objects(TaskCommand, as_objects=as_objects, **query_params)
 
-    def create_commands(
+    def create_task_commands(
         self, commands: List[TaskCommand], as_objects: bool = True
     ) -> List[TaskCommand]:
         """Create task commands."""
