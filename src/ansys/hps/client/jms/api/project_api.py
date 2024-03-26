@@ -288,43 +288,30 @@ class ProjectApi:
         analytics: bool = True,
     ) -> AnalyzeResponse:
         """Compare resource requirements against available compute resources."""
-        from ansys.hps.client.rms.models import (
-            AnalyzeHpcResources,
-            AnalyzeRequiredSoftware,
-            AnalyzeResourceRequirements,
-        )
+        from ansys.hps.client.rms.models import AnalyzeRequiredSoftware, AnalyzeResourceRequirements
 
-        tds = self.get_task_definitions(id=task_definition_id, fields="all")
+        # we get the task definition as a native dict to more easily translate
+        # the sub-objects into RMS models
+        tds = self.get_task_definitions(id=task_definition_id, fields="all", as_objects=False)
         if not tds:
             raise ClientError(f"Could not retrieve task definition {task_definition_id}")
         td = tds[0]
 
-        rms_api = RmsApi(self.client)
-
-        queue = None
-        if td.resource_requirements.hpc_resources:
-            queue = td.resource_requirements.hpc_resources.queue or None
+        project_permissions = self.get_permissions(as_objects=False)
 
         requirements = AnalyzeRequirements(
             project_id=self.project_id,
             software_requirements=[
-                AnalyzeRequiredSoftware(name=x.name, version=x.version)
-                for x in td.software_requirements
+                AnalyzeRequiredSoftware(name=x["name"], version=x["version"])
+                for x in td["software_requirements"]
             ],
-            resource_requirements=AnalyzeResourceRequirements(
-                memory=td.resource_requirements.memory or None,
-                num_cores=td.resource_requirements.num_cores or None,
-                disk_space=td.resource_requirements.disk_space or None,
-                platform=td.resource_requirements.platform or None,
-                custom=td.resource_requirements.custom or None,
-                hpc_resources=AnalyzeHpcResources(
-                    queue=queue,
-                ),
-            ),
+            resource_requirements=AnalyzeResourceRequirements(**td["resource_requirements"]),
             evaluator_ids=evaluator_ids,
             scaler_ids=scaler_ids,
+            project_permissions=project_permissions,
         )
 
+        rms_api = RmsApi(self.client)
         return rms_api.analyze(requirements=requirements, analytics=analytics)
 
     ################################################################
