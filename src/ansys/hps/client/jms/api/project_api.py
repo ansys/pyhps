@@ -288,7 +288,6 @@ class ProjectApi:
         analytics: bool = True,
     ) -> AnalyzeResponse:
         """Compare resource requirements against available compute resources."""
-        from ansys.hps.client.rms.models import AnalyzeRequiredSoftware, AnalyzeResourceRequirements
 
         # we get the task definition as a native dict to more easily translate
         # the sub-objects into RMS models
@@ -301,11 +300,8 @@ class ProjectApi:
 
         requirements = AnalyzeRequirements(
             project_id=self.project_id,
-            software_requirements=[
-                AnalyzeRequiredSoftware(name=x["name"], version=x["version"])
-                for x in td["software_requirements"]
-            ],
-            resource_requirements=AnalyzeResourceRequirements(**td["resource_requirements"]),
+            software_requirements=td["software_requirements"],
+            resource_requirements=td["resource_requirements"],
             evaluator_ids=evaluator_ids,
             scaler_ids=scaler_ids,
             project_permissions=project_permissions,
