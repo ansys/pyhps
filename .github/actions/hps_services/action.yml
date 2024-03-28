@@ -12,13 +12,11 @@ inputs:
   token:
     description: 'Token'
     required: true
-    type: string
 
   internal-package:
     description: 'Use the docker-compose internal package (instead of the customer one)'
     required: false
-    default: false
-    type: boolean
+    default: 'false'
 
 outputs:
   url:
@@ -33,7 +31,7 @@ runs:
   using: "composite"
   
   steps:
-    - if: ${{ github.event.inputs.internal-package == false || github.event.inputs.internal-package == 'false' }}
+    - if: ${{ inputs.internal-package == 'false' }}
       uses: dsaltares/fetch-gh-release-asset@master
       name: Download Customer Services Artifact
       with:
@@ -43,7 +41,7 @@ runs:
         version: tags/${{ inputs.version }}
         token: ${{ inputs.token }}
 
-    - if: ${{ github.event.inputs.internal-package == true || github.event.inputs.internal-package == 'true' }}
+    - if: ${{ inputs.internal-package == 'true' }}
       uses: dsaltares/fetch-gh-release-asset@master
       name: Download Internal Services Artifact
       with:
@@ -65,7 +63,7 @@ runs:
         password: ${{ inputs.token }}
 
     - name: Start services (customer package)
-      if: ${{ github.event.inputs.internal-package == false || github.event.inputs.internal-package == 'false' }}
+      if: ${{ inputs.internal-package == 'false' }}
       shell: bash
       run: |
         ls -la
@@ -77,7 +75,7 @@ runs:
       working-directory: ./docker-compose-artifact
 
     - name: Start services (internal package)
-      if: ${{ github.event.inputs.internal-package == true || github.event.inputs.internal-package == 'true' }}
+      if: ${{ inputs.internal-package == 'true' }}
       shell: bash
       run: |
         ls -la
