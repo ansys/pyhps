@@ -52,7 +52,7 @@ jobs:
       python-version: ${{ matrix.cfg.python-version }}   
       toxenv: ${{ matrix.cfg.toxenv }}
       runner: ${{ matrix.os }}
-      hps-version: v${{ inputs.hps-version || '1.0.2' }}
+      hps-version: v${{ inputs.hps-version || '1.0.3' }}
 
   docs:
     name: Documentation
