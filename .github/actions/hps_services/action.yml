@@ -13,6 +13,14 @@ inputs:
     description: 'Token'
     required: true
 
+  ghcr-username:
+    description: 'Username to access the ansys-internal github docker registry'
+    required: true
+  
+  ghcr-token:
+    description: 'Token to access the ansys-internal github docker registry'
+    required: true
+
   internal-package:
     description: 'Use the docker-compose internal package (instead of the customer one)'
     required: false
@@ -59,8 +67,8 @@ runs:
       uses: docker/login-action@v2
       with:
         registry: ghcr.io
-        username: ansys-bot
-        password: ${{ inputs.token }}
+        username: ${{ ghcr-username}}
+        password: ${{ inputs.ghcr-token }}
 
     - name: Start services (customer package)
       if: ${{ inputs.internal-package == 'false' }}

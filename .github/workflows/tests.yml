@@ -41,7 +41,9 @@ jobs:
         id: hps-services
         uses: ./.github/actions/hps_services
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.PYANSYS_CI_BOT_TOKEN }}
+          ghcr-username: ansys-bot
+          ghcr-token: ${{ secrets.GITHUB_TOKEN }}
           version: ${{ inputs.hps-version }}
           internal-package: 'true'
 
