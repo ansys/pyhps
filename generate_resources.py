@@ -159,6 +159,14 @@ JMS_RESOURCES = [
         "resource_filename": "task_definition",
     },
     {
+        "schema": "WorkerContextSchema",
+        "schema_filename": "task_definition",
+        "rest_name": None,
+        "additional_fields": [],
+        "class": "WorkerContext",
+        "resource_filename": "task_definition",
+    },
+    {
         "schema": "SuccessCriteriaSchema",
         "schema_filename": "task_definition",
         "rest_name": None,
@@ -229,7 +237,9 @@ JMS_RESOURCES = [
         "additional_fields": [],
         "class": "TaskDefinitionTemplate",
         "resource_filename": "task_definition_template",
-        "additional_imports": ["from .task_definition import HpcResources, Software"],
+        "additional_imports": [
+            "from .task_definition import HpcResources, Software, WorkerContext"
+        ],
     },
     {
         "schema": "TaskSchema",

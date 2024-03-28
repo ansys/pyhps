@@ -25,7 +25,7 @@ from marshmallow import fields, validate
 
 from ansys.hps.client.common import BaseSchema, ObjectSchema
 
-from .task_definition import HpcResourcesSchema, SoftwareSchema
+from .task_definition import HpcResourcesSchema, SoftwareSchema, WorkerContextSchema
 
 
 class TemplatePropertySchema(BaseSchema):
@@ -61,6 +61,12 @@ class TemplateResourceRequirementsSchema(BaseSchema):
     num_cores = fields.Nested(TemplatePropertySchema, allow_none=True)
     disk_space = fields.Nested(TemplatePropertySchema, allow_none=True)
     distributed = fields.Nested(TemplatePropertySchema, allow_none=True)
+    compute_resource_set_id = fields.String(
+        allow_none=True,
+    )
+    evaluator_id = fields.String(
+        allow_none=True,
+    )
     custom = fields.Dict(
         keys=fields.String, values=fields.Nested(TemplatePropertySchema), allow_none=True
     )
@@ -136,6 +142,11 @@ class TaskDefinitionTemplateSchema(ObjectSchema):
             "description": "Hardware requirements such as the number of cores, "
             "memory, and disk space."
         },
+    )
+    worker_context = fields.Nested(
+        WorkerContextSchema,
+        allow_none=True,
+        metadata={"description": ":class:`WorkerContext` object."},
     )
 
     execution_context = fields.Dict(
