@@ -56,10 +56,10 @@ runs:
         GITHUB_TOKEN: ${{ inputs.token }}
 
     - name: Login in Github Container registry
-      uses: docker/login-action@v3
+      uses: docker/login-action@v2
       with:
-        registry: ghcr.io/ansys-internal
-        username: pyansys-ci-bot
+        registry: ghcr.io
+        username: ansys-bot
         password: ${{ inputs.token }}
 
     - name: Start services (customer package)
@@ -81,8 +81,8 @@ runs:
         ls -la
         tar -xvzf docker-compose-internal.tar.gz
         cd docker-compose
-        docker-compose pull
-        docker-compose up -d
+        FSGATEWAY_TAG=latest-dev JMS_TAG=latest-dev docker-compose pull
+        FSGATEWAY_TAG=latest-dev JMS_TAG=latest-dev docker-compose up -d
       working-directory: ./docker-compose-artifact
 
     - name: Wait for services

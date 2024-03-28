@@ -41,7 +41,7 @@ jobs:
         id: hps-services
         uses: ./.github/actions/hps_services
         with:
-          token: ${{ secrets.PYANSYS_CI_BOT_TOKEN }}
+          token: ${{ secrets.GITHUB_TOKEN }}
           version: ${{ inputs.hps-version }}
           internal-package: 'true'
 
