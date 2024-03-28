@@ -18,7 +18,7 @@ on:
       hps-version:
         description: HPS version to test against
         type: string
-        default: 'v1.0.2'
+        default: 'v1.0.3'
 
 jobs:
 
@@ -43,7 +43,7 @@ jobs:
         with:
           token: ${{ secrets.PYANSYS_CI_BOT_TOKEN }}
           version: ${{ inputs.hps-version }}
-          internal-package: true
+          internal-package: 'true'
 
       - name: Test with tox
         run: tox -e ${{ inputs.toxenv }}-coverage
