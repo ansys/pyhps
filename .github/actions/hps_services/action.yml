@@ -80,7 +80,6 @@ runs:
       run: |
         ls -la
         tar -xvzf docker-compose-internal.tar.gz
-        mv docker-compose-internal docker-compose
         cd docker-compose
         docker-compose pull
         docker-compose up -d
