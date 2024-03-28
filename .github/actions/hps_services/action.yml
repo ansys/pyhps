@@ -67,7 +67,7 @@ runs:
       uses: docker/login-action@v2
       with:
         registry: ghcr.io
-        username: ${{ ghcr-username}}
+        username: ${{ inputs.ghcr-username }}
         password: ${{ inputs.ghcr-token }}
 
     - name: Start services (customer package)
