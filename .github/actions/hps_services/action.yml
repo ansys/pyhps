@@ -69,6 +69,9 @@ runs:
         username: ${{ inputs.ghcr-username }}
         password: ${{ inputs.ghcr-token }}
 
+    - name: Test Pull Image
+      run: docker pull ghcr.io/ansys-internal/rep/jms-dev:latest-dev
+
     - name: Start services (customer package)
       if: ${{ inputs.internal-package == 'false' }}
       shell: bash
