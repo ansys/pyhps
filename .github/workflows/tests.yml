@@ -43,7 +43,7 @@ jobs:
         with:
           token: ${{ secrets.PYANSYS_CI_BOT_TOKEN }}
           ghcr-username: ${{ secrets.PYANSYS_CI_BOT_USERNAME }}
-          ghcr-token: ${{ secrets.PYANSYS_CI_BOT_TOKEN }}
+          ghcr-token: ${{ secrets.PYANSYS_CI_BOT_PACKAGE_TOKEN }}
           version: ${{ inputs.hps-version }}
           internal-package: 'true'
 
