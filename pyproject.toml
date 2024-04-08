@@ -46,7 +46,7 @@ doc = [
     "autodoc_pydantic==2.1.0",
     "jupyter_sphinx==0.5.3",
     "nbsphinx==0.9.3",
-    "numpydoc==1.6.0",
+    "numpydoc==1.7.0",
     "myst-parser==2.0.0",
     "Sphinx==7.2.6",
     "sphinx-autodoc-typehints==2.0.0",
@@ -60,7 +60,7 @@ doc = [
 ]
 
 build = [
-    "build==1.1.1",
+    "build==1.2.1",
     "twine==5.0.0",
     "wheel",
     "datamodel-code-generator==0.24.2",
