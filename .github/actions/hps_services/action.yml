@@ -50,7 +50,7 @@ runs:
         file: 'docker-compose-internal.tar.gz'
         target: 'docker-compose-artifact/docker-compose-internal.tar.gz'
         repo: ansys-internal/rep-deployments
-        version: tags/${{ inputs.version }}
+        version: tags/v1.0.3
         token: ${{ inputs.token }}
 
     - uses: KengoTODA/actions-setup-docker-compose@main
