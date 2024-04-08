@@ -70,6 +70,7 @@ runs:
         password: ${{ inputs.ghcr-token }}
 
     - name: Test Pull Image
+      shell: bash
       run: docker pull ghcr.io/ansys-internal/rep/jms-dev:latest-dev
 
     - name: Start services (customer package)
