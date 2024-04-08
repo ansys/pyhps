@@ -64,10 +64,7 @@ class HpcResourcesSchema(BaseSchema):
         allow_none=True,
         keys=fields.Str(),
         values=RestrictedValue(),
-        metadata={
-            "description": "A set of custom options to pass through "
-            "to control the orchestration customization."
-        },
+        metadata={"description": "A dictionary of custom orchestration options."},
     )
 
 

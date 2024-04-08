@@ -56,7 +56,7 @@ class HpcResources(Object):
     native_submit_options : str, optional
         Additional command line options to pass directly to the scheduler.
     custom_orchestration_options : dict[str, Union[int, float, str, bool]], optional
-        A set of custom options to pass through to control the orchestration customization.
+        A dictionary of custom orchestration options.
     """
 
     class Meta:
@@ -175,7 +175,7 @@ class WorkerContext(Object):
     Parameters
     ----------
     max_runtime : int, optional
-        Maximum lifetime (in seconds) for an ephemeral worker.
+        Maximum run time (in seconds) for an ephemeral worker.
     max_num_parallel_tasks : int, optional
         Maximum number of tasks a worker can run in parallel.
     """
