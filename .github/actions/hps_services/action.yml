@@ -63,7 +63,7 @@ runs:
         GITHUB_TOKEN: ${{ inputs.token }}
 
     - name: Login in Github Container registry
-      uses: docker/login-action@v2
+      uses: docker/login-action@v3
       with:
         registry: ghcr.io
         username: ${{ inputs.ghcr-username }}
