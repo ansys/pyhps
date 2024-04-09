@@ -52,6 +52,8 @@ class HpcResources(Object):
         Whether a job can't share resources with other running jobs.
     queue : str, optional
         Name of the job scheduler queue.
+    use_local_scratch : bool, optional
+        Whether to use node local storage.
     """
 
     class Meta:
@@ -64,12 +66,14 @@ class HpcResources(Object):
         num_gpus_per_node: int = missing,
         exclusive: bool = missing,
         queue: str = missing,
+        use_local_scratch: bool = missing,
         **kwargs,
     ):
         self.num_cores_per_node = num_cores_per_node
         self.num_gpus_per_node = num_gpus_per_node
         self.exclusive = exclusive
         self.queue = queue
+        self.use_local_scratch = use_local_scratch
 
         self.obj_type = self.__class__.__name__
 
