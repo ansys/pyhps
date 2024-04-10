@@ -4,8 +4,12 @@ on:
     inputs:
       hps-version:
         description: HPS version to test against
-        default: '1.0.2'
-        type: string
+        default: 'latest-dev'
+        type: choice
+        options:
+          - 'v1.0.2'
+          - 'v1.0.3'
+          - 'latest-dev'
 
   pull_request:
   push:
@@ -52,7 +56,7 @@ jobs:
       python-version: ${{ matrix.cfg.python-version }}   
       toxenv: ${{ matrix.cfg.toxenv }}
       runner: ${{ matrix.os }}
-      hps-version: v${{ inputs.hps-version || '1.0.2' }}
+      hps-version: ${{ inputs.hps-version || 'latest-dev' }}
 
   docs:
     name: Documentation
