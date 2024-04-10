@@ -1,0 +1,103 @@
+name: 'Local HPS Deployment'
+
+description: 'Docker Compose-based local HPS deployment'
+
+inputs:
+  
+  version:
+    description: 'HPS version'
+    required: true
+
+  token:
+    description: 'Token'
+    required: true
+
+  ghcr-username:
+    description: 'Username to access the ansys-internal github docker registry'
+    required: true
+  
+  ghcr-token:
+    description: 'Token to access the ansys-internal github docker registry'
+    required: true
+
+outputs:
+  url:
+    description: 'HPS URL'
+    value: ${{ steps.set-outputs.outputs.url }}
+
+  path:
+    description: 'Path of the docker compose artifact'
+    value: ${{ steps.set-outputs.outputs.path }}
+  
+runs:
+  using: "composite"
+  
+  steps:
+    - if: ${{ inputs.version != 'latest-dev' }}
+      uses: dsaltares/fetch-gh-release-asset@master
+      name: Download Customer Services Artifact
+      with:
+        file: 'docker-compose-customer.tar.gz'
+        target: 'docker-compose-artifact/docker-compose-customer.tar.gz'
+        repo: ansys-internal/rep-deployments
+        version: tags/${{ inputs.version }}
+        token: ${{ inputs.token }}
+
+    - if: ${{ inputs.version == 'latest-dev' }}
+      uses: dsaltares/fetch-gh-release-asset@master
+      name: Download Internal Services Artifact
+      with:
+        file: 'docker-compose-internal.tar.gz'
+        target: 'docker-compose-artifact/docker-compose-internal.tar.gz'
+        repo: ansys-internal/rep-deployments
+        version: tags/v1.0.3
+        token: ${{ inputs.token }}
+
+    - uses: KengoTODA/actions-setup-docker-compose@main
+      env:
+        GITHUB_TOKEN: ${{ inputs.token }}
+
+    - name: Login in Github Container registry
+      uses: docker/login-action@v3
+      with:
+        registry: ghcr.io
+        username: ${{ inputs.ghcr-username }}
+        password: ${{ inputs.ghcr-token }}
+
+    - name: Start services (customer package)
+      if: ${{ inputs.version != 'latest-dev' }}
+      shell: bash
+      run: |
+        ls -la
+        tar -xvzf docker-compose-customer.tar.gz
+        mv docker-compose-customer docker-compose
+        cd docker-compose
+        docker-compose build
+        docker-compose up -d
+      working-directory: ./docker-compose-artifact
+
+    - name: Start services (internal package)
+      if: ${{ inputs.version == 'latest-dev' }}
+      shell: bash
+      run: |
+        ls -la
+        tar -xvzf docker-compose-internal.tar.gz
+        cd docker-compose
+        FSGATEWAY_TAG=latest-dev JMS_TAG=latest-dev docker-compose pull
+        FSGATEWAY_TAG=latest-dev JMS_TAG=latest-dev docker-compose up -d
+      working-directory: ./docker-compose-artifact
+
+    - name: Wait for services
+      shell: bash
+      run: |
+        curl -k --head -X GET --retry 30 --retry-connrefused --retry-delay 1 https://localhost:8443/hps/jms/api/v1
+        curl -k --head -X GET --retry 30 --retry-connrefused --retry-delay 1 https://localhost:8443/hps/fs/api/v1
+        curl -k --head -X GET --retry 30 --retry-connrefused --retry-delay 1 https://localhost:8443/hps/rms/api/v1
+
+    - name: Set outputs
+      id: set-outputs
+      shell: bash
+      run: |
+        echo "url=https://localhost:8443/hps" >> $GITHUB_OUTPUT
+        echo "path=$(pwd)" >> $GITHUB_OUTPUT
+      working-directory: ./docker-compose-artifact/docker-compose
