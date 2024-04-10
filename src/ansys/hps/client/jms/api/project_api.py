@@ -286,6 +286,7 @@ class ProjectApi:
         evaluator_ids: list[str] = None,
         scaler_ids: list[str] = None,
         analytics: bool = True,
+        as_object: bool = True,
     ) -> AnalyzeResponse:
         """Compare resource requirements against available compute resources."""
 
@@ -308,7 +309,7 @@ class ProjectApi:
         )
 
         rms_api = RmsApi(self.client)
-        return rms_api.analyze(requirements=requirements, analytics=analytics)
+        return rms_api.analyze(requirements=requirements, analytics=analytics, as_object=as_object)
 
     ################################################################
     # Job definitions
