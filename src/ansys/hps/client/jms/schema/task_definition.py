@@ -107,11 +107,11 @@ class ResourceRequirementsSchema(BaseSchema):
     )
     compute_resource_set_id = fields.String(
         allow_none=True,
-        metadata={"description": "ID of the compute resource set this task should run on."},
+        metadata={"description": "ID of the compute resource set that this task should run on."},
     )
     evaluator_id = fields.String(
         allow_none=True,
-        metadata={"description": "ID of the evaluator this task should run on."},
+        metadata={"description": "ID of the evaluator that this task should run on."},
     )
     custom = fields.Dict(
         allow_none=True,

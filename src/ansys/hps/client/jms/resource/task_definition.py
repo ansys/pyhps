@@ -106,9 +106,9 @@ class ResourceRequirements(Object):
     distributed : bool, optional
         Whether to enable distributed parallel processing.
     compute_resource_set_id : str, optional
-        ID of the compute resource set this task should run on.
+        ID of the compute resource set that this task should run on.
     evaluator_id : str, optional
-        ID of the evaluator this task should run on.
+        ID of the evaluator that this task should run on.
     custom : dict[str, Union[int, float, str, bool]], optional
         Dictionary of custom resource requirements.
     hpc_resources : HpcResources, optional
