@@ -1,6 +1,6 @@
 name: 'Local HPS Deployment'
 
-description: 'Docker Compose based local HPS deployment'
+description: 'Docker Compose-based local HPS deployment'
 
 inputs:
   

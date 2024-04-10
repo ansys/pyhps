@@ -53,6 +53,8 @@ class HpcResources(Object):
         Whether a job can't share resources with other running jobs.
     queue : str, optional
         Name of the job scheduler queue.
+    use_local_scratch : bool, optional
+        Whether to use node local storage.
     native_submit_options : str, optional
         Additional command line options to pass directly to the scheduler.
     custom_orchestration_options : dict[str, Union[int, float, str, bool]], optional
@@ -69,6 +71,7 @@ class HpcResources(Object):
         num_gpus_per_node: int = missing,
         exclusive: bool = missing,
         queue: str = missing,
+        use_local_scratch: bool = missing,
         native_submit_options: str = missing,
         custom_orchestration_options: Dict[str, Union[int, float, str, bool]] = missing,
         **kwargs,
@@ -77,6 +80,7 @@ class HpcResources(Object):
         self.num_gpus_per_node = num_gpus_per_node
         self.exclusive = exclusive
         self.queue = queue
+        self.use_local_scratch = use_local_scratch
         self.native_submit_options = native_submit_options
         self.custom_orchestration_options = custom_orchestration_options
 
