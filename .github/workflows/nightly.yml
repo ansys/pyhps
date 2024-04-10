@@ -1,6 +1,16 @@
 name: Nightly Build
 on:
   workflow_dispatch:
+    inputs:
+      hps-version:
+        description: HPS version to test against
+        default: 'latest-dev'
+        type: choice
+        options:
+          - 'v1.0.2'
+          - 'v1.0.3'
+          - 'latest-dev'
+
   schedule:
   - cron: "0 2 * * *"
 
@@ -55,7 +65,8 @@ jobs:
       python-version: ${{ matrix.cfg.python-version }}   
       toxenv: ${{ matrix.cfg.toxenv }}
       runner: ${{ matrix.os }}
-        
+      hps-version: ${{ inputs.hps-version || 'latest-dev' }}
+
   smoke-tests:
     name: Build and Smoke tests
     runs-on: ${{ matrix.os }}
