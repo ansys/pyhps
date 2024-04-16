@@ -52,6 +52,8 @@ from .jms_api import JmsApi, _copy_objects
 
 log = logging.getLogger(__name__)
 
+import urllib.parse
+
 
 class ProjectApi:
     """Exposes the project endpoints of the JMS.
@@ -119,9 +121,11 @@ class ProjectApi:
         return self._fs_url
 
     @property
-    def fs_bucket_url(self) -> str:
+    def fs_bucket_url(self) -> str | None:
         """URL of the project's bucket in the file storage gateway."""
-        return f"{self.fs_url}/{self.project_id}"
+        if self.client.settings.use_legacy_fs:
+            return f"{self.fs_url}/{self.project_id}"
+        return None
 
     ################################################################
     # Project operations (copy, archive)
@@ -577,7 +581,15 @@ def _download_files(project_api: ProjectApi, files: List[File]):
 
     for f in files:
         if getattr(f, "hash", None) is not None:
-            r = project_api.client.session.get(f"{project_api.fs_bucket_url}/{f.storage_id}")
+            if project_api.client.settings.use_legacy_fs:
+                r = project_api.client.session.get(f"{project_api.fs_bucket_url}/{f.storage_id}")
+            else:
+                encoded_file_path = urllib.parse.quote(
+                    f"{project_api.project_id}/{f.storage_id}/{f.name}", safe=""
+                )
+                r = project_api.client.session.get(
+                    f"{project_api.fs_url}/data/any/{encoded_file_path}"
+                )
             f.content = r.content
             f.content_type = r.headers["Content-Type"]
 
@@ -599,7 +611,8 @@ def _upload_files(project_api: ProjectApi, files):
     This is a temporary implementation for uploading files. It is to be
     replaced with direct ansft calls, when it is available as a Python package.
     """
-    fs_headers = {"content-type": "application/octet-stream"}
+    if project_api.client.settings.use_legacy_fs:
+        fs_headers = {"content-type": "application/octet-stream"}
 
     for f in files:
         if getattr(f, "src", None) is None:
@@ -610,13 +623,32 @@ def _upload_files(project_api: ProjectApi, files):
         if is_file:
             content = open(f.src, "rb")
 
-        r = project_api.client.session.post(
-            f"{project_api.fs_bucket_url}/{f.storage_id}",
-            data=content,
-            headers=fs_headers,
-        )
-        f.hash = r.json()["checksum"]
-        f.size = r.request.headers.get("Content-Length", None)
+        if project_api.client.settings.use_legacy_fs:
+            r = project_api.client.session.post(
+                f"{project_api.fs_bucket_url}/{f.storage_id}",
+                data=content,
+                headers=fs_headers,
+            )
+            f.hash = r.json()["checksum"]
+            f.size = r.request.headers.get("Content-Length", None)
+        else:
+            encoded_file_path = urllib.parse.quote(
+                f"{project_api.project_id}/{f.storage_id}/{f.name}", safe=""
+            )
+            file = {"file": (f.name, content, f.type)}
+
+            # TODO
+            # Multi-part form boundary is not applied because of the default session content-type;
+            # Temporarily remove the default to not block default requests behavior.
+            project_api.client.session.headers.pop("content-type", None)
+
+            r = project_api.client.session.post(
+                f"{project_api.fs_url}/data/any/{encoded_file_path}", files=file
+            )
+
+            # TODO
+            # Re-apply default content-type post file creation.
+            project_api.client.session.headers.update({"content-type": "application/json"})
 
         if is_file:
             content.close()
