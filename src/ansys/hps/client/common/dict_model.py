@@ -19,8 +19,16 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
-"""PyHPS common subpackage."""
-from .base_resource import Object
-from .base_schema import BaseSchema, ObjectSchema, ObjectSchemaWithModificationInfo
-from .dict_model import DictModel
-from .restricted_value import RestrictedValue
+
+from pydantic import BaseModel
+
+
+class DictModel(BaseModel):
+    def __getitem__(self, key):
+        return getattr(self, key)
+
+    def __setitem__(self, key, value):
+        return setattr(self, key, value)
+
+    def get(self, key, default_value):
+        return getattr(self, key, default_value)
