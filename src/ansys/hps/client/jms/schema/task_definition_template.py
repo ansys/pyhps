@@ -61,12 +61,8 @@ class TemplateResourceRequirementsSchema(BaseSchema):
     num_cores = fields.Nested(TemplatePropertySchema, allow_none=True)
     disk_space = fields.Nested(TemplatePropertySchema, allow_none=True)
     distributed = fields.Nested(TemplatePropertySchema, allow_none=True)
-    compute_resource_set_id = fields.String(
-        allow_none=True,
-    )
-    evaluator_id = fields.String(
-        allow_none=True,
-    )
+    compute_resource_set_id = fields.Nested(TemplatePropertySchema, allow_none=True)
+    evaluator_id = fields.Nested(TemplatePropertySchema, allow_none=True)
     custom = fields.Dict(
         keys=fields.String, values=fields.Nested(TemplatePropertySchema), allow_none=True
     )

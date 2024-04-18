@@ -87,8 +87,8 @@ class TemplateResourceRequirements(Object):
     num_cores : TemplateProperty, optional
     disk_space : TemplateProperty, optional
     distributed : TemplateProperty, optional
-    compute_resource_set_id : str, optional
-    evaluator_id : str, optional
+    compute_resource_set_id : TemplateProperty, optional
+    evaluator_id : TemplateProperty, optional
     custom : dict[str, TemplateProperty], optional
     hpc_resources : HpcResources, optional
     """
@@ -104,8 +104,8 @@ class TemplateResourceRequirements(Object):
         num_cores: TemplateProperty = missing,
         disk_space: TemplateProperty = missing,
         distributed: TemplateProperty = missing,
-        compute_resource_set_id: str = missing,
-        evaluator_id: str = missing,
+        compute_resource_set_id: TemplateProperty = missing,
+        evaluator_id: TemplateProperty = missing,
         custom: Dict[str, TemplateProperty] = missing,
         hpc_resources: HpcResources = missing,
         **kwargs,
