@@ -68,7 +68,7 @@ class HpcResourcesSchema(BaseSchema):
         allow_none=True,
         keys=fields.Str(),
         values=RestrictedValue(),
-        metadata={"description": "A dictionary of custom orchestration options."},
+        metadata={"description": "Dictionary of custom orchestration options."},
     )
 
 
@@ -82,7 +82,7 @@ class WorkerContextSchema(BaseSchema):
     )
     max_num_parallel_tasks = fields.Int(
         allow_none=True,
-        metadata={"description": "Maximum number of tasks a worker can run in parallel."},
+        metadata={"description": "Maximum number of tasks that a worker can run in parallel."},
     )
 
 
