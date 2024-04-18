@@ -19,8 +19,25 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
-"""PyHPS common subpackage."""
-from .base_resource import Object
-from .base_schema import BaseSchema, ObjectSchema, ObjectSchemaWithModificationInfo
-from .dict_model import DictModel
-from .restricted_value import RestrictedValue
+
+from ansys.hps.client.rms.models import EvaluatorResources, HpcResources
+
+
+def test_dict_model_functionality():
+
+    obj = EvaluatorResources(
+        num_cores=4,
+        memory=1024,
+        hpc_resources=HpcResources(
+            queue="queue1",
+            exclusive=True,
+        ),
+    )
+
+    assert obj["num_cores"] == 4
+    assert obj["hpc_resources"]["queue"] == "queue1"
+
+    assert obj["hpc_resources"].get("num_cores_per_node", None) is None
+
+    obj["hpc_resources"]["num_cores_per_node"] = 2
+    assert obj["hpc_resources"].get("num_cores_per_node", None) == 2
