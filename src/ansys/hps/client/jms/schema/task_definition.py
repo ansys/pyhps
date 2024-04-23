@@ -78,11 +78,14 @@ class WorkerContextSchema(BaseSchema):
 
     max_runtime = fields.Int(
         allow_none=True,
-        metadata={"description": "Maximum run time (in seconds) for an ephemeral worker."},
+        metadata={"description": "Maximum run time (in seconds) for an ephemeral evaluator."},
     )
     max_num_parallel_tasks = fields.Int(
         allow_none=True,
-        metadata={"description": "Maximum number of tasks that a worker can run in parallel."},
+        metadata={
+            "description": "Maximum number of tasks that "
+            "an ephemeral evaluator can run in parallel."
+        },
     )
 
 

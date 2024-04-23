@@ -179,9 +179,9 @@ class WorkerContext(Object):
     Parameters
     ----------
     max_runtime : int, optional
-        Maximum run time (in seconds) for an ephemeral worker.
+        Maximum run time (in seconds) for an ephemeral evaluator.
     max_num_parallel_tasks : int, optional
-        Maximum number of tasks that a worker can run in parallel.
+        Maximum number of tasks that an ephemeral evaluator can run in parallel.
     """
 
     class Meta:
