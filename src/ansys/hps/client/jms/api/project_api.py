@@ -31,7 +31,7 @@ import requests
 
 from ansys.hps.client.client import Client
 from ansys.hps.client.common import Object
-from ansys.hps.client.exceptions import HPSError
+from ansys.hps.client.exceptions import ClientError, HPSError
 from ansys.hps.client.jms.resource import (
     Algorithm,
     File,
@@ -46,6 +46,8 @@ from ansys.hps.client.jms.resource import (
     Task,
     TaskDefinition,
 )
+from ansys.hps.client.rms.api import RmsApi
+from ansys.hps.client.rms.models import AnalyzeRequirements, AnalyzeResponse
 
 from .base import create_objects, delete_objects, get_objects, update_objects
 from .jms_api import JmsApi, _copy_objects
@@ -277,6 +279,37 @@ class ProjectApi:
             track progress.
         """
         return _copy_objects(self.client, self.url, task_definitions, wait=wait)
+
+    def analyze_task_definition(
+        self,
+        task_definition_id: str,
+        evaluator_ids: list[str] = None,
+        scaler_ids: list[str] = None,
+        analytics: bool = True,
+        as_object: bool = True,
+    ) -> AnalyzeResponse:
+        """Compare resource requirements against available compute resources."""
+
+        # Task definition is retrieved as a native dictionary to more easily translate
+        # the subobjects into RMS models
+        tds = self.get_task_definitions(id=task_definition_id, fields="all", as_objects=False)
+        if not tds:
+            raise ClientError(f"Could not retrieve task definition {task_definition_id}")
+        td = tds[0]
+
+        project_permissions = self.get_permissions(as_objects=False)
+
+        requirements = AnalyzeRequirements(
+            project_id=self.project_id,
+            software_requirements=td["software_requirements"],
+            resource_requirements=td["resource_requirements"],
+            evaluator_ids=evaluator_ids,
+            scaler_ids=scaler_ids,
+            project_permissions=project_permissions,
+        )
+
+        rms_api = RmsApi(self.client)
+        return rms_api.analyze(requirements=requirements, analytics=analytics, as_object=as_object)
 
     ################################################################
     # Job definitions
