@@ -21,7 +21,11 @@
 # SOFTWARE.
 
 from collections import OrderedDict
+import logging
 
+from examples.python_two_bar_truss_problem.project_setup import main as create_project
+
+from ansys.hps.client import ProjectApi
 from ansys.hps.client.jms.resource import TaskDefinition
 from ansys.hps.client.jms.resource.task_definition import (
     HpcResources,
@@ -30,6 +34,8 @@ from ansys.hps.client.jms.resource.task_definition import (
     SuccessCriteria,
 )
 from ansys.hps.client.jms.schema.task_definition import TaskDefinitionSchema
+
+log = logging.getLogger(__name__)
 
 
 def test_task_definition_deserialization():
@@ -246,3 +252,26 @@ def test_task_definition_serialization():
             "hpc_resources": {"num_gpus_per_node": 2, "exclusive": True},
         }
     )
+
+
+def test_analyze_task_definition(client):
+    # Because compute resources can't be assumed to be available,
+    # so we just hit the endpoint
+
+    project = create_project(client, 1, use_exec_script=False)
+    api = ProjectApi(client, project.id)
+    task_def = api.get_task_definitions()[0]
+
+    r = api.analyze_task_definition(task_def.id)
+    log.info(r.model_dump_json(indent=2))
+    assert r is not None
+    assert not isinstance(r, dict)
+
+    r = api.analyze_task_definition(task_def.id, analytics=False)
+    log.info(r.model_dump_json(indent=2))
+    assert r is not None
+    assert r.analytics is None
+
+    r = api.analyze_task_definition(task_def.id, as_object=False)
+    assert r is not None
+    assert isinstance(r, dict)

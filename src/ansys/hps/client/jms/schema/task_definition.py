@@ -54,6 +54,10 @@ class HpcResourcesSchema(BaseSchema):
     queue = fields.Str(
         allow_none=True, metadata={"description": "Name of the job scheduler queue."}
     )
+    use_local_scratch = fields.Bool(
+        allow_none=True,
+        metadata={"description": "Whether to use node local storage."},
+    )
 
 
 class ResourceRequirementsSchema(BaseSchema):
