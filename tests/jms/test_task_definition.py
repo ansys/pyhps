@@ -255,7 +255,7 @@ def test_task_definition_serialization():
 
 
 def test_analyze_task_definition(client):
-    # we can't assume compute resources to be available,
+    # Because compute resources can't be assumed to be available,
     # so we just hit the endpoint
 
     project = create_project(client, 1, use_exec_script=False)

@@ -186,7 +186,7 @@ class RmsApi(object):
     ) -> AnalyzeResponse:
         """Compare resource requirements against available compute resources."""
         if requirements is None:
-            raise ClientError(f"requirements can't be None.")
+            raise ClientError(f"Requirements can't be None.")
 
         r = self.client.session.post(
             f"{self.url}/analyze",

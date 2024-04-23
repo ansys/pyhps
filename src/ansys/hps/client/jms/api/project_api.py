@@ -290,8 +290,8 @@ class ProjectApi:
     ) -> AnalyzeResponse:
         """Compare resource requirements against available compute resources."""
 
-        # we get the task definition as a native dict to more easily translate
-        # the sub-objects into RMS models
+        # Task definition is retrieved as a native dictionary to more easily translate
+        # the subobjects into RMS models
         tds = self.get_task_definitions(id=task_definition_id, fields="all", as_objects=False)
         if not tds:
             raise ClientError(f"Could not retrieve task definition {task_definition_id}")
