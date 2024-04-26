@@ -66,7 +66,7 @@ jobs:
       toxenv: ${{ matrix.cfg.toxenv }}
       runner: ${{ matrix.os }}
       hps-version: ${{ inputs.hps-version || 'latest-dev' }}
-
+      
   smoke-tests:
     name: Build and Smoke tests
     runs-on: ${{ matrix.os }}

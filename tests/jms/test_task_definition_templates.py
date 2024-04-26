@@ -81,6 +81,18 @@ def test_template_deserialization():
                 "value_list": ["DMP", "SMP", "Hybrid"],
             },
         },
+        "worker_context": {
+            "max_runtime": 120,
+            "max_num_parallel_tasks": 3,
+        },
+        "resource_requirements": {
+            "hpc_resources": {
+                "custom_orchestration_options": {
+                    "sval": "value",
+                    "bval": False,
+                }
+            }
+        },
     }
 
     template = TaskDefinitionTemplateSchema().load(json_data)
@@ -94,6 +106,12 @@ def test_template_deserialization():
     assert len(template.output_files) == 2
     assert template.output_files[0].name == "out"
     assert template.output_files[1].type == "application/octet-stream"
+    assert template.worker_context.max_num_parallel_tasks == 3
+    assert template.worker_context.max_runtime == 120
+    assert (
+        template.resource_requirements.hpc_resources.custom_orchestration_options["sval"] == "value"
+    )
+    assert not template.resource_requirements.hpc_resources.custom_orchestration_options["bval"]
 
     json_data["software_requirements"][0]["version"] = "2022 R2"
     json_data["execution_command"] = "my command line"
