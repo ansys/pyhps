@@ -56,18 +56,26 @@ def interrupt_running_task(client, project_id) -> Project:
         log.info("Task is not running.")
         return
 
+    log.info(f"Found running Task: {task.id}")
+
     project_url = f"{client.url}/jms/api/v1/projects/{project_id}"
     command_defs_url = f"{project_url}/task_command_definitions"
 
     resp = client.session.get(command_defs_url)
     command_defs = resp.json()["task_command_definitions"]
+    if not command_defs:
+        log.info(f"No command definitions found")
+        return
+
+    log.info(f"Command definition id: {command_defs[0]['id']}")
 
     command_url = f"{project_url}/task_commands"
     data_str = f"""{{"task_commands" :
-    [{{"name": "{command_defs[0]["name"]}",
-    "task_id": "{task_def.id}",
-    "command_definition_id": "{command_defs[0]["id"]}",
-    "arguments": {{"immediately": true}}}}]}}"""
+    [
+        {{"task_id": "{task.id}",
+        "command_definition_id": "{command_defs[0]["id"]}",
+        "arguments": {{}}}}
+    ]}}"""
 
     resp = client.session.post(command_url, data=data_str)
     if not resp.status_code == 201:

@@ -35,7 +35,7 @@ from ansys.rep.evaluator.task_manager import ApplicationExecution
 
 class MAPDLExecution(ApplicationExecution):
     class Meta(ApplicationExecution.Meta):
-        available_commands = ["interrupt"]
+        available_commands = ["interrupt", "command_with_parameters"]
 
     def execute(self):
 
@@ -78,3 +78,11 @@ class MAPDLExecution(ApplicationExecution):
         with open("file.abt", "w") as file:
             file.write("nonlinear")
         log.info("Created file.abt.")
+
+    def command_with_parameters(self, count: int, message: str):
+        if not count or count < 0:
+            raise ("count must be greater than zero")
+
+        message = os.path.expandvars(message)
+        for c in count:
+            log.info(message)
