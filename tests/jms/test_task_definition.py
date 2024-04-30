@@ -69,6 +69,8 @@ def test_task_definition_deserialization():
             "num_cores": 1,
             "disk_space": 5,
             "memory": 250,
+            "evaluator_id": "ev-id",
+            "compute_resource_set_id": "crs-id",
             "custom": {
                 "test_str": "5",
                 "test_int": 1,
@@ -82,6 +84,7 @@ def test_task_definition_deserialization():
                 "num_cores_per_node": 3,
                 "exclusive": True,
                 "queue": "myq",
+                "native_submit_options": '--constraint="graphics*4"',
             },
         },
         "software_requirements": [],
@@ -143,7 +146,14 @@ def test_task_definition_deserialization():
             "test_bool2": False,
             "test_none": None,
         },
-        hpc_resources=HpcResources(exclusive=True, queue="myq", num_cores_per_node=3),
+        hpc_resources=HpcResources(
+            exclusive=True,
+            queue="myq",
+            num_cores_per_node=3,
+            native_submit_options='--constraint="graphics*4"',
+        ),
+        evaluator_id="ev-id",
+        compute_resource_set_id="crs-id",
     )
 
 
@@ -182,7 +192,19 @@ def test_task_definition_serialization():
                 "test_bool2": False,
                 "test_none": None,
             },
-            hpc_resources=HpcResources(exclusive=True, num_gpus_per_node=2),
+            hpc_resources=HpcResources(
+                exclusive=True,
+                num_gpus_per_node=2,
+                custom_orchestration_options={
+                    "test_str": "5",
+                    "test_int": 1,
+                    "test_int2": 0,
+                    "test_float": 7.7,
+                    "test_bool": True,
+                    "test_bool2": False,
+                    "test_none": None,
+                },
+            ),
         ),
         software_requirements=[],
         store_output=True,
@@ -249,7 +271,19 @@ def test_task_definition_serialization():
                 "test_bool2": False,
                 "test_none": None,
             },
-            "hpc_resources": {"num_gpus_per_node": 2, "exclusive": True},
+            "hpc_resources": {
+                "num_gpus_per_node": 2,
+                "exclusive": True,
+                "custom_orchestration_options": {
+                    "test_str": "5",
+                    "test_int": 1,
+                    "test_int2": 0,
+                    "test_float": 7.7,
+                    "test_bool": True,
+                    "test_bool2": False,
+                    "test_none": None,
+                },
+            },
         }
     )
 

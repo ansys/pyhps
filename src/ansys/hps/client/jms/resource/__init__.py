@@ -48,6 +48,7 @@ from .task_definition import (
     Software,
     SuccessCriteria,
     TaskDefinition,
+    WorkerContext,
 )
 from .task_definition_template import (
     TaskDefinitionTemplate,

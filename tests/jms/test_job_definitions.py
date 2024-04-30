@@ -32,6 +32,7 @@ from ansys.hps.client.jms.resource import (
     Project,
     ResourceRequirements,
     TaskDefinition,
+    WorkerContext,
 )
 
 log = logging.getLogger(__name__)
@@ -80,7 +81,9 @@ def test_task_definition_fields(client):
             memory=256 * 1024 * 1024 * 1024,  # 256GB
             disk_space=2 * 1024 * 1024 * 1024 * 1024,  # 2TB
             hpc_resources=HpcResources(num_cores_per_node=2),
+            compute_resource_set_id="abc123",
         ),
+        worker_context=WorkerContext(max_runtime=3600, max_num_parallel_tasks=4),
     )
     assert task_def.resource_requirements.hpc_resources.num_cores_per_node == 2
 
@@ -89,6 +92,8 @@ def test_task_definition_fields(client):
     assert task_def.resource_requirements.memory == 274877906944
     assert task_def.resource_requirements.disk_space == 2199023255552
     assert task_def.resource_requirements.hpc_resources.num_cores_per_node == 2
+    assert task_def.worker_context.max_num_parallel_tasks == 4
+    assert task_def.resource_requirements.compute_resource_set_id == "abc123"
     assert task_def.modified_by is not missing
     assert task_def.created_by is not missing
     assert auth_api.get_user(id=task_def.created_by).username == client.username
