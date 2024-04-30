@@ -20,10 +20,9 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from ansys.hps.client.rms.models import EvaluatorResources, HpcResources
-
 
 def test_dict_model_functionality():
+    from ansys.hps.client.rms.models import EvaluatorResources, HpcResources
 
     obj = EvaluatorResources(
         num_cores=4,
@@ -41,3 +40,23 @@ def test_dict_model_functionality():
 
     obj["hpc_resources"]["num_cores_per_node"] = 2
     assert obj["hpc_resources"].get("num_cores_per_node", None) == 2
+
+
+def test_object_functionality():
+    from ansys.hps.client.jms.resource.task_definition import HpcResources, ResourceRequirements
+
+    obj = ResourceRequirements(
+        num_cores=4,
+        memory=1024,
+        hpc_resources=HpcResources(
+            num_cores_per_node=2,
+            queue="queue1",
+            exclusive=True,
+        ),
+    )
+
+    assert obj["num_cores"] == 4
+    assert obj["hpc_resources"]["queue"] == "queue1"
+
+    obj["hpc_resources"]["num_cores_per_node"] = 3
+    assert obj["hpc_resources"].get("num_cores_per_node", None) == 3
