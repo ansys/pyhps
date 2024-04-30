@@ -47,7 +47,7 @@ doc = [
     "jupyter_sphinx==0.5.3",
     "nbsphinx==0.9.3",
     "numpydoc==1.7.0",
-    "myst-parser==2.0.0",
+    "myst-parser==3.0.1",
     "Sphinx==7.3.7",
     "sphinx-autodoc-typehints==2.0.1",
     "sphinxcontrib-globalsubs==0.1.1",
