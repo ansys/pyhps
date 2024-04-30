@@ -36,6 +36,7 @@ Resources
    StringParameterDefinition
    ParameterMapping
    Software
+   HpcResources
    ResourceRequirements
    SuccessCriteria
    Licensing

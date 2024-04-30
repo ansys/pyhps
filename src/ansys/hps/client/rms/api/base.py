@@ -56,6 +56,21 @@ def _create_dynamic_list_model(name, field_name, field_type) -> BaseModel:
     return create_model(name, **fields)
 
 
+def object_to_json(
+    object: BaseModel,
+    exclude_unset: bool = True,
+    exclude_defaults: bool = False,
+):
+    if pydantic_version.startswith("1."):
+        return object.json(exclude_unset=exclude_unset, exclude_defaults=exclude_defaults)
+    elif pydantic_version.startswith("2."):
+        return object.model_dump_json(
+            exclude_unset=exclude_unset, exclude_defaults=exclude_defaults
+        )
+    else:
+        raise RuntimeError(f"Unsupported Pydantic version {pydantic_version}")
+
+
 def objects_to_json(
     objects: List[BaseModel],
     rest_name: str,
@@ -72,14 +87,7 @@ def objects_to_json(
     args = {f"{rest_name}": objects}
     objects_list = ListOfObjects(**args)
 
-    if pydantic_version.startswith("1."):
-        return objects_list.json(exclude_unset=exclude_unset, exclude_defaults=exclude_defaults)
-    elif pydantic_version.startswith("2."):
-        return objects_list.model_dump_json(
-            exclude_unset=exclude_unset, exclude_defaults=exclude_defaults
-        )
-    else:
-        raise RuntimeError(f"Unsupported Pydantic version {pydantic_version}")
+    return object_to_json(objects_list, exclude_unset, exclude_defaults)
 
 
 def json_to_objects(data, obj_type):

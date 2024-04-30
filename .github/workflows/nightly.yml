@@ -1,6 +1,16 @@
 name: Nightly Build
 on:
   workflow_dispatch:
+    inputs:
+      hps-version:
+        description: HPS version to test against
+        default: 'latest-dev'
+        type: choice
+        options:
+          - 'v1.0.2'
+          - 'v1.0.3'
+          - 'latest-dev'
+
   schedule:
   - cron: "0 2 * * *"
 
@@ -34,7 +44,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: PyAnsys documentation style checks
-        uses: ansys/actions/doc-style@v5
+        uses: ansys/actions/doc-style@v6
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
 
@@ -55,7 +65,8 @@ jobs:
       python-version: ${{ matrix.cfg.python-version }}   
       toxenv: ${{ matrix.cfg.toxenv }}
       runner: ${{ matrix.os }}
-        
+      hps-version: ${{ inputs.hps-version || 'latest-dev' }}
+      
   smoke-tests:
     name: Build and Smoke tests
     runs-on: ${{ matrix.os }}
@@ -72,7 +83,7 @@ jobs:
             os: macos-latest
     steps:
       - name: Build wheelhouse and perform smoke test
-        uses: ansys/actions/build-wheelhouse@v5
+        uses: ansys/actions/build-wheelhouse@v6
         with:
           library-name: ${{ env.PACKAGE_NAME }}
           operating-system: ${{ matrix.os }}
