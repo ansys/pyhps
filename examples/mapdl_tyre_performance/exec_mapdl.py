@@ -81,8 +81,9 @@ class MAPDLExecution(ApplicationExecution):
 
     def command_with_parameters(self, count: int, message: str):
         if not count or count < 0:
-            raise ("count must be greater than zero")
+            raise Exception("count must be greater than zero")
 
         message = os.path.expandvars(message)
-        for c in count:
-            log.info(message)
+        while count:
+            log.info(f"{count}: {message}")
+            count -= 1
