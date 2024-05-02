@@ -108,5 +108,5 @@ class Object(object):
     def __setitem__(self, key, value):
         return setattr(self, key, value)
 
-    def get(self, key, default_value):
-        return getattr(self, key, default_value)
+    def get(self, key, default=None):
+        return getattr(self, key, default)

@@ -21,22 +21,28 @@
 # SOFTWARE.
 
 
-def test_dict_model_functionality():
-    from ansys.hps.client.rms.models import EvaluatorResources, HpcResources
+def test_object_functionality():
+    from ansys.hps.client.jms.resource.task_definition import HpcResources, ResourceRequirements
 
-    obj = EvaluatorResources(
+    obj = ResourceRequirements(
         num_cores=4,
         memory=1024,
         hpc_resources=HpcResources(
+            num_cores_per_node=2,
             queue="queue1",
             exclusive=True,
         ),
     )
 
     assert obj["num_cores"] == 4
+    
+
+    
     assert obj["hpc_resources"]["queue"] == "queue1"
 
-    assert obj["hpc_resources"].get("num_cores_per_node", None) is None
-
-    obj["hpc_resources"]["num_cores_per_node"] = 2
-    assert obj["hpc_resources"].get("num_cores_per_node", None) == 2
+    obj["hpc_resources"]["num_cores_per_node"] = 3
+    assert obj["hpc_resources"].get("num_cores_per_node", None) == 3
+    
+    assert obj.get("memory") == 1024
+    assert obj.get("service") is None
+    
