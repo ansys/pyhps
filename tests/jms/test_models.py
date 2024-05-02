@@ -35,14 +35,11 @@ def test_object_functionality():
     )
 
     assert obj["num_cores"] == 4
-    
 
-    
     assert obj["hpc_resources"]["queue"] == "queue1"
 
     obj["hpc_resources"]["num_cores_per_node"] = 3
     assert obj["hpc_resources"].get("num_cores_per_node", None) == 3
-    
+
     assert obj.get("memory") == 1024
     assert obj.get("service") is None
-    
