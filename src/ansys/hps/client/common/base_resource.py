@@ -22,6 +22,7 @@
 """Module processing class members for an object."""
 import json
 import logging
+from typing import Dict, Optional
 
 from marshmallow.utils import missing
 
@@ -110,3 +111,13 @@ class Object(object):
 
     def get(self, key, default=None):
         return getattr(self, key, default)
+
+    def to_dict(self) -> Dict:
+        """Serialize to a dictionary."""
+        schema = self.Meta.schema(many=False)
+        return schema.dump(self)
+
+    def to_json(self, indent: Optional[int] = None) -> str:
+        """Serialize to a JSON formatted string."""
+        schema = self.Meta.schema(many=False)
+        return schema.dumps(self, indent=indent)

@@ -20,9 +20,12 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+import json
+
+from ansys.hps.client.jms.resource import HpcResources, Job, ResourceRequirements
+
 
 def test_object_functionality():
-    from ansys.hps.client.jms.resource.task_definition import HpcResources, ResourceRequirements
 
     obj = ResourceRequirements(
         num_cores=4,
@@ -43,3 +46,61 @@ def test_object_functionality():
 
     assert obj.get("memory") == 1024
     assert obj.get("service") is None
+
+
+def test_serialization():
+
+    obj = ResourceRequirements(
+        num_cores=4,
+        memory=1024,
+        hpc_resources=HpcResources(
+            num_cores_per_node=2,
+            queue="queue1",
+            exclusive=True,
+        ),
+    )
+
+    obj_dict = obj.to_dict()
+
+    assert obj_dict["num_cores"] == 4
+
+    assert obj_dict["hpc_resources"]["queue"] == "queue1"
+
+    obj_dict["hpc_resources"]["num_cores_per_node"] = 3
+    assert obj_dict["hpc_resources"].get("num_cores_per_node", None) == 3
+
+    assert obj_dict.get("memory") == 1024
+    assert obj_dict.get("service") is None
+
+    obj_json = obj.to_json()
+    obj_dict = json.loads(obj_json)
+
+    assert obj_dict["num_cores"] == 4
+
+    assert obj_dict["hpc_resources"]["queue"] == "queue1"
+
+    obj_dict["hpc_resources"]["num_cores_per_node"] = 3
+    assert obj_dict["hpc_resources"].get("num_cores_per_node", None) == 3
+
+    assert obj_dict.get("memory") == 1024
+    assert obj_dict.get("service") is None
+
+
+def test_serialization_load_only():
+    # verify that load_only fields are not
+
+    obj = Job(
+        creation_time="2024-12-22T03:12:58.019077+00:00",
+        name="job-name",
+    )
+
+    obj_dict = obj.to_dict()
+
+    assert obj_dict["name"] == "job-name"
+    assert "creation_time" not in obj_dict
+
+    obj_json = obj.to_json()
+    obj_dict = json.loads(obj_json)
+
+    assert obj_dict["name"] == "job-name"
+    assert "creation_time" not in obj_dict
