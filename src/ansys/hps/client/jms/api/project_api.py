@@ -476,8 +476,8 @@ class ProjectApi:
         """Get a list of task commands."""
         return self.get_commands(task_id=task_id, as_objects=as_objects, **query_params)
 
-    def send_task_command(self, task_id: str, name: str, **command_arguments) -> TaskCommand:
-        """Send a command to a task."""
+    def queue_task_command(self, task_id: str, name: str, **command_arguments) -> TaskCommand:
+        """Queue a command to a task."""
 
         # get the task definition id
         task = self.get_tasks(id=task_id, fields=["id", "task_definition_id"])[0]
@@ -509,7 +509,7 @@ class ProjectApi:
             command_definition_id=command_definition.id,
             arguments=command_arguments,
         )
-        return self.create_task_commands([command])
+        return self.create_task_commands([command])[0]
 
     ################################################################
     # Commands
