@@ -43,6 +43,8 @@ from .resource import (
     StringParameterDefinition,
     SuccessCriteria,
     Task,
+    TaskCommand,
+    TaskCommandDefinition,
     TaskDefinition,
     TaskDefinitionTemplate,
     TemplateInputFile,
