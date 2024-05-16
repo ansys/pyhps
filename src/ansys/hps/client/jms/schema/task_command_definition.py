@@ -39,11 +39,6 @@ class TaskCommandDefinitionSchema(ObjectSchemaWithModificationInfo):
             "that the task command definition is linked to."
         },
     )
-    timeout = fields.Integer(
-        allow_none=True,
-        load_only=True,
-        metadata={"description": "Maximum time in seconds for executing the task command."},
-    )
     name = fields.String(
         allow_none=False,
         load_only=True,

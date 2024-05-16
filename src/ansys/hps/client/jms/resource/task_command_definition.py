@@ -51,8 +51,6 @@ class TaskCommandDefinition(Object):
         ID of the user who last modified the object.
     task_definition_id : str
         ID of the :class:`TaskDefinition` instance that the task command definition is linked to.
-    timeout : int, optional
-        Maximum time in seconds for executing the task command.
     name : str
         Name of the command (corresponds to the function name in the execution script).
     parameters : dict, optional
@@ -71,7 +69,6 @@ class TaskCommandDefinition(Object):
         created_by: str = missing,
         modified_by: str = missing,
         task_definition_id: str = missing,
-        timeout: int = missing,
         name: str = missing,
         parameters: Dict = missing,
         **kwargs,
@@ -82,7 +79,6 @@ class TaskCommandDefinition(Object):
         self.created_by = created_by
         self.modified_by = modified_by
         self.task_definition_id = task_definition_id
-        self.timeout = timeout
         self.name = name
         self.parameters = parameters
 

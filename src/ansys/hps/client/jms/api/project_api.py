@@ -470,12 +470,8 @@ class ProjectApi:
         """Update a list of tasks."""
         return self._update_objects(tasks, Task, as_objects=as_objects)
 
-    def get_task_commands(
-        self, task_id: str, as_objects: bool = True, **query_params
-    ) -> List[TaskCommand]:
-        """Get a list of task commands."""
-        return self.get_commands(task_id=task_id, as_objects=as_objects, **query_params)
-
+    ################################################################
+    # Commands
     def queue_task_command(self, task_id: str, name: str, **command_arguments) -> TaskCommand:
         """Queue a command to a task."""
 
@@ -511,8 +507,6 @@ class ProjectApi:
         )
         return self.create_task_commands([command])[0]
 
-    ################################################################
-    # Commands
     def get_task_commands(self, as_objects: bool = True, **query_params) -> List[TaskCommand]:
         """Get a list of task commands."""
         return self._get_objects(TaskCommand, as_objects=as_objects, **query_params)

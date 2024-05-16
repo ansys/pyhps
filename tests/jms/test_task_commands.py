@@ -133,6 +133,8 @@ def test_job_with_commands(client):
     assert command.arguments["arg1"] == 6.5
     assert command.arguments["arg2"] == "test"
     assert command.status == "new"
+    assert command.command_definition_id == command_definitions[0].id
+    assert command.task_id == task.id
 
     # verify get commands
     commands = project_api.get_task_commands(task_id=task.id)
