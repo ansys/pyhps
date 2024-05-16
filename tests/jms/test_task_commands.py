@@ -90,9 +90,6 @@ def test_job_with_commands(client):
 
     task_def = project_api.create_task_definitions([task_def])[0]
 
-    # !! WORKAROUND TO LET THE TEST TEMPORARILY PASS !!
-    task_def = project_api.update_task_definitions([task_def])[0]
-
     command_definitions = project_api.get_task_command_definitions(task_definition_id=task_def.id)
     assert len(command_definitions) == 1
     for cd in command_definitions:
