@@ -27,6 +27,7 @@ from marshmallow.utils import missing
 import pytest
 
 from ansys.hps.client import Client, ClientError, HPSError
+from ansys.hps.client import __ansys_apps_version__ as ansys_version
 from ansys.hps.client.jms import JmsApi, ProjectApi
 from ansys.hps.client.jms.api.jms_api import _find_available_fs_url
 from ansys.hps.client.jms.resource import (
@@ -52,6 +53,10 @@ def test_jms_api_info(client):
     assert "build" in info
     assert "settings" in info
     assert "time" in info
+
+    assert jms_api._api_info is None
+    _ = jms_api.execution_script_default_bucket
+    assert jms_api._api_info is not None
 
 
 def test_unavailable_fs_url(client):
@@ -233,3 +238,21 @@ def test_objects_type_check(client):
     )
 
     JmsApi(client).delete_project(proj)
+
+
+def test_list_default_execution_scripts(client):
+
+    jms_api = JmsApi(client)
+    file_names = jms_api.list_default_execution_scripts()
+    assert len(file_names) > 0
+    for fn in file_names:
+        assert isinstance(fn, str)
+        assert len(fn) > 0
+
+    ansys_short_version = f"v{ansys_version[2:4]}{ansys_version[6]}"
+    for product_name in ["mapdl", "lsdyna", "fluent"]:
+        script_name = f"{product_name}-{ansys_short_version}-exec_{product_name}.py"
+        assert script_name in file_names
+
+    assert "mechanical-exec_mechanical.py" in file_names
+    assert "web-sample_execution_script.py" in file_names

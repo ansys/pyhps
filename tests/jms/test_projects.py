@@ -282,6 +282,8 @@ def test_copy_exec_script(client):
     proj = jms_api.create_project(proj)
 
     project_api = ProjectApi(client, proj.id)
+    assert project_api._jms_api is None
+
     ansys_short_version = f"v{ansys_version[2:4]}{ansys_version[6]}"
     script_name = f"mapdl-{ansys_short_version}-exec_mapdl"
     file = project_api.copy_default_execution_script(f"{script_name}.py")
@@ -289,5 +291,7 @@ def test_copy_exec_script(client):
     assert file.evaluation_path == f"{script_name}.py"
     assert file.hash is not None
     assert file.storage_id is not None
+
+    assert project_api._jms_api is not None
 
     jms_api.delete_project(proj)

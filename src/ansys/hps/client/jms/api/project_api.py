@@ -104,11 +104,19 @@ class ProjectApi:
         self.project_id = project_id
         self._fs_url = None
         self._fs_project_id = None
+        self._jms_api = None
 
     @property
     def jms_api_url(self) -> str:
         """Get the JMS API URL."""
         return f"{self.client.url}/jms/api/v1"
+
+    @property
+    def jms_api(self) -> JmsApi:
+        """Get the JMS API object."""
+        if self._jms_api is None:
+            self._jms_api = JmsApi(self.client)
+        return self._jms_api
 
     @property
     def url(self) -> str:
@@ -119,7 +127,7 @@ class ProjectApi:
     def fs_url(self) -> str:
         """URL of the file storage gateway."""
         if self._fs_url is None:
-            self._fs_url = JmsApi(self.client).fs_url
+            self._fs_url = self.jms_api.fs_url
         return self._fs_url
 
     @property
@@ -593,7 +601,7 @@ class ProjectApi:
         """Delete license contexts."""
         rest_name = LicenseContext.Meta.rest_name
         url = f"{self.jms_api_url}/projects/{self.id}/{rest_name}"
-        r = self.client.session.delete(url)
+        _ = self.client.session.delete(url)
 
     ################################################################
     def copy_default_execution_script(self, filename: str) -> File:
@@ -601,8 +609,10 @@ class ProjectApi:
 
         Example:
 
-            >>> file = project_api.copy_default_execution_script("exec_mapdl.py")
+            >>> file = project_api.copy_default_execution_script("mapdl-v241-exec_mapdl.py")
 
+        You can use the :meth:`JmsApi.list_default_execution_scripts` to query
+        the list of available default execution scripts.
         """
 
         # create file resource
@@ -611,9 +621,7 @@ class ProjectApi:
         file = self.create_files([file])[0]
 
         # query location of default execution scripts from server
-        jms_api = JmsApi(self.client)
-        info = jms_api.get_api_info()
-        execution_script_default_bucket = info["settings"]["execution_script_default_bucket"]
+        execution_script_default_bucket = self.jms_api.execution_script_default_bucket
 
         # server side copy of the file to project bucket
         checksum = _fs_copy_file(
