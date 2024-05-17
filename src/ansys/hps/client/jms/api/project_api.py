@@ -611,7 +611,7 @@ class ProjectApi:
 
             >>> file = project_api.copy_default_execution_script("mapdl-v241-exec_mapdl.py")
 
-        You can use the :meth:`JmsApi.list_default_execution_scripts` to query
+        You can use the method :meth:`JmsApi.list_default_execution_scripts` to query
         the list of available default execution scripts.
         """
 
