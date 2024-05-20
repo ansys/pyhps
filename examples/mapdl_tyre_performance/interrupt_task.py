@@ -49,11 +49,11 @@ def interrupt_running_task(client, project_id) -> Project:
         {"task_definition_id": task_def.id, "eval_status": "running"}
     )
     if not running_tasks:
-        log.info("No tasks are running.")
+        log.error("No tasks are running.")
 
     task = running_tasks[0]
     if not task.eval_status == "running":
-        log.info("Task is not running.")
+        log.error("Task is not running.")
         return
 
     log.info(f"Found running Task: {task.id}")
@@ -64,19 +64,28 @@ def interrupt_running_task(client, project_id) -> Project:
     resp = client.session.get(command_defs_url)
     command_defs = resp.json()["task_command_definitions"]
     if not command_defs:
-        log.info(f"No command definitions found")
+        log.error(f"No command definitions found")
         return
+    
+    cmd_def = None
+    for cmd in command_defs:
+        if cmd['name'] == 'interrupt':
+            cmd_def = cmd
 
-    log.info(f"Command definition id: {command_defs[0]['id']}")
+    if not cmd_def:
+        log.error(f"Interrupt command not found")
+
+    log.info(f"Command definition id: {cmd_def['id']}")
 
     command_url = f"{project_url}/task_commands"
     data_str = f"""{{"task_commands" :
     [
         {{"task_id": "{task.id}",
-        "command_definition_id": "{command_defs[0]["id"]}",
+        "command_definition_id": "{cmd_def["id"]}",
         "arguments": {{}}}}
     ]}}"""
-
+    log.debug(data_str)
+    
     resp = client.session.post(command_url, data=data_str)
     if not resp.status_code == 201:
         log.info("Failed to submit task command.")
