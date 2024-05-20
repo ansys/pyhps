@@ -66,10 +66,10 @@ def interrupt_running_task(client, project_id) -> Project:
     if not command_defs:
         log.error(f"No command definitions found")
         return
-    
+
     cmd_def = None
     for cmd in command_defs:
-        if cmd['name'] == 'interrupt':
+        if cmd["name"] == "interrupt":
             cmd_def = cmd
 
     if not cmd_def:
@@ -85,7 +85,7 @@ def interrupt_running_task(client, project_id) -> Project:
         "arguments": {{}}}}
     ]}}"""
     log.debug(data_str)
-    
+
     resp = client.session.post(command_url, data=data_str)
     if not resp.status_code == 201:
         log.info("Failed to submit task command.")
