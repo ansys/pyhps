@@ -19,7 +19,7 @@ repos:
     exclude: ^(src/ansys/hps/client/jms/resource/|src/ansys/hps/client/auth/resource/)
 
 - repo: https://github.com/codespell-project/codespell
-  rev: v2.2.6
+  rev: v2.3.0
   hooks:
   - id: codespell
     exclude: >
