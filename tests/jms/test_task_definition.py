@@ -21,7 +21,11 @@
 # SOFTWARE.
 
 from collections import OrderedDict
+import logging
 
+from examples.python_two_bar_truss_problem.project_setup import main as create_project
+
+from ansys.hps.client import ProjectApi
 from ansys.hps.client.jms.resource import TaskDefinition
 from ansys.hps.client.jms.resource.task_definition import (
     HpcResources,
@@ -30,6 +34,8 @@ from ansys.hps.client.jms.resource.task_definition import (
     SuccessCriteria,
 )
 from ansys.hps.client.jms.schema.task_definition import TaskDefinitionSchema
+
+log = logging.getLogger(__name__)
 
 
 def test_task_definition_deserialization():
@@ -63,6 +69,8 @@ def test_task_definition_deserialization():
             "num_cores": 1,
             "disk_space": 5,
             "memory": 250,
+            "evaluator_id": "ev-id",
+            "compute_resource_set_id": "crs-id",
             "custom": {
                 "test_str": "5",
                 "test_int": 1,
@@ -76,6 +84,7 @@ def test_task_definition_deserialization():
                 "num_cores_per_node": 3,
                 "exclusive": True,
                 "queue": "myq",
+                "native_submit_options": '--constraint="graphics*4"',
             },
         },
         "software_requirements": [],
@@ -137,7 +146,14 @@ def test_task_definition_deserialization():
             "test_bool2": False,
             "test_none": None,
         },
-        hpc_resources=HpcResources(exclusive=True, queue="myq", num_cores_per_node=3),
+        hpc_resources=HpcResources(
+            exclusive=True,
+            queue="myq",
+            num_cores_per_node=3,
+            native_submit_options='--constraint="graphics*4"',
+        ),
+        evaluator_id="ev-id",
+        compute_resource_set_id="crs-id",
     )
 
 
@@ -176,7 +192,19 @@ def test_task_definition_serialization():
                 "test_bool2": False,
                 "test_none": None,
             },
-            hpc_resources=HpcResources(exclusive=True, num_gpus_per_node=2),
+            hpc_resources=HpcResources(
+                exclusive=True,
+                num_gpus_per_node=2,
+                custom_orchestration_options={
+                    "test_str": "5",
+                    "test_int": 1,
+                    "test_int2": 0,
+                    "test_float": 7.7,
+                    "test_bool": True,
+                    "test_bool2": False,
+                    "test_none": None,
+                },
+            ),
         ),
         software_requirements=[],
         store_output=True,
@@ -243,6 +271,41 @@ def test_task_definition_serialization():
                 "test_bool2": False,
                 "test_none": None,
             },
-            "hpc_resources": {"num_gpus_per_node": 2, "exclusive": True},
+            "hpc_resources": {
+                "num_gpus_per_node": 2,
+                "exclusive": True,
+                "custom_orchestration_options": {
+                    "test_str": "5",
+                    "test_int": 1,
+                    "test_int2": 0,
+                    "test_float": 7.7,
+                    "test_bool": True,
+                    "test_bool2": False,
+                    "test_none": None,
+                },
+            },
         }
     )
+
+
+def test_analyze_task_definition(client):
+    # Because compute resources can't be assumed to be available,
+    # so we just hit the endpoint
+
+    project = create_project(client, 1, use_exec_script=False)
+    api = ProjectApi(client, project.id)
+    task_def = api.get_task_definitions()[0]
+
+    r = api.analyze_task_definition(task_def.id)
+    log.info(r.model_dump_json(indent=2))
+    assert r is not None
+    assert not isinstance(r, dict)
+
+    r = api.analyze_task_definition(task_def.id, analytics=False)
+    log.info(r.model_dump_json(indent=2))
+    assert r is not None
+    assert r.analytics is None
+
+    r = api.analyze_task_definition(task_def.id, as_object=False)
+    assert r is not None
+    assert isinstance(r, dict)

@@ -22,4 +22,5 @@
 """PyHPS common subpackage."""
 from .base_resource import Object
 from .base_schema import BaseSchema, ObjectSchema, ObjectSchemaWithModificationInfo
+from .dict_model import DictModel
 from .restricted_value import RestrictedValue

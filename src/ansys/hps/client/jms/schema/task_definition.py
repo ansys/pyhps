@@ -58,6 +58,35 @@ class HpcResourcesSchema(BaseSchema):
         allow_none=True,
         metadata={"description": "Whether to use node local storage."},
     )
+    native_submit_options = fields.Str(
+        allow_none=True,
+        metadata={
+            "description": "Additional command line options to pass directly to the scheduler."
+        },
+    )
+    custom_orchestration_options = fields.Dict(
+        allow_none=True,
+        keys=fields.Str(),
+        values=RestrictedValue(),
+        metadata={"description": "Dictionary of custom orchestration options."},
+    )
+
+
+class WorkerContextSchema(BaseSchema):
+    class Meta(BaseSchema.Meta):
+        pass
+
+    max_runtime = fields.Int(
+        allow_none=True,
+        metadata={"description": "Maximum run time (in seconds) for an ephemeral evaluator."},
+    )
+    max_num_parallel_tasks = fields.Int(
+        allow_none=True,
+        metadata={
+            "description": "Maximum number of tasks that "
+            "an ephemeral evaluator can run in parallel."
+        },
+    )
 
 
 class ResourceRequirementsSchema(BaseSchema):
@@ -78,6 +107,14 @@ class ResourceRequirementsSchema(BaseSchema):
     distributed = fields.Bool(
         allow_none=True,
         metadata={"description": "Whether to enable distributed parallel processing."},
+    )
+    compute_resource_set_id = fields.String(
+        allow_none=True,
+        metadata={"description": "ID of the compute resource set that this task should run on."},
+    )
+    evaluator_id = fields.String(
+        allow_none=True,
+        metadata={"description": "ID of the evaluator that this task should run on."},
     )
     custom = fields.Dict(
         allow_none=True,
@@ -218,4 +255,9 @@ class TaskDefinitionSchema(ObjectSchemaWithModificationInfo):
         ResourceRequirementsSchema,
         allow_none=True,
         metadata={"description": ":class:`ResourceRequirements` object."},
+    )
+    worker_context = fields.Nested(
+        WorkerContextSchema,
+        allow_none=True,
+        metadata={"description": ":class:`WorkerContext` object."},
     )

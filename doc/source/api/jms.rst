@@ -36,12 +36,15 @@ Resources
    StringParameterDefinition
    ParameterMapping
    Software
+   HpcResources
    ResourceRequirements
    SuccessCriteria
    Licensing
    TaskDefinition
+   TaskCommandDefinition
    JobDefinition
    Task
+   TaskCommand
    Job
    JobSelection
    Algorithm
