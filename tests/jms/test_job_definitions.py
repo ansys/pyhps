@@ -143,4 +143,13 @@ def test_task_and_job_definition_copy(client):
     assert len(original_jd.parameter_mapping_ids) == len(new_jd.parameter_mapping_ids)
     assert len(original_jd.task_definition_ids) == len(new_jd.task_definition_ids)
 
+    original_param_defs = project_api.get_parameter_definitions(
+        id=original_jd.parameter_definition_ids
+    )
+    new_jd_param_defs = project_api.get_parameter_definitions(id=new_jd.parameter_definition_ids)
+    for mode in ["input", "output"]:
+        assert len([pd for pd in original_param_defs if pd.mode == mode]) == len(
+            [pd for pd in new_jd_param_defs if pd.mode == mode]
+        )
+
     jms_api.delete_project(project)
