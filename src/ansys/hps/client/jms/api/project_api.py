@@ -124,13 +124,6 @@ class ProjectApi:
             self._fs_url = JmsApi(self.client).fs_url
         return self._fs_url
 
-    @property
-    def fs_bucket_url(self) -> str | None:
-        """URL of the project's bucket in the file storage gateway."""
-        if self.client.settings.use_legacy_fs:
-            return f"{self.fs_url}/{self.project_id}"
-        return None
-
     ################################################################
     # Project operations (copy, archive)
     def copy_project(self, wait: bool = True) -> str:
@@ -669,15 +662,10 @@ def _download_files(project_api: ProjectApi, files: List[File]):
 
     for f in files:
         if getattr(f, "hash", None) is not None:
-            if project_api.client.settings.use_legacy_fs:
-                r = project_api.client.session.get(f"{project_api.fs_bucket_url}/{f.storage_id}")
-            else:
-                encoded_file_path = urllib.parse.quote(
-                    f"{project_api.project_id}/{f.storage_id}/{f.name}", safe=""
-                )
-                r = project_api.client.session.get(
-                    f"{project_api.fs_url}/data/any/{encoded_file_path}"
-                )
+            encoded_file_path = urllib.parse.quote(
+                f"{project_api.project_id}/{f.storage_id}", safe=""
+            )
+            r = project_api.client.session.get(f"{project_api.fs_url}/data/any/{encoded_file_path}")
             f.content = r.content
             f.content_type = r.headers["Content-Type"]
 
@@ -699,9 +687,6 @@ def _upload_files(project_api: ProjectApi, files):
     This is a temporary implementation for uploading files. It is to be
     replaced with direct ansft calls, when it is available as a Python package.
     """
-    if project_api.client.settings.use_legacy_fs:
-        fs_headers = {"content-type": "application/octet-stream"}
-
     for f in files:
         if getattr(f, "src", None) is None:
             continue
@@ -711,32 +696,21 @@ def _upload_files(project_api: ProjectApi, files):
         if is_file:
             content = open(f.src, "rb")
 
-        if project_api.client.settings.use_legacy_fs:
-            r = project_api.client.session.post(
-                f"{project_api.fs_bucket_url}/{f.storage_id}",
-                data=content,
-                headers=fs_headers,
-            )
-            f.hash = r.json()["checksum"]
-            f.size = r.request.headers.get("Content-Length", None)
-        else:
-            encoded_file_path = urllib.parse.quote(
-                f"{project_api.project_id}/{f.storage_id}/{f.name}", safe=""
-            )
-            file = {"file": (f.name, content, f.type)}
+        encoded_file_path = urllib.parse.quote(f"{project_api.project_id}/{f.storage_id}", safe="")
+        file = {"file": (f.name, content, f.type)}
 
-            # TODO
-            # Multi-part form boundary is not applied because of the default session content-type;
-            # Temporarily remove the default to not block default requests behavior.
-            project_api.client.session.headers.pop("content-type", None)
+        # TODO
+        # Multi-part form boundary is not applied because of the default session content-type;
+        # Temporarily remove the default to not block default requests behavior.
+        project_api.client.session.headers.pop("content-type", None)
 
-            r = project_api.client.session.post(
-                f"{project_api.fs_url}/data/any/{encoded_file_path}", files=file
-            )
+        r = project_api.client.session.post(
+            f"{project_api.fs_url}/data/any/{encoded_file_path}", files=file
+        )
 
-            # TODO
-            # Re-apply default content-type post file creation.
-            project_api.client.session.headers.update({"content-type": "application/json"})
+        # TODO
+        # Re-apply default content-type post file creation.
+        project_api.client.session.headers.update({"content-type": "application/json"})
 
         if is_file:
             content.close()
@@ -790,12 +764,14 @@ def _download_file(
     if getattr(file, "hash", None) is None:
         log.warning(f"No hash found for file {file.name}.")
 
-    download_link = f"{project_api.fs_bucket_url}/{file.storage_id}"
+    encoded_file_path = urllib.parse.quote(f"{project_api.project_id}/{file.storage_id}", safe="")
     download_path = os.path.join(target_path, file.evaluation_path)
     Path(download_path).parent.mkdir(parents=True, exist_ok=True)
 
     with (
-        project_api.client.session.get(download_link, stream=stream) as r,
+        project_api.client.session.get(
+            f"{project_api.fs_url}/data/any/{encoded_file_path}", stream=stream
+        ) as r,
         open(download_path, "wb") as f,
     ):
         for chunk in r.iter_content(chunk_size=None):

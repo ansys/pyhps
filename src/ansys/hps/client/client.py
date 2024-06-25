@@ -28,8 +28,6 @@ import warnings
 import jwt
 import requests
 
-from ansys.hps.client.settings import Settings
-
 from .authenticate import authenticate
 from .connection import create_session
 from .exceptions import HPSError, raise_for_status
@@ -130,7 +128,6 @@ class Client(object):
         all_fields=True,
         verify: Union[bool, str] = None,
         disable_security_warnings: bool = True,
-        settings=Settings(),
         **kwargs,
     ):
 
@@ -153,7 +150,6 @@ class Client(object):
         self.client_id = client_id
         self.client_secret = client_secret
         self.verify = verify
-        self.settings = settings
 
         if self.verify is None:
             self.verify = False

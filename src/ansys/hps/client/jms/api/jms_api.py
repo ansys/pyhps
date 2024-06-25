@@ -78,10 +78,7 @@ class JmsApi(object):
     def fs_url(self) -> str:
         """URL of the file storage gateway."""
         if self._fs_url is None:
-            if self.client.settings.use_legacy_fs:
-                self._fs_url = _find_available_fs_url(self.get_storage())
-            else:
-                self._fs_url = f"{self.client.url}/dts/api/v1"
+            self._fs_url = f"{self.client.url}/dt/api/v1"
         return self._fs_url
 
     def get_api_info(self):
