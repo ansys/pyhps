@@ -114,3 +114,31 @@ def test_authentication_username_exception(url, username, keycloak_client):
             client_id=rep_impersonation_client["clientId"],
             client_secret=rep_impersonation_client["secret"],
         )
+
+
+def test_authentication_refresh_token(url, username, password):
+
+    # realm_settings  = keycloak_client.get_realm("rep")
+    # realm_settings['accessTokenLifespan'] = 2  # token expiration in seconds
+
+    client = Client(url, username, password)
+    assert client.access_token is not None
+    assert client.refresh_token is not None
+
+    i = 0
+    num_iter = 10000
+    while i < num_iter:
+
+        access_token = client.access_token
+        refresh_token = client.refresh_token
+
+        # wait a moment otherwise the OAuth server will issue the very same tokens
+        time.sleep(0.1)
+
+        client.refresh_access_token()
+        assert client.access_token != access_token
+        assert client.refresh_token != refresh_token
+
+        i += 1
+        if i % (num_iter / 100) == 0:
+            log.info(f"Counter: {i}")
