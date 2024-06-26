@@ -106,6 +106,7 @@ jobs:
           python -m pip install --upgrade pip setuptools tox
 
           # Necessary for creating PDF
+          sudo apt update
           sudo apt-get -y install latexmk
           sudo apt install texlive-latex-extra
 
