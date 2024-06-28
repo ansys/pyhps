@@ -92,32 +92,33 @@ def authenticate(
         auth_url = urllib.parse.urljoin(url + "/", auth_postfix)
     log.debug(f"Authenticating using {auth_url}")
 
-    session = requests.Session()
-    session.verify = verify
-    session.headers = ({"content-type": "application/x-www-form-urlencoded"},)
+    with requests.Session() as session:
+        session.verify = verify
+        session.headers = ({"content-type": "application/x-www-form-urlencoded"},)
 
-    token_url = f"{auth_url}/protocol/openid-connect/token"
+        token_url = f"{auth_url}/protocol/openid-connect/token"
 
-    data = {
-        "client_id": client_id,
-        "grant_type": grant_type,
-        "scope": scope,
-    }
-    if client_secret is not None:
-        data["client_secret"] = client_secret
-    if username is not None:
-        data["username"] = username
-    if password is not None:
-        data["password"] = password
-    if refresh_token is not None:
-        data["refresh_token"] = refresh_token
+        data = {
+            "client_id": client_id,
+            "grant_type": grant_type,
+            "scope": scope,
+        }
+        if client_secret is not None:
+            data["client_secret"] = client_secret
+        if username is not None:
+            data["username"] = username
+        if password is not None:
+            data["password"] = password
+        if refresh_token is not None:
+            data["refresh_token"] = refresh_token
 
-    data.update(**kwargs)
+        data.update(**kwargs)
 
-    log.debug(
-        f"Retrieving access token for client {client_id} from {auth_url} using {grant_type} grant."
-    )
-    r = session.post(token_url, data=data, timeout=timeout)
+        log.debug(
+            "Retrieving access token for client "
+            f"{client_id} from {auth_url} using {grant_type} grant."
+        )
+        r = session.post(token_url, data=data, timeout=timeout)
 
-    raise_for_status(r)
-    return r.json()
+        raise_for_status(r)
+        return r.json()
