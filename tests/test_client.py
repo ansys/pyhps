@@ -126,7 +126,7 @@ def test_authentication_refresh_token(url, username, password):
     assert client.refresh_token is not None
 
     i = 0
-    num_iter = 10000
+    num_iter = 200000
     while i < num_iter:
 
         access_token = client.access_token
