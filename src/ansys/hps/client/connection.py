@@ -64,7 +64,7 @@ def create_session(
         )
 
     # Set basic content type to json
-    session.headers = {
+    session.headers.update = {
         "content-type": "application/json",
     }
 
