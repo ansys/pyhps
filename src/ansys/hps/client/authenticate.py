@@ -94,7 +94,9 @@ def authenticate(
 
     with requests.Session() as session:
         session.verify = verify
-        session.headers.update = ({"content-type": "application/x-www-form-urlencoded"},)
+        session.headers.update(
+            {"content-type": "application/x-www-form-urlencoded"},
+        )
 
         token_url = f"{auth_url}/protocol/openid-connect/token"
 

@@ -64,9 +64,7 @@ def create_session(
         )
 
     # Set basic content type to json
-    session.headers.update = {
-        "content-type": "application/json",
-    }
+    session.headers.update({"content-type": "application/json"})
 
     if access_token:
         session.headers.update({"Authorization": "Bearer %s" % access_token})
