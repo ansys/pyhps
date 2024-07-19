@@ -139,8 +139,6 @@ class Client(object):
             log.warning(msg)
 
         self.url = url
-        self.auth_url = auth_url
-        self.auth_api_url = (auth_url or url) + f"/auth/"
         self.access_token = None
         self.refresh_token = None
         self.username = username
@@ -165,6 +163,29 @@ class Client(object):
                 requests.packages.urllib3.exceptions.InsecureRequestWarning
             )
 
+        self.auth_url = auth_url
+        self.auth_api_url = (auth_url or url) + f"/auth/"
+
+        if not auth_url:
+            with requests.session() as session:
+                session.verify = self.verify
+                jms_info_url = url.rstrip('/') + "/jms/api/v1"
+                resp = session.get(jms_info_url)
+                if resp.status_code != 200:
+                    raise RuntimeError(
+                        f"Failed to contact jms info endpoint {jms_info_url}, \
+                            status code {resp.status_code}: {resp.content.decode()}"
+                    )
+                else:
+                    jms_data = resp.json()
+                    if "services" in jms_data and "auth_url" in jms_data["services"]:
+                        self.auth_url = resp.json()["services"]["auth_url"]
+                    else:
+                        raise RuntimeError(
+                            f"Failed to obtain auth_url from jms {jms_info_url}, \
+                                status code {resp.status_code}: {resp.content.decode()}"
+                        )
+
         if access_token:
             log.debug("Authenticate with access token")
             self.access_token = access_token
@@ -179,8 +200,7 @@ class Client(object):
             log.debug(f"Authenticating with '{self.grant_type}' grant type.")
 
             tokens = authenticate(
-                url=auth_url or url,
-                realm=realm,
+                auth_url=self.auth_url,
                 grant_type=self.grant_type,
                 scope=scope,
                 client_id=client_id,
@@ -197,8 +217,18 @@ class Client(object):
         parsed_username = None
 
         try:
-            parsed_jwt = jwt.decode(self.access_token, options={"verify_signature": False})
-            parsed_username = parsed_jwt["preferred_username"]
+            parsed_token = jwt.decode(self.access_token, options={"verify_signature": False})
+            # Try to get the standard keycloak name, then other possible valid names, username is required!
+            parsed_username = parsed_token.get("preferred_username", None)
+            if not parsed_username:
+                parsed_username = parsed_token.get("username", None)
+            if not parsed_username:
+                parsed_username = parsed_token.get("name", None)
+
+            # Service accounts look like "aud -> service_account_id"
+            if not parsed_username:
+                if parsed_token.get("oid", "oid_not_found") == parsed_token.get("sub", "sub_not_found"):
+                    parsed_username = "service_account_" + parsed_token.get("aud", "aud_not_set")
         except:
             log.warning("Could not retrieve preferred_username from access token.")
 
@@ -257,8 +287,7 @@ class Client(object):
             # Its not recommended to give refresh tokens to client_credentials grant types
             # as per OAuth 2.0 RFC6749 Section 4.4.3, so handle these specially...
             tokens = authenticate(
-                url=self.auth_url or self.url,
-                realm=self.realm,
+                auth_url=self.auth_url,
                 grant_type="client_credentials",
                 scope=self.scope,
                 client_id=self.client_id,
@@ -268,8 +297,7 @@ class Client(object):
         else:
             # Other workflows for authentication generally support refresh_tokens
             tokens = authenticate(
-                url=self.auth_url or self.url,
-                realm=self.realm,
+                auth_url=self.auth_url,
                 grant_type="refresh_token",
                 scope=self.scope,
                 client_id=self.client_id,
