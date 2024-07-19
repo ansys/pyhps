@@ -22,7 +22,7 @@
 """Module that provides authentication for the user with a password or refresh token against the
 HPS authentication service."""
 import logging
-from typing import Union, List
+from typing import List, Union
 
 import requests
 
@@ -31,6 +31,7 @@ from .exceptions import raise_for_status
 log = logging.getLogger(__name__)
 
 OIDC_DISCOVERY_ENDPOINT_PATH = "/.well-known/openid-configuration"
+
 
 class Discovered:
     keys: List[dict]
@@ -65,6 +66,7 @@ def get_discovery_data(auth_url: str, timeout: int = 10) -> dict:
             )
 
         return disco.json()
+
 
 def authenticate(
     auth_url: str = "https://127.0.0.1:8443/hps/auth/realms/rep",

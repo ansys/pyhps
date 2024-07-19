@@ -169,7 +169,7 @@ class Client(object):
         if not auth_url:
             with requests.session() as session:
                 session.verify = self.verify
-                jms_info_url = url.rstrip('/') + "/jms/api/v1"
+                jms_info_url = url.rstrip("/") + "/jms/api/v1"
                 resp = session.get(jms_info_url)
                 if resp.status_code != 200:
                     raise RuntimeError(
@@ -227,7 +227,9 @@ class Client(object):
 
             # Service accounts look like "aud -> service_account_id"
             if not parsed_username:
-                if parsed_token.get("oid", "oid_not_found") == parsed_token.get("sub", "sub_not_found"):
+                if parsed_token.get("oid", "oid_not_found") == parsed_token.get(
+                    "sub", "sub_not_found"
+                ):
                     parsed_username = "service_account_" + parsed_token.get("aud", "aud_not_set")
         except:
             log.warning("Could not retrieve preferred_username from access token.")
