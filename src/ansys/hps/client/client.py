@@ -138,6 +138,11 @@ class Client(object):
             warnings.warn(msg, DeprecationWarning)
             log.warning(msg)
 
+        if auth_url is not None:
+            msg = "The 'auth_url' input argument is deprecated. Use None instead. New HPS deployments will determine this automatically."
+            warnings.warn(msg, DeprecationWarning)
+            log.warning(msg)
+
         self.url = url
         self.access_token = None
         self.refresh_token = None
@@ -169,7 +174,7 @@ class Client(object):
         if not auth_url:
             with requests.session() as session:
                 session.verify = self.verify
-                jms_info_url = url.rstrip("/") + "/jms/api/v1"
+                jms_info_url = url.rstrip('/') + "/jms/api/v1"
                 resp = session.get(jms_info_url)
                 if resp.status_code != 200:
                     raise RuntimeError(
@@ -178,13 +183,15 @@ class Client(object):
                     )
                 else:
                     jms_data = resp.json()
-                    if "services" in jms_data and "auth_url" in jms_data["services"]:
-                        self.auth_url = resp.json()["services"]["auth_url"]
+                    if "services" in jms_data and "external_auth_url" in jms_data["services"]:
+                        self.auth_url = resp.json()["services"]["external_auth_url"]
                     else:
-                        raise RuntimeError(
-                            f"Failed to obtain auth_url from jms {jms_info_url}, \
-                                status code {resp.status_code}: {resp.content.decode()}"
-                        )
+                        log.warning(
+                            "Legacy JMS service does not include external_auth_url. \
+                                Generating auth_url..."
+                            )
+                        if realm and not realm.isspace() and "auth/realms" not in url:
+                            self.auth_url = f"{url.rstrip('/')}/auth/realms/{realm}"
 
         if access_token:
             log.debug("Authenticate with access token")
@@ -215,24 +222,25 @@ class Client(object):
             self.refresh_token = tokens.get("refresh_token", None)
 
         parsed_username = None
-
+        token = {}
         try:
-            parsed_token = jwt.decode(self.access_token, options={"verify_signature": False})
-            # Try to get the standard keycloak name, then other possible valid names, username is required!
-            parsed_username = parsed_token.get("preferred_username", None)
-            if not parsed_username:
-                parsed_username = parsed_token.get("username", None)
-            if not parsed_username:
-                parsed_username = parsed_token.get("name", None)
+            token = jwt.decode(self.access_token, options={"verify_signature": False})
+        except Exception:
+            raise HPSError("Authentication token was invalid.")
 
-            # Service accounts look like "aud -> service_account_id"
-            if not parsed_username:
-                if parsed_token.get("oid", "oid_not_found") == parsed_token.get(
-                    "sub", "sub_not_found"
-                ):
-                    parsed_username = "service_account_" + parsed_token.get("aud", "aud_not_set")
-        except:
-            log.warning("Could not retrieve preferred_username from access token.")
+        # Try to get the standard keycloak name, then other possible valid names
+        parsed_username = token.get("preferred_username", None)
+        if not parsed_username:
+            parsed_username = token.get("username", None)
+        if not parsed_username:
+            parsed_username = token.get("name", None)
+
+        # Service accounts look like "aud -> service_account_id"
+        if not parsed_username:
+            if token.get("oid", "oid_not_found") == token.get("sub", "sub_not_found"):
+                parsed_username = "service_account_" + token.get("aud", "aud_not_set")
+            else:
+                raise HPSError("Authentication token had no username.")
 
         if parsed_username is not None:
             if self.username is not None and self.username != parsed_username:
