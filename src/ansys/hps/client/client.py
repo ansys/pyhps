@@ -235,7 +235,7 @@ class Client(object):
         if not parsed_username:
             parsed_username = token.get("name", None)
 
-        # Service accounts look like "aud -> service_account_id"
+        # Service accounts look like "aud -> service_client_id"
         if not parsed_username:
             if token.get("oid", "oid_not_found") == token.get("sub", "sub_not_found"):
                 parsed_username = "service_account_" + token.get("aud", "aud_not_set")
