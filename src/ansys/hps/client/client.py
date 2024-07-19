@@ -174,7 +174,7 @@ class Client(object):
         if not auth_url:
             with requests.session() as session:
                 session.verify = self.verify
-                jms_info_url = url.rstrip('/') + "/jms/api/v1"
+                jms_info_url = url.rstrip("/") + "/jms/api/v1"
                 resp = session.get(jms_info_url)
                 if resp.status_code != 200:
                     raise RuntimeError(
@@ -189,7 +189,7 @@ class Client(object):
                         log.warning(
                             "Legacy JMS service does not include external_auth_url. \
                                 Generating auth_url..."
-                            )
+                        )
                         if realm and not realm.isspace() and "auth/realms" not in url:
                             self.auth_url = f"{url.rstrip('/')}/auth/realms/{realm}"
 
