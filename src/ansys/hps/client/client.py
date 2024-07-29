@@ -111,6 +111,7 @@ class Client(object):
 
     """
 
+    
     def __init__(
         self,
         url: str = "https://127.0.0.1:8443/hps",
@@ -124,7 +125,6 @@ class Client(object):
         client_secret: str = None,
         access_token: str = None,
         refresh_token: str = None,
-        auth_url: str = None,
         all_fields=True,
         verify: Union[bool, str] = None,
         disable_security_warnings: bool = True,
@@ -138,6 +138,7 @@ class Client(object):
             warnings.warn(msg, DeprecationWarning)
             log.warning(msg)
 
+        auth_url = kwargs.get("auth_url", None)
         if auth_url is not None:
             msg = "The 'auth_url' input argument is deprecated. Use None instead. New HPS deployments will determine this automatically."
             warnings.warn(msg, DeprecationWarning)
@@ -169,7 +170,6 @@ class Client(object):
             )
 
         self.auth_url = auth_url
-        self.auth_api_url = (auth_url or url) + f"/auth/"
 
         if not auth_url:
             with requests.session() as session:
@@ -190,7 +190,7 @@ class Client(object):
                             "Legacy JMS service does not include external_auth_url. \
                                 Generating auth_url..."
                         )
-                        if realm and not realm.isspace() and "auth/realms" not in url:
+                        if realm:
                             self.auth_url = f"{url.rstrip('/')}/auth/realms/{realm}"
 
         if access_token:
@@ -229,18 +229,7 @@ class Client(object):
             raise HPSError("Authentication token was invalid.")
 
         # Try to get the standard keycloak name, then other possible valid names
-        parsed_username = token.get("preferred_username", None)
-        if not parsed_username:
-            parsed_username = token.get("username", None)
-        if not parsed_username:
-            parsed_username = token.get("name", None)
-
-        # Service accounts look like "aud -> service_client_id"
-        if not parsed_username:
-            if token.get("oid", "oid_not_found") == token.get("sub", "sub_not_found"):
-                parsed_username = "service_account_" + token.get("aud", "aud_not_set")
-            else:
-                raise HPSError("Authentication token had no username.")
+        parsed_username = self._get_username(token)
 
         if parsed_username is not None:
             if self.username is not None and self.username != parsed_username:
@@ -265,12 +254,34 @@ class Client(object):
         self._unauthorized_num_retry = 0
         self._unauthorized_max_retry = 1
 
+    def _get_username(self, decoded_token):
+        parsed_username = decoded_token.get("preferred_username", None)
+        if not parsed_username:
+            parsed_username = decoded_token.get("username", None)
+        if not parsed_username:
+            parsed_username = decoded_token.get("name", None)
+
+        # Service accounts look like "aud -> service_client_id"
+        if not parsed_username:
+            if decoded_token.get("oid", "oid_not_found") == decoded_token.get("sub", "sub_not_found"):
+                parsed_username = "service_account_" + decoded_token.get("aud", "aud_not_set")
+            else:
+                raise HPSError("Authentication token had no username.")
+        return parsed_username
+
     @property
     def rep_url(self) -> str:
         msg = "The client 'rep_url' property is deprecated. Use 'url' instead."
         warnings.warn(msg, DeprecationWarning)
         log.warning(msg)
         return self.url
+    
+    @property
+    def auth_api_url(self) -> str:
+        msg = "The client 'auth_api_url' property is deprecated.  There is no generic auth_api exposed."
+        warnings.warn(msg, DeprecationWarning)
+        log.warning(msg)
+        return (self.auth_url or self.url) + f"/auth/"
 
     def _auto_refresh_token(self, response, *args, **kwargs):
         """Automatically refreshes the access token and

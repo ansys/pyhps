@@ -22,7 +22,7 @@
 """Module that provides authentication for the user with a password or refresh token against the
 HPS authentication service."""
 import logging
-from typing import List, Union
+from typing import Union, List
 
 import requests
 
@@ -33,31 +33,11 @@ log = logging.getLogger(__name__)
 OIDC_DISCOVERY_ENDPOINT_PATH = "/.well-known/openid-configuration"
 
 
-class Discovered:
-    keys: List[dict]
-    algorithms: List[str]
-    openid_config: dict
-    claims_supported: List[str]
-
-    def __init__(self, keys, algorithms, openid_config, claims_supported=[]):
-        self.keys = keys
-        self.algorithms = algorithms
-        self.openid_config = openid_config
-        self.claims_supported = claims_supported
-
-    # After we grab the standard keys from the Identity Provider, add in any local keys we support...
-    def add_keys(self, addtl_jwks_keys):
-        self.keys.extend(addtl_jwks_keys)
-
-
-def get_discovery_data(auth_url: str, timeout: int = 10) -> dict:
-    """
-    Caching this discovery data because it should not change except when restarting OIDC services or adding new routes
-    """
+def get_discovery_data(auth_url: str, timeout: int = 10, verify: Union[bool, str] = True) -> dict:
     disco_url = auth_url.rstrip("/") + OIDC_DISCOVERY_ENDPOINT_PATH
-    log.trace(f"Discovery URL: {disco_url}")
+    log.debug(f"Discovery URL: {disco_url}")
     with requests.Session() as session:
-        session.verify = False
+        session.verify = verify
         disco = session.get(disco_url, timeout=timeout)
         if disco.status_code != 200:
             raise RuntimeError(
@@ -66,7 +46,6 @@ def get_discovery_data(auth_url: str, timeout: int = 10) -> dict:
             )
 
         return disco.json()
-
 
 def authenticate(
     auth_url: str = "https://127.0.0.1:8443/hps/auth/realms/rep",
@@ -121,39 +100,42 @@ def authenticate(
     """
 
     auth_url = str(auth_url)
-    disco_dict = get_discovery_data(auth_url, timeout)
+    disco_dict = get_discovery_data(auth_url, timeout, verify)
     token_url = disco_dict["token_endpoint"]
 
     with requests.Session() as session:
-        session.verify = False
-        session.headers = ({"content-type": "application/x-www-form-urlencoded"},)
+        session.verify = verify
+        session.headers.update({"content-type": "application/x-www-form-urlencoded"})
 
-        # seemingly necessary all the time
+        # seemingly necessary all the time       
         data = {
             "client_id": client_id,
             "scope": scope,
         }
-
+        # Adding extra items that were passed for very specific workflows
+        for key, value in kwargs.items():
+            data[key] = value
+        
         # If someone specifically calls out a grant type, just use it directly.
-        if grant_type and not grant_type.isspace():
+        if grant_type:
             data["grant_type"] = grant_type
 
         # Many grant types can have client secrets, client secret with other things just means it not a public endpoint
-        if client_secret is not None and not client_secret.isspace():
+        if client_secret is not None:
             data["client_secret"] = client_secret
 
         # Username is also used in more than one workflow.
-        if username and not username.isspace():
+        if username:
             data["username"] = username
 
         # If password and username, and its not already defined, this has to be password grant
-        if password and not password.isspace():
+        if password:
             data["password"] = password
             if "username" in data and not "grant_type" in data:
                 data["grant_type"] = "password"
 
         # If a refresh token is provided, the grant type is refresh token unless otherwise listed.
-        if refresh_token and not refresh_token.isspace():
+        if refresh_token:
             data["refresh_token"] = refresh_token
             if not "grant_type" in data:
                 data["grant_type"] = "refresh_token"
