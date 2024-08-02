@@ -23,10 +23,12 @@
 import json
 import logging
 import os
-from pathlib import Path
+import shutil
 from typing import Callable, List, Type, Union
 from warnings import warn
 
+from ansys.hps.data_transfer.client.models.msg import SrcDst, StoragePath
+from ansys.hps.data_transfer.client.models.ops import OperationState
 import requests
 
 from ansys.hps.client.client import Client
@@ -657,17 +659,36 @@ class ProjectApi:
 
 def _download_files(project_api: ProjectApi, files: List[File]):
     """
-    Download files directly using the fs REST gateway.
+    Download files directly using data transfer worker.
 
-    This is a temporary implementation for downloading files. It is to be
-    replaced with direct ansft calls, when it is available as a Python package.
     """
+
+    project_api.client._start_dt_worker()
+    out_path = os.path.join(os.path.dirname(__file__), "downloads")
 
     for f in files:
         if getattr(f, "hash", None) is not None:
-            r = project_api.client.session.get(f"{project_api.fs_bucket_url}/{f.storage_id}")
-            f.content = r.content
-            f.content_type = r.headers["Content-Type"]
+            fpath = os.path.join(out_path, f"{f.id}")
+            download_path = os.path.join(fpath, f.evaluation_path)
+            base_dir = project_api.project_id
+
+            log.info(f"Downloading file {f.id}")
+            src = StoragePath(path=f"{base_dir}/{os.path.basename(f.storage_id)}")
+            dst = StoragePath(path=download_path, remote="local")
+            op = project_api.client.dt_api.copy([SrcDst(src=src, dst=dst)])
+            op = project_api.client.dt_api.wait_for([op.id])
+
+            log.info(f"Operation {op[0].state}")
+            if op[0].state == OperationState.Succeeded:
+                with open(download_path, "rb") as inp:
+                    f.content = inp.read()
+            else:
+                log.error(f"Download of file {f.evaluation_path} with id {f.id} failed")
+
+    # Delete temporary folder
+    if os.path.exists(out_path):
+        print("deleting folder")
+        shutil.rmtree(out_path)
 
 
 def get_files(project_api: ProjectApi, as_objects=True, content=False, **query_params):
@@ -682,32 +703,38 @@ def get_files(project_api: ProjectApi, as_objects=True, content=False, **query_p
 
 def _upload_files(project_api: ProjectApi, files):
     """
-    Uploads files directly using the fs REST gateway.
+    Uploads files directly using data transfer worker.
 
-    This is a temporary implementation for uploading files. It is to be
-    replaced with direct ansft calls, when it is available as a Python package.
     """
-    fs_headers = {"content-type": "application/octet-stream"}
+
+    project_api.client._start_dt_worker()
 
     for f in files:
         if getattr(f, "src", None) is None:
             continue
 
         is_file = isinstance(f.src, str) and os.path.exists(f.src)
-        content = f.src
-        if is_file:
-            content = open(f.src, "rb")
-
-        r = project_api.client.session.post(
-            f"{project_api.fs_bucket_url}/{f.storage_id}",
-            data=content,
-            headers=fs_headers,
-        )
-        f.hash = r.json()["checksum"]
-        f.size = r.request.headers.get("Content-Length", None)
 
         if is_file:
-            content.close()
+            base_dir = project_api.project_id
+            log.info(f"Copying files {f.id}")
+            src = StoragePath(path=f.src, remote="local")
+            dst = StoragePath(path=f"{base_dir}/{os.path.basename(f.storage_id)}")
+            op = project_api.client.dt_api.copy([SrcDst(src=src, dst=dst)])
+            op = project_api.client.dt_api.wait_for(op.id)
+            log.info(f"Operation {op[0].state}")
+            if op[0].state == OperationState.Succeeded:
+                op = project_api.client.dt_api.get_metadata([dst])
+                op = project_api.client.dt_api.wait_for(op.id)[0]
+                log.info(f"Operation {op.state}")
+                if op.state == OperationState.Succeeded:
+                    md = op.result[dst.path]
+                    f.hash = md["checksum"]
+                    f.size = md["size"]
+                else:
+                    log.error(f"Failed to fetch metadata of uploaded file {f.src}")
+            else:
+                log.error(f"Upload of file {f.src} failed")
 
 
 def create_files(project_api: ProjectApi, files, as_objects=True) -> List[File]:
@@ -755,21 +782,26 @@ def _download_file(
     stream: bool = True,
 ) -> str:
     """Download a file."""
+
+    project_api.client._start_dt_worker()
+
     if getattr(file, "hash", None) is None:
         log.warning(f"No hash found for file {file.name}.")
 
-    download_link = f"{project_api.fs_bucket_url}/{file.storage_id}"
     download_path = os.path.join(target_path, file.evaluation_path)
-    Path(download_path).parent.mkdir(parents=True, exist_ok=True)
+    base_dir = project_api.project_id
 
-    with (
-        project_api.client.session.get(download_link, stream=stream) as r,
-        open(download_path, "wb") as f,
-    ):
-        for chunk in r.iter_content(chunk_size=None):
-            f.write(chunk)
-            if progress_handler is not None:
-                progress_handler(len(chunk))
+    log.info(f"Downloading file {file.id}")
+    src = StoragePath(path=f"{base_dir}/{os.path.basename(file.storage_id)}")
+    dst = StoragePath(path=download_path, remote="local")
+    op = project_api.client.dt_api.copy([SrcDst(src=src, dst=dst)])
+    op = project_api.client.dt_api.wait_for([op.id])
+
+    log.info(f"Operation {op[0].state}")
+
+    if op[0].state != OperationState.Succeeded:
+        log.error(f"Download of file {file.evaluation_path} with id {file.id} failed")
+        return None
 
     return download_path
 

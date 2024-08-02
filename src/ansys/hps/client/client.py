@@ -21,10 +21,13 @@
 # SOFTWARE.
 """Module providing the Python client to the HPS APIs."""
 
+import atexit
 import logging
 from typing import Union
 import warnings
 
+from ansys.hps.data_transfer.client import Client as dtClient
+from ansys.hps.data_transfer.client import DataTransferApi
 import jwt
 import requests
 
@@ -76,6 +79,9 @@ class Client(object):
     refresh_token : str, optional
         Refresh token.
     auth_url : str, optional
+    data_transfer_url: str
+        URL pointing to the data transfer API endpoint.
+        The default is ``'https://127.0.0.1:8443/hps/dt/api/v1'``.
     all_fields : bool, optional
         Whether to apply the ``fields="all"`` query parameter to all requests so
         that all available fields are returned for the requested resources. The
@@ -98,7 +104,8 @@ class Client(object):
     >>> cl = Client(
     ...     url="https://localhost:8443/hps",
     ...     username="repuser",
-    ...     password="repuser"
+    ...     password="repuser",
+            dts_url="https://localhost:8443/hps/dt/api/v1"
     ... )
 
     Create a client object and connect to HPS with a refresh token.
@@ -106,7 +113,8 @@ class Client(object):
     >>> cl = Client(
     ...     url="https://localhost:8443/hps",
     ...     username="repuser",
-    ...     refresh_token="eyJhbGciOiJIUzI1NiIsInR5cC..."
+    ...     refresh_token="eyJhbGciOiJIUzI1NiIsInR5cC...",
+            dts_url="https://localhost:8443/hps/dt/api/v1"
     >>> )
 
     """
@@ -128,6 +136,7 @@ class Client(object):
         all_fields=True,
         verify: Union[bool, str] = None,
         disable_security_warnings: bool = True,
+        data_transfer_url: str = "https://localhost:8443/hps/dt/api/v1",
         **kwargs,
     ):
 
@@ -150,6 +159,8 @@ class Client(object):
         self.client_id = client_id
         self.client_secret = client_secret
         self.verify = verify
+        self.data_transfer_url = data_transfer_url
+        self.dt_client = None
 
         if self.verify is None:
             self.verify = False
@@ -225,12 +236,38 @@ class Client(object):
         self._unauthorized_num_retry = 0
         self._unauthorized_max_retry = 1
 
+        def exit_handler():
+            log.info("Exiting gracefully.")
+            if self.dt_client is not None:
+                self.dt_client.stop()
+
+        atexit.register(exit_handler)
+
     @property
     def rep_url(self) -> str:
         msg = "The client 'rep_url' property is deprecated. Use 'url' instead."
         warnings.warn(msg, DeprecationWarning)
         log.warning(msg)
         return self.url
+
+    def _start_dt_worker(self):
+
+        if self.dt_client is None:
+            log.info("Starting Data Transfer client.")
+            # start Data transfer client
+            self.dt_client = dtClient()
+
+            self.dt_client.binary_config.update(
+                verbosity=3,
+                debug=False,
+                insecure=True,
+                token=self.access_token,
+                data_transfer_url=self.data_transfer_url,
+            )
+            self.dt_client.start()
+
+            self.dt_api = DataTransferApi(self.dt_client)
+            self.dt_api.status(wait=True)
 
     def _auto_refresh_token(self, response, *args, **kwargs):
         """Automatically refreshes the access token and
