@@ -666,29 +666,36 @@ def _download_files(project_api: ProjectApi, files: List[File]):
     project_api.client._start_dt_worker()
     out_path = os.path.join(os.path.dirname(__file__), "downloads")
 
+    base_dir = project_api.project_id
+    srcs = []
+    dsts = []
     for f in files:
         if getattr(f, "hash", None) is not None:
             fpath = os.path.join(out_path, f"{f.id}")
             download_path = os.path.join(fpath, f.evaluation_path)
-            base_dir = project_api.project_id
+            srcs.append(StoragePath(path=f"{base_dir}/{os.path.basename(f.storage_id)}"))
+            dsts.append(StoragePath(path=download_path, remote="local"))
 
-            log.info(f"Downloading file {f.id}")
-            src = StoragePath(path=f"{base_dir}/{os.path.basename(f.storage_id)}")
-            dst = StoragePath(path=download_path, remote="local")
-            op = project_api.client.dt_api.copy([SrcDst(src=src, dst=dst)])
-            op = project_api.client.dt_api.wait_for([op.id])
+    if len(srcs) > 0:
+        log.info(f"Downloading files")
+        op = project_api.client.dt_api.copy(
+            [SrcDst(src=src, dst=dst) for src, dst in zip(srcs, dsts)]
+        )
+        op = project_api.client.dt_api.wait_for([op.id])
+        log.info(f"Operation {op[0].state}")
+        if op[0].state == OperationState.Succeeded:
+            for f in files:
+                if getattr(f, "hash", None) is not None:
+                    fpath = os.path.join(out_path, f"{f.id}")
+                    download_path = os.path.join(fpath, f.evaluation_path)
+                    with open(download_path, "rb") as inp:
+                        f.content = inp.read()
+        else:
+            log.error(f"Download of files failed")
 
-            log.info(f"Operation {op[0].state}")
-            if op[0].state == OperationState.Succeeded:
-                with open(download_path, "rb") as inp:
-                    f.content = inp.read()
-            else:
-                log.error(f"Download of file {f.evaluation_path} with id {f.id} failed")
-
-    # Delete temporary folder
-    if os.path.exists(out_path):
-        print("deleting folder")
-        shutil.rmtree(out_path)
+        # Delete temporary folder
+        if os.path.exists(out_path):
+            shutil.rmtree(out_path)
 
 
 def get_files(project_api: ProjectApi, as_objects=True, content=False, **query_params):
@@ -708,33 +715,49 @@ def _upload_files(project_api: ProjectApi, files):
     """
 
     project_api.client._start_dt_worker()
+    srcs = []
+    dsts = []
+    base_dir = project_api.project_id
 
     for f in files:
         if getattr(f, "src", None) is None:
             continue
-
         is_file = isinstance(f.src, str) and os.path.exists(f.src)
-
         if is_file:
-            base_dir = project_api.project_id
-            log.info(f"Copying files {f.id}")
-            src = StoragePath(path=f.src, remote="local")
-            dst = StoragePath(path=f"{base_dir}/{os.path.basename(f.storage_id)}")
-            op = project_api.client.dt_api.copy([SrcDst(src=src, dst=dst)])
-            op = project_api.client.dt_api.wait_for(op.id)
-            log.info(f"Operation {op[0].state}")
-            if op[0].state == OperationState.Succeeded:
-                op = project_api.client.dt_api.get_metadata([dst])
-                op = project_api.client.dt_api.wait_for(op.id)[0]
-                log.info(f"Operation {op.state}")
-                if op.state == OperationState.Succeeded:
-                    md = op.result[dst.path]
-                    f.hash = md["checksum"]
-                    f.size = md["size"]
-                else:
-                    log.error(f"Failed to fetch metadata of uploaded file {f.src}")
-            else:
-                log.error(f"Upload of file {f.src} failed")
+            srcs.append(StoragePath(path=f.src, remote="local"))
+            dsts.append(StoragePath(path=f"{base_dir}/{os.path.basename(f.storage_id)}"))
+    if len(srcs) > 0:
+        log.info(f"Uploading files")
+        op = project_api.client.dt_api.copy(
+            [SrcDst(src=src, dst=dst) for src, dst in zip(srcs, dsts)]
+        )
+        op = project_api.client.dt_api.wait_for(op.id)
+        log.info(f"Operation {op[0].state}")
+        if op[0].state == OperationState.Succeeded:
+            _fetch_file_metadata(project_api, files, dsts)
+        else:
+            log.error(f"Upload of files failed")
+    else:
+        log.info("No files to upload")
+
+
+def _fetch_file_metadata(
+    project_api: ProjectApi, files: List[File], storagePaths: List[StoragePath]
+):
+    log.info(f"Getting upload file metadata")
+    op = project_api.client.dt_api.get_metadata(storagePaths)
+    op = project_api.client.dt_api.wait_for(op.id)[0]
+    log.info(f"Operation {op.state}")
+    if op.state == OperationState.Succeeded:
+        base_dir = project_api.project_id
+        for f in files:
+            if getattr(f, "src", None) is None:
+                continue
+            md = op.result[f"{base_dir}/{os.path.basename(f.storage_id)}"]
+            f.hash = md["checksum"]
+            f.size = md["size"]
+    else:
+        log.error(f"Failed to fetch metadata of uploaded files")
 
 
 def create_files(project_api: ProjectApi, files, as_objects=True) -> List[File]:
