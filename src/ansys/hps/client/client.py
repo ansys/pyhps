@@ -26,7 +26,7 @@ import logging
 from typing import Union
 import warnings
 
-from ansys.hps.data_transfer.client import Client as dtClient
+from ansys.hps.data_transfer.client import Client as DTClient
 from ansys.hps.data_transfer.client import DataTransferApi
 import jwt
 import requests
@@ -136,7 +136,7 @@ class Client(object):
         all_fields=True,
         verify: Union[bool, str] = None,
         disable_security_warnings: bool = True,
-        data_transfer_url: str = "https://localhost:8443/hps/dt/api/v1",
+        data_transfer_url: str | None =  None,
         **kwargs,
     ):
 
@@ -159,7 +159,7 @@ class Client(object):
         self.client_id = client_id
         self.client_secret = client_secret
         self.verify = verify
-        self.data_transfer_url = data_transfer_url
+        self.data_transfer_url = data_transfer_url if data_transfer_url else url + "/dt/api/v1"
         self.dt_client = None
 
         if self.verify is None:
@@ -255,7 +255,7 @@ class Client(object):
         if self.dt_client is None:
             log.info("Starting Data Transfer client.")
             # start Data transfer client
-            self.dt_client = dtClient()
+            self.dt_client = DTClient()
 
             self.dt_client.binary_config.update(
                 verbosity=3,
@@ -282,6 +282,8 @@ class Client(object):
             response.request.headers.update(
                 {"Authorization": self.session.headers["Authorization"]}
             )
+            if self.dt_client is not None:
+                self.dt_client.binary_config.update(token=self.access_token)
             log.debug(f"Retrying request with updated access token.")
             return self.session.send(response.request)
 
