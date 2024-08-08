@@ -136,7 +136,7 @@ class Client(object):
         all_fields=True,
         verify: Union[bool, str] = None,
         disable_security_warnings: bool = True,
-        data_transfer_url: str | None =  None,
+        data_transfer_url: str | None = None,
         **kwargs,
     ):
 
