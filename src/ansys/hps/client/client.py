@@ -111,7 +111,6 @@ class Client(object):
 
     """
 
-    
     def __init__(
         self,
         url: str = "https://127.0.0.1:8443/hps",
@@ -140,7 +139,10 @@ class Client(object):
 
         auth_url = kwargs.get("auth_url", None)
         if auth_url is not None:
-            msg = "The 'auth_url' input argument is deprecated. Use None instead. New HPS deployments will determine this automatically."
+            msg = (
+                "The 'auth_url' input argument is deprecated. Use None instead. "
+                "New HPS deployments will determine this automatically."
+            )
             warnings.warn(msg, DeprecationWarning)
             log.warning(msg)
 
@@ -263,7 +265,9 @@ class Client(object):
 
         # Service accounts look like "aud -> service_client_id"
         if not parsed_username:
-            if decoded_token.get("oid", "oid_not_found") == decoded_token.get("sub", "sub_not_found"):
+            if decoded_token.get("oid", "oid_not_found") == decoded_token.get(
+                "sub", "sub_not_found"
+            ):
                 parsed_username = "service_account_" + decoded_token.get("aud", "aud_not_set")
             else:
                 raise HPSError("Authentication token had no username.")
@@ -275,10 +279,11 @@ class Client(object):
         warnings.warn(msg, DeprecationWarning)
         log.warning(msg)
         return self.url
-    
+
     @property
     def auth_api_url(self) -> str:
-        msg = "The client 'auth_api_url' property is deprecated.  There is no generic auth_api exposed."
+        msg = "The client 'auth_api_url' property is deprecated. \
+               There is no generic auth_api exposed."
         warnings.warn(msg, DeprecationWarning)
         log.warning(msg)
         return (self.auth_url or self.url) + f"/auth/"

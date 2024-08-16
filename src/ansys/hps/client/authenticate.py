@@ -22,7 +22,7 @@
 """Module that provides authentication for the user with a password or refresh token against the
 HPS authentication service."""
 import logging
-from typing import Union, List
+from typing import Union
 
 import requests
 
@@ -46,6 +46,7 @@ def get_discovery_data(auth_url: str, timeout: int = 10, verify: Union[bool, str
             )
 
         return disco.json()
+
 
 def authenticate(
     auth_url: str = "https://127.0.0.1:8443/hps/auth/realms/rep",
@@ -107,7 +108,7 @@ def authenticate(
         session.verify = verify
         session.headers.update({"content-type": "application/x-www-form-urlencoded"})
 
-        # seemingly necessary all the time       
+        # seemingly necessary all the time
         data = {
             "client_id": client_id,
             "scope": scope,
@@ -115,12 +116,13 @@ def authenticate(
         # Adding extra items that were passed for very specific workflows
         for key, value in kwargs.items():
             data[key] = value
-        
+
         # If someone specifically calls out a grant type, just use it directly.
         if grant_type:
             data["grant_type"] = grant_type
 
-        # Many grant types can have client secrets, client secret with other things just means it not a public endpoint
+        # Many grant types can have client secrets,
+        # client secret with other things just means it not a public endpoint
         if client_secret is not None:
             data["client_secret"] = client_secret
 
@@ -140,12 +142,13 @@ def authenticate(
             if not "grant_type" in data:
                 data["grant_type"] = "refresh_token"
 
-        # If we have a secret and no other grant types have been suggested, then it must be a simple client_creds
+        # If we have a secret and no other grant types have been suggested,
+        # then it must be a simple client_creds
         if "client_secret" in data and not "grant_type" in data:
             data["grant_type"] = "client_credentials"
 
         log.debug(
-            f"Retrieving access token for client {client_id} from {auth_url} using {grant_type} grant."
+            f"Retrieving access token for {client_id} from {auth_url} using {grant_type} grant."
         )
 
         r = session.post(token_url, data=data, timeout=timeout)
