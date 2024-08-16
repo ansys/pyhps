@@ -282,11 +282,13 @@ class Client(object):
 
     @property
     def auth_api_url(self) -> str:
-        msg = "The client 'auth_api_url' property is deprecated. \
+        msg = f"The client 'auth_api_url' property is deprecated. \
                There is no generic auth_api exposed."
         warnings.warn(msg, DeprecationWarning)
         log.warning(msg)
-        return (self.auth_url or self.url) + f"/auth/"
+        auth_api_base, _, _ = self.auth_url.partition("realms")
+        log.warning(auth_api_base)
+        return auth_api_base
 
     def _auto_refresh_token(self, response, *args, **kwargs):
         """Automatically refreshes the access token and
