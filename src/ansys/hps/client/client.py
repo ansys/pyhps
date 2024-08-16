@@ -286,9 +286,12 @@ class Client(object):
                There is no generic auth_api exposed."
         warnings.warn(msg, DeprecationWarning)
         log.warning(msg)
-        auth_api_base, _, _ = self.auth_url.partition("realms")
-        log.warning(auth_api_base)
-        return auth_api_base
+        auth_api_base, sep, _ = self.auth_url.partition("realms")
+        if sep:
+            return auth_api_base
+        else:
+            log.error("auth_api not valid for non-keycloak implementation")
+            return None
 
     def _auto_refresh_token(self, response, *args, **kwargs):
         """Automatically refreshes the access token and
