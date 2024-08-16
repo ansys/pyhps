@@ -286,8 +286,8 @@ class Client(object):
                There is no generic auth_api exposed."
         warnings.warn(msg, DeprecationWarning)
         log.warning(msg)
-        auth_api_base, sep, _ = self.auth_url.partition("realms")
-        if sep:
+        auth_api_base, _, tail = self.auth_url.partition("realms")
+        if tail:
             return auth_api_base
         else:
             log.error("auth_api not valid for non-keycloak implementation")
