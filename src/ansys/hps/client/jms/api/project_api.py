@@ -29,7 +29,6 @@ from warnings import warn
 
 from ansys.hps.data_transfer.client.models.msg import SrcDst, StoragePath
 from ansys.hps.data_transfer.client.models.ops import OperationState
-import requests
 
 from ansys.hps.client.client import Client
 from ansys.hps.client.common import Object
@@ -618,14 +617,25 @@ class ProjectApi:
         execution_script_default_bucket = info["settings"]["execution_script_default_bucket"]
 
         # server side copy of the file to project bucket
-        checksum = _fs_copy_file(
-            self.client.session,
-            self.fs_url,
-            execution_script_default_bucket,
-            filename,
-            self.project_id,
-            file.storage_id,
-        )
+        self.client._start_dt_worker()
+        src = StoragePath(path=f"{execution_script_default_bucket}/{filename}")
+        dst = StoragePath(path=f"{self.project_id}/{file.storage_id}")
+        log.info(f"Copying default execution script {filename}")
+        op = self.client.dt_api.copy([SrcDst(src=src, dst=dst)])
+        op = self.client.dt_api.wait_for(op.id)[0]
+        log.debug(f"Operation {op.state}")
+        if op.state != OperationState.Succeeded:
+            raise HPSError(f"Copying of default execution script {filename} failed")
+
+        # get checksum of copied file
+        op = self.client.dt_api.get_metadata([dst])
+        op = self.client.dt_api.wait_for(op.id)[0]
+        log.debug(f"Operation {op.state}")
+        if op.state != OperationState.Succeeded:
+            raise HPSError(
+                f"Retrieval of meta data of copied default execution script {filename} failed"
+            )
+        checksum = op.result[dst.path]["checksum"]
 
         # update file resource
         file.hash = checksum
@@ -896,21 +906,3 @@ def sync_jobs(project_api: ProjectApi, jobs: List[Job]):
     url = f"{project_api.url}/jobs:sync"  # noqa: E231
     json_data = json.dumps({"job_ids": [obj.id for obj in jobs]})
     r = project_api.client.session.put(f"{url}", data=json_data)
-
-
-def _fs_copy_file(
-    session: requests.Session,
-    fs_url: str,
-    source_bucket: str,
-    source_name: str,
-    destination_bucket: str,
-    destination_name: str,
-) -> str:
-    """Copy files with the fs REST gateway."""
-    json_data = json.dumps(
-        {"destination": f"ansfs://{destination_bucket}/{destination_name}"}  # noqa: E231
-    )
-    r = session.post(
-        url=f"{fs_url}/{source_bucket}/{source_name}:copy", data=json_data  # noqa: E231
-    )
-    return r.json()["checksum"]
