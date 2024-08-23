@@ -188,12 +188,12 @@ class Client(object):
                     if "services" in jms_data and "external_auth_url" in jms_data["services"]:
                         self.auth_url = resp.json()["services"]["external_auth_url"]
                     else:
-                        log.warning(
-                            "Legacy JMS service does not include external_auth_url. \
-                                Generating auth_url..."
-                        )
                         if realm:
                             self.auth_url = f"{url.rstrip('/')}/auth/realms/{realm}"
+                        else:
+                            log.warning(
+                                "External_auth_url not found from JMS and no realm specified."
+                            )
 
         if access_token:
             log.debug("Authenticate with access token")
