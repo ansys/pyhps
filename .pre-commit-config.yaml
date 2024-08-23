@@ -1,7 +1,7 @@
 repos:
 
 - repo: https://github.com/psf/black
-  rev: 24.4.2
+  rev: 24.8.0
   hooks:
   - id: black
     exclude: ^(src/ansys/hps/client/rms/models.py)
@@ -13,7 +13,7 @@ repos:
     # exclude: ^(src/ansys/hps/client/jms/resource/|src/ansys/hps/client/auth/resource/)
 
 - repo: https://github.com/PyCQA/flake8
-  rev: 7.1.0
+  rev: 7.1.1
   hooks:
   - id: flake8
     exclude: ^(src/ansys/hps/client/jms/resource/|src/ansys/hps/client/auth/resource/)
@@ -32,7 +32,7 @@ repos:
     args: [-I, .codespellignore]
 
 - repo: https://github.com/ansys/pre-commit-hooks
-  rev: v0.3.1
+  rev: v0.4.3
   hooks:
   - id: add-license-headers
     files: '(ansys|examples|tests)/.*\.(py)|\.(proto)|generate_resources.py|archive_examples.py'
