@@ -123,7 +123,7 @@ def authenticate(
 
         # Many grant types can have client secrets,
         # client secret with other things just means it not a public endpoint
-        if client_secret is not None:
+        if client_secret:
             data["client_secret"] = client_secret
 
         # Username is also used in more than one workflow.
