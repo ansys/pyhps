@@ -133,7 +133,6 @@ class Client(object):
         client_secret: str = None,
         access_token: str = None,
         refresh_token: str = None,
-        auth_url: str = None,
         all_fields=True,
         verify: Union[bool, str] = None,
         disable_security_warnings: bool = True,
@@ -147,9 +146,16 @@ class Client(object):
             warnings.warn(msg, DeprecationWarning)
             log.warning(msg)
 
+        auth_url = kwargs.get("auth_url", None)
+        if auth_url is not None:
+            msg = (
+                "The 'auth_url' input argument is deprecated. Use None instead. "
+                "New HPS deployments will determine this automatically."
+            )
+            warnings.warn(msg, DeprecationWarning)
+            log.warning(msg)
+
         self.url = url
-        self.auth_url = auth_url
-        self.auth_api_url = (auth_url or url) + f"/auth/"
         self.access_token = None
         self.refresh_token = None
         self.username = username
@@ -176,6 +182,30 @@ class Client(object):
                 requests.packages.urllib3.exceptions.InsecureRequestWarning
             )
 
+        self.auth_url = auth_url
+
+        if not auth_url:
+            with requests.session() as session:
+                session.verify = self.verify
+                jms_info_url = url.rstrip("/") + "/jms/api/v1"
+                resp = session.get(jms_info_url)
+                if resp.status_code != 200:
+                    raise RuntimeError(
+                        f"Failed to contact jms info endpoint {jms_info_url}, \
+                            status code {resp.status_code}: {resp.content.decode()}"
+                    )
+                else:
+                    jms_data = resp.json()
+                    if "services" in jms_data and "external_auth_url" in jms_data["services"]:
+                        self.auth_url = resp.json()["services"]["external_auth_url"]
+                    else:
+                        if realm:
+                            self.auth_url = f"{url.rstrip('/')}/auth/realms/{realm}"
+                        else:
+                            log.warning(
+                                "External_auth_url not found from JMS and no realm specified."
+                            )
+
         if access_token:
             log.debug("Authenticate with access token")
             self.access_token = access_token
@@ -190,8 +220,7 @@ class Client(object):
             log.debug(f"Authenticating with '{self.grant_type}' grant type.")
 
             tokens = authenticate(
-                url=auth_url or url,
-                realm=realm,
+                auth_url=self.auth_url,
                 grant_type=self.grant_type,
                 scope=scope,
                 client_id=client_id,
@@ -206,12 +235,14 @@ class Client(object):
             self.refresh_token = tokens.get("refresh_token", None)
 
         parsed_username = None
-
+        token = {}
         try:
-            parsed_jwt = jwt.decode(self.access_token, options={"verify_signature": False})
-            parsed_username = parsed_jwt["preferred_username"]
-        except:
-            log.warning("Could not retrieve preferred_username from access token.")
+            token = jwt.decode(self.access_token, options={"verify_signature": False})
+        except Exception:
+            raise HPSError("Authentication token was invalid.")
+
+        # Try to get the standard keycloak name, then other possible valid names
+        parsed_username = self._get_username(token)
 
         if parsed_username is not None:
             if self.username is not None and self.username != parsed_username:
@@ -242,6 +273,23 @@ class Client(object):
                 self.dt_client.stop()
 
         atexit.register(exit_handler)
+
+    def _get_username(self, decoded_token):
+        parsed_username = decoded_token.get("preferred_username", None)
+        if not parsed_username:
+            parsed_username = decoded_token.get("username", None)
+        if not parsed_username:
+            parsed_username = decoded_token.get("name", None)
+
+        # Service accounts look like "aud -> service_client_id"
+        if not parsed_username:
+            if decoded_token.get("oid", "oid_not_found") == decoded_token.get(
+                "sub", "sub_not_found"
+            ):
+                parsed_username = "service_account_" + decoded_token.get("aud", "aud_not_set")
+            else:
+                raise HPSError("Authentication token had no username.")
+        return parsed_username
 
     @property
     def rep_url(self) -> str:
@@ -302,6 +350,20 @@ class Client(object):
 
         return path
 
+    @property
+    def auth_api_url(self) -> str:
+        msg = f"The client 'auth_api_url' property is deprecated. \
+               There is no generic auth_api exposed."
+        warnings.warn(msg, DeprecationWarning)
+        log.warning(msg)
+        auth_api_base, _, tail = self.auth_url.partition("realms")
+        if tail:
+            return auth_api_base
+        else:
+            log.error("auth_api not valid for non-keycloak implementation")
+            return None
+
+
     def _auto_refresh_token(self, response, *args, **kwargs):
         """Automatically refreshes the access token and
         resends the request in case of an unauthorized error."""
@@ -329,8 +391,7 @@ class Client(object):
             # Its not recommended to give refresh tokens to client_credentials grant types
             # as per OAuth 2.0 RFC6749 Section 4.4.3, so handle these specially...
             tokens = authenticate(
-                url=self.auth_url or self.url,
-                realm=self.realm,
+                auth_url=self.auth_url,
                 grant_type="client_credentials",
                 scope=self.scope,
                 client_id=self.client_id,
@@ -340,8 +401,7 @@ class Client(object):
         else:
             # Other workflows for authentication generally support refresh_tokens
             tokens = authenticate(
-                url=self.auth_url or self.url,
-                realm=self.realm,
+                auth_url=self.auth_url,
                 grant_type="refresh_token",
                 scope=self.scope,
                 client_id=self.client_id,
