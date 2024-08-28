@@ -288,14 +288,11 @@ class Client(object):
         environment_variable = "HOME"
         if platform.uname()[0].lower() == "windows":
             environment_variable = "LOCALAPPDATA"
-        if platform.uname()[0].lower() == "darwin":
-            environment_variable = "LOCALAPPDATA"
         path = os.environ.get(environment_variable, None)
 
         app_dir = ""
         if company:
             app_dir = os.path.join(app_dir, company)
-
         if app_dir:
             if platform.uname()[0].lower() != "windows":
                 app_dir = "." + app_dir.lower()
