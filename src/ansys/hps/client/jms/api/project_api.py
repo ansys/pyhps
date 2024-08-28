@@ -25,7 +25,7 @@ import logging
 import os
 import shutil
 from typing import Callable, List, Type, Union
-from warnings import warn
+import warnings
 
 from ansys.hps.data_transfer.client.models.msg import SrcDst, StoragePath
 from ansys.hps.data_transfer.client.models.ops import OperationState
@@ -182,7 +182,7 @@ class ProjectApi:
         self,
         file: File,
         target_path: str,
-        stream: bool = True,
+        stream: bool = None,
         progress_handler: Callable[[int], None] = None,
     ) -> str:
         """
@@ -191,7 +191,11 @@ class ProjectApi:
         If ``stream=True``, data is retrieved in chunks, which avoids storing the entire content
         in memory.
         """
-        return _download_file(self, file, target_path, progress_handler, stream)
+        if stream is not None:
+            msg = "The 'stream' input argument in ProjectApi.download_file() is deprecated. "
+            warnings.warn(msg, DeprecationWarning)
+            log.warning(msg)
+        return _download_file(self, file, target_path, progress_handler)
 
     ################################################################
     # Parameter definitions
@@ -816,7 +820,6 @@ def _download_file(
     file: File,
     target_path: str,
     progress_handler: Callable[[int], None] = None,
-    stream: bool = True,
 ) -> str:
     """Download a file."""
 
