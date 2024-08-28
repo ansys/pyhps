@@ -19,10 +19,14 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
+from ansys.hps.client.__version__ import __company_short__
+
 """Module providing the Python client to the HPS APIs."""
 
 import atexit
 import logging
+import os
+import platform
 from typing import Union
 import warnings
 
@@ -79,9 +83,6 @@ class Client(object):
     refresh_token : str, optional
         Refresh token.
     auth_url : str, optional
-    data_transfer_url: str
-        URL pointing to the data transfer API endpoint.
-        The default is ``'https://127.0.0.1:8443/hps/dt/api/v1'``.
     all_fields : bool, optional
         Whether to apply the ``fields="all"`` query parameter to all requests so
         that all available fields are returned for the requested resources. The
@@ -136,7 +137,6 @@ class Client(object):
         all_fields=True,
         verify: Union[bool, str] = None,
         disable_security_warnings: bool = True,
-        data_transfer_url: str | None = None,
         **kwargs,
     ):
 
@@ -159,7 +159,7 @@ class Client(object):
         self.client_id = client_id
         self.client_secret = client_secret
         self.verify = verify
-        self.data_transfer_url = data_transfer_url if data_transfer_url else url + "/dt/api/v1"
+        self.data_transfer_url = url + f"/dt/api/v1"
         self.dt_client = None
 
         if self.verify is None:
@@ -237,8 +237,8 @@ class Client(object):
         self._unauthorized_max_retry = 1
 
         def exit_handler():
-            log.info("Exiting gracefully.")
             if self.dt_client is not None:
+                log.info("Stopping the data transfer client gracefully.")
                 self.dt_client.stop()
 
         atexit.register(exit_handler)
@@ -255,7 +255,7 @@ class Client(object):
         if self.dt_client is None:
             log.info("Starting Data Transfer client.")
             # start Data transfer client
-            self.dt_client = DTClient()
+            self.dt_client = DTClient(download_dir=self._get_download_dir(__company_short__))
 
             self.dt_client.binary_config.update(
                 verbosity=3,
@@ -268,6 +268,42 @@ class Client(object):
 
             self.dt_api = DataTransferApi(self.dt_client)
             self.dt_api.status(wait=True)
+
+    def _get_download_dir(self, company=None):
+        """
+        Returns download directory platform dependent
+
+        :Parameters:
+        -`company`: Company name of the software provider
+
+        Resulting paths:
+        `Linux`: /home/user/.ansys/binaries
+        `Windows`: C:\\Users\\user\\AppData\\Local\\Ansys\\binaries
+
+        Note that on Windows we use AppData\Local for this,
+        not AppData\Roaming, as the data stored for an application should typically be kept local.
+
+        """
+
+        environment_variable = "HOME"
+        if platform.uname()[0].lower() == "windows":
+            environment_variable = "LOCALAPPDATA"
+        if platform.uname()[0].lower() == "darwin":
+            environment_variable = "LOCALAPPDATA"
+        path = os.environ.get(environment_variable, None)
+
+        app_dir = ""
+        if company:
+            app_dir = os.path.join(app_dir, company)
+
+        if app_dir:
+            if platform.uname()[0].lower() != "windows":
+                app_dir = "." + app_dir.lower()
+            path = os.path.join(path, app_dir)
+
+        path = os.path.join(path, "binaries")
+
+        return path
 
     def _auto_refresh_token(self, response, *args, **kwargs):
         """Automatically refreshes the access token and

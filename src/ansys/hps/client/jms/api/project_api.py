@@ -702,6 +702,7 @@ def _download_files(project_api: ProjectApi, files: List[File]):
                         f.content = inp.read()
         else:
             log.error(f"Download of files failed")
+            raise HPSError(f"Download of files failed")
 
         # Delete temporary folder
         if os.path.exists(out_path):
@@ -747,6 +748,8 @@ def _upload_files(project_api: ProjectApi, files):
             _fetch_file_metadata(project_api, files, dsts)
         else:
             log.error(f"Upload of files failed")
+            raise HPSError(f"Upload of files failed")
+
     else:
         log.info("No files to upload")
 
@@ -768,6 +771,7 @@ def _fetch_file_metadata(
             f.size = md["size"]
     else:
         log.error(f"Failed to fetch metadata of uploaded files")
+        raise HPSError(f"Failed to fetch metadata of uploaded files")
 
 
 def create_files(project_api: ProjectApi, files, as_objects=True) -> List[File]:
