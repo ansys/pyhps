@@ -363,7 +363,6 @@ class Client(object):
             log.error("auth_api not valid for non-keycloak implementation")
             return None
 
-
     def _auto_refresh_token(self, response, *args, **kwargs):
         """Automatically refreshes the access token and
         resends the request in case of an unauthorized error."""
