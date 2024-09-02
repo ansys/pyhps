@@ -55,21 +55,8 @@ def keycloak_password():
 
 
 @pytest.fixture(scope="session")
-def client(binary_config, binary_dir):
-    from ansys.hps.data_transfer.client import Client
-
-    c = Client(bin_config=binary_config, download_dir=binary_dir, clean_dev=False)
-    c.start()
-    yield c
-
-    from ansys.hps.data_transfer.client import DataTransferApi
-    from ansys.hps.data_transfer.client.models.msg import StoragePath
-
-    api = DataTransferApi(c)
-    op = api.rmdir([StoragePath(path="python_client_tests")])
-    api.wait_for(op.id)
-
-    c.stop()
+def client(url, username, password):
+    return Client(url, username, password, verify=False)
 
 
 @pytest.fixture()
