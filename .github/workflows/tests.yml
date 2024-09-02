@@ -31,13 +31,12 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: ${{ inputs.python-version }}
-          
-      - name: Create .netrc
-        run: |
-          printf "machine github.com\n\
-                  login pyansys-ci-bot\n\
-                  password ${{ secrets.PYANSYS_CI_BOT_PACKAGE_TOKEN }}\n"\ >> ./.netrc
-          chmod 600 ./.netrc
+        
+      - uses: extractions/netrc@v2
+        with:
+          machine: github.com
+          username: pyansys-ci-bot
+          password: ${{ secrets.PYANSYS_CI_BOT_PACKAGE_TOKEN }}
 
       - name: Install dependencies
         run: |
