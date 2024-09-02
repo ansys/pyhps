@@ -301,21 +301,25 @@ class Client(object):
     def _start_dt_worker(self):
 
         if self.dt_client is None:
-            log.info("Starting Data Transfer client.")
-            # start Data transfer client
-            self.dt_client = DTClient(download_dir=self._get_download_dir(__company_short__))
+            try:
+                log.info("Starting Data Transfer client.")
+                # start Data transfer client
+                self.dt_client = DTClient(download_dir=self._get_download_dir(__company_short__))
 
-            self.dt_client.binary_config.update(
-                verbosity=3,
-                debug=False,
-                insecure=True,
-                token=self.access_token,
-                data_transfer_url=self.data_transfer_url,
-            )
-            self.dt_client.start()
+                self.dt_client.binary_config.update(
+                    verbosity=3,
+                    debug=False,
+                    insecure=True,
+                    token=self.access_token,
+                    data_transfer_url=self.data_transfer_url,
+                )
+                self.dt_client.start()
 
-            self.dt_api = DataTransferApi(self.dt_client)
-            self.dt_api.status(wait=True)
+                self.dt_api = DataTransferApi(self.dt_client)
+                self.dt_api.status(wait=True)
+            except Exception as ex:
+                log.debug(ex)
+                raise HPSError("Error occurred when starting Data Transfer client.")
 
     def _get_download_dir(self, company=None):
         """
