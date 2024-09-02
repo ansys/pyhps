@@ -31,11 +31,15 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: ${{ inputs.python-version }}
+          
+      - name: Create .netrc
+        run: |
+          printf "machine github.com\n\
+                  login pyansys-ci-bot\n\
+                  password ${{ secrets.PYANSYS_CI_BOT_PACKAGE_TOKEN }}\n"\ >> ./.netrc
+          chmod 600 ./.netrc
 
       - name: Install dependencies
-        with:
-          secrets: |
-            GIT_AUTH_TOKEN=${{ secrets.PYANSYS_CI_BOT_PACKAGE_TOKEN }}
         run: |
           python -m pip install --upgrade pip setuptools tox tox-gh-actions
           mkdir docker-compose-artifact
