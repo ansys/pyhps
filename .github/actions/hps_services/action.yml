@@ -83,8 +83,8 @@ runs:
         ls -la
         tar -xvzf docker-compose-internal.tar.gz
         cd docker-compose
-        FSGATEWAY_TAG=latest-dev JMS_TAG=latest-dev DTS_TAG=latest-dev docker-compose pull
-        FSGATEWAY_TAG=latest-dev JMS_TAG=latest-dev DTS_TAG=latest-dev docker-compose --profile=stable --profile=data-transfer up -d
+        FSGATEWAY_TAG=latest-dev JMS_TAG=mgunupa-integration DTS_TAG=latest-dev docker-compose pull
+        FSGATEWAY_TAG=latest-dev JMS_TAG=mgunupa-integration DTS_TAG=latest-dev docker-compose --profile=stable --profile=data-transfer up -d
       working-directory: ./docker-compose-artifact
 
     - name: Wait for services
