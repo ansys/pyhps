@@ -83,7 +83,7 @@ runs:
         cd docker-compose
         docker-compose build
         docker-compose up -d
-      working-directory: ./docker-compose-artifact
+      working-directory: ./
 
     - name: Start services (internal package)
       if: ${{ inputs.version == 'latest-dev' }}
