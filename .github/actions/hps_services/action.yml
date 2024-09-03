@@ -77,7 +77,6 @@ runs:
       if: ${{ inputs.version != 'latest-dev' }}
       shell: bash
       run: |
-        pwd
         ls -la
         tar -xvzf docker-compose-customer.tar.gz
         mv docker-compose-customer docker-compose
@@ -90,6 +89,8 @@ runs:
       if: ${{ inputs.version == 'latest-dev' }}
       shell: bash
       run: |
+        echo "$(pwd)"
+        pwd
         ls -la
         tar -xvzf docker-compose-internal.tar.gz
         cd docker-compose
