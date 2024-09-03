@@ -737,10 +737,10 @@ def _upload_files(project_api: ProjectApi, files):
     for f in files:
         if getattr(f, "src", None) is None:
             continue
-        is_file = isinstance(f.src, str) and os.path.exists(f.src)
-        if is_file:
-            srcs.append(StoragePath(path=f.src, remote="local"))
-            dsts.append(StoragePath(path=f"{base_dir}/{os.path.basename(f.storage_id)}"))
+        # is_file = isinstance(f.src, str) and os.path.exists(f.src)
+        # if is_file:
+        srcs.append(StoragePath(path=f.src, remote="local"))
+        dsts.append(StoragePath(path=f"{base_dir}/{os.path.basename(f.storage_id)}"))
     if len(srcs) > 0:
         log.info(f"Uploading files")
         op = project_api.client.dt_api.copy(
@@ -768,7 +768,7 @@ def _fetch_file_metadata(
     if op.state == OperationState.Succeeded:
         base_dir = project_api.project_id
         for f in files:
-            if getattr(f, "src", None) is None:
+            if getattr(f, "src", None) is None or isinstance(f.src, str) == False:
                 continue
             md = op.result[f"{base_dir}/{os.path.basename(f.storage_id)}"]
             f.hash = md["checksum"]
@@ -882,7 +882,7 @@ def archive_project(project_api: ProjectApi, target_path, include_job_files=True
     download_link = op.result["backend_path"]
 
     # Download archive
-    download_link = download_link.replace("ansfs://", project_api.fs_url + "/")
+    # download_link = download_link.replace("ansfs://", project_api.fs_url + "/")
     log.info(f"Project archive download link: {download_link}")
 
     if not os.path.isdir(target_path):
@@ -891,14 +891,24 @@ def archive_project(project_api: ProjectApi, target_path, include_job_files=True
     file_path = os.path.join(target_path, download_link.rsplit("/")[-1])
     log.info(f"Download archive to {file_path}")
 
-    with project_api.client.session.get(download_link, stream=True) as r:
-        with open(file_path, "wb") as f:
-            for chunk in r.iter_content(chunk_size=1024 * 1024):
-                if chunk:
-                    f.write(chunk)
+    _download_archive(project_api, download_link, file_path)
 
     log.info(f"Done saving project archive to disk.")
     return file_path
+
+
+def _download_archive(project_api: ProjectApi, download_link, target_path):
+    project_api.client._start_dt_worker()
+
+    src = StoragePath(path=f"{download_link}")
+    dst = StoragePath(path=target_path, remote="local")
+    op = project_api.client.dt_api.copy([SrcDst(src=src, dst=dst)])
+    op = project_api.client.dt_api.wait_for([op.id])
+
+    log.info(f"Operation {op[0].state}")
+
+    if op[0].state != OperationState.Succeeded:
+        raise HPSError(f"Download of archive {download_link} failed")
 
 
 def copy_jobs(project_api: ProjectApi, jobs: List[Job], as_objects=True, **query_params):
