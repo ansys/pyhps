@@ -43,15 +43,26 @@ runs:
         version: tags/${{ inputs.version }}
         token: ${{ inputs.token }}
 
-    - if: ${{ inputs.version == 'latest-dev' }}
-      uses: dsaltares/fetch-gh-release-asset@master
-      name: Download Internal Services Artifact
-      with:
-        file: 'docker-compose-internal.tar.gz'
-        target: 'docker-compose-artifact/docker-compose-internal.tar.gz'
-        repo: ansys-internal/rep-deployments@mpawlik/dt_integration
-        version: tags/latest-dev
-        token: ${{ inputs.token }}
+#    - if: ${{ inputs.version == 'latest-dev' }}
+#      uses: dsaltares/fetch-gh-release-asset@master
+#      name: Download Internal Services Artifact
+#      with:
+#        file: 'docker-compose-internal.tar.gz'
+#        target: 'docker-compose-artifact/docker-compose-internal.tar.gz'
+#        repo: ansys-internal/rep-deployments@mpawlik/dt_integration
+#        version: tags/latest-dev
+#        token: ${{ inputs.token }}
+      - if: ${{ inputs.version == 'latest-dev' }}
+        uses: dawidd6/action-download-artifact@v3
+        with:
+          workflow: action.yaml
+          name: Download Internal Services Artifact
+          #path: test_setup/
+          branch: dt_integration
+          repo: ansys-internal/rep-deployments
+          workflow_conclusion: success           
+          search_artifacts: false
+          github_token: ${{secrets.PYANSYS_CI_BOT_TOKEN}}
 
     - uses: KengoTODA/actions-setup-docker-compose@main
       env:
