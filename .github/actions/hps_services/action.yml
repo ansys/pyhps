@@ -58,7 +58,7 @@ runs:
         name: docker-compose-internal
         branch: mpawlik/dt_integration
         repo: ansys-internal/rep-deployments
-        workflow_conclusion: success           
+        workflow_conclusion: neutral           
         search_artifacts: false
         github_token: ${{ inputs.token }}
 
