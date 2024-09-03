@@ -62,6 +62,14 @@ runs:
         search_artifacts: false
         github_token: ${{ inputs.token }}
 
+    - name: Setup tmate session
+      uses: mxschmitt/action-tmate@v3
+      with:
+          ## limits ssh access and adds the ssh public key for the user which triggered the workflow
+        limit-access-to-actor: true
+          ## limits ssh access and adds the ssh public keys of the listed GitHub users
+          # limit-access-to-users: [username]
+
     - uses: KengoTODA/actions-setup-docker-compose@main
       env:
         GITHUB_TOKEN: ${{ inputs.token }}
