@@ -55,7 +55,7 @@ runs:
     - uses: dawidd6/action-download-artifact@v3
       with:
         workflow: action.yaml
-        name: Download Internal Services Artifact
+        name: docker-compose-internal
           #path: test_setup/
         branch: mpawlik/dt_integration
         repo: ansys-internal/rep-deployments
