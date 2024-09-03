@@ -49,7 +49,7 @@ runs:
       with:
         file: 'docker-compose-internal.tar.gz'
         target: 'docker-compose-artifact/docker-compose-internal.tar.gz'
-        repo: ansys-internal/rep-deployments
+        repo: ansys-internal/rep-deployments@mpawlik/dt_integration
         version: tags/latest-dev
         token: ${{ inputs.token }}
 
