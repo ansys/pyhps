@@ -51,6 +51,7 @@ def test_jms_api_info(client):
     assert "settings" in info
     assert "time" in info
 
+
 def test_jms_api(client):
 
     log.debug("=== Client ===")
