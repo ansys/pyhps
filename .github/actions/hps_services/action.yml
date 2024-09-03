@@ -60,6 +60,7 @@ runs:
         repo: ansys-internal/rep-deployments
         workflow_conclusion: success           
         search_artifacts: false
+        path: ./docker-compose-artifact
         github_token: ${{ inputs.token }}
 
     - uses: KengoTODA/actions-setup-docker-compose@main
@@ -96,7 +97,7 @@ runs:
         cd docker-compose
         FSGATEWAY_TAG=latest-dev JMS_TAG=mgunupa-integration DTS_TAG=latest-dev docker-compose pull
         FSGATEWAY_TAG=latest-dev JMS_TAG=mgunupa-integration DTS_TAG=latest-dev docker-compose --profile=stable --profile=data-transfer up -d
-      #working-directory: ./docker-compose-artifact
+      working-directory: ./docker-compose-artifact
 
     - name: Wait for services
       shell: bash
