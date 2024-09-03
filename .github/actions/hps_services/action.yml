@@ -56,7 +56,7 @@ runs:
       with:
         workflow: main.yaml
         name: docker-compose-internal
-        path: test_setup/
+        #path: test_setup/
         branch: mpawlik/dt_integration
         repo: ansys-internal/rep-deployments
         workflow_conclusion: success           
@@ -88,10 +88,10 @@ runs:
 
     - name: Start services (internal package)
       if: ${{ inputs.version == 'latest-dev' }}
-      shell: bash
+      #shell: bash
       run: |
         ls -la
-        cd test_setup/
+        #cd test_setup/
         tar -xvzf docker-compose-internal.tar.gz
         cd docker-compose
         FSGATEWAY_TAG=latest-dev JMS_TAG=mgunupa-integration DTS_TAG=latest-dev docker-compose pull
