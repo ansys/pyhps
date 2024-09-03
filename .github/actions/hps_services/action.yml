@@ -57,7 +57,7 @@ runs:
         workflow: action.yaml
         name: Download Internal Services Artifact
           #path: test_setup/
-        branch: dt_integration
+        branch: mpawlik/dt_integration
         repo: ansys-internal/rep-deployments
         workflow_conclusion: success           
         search_artifacts: false
