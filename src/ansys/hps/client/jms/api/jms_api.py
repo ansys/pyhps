@@ -68,6 +68,7 @@ class JmsApi(object):
         """Initialize JMS API."""
         self.client = client
         self._fs_url = None
+        self._api_info = None
 
     @property
     def url(self) -> str:
@@ -81,13 +82,25 @@ class JmsApi(object):
             self._fs_url = _find_available_fs_url(self.get_storage())
         return self._fs_url
 
-    def get_api_info(self):
+    def get_api_info(self) -> dict:
         """Get information of the JMS API that the client is connected to.
 
         Information includes the version and build date.
         """
         r = self.client.session.get(self.url)
         return r.json()
+
+    @property
+    def api_info(self) -> dict:
+        """Information of the JMS API that the client is connected to."""
+        if self._api_info is None:
+            self._api_info = self.get_api_info()
+        return self._api_info
+
+    @property
+    def execution_script_default_bucket(self) -> str:
+        """Default bucket for execution scripts."""
+        return self.api_info["settings"]["execution_script_default_bucket"]
 
     ################################################################
     # Projects
@@ -244,6 +257,20 @@ class JmsApi(object):
             Permission,
             as_objects,
         )
+
+    # Execution Scripts
+    def list_default_execution_scripts(self) -> list[str]:
+        """List default execution scripts.
+
+        Returns a list of available default execution scripts that can be passed
+        as input to the :meth:`ProjectApi.copy_default_execution_script` method.
+        """
+        r = self.client.session.get(f"{self.fs_url}/list/{self.execution_script_default_bucket}")
+        file_list = [
+            f.replace(f"ansfs://{self.execution_script_default_bucket}/", "")
+            for f in r.json()["file_list"]
+        ]
+        return file_list
 
     ################################################################
     # Operations
