@@ -20,6 +20,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 """Module exposing the project endpoints of the JMS."""
+import io
 import json
 import logging
 import os
@@ -732,14 +733,21 @@ def _upload_files(project_api: ProjectApi, files):
     project_api.client._start_dt_worker()
     srcs = []
     dsts = []
+    tempFiles = []
     base_dir = project_api.project_id
+    filePath = ""
 
     for f in files:
         if getattr(f, "src", None) is None:
             continue
-        # is_file = isinstance(f.src, str) and os.path.exists(f.src)
-        # if is_file:
-        srcs.append(StoragePath(path=f.src, remote="local"))
+        filePath = f.src
+        if isinstance(f.src, io.IOBase):
+            tempFiles.append(f.storage_id)
+            mode = "wb" if isinstance(f.src, io.BytesIO) else "w"
+            with open(f.storage_id, mode) as out:
+                out.write(f.src.getvalue())
+                filePath = f.storage_id
+        srcs.append(StoragePath(path=filePath, remote="local"))
         dsts.append(StoragePath(path=f"{base_dir}/{os.path.basename(f.storage_id)}"))
     if len(srcs) > 0:
         log.info(f"Uploading files")
@@ -753,6 +761,11 @@ def _upload_files(project_api: ProjectApi, files):
         else:
             log.error(f"Upload of files failed")
             raise HPSError(f"Upload of files failed")
+
+    if len(tempFiles) > 0:
+        for file in tempFiles:
+            if os.path.exists(file):
+                os.remove(file)
 
     else:
         log.info("No files to upload")
@@ -768,7 +781,7 @@ def _fetch_file_metadata(
     if op.state == OperationState.Succeeded:
         base_dir = project_api.project_id
         for f in files:
-            if getattr(f, "src", None) is None or isinstance(f.src, str) == False:
+            if getattr(f, "src", None) is None:
                 continue
             md = op.result[f"{base_dir}/{os.path.basename(f.storage_id)}"]
             f.hash = md["checksum"]
