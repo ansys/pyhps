@@ -19,7 +19,6 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
-from ansys.hps.client.__version__ import __company_short__
 
 """Module providing the Python client to the HPS APIs."""
 
@@ -105,8 +104,7 @@ class Client(object):
     >>> cl = Client(
     ...     url="https://localhost:8443/hps",
     ...     username="repuser",
-    ...     password="repuser",
-            dts_url="https://localhost:8443/hps/dt/api/v1"
+    ...     password="repuser"
     ... )
 
     Create a client object and connect to HPS with a refresh token.
@@ -114,8 +112,7 @@ class Client(object):
     >>> cl = Client(
     ...     url="https://localhost:8443/hps",
     ...     username="repuser",
-    ...     refresh_token="eyJhbGciOiJIUzI1NiIsInR5cC...",
-            dts_url="https://localhost:8443/hps/dt/api/v1"
+    ...     refresh_token="eyJhbGciOiJIUzI1NiIsInR5cC..."
     >>> )
 
     """
@@ -304,7 +301,7 @@ class Client(object):
             try:
                 log.info("Starting Data Transfer client.")
                 # start Data transfer client
-                self.dt_client = DTClient(download_dir=self._get_download_dir(__company_short__))
+                self.dt_client = DTClient(download_dir=self._get_download_dir("Ansys"))
 
                 self.dt_client.binary_config.update(
                     verbosity=3,

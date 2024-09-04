@@ -29,10 +29,6 @@ except ModuleNotFoundError:  # pragma: no cover
 # major, minor, patch
 __version__ = importlib_metadata.version("ansys-hps-client")
 
-__company__ = "Ansys Switzerland GmbH"
-
-__company_short__ = "Ansys"
-
 # this is only a convenience to default the version
 # of Ansys simulation applications in PyHPS examples
 __ansys_apps_version__ = "2024 R2"

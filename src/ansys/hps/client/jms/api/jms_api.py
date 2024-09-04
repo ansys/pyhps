@@ -76,13 +76,6 @@ class JmsApi(object):
         """URL of the API."""
         return f"{self.client.url}/jms/api/v1"
 
-    # @property
-    # def fs_url(self) -> str:
-    #     """URL of the file storage gateway."""
-    #     if self._fs_url is None:
-    #         self._fs_url = _find_available_fs_url(self.get_storage())
-    #     return self._fs_url
-
     def get_api_info(self):
         """Get information of the JMS API that the client is connected to.
 
@@ -477,32 +470,3 @@ def _get_storages(client: Client, api_url: str) -> List[Dict]:
     url = f"{api_url}/storage"
     r = client.session.get(url)
     return r.json()["backends"]
-
-
-# def _find_available_fs_url(file_storages: Dict) -> str:
-#     """Find first available file storage URL."""
-#
-#     if not file_storages:
-#         raise HPSError("There is no file storage information.")
-#
-#     rest_gateways = [fs for fs in file_storages if fs["obj_type"] == "RestGateway"]
-#     rest_gateways.sort(key=lambda fs: fs["priority"])
-#
-#     if not rest_gateways:
-#         raise HPSError("There is no file storage gateway defined.")
-#
-#     for d in rest_gateways:
-#         url = d["url"]
-#         try:
-#             r = requests.get(url, verify=False, timeout=2)
-#             is_ansft = r.json()["ansft"]
-#         except Exception as ex:
-#             log.debug(ex)
-#             continue
-#         if r.status_code == 200 and is_ansft:
-#             return url
-#
-#     raise HPSError(
-#         f"All defined file storage gateways are unavailable"
-#         f" ({', '.join([d['url'] for d in rest_gateways])})."
-#     )

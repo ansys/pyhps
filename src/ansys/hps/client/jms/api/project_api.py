@@ -19,12 +19,13 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
+import tempfile
+
 """Module exposing the project endpoints of the JMS."""
 import io
 import json
 import logging
 import os
-import shutil
 from typing import Callable, List, Type, Union
 import warnings
 
@@ -678,8 +679,10 @@ def _download_files(project_api: ProjectApi, files: List[File]):
 
     """
 
+    temp_dir = tempfile.TemporaryDirectory()
+
     project_api.client._start_dt_worker()
-    out_path = os.path.join(os.path.dirname(__file__), "downloads")
+    out_path = os.path.join(temp_dir.name, "downloads")
 
     base_dir = project_api.project_id
     srcs = []
@@ -709,10 +712,6 @@ def _download_files(project_api: ProjectApi, files: List[File]):
             log.error(f"Download of files failed")
             raise HPSError(f"Download of files failed")
 
-        # Delete temporary folder
-        if os.path.exists(out_path):
-            shutil.rmtree(out_path)
-
 
 def get_files(project_api: ProjectApi, as_objects=True, content=False, **query_params):
     """Get files for the project API."""
@@ -733,20 +732,20 @@ def _upload_files(project_api: ProjectApi, files):
     project_api.client._start_dt_worker()
     srcs = []
     dsts = []
-    tempFiles = []
     base_dir = project_api.project_id
     filePath = ""
+
+    temp_dir = tempfile.TemporaryDirectory()
 
     for f in files:
         if getattr(f, "src", None) is None:
             continue
         filePath = f.src
         if isinstance(f.src, io.IOBase):
-            tempFiles.append(f.storage_id)
             mode = "wb" if isinstance(f.src, io.BytesIO) else "w"
-            with open(f.storage_id, mode) as out:
+            with open(os.path.join(temp_dir.name, f.storage_id), mode) as out:
                 out.write(f.src.getvalue())
-                filePath = f.storage_id
+            filePath = os.path.join(temp_dir.name, f.storage_id)
         srcs.append(StoragePath(path=filePath, remote="local"))
         dsts.append(StoragePath(path=f"{base_dir}/{os.path.basename(f.storage_id)}"))
     if len(srcs) > 0:
@@ -761,11 +760,6 @@ def _upload_files(project_api: ProjectApi, files):
         else:
             log.error(f"Upload of files failed")
             raise HPSError(f"Upload of files failed")
-
-    if len(tempFiles) > 0:
-        for file in tempFiles:
-            if os.path.exists(file):
-                os.remove(file)
 
     else:
         log.info("No files to upload")
@@ -847,6 +841,10 @@ def _download_file(
     log.info(f"Downloading file {file.id}")
     src = StoragePath(path=f"{base_dir}/{os.path.basename(file.storage_id)}")
     dst = StoragePath(path=download_path, remote="local")
+
+    if progress_handler is not None:
+        progress_handler(0)
+
     op = project_api.client.dt_api.copy([SrcDst(src=src, dst=dst)])
     op = project_api.client.dt_api.wait_for([op.id])
 
@@ -855,6 +853,9 @@ def _download_file(
     if op[0].state != OperationState.Succeeded:
         log.error(f"Download of file {file.evaluation_path} with id {file.id} failed")
         return None
+
+    if progress_handler is not None:
+        progress_handler(file.size)
 
     return download_path
 
