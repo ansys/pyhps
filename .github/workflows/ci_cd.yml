@@ -20,7 +20,7 @@ on:
     tags:
       - "*"
     branches:
-      - rajapise/dts-integration
+      - main
 
 env:
   MAIN_PYTHON_VERSION: '3.10'
