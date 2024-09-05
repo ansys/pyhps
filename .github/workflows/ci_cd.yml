@@ -12,7 +12,8 @@ on:
           - 'latest-dev'
       hps-feature:
         description: HPS feature to test against
-        default: 'string'
+        type: 'string'
+        default: 'mpawlik/dt_integration'
 
   pull_request:
   push:
