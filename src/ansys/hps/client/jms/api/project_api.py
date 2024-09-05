@@ -19,15 +19,18 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
+import tempfile
+
 """Module exposing the project endpoints of the JMS."""
+import io
 import json
 import logging
 import os
-from pathlib import Path
 from typing import Callable, List, Type, Union
-from warnings import warn
+import warnings
 
-import requests
+from ansys.hps.data_transfer.client.models.msg import SrcDst, StoragePath
+from ansys.hps.data_transfer.client.models.ops import OperationState
 
 from ansys.hps.client.client import Client
 from ansys.hps.client.common import Object
@@ -181,7 +184,7 @@ class ProjectApi:
         self,
         file: File,
         target_path: str,
-        stream: bool = True,
+        stream: bool = None,
         progress_handler: Callable[[int], None] = None,
     ) -> str:
         """
@@ -190,7 +193,11 @@ class ProjectApi:
         If ``stream=True``, data is retrieved in chunks, which avoids storing the entire content
         in memory.
         """
-        return _download_file(self, file, target_path, progress_handler, stream)
+        if stream is not None:
+            msg = "The 'stream' input argument in ProjectApi.download_file() is deprecated. "
+            warnings.warn(msg, DeprecationWarning)
+            log.warning(msg)
+        return _download_file(self, file, target_path, progress_handler)
 
     ################################################################
     # Parameter definitions
@@ -616,14 +623,25 @@ class ProjectApi:
         execution_script_default_bucket = info["settings"]["execution_script_default_bucket"]
 
         # server side copy of the file to project bucket
-        checksum = _fs_copy_file(
-            self.client.session,
-            self.fs_url,
-            execution_script_default_bucket,
-            filename,
-            self.project_id,
-            file.storage_id,
-        )
+        self.client._start_dt_worker()
+        src = StoragePath(path=f"{execution_script_default_bucket}/{filename}")
+        dst = StoragePath(path=f"{self.project_id}/{file.storage_id}")
+        log.info(f"Copying default execution script {filename}")
+        op = self.client.dt_api.copy([SrcDst(src=src, dst=dst)])
+        op = self.client.dt_api.wait_for(op.id)[0]
+        log.debug(f"Operation {op.state}")
+        if op.state != OperationState.Succeeded:
+            raise HPSError(f"Copying of default execution script {filename} failed")
+
+        # get checksum of copied file
+        op = self.client.dt_api.get_metadata([dst])
+        op = self.client.dt_api.wait_for(op.id)[0]
+        log.debug(f"Operation {op.state}")
+        if op.state != OperationState.Succeeded:
+            raise HPSError(
+                f"Retrieval of meta data of copied default execution script {filename} failed"
+            )
+        checksum = op.result[dst.path]["checksum"]
 
         # update file resource
         file.hash = checksum
@@ -657,17 +675,42 @@ class ProjectApi:
 
 def _download_files(project_api: ProjectApi, files: List[File]):
     """
-    Download files directly using the fs REST gateway.
+    Download files directly using data transfer worker.
 
-    This is a temporary implementation for downloading files. It is to be
-    replaced with direct ansft calls, when it is available as a Python package.
     """
 
+    temp_dir = tempfile.TemporaryDirectory()
+
+    project_api.client._start_dt_worker()
+    out_path = os.path.join(temp_dir.name, "downloads")
+
+    base_dir = project_api.project_id
+    srcs = []
+    dsts = []
     for f in files:
         if getattr(f, "hash", None) is not None:
-            r = project_api.client.session.get(f"{project_api.fs_bucket_url}/{f.storage_id}")
-            f.content = r.content
-            f.content_type = r.headers["Content-Type"]
+            fpath = os.path.join(out_path, f"{f.id}")
+            download_path = os.path.join(fpath, f.evaluation_path)
+            srcs.append(StoragePath(path=f"{base_dir}/{os.path.basename(f.storage_id)}"))
+            dsts.append(StoragePath(path=download_path, remote="local"))
+
+    if len(srcs) > 0:
+        log.info(f"Downloading files")
+        op = project_api.client.dt_api.copy(
+            [SrcDst(src=src, dst=dst) for src, dst in zip(srcs, dsts)]
+        )
+        op = project_api.client.dt_api.wait_for([op.id])
+        log.info(f"Operation {op[0].state}")
+        if op[0].state == OperationState.Succeeded:
+            for f in files:
+                if getattr(f, "hash", None) is not None:
+                    fpath = os.path.join(out_path, f"{f.id}")
+                    download_path = os.path.join(fpath, f.evaluation_path)
+                    with open(download_path, "rb") as inp:
+                        f.content = inp.read()
+        else:
+            log.error(f"Download of files failed")
+            raise HPSError(f"Download of files failed")
 
 
 def get_files(project_api: ProjectApi, as_objects=True, content=False, **query_params):
@@ -682,32 +725,64 @@ def get_files(project_api: ProjectApi, as_objects=True, content=False, **query_p
 
 def _upload_files(project_api: ProjectApi, files):
     """
-    Uploads files directly using the fs REST gateway.
+    Uploads files directly using data transfer worker.
 
-    This is a temporary implementation for uploading files. It is to be
-    replaced with direct ansft calls, when it is available as a Python package.
     """
-    fs_headers = {"content-type": "application/octet-stream"}
+
+    project_api.client._start_dt_worker()
+    srcs = []
+    dsts = []
+    base_dir = project_api.project_id
+    filePath = ""
+
+    temp_dir = tempfile.TemporaryDirectory()
 
     for f in files:
         if getattr(f, "src", None) is None:
             continue
-
-        is_file = isinstance(f.src, str) and os.path.exists(f.src)
-        content = f.src
-        if is_file:
-            content = open(f.src, "rb")
-
-        r = project_api.client.session.post(
-            f"{project_api.fs_bucket_url}/{f.storage_id}",
-            data=content,
-            headers=fs_headers,
+        filePath = f.src
+        if isinstance(f.src, io.IOBase):
+            mode = "wb" if isinstance(f.src, io.BytesIO) else "w"
+            with open(os.path.join(temp_dir.name, f.storage_id), mode) as out:
+                out.write(f.src.getvalue())
+            filePath = os.path.join(temp_dir.name, f.storage_id)
+        srcs.append(StoragePath(path=filePath, remote="local"))
+        dsts.append(StoragePath(path=f"{base_dir}/{os.path.basename(f.storage_id)}"))
+    if len(srcs) > 0:
+        log.info(f"Uploading files")
+        op = project_api.client.dt_api.copy(
+            [SrcDst(src=src, dst=dst) for src, dst in zip(srcs, dsts)]
         )
-        f.hash = r.json()["checksum"]
-        f.size = r.request.headers.get("Content-Length", None)
+        op = project_api.client.dt_api.wait_for(op.id)
+        log.info(f"Operation {op[0].state}")
+        if op[0].state == OperationState.Succeeded:
+            _fetch_file_metadata(project_api, files, dsts)
+        else:
+            log.error(f"Upload of files failed")
+            raise HPSError(f"Upload of files failed")
 
-        if is_file:
-            content.close()
+    else:
+        log.info("No files to upload")
+
+
+def _fetch_file_metadata(
+    project_api: ProjectApi, files: List[File], storagePaths: List[StoragePath]
+):
+    log.info(f"Getting upload file metadata")
+    op = project_api.client.dt_api.get_metadata(storagePaths)
+    op = project_api.client.dt_api.wait_for(op.id)[0]
+    log.info(f"Operation {op.state}")
+    if op.state == OperationState.Succeeded:
+        base_dir = project_api.project_id
+        for f in files:
+            if getattr(f, "src", None) is None:
+                continue
+            md = op.result[f"{base_dir}/{os.path.basename(f.storage_id)}"]
+            f.hash = md["checksum"]
+            f.size = md["size"]
+    else:
+        log.error(f"Failed to fetch metadata of uploaded files")
+        raise HPSError(f"Failed to fetch metadata of uploaded files")
 
 
 def create_files(project_api: ProjectApi, files, as_objects=True) -> List[File]:
@@ -752,24 +827,35 @@ def _download_file(
     file: File,
     target_path: str,
     progress_handler: Callable[[int], None] = None,
-    stream: bool = True,
 ) -> str:
     """Download a file."""
+
+    project_api.client._start_dt_worker()
+
     if getattr(file, "hash", None) is None:
         log.warning(f"No hash found for file {file.name}.")
 
-    download_link = f"{project_api.fs_bucket_url}/{file.storage_id}"
     download_path = os.path.join(target_path, file.evaluation_path)
-    Path(download_path).parent.mkdir(parents=True, exist_ok=True)
+    base_dir = project_api.project_id
 
-    with (
-        project_api.client.session.get(download_link, stream=stream) as r,
-        open(download_path, "wb") as f,
-    ):
-        for chunk in r.iter_content(chunk_size=None):
-            f.write(chunk)
-            if progress_handler is not None:
-                progress_handler(len(chunk))
+    log.info(f"Downloading file {file.id}")
+    src = StoragePath(path=f"{base_dir}/{os.path.basename(file.storage_id)}")
+    dst = StoragePath(path=download_path, remote="local")
+
+    if progress_handler is not None:
+        progress_handler(0)
+
+    op = project_api.client.dt_api.copy([SrcDst(src=src, dst=dst)])
+    op = project_api.client.dt_api.wait_for([op.id])
+
+    log.info(f"Operation {op[0].state}")
+
+    if op[0].state != OperationState.Succeeded:
+        log.error(f"Download of file {file.evaluation_path} with id {file.id} failed")
+        return None
+
+    if progress_handler is not None:
+        progress_handler(file.size)
 
     return download_path
 
@@ -810,7 +896,7 @@ def archive_project(project_api: ProjectApi, target_path, include_job_files=True
     download_link = op.result["backend_path"]
 
     # Download archive
-    download_link = download_link.replace("ansfs://", project_api.fs_url + "/")
+    # download_link = download_link.replace("ansfs://", project_api.fs_url + "/")
     log.info(f"Project archive download link: {download_link}")
 
     if not os.path.isdir(target_path):
@@ -819,14 +905,24 @@ def archive_project(project_api: ProjectApi, target_path, include_job_files=True
     file_path = os.path.join(target_path, download_link.rsplit("/")[-1])
     log.info(f"Download archive to {file_path}")
 
-    with project_api.client.session.get(download_link, stream=True) as r:
-        with open(file_path, "wb") as f:
-            for chunk in r.iter_content(chunk_size=1024 * 1024):
-                if chunk:
-                    f.write(chunk)
+    _download_archive(project_api, download_link, file_path)
 
     log.info(f"Done saving project archive to disk.")
     return file_path
+
+
+def _download_archive(project_api: ProjectApi, download_link, target_path):
+    project_api.client._start_dt_worker()
+
+    src = StoragePath(path=f"{download_link}")
+    dst = StoragePath(path=target_path, remote="local")
+    op = project_api.client.dt_api.copy([SrcDst(src=src, dst=dst)])
+    op = project_api.client.dt_api.wait_for([op.id])
+
+    log.info(f"Operation {op[0].state}")
+
+    if op[0].state != OperationState.Succeeded:
+        raise HPSError(f"Download of archive {download_link} failed")
 
 
 def copy_jobs(project_api: ProjectApi, jobs: List[Job], as_objects=True, **query_params):
@@ -841,21 +937,3 @@ def sync_jobs(project_api: ProjectApi, jobs: List[Job]):
     url = f"{project_api.url}/jobs:sync"  # noqa: E231
     json_data = json.dumps({"job_ids": [obj.id for obj in jobs]})
     r = project_api.client.session.put(f"{url}", data=json_data)
-
-
-def _fs_copy_file(
-    session: requests.Session,
-    fs_url: str,
-    source_bucket: str,
-    source_name: str,
-    destination_bucket: str,
-    destination_name: str,
-) -> str:
-    """Copy files with the fs REST gateway."""
-    json_data = json.dumps(
-        {"destination": f"ansfs://{destination_bucket}/{destination_name}"}  # noqa: E231
-    )
-    r = session.post(
-        url=f"{fs_url}/{source_bucket}/{source_name}:copy", data=json_data  # noqa: E231
-    )
-    return r.json()["checksum"]

@@ -19,6 +19,10 @@ on:
         description: HPS version to test against
         type: string
         default: 'latest-dev'
+      hps-feature:
+        description: HPS Feature to test against (only for latest-dev version)
+        type: string
+        default: 'main'
 
 jobs:
 
@@ -31,6 +35,12 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: ${{ inputs.python-version }}
+        
+      - uses: extractions/netrc@v2
+        with:
+          machine: github.com
+          username: pyansys-ci-bot
+          password: ${{ secrets.PYANSYS_CI_BOT_PACKAGE_TOKEN }}
 
       - name: Install dependencies
         run: |
@@ -45,7 +55,8 @@ jobs:
           ghcr-username: ${{ secrets.PYANSYS_CI_BOT_USERNAME }}
           ghcr-token: ${{ secrets.PYANSYS_CI_BOT_PACKAGE_TOKEN }}
           version: ${{ inputs.hps-version }}
-
+          feature: ${{ inputs.hps-feature }}
+   
       - name: Test with tox
         run: tox -e ${{ inputs.toxenv }}-coverage
         env:

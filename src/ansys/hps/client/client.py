@@ -19,12 +19,18 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
+
 """Module providing the Python client to the HPS APIs."""
 
+import atexit
 import logging
+import os
+import platform
 from typing import Union
 import warnings
 
+from ansys.hps.data_transfer.client import Client as DTClient
+from ansys.hps.data_transfer.client import DataTransferApi
 import jwt
 import requests
 
@@ -156,6 +162,8 @@ class Client(object):
         self.client_id = client_id
         self.client_secret = client_secret
         self.verify = verify
+        self.data_transfer_url = url + f"/dt/api/v1"
+        self.dt_client = None
 
         if self.verify is None:
             self.verify = False
@@ -256,6 +264,13 @@ class Client(object):
         self._unauthorized_num_retry = 0
         self._unauthorized_max_retry = 1
 
+        def exit_handler():
+            if self.dt_client is not None:
+                log.info("Stopping the data transfer client gracefully.")
+                self.dt_client.stop()
+
+        atexit.register(exit_handler)
+
     def _get_username(self, decoded_token):
         parsed_username = decoded_token.get("preferred_username", None)
         if not parsed_username:
@@ -279,6 +294,62 @@ class Client(object):
         warnings.warn(msg, DeprecationWarning)
         log.warning(msg)
         return self.url
+
+    def _start_dt_worker(self):
+
+        if self.dt_client is None:
+            try:
+                log.info("Starting Data Transfer client.")
+                # start Data transfer client
+                self.dt_client = DTClient(download_dir=self._get_download_dir("Ansys"))
+
+                self.dt_client.binary_config.update(
+                    verbosity=3,
+                    debug=False,
+                    insecure=True,
+                    token=self.access_token,
+                    data_transfer_url=self.data_transfer_url,
+                )
+                self.dt_client.start()
+
+                self.dt_api = DataTransferApi(self.dt_client)
+                self.dt_api.status(wait=True)
+            except Exception as ex:
+                log.debug(ex)
+                raise HPSError("Error occurred when starting Data Transfer client.")
+
+    def _get_download_dir(self, company=None):
+        """
+        Returns download directory platform dependent
+
+        :Parameters:
+        -`company`: Company name of the software provider
+
+        Resulting paths:
+        `Linux`: /home/user/.ansys/binaries
+        `Windows`: C:\\Users\\user\\AppData\\Local\\Ansys\\binaries
+
+        Note that on Windows we use AppData\Local for this,
+        not AppData\Roaming, as the data stored for an application should typically be kept local.
+
+        """
+
+        environment_variable = "HOME"
+        if platform.uname()[0].lower() == "windows":
+            environment_variable = "LOCALAPPDATA"
+        path = os.environ.get(environment_variable, None)
+
+        app_dir = ""
+        if company:
+            app_dir = os.path.join(app_dir, company)
+        if app_dir:
+            if platform.uname()[0].lower() != "windows":
+                app_dir = "." + app_dir.lower()
+            path = os.path.join(path, app_dir)
+
+        path = os.path.join(path, "binaries")
+
+        return path
 
     @property
     def auth_api_url(self) -> str:
@@ -306,6 +377,8 @@ class Client(object):
             response.request.headers.update(
                 {"Authorization": self.session.headers["Authorization"]}
             )
+            if self.dt_client is not None:
+                self.dt_client.binary_config.update(token=self.access_token)
             log.debug(f"Retrying request with updated access token.")
             return self.session.send(response.request)
 
