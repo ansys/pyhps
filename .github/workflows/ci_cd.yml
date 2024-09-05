@@ -13,7 +13,7 @@ on:
       hps-feature:
         description: HPS feature to test against
         type: 'string'
-        default: 'mpawlik/dt_integration'
+        default: 'main'
 
   pull_request:
   push:
@@ -61,7 +61,7 @@ jobs:
       toxenv: ${{ matrix.cfg.toxenv }}
       runner: ${{ matrix.os }}
       hps-version: ${{ inputs.hps-version || 'latest-dev' }}
-      hps-feature: ${{ inputs.hps-feature }}
+      hps-feature: ${{ inputs.hps-feature || 'mpawlik/dt_integration' }} # revert to 'main' before merging
 
   docs:
     name: Documentation

@@ -9,8 +9,8 @@ inputs:
     required: true
 
   feature:
-    description: 'HPS feature'
-    required: true    
+    description: 'HPS feature (only for latest-dev version)'
+    required: false
 
   token:
     description: 'Token'
@@ -53,7 +53,7 @@ runs:
       with:
         workflow: main.yaml
         name: docker-compose-internal
-        branch: ${{ inputs.feature }}
+        branch: ${{ inputs.feature || 'main'}}
         repo: ansys-internal/rep-deployments
         workflow_conclusion: success           
         search_artifacts: false

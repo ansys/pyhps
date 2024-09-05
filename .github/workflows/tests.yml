@@ -20,9 +20,9 @@ on:
         type: string
         default: 'latest-dev'
       hps-feature:
-        description: HPS Feature to test against
+        description: HPS Feature to test against (only for latest-dev version)
         type: string
-        default: 'mpawlik/dt_integration'
+        default: 'main'
 
 jobs:
 
