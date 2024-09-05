@@ -19,6 +19,10 @@ on:
         description: HPS version to test against
         type: string
         default: 'latest-dev'
+      hps-feature:
+        description: HPS Feature to test against
+        type: string
+        default: 'mpawlik/dt_integration'
 
 jobs:
 
@@ -51,6 +55,7 @@ jobs:
           ghcr-username: ${{ secrets.PYANSYS_CI_BOT_USERNAME }}
           ghcr-token: ${{ secrets.PYANSYS_CI_BOT_PACKAGE_TOKEN }}
           version: ${{ inputs.hps-version }}
+		  feature: ${{ inputs.hps-feature }}
 
       - name: Test with tox
         run: tox -e ${{ inputs.toxenv }}-coverage
