@@ -48,13 +48,13 @@ runs:
       name: Download Internal Services Artifact
       with:
         workflow: main.yaml
-		name: docker-compose-internal
-		branch: ${{ inputs.feature }}
-		repo: ansys-internal/rep-deployments
-		workflow_conclusion: success           
-		search_artifacts: false
-		path: ./docker-compose-artifact
-		github_token: ${{ inputs.token }}
+        name: docker-compose-internal
+        branch: ${{ inputs.feature }}
+        repo: ansys-internal/rep-deployments
+        workflow_conclusion: success           
+        search_artifacts: false
+        path: ./docker-compose-artifact
+        github_token: ${{ inputs.token }}
 
     - uses: KengoTODA/actions-setup-docker-compose@main
       env:
