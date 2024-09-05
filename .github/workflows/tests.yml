@@ -55,7 +55,7 @@ jobs:
           ghcr-username: ${{ secrets.PYANSYS_CI_BOT_USERNAME }}
           ghcr-token: ${{ secrets.PYANSYS_CI_BOT_PACKAGE_TOKEN }}
           version: ${{ inputs.hps-version }}
-		  feature: ${{ inputs.hps-feature }}
+	  feature: ${{ inputs.hps-feature }}
 
       - name: Test with tox
         run: tox -e ${{ inputs.toxenv }}-coverage
