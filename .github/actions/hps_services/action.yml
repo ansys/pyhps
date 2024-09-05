@@ -8,6 +8,10 @@ inputs:
     description: 'HPS version'
     required: true
 
+  feature:
+    description: 'HPS feature'
+    required: true    
+
   token:
     description: 'Token'
     required: true
