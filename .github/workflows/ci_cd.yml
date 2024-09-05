@@ -10,6 +10,9 @@ on:
           - 'v1.0.2'
           - 'v1.0.3'
           - 'latest-dev'
+      hps-feature:
+        description: HPS feature to test against
+        default: 'string'
 
   pull_request:
   push:
@@ -57,6 +60,7 @@ jobs:
       toxenv: ${{ matrix.cfg.toxenv }}
       runner: ${{ matrix.os }}
       hps-version: ${{ inputs.hps-version || 'latest-dev' }}
+      hps-feature: ${{ inputs.hps-feature }}
 
   docs:
     name: Documentation
