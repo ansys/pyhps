@@ -27,7 +27,6 @@ import json
 import logging
 import os
 from typing import Dict, List, Union
-import uuid
 
 import backoff
 
@@ -409,10 +408,16 @@ def _restore_project(jms_api, archive_path):
     if not os.path.exists(archive_path):
         raise HPSError(f"Project archive: path does not exist {archive_path}")
 
-    bucket = f"hps-client-restore-{uuid.uuid4()}"
-
     log.info(f"Uploading archive {archive_path}")
 
+    # POST project archive dir creation request
+    url = f"{jms_api.url}/projects/dir"
+    r = jms_api.client.session.post(url)
+    if not r.json()["project_dir"]:
+        msg = "Failed to create the archive restore dir."
+        msg += f" Request response: {r.json()}"
+        raise HPSError(f"{msg}")
+    bucket = r.json()["project_dir"][0]
     _upload_archive(jms_api, archive_path, bucket)
 
     # POST restore request
