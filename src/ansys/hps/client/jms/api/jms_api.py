@@ -229,15 +229,19 @@ class JmsApi(object):
         self,
         template_id: str,
         permissions: List[Permission],
+        template_path: str = None,
         as_objects: bool = True,
     ) -> List[Permission]:
         """Update permissions of a task definition template."""
+        if template_path:
+            query_params = {"template_path": template_path}
         return update_objects(
             self.client.session,
             f"{self.url}/task_definition_templates/{template_id}",
             permissions,
             Permission,
             as_objects,
+            **query_params,
         )
 
     ################################################################
