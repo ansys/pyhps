@@ -7,10 +7,10 @@ cd examples
 REM cd mapdl_tyre_performance
 cd generic_api
 
-set TOKEN=
+set TOKEN=eyJhbGciOiJSUzI1NiIsImtpZCI6ImNWQWZMRlQyZS1qT1A2QmlmOUxvRGRRaC1kdC1sazlpa2Fab0EzY0U2bWsiLCJ0eXAiOiJKV1QifQ.eyJhdWQiOiJkY2UyNjc3My03NTZkLTQ2NzEtYjJlNC05ZTEyZmZlZDA3ZjYiLCJpc3MiOiJodHRwczovL2EzNjVkZXYuYjJjbG9naW4uY29tL2NhNGZmNDVhLTI3MzMtNDBkNS1hNGIyLTNjMGYzMDhiYWM5MS92Mi4wLyIsImV4cCI6MTcyNzcxMzA3NCwibmJmIjoxNzI3NzA5NDc0LCJzdWIiOiJmZDUyZTc1ZC1mNzJlLTQyMTItYTczYy00ZjY3NGI5NWExZjciLCJlbWFpbCI6Impvbi5ub3Zha0BhbnN5cy5jb20iLCJ0aWQiOiIzNGM2Y2U2Ny0xNWI4LTRlZmYtODBlOS01MmRhOGJlODk3MDYiLCJnaXZlbl9uYW1lIjoiSm9uIiwiZmFtaWx5X25hbWUiOiJOb3ZhayIsIm5hbWUiOiJKb24gTm92YWsiLCJVSUQiOiJmZDUyZTc1ZC1mNzJlLTQyMTItYTczYy00ZjY3NGI5NWExZjciLCJub25jZSI6ImRHTm5iMjlMU0hjeFEzbG5URlJ0VjBWVE5WbzBNMjU1UVd0T04yOUtVVk5XTjFCdVV6WXhNa1JhVVhrMCIsInNjcCI6IkxpY2Vuc2luZ0FzQVNlcnZpY2UiLCJhenAiOiIwMDgzNWJjZC00MjQ1LTRkNjEtOTE5Yy1jYzhjMzdkYjdkN2YiLCJ2ZXIiOiIxLjAiLCJpYXQiOjE3Mjc3MDk0NzR9.XmWkjzQPCkxj5BARV-lMk97hzRsTo-NA2lo2WbN3tTztm3yzG0RM7TwdqdfqAJqJkp6B3qlptwZq6PdIP70NdFT1jra-FHOfWVLuw1bZn4sKszAmKIXc_ODH7mpXUgA0vrCmfrmrdi7ei1zzSoZQsmuwoxX2jOZWyR4ZMBX6uBLRzuETrvb09ln1tATrRbldmXBz3IPkScnu-_M_4sntXFhzvsL2wsnW-ZUcJ0ROxhk6s6bnr9AdavO5CdkF5859hdicp-gL6qrEk3FokERdq9fjrz2DYoD2nombIeHYwDUicip3Jd1Zh9OQvdEFFtjNfzdPsgNCuNUCwVVpG7pAJQ
 
-REM python project_setup.py --name "Jons testing" -v "2025 R1" --url "https://test-jms.awsansys11np.onscale.com/hps" --num-jobs=1 --account=onprem_account --token=%TOKEN%
-REM python project_setup.py --urls "https://test-jms.awsansys11np.onscale.com/hps" "https://dev-jms.awsansys11np.onscale.com/hps"  --accounts "onprem_account" "30b226d7-aa1b-4001-b763-f88525abde4d" --token=%TOKEN%
-python project_setup.py --urls "https://dev-jms.awsansys11np.onscale.com/hps"  --accounts "onprem_account" "30b226d7-aa1b-4001-b763-f88525abde4d" "0fea8f1b-0f0f-4998-938a-37a62db59481" --token=%TOKEN%
+REM python project_setup.py --name "Jons testing" -v "2025 R1" --url "https://test-jms.awsansys11np.onscale.com/hps" --num-jobs=1 --token=%TOKEN%
+python project_setup.py --urls "https://test-jms.awsansys11np.onscale.com/hps" --accounts "onprem_account" --token=%TOKEN% REM --verbose=True
+REM python project_setup.py --urls "https://dev-jms.awsansys11np.onscale.com/hps"  --accounts "30b226d7-aa1b-4001-b763-f88525abde4d" "0fea8f1b-0f0f-4998-938a-37a62db59481" --token=%TOKEN%
 
 pause

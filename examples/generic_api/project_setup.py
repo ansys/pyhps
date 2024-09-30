@@ -28,10 +28,12 @@ in the technology demonstration guide (td-57).
 """
 
 import argparse
+import json
 import logging
 
 from ansys.hps.client import Client, HPSError
 from ansys.hps.client.jms import JmsApi, Project
+from ansys.hps.client.jms.resource.project import ProjectSchema
 from ansys.hps.client.rms import RmsApi
 
 log = logging.getLogger(__name__)
@@ -69,6 +71,11 @@ def show_rms_data(client: Client, verbose: bool) -> Project:
 
     for project in projects:
         log.debug(f"    {project.name}: {project.id}")
+
+    schema = ProjectSchema()
+    project = Project(name="testing", priority=1, active=False)
+    serialized_data = schema.dump(project)
+    log.debug(json.dumps({"projects": [serialized_data], "replace": True}))
 
     log.debug("")
     log.debug("")

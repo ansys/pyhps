@@ -37,7 +37,6 @@ from ansys.hps.client.jms import (
     File,
     FloatParameterDefinition,
     JmsApi,
-    Job,
     JobDefinition,
     ParameterMapping,
     Project,
@@ -51,7 +50,12 @@ log = logging.getLogger(__name__)
 
 
 def create_project(
-    client, name, version=__ansys_apps_version__, num_jobs=20, use_exec_script=False, active=True
+    client: Client,
+    name,
+    version=__ansys_apps_version__,
+    num_jobs=20,
+    use_exec_script=False,
+    active=True,
 ) -> Project:
 
     log.debug("=== Project")
@@ -266,6 +270,8 @@ if __name__ == "__main__":
     parser.add_argument("-U", "--url", default="https://localhost:8443/hps")
     parser.add_argument("-u", "--username", default="repuser")
     parser.add_argument("-p", "--password", default="repuser")
+    parser.add_argument("-t", "--token", default="")
+    parser.add_argument("-a", "--account", default="onprem_account")
     parser.add_argument("-v", "--ansys-version", default=__ansys_apps_version__)
 
     args = parser.parse_args()
@@ -274,7 +280,11 @@ if __name__ == "__main__":
     logging.basicConfig(format="[%(asctime)s | %(levelname)s] %(message)s", level=logging.DEBUG)
 
     log.debug("=== HPS connection")
-    client = Client(url=args.url, username=args.username, password=args.password)
+    if args.token:
+        client = Client(url=args.url, access_token=args.token)
+        client.session.headers.update({"accountid": args.account})
+    else:
+        client = Client(url=args.url, username=args.username, password=args.password)
 
     try:
         log.info(f"HPS URL: {client.url}")
