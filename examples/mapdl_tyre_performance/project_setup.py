@@ -37,6 +37,7 @@ from ansys.hps.client.jms import (
     File,
     FloatParameterDefinition,
     JmsApi,
+    Job,
     JobDefinition,
     ParameterMapping,
     Project,
