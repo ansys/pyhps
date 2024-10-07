@@ -44,7 +44,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: PyAnsys documentation style checks
-        uses: ansys/actions/doc-style@v7
+        uses: ansys/actions/doc-style@v8
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
 
@@ -88,7 +88,7 @@ jobs:
           password: ${{ secrets.PYANSYS_CI_BOT_PACKAGE_TOKEN }}
 
       - name: Build wheelhouse and perform smoke test
-        uses: ansys/actions/build-wheelhouse@v7
+        uses: ansys/actions/build-wheelhouse@v8
         with:
           library-name: ${{ env.PACKAGE_NAME }}
           operating-system: ${{ matrix.os }}
