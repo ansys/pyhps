@@ -32,6 +32,9 @@ import json
 import logging
 import time
 
+from ansys.rep.common.auth.self_signed_token_provider import SelfSignedTokenProvider
+import jwt
+
 from ansys.hps.client import Client, HPSError
 from ansys.hps.client.jms import JmsApi, Project, ProjectApi, TaskDefinition
 from ansys.hps.client.jms.resource.project import ProjectSchema
@@ -120,6 +123,8 @@ if __name__ == "__main__":
     parser.add_argument("-a", "--accounts", nargs="+", default="onprem_account")
     parser.add_argument("-v", "--verbose", default=False)
     parser.add_argument("-m", "--monitor", default=False)
+    parser.add_argument("-s", "--signing_key", default="")
+    parser.add_argument("-i", "--user_id", default="")
 
     args = parser.parse_args()
 
@@ -128,8 +133,28 @@ if __name__ == "__main__":
 
     for url in args.urls:
         for account in args.accounts:
-            if args.token:
-                client = Client(url=url, access_token=args.token)
+            if args.token or args.signing_key:
+                if args.signing_key:
+                    user_id = "client_service"
+                    if args.user_id:
+                        user_id = args.user_id
+                    elif args.token:
+                        payload = jwt.decode(
+                            args.token, algorithms=["RS256"], options={"verify_signature": False}
+                        )
+                        user_id = payload["sub"]
+                        log.debug(f"Found user_id from token: {payload['sub']}")
+                    provider = SelfSignedTokenProvider({"hps-default": args.signing_key})
+                    token = provider.generate_signed_token(
+                        user_id,
+                        "dummy_client",
+                        account,
+                        6000,
+                        {"oid": user_id},
+                    )
+                else:
+                    token = args.token
+                client = Client(url=url, access_token=token)
                 client.session.headers.update({"accountid": account})
             else:
                 client = Client(url=url, username=args.username, password=args.password)
