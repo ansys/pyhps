@@ -44,36 +44,30 @@ log = logging.getLogger(__name__)
 
 
 def monitor_latest_project(client: Client, verbose: bool) -> Project:
+    log.debug("")
+    log.debug("")
+    log.debug("=== Projects")
+    jms_api = JmsApi(client)
+    projects = jms_api.get_projects(statistics=True)
 
-    while True:
+    for project in projects:
         log.debug("")
-        log.debug("")
-        log.debug("=== Projects")
-        jms_api = JmsApi(client)
-        projects = jms_api.get_projects()
-
-        for project in projects:
-            log.debug("")
-            log.debug(f"    Project: {project.name}: {project.id}")
-            proj_api = ProjectApi(client, project.id)
-            task_definitions = proj_api.get_task_definitions()
-            tasks = proj_api.get_tasks()
-            if len(tasks) > 0:
-                log.debug("    === Tasks")
-            else:
-                log.debug("    === No Tasks")
-            for task in tasks:
-                task_def: TaskDefinition = next(
-                    (d for d in task_definitions if d.id == task.task_definition_id)
-                )
-                log.debug(f"        {task_def.name} -> {task.eval_status}")
-
-        log.debug("")
-        time.sleep(10)
+        log.debug(f"    Project: {project.name}: {project.id}")
+        proj_api = ProjectApi(client, project.id)
+        task_definitions = proj_api.get_task_definitions()
+        tasks = proj_api.get_tasks()
+        if len(tasks) > 0:
+            log.debug(f"    === Tasks {project.statistics['eval_status']}")
+        else:
+            log.debug("    === No Tasks")
+        for task in tasks:
+            task_def: TaskDefinition = next(
+                (d for d in task_definitions if d.id == task.task_definition_id)
+            )
+            log.debug(f"        {task_def.name} -> {task.eval_status}")
 
 
 def show_rms_data(client: Client, verbose: bool) -> Project:
-
     rms_api = RmsApi(client)
     try:
         crs_sets = rms_api.get_compute_resource_sets()
@@ -114,25 +108,12 @@ def show_rms_data(client: Client, verbose: bool) -> Project:
     log.debug("")
 
 
-if __name__ == "__main__":
-    parser = argparse.ArgumentParser()
-    parser.add_argument("-U", "--urls", nargs="+", default="https://localhost:8443/hps")
-    parser.add_argument("-u", "--username", default="repuser")
-    parser.add_argument("-p", "--password", default="repuser")
-    parser.add_argument("-t", "--token", default="")
-    parser.add_argument("-a", "--accounts", nargs="+", default="onprem_account")
-    parser.add_argument("-v", "--verbose", default=False)
-    parser.add_argument("-m", "--monitor", default=False)
-    parser.add_argument("-s", "--signing_key", default="")
-    parser.add_argument("-i", "--user_id", default="")
-
-    args = parser.parse_args()
-
-    logger = logging.getLogger()
-    logging.basicConfig(format="[%(asctime)s | %(levelname)s] %(message)s", level=logging.DEBUG)
-
+def _main(log, monitor_latest_project, show_rms_data, args):
     for url in args.urls:
-        for account in args.accounts:
+        accounts = args.accounts
+        if not any(args.accounts):
+            accounts = [None]
+        for account in accounts:
             if args.token or args.signing_key:
                 if args.signing_key:
                     user_id = "client_service"
@@ -147,15 +128,16 @@ if __name__ == "__main__":
                     provider = SelfSignedTokenProvider({"hps-default": args.signing_key})
                     token = provider.generate_signed_token(
                         user_id,
-                        "dummy_client",
+                        "dummy_client" if account else account,
                         account,
                         6000,
                         {"oid": user_id},
                     )
                 else:
                     token = args.token
-                client = Client(url=url, access_token=token)
-                client.session.headers.update({"accountid": account})
+                client = Client(url=url, access_token=token, verify=True)
+                if account:
+                    client.session.headers.update({"accountid": account})
             else:
                 client = Client(url=url, username=args.username, password=args.password)
 
@@ -170,3 +152,28 @@ if __name__ == "__main__":
 
             except HPSError as e:
                 log.error(str(e))
+
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser()
+    parser.add_argument("-U", "--urls", nargs="+", default="https://localhost:8443/hps")
+    parser.add_argument("-u", "--username", default="repuser")
+    parser.add_argument("-p", "--password", default="repuser")
+    parser.add_argument("-t", "--token", default="")
+    parser.add_argument("-a", "--accounts", nargs="+", default="")
+    parser.add_argument("-v", "--verbose", default=False)
+    parser.add_argument("-m", "--monitor", default=False)
+    parser.add_argument("-s", "--signing_key", default="")
+    parser.add_argument("-i", "--user_id", default="")
+
+    args = parser.parse_args()
+
+    logger = logging.getLogger()
+    logging.basicConfig(format="[%(asctime)s | %(levelname)s] %(message)s", level=logging.DEBUG)
+
+    if args.monitor:
+        while True:
+            _main(log, monitor_latest_project, show_rms_data, args)
+            time.sleep(10)
+    else:
+        _main(log, monitor_latest_project, show_rms_data, args)
