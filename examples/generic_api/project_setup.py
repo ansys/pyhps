@@ -28,6 +28,7 @@ in the technology demonstration guide (td-57).
 """
 
 import argparse
+from datetime import datetime, timezone
 import json
 import logging
 import time
@@ -36,35 +37,54 @@ from ansys.rep.common.auth.self_signed_token_provider import SelfSignedTokenProv
 import jwt
 
 from ansys.hps.client import Client, HPSError
-from ansys.hps.client.jms import JmsApi, Project, ProjectApi, TaskDefinition
+from ansys.hps.client.jms import JmsApi, Project, ProjectApi
 from ansys.hps.client.jms.resource.project import ProjectSchema
 from ansys.hps.client.rms import RmsApi
 
 log = logging.getLogger(__name__)
 
 
-def monitor_latest_project(client: Client, verbose: bool) -> Project:
+def monitor_projects(client: Client, verbose: bool, filter: str, remove: str = None):
     log.debug("")
     log.debug("")
-    log.debug("=== Projects")
     jms_api = JmsApi(client)
     projects = jms_api.get_projects(statistics=True)
 
-    for project in projects:
+    filtered_projects = projects
+    if filter is not None:
+        log.debug(f"Filtering projects based on name including: {filter}")
+        filtered_projects = [
+            proj for proj in projects if proj.name.lower().find(filter.lower()) >= 0
+        ]
+
+    log.debug(f"=== Projects ({len(filtered_projects)})")
+    for project in filtered_projects:
+        age = (datetime.now(timezone.utc) - project.creation_time).total_seconds()
+        age_hours = int(age / 3600)
         log.debug("")
-        log.debug(f"    Project: {project.name}: {project.id}")
+        log.debug(f"    Project: ({age_hours}h old) {project.name}: {project.id}")
         proj_api = ProjectApi(client, project.id)
-        task_definitions = proj_api.get_task_definitions()
+
         tasks = proj_api.get_tasks()
         if len(tasks) > 0:
             log.debug(f"    === Tasks {project.statistics['eval_status']}")
         else:
             log.debug("    === No Tasks")
+        if remove is not None:
+            if "old" in remove:
+                if age_hours > 120:
+                    log.debug(f"    === Removing project older than 5 days: age {age_hours}h.")
+                    jms_api.delete_project(project)
+            if project.statistics["eval_status"]["pending"] == 0:
+                if project.statistics["eval_status"]["running"] == 0:
+                    if age_hours > 1:
+                        log.debug(
+                            f"    === Removing project not pending or running: age {age_hours}h."
+                        )
+                        jms_api.delete_project(project)
+                        continue
         for task in tasks:
-            task_def: TaskDefinition = next(
-                (d for d in task_definitions if d.id == task.task_definition_id)
-            )
-            log.debug(f"        {task_def.name} -> {task.eval_status}")
+            log.debug(f"        {task.task_definition_snapshot.name} -> {task.eval_status}")
 
 
 def show_rms_data(client: Client, verbose: bool) -> Project:
@@ -76,6 +96,7 @@ def show_rms_data(client: Client, verbose: bool) -> Project:
         for crs in crs_sets:
             log.debug(f"    === {crs.name}: {crs.backend.plugin_name}")
             if verbose:
+                log.debug(f"   Config: {crs.backend.json()}")
                 try:
                     info = rms_api.get_cluster_info(crs.id)
                 except:
@@ -146,7 +167,9 @@ def _main(log, monitor_latest_project, show_rms_data, args):
                 log.info(f"=== Url Specified     : {client.url}")
                 log.info(f"=== Account Specified : {account}")
                 if args.monitor:
-                    monitor_latest_project(client=client, verbose=args.verbose)
+                    monitor_latest_project(
+                        client=client, verbose=args.verbose, filter=args.filter, remove=args.remove
+                    )
                 else:
                     show_rms_data(client=client, verbose=args.verbose)
 
@@ -165,6 +188,8 @@ if __name__ == "__main__":
     parser.add_argument("-m", "--monitor", default=False)
     parser.add_argument("-s", "--signing_key", default="")
     parser.add_argument("-i", "--user_id", default="")
+    parser.add_argument("-f", "--filter", default=None)
+    parser.add_argument("-r", "--remove", default=None)
 
     args = parser.parse_args()
 
@@ -173,7 +198,7 @@ if __name__ == "__main__":
 
     if args.monitor:
         while True:
-            _main(log, monitor_latest_project, show_rms_data, args)
+            _main(log, monitor_projects, show_rms_data, args)
             time.sleep(10)
     else:
-        _main(log, monitor_latest_project, show_rms_data, args)
+        _main(log, monitor_projects, show_rms_data, args)
