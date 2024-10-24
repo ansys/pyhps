@@ -222,7 +222,7 @@ def test_template_permissions(client, keycloak_client, is_admin):
     assert permissions[0].value_id is not None
     assert permissions[1].permission_type == "organization"
     assert permissions[1].role == "reader"
-    assert permissions[1].value_id ==  "onprem_account"
+    assert permissions[1].value_id == "onprem_account"
 
     # create test user
     user1, client1 = create_new_user_client(client.url, keycloak_client)
@@ -277,7 +277,7 @@ def test_template_permissions(client, keycloak_client, is_admin):
     assert permissions[0].value_id == user1.id
     assert permissions[1].permission_type == "organization"
     assert permissions[1].role == "reader"
-    assert permissions[1].value_id ==  "onprem_account"
+    assert permissions[1].value_id == "onprem_account"
 
     # verify that an admin user can access the template
     if is_admin:
@@ -304,7 +304,7 @@ def test_template_permissions_update(client):
     permissions = jms_api.get_task_definition_template_permissions(template_id=template.id)
     assert len(permissions) == 2
     assert permissions[0].permission_type == "user"
-    assert permissions[1].permission_type == "organization"    
+    assert permissions[1].permission_type == "organization"
 
     # change permissions
     permissions = [Permission(permission_type="anyone", role="admin", value_id=None)]
@@ -334,7 +334,7 @@ def test_template_anyone_permission(client, keycloak_client):
     assert permissions[0].value_id is not None
     assert permissions[1].permission_type == "organization"
     assert permissions[1].role == "reader"
-    assert permissions[1].value_id ==  "onprem_account"
+    assert permissions[1].value_id == "onprem_account"
 
     # create test user
     user1, client1 = create_new_user_client(client.url, keycloak_client)
@@ -407,7 +407,7 @@ def test_template_delete(client, keycloak_client):
     assert permissions[0].value_id == user1.id
     assert permissions[1].permission_type == "organization"
     assert permissions[1].role == "reader"
-    assert permissions[1].value_id ==  "onprem_account"
+    assert permissions[1].value_id == "onprem_account"
 
     # verify user2 can't access the template
     client2_templates = jms_api2.get_task_definition_templates(id=template.id)
