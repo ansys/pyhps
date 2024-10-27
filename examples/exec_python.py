@@ -23,10 +23,9 @@
 """
 Simplistic execution script for Python.
 
-Command formed: python <script_file> <input_file>
+Command formed: python <script_file> <input_file (optional)>
 """
 import os
-import subprocess
 
 from ansys.rep.common.logging import log
 from ansys.rep.evaluator.task_manager import ApplicationExecution
@@ -41,7 +40,7 @@ class PythonExecution(ApplicationExecution):
         script_file = next((f for f in self.context.input_files if f["name"] == "script"), None)
         assert script_file, "Python script file script missing"
         inp_file = next((f for f in self.context.input_files if f["name"] == "inp"), None)
-        assert inp_file, "Input file inp missing"
+        # assert inp_file, "Input file inp missing"
 
         # Identify application
         app_name = "Python"
@@ -61,10 +60,11 @@ class PythonExecution(ApplicationExecution):
         env.update(self.context.environment)
 
         # Form command
-        cmd = f"{exe} {script_file['path']} {inp_file['path']}"
+        cmd = f"{exe} {script_file['path']}"
+        if inp_file:
+            cmd += f" {inp_file['path']}"
 
         # Execute
-        log.info(f"Executing: {cmd}")
-        subprocess.run(cmd, shell=True, check=True, env=env)
+        self.run_and_capture_output(cmd, shell=True, env=env)
 
         log.info("End Python execution script")
