@@ -196,6 +196,7 @@ def test_template_integration(client):
         original_template.software_requirements[0].version
         == original_template.software_requirements[0].version
     )
+    jms_api.delete_task_definition_templates([new_template])
 
 
 def test_template_permissions(client, keycloak_client, is_admin):
