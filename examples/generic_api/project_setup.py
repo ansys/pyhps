@@ -38,17 +38,51 @@ import jwt
 
 from ansys.hps.client import Client, HPSError
 from ansys.hps.client.jms import JmsApi, Project, ProjectApi
-from ansys.hps.client.jms.resource.project import ProjectSchema
+from ansys.hps.client.jms.resource.project import Project, ProjectSchema
 from ansys.hps.client.rms import RmsApi
 
 log = logging.getLogger(__name__)
+
+
+def filter_dict(input_dict, desired_keys=["evaluated", "pending", "failed", "running"]):
+    """
+    Filters the input dictionary to only include the keys in desired_keys.
+
+    Args:
+    input_dict (dict): The dictionary to filter.
+    desired_keys (list): A list of keys to retain in the filtered dictionary.
+
+    Returns:
+    dict: A new dictionary containing only the desired keys.
+    """
+    return {key: input_dict[key] for key in desired_keys if key in input_dict}
+
+
+def find_by_id(object_list, target_id):
+    """
+    Find an object in a list by its ID.
+
+    :param object_list: List of objects (dictionaries or custom objects) to search.
+    :param target_id: The ID to search for.
+    :return: The object if found, otherwise None.
+    """
+    for obj in object_list:
+        if isinstance(obj, dict) and "id" in obj:
+            if obj["id"] == target_id:
+                return obj
+        elif hasattr(obj, "id"):
+            if obj.id == target_id:
+                return obj
+    return None
 
 
 def monitor_projects(client: Client, verbose: bool, filter: str, remove: str = None):
     log.debug("")
     log.debug("")
     jms_api = JmsApi(client)
-    projects = jms_api.get_projects(statistics=True)
+    projects_raw = jms_api.get_projects(as_objects=False, statistics=True, permissions=True)
+    schema = ProjectSchema(many=True)
+    projects: list[Project] = schema.load(projects_raw)
 
     filtered_projects = projects
     if filter is not None:
@@ -63,11 +97,13 @@ def monitor_projects(client: Client, verbose: bool, filter: str, remove: str = N
         age_hours = int(age / 3600)
         log.debug("")
         log.debug(f"    Project: ({age_hours}h old) {project.name}: {project.id}")
+        permissions = [d["value_name"] for d in find_by_id(projects_raw, project.id)["permissions"]]
+        log.debug(f"    Permissions: {permissions}")
         proj_api = ProjectApi(client, project.id)
 
         tasks = proj_api.get_tasks()
         if len(tasks) > 0:
-            log.debug(f"    === Tasks {project.statistics['eval_status']}")
+            log.debug(f"    === Tasks {filter_dict(project.statistics['eval_status'])}")
         else:
             log.debug("    === No Tasks")
         if remove is not None:
@@ -75,11 +111,27 @@ def monitor_projects(client: Client, verbose: bool, filter: str, remove: str = N
                 if age_hours > 120:
                     log.debug(f"    === Removing project older than 5 days: age {age_hours}h.")
                     jms_api.delete_project(project)
-            if project.statistics["eval_status"]["pending"] == 0:
-                if project.statistics["eval_status"]["running"] == 0:
+                    continue
+            if not "pending" in project.statistics["eval_status"]:
+                pass
+            elif (
+                not (
+                    project.statistics["eval_status"]["evaluated"] > 0
+                    or project.statistics["eval_status"]["failed"] > 0
+                )
+                and project.statistics["eval_status"]["running"] == 0
+            ):
+                if project.statistics["eval_status"]["pending"] == 0:
                     if age_hours > 1:
                         log.debug(
                             f"    === Removing project not pending or running: age {age_hours}h."
+                        )
+                        jms_api.delete_project(project)
+                        continue
+                else:
+                    if age_hours > 12:
+                        log.debug(
+                            f"    === Removing project pending for 1/2 day: age {age_hours}h."
                         )
                         jms_api.delete_project(project)
                         continue
@@ -156,11 +208,18 @@ def _main(log, monitor_latest_project, show_rms_data, args):
                     )
                 else:
                     token = args.token
-                client = Client(url=url, access_token=token, verify=True)
+                client = Client(
+                    url=url, access_token=token, verify=False if args.skip_verify else True
+                )
                 if account:
                     client.session.headers.update({"accountid": account})
             else:
-                client = Client(url=url, username=args.username, password=args.password)
+                client = Client(
+                    url=url,
+                    username=args.username,
+                    password=args.password,
+                    verify=False if args.skip_verify else True,
+                )
 
             try:
                 log.info("")
@@ -190,6 +249,7 @@ if __name__ == "__main__":
     parser.add_argument("-i", "--user_id", default="")
     parser.add_argument("-f", "--filter", default=None)
     parser.add_argument("-r", "--remove", default=None)
+    parser.add_argument("--skip_verify", default=True, action=argparse.BooleanOptionalAction)
 
     args = parser.parse_args()
 

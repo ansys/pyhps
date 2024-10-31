@@ -210,7 +210,7 @@ def test_template_permissions(client, keycloak_client, is_admin):
     for template in templates:
         permissions = jms_api.get_task_definition_template_permissions(template_id=template.id)
         for permission in permissions:
-            assert permission.permission_type in ["user", "group", "anyone"]
+            assert permission.permission_type in ["organization", "user", "group", "anyone"]
 
     # create new template and check default permissions
     template = TaskDefinitionTemplate(name="my_template", version=uuid.uuid4())
@@ -272,6 +272,9 @@ def test_template_permissions(client, keycloak_client, is_admin):
     assert permissions[0].permission_type == "user"
     assert permissions[0].role == "admin"
     assert permissions[0].value_id == user1.id
+    assert permissions[1].permission_type == "organization"
+    assert permissions[1].role == "reader"
+    assert permissions[1].value_id == "onprem_account"
 
     # verify that an admin user can access the template
     if is_admin:
@@ -296,7 +299,7 @@ def test_template_permissions_update(client):
     template = TaskDefinitionTemplate(name="my_template", version=uuid.uuid4())
     template = jms_api.create_task_definition_templates([template])[0]
     permissions = jms_api.get_task_definition_template_permissions(template_id=template.id)
-    assert len(permissions) == 1
+    assert len(permissions) == 2
     assert permissions[0].permission_type == "user"
 
     # change permissions
@@ -321,7 +324,7 @@ def test_template_anyone_permission(client, keycloak_client):
     template = TaskDefinitionTemplate(name="my_template", version=uuid.uuid4())
     template = jms_api.create_task_definition_templates([template])[0]
     permissions = jms_api.get_task_definition_template_permissions(template_id=template.id)
-    assert len(permissions) == 1
+    assert len(permissions) == 2
     assert permissions[0].permission_type == "user"
     assert permissions[0].role == "admin"
     assert permissions[0].value_id is not None
