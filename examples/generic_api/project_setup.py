@@ -76,7 +76,27 @@ def find_by_id(object_list, target_id):
     return None
 
 
-def monitor_projects(client: Client, verbose: bool, filter: str, remove: str = None):
+def check_project_stats(
+    proj: Project, greater_than_zero: list[str], equal_zero: list[str], empty_value=True
+) -> bool:
+    # If no stats yet, then dont remove it...
+    if not "pending" in proj.statistics["eval_status"]:
+        return empty_value
+
+    for item in greater_than_zero:
+        if proj.statistics["eval_status"][item] <= 0:
+            return False
+
+    for item in equal_zero:
+        if proj.statistics["eval_status"][item] > 0:
+            return False
+
+    return True
+
+
+def monitor_projects(
+    client: Client, verbose: bool, filter: str, remove: str = None, limited_monitoring: bool = False
+):
     log.debug("")
     log.debug("")
     jms_api = JmsApi(client)
@@ -89,6 +109,14 @@ def monitor_projects(client: Client, verbose: bool, filter: str, remove: str = N
         log.debug(f"Filtering projects based on name including: {filter}")
         filtered_projects = [
             proj for proj in projects if proj.name.lower().find(filter.lower()) >= 0
+        ]
+
+    if limited_monitoring:
+        log.debug(f"Limited monitoring enabled: Showing only states pending/running/failed not 0")
+        filtered_projects = [
+            p
+            for p in list(filtered_projects)
+            if not check_project_stats(p, [], ["failed", "running", "pending"])
         ]
 
     log.debug(f"=== Projects ({len(filtered_projects)})")
@@ -108,20 +136,15 @@ def monitor_projects(client: Client, verbose: bool, filter: str, remove: str = N
             log.debug("    === No Tasks")
         if remove is not None:
             if "old" in remove:
+                # Old remove old projects based on time alone
                 if age_hours > 120:
                     log.debug(f"    === Removing project older than 5 days: age {age_hours}h.")
                     jms_api.delete_project(project)
                     continue
-            if not "pending" in project.statistics["eval_status"]:
-                pass
-            elif (
-                not (
-                    project.statistics["eval_status"]["evaluated"] > 0
-                    or project.statistics["eval_status"]["failed"] > 0
-                )
-                and project.statistics["eval_status"]["running"] == 0
-            ):
-                if project.statistics["eval_status"]["pending"] == 0:
+            elif check_project_stats(project, [], ["running", "evaluated", "failed"], False):
+                # Remove more recent projects that are broken (No running or finished tasks)
+                if check_project_stats(project, [], ["pending"]):
+                    # Project with no tasks in any valid state (pend, run, finish)
                     if age_hours > 1:
                         log.debug(
                             f"    === Removing project not pending or running: age {age_hours}h."
@@ -129,6 +152,7 @@ def monitor_projects(client: Client, verbose: bool, filter: str, remove: str = N
                         jms_api.delete_project(project)
                         continue
                 else:
+                    # Project with pending for a long time (error in setup or cluster)
                     if age_hours > 12:
                         log.debug(
                             f"    === Removing project pending for 1/2 day: age {age_hours}h."
@@ -225,9 +249,13 @@ def _main(log, monitor_latest_project, show_rms_data, args):
                 log.info("")
                 log.info(f"=== Url Specified     : {client.url}")
                 log.info(f"=== Account Specified : {account}")
-                if args.monitor:
+                if args.monitor or args.limited_monitor:
                     monitor_latest_project(
-                        client=client, verbose=args.verbose, filter=args.filter, remove=args.remove
+                        client=client,
+                        verbose=args.verbose,
+                        filter=args.filter,
+                        remove=args.remove,
+                        limited_monitoring=args.limited_monitor,
                     )
                 else:
                     show_rms_data(client=client, verbose=args.verbose)
@@ -245,10 +273,12 @@ if __name__ == "__main__":
     parser.add_argument("-a", "--accounts", nargs="+", default="")
     parser.add_argument("-v", "--verbose", default=False)
     parser.add_argument("-m", "--monitor", default=False)
+    parser.add_argument("-l", "--limited_monitor", default=False)
     parser.add_argument("-s", "--signing_key", default="")
     parser.add_argument("-i", "--user_id", default="")
     parser.add_argument("-f", "--filter", default=None)
     parser.add_argument("-r", "--remove", default=None)
+
     parser.add_argument("--skip_verify", default=True, action=argparse.BooleanOptionalAction)
 
     args = parser.parse_args()
@@ -256,7 +286,7 @@ if __name__ == "__main__":
     logger = logging.getLogger()
     logging.basicConfig(format="[%(asctime)s | %(levelname)s] %(message)s", level=logging.DEBUG)
 
-    if args.monitor:
+    if args.monitor or args.limited_monitor:
         while True:
             _main(log, monitor_projects, show_rms_data, args)
             time.sleep(10)
