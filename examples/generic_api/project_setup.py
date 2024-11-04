@@ -137,8 +137,8 @@ def monitor_projects(
         if remove is not None:
             if "old" in remove:
                 # Old remove old projects based on time alone
-                if age_hours > 120:
-                    log.debug(f"    === Removing project older than 5 days: age {age_hours}h.")
+                if age_hours > 72:
+                    log.debug(f"    === Removing project older than 3 days: age {age_hours}h.")
                     jms_api.delete_project(project)
                     continue
             elif check_project_stats(project, [], ["running", "evaluated", "failed"], False):
@@ -160,7 +160,9 @@ def monitor_projects(
                         jms_api.delete_project(project)
                         continue
         for task in tasks:
-            log.debug(f"        {task.task_definition_snapshot.name} -> {task.eval_status}")
+            log.debug(
+                f"        {task.task_definition_snapshot.name}: {task.job_id} -> {task.eval_status}"
+            )
 
 
 def show_rms_data(client: Client, verbose: bool) -> Project:
