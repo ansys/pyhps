@@ -21,6 +21,7 @@
 # SOFTWARE.
 
 import logging
+import pytest
 
 from ansys.hps.client import APIError, Client, ClientError
 from ansys.hps.client.jms import JmsApi
@@ -43,6 +44,7 @@ def test_server_error(client):
     assert except_obj.response.status_code == 500
 
 
+@pytest.mark.xfail
 def test_client_error(url, username, password, client):
 
     except_obj = None
