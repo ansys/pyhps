@@ -21,6 +21,7 @@
 # SOFTWARE.
 
 import logging
+
 import pytest
 
 from ansys.hps.client import APIError, Client, ClientError
