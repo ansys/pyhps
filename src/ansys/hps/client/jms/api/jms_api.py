@@ -19,15 +19,16 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
+from ansys.hps.data_transfer.client.models.msg import SrcDst, StoragePath
+from ansys.hps.data_transfer.client.models.ops import OperationState
+
 """Module wrapping around the JMS root endpoints."""
 import json
 import logging
 import os
 from typing import Dict, List, Union
-import uuid
 
 import backoff
-import requests
 
 from ansys.hps.client.client import Client
 from ansys.hps.client.common import Object
@@ -73,13 +74,6 @@ class JmsApi(object):
     def url(self) -> str:
         """URL of the API."""
         return f"{self.client.url}/jms/api/v1"
-
-    @property
-    def fs_url(self) -> str:
-        """URL of the file storage gateway."""
-        if self._fs_url is None:
-            self._fs_url = _find_available_fs_url(self.get_storage())
-        return self._fs_url
 
     def get_api_info(self):
         """Get information of the JMS API that the client is connected to.
@@ -414,23 +408,22 @@ def _restore_project(jms_api, archive_path):
     if not os.path.exists(archive_path):
         raise HPSError(f"Project archive: path does not exist {archive_path}")
 
-    # Upload archive to FS API
-    archive_name = os.path.basename(archive_path)
+    log.info(f"Uploading archive {archive_path}")
 
-    bucket = f"hps-client-restore-{uuid.uuid4()}"
-    fs_file_url = f"{jms_api.client.url}/fs/api/v1/{bucket}/{archive_name}"
-    ansfs_file_url = f"ansfs://{bucket}/{archive_name}"  # noqa: E231
-
-    fs_headers = {"content-type": "application/octet-stream"}
-
-    log.info(f"Uploading archive to {fs_file_url}")
-    with open(archive_path, "rb") as file_content:
-        r = jms_api.client.session.post(fs_file_url, data=file_content, headers=fs_headers)
+    # POST project archive dir creation request
+    url = f"{jms_api.url}/projects/dir"
+    r = jms_api.client.session.post(url)
+    if not r.json()["project_dir"]:
+        msg = "Failed to create the archive restore dir."
+        msg += f" Request response: {r.json()}"
+        raise HPSError(f"{msg}")
+    bucket = r.json()["project_dir"][0]
+    _upload_archive(jms_api, archive_path, bucket)
 
     # POST restore request
-    log.info(f"Restoring archive from {ansfs_file_url}")
+    log.info(f"Restoring archive {archive_path}")
     url = f"{jms_api.url}/projects/archive"
-    query_params = {"backend_path": ansfs_file_url}
+    query_params = {"backend_path": f"{bucket}/{os.path.basename(archive_path)}"}
     r = jms_api.client.session.post(url, params=query_params)
 
     # Monitor restore operation
@@ -449,9 +442,30 @@ def _restore_project(jms_api, archive_path):
 
     # Delete archive file on server
     log.info(f"Delete temporary bucket {bucket}")
-    r = jms_api.client.session.put(f"{jms_api.client.url}/fs/api/v1/remove/{bucket}")
+    op = jms_api.client.dt_api.rmdir([StoragePath(path=bucket)])
+    op = jms_api.client.dt_api.wait_for([op.id])
+    if op[0].state != OperationState.Succeeded:
+        raise HPSError(f"Delete temporary bucket {bucket} failed")
 
     return get_project(jms_api.client, jms_api.url, project_id)
+
+
+def _upload_archive(jms_api: JmsApi, archive_path, bucket):
+    """
+    Uploads archive using data transfer worker.
+
+    """
+    jms_api.client._start_dt_worker()
+
+    src = StoragePath(path=archive_path, remote="local")
+    dst = StoragePath(path=f"{bucket}/{os.path.basename(archive_path)}")
+
+    op = jms_api.client.dt_api.copy([SrcDst(src=src, dst=dst)])
+    op = jms_api.client.dt_api.wait_for(op.id)
+
+    log.info(f"Operation {op[0].state}")
+    if op[0].state != OperationState.Succeeded:
+        raise HPSError(f"Upload of archive {archive_path} failed")
 
 
 def _get_storages(client: Client, api_url: str) -> List[Dict]:
@@ -461,32 +475,3 @@ def _get_storages(client: Client, api_url: str) -> List[Dict]:
     url = f"{api_url}/storage"
     r = client.session.get(url)
     return r.json()["backends"]
-
-
-def _find_available_fs_url(file_storages: Dict) -> str:
-    """Find first available file storage URL."""
-
-    if not file_storages:
-        raise HPSError("There is no file storage information.")
-
-    rest_gateways = [fs for fs in file_storages if fs["obj_type"] == "RestGateway"]
-    rest_gateways.sort(key=lambda fs: fs["priority"])
-
-    if not rest_gateways:
-        raise HPSError("There is no file storage gateway defined.")
-
-    for d in rest_gateways:
-        url = d["url"]
-        try:
-            r = requests.get(url, verify=False, timeout=2)
-            is_ansft = r.json()["ansft"]
-        except Exception as ex:
-            log.debug(ex)
-            continue
-        if r.status_code == 200 and is_ansft:
-            return url
-
-    raise HPSError(
-        f"All defined file storage gateways are unavailable"
-        f" ({', '.join([d['url'] for d in rest_gateways])})."
-    )

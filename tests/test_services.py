@@ -47,11 +47,11 @@ def test_services(client: Client, build_info_path: str):
     assert "execution_script_bucket" in jms_info["settings"]
     assert "execution_script_default_bucket" in jms_info["settings"]
 
-    # check file storage api
-    r = client.session.get(f"{client.rep_url}/fs/api/v1")
-    fs_info = r.json()
-    log.info(f"FS api info\n{json.dumps(fs_info, indent=2)}")
-    assert "build" in fs_info
+    # check dts api
+    r = client.session.get(f"{client.rep_url}/dt/api/v1")
+    dt_info = r.json()
+    log.info(f"Dt api info\n{json.dumps(dt_info, indent=2)}")
+    assert "build_info" in dt_info
 
     # check rms api
     rms_api = RmsApi(client)
@@ -60,7 +60,7 @@ def test_services(client: Client, build_info_path: str):
     assert "build" in rms_info
     assert "version" in rms_info["build"]
 
-    info = {"jms": jms_info, "fs": fs_info, "rms": rms_info}
+    info = {"jms": jms_info, "dt": dt_info, "rms": rms_info}
     with open(build_info_path, "w") as f:
         f.write(json.dumps(info, indent=2))
 

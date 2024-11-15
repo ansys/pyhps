@@ -19,12 +19,18 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
+
 """Module providing the Python client to the HPS APIs."""
 
+import atexit
 import logging
+import os
+import platform
 from typing import Union
 import warnings
 
+from ansys.hps.data_transfer.client import Client as DTClient
+from ansys.hps.data_transfer.client import DataTransferApi
 import jwt
 import requests
 
@@ -124,7 +130,6 @@ class Client(object):
         client_secret: str = None,
         access_token: str = None,
         refresh_token: str = None,
-        auth_url: str = None,
         all_fields=True,
         verify: Union[bool, str] = None,
         disable_security_warnings: bool = True,
@@ -138,9 +143,16 @@ class Client(object):
             warnings.warn(msg, DeprecationWarning)
             log.warning(msg)
 
+        auth_url = kwargs.get("auth_url", None)
+        if auth_url is not None:
+            msg = (
+                "The 'auth_url' input argument is deprecated. Use None instead. "
+                "New HPS deployments will determine this automatically."
+            )
+            warnings.warn(msg, DeprecationWarning)
+            log.warning(msg)
+
         self.url = url
-        self.auth_url = auth_url
-        self.auth_api_url = (auth_url or url) + f"/auth/"
         self.access_token = None
         self.refresh_token = None
         self.username = username
@@ -150,6 +162,8 @@ class Client(object):
         self.client_id = client_id
         self.client_secret = client_secret
         self.verify = verify
+        self.data_transfer_url = url + f"/dt/api/v1"
+        self.dt_client = None
 
         if self.verify is None:
             self.verify = False
@@ -165,6 +179,30 @@ class Client(object):
                 requests.packages.urllib3.exceptions.InsecureRequestWarning
             )
 
+        self.auth_url = auth_url
+
+        if not auth_url:
+            with requests.session() as session:
+                session.verify = self.verify
+                jms_info_url = url.rstrip("/") + "/jms/api/v1"
+                resp = session.get(jms_info_url)
+                if resp.status_code != 200:
+                    raise RuntimeError(
+                        f"Failed to contact jms info endpoint {jms_info_url}, \
+                            status code {resp.status_code}: {resp.content.decode()}"
+                    )
+                else:
+                    jms_data = resp.json()
+                    if "services" in jms_data and "external_auth_url" in jms_data["services"]:
+                        self.auth_url = resp.json()["services"]["external_auth_url"]
+                    else:
+                        if realm:
+                            self.auth_url = f"{url.rstrip('/')}/auth/realms/{realm}"
+                        else:
+                            log.warning(
+                                "External_auth_url not found from JMS and no realm specified."
+                            )
+
         if access_token:
             log.debug("Authenticate with access token")
             self.access_token = access_token
@@ -179,8 +217,7 @@ class Client(object):
             log.debug(f"Authenticating with '{self.grant_type}' grant type.")
 
             tokens = authenticate(
-                url=auth_url or url,
-                realm=realm,
+                auth_url=self.auth_url,
                 grant_type=self.grant_type,
                 scope=scope,
                 client_id=client_id,
@@ -195,12 +232,14 @@ class Client(object):
             self.refresh_token = tokens.get("refresh_token", None)
 
         parsed_username = None
-
+        token = {}
         try:
-            parsed_jwt = jwt.decode(self.access_token, options={"verify_signature": False})
-            parsed_username = parsed_jwt["preferred_username"]
-        except:
-            log.warning("Could not retrieve preferred_username from access token.")
+            token = jwt.decode(self.access_token, options={"verify_signature": False})
+        except Exception:
+            raise HPSError("Authentication token was invalid.")
+
+        # Try to get the standard keycloak name, then other possible valid names
+        parsed_username = self._get_username(token)
 
         if parsed_username is not None:
             if self.username is not None and self.username != parsed_username:
@@ -225,12 +264,105 @@ class Client(object):
         self._unauthorized_num_retry = 0
         self._unauthorized_max_retry = 1
 
+        def exit_handler():
+            if self.dt_client is not None:
+                log.info("Stopping the data transfer client gracefully.")
+                self.dt_client.stop()
+
+        atexit.register(exit_handler)
+
+    def _get_username(self, decoded_token):
+        parsed_username = decoded_token.get("preferred_username", None)
+        if not parsed_username:
+            parsed_username = decoded_token.get("username", None)
+        if not parsed_username:
+            parsed_username = decoded_token.get("name", None)
+
+        # Service accounts look like "aud -> service_client_id"
+        if not parsed_username:
+            if decoded_token.get("oid", "oid_not_found") == decoded_token.get(
+                "sub", "sub_not_found"
+            ):
+                parsed_username = "service_account_" + decoded_token.get("aud", "aud_not_set")
+            else:
+                raise HPSError("Authentication token had no username.")
+        return parsed_username
+
     @property
     def rep_url(self) -> str:
         msg = "The client 'rep_url' property is deprecated. Use 'url' instead."
         warnings.warn(msg, DeprecationWarning)
         log.warning(msg)
         return self.url
+
+    def _start_dt_worker(self):
+
+        if self.dt_client is None:
+            try:
+                log.info("Starting Data Transfer client.")
+                # start Data transfer client
+                self.dt_client = DTClient(download_dir=self._get_download_dir("Ansys"))
+
+                self.dt_client.binary_config.update(
+                    verbosity=3,
+                    debug=False,
+                    insecure=True,
+                    token=self.access_token,
+                    data_transfer_url=self.data_transfer_url,
+                )
+                self.dt_client.start()
+
+                self.dt_api = DataTransferApi(self.dt_client)
+                self.dt_api.status(wait=True)
+            except Exception as ex:
+                log.debug(ex)
+                raise HPSError("Error occurred when starting Data Transfer client.")
+
+    def _get_download_dir(self, company=None):
+        """
+        Returns download directory platform dependent
+
+        :Parameters:
+        -`company`: Company name of the software provider
+
+        Resulting paths:
+        `Linux`: /home/user/.ansys/binaries
+        `Windows`: C:\\Users\\user\\AppData\\Local\\Ansys\\binaries
+
+        Note that on Windows we use AppData\Local for this,
+        not AppData\Roaming, as the data stored for an application should typically be kept local.
+
+        """
+
+        environment_variable = "HOME"
+        if platform.uname()[0].lower() == "windows":
+            environment_variable = "LOCALAPPDATA"
+        path = os.environ.get(environment_variable, None)
+
+        app_dir = ""
+        if company:
+            app_dir = os.path.join(app_dir, company)
+        if app_dir:
+            if platform.uname()[0].lower() != "windows":
+                app_dir = "." + app_dir.lower()
+            path = os.path.join(path, app_dir)
+
+        path = os.path.join(path, "binaries")
+
+        return path
+
+    @property
+    def auth_api_url(self) -> str:
+        msg = f"The client 'auth_api_url' property is deprecated. \
+               There is no generic auth_api exposed."
+        warnings.warn(msg, DeprecationWarning)
+        log.warning(msg)
+        auth_api_base, _, tail = self.auth_url.partition("realms")
+        if tail:
+            return auth_api_base
+        else:
+            log.error("auth_api not valid for non-keycloak implementation")
+            return None
 
     def _auto_refresh_token(self, response, *args, **kwargs):
         """Automatically refreshes the access token and
@@ -245,6 +377,8 @@ class Client(object):
             response.request.headers.update(
                 {"Authorization": self.session.headers["Authorization"]}
             )
+            if self.dt_client is not None:
+                self.dt_client.binary_config.update(token=self.access_token)
             log.debug(f"Retrying request with updated access token.")
             return self.session.send(response.request)
 
@@ -257,8 +391,7 @@ class Client(object):
             # Its not recommended to give refresh tokens to client_credentials grant types
             # as per OAuth 2.0 RFC6749 Section 4.4.3, so handle these specially...
             tokens = authenticate(
-                url=self.auth_url or self.url,
-                realm=self.realm,
+                auth_url=self.auth_url,
                 grant_type="client_credentials",
                 scope=self.scope,
                 client_id=self.client_id,
@@ -268,8 +401,7 @@ class Client(object):
         else:
             # Other workflows for authentication generally support refresh_tokens
             tokens = authenticate(
-                url=self.auth_url or self.url,
-                realm=self.realm,
+                auth_url=self.auth_url,
                 grant_type="refresh_token",
                 scope=self.scope,
                 client_id=self.client_id,

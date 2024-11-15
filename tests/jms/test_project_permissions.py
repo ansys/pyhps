@@ -71,7 +71,7 @@ def test_get_project_permissions(client):
     proj = jms_api.create_project(proj, replace=True)
     project_api = ProjectApi(client, proj.id)
 
-    perms = project_api.get_permissions()
+    perms = [p for p in project_api.get_permissions() if p.permission_type == "user"]
     assert len(perms) == 1
     assert perms[0].value_name == client.username
     assert perms[0].role == "admin"
@@ -140,7 +140,7 @@ def test_modify_project_permissions(client, keycloak_client):
 
     # user1 shares the project with user2
     grant_permissions(project_api, user2)
-    permissions = project_api.get_permissions()
+    permissions = [p for p in project_api.get_permissions() if p.permission_type == "user"]
     assert len(permissions) == 2
     assert user1.username in [x.value_name for x in permissions]
     assert user2.username in [x.value_name for x in permissions]
@@ -162,7 +162,7 @@ def test_modify_project_permissions(client, keycloak_client):
 
     # user1 removes permissions to user2
     remove_permissions(project_api, user2)
-    permissions = project_api.get_permissions()
+    permissions = [p for p in project_api.get_permissions() if p.permission_type == "user"]
     assert len(permissions) == 1
     assert user1.username in [x.value_name for x in permissions]
     assert user2.username not in [x.value_name for x in permissions]

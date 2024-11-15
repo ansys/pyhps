@@ -44,7 +44,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: PyAnsys documentation style checks
-        uses: ansys/actions/doc-style@v6
+        uses: ansys/actions/doc-style@v8
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
 
@@ -53,7 +53,6 @@ jobs:
       matrix:
           os: ['ubuntu-latest']
           cfg: [
-              { python-version: '3.9', toxenv: 'py39' },
               { python-version: '3.10', toxenv: 'py310' },
               { python-version: '3.11', toxenv: 'py311' },
               { python-version: '3.12', toxenv: 'py312' },
@@ -75,15 +74,21 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-latest, windows-latest, macos-latest]
-        python-version: ['3.9', '3.10', '3.11', '3.12']
+        python-version: ['3.10', '3.11', '3.12']
         should-release:
           - ${{ github.event_name == 'push' && contains(github.ref, 'refs/tags') }}
         exclude:
           - should-release: false 
             os: macos-latest
     steps:
+      - uses: extractions/netrc@v2
+        with:
+          machine: github.com
+          username: pyansys-ci-bot
+          password: ${{ secrets.PYANSYS_CI_BOT_PACKAGE_TOKEN }}
+
       - name: Build wheelhouse and perform smoke test
-        uses: ansys/actions/build-wheelhouse@v6
+        uses: ansys/actions/build-wheelhouse@v8
         with:
           library-name: ${{ env.PACKAGE_NAME }}
           operating-system: ${{ matrix.os }}
@@ -101,11 +106,18 @@ jobs:
         with:
           python-version: ${{ env.MAIN_PYTHON_VERSION }}
 
+      - uses: extractions/netrc@v2
+        with:
+          machine: github.com
+          username: pyansys-ci-bot
+          password: ${{ secrets.PYANSYS_CI_BOT_PACKAGE_TOKEN }}
+
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip setuptools tox
 
           # Necessary for creating PDF
+          sudo apt update
           sudo apt-get -y install latexmk
           sudo apt install texlive-latex-extra
 

@@ -8,6 +8,10 @@ inputs:
     description: 'HPS version'
     required: true
 
+  feature:
+    description: 'HPS feature (only for latest-dev version)'
+    required: false
+
   token:
     description: 'Token'
     required: true
@@ -44,14 +48,17 @@ runs:
         token: ${{ inputs.token }}
 
     - if: ${{ inputs.version == 'latest-dev' }}
-      uses: dsaltares/fetch-gh-release-asset@master
+      uses: dawidd6/action-download-artifact@v3
       name: Download Internal Services Artifact
       with:
-        file: 'docker-compose-internal.tar.gz'
-        target: 'docker-compose-artifact/docker-compose-internal.tar.gz'
+        workflow: main.yaml
+        name: docker-compose-internal
+        branch: ${{ inputs.feature || 'main'}}
         repo: ansys-internal/rep-deployments
-        version: tags/latest-dev
-        token: ${{ inputs.token }}
+        workflow_conclusion: success           
+        search_artifacts: false
+        path: ./docker-compose-artifact
+        github_token: ${{ inputs.token }}
 
     - uses: KengoTODA/actions-setup-docker-compose@main
       env:
@@ -80,17 +87,19 @@ runs:
       if: ${{ inputs.version == 'latest-dev' }}
       shell: bash
       run: |
+        echo "$(pwd)"
+        pwd
         ls -la
         tar -xvzf docker-compose-internal.tar.gz
         cd docker-compose
-        FSGATEWAY_TAG=latest-dev JMS_TAG=latest-dev docker-compose pull
-        FSGATEWAY_TAG=latest-dev JMS_TAG=latest-dev docker-compose up -d
+        docker-compose pull
+        docker-compose up -d
       working-directory: ./docker-compose-artifact
 
     - name: Wait for services
       shell: bash
       run: |
-        curl -k --head -X GET --retry 30 --retry-connrefused --retry-delay 1 https://localhost:8443/hps/jms/api/v1
+        curl -k --head -X GET --retry 30 --retry-connrefused --retry-delay 5 https://localhost:8443/hps/jms/api/v1
         curl -k --head -X GET --retry 30 --retry-connrefused --retry-delay 1 https://localhost:8443/hps/fs/api/v1
         curl -k --head -X GET --retry 30 --retry-connrefused --retry-delay 1 https://localhost:8443/hps/rms/api/v1
 
