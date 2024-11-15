@@ -48,7 +48,7 @@ doc = [
     "nbsphinx==0.9.5",
     "numpydoc==1.8.0",
     "myst-parser==4.0.0",
-    "Sphinx==7.4.7",
+    "Sphinx==8.0.2",
     "sphinx-autodoc-typehints==2.5.0",
     "sphinxcontrib-globalsubs==0.1.2",
     "sphinxcontrib-httpdomain==1.8.1",
