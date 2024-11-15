@@ -230,12 +230,16 @@ jobs:
           doc-artifact-name: 'documentation-html'
           cname: ${{ env.DOCUMENTATION_CNAME }}
           token: ${{ secrets.GITHUB_TOKEN }}
+          bot-user: ${{ secrets.PYANSYS_CI_BOT_USERNAME }}
+          bot-email: ${{ secrets.PYANSYS_CI_BOT_EMAIL }}
 
   release:
     name: Release project
     if: github.event_name == 'push' && contains(github.ref, 'refs/tags')
     needs: [package]
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
       - name: Release to the public PyPI repository
         uses: ansys/actions/release-pypi-public@v8
@@ -248,6 +252,7 @@ jobs:
         uses: ansys/actions/release-github@v8
         with:
           library-name: ${{ env.PACKAGE_NAME }}
+          token: ${{ secrets.GITHUB_TOKEN }}
         
   doc-deploy-stable:
     name: "Deploy stable documentation"
@@ -260,4 +265,6 @@ jobs:
         with:
           doc-artifact-name: 'documentation-html'
           cname: ${{ env.DOCUMENTATION_CNAME }}
-          token: ${{ secrets.GITHUB_TOKEN }}     
+          token: ${{ secrets.GITHUB_TOKEN }}
+          bot-user: ${{ secrets.PYANSYS_CI_BOT_USERNAME }}
+          bot-email: ${{ secrets.PYANSYS_CI_BOT_EMAIL }}
