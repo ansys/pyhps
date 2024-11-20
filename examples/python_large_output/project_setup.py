@@ -46,7 +46,7 @@ from ansys.hps.client.jms import (
 log = logging.getLogger(__name__)
 
 
-def main(client, use_exec_script) -> Project:
+def main(client, use_exec_script, python_version) -> Project:
     """
     Create project that runs a Python script to generate a large output file.
     """
@@ -118,7 +118,7 @@ def main(client, use_exec_script) -> Project:
 
     task_def = TaskDefinition(
         name="Python",
-        software_requirements=[Software(name="Python", version="3.10")],
+        software_requirements=[Software(name="Python", version=python_version)],
         execution_command="%executable% %file:script%",
         resource_requirements=ResourceRequirements(num_cores=0.5),
         execution_level=0,
@@ -173,7 +173,7 @@ if __name__ == "__main__":
     parser.add_argument("-u", "--username", default="repuser")
     parser.add_argument("-p", "--password", default="repuser")
     parser.add_argument("-es", "--use-exec-script", default=False, action="store_true")
-
+    parser.add_argument("-v", "--python-version", default="3.10")
     args = parser.parse_args()
 
     logger = logging.getLogger()
@@ -182,6 +182,6 @@ if __name__ == "__main__":
     client = Client(url=args.url, username=args.username, password=args.password)
 
     try:
-        main(client, use_exec_script=args.use_exec_script)
+        main(client, use_exec_script=args.use_exec_script, python_version=args.python_version)
     except HPSError as e:
         log.error(str(e))
