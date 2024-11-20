@@ -37,20 +37,20 @@ dependencies = [
 [project.optional-dependencies]
 tests = [
     "pytest==8.3.3",
-    "coverage==7.6.1",
+    "coverage==7.6.7",
     "python-keycloak>=3.9.1,<4.0.0",
 ]
 
 doc = [
-    "ansys-sphinx-theme==1.0.8",
+    "ansys-sphinx-theme==1.2.1",
     "autodoc_pydantic==2.1.0",
     "jupyter_sphinx==0.5.3",
     "nbsphinx==0.9.5",
     "numpydoc==1.8.0",
     "myst-parser==4.0.0",
-    "Sphinx==7.4.7",
-    "sphinx-autodoc-typehints==2.3.0",
-    "sphinxcontrib-globalsubs==0.1.1",
+    "Sphinx==8.0.2",
+    "sphinx-autodoc-typehints==2.5.0",
+    "sphinxcontrib-globalsubs==0.1.2",
     "sphinxcontrib-httpdomain==1.8.1",
     "sphinx-copybutton==0.5.2",
     "sphinx_design==0.6.1",
@@ -60,10 +60,10 @@ doc = [
 ]
 
 build = [
-    "build==1.2.2",
+    "build==1.2.2.post1",
     "twine==5.1.1",
     "wheel",
-    "datamodel-code-generator==0.24.2",
+    "datamodel-code-generator==0.26.3",
 ]
 
 [project.urls]
