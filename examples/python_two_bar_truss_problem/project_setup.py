@@ -48,7 +48,7 @@ from ansys.hps.client.jms import (
 log = logging.getLogger(__name__)
 
 
-def main(client, num_jobs, use_exec_script, python_version) -> Project:
+def main(client, num_jobs, use_exec_script, python_version=None) -> Project:
     """
     Create project solving a two-bar truss problem with Python.
 
