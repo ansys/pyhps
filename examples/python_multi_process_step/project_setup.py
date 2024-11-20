@@ -47,8 +47,6 @@ import logging
 import os
 import random
 
-from task_files import update_task_files
-
 from ansys.hps.client import Client, HPSError
 from ansys.hps.client.jms import (
     File,
@@ -66,6 +64,8 @@ from ansys.hps.client.jms import (
     TaskDefinition,
 )
 
+from .task_files import update_task_files
+
 log = logging.getLogger(__name__)
 
 
@@ -79,7 +79,7 @@ def main(
     change_job_tasks,
     inactive,
     sequential,
-    python_version,
+    python_version=None,
 ) -> Project:
     """Python project implementing multiple steps and optional image generation."""
     log.debug("=== Project")

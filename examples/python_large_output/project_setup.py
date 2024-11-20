@@ -46,7 +46,7 @@ from ansys.hps.client.jms import (
 log = logging.getLogger(__name__)
 
 
-def main(client, use_exec_script, python_version) -> Project:
+def main(client, use_exec_script, python_version=None) -> Project:
     """
     Create project that runs a Python script to generate a large output file.
     """

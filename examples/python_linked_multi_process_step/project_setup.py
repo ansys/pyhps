@@ -49,7 +49,7 @@ from ansys.hps.client.jms import (
 log = logging.getLogger(__name__)
 
 
-def main(client, num_task_definitions, num_jobs, start, inactive, python_version):
+def main(client, num_task_definitions, num_jobs, start, inactive, python_version=None):
     """Create project with multiple dependent Python tasks and linked files in between."""
     log.debug("=== Project")
     proj = Project(
