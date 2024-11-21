@@ -48,7 +48,7 @@ from ansys.hps.client.jms import (
 log = logging.getLogger(__name__)
 
 
-def main(client, num_jobs, use_exec_script) -> Project:
+def main(client, num_jobs, use_exec_script, python_version=None) -> Project:
     """
     Create project solving a two-bar truss problem with Python.
 
@@ -220,7 +220,7 @@ def main(client, num_jobs, use_exec_script) -> Project:
 
     task_def = TaskDefinition(
         name="python_evaluation",
-        software_requirements=[Software(name="Python", version="3.10")],
+        software_requirements=[Software(name="Python", version=python_version)],
         execution_command="%executable% %file:script% %file:inp%",
         resource_requirements=ResourceRequirements(
             num_cores=0.5,
@@ -290,7 +290,7 @@ if __name__ == "__main__":
     parser.add_argument("-p", "--password", default="repuser")
     parser.add_argument("-n", "--num-jobs", type=int, default=50)
     parser.add_argument("-es", "--use-exec-script", default=False, action="store_true")
-
+    parser.add_argument("-v", "--python-version", default="3.10")
     args = parser.parse_args()
 
     logger = logging.getLogger()
@@ -299,6 +299,11 @@ if __name__ == "__main__":
     client = Client(url=args.url, username=args.username, password=args.password)
 
     try:
-        main(client, num_jobs=args.num_jobs, use_exec_script=args.use_exec_script)
+        main(
+            client,
+            num_jobs=args.num_jobs,
+            use_exec_script=args.use_exec_script,
+            python_version=args.python_version,
+        )
     except HPSError as e:
         log.error(str(e))

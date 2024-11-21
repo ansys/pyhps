@@ -79,6 +79,7 @@ def main(
     change_job_tasks,
     inactive,
     sequential,
+    python_version=None,
 ) -> Project:
     """Python project implementing multiple steps and optional image generation."""
     log.debug("=== Project")
@@ -227,7 +228,7 @@ def main(
             TaskDefinition(
                 name=f"td{i}_py_eval",
                 software_requirements=[
-                    Software(name="Python", version="3.10"),
+                    Software(name="Python", version=python_version),
                 ],
                 execution_command=cmd,
                 max_execution_time=duration * 1.5,
@@ -317,6 +318,7 @@ if __name__ == "__main__":
         default=False,
         help="Whether to evaluate all tasks of same exec level per job sequentially or in parallel",
     )
+    parser.add_argument("-v", "--python-version", default="3.10")
 
     args = parser.parse_args()
 
@@ -334,6 +336,7 @@ if __name__ == "__main__":
             change_job_tasks=args.change_job_tasks,
             inactive=args.inactive,
             sequential=args.sequential,
+            python_version=args.python_version,
         )
     except HPSError as e:
         log.error(str(e))

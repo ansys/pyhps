@@ -49,7 +49,7 @@ from ansys.hps.client.jms import (
 log = logging.getLogger(__name__)
 
 
-def main(client, num_task_definitions, num_jobs, start, inactive):
+def main(client, num_task_definitions, num_jobs, start, inactive, python_version=None):
     """Create project with multiple dependent Python tasks and linked files in between."""
     log.debug("=== Project")
     proj = Project(
@@ -152,7 +152,7 @@ def main(client, num_task_definitions, num_jobs, start, inactive):
                 software_requirements=[
                     Software(
                         name="Python",
-                        version="3.10",
+                        version=python_version,
                     )
                 ],
                 execution_command=cmd,
@@ -211,6 +211,7 @@ if __name__ == "__main__":
     parser.add_argument(
         "-i", "--inactive", action="store_true", default=False, help="Set project to inactive"
     )
+    parser.add_argument("-v", "--python-version", default="3.10")
 
     args = parser.parse_args()
 
@@ -223,6 +224,7 @@ if __name__ == "__main__":
             num_task_definitions=args.num_task_definitions,
             start=args.start,
             inactive=args.inactive,
+            python_version=args.python_version,
         )
     except HPSError as e:
         log.error(str(e))
