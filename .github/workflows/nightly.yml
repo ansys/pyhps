@@ -4,11 +4,11 @@ on:
     inputs:
       hps-version:
         description: HPS version to test against
-        default: 'latest-dev'
+        default: 'v1.1.0'
         type: choice
         options:
           - 'v1.0.2'
-          - 'v1.0.3'
+          - 'v1.1.0'
           - 'latest-dev'
 
   schedule:
@@ -44,7 +44,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: PyAnsys documentation style checks
-        uses: ansys/actions/doc-style@v7
+        uses: ansys/actions/doc-style@v8
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
 
