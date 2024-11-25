@@ -18,7 +18,7 @@ on:
       hps-version:
         description: HPS version to test against
         type: string
-        default: 'latest-dev'
+        default: 'v1.1.0'
 
 jobs:
 
