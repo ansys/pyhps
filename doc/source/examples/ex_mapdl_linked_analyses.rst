@@ -1,5 +1,9 @@
 .. _example_mapdl_linked_analyses:
 
+.. note::
+
+    Go to the `bottom of this page`_ to download the ZIP file for the MAPDL linked analyses example.
+
 MAPDL linked analyses
 =====================
 
@@ -23,14 +27,20 @@ as a multi-task job to HPS. The script shows two possible ways to submit the ind
 
 In both cases, output files from upstream tasks are used as inputs of downstream tasks.
 
-.. only:: builder_html
-
-     You can download the :download:`ZIP file <../../../build/mapdl_linked_analyses.zip>` for the
-     MAPDL linked analyses example and use a tool such as 7-Zip to extract the files.
-
 Here is the ``project_setup.py`` file for this project:.
 
 .. literalinclude:: ../../../examples/mapdl_linked_analyses/project_setup.py
     :language: python
     :lines: 23-
     :caption: project_setup.py
+
+Download the ZIP file for the MAPDL linked analyses example and use
+a tool such as 7-Zip to extract the files.
+
+.. _bottom of this page:
+
+.. button-link:: ../_downloads/mapdl_linked_analyses.zip
+    :color: black
+    :expand:
+
+    Download ZIP file

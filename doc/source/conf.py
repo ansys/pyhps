@@ -1,9 +1,12 @@
 # Sphinx documentation configuration file
 from datetime import datetime
 import os
+import pathlib
+import shutil
 import sys
 
 from ansys_sphinx_theme import ansys_favicon, get_version_match, pyansys_logo_black
+import sphinx
 
 from ansys.hps.client import __version__
 
@@ -327,3 +330,39 @@ extlinks = {
         "ANSYS Help - ",
     ),
 }
+
+
+def copy_download_files_to_source_dir(app: sphinx.application.Sphinx) -> None:
+    """
+    Copy zipped example files to target directory at build time
+
+    Parameters
+    ----------
+    app : sphinx.application.Sphinx
+        Sphinx application instance containing the all the doc build configuration.
+
+    """
+
+    # archive_examples.py in the root directory is being run before doc build (via tox)
+    # we simply need to copy the into the _download target defined in the .rst source files.
+    SOURCE_DIR = pathlib.Path(app.srcdir)
+    ZIPPED_FILES_DIR = SOURCE_DIR.parent.parent / "build"
+    DOWNLOAD_FILES_DIR = SOURCE_DIR.parent / "_build" / "html" / "_downloads"
+    DOWNLOAD_FILES_DIR.mkdir(exist_ok=True)
+
+    for file_path in ZIPPED_FILES_DIR.glob("*"):
+        if file_path.is_file():
+            shutil.copy(file_path, DOWNLOAD_FILES_DIR)
+
+
+def setup(app: sphinx.application.Sphinx) -> None:
+    """
+    Run hook function(s) during the documentation build.
+
+    Parameters
+    ----------
+    app : sphinx.application.Sphinx
+        Sphinx application instance containing the all the doc build configuration.
+    """
+
+    app.connect("builder-inited", copy_download_files_to_source_dir)

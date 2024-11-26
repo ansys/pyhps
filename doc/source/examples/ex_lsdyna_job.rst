@@ -1,5 +1,9 @@
 .. _example_lsdyna_job:
 
+.. note::
+
+    Go to the `bottom of this page`_ to download the ZIP file for the LS-DYNA job submission example.
+
 LS-DYNA job submission
 ======================
 
@@ -28,14 +32,20 @@ The job consists of two tasks:
 
     python -m pip install tqdm humanize
 
-.. only:: builder_html
-
-     You can dowlonad the :download:`ZIP file <../../../build/lsdyna_cylinder_plate.zip>` for
-     the LS-DYNA job submission example and use a tool such as 7-Zip to extract the files.
-
 Here is the ``project_setup.py`` script for this example:
 
 .. literalinclude:: ../../../examples/lsdyna_cylinder_plate/lsdyna_job.py
     :language: python
     :lines: 23-
     :caption: lsdyna_job.py
+
+Download the ZIP file for the LS-DYNA job submission example and use
+a tool such as 7-Zip to extract the files.
+
+.. _bottom of this page:
+
+.. button-link:: ../_downloads/lsdyna_cylinder_plate.zip
+    :color: black
+    :expand:
+
+    Download ZIP file
