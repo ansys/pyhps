@@ -1,5 +1,9 @@
 .. _example_mapdl_tire_performance:
 
+.. note::
+
+    Go to the `bottom of this page`_ to download the ZIP file for the MAPDL tire performance example.
+
 MAPDL tire performance
 =======================
 
@@ -8,14 +12,20 @@ performance simulation example included in the technology demonstration guide (t
 Solution convergence (GST) and contact status (CND) tracking files are periodically collected
 while the job is running. 
 
-.. only:: builder_html
-
-     You can download the :download:`ZIP file <../../../build/mapdl_tyre_performance.zip>`
-     for the MAPDL tire performance example and use a tool such as 7-Zip to extract the files.
-
 Here is the ``project_setup.py`` file for this project:
 
 .. literalinclude:: ../../../examples/mapdl_tyre_performance/project_setup.py
     :language: python
     :lines: 23-
     :caption: project_setup.py
+
+Download the ZIP file for the MAPDL tire performance example and use
+a tool such as 7-Zip to extract the files.
+
+.. _bottom of this page:
+
+.. button-link:: ../_downloads/mapdl_tyre_performance.zip
+    :color: black
+    :expand:
+
+    Download ZIP file
