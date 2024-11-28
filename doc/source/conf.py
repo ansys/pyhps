@@ -332,6 +332,7 @@ extlinks = {
     ),
 }
 
+
 def archive_examples(app: sphinx.application.Sphinx) -> None:
     """
     Create a zip archive for each listed example included in the examples folder.
