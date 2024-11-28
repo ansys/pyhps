@@ -44,7 +44,7 @@ def download_files(client, project_name):
     log.info(f"Downloading files to {out_path}")
 
     jms_api = JmsApi(client)
-    project = jms_api.get_project_by_name(name=project_name)    
+    project = jms_api.get_project_by_name(name=project_name)
     project = jms_api.get_project(id=project.id)
 
     log.info(f"Project id: {project.id}")
@@ -66,9 +66,9 @@ def download_files(client, project_name):
                 fpath = os.path.join(out_path, f"task_{task.id}")
                 log.info(f"Download output file {f.evaluation_path} to {fpath}")
                 start = time.process_time()
-                project_api.download_file(file=f, target_path=fpath)  
-                log.info(f"Time taken to download output file: {(time.time() - start):.2f} seconds"        
-    )  
+                project_api.download_file(file=f, target_path=fpath)
+                log.info(f"Time taken to download output file: {(time.time() - start):.2f} seconds")
+
 
 if __name__ == "__main__":
 
