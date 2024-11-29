@@ -49,7 +49,7 @@ def download_files(client, project_name, dir_path):
     project = jms_api.get_project_by_name(name=project_name)
     project = jms_api.get_project(id=project.id)
 
-    # start dt client to time dowload of output files correctly
+    # start dt client to time download of output files correctly
     jms_api.client._start_dt_worker()
 
     log.info(f"Project id: {project.id}")
