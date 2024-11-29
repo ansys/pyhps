@@ -188,6 +188,11 @@ if __name__ == "__main__":
     client = Client(url=args.url, username=args.username, password=args.password)
 
     try:
-        create_project(client, name=args.name, use_exec_script=args.use_exec_script, python_version=args.python_version)
+        create_project(
+            client,
+            name=args.name,
+            use_exec_script=args.use_exec_script,
+            python_version=args.python_version,
+        )
     except HPSError as e:
         log.error(str(e))
