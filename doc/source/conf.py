@@ -11,6 +11,56 @@ import sphinx
 
 from ansys.hps.client import __version__
 
+# Constants declaration
+EXAMPLES = {
+    "mapdl_motorbike_frame": [
+        "project_setup.py",
+        "project_query.py",
+        "exec_mapdl.py",
+        "motorbike_frame_results.txt",
+        "motorbike_frame.mac",
+    ],
+    "mapdl_tyre_performance": [
+        "project_setup.py",
+        "tire_performance_simulation.mac",
+        "2d_tire_geometry.iges",
+    ],
+    "mapdl_linked_analyses": [
+        "project_setup.py",
+        "prestress.dat",
+        "modal.dat",
+        "harmonic.dat",
+    ],
+    "lsdyna_cylinder_plate": [
+        "lsdyna_job.py",
+        "cylinder_plate.k",
+        "postprocess.cfile",
+    ],
+    "python_two_bar_truss_problem": [
+        "project_setup.py",
+        "exec_python.py",
+        "evaluate.py",
+        "input_parameters.json",
+    ],
+    "fluent_2d_heat_exchanger": [
+        "project_setup.py",
+        "heat_exchanger.jou",
+        "heat_exchanger.cas.h5",
+    ],
+    "fluent_nozzle": [
+        "project_setup.py",
+        "solve.jou",
+        "nozzle.cas",
+    ],
+    "cfx_static_mixer": [
+        "project_setup.py",
+        "exec_cfx.py",
+        "runInput.ccl",
+        "StaticMixer_001.cfx",
+        "StaticMixer_001.def",
+    ],
+}
+
 sys.path.append(os.path.abspath(os.path.dirname(__file__)))
 
 # -- Project information -----------------------------------------------------
@@ -343,72 +393,25 @@ def archive_examples(app: sphinx.application.Sphinx) -> None:
         Sphinx application instance containing the all the doc build configuration.
 
     """
-    EXAMPLES = {
-        "mapdl_motorbike_frame": [
-            "project_setup.py",
-            "project_query.py",
-            "exec_mapdl.py",
-            "motorbike_frame_results.txt",
-            "motorbike_frame.mac",
-        ],
-        "mapdl_tyre_performance": [
-            "project_setup.py",
-            "tire_performance_simulation.mac",
-            "2d_tire_geometry.iges",
-        ],
-        "mapdl_linked_analyses": [
-            "project_setup.py",
-            "prestress.dat",
-            "modal.dat",
-            "harmonic.dat",
-        ],
-        "lsdyna_cylinder_plate": [
-            "lsdyna_job.py",
-            "cylinder_plate.k",
-            "postprocess.cfile",
-        ],
-        "python_two_bar_truss_problem": [
-            "project_setup.py",
-            "exec_python.py",
-            "evaluate.py",
-            "input_parameters.json",
-        ],
-        "fluent_2d_heat_exchanger": [
-            "project_setup.py",
-            "heat_exchanger.jou",
-            "heat_exchanger.cas.h5",
-        ],
-        "fluent_nozzle": [
-            "project_setup.py",
-            "solve.jou",
-            "nozzle.cas",
-        ],
-        "cfx_static_mixer": [
-            "project_setup.py",
-            "exec_cfx.py",
-            "runInput.ccl",
-            "StaticMixer_001.cfx",
-            "StaticMixer_001.def",
-        ],
-    }
-    SOURCE_DIR = Path(app.srcdir)
-    ROOT_PATH = SOURCE_DIR.parent.parent
+
+    source_dir = Path(app.srcdir)
+    root_path = source_dir.parent.parent
 
     # Create zip files for each example
-    build_path = ROOT_PATH / "build"
+    build_path = root_path / "build"
     build_path.mkdir(exist_ok=True)
     for name, files in EXAMPLES.items():
         with ZipFile(build_path / f"{name}.zip", "w") as zip_archive:
             for file in files:
-                zip_archive.write(ROOT_PATH / "examples" / name / file, file)
+                zip_archive.write(root_path / "examples" / name / file, file)
 
     with ZipFile(build_path / "pyhps_examples.zip", "w") as zip_archive:
         for name, files in EXAMPLES.items():
             for file in files:
-                zip_archive.write(ROOT_PATH / "examples" / name / file, Path(name) / file)
+                zip_archive.write(root_path / "examples" / name / file, Path(name) / file)
 
     # Copy zipped example files to target directory at build time
-    download_files_dir = SOURCE_DIR.parent / "_build" / "html" / "_downloads"
+    download_files_dir = source_dir.parent / "_build" / "html" / "_downloads"
     download_files_dir.mkdir(exist_ok=True)
     for file_path in build_path.glob("*"):
         if file_path.is_file():
