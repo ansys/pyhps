@@ -35,6 +35,7 @@ import time
 
 from ansys.rep.common.auth.self_signed_token_provider import SelfSignedTokenProvider
 import jwt
+from marshmallow.utils import missing
 
 from ansys.hps.client import Client, HPSError
 from ansys.hps.client.jms import JmsApi, Project, ProjectApi
@@ -100,7 +101,9 @@ def monitor_projects(
     log.debug("")
     log.debug("")
     jms_api = JmsApi(client)
-    projects_raw = jms_api.get_projects(as_objects=False, statistics=True, permissions=True)
+    projects_raw = jms_api.get_projects(
+        as_objects=False, statistics=True, permissions=True, sort="-creation_time"
+    )
     schema = ProjectSchema(many=True)
     projects: list[Project] = schema.load(projects_raw)
 
@@ -123,8 +126,9 @@ def monitor_projects(
     for project in filtered_projects:
         age = (datetime.now(timezone.utc) - project.creation_time).total_seconds()
         age_hours = int(age / 3600)
+        age_minutes = int((age % 3600) / 60)
         log.debug("")
-        log.debug(f"    Project: ({age_hours}h old) {project.name}: {project.id}")
+        log.debug(f"    Project: ({age_hours}h {age_minutes}m old) {project.name}: {project.id}")
         permissions = [d["value_name"] for d in find_by_id(projects_raw, project.id)["permissions"]]
         log.debug(f"    Permissions: {permissions}")
         proj_api = ProjectApi(client, project.id)
@@ -137,11 +141,11 @@ def monitor_projects(
         if remove is not None:
             if "old" in remove:
                 # Old remove old projects based on time alone
-                if age_hours > 72:
-                    log.debug(f"    === Removing project older than 3 days: age {age_hours}h.")
+                if age_hours > 48:
+                    log.debug(f"    === Removing project older than 2 days: age {age_hours}h.")
                     jms_api.delete_project(project)
                     continue
-            elif check_project_stats(project, [], ["running", "evaluated", "failed"], False):
+            if check_project_stats(project, [], ["running", "evaluated", "failed"], False):
                 # Remove more recent projects that are broken (No running or finished tasks)
                 if check_project_stats(project, [], ["pending"]):
                     # Project with no tasks in any valid state (pend, run, finish)
@@ -153,16 +157,25 @@ def monitor_projects(
                         continue
                 else:
                     # Project with pending for a long time (error in setup or cluster)
-                    if age_hours > 12:
+                    if age_hours > 6:
                         log.debug(
                             f"    === Removing project pending for 1/2 day: age {age_hours}h."
                         )
                         jms_api.delete_project(project)
                         continue
         for task in tasks:
+            resources = task.task_definition_snapshot.resource_requirements
+            # log.debug(task.monitored_file_ids)
             log.debug(
                 f"        {task.task_definition_snapshot.name}: {task.job_id} -> {task.eval_status}"
             )
+            if resources not in [None, missing]:
+                queue = (
+                    resources.hpc_resources.queue
+                    if resources.hpc_resources not in [None, missing]
+                    else "NotSet"
+                )
+                log.debug(f"          CRS: {resources.compute_resource_set_id} -> {queue}")
 
 
 def show_rms_data(client: Client, verbose: bool) -> Project:
@@ -172,7 +185,7 @@ def show_rms_data(client: Client, verbose: bool) -> Project:
         log.debug("")
         log.debug("=== CRS Sets")
         for crs in crs_sets:
-            log.debug(f"    === {crs.name}: {crs.backend.plugin_name}")
+            log.debug(f"    === {crs.name}: {crs.backend.plugin_name} -> {crs.id}")
             if verbose:
                 log.debug(f"   Config: {crs.backend.json()}")
                 try:
