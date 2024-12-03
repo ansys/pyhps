@@ -274,6 +274,27 @@ def test_cfx_static_mixer(client):
     jms_api.delete_project(project)
 
 
+def test_python_large_output(client):
+
+    from examples.python_large_output.project_setup import create_project
+
+    project = create_project(
+        client, name="Python Large Output Files test", use_exec_script=True, python_version=3.10
+    )
+    assert project is not None
+
+    jms_api = JmsApi(client)
+    project_api = ProjectApi(client, project.id)
+
+    assert len(project_api.get_jobs()) == 7
+    jms_api.get_project(id=project.id).name == "Python Large Output Files test"
+
+    job = project_api.get_jobs()[0]
+    assert job.name == "Job 1 GB"
+
+    jms_api.delete_project(project)
+
+
 def test_python_multi_steps(client):
 
     from examples.python_multi_process_step.project_setup import main as create_project
