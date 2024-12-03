@@ -23,7 +23,7 @@ on:
       - main
 
 env:
-  MAIN_PYTHON_VERSION: '3.10'
+  MAIN_PYTHON_VERSION: '3.12'
   DOCUMENTATION_CNAME: 'hps.docs.pyansys.com'
   PACKAGE_NAME: 'ansys-hps-client'
 

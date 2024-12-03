@@ -15,7 +15,7 @@ on:
   - cron: "0 2 * * *"
 
 env:
-  MAIN_PYTHON_VERSION: '3.10'
+  MAIN_PYTHON_VERSION: '3.12'
   PACKAGE_NAME: 'ansys-hps-client'
 
 concurrency:
