@@ -223,7 +223,7 @@ def test_template_permissions(client, keycloak_client, is_admin):
     assert permissions[0].value_id is not None
     assert permissions[1].permission_type == "organization"
     assert permissions[1].role == "reader"
-    assert permissions[1].value_id == "onprem_account"
+    assert permissions[1].value_id == "service_account"
 
     # create test user
     user1, client1 = create_new_user_client(client.url, keycloak_client)
@@ -278,7 +278,7 @@ def test_template_permissions(client, keycloak_client, is_admin):
     assert permissions[0].value_id == user1.id
     assert permissions[1].permission_type == "organization"
     assert permissions[1].role == "reader"
-    assert permissions[1].value_id == "onprem_account"
+    assert permissions[1].value_id == "service_account"
 
     # verify that an admin user can access the template
     if is_admin:
@@ -335,7 +335,7 @@ def test_template_anyone_permission(client, keycloak_client):
     assert permissions[0].value_id is not None
     assert permissions[1].permission_type == "organization"
     assert permissions[1].role == "reader"
-    assert permissions[1].value_id == "onprem_account"
+    assert permissions[1].value_id == "service_account"
 
     # create test user
     user1, client1 = create_new_user_client(client.url, keycloak_client)

@@ -109,8 +109,8 @@ def test_project_integration(client):
     while not proj.statistics["eval_status"] and time.time() < timeout:
         time.sleep(2)
         proj = jms_api.get_projects(id=proj.id, statistics=True)[0]
-    assert proj.statistics["eval_status"]["prolog"] == 0
-    assert proj.statistics["eval_status"]["failed"] == 0
+    assert "prolog" not in proj.statistics["eval_status"]
+    assert "failed" not in proj.statistics["eval_status"]
 
     proj = jms_api.get_project(id=proj.id)
     proj.active = False
