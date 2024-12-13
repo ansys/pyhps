@@ -1,0 +1,6 @@
+user\_is\_admin
+===============
+
+.. currentmodule:: ansys.hps.client.auth.api
+
+.. automethod:: AuthApi.user_is_admin
