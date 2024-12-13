@@ -15,7 +15,7 @@ on:
   - cron: "0 2 * * *"
 
 env:
-  MAIN_PYTHON_VERSION: '3.10'
+  MAIN_PYTHON_VERSION: '3.12'
   PACKAGE_NAME: 'ansys-hps-client'
 
 concurrency:
@@ -56,6 +56,7 @@ jobs:
               { python-version: '3.10', toxenv: 'py310' },
               { python-version: '3.11', toxenv: 'py311' },
               { python-version: '3.12', toxenv: 'py312' },
+              { python-version: '3.13', toxenv: 'py313' },
             ]
       fail-fast: false
     uses: ./.github/workflows/tests.yml
@@ -74,7 +75,7 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-latest, windows-latest, macos-latest]
-        python-version: ['3.10', '3.11', '3.12']
+        python-version: ['3.10', '3.11', '3.12', '3.13']
         should-release:
           - ${{ github.event_name == 'push' && contains(github.ref, 'refs/tags') }}
         exclude:
