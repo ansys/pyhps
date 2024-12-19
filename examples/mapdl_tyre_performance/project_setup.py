@@ -36,6 +36,7 @@ from ansys.hps.client import Client, HPSError, __ansys_apps_version__
 from ansys.hps.client.jms import (
     File,
     FloatParameterDefinition,
+    HpcResources,
     JmsApi,
     Job,
     JobDefinition,
@@ -57,11 +58,13 @@ def create_project(
     num_jobs=20,
     use_exec_script=False,
     active=True,
+    queue="",
+    crs_id="",
 ) -> Project:
 
     log.debug("=== Project")
     jms_api = JmsApi(client)
-    proj = Project(name=name, priority=1, active=True)
+    proj = Project(name=name, priority=1, active=active)
     proj = jms_api.create_project(proj)
 
     project_api = ProjectApi(client, proj.id)
@@ -214,6 +217,8 @@ def create_project(
             memory=4000 * 1024 * 1024,
             disk_space=500 * 1024 * 1024,
             distributed=True,
+            compute_resource_set_id=crs_id,
+            hpc_resources=HpcResources(queue=queue),
         ),
         max_execution_time=1800.0,
         execution_level=0,
@@ -274,6 +279,8 @@ if __name__ == "__main__":
     parser.add_argument("-t", "--token", default="")
     parser.add_argument("-a", "--account", default="onprem_account")
     parser.add_argument("-v", "--ansys-version", default=__ansys_apps_version__)
+    parser.add_argument("-q", "--queue", default="")
+    parser.add_argument("-c", "--crsid", default="")
 
     args = parser.parse_args()
 
@@ -295,6 +302,8 @@ if __name__ == "__main__":
             version=args.ansys_version,
             num_jobs=args.num_jobs,
             use_exec_script=args.use_exec_script,
+            crs_id=args.crsid,
+            queue=args.queue,
         )
     except HPSError as e:
         log.error(str(e))

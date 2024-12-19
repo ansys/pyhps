@@ -36,6 +36,7 @@ from ansys.hps.client.jms import (
     File,
     FitnessDefinition,
     FloatParameterDefinition,
+    HpcResources,
     JmsApi,
     Job,
     JobDefinition,
@@ -54,7 +55,14 @@ log = logging.getLogger(__name__)
 
 
 def create_project(
-    client, name, version=__ansys_apps_version__, num_jobs=20, use_exec_script=False, active=True
+    client: Client,
+    name,
+    version=__ansys_apps_version__,
+    num_jobs=20,
+    use_exec_script=False,
+    active=True,
+    queue="",
+    crs_id="",
 ) -> Project:
     """
     Create an HPS project consisting of an ANSYS APDL beam model of a motorbike frame.
@@ -268,9 +276,11 @@ def create_project(
         ],
         execution_command="%executable% -b -i %file:inp% -o file.out -np %resource:num_cores%",
         resource_requirements=ResourceRequirements(
-            num_cores=1.0,
+            num_cores=4,
             memory=250 * 1024 * 1024,  # 250 MB
             disk_space=5 * 1024 * 1024,  # 5 MB
+            compute_resource_set_id=crs_id,
+            hpc_resources=HpcResources(queue=queue, exclusive=False),
         ),
         execution_level=0,
         max_execution_time=50.0,
@@ -351,11 +361,16 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("-n", "--name", type=str, default="Mapdl Motorbike Frame")
     parser.add_argument("-j", "--num-jobs", type=int, default=50)
-    parser.add_argument("-es", "--use-exec-script", default=False, action="store_true")
+    parser.add_argument("-es", "--use-exec-script", default=False, type=bool)
+    # parser.add_argument("-es", "--use-exec-script", default=False, action="store_true")
     parser.add_argument("-U", "--url", default="https://127.0.0.1:8443/hps")
     parser.add_argument("-u", "--username", default="repuser")
     parser.add_argument("-p", "--password", default="repuser")
     parser.add_argument("-v", "--ansys-version", default=__ansys_apps_version__)
+    parser.add_argument("-t", "--token", default="")
+    parser.add_argument("-a", "--account", default="onprem_account")
+    parser.add_argument("-q", "--queue", default="")
+    parser.add_argument("-c", "--crsid", default="")
     args = parser.parse_args()
 
     logger = logging.getLogger()
@@ -363,7 +378,13 @@ if __name__ == "__main__":
 
     try:
         log.info("Connect to HPC Platform Services")
-        client = Client(url=args.url, username=args.username, password=args.password)
+
+        if args.token:
+            client = Client(url=args.url, access_token=args.token)
+            client.session.headers.update({"accountid": args.account})
+        else:
+            client = Client(url=args.url, username=args.username, password=args.password)
+
         log.info(f"HPS URL: {client.url}")
         proj = create_project(
             client=client,
@@ -371,6 +392,8 @@ if __name__ == "__main__":
             version=args.ansys_version,
             num_jobs=args.num_jobs,
             use_exec_script=args.use_exec_script,
+            crs_id=args.crsid,
+            queue=args.queue,
         )
 
     except HPSError as e:
