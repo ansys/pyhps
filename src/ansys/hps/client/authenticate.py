@@ -22,7 +22,7 @@
 """Module that provides authentication for the user with a password or refresh token against the
 HPS authentication service."""
 import logging
-from typing import Union, List
+from typing import List, Union
 
 import requests
 
@@ -158,16 +158,16 @@ def authenticate(
 
 
 def authenticate_via_action_token(
-        auth_url: str = "https://127.0.0.1:8443/hps/auth/realms/rep",
-        action_token_pathprefix: str = "job-action-token",
-        username: str = None,
-        scope: List[str] = ["openid"],
-        client_id: str = "rep-cli",
-        audience: List[str] = None,
-        access_token: str = None,
-        timeout: float = 10.0,
-        verify: Union[bool, str] = True,
-        **kwargs,
+    auth_url: str = "https://127.0.0.1:8443/hps/auth/realms/rep",
+    action_token_pathprefix: str = "job-action-token",
+    username: str = None,
+    scope: List[str] = ["openid"],
+    client_id: str = "rep-cli",
+    audience: List[str] = None,
+    access_token: str = None,
+    timeout: float = 10.0,
+    verify: Union[bool, str] = True,
+    **kwargs,
 ):
     """
     Authenticates the user by requesting an action token.
@@ -200,22 +200,22 @@ def authenticate_via_action_token(
         JSON-encoded content of a :class:`requests.Response` object.
     """
 
-    action_token_resp = request_action_token(auth_url,
-                                             action_token_pathprefix,
-                                             username,
-                                             scope,
-                                             client_id,
-                                             access_token,
-                                             audience,
-                                             timeout=timeout,
-                                             verify=verify,
-                                             **kwargs)
+    action_token_resp = request_action_token(
+        auth_url,
+        action_token_pathprefix,
+        username,
+        scope,
+        client_id,
+        access_token,
+        audience,
+        timeout=timeout,
+        verify=verify,
+        **kwargs,
+    )
 
     auth_api = action_token_resp["link"]
 
-    log.debug(
-            f"Action token received {action_token_resp['token']}."
-        )
+    log.debug(f"Action token received {action_token_resp['token']}.")
 
     with requests.Session() as session:
         session.verify = verify
@@ -235,16 +235,16 @@ def authenticate_via_action_token(
 
 
 def request_action_token(
-        auth_url: str = "https://127.0.0.1:8443/hps/auth/realms/rep",
-        action_token_pathprefix: str = "job-action-token",
-        username: str = None,
-        scope: List[str] = ["openid"] ,
-        client_id: str = "job-api-call",
-        access_token: str = None,
-        audience: List[str] = None,
-        timeout: float = 10.0,
-        verify: Union[bool, str] = True,
-        **kwargs,
+    auth_url: str = "https://127.0.0.1:8443/hps/auth/realms/rep",
+    action_token_pathprefix: str = "job-action-token",
+    username: str = None,
+    scope: List[str] = ["openid"],
+    client_id: str = "job-api-call",
+    access_token: str = None,
+    audience: List[str] = None,
+    timeout: float = 10.0,
+    verify: Union[bool, str] = True,
+    **kwargs,
 ):
     """
     Request an action token for a user fully authenticated.
