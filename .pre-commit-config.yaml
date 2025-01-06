@@ -35,7 +35,7 @@ repos:
   rev: v0.4.4
   hooks:
   - id: add-license-headers
-    files: '(ansys|examples|tests)/.*\.(py)|\.(proto)|generate_resources.py|archive_examples.py'
+    files: '(ansys|examples|tests)/.*\.(py)|generate_resources.py|archive_examples.py'
     args:
     - --start_year=2022
 
