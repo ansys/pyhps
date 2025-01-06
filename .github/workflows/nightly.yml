@@ -78,7 +78,7 @@ jobs:
   docs:
     name: Documentation
     runs-on: ubuntu-latest
-    needs: [style, doc-style]
+    needs: [style]
     steps:
       - uses: actions/checkout@v4
 
