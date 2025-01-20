@@ -38,15 +38,15 @@ dependencies = [
 [project.optional-dependencies]
 tests = [
     "pytest==8.3.4",
-    "coverage==7.6.9",
+    "coverage==7.6.10",
     "python-keycloak>=3.9.1,<4.0.0",
 ]
 
 doc = [
-    "ansys-sphinx-theme==1.2.3",
+    "ansys-sphinx-theme==1.2.6",
     "autodoc_pydantic==2.1.0",
     "jupyter_sphinx==0.5.3",
-    "nbsphinx==0.9.5",
+    "nbsphinx==0.9.6",
     "numpydoc==1.8.0",
     "myst-parser==4.0.0",
     "Sphinx==8.1.3",
