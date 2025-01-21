@@ -32,7 +32,7 @@ dependencies = [
     "backoff>=2.0.0",
     "pydantic>=1.10.0",
     "PyJWT>=2.8.0",
-    "ansys-hps-data-transfer-client@git+https://github.com/ansys-internal/hps-data-transfer-client.git@main#egg=ansys-hps-data-transfer-client"
+    "ansys-hps-data-transfer-client@git+https://github.com/ansys-internal/hps-data-transfer-client.git@mpawlik/poetry#egg=ansys-hps-data-transfer-client"
 ]
 
 [project.optional-dependencies]
