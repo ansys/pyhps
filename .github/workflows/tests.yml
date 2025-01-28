@@ -14,7 +14,7 @@ on:
       runner:
         description: Where to run
         type: string
-        default: 'ubuntu-latest-8-cores'
+        default: 'ubuntu-latest'
       hps-version:
         description: HPS version to test against
         type: string
