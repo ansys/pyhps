@@ -79,7 +79,6 @@ runs:
         tar -xvzf docker-compose-customer.tar.gz
         mv docker-compose-customer docker-compose
         cd docker-compose
-        sed -i "s/^DTS_CONFIG_FILE=.*/DTS_CONFIG_FILE=config_minio.json/" .env
         docker-compose build
         docker-compose up -d
       working-directory: ./docker-compose-artifact
