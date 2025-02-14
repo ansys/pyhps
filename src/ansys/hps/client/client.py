@@ -1,4 +1,4 @@
-# Copyright (C) 2022 - 2024 ANSYS, Inc. and/or its affiliates.
+# Copyright (C) 2022 - 2025 ANSYS, Inc. and/or its affiliates.
 # SPDX-License-Identifier: MIT
 #
 #
@@ -305,7 +305,7 @@ class Client(object):
 
                 self.dt_client.binary_config.update(
                     verbosity=3,
-                    debug=False,
+                    debug=True,
                     insecure=True,
                     token=self.access_token,
                     data_transfer_url=self.data_transfer_url,

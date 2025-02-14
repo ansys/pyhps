@@ -1,4 +1,4 @@
-# Copyright (C) 2022 - 2024 ANSYS, Inc. and/or its affiliates.
+# Copyright (C) 2022 - 2025 ANSYS, Inc. and/or its affiliates.
 # SPDX-License-Identifier: MIT
 #
 #
@@ -31,6 +31,7 @@ import argparse
 import logging
 import os
 import random
+import time
 
 from ansys.hps.client import Client, HPSError, __ansys_apps_version__
 from ansys.hps.client.jms import (
@@ -94,7 +95,7 @@ def create_project(
             type="text/plain",
             collect=True,
             monitor=True,
-            collect_interval=30,
+            # collect_interval=30,
         ),
         File(
             name="gst",
@@ -102,7 +103,7 @@ def create_project(
             type="text/plain",
             collect=True,
             monitor=True,
-            collect_interval=30,
+            # collect_interval=30,
         ),
         File(
             name="err", evaluation_path="file*.err", type="text/plain", collect=True, monitor=True
@@ -210,10 +211,11 @@ def create_project(
         software_requirements=[Software(name="Ansys Mechanical APDL", version=version)],
         execution_command="%executable% -b -i %file:inp% -o file.out -np %resource:num_cores%",
         resource_requirements=ResourceRequirements(
-            num_cores=4,
-            memory=4000 * 1024 * 1024,
-            disk_space=500 * 1024 * 1024,
+            num_cores=120,
+            memory=16000 * 1024 * 1024,
+            disk_space=5000 * 1024 * 1024,
             distributed=True,
+            # compute_resource_set_id="02yZVjGPt7oxL4HH2uQdNG"
         ),
         max_execution_time=1800.0,
         execution_level=0,
@@ -223,9 +225,19 @@ def create_project(
     )
 
     if use_exec_script:
-        exec_script_file = project_api.copy_default_execution_script(
-            f"mapdl-v{version[2:4]}{version[6]}-exec_mapdl.py"
-        )
+        retry = 0
+        while retry < 50:
+            try:
+                exec_script_file = project_api.copy_default_execution_script(
+                    f"mapdl-v{version[2:4]}{version[6]}-exec_mapdl.py"
+                    # f"fluent-v{version[2:4]}{version[6]}-exec_fluent.py"
+                )
+                time.sleep(1)
+                break
+            except HPSError as e:
+                log.error(f"Failed to copy execution script: {str(e)}")
+                exec_script_file = None
+                retry += 1
 
         task_def.use_execution_script = True
         task_def.execution_script_id = exec_script_file.id

@@ -1,4 +1,4 @@
-# Copyright (C) 2022 - 2024 ANSYS, Inc. and/or its affiliates.
+# Copyright (C) 2022 - 2025 ANSYS, Inc. and/or its affiliates.
 # SPDX-License-Identifier: MIT
 #
 #
@@ -770,14 +770,14 @@ def _fetch_file_metadata(
 ):
     log.info(f"Getting upload file metadata")
     op = project_api.client.dt_api.get_metadata(storagePaths)
-    op = project_api.client.dt_api.wait_for(op.id)[0]
-    log.info(f"Operation {op.state}")
-    if op.state == OperationState.Succeeded:
+    op = project_api.client.dt_api.wait_for(op.id)
+    log.info(f"Operation {op[0].state}")
+    if op[0].state == OperationState.Succeeded:
         base_dir = project_api.project_id
         for f in files:
             if getattr(f, "src", None) is None:
                 continue
-            md = op.result[f"{base_dir}/{os.path.basename(f.storage_id)}"]
+            md = op[0].result[f"{base_dir}/{os.path.basename(f.storage_id)}"]
             f.hash = md["checksum"]
             f.size = md["size"]
     else:
