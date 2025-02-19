@@ -117,6 +117,7 @@ def create_project(
             lower_limit=-8.0,
             upper_limit=8.0,
             default=0.0,
+            mode="input"
         ),
         FloatParameterDefinition(
             name="inflation_pressure",
@@ -124,6 +125,7 @@ def create_project(
             lower_limit=0.15e06,
             upper_limit=0.3e06,
             default=0.24e06,
+            mode="input"
         ),
         FloatParameterDefinition(
             name="rotational_velocity",
@@ -131,6 +133,7 @@ def create_project(
             lower_limit=0.0,
             upper_limit=70.0,
             default=50.0,
+            mode="input"
         ),
         FloatParameterDefinition(
             name="translational_velocity",
@@ -138,6 +141,7 @@ def create_project(
             lower_limit=0.0,
             upper_limit=30.0,
             default=20.0,
+            mode="input"
         ),
     ]
     input_params = project_api.create_parameter_definitions(input_params)
@@ -173,8 +177,8 @@ def create_project(
 
     # Collect some runtime stats from MAPDL out file
     output_params = [
-        FloatParameterDefinition(name="mapdl_cp_time", display_text="MAPDL CP Time"),
-        FloatParameterDefinition(name="mapdl_elapsed_time", display_text="MAPDL Elapsed Time"),
+        FloatParameterDefinition(name="mapdl_cp_time", display_text="MAPDL CP Time", mode="output"),
+        FloatParameterDefinition(name="mapdl_elapsed_time", display_text="MAPDL Elapsed Time", mode="output"),
     ]
     output_params = project_api.create_parameter_definitions(output_params)
 
