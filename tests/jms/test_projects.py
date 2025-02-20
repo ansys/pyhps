@@ -282,12 +282,15 @@ def test_copy_exec_script(client):
     proj = jms_api.create_project(proj)
 
     project_api = ProjectApi(client, proj.id)
+
     ansys_short_version = f"v{ansys_version[2:4]}{ansys_version[6]}"
-    script_name = f"mapdl-{ansys_short_version}-exec_mapdl"
-    file = project_api.copy_default_execution_script(f"{script_name}.py")
-    assert file.name == script_name
-    assert file.evaluation_path == f"{script_name}.py"
-    assert file.hash is not None
-    assert file.storage_id is not None
+    script_names = [f"mapdl-{ansys_short_version}-exec_mapdl", "mechanical-exec_mechanical"]
+
+    for script_name in script_names:
+        file = project_api.copy_default_execution_script(f"{script_name}.py")
+        assert file.name == script_name
+        assert file.evaluation_path == f"{script_name}.py"
+        assert file.hash is not None
+        assert file.storage_id is not None
 
     jms_api.delete_project(proj)
