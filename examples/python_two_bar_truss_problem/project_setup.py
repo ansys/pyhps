@@ -114,16 +114,36 @@ def main(client, num_jobs, use_exec_script, python_version=None) -> Project:
             name="diameter", lower_limit=0.2, upper_limit=5, default=3, units="in", mode="input"
         ),
         FloatParameterDefinition(
-            name="thickness", lower_limit=0.03, upper_limit=0.6, default=0.15, units="in", mode="input"
+            name="thickness",
+            lower_limit=0.03,
+            upper_limit=0.6,
+            default=0.15,
+            units="in",
+            mode="input",
         ),
         FloatParameterDefinition(
-            name="separation_distance", lower_limit=40, upper_limit=150, default=60, units="in", mode="input"
+            name="separation_distance",
+            lower_limit=40,
+            upper_limit=150,
+            default=60,
+            units="in",
+            mode="input",
         ),
         FloatParameterDefinition(
-            name="young_modulus", lower_limit=1e6, upper_limit=1e8, default=3e7, units="lbs in^-2", mode="input"
+            name="young_modulus",
+            lower_limit=1e6,
+            upper_limit=1e8,
+            default=3e7,
+            units="lbs in^-2",
+            mode="input",
         ),
         FloatParameterDefinition(
-            name="density", lower_limit=0.1, upper_limit=0.6, default=0.3, units="lbs in^-2", mode="input"
+            name="density",
+            lower_limit=0.1,
+            upper_limit=0.6,
+            default=0.3,
+            units="lbs in^-2",
+            mode="input",
         ),
         FloatParameterDefinition(
             name="load", lower_limit=1e1, upper_limit=1e5, default=66e3, units="lbs", mode="input"

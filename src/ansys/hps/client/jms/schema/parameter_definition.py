@@ -49,7 +49,7 @@ class ParameterDefinitionBaseSchema(ObjectSchemaWithModificationInfo):
     )
 
     mode = fields.String(
-        #load_only=True,
+        # load_only=True,
         allow_none=True,
         metadata={
             "description": "Indicates whether it's an input "

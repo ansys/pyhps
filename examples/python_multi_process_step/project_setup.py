@@ -160,7 +160,9 @@ def main(
     mappings = []
     for i in range(num_task_definitions):
         new_params = [
-            IntParameterDefinition(name=f"period{i}", lower_limit=1, upper_limit=period, units="s", mode="input"),
+            IntParameterDefinition(
+                name=f"period{i}", lower_limit=1, upper_limit=period, units="s", mode="input"
+            ),
             IntParameterDefinition(
                 name=f"duration{i}", lower_limit=0, upper_limit=duration, units="s", mode="input"
             ),
@@ -169,7 +171,7 @@ def main(
                 name=f"color{i}",
                 value_list=["red", "blue", "green", "yellow", "cyan"],
                 default='"orange"',
-                mode="input"
+                mode="input",
             ),
         ]
         new_params = project_api.create_parameter_definitions(new_params)

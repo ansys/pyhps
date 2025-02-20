@@ -105,7 +105,10 @@ def main(client, num_task_definitions, num_jobs, start, inactive, python_version
         FloatParameterDefinition(name="start", lower_limit=1.0, upper_limit=start, mode="input"),
     ]
     params.extend(
-        [FloatParameterDefinition(name=f"product{i}", mode="output") for i in range(num_task_definitions)]
+        [
+            FloatParameterDefinition(name=f"product{i}", mode="output")
+            for i in range(num_task_definitions)
+        ]
     )
     params = project_api.create_parameter_definitions(params)
     job_def.parameter_definition_ids = [o.id for o in params]

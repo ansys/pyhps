@@ -127,10 +127,18 @@ def create_project(
         float_input_params.extend(
             [
                 FloatParameterDefinition(
-                    name="tube%i_radius" % i, lower_limit=4.0, upper_limit=20.0, default=12.0, mode="input"
+                    name="tube%i_radius" % i,
+                    lower_limit=4.0,
+                    upper_limit=20.0,
+                    default=12.0,
+                    mode="input",
                 ),
                 FloatParameterDefinition(
-                    name="tube%i_thickness" % i, lower_limit=0.5, upper_limit=2.5, default=1.0, mode="input"
+                    name="tube%i_thickness" % i,
+                    lower_limit=0.5,
+                    upper_limit=2.5,
+                    default=1.0,
+                    mode="input",
                 ),
             ]
         )
@@ -162,7 +170,9 @@ def create_project(
     str_input_params = []
     for i in range(1, 22):
         str_input_params.append(
-            StringParameterDefinition(name="tube%s" % i, default="1", value_list=["1", "2", "3"], mode="input")
+            StringParameterDefinition(
+                name="tube%s" % i, default="1", value_list=["1", "2", "3"], mode="input"
+            )
         )
     str_input_params = project_api.create_parameter_definitions(str_input_params)
 
@@ -193,7 +203,9 @@ def create_project(
 
     stat_params = []
     # # Collect some runtime stats from MAPDL out file
-    stat_params.append(FloatParameterDefinition(name="mapdl_elapsed_time_obtain_license", mode="output"))
+    stat_params.append(
+        FloatParameterDefinition(name="mapdl_elapsed_time_obtain_license", mode="output")
+    )
     stat_params.append(FloatParameterDefinition(name="mapdl_cp_time", mode="output"))
     stat_params.append(FloatParameterDefinition(name="mapdl_elapsed_time", mode="output"))
     stat_params = project_api.create_parameter_definitions(stat_params)

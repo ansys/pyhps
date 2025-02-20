@@ -94,7 +94,9 @@ def main(client, use_exec_script, python_version=None) -> Project:
 
     # Input params
     input_params = [
-        IntParameterDefinition(name="size", lower_limit=1, upper_limit=1000, default=1, mode="input"),
+        IntParameterDefinition(
+            name="size", lower_limit=1, upper_limit=1000, default=1, mode="input"
+        ),
     ]
     input_params = project_api.create_parameter_definitions(input_params)
 
