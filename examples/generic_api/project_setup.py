@@ -201,7 +201,7 @@ def monitor_projects(
                     for f in [f for f in files if f.name == file_name]:
                         counter += 1
                         line += f" {f.evaluation_path[:20].rjust(20)}"
-                        line += f" -{f.type.split('/')[0][:6].ljust(6)} "
+                        line += f" -{f.size}b-{f.type.split('/')[0][:6].ljust(6)} "
                         incomplete = True
                         if counter % 4 == 0:
                             log.debug(line)
