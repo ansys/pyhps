@@ -103,7 +103,7 @@ def monitor_projects(
     log.debug("")
     jms_api = JmsApi(client)
     projects_raw = jms_api.get_projects(
-        as_objects=False, statistics=True, permissions=True, sort="-creation_time"
+        as_objects=False, statistics=True, permissions=True, sort="-modification_time"
     )
     schema = ProjectSchema(many=True)
     projects: list[Project] = schema.load(projects_raw)
@@ -125,15 +125,19 @@ def monitor_projects(
 
     log.debug(f"=== Projects ({len(filtered_projects)})")
     for project in filtered_projects:
-        age = (datetime.now(timezone.utc) - project.creation_time).total_seconds()
-        age_hours = int(age / 3600)
-        age_minutes = int((age % 3600) / 60)
+        modified_age = (datetime.now(timezone.utc) - project.modification_time).total_seconds()
+        if len(filtered_projects) > 10 and modified_age > 48 * 60 * 60:
+            continue  # Skip projects older than 2 days
+
+        created_age = (datetime.now(timezone.utc) - project.creation_time).total_seconds()
+        age_hours = int(created_age / 3600)
+        age_minutes = int((created_age % 3600) / 60)
         log.debug("")
         log.debug(f"    Project: ({age_hours}h {age_minutes}m old) {project.name}: {project.id}")
         permissions = [d["value_name"] for d in find_by_id(projects_raw, project.id)["permissions"]]
         log.debug(f"    Permissions: {permissions}")
-        proj_api = ProjectApi(client, project.id)
 
+        proj_api = ProjectApi(client, project.id)
         try:
             if remove is not None:
                 if "old" in remove:
@@ -180,6 +184,7 @@ def monitor_projects(
                     )
                     log.debug(f"{' '*10}CRS: {resources.compute_resource_set_id} -> {queue}")
 
+                """
                 log.debug(f"{' '*10}Files:")
                 files = proj_api.get_files(id=task.output_file_ids)
                 file_counts = {}
@@ -209,7 +214,7 @@ def monitor_projects(
                             incomplete = False
                 if incomplete:
                     log.debug(line)
-
+                """
         except HPSError as e:
             log.debug(e)
             continue
@@ -234,16 +239,17 @@ def show_rms_data(client: Client, verbose: bool) -> Project:
                 )
             else:
                 log.debug(f"    === Scaler info: {crs.scaler_id}: NOT FOUND")
-            if verbose:
-                log.debug(f"   Config: {crs.backend.json()}")
-                try:
-                    info = rms_api.get_cluster_info(crs.id)
-                except:
-                    log.warning(f"       Cluster info not available for {crs.name}")
-                    log.debug("")
-                    continue
-                for queue in info.queues:
-                    log.debug(f"        === {queue.name}:")
+
+            log.debug(f"   Config: {crs.backend.json()}")
+            try:
+                info = rms_api.get_cluster_info(crs.id)
+            except:
+                log.warning(f"       Cluster info not available for {crs.name}")
+                log.debug("")
+                continue
+            for queue in info.queues:
+                log.debug(f"        === {queue.name}:")
+                if verbose:
                     for prop in queue.additional_props:
                         log.debug(f"            {prop}: {queue.additional_props[prop]}")
     except HPSError as e:
