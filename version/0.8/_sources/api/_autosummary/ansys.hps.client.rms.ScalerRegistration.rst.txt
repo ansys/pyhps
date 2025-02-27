@@ -1,0 +1,6 @@
+﻿ScalerRegistration
+==================
+
+.. currentmodule:: ansys.hps.client.rms
+
+.. autopydantic_model:: ScalerRegistration
