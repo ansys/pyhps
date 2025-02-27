@@ -463,7 +463,7 @@ class ProjectApi:
             "'ProjectApi._sync_jobs' is deprecated and is to be removed soon. "
             "Use 'ProjectApi.sync_jobs' instead."
         )
-        warn(msg, DeprecationWarning)
+        warnings.warn(msg, DeprecationWarning)
         log.warning(msg)
         return self.sync_jobs(jobs)
 
