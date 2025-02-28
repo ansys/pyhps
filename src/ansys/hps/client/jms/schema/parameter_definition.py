@@ -52,7 +52,8 @@ class ParameterDefinitionBaseSchema(ObjectSchemaWithModificationInfo):
         allow_none=True,
         metadata={
             "description": "Indicates whether it's an input "
-            "or output parameter. The mode is filled server-side."
+            "or output parameter. If not provided, the server "
+            "will default the mode to input."
         },
     )
 
