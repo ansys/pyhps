@@ -37,7 +37,7 @@ dependencies = [
 
 [project.optional-dependencies]
 tests = [
-    "pytest==8.3.4",
+    "pytest==8.3.5",
     "coverage==7.6.12",
     "python-keycloak>=3.9.1,<4.0.0",
 ]
