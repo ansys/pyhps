@@ -46,12 +46,17 @@ from ansys.hps.client.jms import (
 log = logging.getLogger(__name__)
 
 
-def main(client, use_exec_script, python_version=None) -> Project:
+def create_project(client, name, use_exec_script, python_version=None) -> Project:
     """
     Create project that runs a Python script to generate a large output file.
+
+    After creating the project, 7 job definitions are created each meant to create
+    a Large download file of variable size in GB.
+
+    Download files from the project
     """
     log.debug("=== Project")
-    proj = Project(name="Python Large Output Files", priority=1, active=True)
+    proj = Project(name=name, priority=1, active=True)
     jms_api = JmsApi(client)
     proj = jms_api.create_project(proj, replace=True)
     project_api = ProjectApi(client, proj.id)
@@ -169,6 +174,7 @@ def main(client, use_exec_script, python_version=None) -> Project:
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
+    parser.add_argument("-n", "--name", type=str, default="Python Large Output Files")
     parser.add_argument("-U", "--url", default="https://127.0.0.1:8443/hps")
     parser.add_argument("-u", "--username", default="repuser")
     parser.add_argument("-p", "--password", default="repuser")
@@ -182,6 +188,11 @@ if __name__ == "__main__":
     client = Client(url=args.url, username=args.username, password=args.password)
 
     try:
-        main(client, use_exec_script=args.use_exec_script, python_version=args.python_version)
+        create_project(
+            client,
+            name=args.name,
+            use_exec_script=args.use_exec_script,
+            python_version=args.python_version,
+        )
     except HPSError as e:
         log.error(str(e))
