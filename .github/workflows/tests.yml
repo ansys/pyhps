@@ -23,6 +23,10 @@ on:
         description: HPS Feature to test against (only for latest-dev version)
         type: string
         default: 'main'
+      docker-compose-profiles:
+        description: Docker compose profiles to use
+        type: string
+        default: 'stable,data-transfer-minio'
 
 jobs:
 
@@ -56,6 +60,7 @@ jobs:
           ghcr-token: ${{ secrets.PYANSYS_CI_BOT_PACKAGE_TOKEN }}
           version: ${{ inputs.hps-version }}
           feature: ${{ inputs.hps-feature }}
+          profile: ${{ inputs.docker-compose-profiles }}
    
       - name: Test with tox
         run: tox -e ${{ inputs.toxenv }}-coverage

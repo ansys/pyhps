@@ -24,6 +24,10 @@ inputs:
     description: 'Token to access the ansys-internal github docker registry'
     required: true
 
+  profile:
+    description: 'Docker compose profiles to use'
+    required: false
+
 outputs:
   url:
     description: 'HPS URL'
@@ -85,6 +89,8 @@ runs:
 
     - name: Start services (internal package)
       if: ${{ inputs.version == 'latest-dev' }}
+      env:
+        PROFILE: ${{ inputs.profile }}
       shell: bash
       run: |
         echo "$(pwd)"
@@ -93,7 +99,7 @@ runs:
         tar -xvzf docker-compose-internal.tar.gz
         cd docker-compose
         docker-compose pull
-        docker-compose up -d
+        docker-compose --profile $PROFILE up -d
       working-directory: ./docker-compose-artifact
 
     - name: Wait for services
