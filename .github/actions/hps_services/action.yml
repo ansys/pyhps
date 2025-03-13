@@ -99,7 +99,11 @@ runs:
         tar -xvzf docker-compose-internal.tar.gz
         cd docker-compose
         docker-compose pull
-        docker-compose --profile $PROFILE up -d
+        if [ -z "$PROFILE"]; then
+          docker-compose up -d
+        else
+          docker-compose --profile $PROFILE up -d
+        fi        
       working-directory: ./docker-compose-artifact
 
     - name: Wait for services
