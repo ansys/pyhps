@@ -25,6 +25,7 @@ Simplistic execution script for Python.
 
 Command formed: python <script_file> <input_file (optional)>
 """
+import json
 import os
 
 from ansys.rep.common.logging import log
@@ -40,7 +41,27 @@ class PythonExecution(ApplicationExecution):
         script_file = next((f for f in self.context.input_files if f["name"] == "script"), None)
         assert script_file, "Python script file script missing"
         inp_file = next((f for f in self.context.input_files if f["name"] == "inp"), None)
-        # assert inp_file, "Input file inp missing"
+
+        param_transfer = self.context.parameter_values["param_transfer"]
+        parameters = self.context.parameter_values
+        # Write input params into file if needed
+        if param_transfer == "json-file":
+            param_name_to_label = {
+                "height": "H",
+                "diameter": "d",
+                "thickness": "t",
+                "separation_distance": "B",
+                "young_modulus": "E",
+                "density": "rho",
+                "load": "P",
+            }
+            input_parameters = {
+                param_name_to_label[name]: value
+                for name, value in parameters.items()
+                if name in param_name_to_label.keys()
+            }
+            with open("input_parameters.json", "w") as in_file:
+                json.dump(input_parameters, in_file, indent=4)
 
         # Identify application
         app_name = "Python"
@@ -61,10 +82,22 @@ class PythonExecution(ApplicationExecution):
 
         # Form command
         cmd = f"{exe} {script_file['path']}"
-        if inp_file:
+        if parameters["param_transfer"] == "mapping":
             cmd += f" {inp_file['path']}"
+        else:
+            cmd += f" input_parameters.json"
 
         # Execute
         self.run_and_capture_output(cmd, shell=True, env=env)
+
+        # Extract parameters if needed
+        if param_transfer == "json-file":
+            try:
+                with open("output_parameters.json", "r") as out_file:
+                    output_parameters = json.load(out_file)
+                self.context.parameter_values.update(output_parameters)
+                os.remove("output_parameters.json")
+            except Exception as ex:
+                log.error("Failed to read output_parameters from file: {ex}")
 
         log.info("End Python execution script")

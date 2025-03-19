@@ -42,13 +42,15 @@ from ansys.hps.client.jms import (
     ProjectApi,
     ResourceRequirements,
     Software,
+    StringParameterDefinition,
+    SuccessCriteria,
     TaskDefinition,
 )
 
 log = logging.getLogger(__name__)
 
 
-def main(client, num_jobs, use_exec_script, python_version=None) -> Project:
+def main(client, num_jobs, use_exec_script, param_transfer, python_version=None) -> Project:
     """
     Create project solving a two-bar truss problem with Python.
 
@@ -61,29 +63,43 @@ def main(client, num_jobs, use_exec_script, python_version=None) -> Project:
     proj = jms_api.create_project(proj, replace=True)
     project_api = ProjectApi(client, proj.id)
 
+    if not use_exec_script and param_transfer != "mapping":
+        log.warning(
+            "Parameter transfers other than 'mapping' require an execution script."
+            + " Setting param_transfer to 'mapping'."
+        )
+        param_transfer = "mapping"
+
     log.debug("=== Files")
     cwd = os.path.dirname(__file__)
 
     files = [
-        File(
-            name="inp",
-            evaluation_path="input_parameters.json",
-            type="text/plain",
-            src=os.path.join(cwd, "input_parameters.json"),
-        ),
         File(
             name="script",
             evaluation_path="evaluate.py",
             type="text/plain",
             src=os.path.join(cwd, "evaluate.py"),
         ),
-        File(
-            name="result",
-            evaluation_path="output_parameters.json",
-            type="text/plain",
-            collect=True,
-        ),
     ]
+
+    # Define input and output files for parameter transfer if needed
+    if param_transfer == "mapping":
+        files.extend(
+            [
+                File(
+                    name="inp",
+                    evaluation_path="input_parameters.json",
+                    type="text/plain",
+                    src=os.path.join(cwd, "input_parameters.json"),
+                ),
+                File(
+                    name="result",
+                    evaluation_path="output_parameters.json",
+                    type="text/plain",
+                    collect=True,
+                ),
+            ]
+        )
 
     if use_exec_script:
         # Define and upload an exemplary exec script to run Python
@@ -108,84 +124,105 @@ def main(client, num_jobs, use_exec_script, python_version=None) -> Project:
     # Input params
     input_params = [
         FloatParameterDefinition(
-            name="height", lower_limit=10, upper_limit=100.0, default=30, units="in"
+            name="height", lower_limit=10, upper_limit=100.0, default=30, units="in", mode="input"
         ),
         FloatParameterDefinition(
-            name="diameter", lower_limit=0.2, upper_limit=5, default=3, units="in"
+            name="diameter", lower_limit=0.2, upper_limit=5, default=3, units="in", mode="input"
         ),
         FloatParameterDefinition(
-            name="thickness", lower_limit=0.03, upper_limit=0.6, default=0.15, units="in"
+            name="thickness",
+            lower_limit=0.03,
+            upper_limit=0.6,
+            default=0.15,
+            units="in",
+            mode="input",
         ),
         FloatParameterDefinition(
-            name="separation_distance", lower_limit=40, upper_limit=150, default=60, units="in"
+            name="separation_distance",
+            lower_limit=40,
+            upper_limit=150,
+            default=60,
+            units="in",
+            mode="input",
         ),
         FloatParameterDefinition(
-            name="young_modulus", lower_limit=1e6, upper_limit=1e8, default=3e7, units="lbs in^-2"
+            name="young_modulus",
+            lower_limit=1e6,
+            upper_limit=1e8,
+            default=3e7,
+            units="lbs in^-2",
+            mode="input",
         ),
         FloatParameterDefinition(
-            name="density", lower_limit=0.1, upper_limit=0.6, default=0.3, units="lbs in^-2"
+            name="density",
+            lower_limit=0.1,
+            upper_limit=0.6,
+            default=0.3,
+            units="lbs in^-2",
+            mode="input",
         ),
         FloatParameterDefinition(
-            name="load", lower_limit=1e1, upper_limit=1e5, default=66e3, units="lbs"
+            name="load", lower_limit=1e1, upper_limit=1e5, default=66e3, units="lbs", mode="input"
+        ),
+        StringParameterDefinition(
+            name="param_transfer", default=param_transfer, mode="input", value_list=[param_transfer]
         ),
     ]
     input_params = project_api.create_parameter_definitions(input_params)
 
-    mappings = [
-        ParameterMapping(
-            key_string='"H"',
-            tokenizer=":",
-            parameter_definition_id=input_params[0].id,
-            file_id=file_ids["inp"],
-        ),
-        ParameterMapping(
-            key_string='"d"',
-            tokenizer=":",
-            parameter_definition_id=input_params[1].id,
-            file_id=file_ids["inp"],
-        ),
-        ParameterMapping(
-            key_string='"t"',
-            tokenizer=":",
-            parameter_definition_id=input_params[2].id,
-            file_id=file_ids["inp"],
-        ),
-        ParameterMapping(
-            key_string='"B"',
-            tokenizer=":",
-            parameter_definition_id=input_params[3].id,
-            file_id=file_ids["inp"],
-        ),
-        ParameterMapping(
-            key_string='"E"',
-            tokenizer=":",
-            parameter_definition_id=input_params[4].id,
-            file_id=file_ids["inp"],
-        ),
-        ParameterMapping(
-            key_string='"rho"',
-            tokenizer=":",
-            parameter_definition_id=input_params[5].id,
-            file_id=file_ids["inp"],
-        ),
-        ParameterMapping(
-            key_string='"P"',
-            tokenizer=":",
-            parameter_definition_id=input_params[6].id,
-            file_id=file_ids["inp"],
-        ),
-    ]
-
     output_params = [
-        FloatParameterDefinition(name="weight", units="lbs"),
-        FloatParameterDefinition(name="stress", units="ksi"),
-        FloatParameterDefinition(name="buckling_stress", units="ksi"),
-        FloatParameterDefinition(name="deflection", units="in"),
+        FloatParameterDefinition(name="weight", units="lbs", mode="output"),
+        FloatParameterDefinition(name="stress", units="ksi", mode="output"),
+        FloatParameterDefinition(name="buckling_stress", units="ksi", mode="output"),
+        FloatParameterDefinition(name="deflection", units="in", mode="output"),
     ]
     output_params = project_api.create_parameter_definitions(output_params)
 
-    mappings.extend(
-        [
+    # Define mappings if needed
+    if param_transfer == "mapping":
+        mappings = [
+            ParameterMapping(
+                key_string='"H"',
+                tokenizer=":",
+                parameter_definition_id=input_params[0].id,
+                file_id=file_ids["inp"],
+            ),
+            ParameterMapping(
+                key_string='"d"',
+                tokenizer=":",
+                parameter_definition_id=input_params[1].id,
+                file_id=file_ids["inp"],
+            ),
+            ParameterMapping(
+                key_string='"t"',
+                tokenizer=":",
+                parameter_definition_id=input_params[2].id,
+                file_id=file_ids["inp"],
+            ),
+            ParameterMapping(
+                key_string='"B"',
+                tokenizer=":",
+                parameter_definition_id=input_params[3].id,
+                file_id=file_ids["inp"],
+            ),
+            ParameterMapping(
+                key_string='"E"',
+                tokenizer=":",
+                parameter_definition_id=input_params[4].id,
+                file_id=file_ids["inp"],
+            ),
+            ParameterMapping(
+                key_string='"rho"',
+                tokenizer=":",
+                parameter_definition_id=input_params[5].id,
+                file_id=file_ids["inp"],
+            ),
+            ParameterMapping(
+                key_string='"P"',
+                tokenizer=":",
+                parameter_definition_id=input_params[6].id,
+                file_id=file_ids["inp"],
+            ),
             ParameterMapping(
                 key_string='"weight"',
                 tokenizer=":",
@@ -211,12 +248,18 @@ def main(client, num_jobs, use_exec_script, python_version=None) -> Project:
                 file_id=file_ids["result"],
             ),
         ]
-    )
-
-    mappings = project_api.create_parameter_mappings(mappings)
+        mappings = project_api.create_parameter_mappings(mappings)
+    else:
+        mappings = []
 
     job_def.parameter_definition_ids = [o.id for o in input_params + output_params]
     job_def.parameter_mapping_ids = [o.id for o in mappings]
+
+    input_file_ids = [file_ids["script"]]
+    output_file_ids = []
+    if param_transfer == "mapping":
+        input_file_ids.append(file_ids["inp"])
+        output_file_ids.append(file_ids["result"])
 
     task_def = TaskDefinition(
         name="python_evaluation",
@@ -227,8 +270,12 @@ def main(client, num_jobs, use_exec_script, python_version=None) -> Project:
         ),
         execution_level=0,
         max_execution_time=30.0,
-        input_file_ids=[file_ids["script"], file_ids["inp"]],
-        output_file_ids=[file_ids["result"]],
+        input_file_ids=input_file_ids,
+        output_file_ids=output_file_ids,
+        success_criteria=SuccessCriteria(
+            return_code=0,
+            require_all_output_parameters=True,
+        ),
     )
 
     if use_exec_script:
@@ -271,7 +318,7 @@ def main(client, num_jobs, use_exec_script, python_version=None) -> Project:
         values = {
             p.name: p.lower_limit + random.random() * (p.upper_limit - p.lower_limit)
             for p in params
-            if p.mode == "input"
+            if p.mode == "input" and p.type == "float"
         }
         jobs.append(
             Job(name=f"Job.{i}", values=values, eval_status="pending", job_definition_id=job_def.id)
@@ -291,6 +338,9 @@ if __name__ == "__main__":
     parser.add_argument("-n", "--num-jobs", type=int, default=50)
     parser.add_argument("-es", "--use-exec-script", default=False, action="store_true")
     parser.add_argument("-v", "--python-version", default="3.10")
+    parser.add_argument(
+        "-pt", "--param-transfer", type=str, default="mapping", choices=["mapping", "json-file"]
+    )
     args = parser.parse_args()
 
     logger = logging.getLogger()
@@ -303,6 +353,7 @@ if __name__ == "__main__":
             client,
             num_jobs=args.num_jobs,
             use_exec_script=args.use_exec_script,
+            param_transfer=args.param_transfer,
             python_version=args.python_version,
         )
     except HPSError as e:
