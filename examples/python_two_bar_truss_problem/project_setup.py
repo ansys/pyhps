@@ -339,7 +339,12 @@ if __name__ == "__main__":
     parser.add_argument("-es", "--use-exec-script", default=False, action="store_true")
     parser.add_argument("-v", "--python-version", default="3.10")
     parser.add_argument(
-        "-pt", "--param-transfer", type=str, default="mapping", choices=["mapping", "json-file"]
+        "-pt",
+        "--param-transfer",
+        type=str,
+        default="mapping",
+        choices=["mapping", "json-file"],
+        help="Method used to transfer parameters between evaluator and execution script",
     )
     args = parser.parse_args()
 
