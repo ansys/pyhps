@@ -19,17 +19,20 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
-from ansys.hps.data_transfer.client.models.msg import SrcDst, StoragePath
-from ansys.hps.data_transfer.client.models.ops import OperationState
 
 """Module wrapping around the JMS root endpoints."""
+
+from functools import cache
 import json
 import logging
 import os
 from typing import Dict, List, Union
 
+from ansys.hps.data_transfer.client.models.msg import SrcDst, StoragePath
+from ansys.hps.data_transfer.client.models.ops import OperationState
 import backoff
 
+from ansys.hps.client.check_version import version_required
 from ansys.hps.client.client import Client
 from ansys.hps.client.common import Object
 from ansys.hps.client.exceptions import HPSError
@@ -41,8 +44,13 @@ from .base import create_objects, delete_objects, get_object, get_objects, updat
 
 log = logging.getLogger(__name__)
 
+"""HPS to JMS version mapping."""
+_VERSIONS = {
+    "1.2.0": "1.1.4",
+}
 
-class JmsApi(object):
+
+class JmsApi:
     """Wraps around the JMS root endpoints.
 
     Parameters
@@ -68,13 +76,13 @@ class JmsApi(object):
     def __init__(self, client: Client):
         """Initialize JMS API."""
         self.client = client
-        self._fs_url = None
 
     @property
     def url(self) -> str:
         """URL of the API."""
         return f"{self.client.url}/jms/api/v1"
 
+    @cache
     def get_api_info(self):
         """Get information of the JMS API that the client is connected to.
 
@@ -82,6 +90,11 @@ class JmsApi(object):
         """
         r = self.client.session.get(self.url)
         return r.json()
+
+    @property
+    def version(self) -> str:
+        """API version."""
+        return self.get_api_info()["build"]["version"]
 
     ################################################################
     # Projects
@@ -121,6 +134,7 @@ class JmsApi(object):
         """Delete a project."""
         return delete_project(self.client, self.url, project)
 
+    @version_required(min_version=_VERSIONS["1.2.0"])
     def restore_project(self, path: str) -> Project:
         """Restore a project from an archive.
 
@@ -451,10 +465,7 @@ def _restore_project(jms_api, archive_path):
 
 
 def _upload_archive(jms_api: JmsApi, archive_path, bucket):
-    """
-    Uploads archive using data transfer worker.
-
-    """
+    """Uploads archive using data transfer worker."""
     jms_api.client._start_dt_worker()
 
     src = StoragePath(path=archive_path, remote="local")

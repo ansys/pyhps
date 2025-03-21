@@ -63,6 +63,13 @@ class ClientError(HPSError):
         super(ClientError, self).__init__(*args, **kwargs)
 
 
+class VersionCompatibilityError(ClientError):
+    """Provides version compatibility errors."""
+
+    def __init__(self, *args, **kwargs):
+        super(VersionCompatibilityError, self).__init__(*args, **kwargs)
+
+
 def raise_for_status(response, *args, **kwargs):
     """Automatically checks HTTP errors.
 

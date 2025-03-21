@@ -163,7 +163,8 @@ class Client(object):
         self.client_secret = client_secret
         self.verify = verify
         self.data_transfer_url = url + f"/dt/api/v1"
-        self.dt_client = None
+        self.dt_client: DTClient | None = None
+        self.dt_api: DataTransferApi | None = None
 
         if self.verify is None:
             self.verify = False

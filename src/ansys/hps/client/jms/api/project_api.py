@@ -32,6 +32,7 @@ import warnings
 from ansys.hps.data_transfer.client.models.msg import SrcDst, StoragePath
 from ansys.hps.data_transfer.client.models.ops import OperationState
 
+from ansys.hps.client.check_version import check_version_and_raise, version_required
 from ansys.hps.client.client import Client
 from ansys.hps.client.common import Object
 from ansys.hps.client.exceptions import ClientError, HPSError
@@ -55,7 +56,7 @@ from ansys.hps.client.rms.api import RmsApi
 from ansys.hps.client.rms.models import AnalyzeRequirements, AnalyzeResponse
 
 from .base import create_objects, delete_objects, get_objects, update_objects
-from .jms_api import JmsApi, _copy_objects
+from .jms_api import _VERSIONS, JmsApi, _copy_objects
 
 log = logging.getLogger(__name__)
 
@@ -105,8 +106,7 @@ class ProjectApi:
         """Initialize project API."""
         self.client = client
         self.project_id = project_id
-        self._fs_url = None
-        self._fs_project_id = None
+        self._jms_api = JmsApi(self.client)
 
     @property
     def jms_api_url(self) -> str:
@@ -119,16 +119,9 @@ class ProjectApi:
         return f"{self.jms_api_url}/projects/{self.project_id}"
 
     @property
-    def fs_url(self) -> str:
-        """URL of the file storage gateway."""
-        if self._fs_url is None:
-            self._fs_url = JmsApi(self.client).fs_url
-        return self._fs_url
-
-    @property
-    def fs_bucket_url(self) -> str:
-        """URL of the project's bucket in the file storage gateway."""
-        return f"{self.fs_url}/{self.project_id}"
+    def version(self) -> str:
+        """API version."""
+        return self._jms_api.version
 
     ################################################################
     # Project operations (copy, archive)
@@ -140,6 +133,7 @@ class ProjectApi:
         else:
             return r
 
+    @version_required(min_version=_VERSIONS["1.2.0"])
     def archive_project(self, path: str, include_job_files: bool = True):
         """Archive a project and save it to disk.
 
@@ -166,6 +160,17 @@ class ProjectApi:
         If ``content=True``, each file's content is also downloaded and stored in memory
         as the :attr:`ansys.hps.client.jms.File.content` attribute.
         """
+
+        if content:
+            check_version_and_raise(
+                self.version,
+                min_version=_VERSIONS["1.2.0"],
+                msg=(
+                    f"ProjectApi.get_files with content=True requires"
+                    f" JMS version {_VERSIONS['1.2.0']} or later."
+                ),
+            )
+
         return get_files(self, as_objects=as_objects, content=content, **query_params)
 
     def create_files(self, files: List[File], as_objects=True) -> List[File]:
@@ -180,6 +185,7 @@ class ProjectApi:
         """Delete files."""
         return self._delete_objects(files, File)
 
+    @version_required(min_version=_VERSIONS["1.2.0"])
     def download_file(
         self,
         file: File,
@@ -603,6 +609,8 @@ class ProjectApi:
         r = self.client.session.delete(url)
 
     ################################################################
+
+    @version_required(min_version=_VERSIONS["1.2.0"])
     def copy_default_execution_script(self, filename: str) -> File:
         """Copy a default execution script to the current project.
 
@@ -618,8 +626,7 @@ class ProjectApi:
         file = self.create_files([file])[0]
 
         # query location of default execution scripts from server
-        jms_api = JmsApi(self.client)
-        info = jms_api.get_api_info()
+        info = self._jms_api.get_api_info()
         execution_script_default_bucket = info["settings"]["execution_script_default_bucket"]
 
         # server side copy of the file to project bucket
@@ -724,10 +731,13 @@ def get_files(project_api: ProjectApi, as_objects=True, content=False, **query_p
 
 
 def _upload_files(project_api: ProjectApi, files):
-    """
-    Uploads files directly using data transfer worker.
+    """Uploads files directly using data transfer worker."""
 
-    """
+    check_version_and_raise(
+        project_api.version,
+        min_version=_VERSIONS["1.2.0"],
+        msg=f"Uploading file content requires JMS version {_VERSIONS['1.2.0']} or later.",
+    )
 
     project_api.client._start_dt_worker()
     srcs = []
@@ -887,8 +897,7 @@ def archive_project(project_api: ProjectApi, target_path, include_job_files=True
     log.debug(f"Operation location: {operation_location}")
     operation_id = operation_location.rsplit("/", 1)[-1]
 
-    jms_api = JmsApi(project_api.client)
-    op = jms_api.monitor_operation(operation_id)
+    op = project_api._jms_api.monitor_operation(operation_id)
 
     if not op.succeeded:
         raise HPSError(f"Failed to archive project {project_api.project_id}.\n{op}")
@@ -896,7 +905,6 @@ def archive_project(project_api: ProjectApi, target_path, include_job_files=True
     download_link = op.result["backend_path"]
 
     # Download archive
-    # download_link = download_link.replace("ansfs://", project_api.fs_url + "/")
     log.info(f"Project archive download link: {download_link}")
 
     if not os.path.isdir(target_path):
