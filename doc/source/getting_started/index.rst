@@ -81,5 +81,5 @@ The following table summarizes the compatibility between PyHPS versions and HPS 
 Legend:
 
 - :octicon:`check-circle-fill` Compatible
-- :octicon:`check-circle` Backward compatible (old HPS features are still supported, new ones may not)
+- :octicon:`check-circle` Backward compatible (new features exposed in PyHPS may not be available in older HPS releases)
 - :octicon:`x` Incompatible
