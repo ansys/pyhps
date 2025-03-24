@@ -55,7 +55,7 @@ RMS_VERSIONS: dict[HpsRelease, str] = {
 }
 
 
-class API(Protocol):
+class ApiProtocol(Protocol):
     """Protocol for API classes."""
 
     @property
@@ -63,59 +63,50 @@ class API(Protocol):
         pass
 
 
-def check_min_version(version, min_version) -> bool:
-    """Check if a version string meets a minimum version.
-
-    Parameters
-    ----------
-    version : str
-        Version string to check. For example, ``"1.32.1"``.
-    min_version : str
-        Required version for comparison. For example, ``"1.32.2"``.
-
-    Returns
-    -------
-    bool
-         ``True`` when successful, ``False`` when failed.
-    """
+def check_min_version(version: str, min_version: str) -> bool:
+    """Check if a version string meets a minimum version."""
     from packaging.version import parse
 
     return parse(version) >= parse(min_version)
 
 
-def check_max_version(version, max_version) -> bool:
-    """Check if a version string meets a maximum version.
-
-    Parameters
-    ----------
-    version : str
-        Version string to check. For example, ``"1.32.1"``.
-    max_version : str
-        Required version for comparison. For example, ``"1.32.2"``.
-
-    Returns
-    -------
-    bool
-         ``True`` when successful, ``False`` when failed.
-    """
+def check_max_version(version: str, max_version: str) -> bool:
+    """Check if a version string meets a maximum version."""
     from packaging.version import parse
 
     return parse(version) <= parse(max_version)
 
 
-def check_version_and_raise(version, min_version=None, max_version=None, msg=None):
+def check_min_version_and_raise(version, min_version: str, msg=None):
+    """Check if a version meets a minimum version, raise an exception if not."""
 
-    if min_version is not None and not check_min_version(version, min_version):
+    if not check_min_version(version, min_version):
 
         if msg is None:
             msg = f"Version {version} is not supported. Minimum version required: {min_version}"
         raise VersionCompatibilityError(msg)
 
-    if max_version is not None and not check_max_version(version, max_version):
+
+def check_max_version_and_raise(version, max_version: str, msg=None):
+    """Check if a version meets a maximum version, raise an exception if not."""
+
+    if not check_max_version(version, max_version):
 
         if msg is None:
             msg = f"Version {version} is not supported. Maximum version required: {max_version}"
         raise VersionCompatibilityError(msg)
+
+
+def check_version_and_raise(
+    version, min_version: str | None = None, max_version: str | None = None, msg=None
+):
+    """Check if a version meets the min/max requirements, raise an exception if not."""
+
+    if min_version is not None:
+        check_min_version_and_raise(version, min_version, msg)
+
+    if max_version is not None:
+        check_max_version_and_raise(version, max_version, msg)
 
 
 def version_required(min_version=None, max_version=None):
@@ -124,16 +115,15 @@ def version_required(min_version=None, max_version=None):
     def decorator(func):
 
         @wraps(func)
-        def wrapper(self: API, *args, **kwargs):
-            if min_version is not None and not check_min_version(self.version, min_version):
-                raise VersionCompatibilityError(
-                    f"{func.__name__} requires {type(self).__name__} version >= " + min_version
-                )
+        def wrapper(self: ApiProtocol, *args, **kwargs):
+            if min_version is not None:
+                msg = f"{func.__name__} requires {type(self).__name__} version >= " + min_version
+                check_min_version_and_raise(self.version, min_version, msg)
 
-            if max_version is not None and not check_max_version(self.version, max_version):
-                raise VersionCompatibilityError(
-                    f"{func.__name__} requires {type(self).__name__} version <= " + min_version
-                )
+            if max_version is not None:
+                msg = f"{func.__name__} requires {type(self).__name__} version <= " + max_version
+                check_max_version_and_raise(self.version, max_version, msg)
+
             return func(self, *args, **kwargs)
 
         return wrapper
