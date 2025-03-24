@@ -32,7 +32,12 @@ import warnings
 from ansys.hps.data_transfer.client.models.msg import SrcDst, StoragePath
 from ansys.hps.data_transfer.client.models.ops import OperationState
 
-from ansys.hps.client.check_version import check_version_and_raise, version_required
+from ansys.hps.client.check_version import (
+    JMS_VERSIONS,
+    HpsRelease,
+    check_version_and_raise,
+    version_required,
+)
 from ansys.hps.client.client import Client
 from ansys.hps.client.common import Object
 from ansys.hps.client.exceptions import ClientError, HPSError
@@ -56,7 +61,7 @@ from ansys.hps.client.rms.api import RmsApi
 from ansys.hps.client.rms.models import AnalyzeRequirements, AnalyzeResponse
 
 from .base import create_objects, delete_objects, get_objects, update_objects
-from .jms_api import _VERSIONS, JmsApi, _copy_objects
+from .jms_api import JmsApi, _copy_objects
 
 log = logging.getLogger(__name__)
 
@@ -133,7 +138,7 @@ class ProjectApi:
         else:
             return r
 
-    @version_required(min_version=_VERSIONS["1.2.0"])
+    @version_required(min_version=JMS_VERSIONS[HpsRelease.v1_2_0])
     def archive_project(self, path: str, include_job_files: bool = True):
         """Archive a project and save it to disk.
 
@@ -162,12 +167,13 @@ class ProjectApi:
         """
 
         if content:
+            min_v = JMS_VERSIONS[HpsRelease.v1_2_0]
             check_version_and_raise(
                 self.version,
-                min_version=_VERSIONS["1.2.0"],
+                min_version=min_v,
                 msg=(
                     f"ProjectApi.get_files with content=True requires"
-                    f" JMS version {_VERSIONS['1.2.0']} or later."
+                    f" JMS version {min_v} or later."
                 ),
             )
 
@@ -185,7 +191,7 @@ class ProjectApi:
         """Delete files."""
         return self._delete_objects(files, File)
 
-    @version_required(min_version=_VERSIONS["1.2.0"])
+    @version_required(min_version=JMS_VERSIONS[HpsRelease.v1_2_0])
     def download_file(
         self,
         file: File,
@@ -610,7 +616,7 @@ class ProjectApi:
 
     ################################################################
 
-    @version_required(min_version=_VERSIONS["1.2.0"])
+    @version_required(min_version=JMS_VERSIONS[HpsRelease.v1_2_0])
     def copy_default_execution_script(self, filename: str) -> File:
         """Copy a default execution script to the current project.
 
@@ -733,10 +739,11 @@ def get_files(project_api: ProjectApi, as_objects=True, content=False, **query_p
 def _upload_files(project_api: ProjectApi, files):
     """Uploads files directly using data transfer worker."""
 
+    min_v = JMS_VERSIONS[HpsRelease.v1_2_0]
     check_version_and_raise(
         project_api.version,
-        min_version=_VERSIONS["1.2.0"],
-        msg=f"Uploading file content requires JMS version {_VERSIONS['1.2.0']} or later.",
+        min_version=min_v,
+        msg=f"Uploading file content requires JMS version {min_v} or later.",
     )
 
     project_api.client.initialize_data_transfer_client()

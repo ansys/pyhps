@@ -32,7 +32,7 @@ from ansys.hps.data_transfer.client.models.msg import SrcDst, StoragePath
 from ansys.hps.data_transfer.client.models.ops import OperationState
 import backoff
 
-from ansys.hps.client.check_version import version_required
+from ansys.hps.client.check_version import JMS_VERSIONS, HpsRelease, version_required
 from ansys.hps.client.client import Client
 from ansys.hps.client.common import Object
 from ansys.hps.client.exceptions import HPSError
@@ -43,11 +43,6 @@ from .base import copy_objects as base_copy_objects
 from .base import create_objects, delete_objects, get_object, get_objects, update_objects
 
 log = logging.getLogger(__name__)
-
-"""HPS to JMS version mapping."""
-_VERSIONS = {
-    "1.2.0": "1.1.4",
-}
 
 
 class JmsApi:
@@ -134,7 +129,7 @@ class JmsApi:
         """Delete a project."""
         return delete_project(self.client, self.url, project)
 
-    @version_required(min_version=_VERSIONS["1.2.0"])
+    @version_required(min_version=JMS_VERSIONS[HpsRelease.v1_2_0])
     def restore_project(self, path: str) -> Project:
         """Restore a project from an archive.
 

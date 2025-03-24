@@ -24,10 +24,35 @@
 Version compatibility checks.
 """
 
+from enum import Enum
 from functools import wraps
 from typing import Protocol
 
 from .exceptions import VersionCompatibilityError
+
+
+class HpsRelease(Enum):
+    """HPS release versions."""
+
+    v1_0_2 = "1.0.2"
+    v1_1_1 = "1.1.1"
+    v1_2_0 = "1.2.0"
+
+
+"""HPS to JMS version mapping."""
+JMS_VERSIONS: dict[HpsRelease, str] = {
+    HpsRelease.v1_0_2: "1.0.12",
+    HpsRelease.v1_1_1: "1.0.20",
+    HpsRelease.v1_2_0: "1.1.4",
+}
+
+
+"""HPS to RMS version mapping."""
+RMS_VERSIONS: dict[HpsRelease, str] = {
+    HpsRelease.v1_0_2: "1.0.0",
+    HpsRelease.v1_1_1: "1.1.5",
+    HpsRelease.v1_2_0: "1.1.10",
+}
 
 
 class API(Protocol):
