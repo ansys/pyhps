@@ -60,6 +60,8 @@ def test_jms_api(client):
     log.debug("=== Projects ===")
     jms_api = JmsApi(client)
 
+    assert jms_api.version is not None
+
     project = jms_api.get_project_by_name(name=proj_name)
 
     if project:
@@ -76,6 +78,8 @@ def test_jms_api(client):
 
     log.debug("=== JobDefinitions ===")
     project_api = ProjectApi(client, project.id)
+    assert project_api.version == jms_api.version
+
     job_definitions = project_api.get_job_definitions(active=True)
     job_def = job_definitions[0]
     log.debug(f"job_definition={job_def}")
