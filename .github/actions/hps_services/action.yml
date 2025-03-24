@@ -109,9 +109,9 @@ runs:
     - name: Wait for services
       shell: bash
       run: |
-        curl -k --head -X GET --retry 30 --retry-connrefused --retry-delay 5 https://localhost:8443/hps/jms/api/v1
-        curl -k --head -X GET --retry 30 --retry-connrefused --retry-delay 1 https://localhost:8443/hps/fs/api/v1
-        curl -k --head -X GET --retry 30 --retry-connrefused --retry-delay 1 https://localhost:8443/hps/rms/api/v1
+        wget --retry-connrefused --retry-on-http-error=503,404 --no-check-certificate -t 10 -O- https://localhost:8443/hps/jms/api/v1
+        wget --retry-connrefused --retry-on-http-error=503,404 --no-check-certificate -t 10 -O- https://localhost:8443/hps/fs/api/v1
+        wget --retry-connrefused --retry-on-http-error=503,404 --no-check-certificate -t 10 -O- https://localhost:8443/hps/rms/api/v1
 
     - name: Set outputs
       id: set-outputs
