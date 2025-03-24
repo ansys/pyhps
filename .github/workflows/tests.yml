@@ -52,7 +52,7 @@ jobs:
       
       - name: Start HPS services
         id: hps-services
-        uses: ansys/pyhps/.github/actions/hps_services@maint/update-action
+        uses: ansys/pyhps/.github/actions/hps_services@main
         with:
           token: ${{ secrets.PYANSYS_CI_BOT_TOKEN }}
           ghcr-username: ${{ secrets.PYANSYS_CI_BOT_USERNAME }}
