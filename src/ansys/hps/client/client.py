@@ -29,7 +29,7 @@ import platform
 from typing import Union
 import warnings
 
-from ansys.hps.data_transfer.client import Client as DTClient
+from ansys.hps.data_transfer.client import Client as DataTransferClient
 from ansys.hps.data_transfer.client import DataTransferApi
 import jwt
 import requests
@@ -163,8 +163,9 @@ class Client(object):
         self.client_secret = client_secret
         self.verify = verify
         self.data_transfer_url = url + f"/dt/api/v1"
-        self.dt_client: DTClient | None = None
-        self.dt_api: DataTransferApi | None = None
+
+        self._dt_client: DataTransferClient | None = None
+        self._dt_api: DataTransferApi | None = None
 
         if self.verify is None:
             self.verify = False
@@ -266,9 +267,9 @@ class Client(object):
         self._unauthorized_max_retry = 1
 
         def exit_handler():
-            if self.dt_client is not None:
+            if self._dt_client is not None:
                 log.info("Stopping the data transfer client gracefully.")
-                self.dt_client.stop()
+                self._dt_client.stop()
 
         atexit.register(exit_handler)
 
@@ -296,25 +297,26 @@ class Client(object):
         log.warning(msg)
         return self.url
 
-    def _start_dt_worker(self):
+    def initialize_data_transfer_client(self):
+        """Initialize the Data Transfer client."""
 
-        if self.dt_client is None:
+        if self._dt_client is None:
             try:
                 log.info("Starting Data Transfer client.")
                 # start Data transfer client
-                self.dt_client = DTClient(download_dir=self._get_download_dir("Ansys"))
+                self._dt_client = DataTransferClient(download_dir=self._get_download_dir("Ansys"))
 
-                self.dt_client.binary_config.update(
+                self._dt_client.binary_config.update(
                     verbosity=3,
                     debug=False,
                     insecure=True,
                     token=self.access_token,
                     data_transfer_url=self.data_transfer_url,
                 )
-                self.dt_client.start()
+                self._dt_client.start()
 
-                self.dt_api = DataTransferApi(self.dt_client)
-                self.dt_api.status(wait=True)
+                self._dt_api = DataTransferApi(self._dt_client)
+                self._dt_api.status(wait=True)
             except Exception as ex:
                 log.debug(ex)
                 raise HPSError("Error occurred when starting Data Transfer client.")
@@ -378,8 +380,8 @@ class Client(object):
             response.request.headers.update(
                 {"Authorization": self.session.headers["Authorization"]}
             )
-            if self.dt_client is not None:
-                self.dt_client.binary_config.update(token=self.access_token)
+            if self._dt_client is not None:
+                self._dt_client.binary_config.update(token=self.access_token)
             log.debug(f"Retrying request with updated access token.")
             return self.session.send(response.request)
 
@@ -414,3 +416,17 @@ class Client(object):
         self.access_token = tokens["access_token"]
         self.refresh_token = tokens.get("refresh_token", None)
         self.session.headers.update({"Authorization": "Bearer %s" % tokens["access_token"]})
+
+    @property
+    def data_transfer_client(self) -> DataTransferClient:
+        """Data Transfer client. If the client is not initialized, it will be started."""
+        if self._dt_client is None:
+            self.initialize_data_transfer_client()
+        return self._dt_client
+
+    @property
+    def data_transfer_api(self) -> DataTransferApi:
+        """Data Transfer API. If the client is not initialized, it will be started."""
+        if self._dt_client is None:
+            self.initialize_data_transfer_client()
+        return self._dt_api

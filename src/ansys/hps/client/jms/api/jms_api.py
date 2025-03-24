@@ -456,8 +456,8 @@ def _restore_project(jms_api, archive_path):
 
     # Delete archive file on server
     log.info(f"Delete temporary bucket {bucket}")
-    op = jms_api.client.dt_api.rmdir([StoragePath(path=bucket)])
-    op = jms_api.client.dt_api.wait_for([op.id])
+    op = jms_api.client.data_transfer_api.rmdir([StoragePath(path=bucket)])
+    op = jms_api.client.data_transfer_api.wait_for([op.id])
     if op[0].state != OperationState.Succeeded:
         raise HPSError(f"Delete temporary bucket {bucket} failed")
 
@@ -466,13 +466,13 @@ def _restore_project(jms_api, archive_path):
 
 def _upload_archive(jms_api: JmsApi, archive_path, bucket):
     """Uploads archive using data transfer worker."""
-    jms_api.client._start_dt_worker()
+    jms_api.client.initialize_data_transfer_client()
 
     src = StoragePath(path=archive_path, remote="local")
     dst = StoragePath(path=f"{bucket}/{os.path.basename(archive_path)}")
 
-    op = jms_api.client.dt_api.copy([SrcDst(src=src, dst=dst)])
-    op = jms_api.client.dt_api.wait_for(op.id)
+    op = jms_api.client.data_transfer_api.copy([SrcDst(src=src, dst=dst)])
+    op = jms_api.client.data_transfer_api.wait_for(op.id)
 
     log.info(f"Operation {op[0].state}")
     if op[0].state != OperationState.Succeeded:

@@ -630,19 +630,19 @@ class ProjectApi:
         execution_script_default_bucket = info["settings"]["execution_script_default_bucket"]
 
         # server side copy of the file to project bucket
-        self.client._start_dt_worker()
+        self.client.initialize_data_transfer_client()
         src = StoragePath(path=f"{execution_script_default_bucket}/{filename}")
         dst = StoragePath(path=f"{self.project_id}/{file.storage_id}")
         log.info(f"Copying default execution script {filename}")
-        op = self.client.dt_api.copy([SrcDst(src=src, dst=dst)])
-        op = self.client.dt_api.wait_for(op.id)[0]
+        op = self.client.data_transfer_api.copy([SrcDst(src=src, dst=dst)])
+        op = self.client.data_transfer_api.wait_for(op.id)[0]
         log.debug(f"Operation {op.state}")
         if op.state != OperationState.Succeeded:
             raise HPSError(f"Copying of default execution script {filename} failed")
 
         # get checksum of copied file
-        op = self.client.dt_api.get_metadata([dst])
-        op = self.client.dt_api.wait_for(op.id)[0]
+        op = self.client.data_transfer_api.get_metadata([dst])
+        op = self.client.data_transfer_api.wait_for(op.id)[0]
         log.debug(f"Operation {op.state}")
         if op.state != OperationState.Succeeded:
             raise HPSError(
@@ -688,7 +688,7 @@ def _download_files(project_api: ProjectApi, files: List[File]):
 
     temp_dir = tempfile.TemporaryDirectory()
 
-    project_api.client._start_dt_worker()
+    project_api.client.initialize_data_transfer_client()
     out_path = os.path.join(temp_dir.name, "downloads")
 
     base_dir = project_api.project_id
@@ -703,10 +703,10 @@ def _download_files(project_api: ProjectApi, files: List[File]):
 
     if len(srcs) > 0:
         log.info(f"Downloading files")
-        op = project_api.client.dt_api.copy(
+        op = project_api.client.data_transfer_api.copy(
             [SrcDst(src=src, dst=dst) for src, dst in zip(srcs, dsts)]
         )
-        op = project_api.client.dt_api.wait_for([op.id])
+        op = project_api.client.data_transfer_api.wait_for([op.id])
         log.info(f"Operation {op[0].state}")
         if op[0].state == OperationState.Succeeded:
             for f in files:
@@ -739,7 +739,7 @@ def _upload_files(project_api: ProjectApi, files):
         msg=f"Uploading file content requires JMS version {_VERSIONS['1.2.0']} or later.",
     )
 
-    project_api.client._start_dt_worker()
+    project_api.client.initialize_data_transfer_client()
     srcs = []
     dsts = []
     base_dir = project_api.project_id
@@ -760,10 +760,10 @@ def _upload_files(project_api: ProjectApi, files):
         dsts.append(StoragePath(path=f"{base_dir}/{os.path.basename(f.storage_id)}"))
     if len(srcs) > 0:
         log.info(f"Uploading files")
-        op = project_api.client.dt_api.copy(
+        op = project_api.client.data_transfer_api.copy(
             [SrcDst(src=src, dst=dst) for src, dst in zip(srcs, dsts)]
         )
-        op = project_api.client.dt_api.wait_for(op.id)
+        op = project_api.client.data_transfer_api.wait_for(op.id)
         log.info(f"Operation {op[0].state}")
         if op[0].state == OperationState.Succeeded:
             _fetch_file_metadata(project_api, files, dsts)
@@ -779,8 +779,8 @@ def _fetch_file_metadata(
     project_api: ProjectApi, files: List[File], storagePaths: List[StoragePath]
 ):
     log.info(f"Getting upload file metadata")
-    op = project_api.client.dt_api.get_metadata(storagePaths)
-    op = project_api.client.dt_api.wait_for(op.id)[0]
+    op = project_api.client.data_transfer_api.get_metadata(storagePaths)
+    op = project_api.client.data_transfer_api.wait_for(op.id)[0]
     log.info(f"Operation {op.state}")
     if op.state == OperationState.Succeeded:
         base_dir = project_api.project_id
@@ -840,7 +840,7 @@ def _download_file(
 ) -> str:
     """Download a file."""
 
-    project_api.client._start_dt_worker()
+    project_api.client.initialize_data_transfer_client()
 
     if getattr(file, "hash", None) is None:
         log.warning(f"No hash found for file {file.name}.")
@@ -855,8 +855,8 @@ def _download_file(
     if progress_handler is not None:
         progress_handler(0)
 
-    op = project_api.client.dt_api.copy([SrcDst(src=src, dst=dst)])
-    op = project_api.client.dt_api.wait_for([op.id])
+    op = project_api.client.data_transfer_api.copy([SrcDst(src=src, dst=dst)])
+    op = project_api.client.data_transfer_api.wait_for([op.id])
 
     log.info(f"Operation {op[0].state}")
 
@@ -920,12 +920,12 @@ def archive_project(project_api: ProjectApi, target_path, include_job_files=True
 
 
 def _download_archive(project_api: ProjectApi, download_link, target_path):
-    project_api.client._start_dt_worker()
+    project_api.client.initialize_data_transfer_client()
 
     src = StoragePath(path=f"{download_link}")
     dst = StoragePath(path=target_path, remote="local")
-    op = project_api.client.dt_api.copy([SrcDst(src=src, dst=dst)])
-    op = project_api.client.dt_api.wait_for([op.id])
+    op = project_api.client.data_transfer_api.copy([SrcDst(src=src, dst=dst)])
+    op = project_api.client.data_transfer_api.wait_for([op.id])
 
     log.info(f"Operation {op[0].state}")
 
