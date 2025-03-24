@@ -109,9 +109,10 @@ runs:
     - name: Wait for services
       shell: bash
       run: |
-        wget --retry-connrefused --retry-on-http-error=503,404 --no-check-certificate -t 10 -O- https://localhost:8443/hps/jms/api/v1
-        wget --retry-connrefused --retry-on-http-error=503,404 --no-check-certificate -t 10 -O- https://localhost:8443/hps/fs/api/v1
-        wget --retry-connrefused --retry-on-http-error=503,404 --no-check-certificate -t 10 -O- https://localhost:8443/hps/rms/api/v1
+        # retry each service max 15 times
+        wget --retry-connrefused --retry-on-http-error=503,404 --no-check-certificate -t 15 -O- https://localhost:8443/hps/jms/api/v1
+        wget --retry-connrefused --retry-on-http-error=503,404 --no-check-certificate -t 15 -O- https://localhost:8443/hps/fs/api/v1
+        wget --retry-connrefused --retry-on-http-error=503,404 --no-check-certificate -t 15 -O- https://localhost:8443/hps/rms/api/v1
 
     - name: Set outputs
       id: set-outputs

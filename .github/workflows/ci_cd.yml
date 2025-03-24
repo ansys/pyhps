@@ -4,7 +4,7 @@ on:
     inputs:
       hps-version:
         description: HPS version to test against
-        default: 'latest-dev'
+        default: 'v1.2.0'
         type: choice
         options:
           - 'v1.0.2'
