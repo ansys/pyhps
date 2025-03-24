@@ -4,7 +4,7 @@ on:
     inputs:
       hps-version:
         description: HPS version to test against
-        default: 'v1.2.0'
+        default: 'latest-dev'
         type: choice
         options:
           - 'v1.0.2'
@@ -56,7 +56,7 @@ jobs:
       python-version: ${{ matrix.cfg.python-version }}   
       toxenv: ${{ matrix.cfg.toxenv }}
       runner: ${{ matrix.os }}
-      hps-version: ${{ inputs.hps-version || 'latest-dev' }}
+      hps-version: ${{ inputs.hps-version || 'v1.2.0' }}
       hps-feature: ${{ inputs.hps-feature || 'main' }}
 
   docs:
