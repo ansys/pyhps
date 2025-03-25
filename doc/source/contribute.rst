@@ -120,10 +120,10 @@ For building documentation, you can manually run these commands:
 
 .. code:: bash
 
-    make -C doc html # for building documentation on linux
+    make -C doc html # for building documentation on Linux
 
 However, the recommended way of checking documentation integrity is to use
-``tox``. For example, the following can be run on linux:
+``tox``. For example, the following can be run on Linux:
 
 .. code:: bash
 
