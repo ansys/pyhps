@@ -384,8 +384,6 @@ extlinks = {
 
 # Configuration for Sphinx Design
 # -----------------------------------------------------------------------------
-sd_fontawesome_latex = True
-
 suppress_warnings = [
     "design.fa-build",
 ]
