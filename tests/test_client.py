@@ -114,3 +114,17 @@ def test_authentication_username_exception(url, username, keycloak_client):
             client_id=rep_impersonation_client["clientId"],
             client_secret=rep_impersonation_client["secret"],
         )
+
+
+def test_dt_client(url, username, password):
+    client = Client(url, username, password)
+    assert client._dt_client is None
+    assert client._dt_api is None
+
+    _ = client.data_transfer_api
+
+    assert client._dt_client is not None
+    assert client._dt_api is not None
+
+    assert client.data_transfer_client == client._dt_client
+    assert client.data_transfer_api == client._dt_api

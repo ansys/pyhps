@@ -20,6 +20,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 """Module wrapping around RMS root endpoints."""
+from functools import cache
 import logging
 from typing import List
 
@@ -52,13 +53,13 @@ class RmsApi(object):
 
     def __init__(self, client: Client):
         self.client = client
-        self._fs_url = None
 
     @property
     def url(self) -> str:
         """URL of the API."""
         return f"{self.client.url}/rms/api/v1"
 
+    @cache
     def get_api_info(self):
         """Get information on the RMS API the client is connected to.
 
@@ -66,6 +67,11 @@ class RmsApi(object):
         """
         r = self.client.session.get(self.url)
         return r.json()
+
+    @property
+    def version(self) -> str:
+        """API version."""
+        return self.get_api_info()["build"]["version"]
 
     ################################################################
     # Evaluators
