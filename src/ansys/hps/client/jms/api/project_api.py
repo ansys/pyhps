@@ -32,6 +32,12 @@ import warnings
 from ansys.hps.data_transfer.client.models.msg import SrcDst, StoragePath
 from ansys.hps.data_transfer.client.models.ops import OperationState
 
+from ansys.hps.client.check_version import (
+    JMS_VERSIONS,
+    HpsRelease,
+    check_version_and_raise,
+    version_required,
+)
 from ansys.hps.client.client import Client
 from ansys.hps.client.common import Object
 from ansys.hps.client.exceptions import ClientError, HPSError
@@ -105,8 +111,7 @@ class ProjectApi:
         """Initialize project API."""
         self.client = client
         self.project_id = project_id
-        self._fs_url = None
-        self._fs_project_id = None
+        self._jms_api = JmsApi(self.client)
 
     @property
     def jms_api_url(self) -> str:
@@ -119,16 +124,9 @@ class ProjectApi:
         return f"{self.jms_api_url}/projects/{self.project_id}"
 
     @property
-    def fs_url(self) -> str:
-        """URL of the file storage gateway."""
-        if self._fs_url is None:
-            self._fs_url = JmsApi(self.client).fs_url
-        return self._fs_url
-
-    @property
-    def fs_bucket_url(self) -> str:
-        """URL of the project's bucket in the file storage gateway."""
-        return f"{self.fs_url}/{self.project_id}"
+    def version(self) -> str:
+        """API version."""
+        return self._jms_api.version
 
     ################################################################
     # Project operations (copy, archive)
@@ -140,6 +138,7 @@ class ProjectApi:
         else:
             return r
 
+    @version_required(min_version=JMS_VERSIONS[HpsRelease.v1_2_0])
     def archive_project(self, path: str, include_job_files: bool = True):
         """Archive a project and save it to disk.
 
@@ -166,6 +165,18 @@ class ProjectApi:
         If ``content=True``, each file's content is also downloaded and stored in memory
         as the :attr:`ansys.hps.client.jms.File.content` attribute.
         """
+
+        if content:
+            min_v = JMS_VERSIONS[HpsRelease.v1_2_0]
+            check_version_and_raise(
+                self.version,
+                min_version=min_v,
+                msg=(
+                    f"ProjectApi.get_files with content=True requires"
+                    f" JMS version {min_v} or later."
+                ),
+            )
+
         return get_files(self, as_objects=as_objects, content=content, **query_params)
 
     def create_files(self, files: List[File], as_objects=True) -> List[File]:
@@ -180,6 +191,7 @@ class ProjectApi:
         """Delete files."""
         return self._delete_objects(files, File)
 
+    @version_required(min_version=JMS_VERSIONS[HpsRelease.v1_2_0])
     def download_file(
         self,
         file: File,
@@ -603,6 +615,8 @@ class ProjectApi:
         r = self.client.session.delete(url)
 
     ################################################################
+
+    @version_required(min_version=JMS_VERSIONS[HpsRelease.v1_2_0])
     def copy_default_execution_script(self, filename: str) -> File:
         """Copy a default execution script to the current project.
 
@@ -618,24 +632,23 @@ class ProjectApi:
         file = self.create_files([file])[0]
 
         # query location of default execution scripts from server
-        jms_api = JmsApi(self.client)
-        info = jms_api.get_api_info()
+        info = self._jms_api.get_api_info()
         execution_script_default_bucket = info["settings"]["execution_script_default_bucket"]
 
         # server side copy of the file to project bucket
-        self.client._start_dt_worker()
+        self.client.initialize_data_transfer_client()
         src = StoragePath(path=f"{execution_script_default_bucket}/{filename}")
         dst = StoragePath(path=f"{self.project_id}/{file.storage_id}")
         log.info(f"Copying default execution script {filename}")
-        op = self.client.dt_api.copy([SrcDst(src=src, dst=dst)])
-        op = self.client.dt_api.wait_for(op.id)[0]
+        op = self.client.data_transfer_api.copy([SrcDst(src=src, dst=dst)])
+        op = self.client.data_transfer_api.wait_for(op.id)[0]
         log.debug(f"Operation {op.state}")
         if op.state != OperationState.Succeeded:
             raise HPSError(f"Copying of default execution script {filename} failed")
 
         # get checksum of copied file
-        op = self.client.dt_api.get_metadata([dst])
-        op = self.client.dt_api.wait_for(op.id)[0]
+        op = self.client.data_transfer_api.get_metadata([dst])
+        op = self.client.data_transfer_api.wait_for(op.id)[0]
         log.debug(f"Operation {op.state}")
         if op.state != OperationState.Succeeded:
             raise HPSError(
@@ -681,7 +694,7 @@ def _download_files(project_api: ProjectApi, files: List[File]):
 
     temp_dir = tempfile.TemporaryDirectory()
 
-    project_api.client._start_dt_worker()
+    project_api.client.initialize_data_transfer_client()
     out_path = os.path.join(temp_dir.name, "downloads")
 
     base_dir = project_api.project_id
@@ -696,10 +709,10 @@ def _download_files(project_api: ProjectApi, files: List[File]):
 
     if len(srcs) > 0:
         log.info(f"Downloading files")
-        op = project_api.client.dt_api.copy(
+        op = project_api.client.data_transfer_api.copy(
             [SrcDst(src=src, dst=dst) for src, dst in zip(srcs, dsts)]
         )
-        op = project_api.client.dt_api.wait_for([op.id])
+        op = project_api.client.data_transfer_api.wait_for([op.id])
         log.info(f"Operation {op[0].state}")
         if op[0].state == OperationState.Succeeded:
             for f in files:
@@ -724,12 +737,16 @@ def get_files(project_api: ProjectApi, as_objects=True, content=False, **query_p
 
 
 def _upload_files(project_api: ProjectApi, files):
-    """
-    Uploads files directly using data transfer worker.
+    """Uploads files directly using data transfer worker."""
 
-    """
+    min_v = JMS_VERSIONS[HpsRelease.v1_2_0]
+    check_version_and_raise(
+        project_api.version,
+        min_version=min_v,
+        msg=f"Uploading file content requires JMS version {min_v} or later.",
+    )
 
-    project_api.client._start_dt_worker()
+    project_api.client.initialize_data_transfer_client()
     srcs = []
     dsts = []
     base_dir = project_api.project_id
@@ -750,10 +767,10 @@ def _upload_files(project_api: ProjectApi, files):
         dsts.append(StoragePath(path=f"{base_dir}/{os.path.basename(f.storage_id)}"))
     if len(srcs) > 0:
         log.info(f"Uploading files")
-        op = project_api.client.dt_api.copy(
+        op = project_api.client.data_transfer_api.copy(
             [SrcDst(src=src, dst=dst) for src, dst in zip(srcs, dsts)]
         )
-        op = project_api.client.dt_api.wait_for(op.id)
+        op = project_api.client.data_transfer_api.wait_for(op.id)
         log.info(f"Operation {op[0].state}")
         if op[0].state == OperationState.Succeeded:
             _fetch_file_metadata(project_api, files, dsts)
@@ -769,8 +786,8 @@ def _fetch_file_metadata(
     project_api: ProjectApi, files: List[File], storagePaths: List[StoragePath]
 ):
     log.info(f"Getting upload file metadata")
-    op = project_api.client.dt_api.get_metadata(storagePaths)
-    op = project_api.client.dt_api.wait_for(op.id)[0]
+    op = project_api.client.data_transfer_api.get_metadata(storagePaths)
+    op = project_api.client.data_transfer_api.wait_for(op.id)[0]
     log.info(f"Operation {op.state}")
     if op.state == OperationState.Succeeded:
         base_dir = project_api.project_id
@@ -830,7 +847,7 @@ def _download_file(
 ) -> str:
     """Download a file."""
 
-    project_api.client._start_dt_worker()
+    project_api.client.initialize_data_transfer_client()
 
     if getattr(file, "hash", None) is None:
         log.warning(f"No hash found for file {file.name}.")
@@ -845,8 +862,8 @@ def _download_file(
     if progress_handler is not None:
         progress_handler(0)
 
-    op = project_api.client.dt_api.copy([SrcDst(src=src, dst=dst)])
-    op = project_api.client.dt_api.wait_for([op.id])
+    op = project_api.client.data_transfer_api.copy([SrcDst(src=src, dst=dst)])
+    op = project_api.client.data_transfer_api.wait_for([op.id])
 
     log.info(f"Operation {op[0].state}")
 
@@ -887,8 +904,7 @@ def archive_project(project_api: ProjectApi, target_path, include_job_files=True
     log.debug(f"Operation location: {operation_location}")
     operation_id = operation_location.rsplit("/", 1)[-1]
 
-    jms_api = JmsApi(project_api.client)
-    op = jms_api.monitor_operation(operation_id)
+    op = project_api._jms_api.monitor_operation(operation_id)
 
     if not op.succeeded:
         raise HPSError(f"Failed to archive project {project_api.project_id}.\n{op}")
@@ -896,7 +912,6 @@ def archive_project(project_api: ProjectApi, target_path, include_job_files=True
     download_link = op.result["backend_path"]
 
     # Download archive
-    # download_link = download_link.replace("ansfs://", project_api.fs_url + "/")
     log.info(f"Project archive download link: {download_link}")
 
     if not os.path.isdir(target_path):
@@ -912,12 +927,12 @@ def archive_project(project_api: ProjectApi, target_path, include_job_files=True
 
 
 def _download_archive(project_api: ProjectApi, download_link, target_path):
-    project_api.client._start_dt_worker()
+    project_api.client.initialize_data_transfer_client()
 
     src = StoragePath(path=f"{download_link}")
     dst = StoragePath(path=target_path, remote="local")
-    op = project_api.client.dt_api.copy([SrcDst(src=src, dst=dst)])
-    op = project_api.client.dt_api.wait_for([op.id])
+    op = project_api.client.data_transfer_api.copy([SrcDst(src=src, dst=dst)])
+    op = project_api.client.data_transfer_api.wait_for([op.id])
 
     log.info(f"Operation {op[0].state}")
 

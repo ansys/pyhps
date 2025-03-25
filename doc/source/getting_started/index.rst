@@ -59,3 +59,27 @@ PyHPS requires these packages as dependencies:
 
 .. LINKS AND REFERENCES
 .. _pip: https://pypi.org/project/pip/
+
+
+Compatibility with HPS releases
+-------------------------------
+
+The following table summarizes the compatibility between PyHPS versions and HPS releases.
+
++------------------------------+-------------------------------+-------------------------------+------------------------------+
+| PyHPS version / HPS release  | ``1.0.2``                     | ``1.1.1``                     | ``1.2.0``                    |
++==============================+===============================+===============================+==============================+
+|         ``0.7.X``            | :octicon:`check-circle-fill`  | :octicon:`check-circle-fill`  | :octicon:`check-circle-fill` |
++------------------------------+-------------------------------+-------------------------------+------------------------------+
+|         ``0.8.X``            | :octicon:`check-circle-fill`  | :octicon:`check-circle-fill`  | :octicon:`check-circle-fill` |
++------------------------------+-------------------------------+-------------------------------+------------------------------+
+|         ``0.9.X``            | :octicon:`check-circle`       | :octicon:`check-circle-fill`  | :octicon:`check-circle-fill` |
++------------------------------+-------------------------------+-------------------------------+------------------------------+
+|         ``0.10.X``           | :octicon:`x`                  | :octicon:`x`                  | :octicon:`check-circle-fill` |
++------------------------------+-------------------------------+-------------------------------+------------------------------+
+
+Legend:
+
+- :octicon:`check-circle-fill` Compatible
+- :octicon:`check-circle` Backward compatible (new features exposed in PyHPS may not be available in older HPS releases)
+- :octicon:`x` Incompatible
