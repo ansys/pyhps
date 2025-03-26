@@ -25,11 +25,11 @@ import logging
 import os
 import time
 
-from examples.mapdl_motorbike_frame.project_setup import create_project
 import pytest
 
 from ansys.hps.client.jms import JmsApi, ProjectApi
 from ansys.hps.client.jms.resource import File
+from examples.mapdl_motorbike_frame.project_setup import create_project
 
 log = logging.getLogger(__name__)
 
@@ -37,7 +37,7 @@ log = logging.getLogger(__name__)
 @pytest.mark.skip(reason="Requires an evaluator with MAPDL.")
 def test_task_files_in_single_task_definition_project(client):
     num_jobs = 5
-    proj_name = f"test_jobs_TaskFilesTest"
+    proj_name = "test_jobs_TaskFilesTest"
 
     # Setup MAPDL motorbike frame project to work with
     proj = create_project(client=client, name=proj_name, num_jobs=num_jobs)
@@ -56,12 +56,12 @@ def test_task_files_in_single_task_definition_project(client):
     mac_file = project_api.get_files(limit=1, content=True)[0]
     content = mac_file.content.decode("utf-8")
     lines = content.splitlines()
-    for i, l in enumerate(lines):
-        if "/PREP7" in l:
+    for i, line in enumerate(lines):
+        if "/PREP7" in line:
             lines.insert(i + 1, "/INPUT,task_input_file,mac")
             break
-    for i, l in enumerate(lines):
-        if "*CFCLOSE" in l:
+    for i, line in enumerate(lines):
+        if "*CFCLOSE" in line:
             lines.insert(i + 2, "*CFCLOSE")
             # lines.insert(i+2, "('task_var = ',F20.8)")
             lines.insert(i + 2, "'task_var = %C'")
@@ -158,7 +158,7 @@ def test_task_files_in_single_task_definition_project(client):
 
     def check_evaluated_tasks(project_api, tasks):
         for t in tasks:
-            log.info(f"=== Task ===")
+            log.info("=== Task ===")
             log.info(f"id={t.id} eval_status={t.eval_status}")
             log.info(f"input_file_ids={t.input_file_ids} ouptut_file_ids={t.output_file_ids}")
             log.info(f"owned_file_ids={t.owned_file_ids} inherited_file_ids={t.inherited_file_ids}")
@@ -173,7 +173,7 @@ def test_task_files_in_single_task_definition_project(client):
             assert len(set(t.input_file_ids).intersection(t.owned_file_ids)) == 2
             input_files = project_api.get_files(id=t.input_file_ids)
             # Check input file names
-            assert set([f.name for f in input_files]) == set(["inp", "inp2"])
+            assert {f.name for f in input_files} == {"inp", "inp2"}
 
             owned_output_file_ids = set(t.output_file_ids).intersection(t.owned_file_ids)
             assert len(owned_output_file_ids) == 1  # 1 output file is owned
@@ -185,9 +185,12 @@ def test_task_files_in_single_task_definition_project(client):
             assert len(inherited_output_file_ids) == 5
             inherited_output_files = project_api.get_files(id=inherited_output_file_ids)
             # Check output file names
-            assert set([f.name for f in inherited_output_files]) == set(
-                ["out", "img", "err", "console_output"]
-            )
+            assert {f.name for f in inherited_output_files} == {
+                "out",
+                "img",
+                "err",
+                "console_output",
+            }
 
             # Find the task output file and compare the contained variable task_var with task id
             intersection = set(t.output_file_ids).intersection(t.owned_file_ids)
@@ -214,7 +217,7 @@ def test_task_files_in_single_task_definition_project(client):
     log.info(f"Tasks 3: {[t.id for t in tasks3]}")
     log.info(f"Times1: {[t.creation_time for t in tasks1]}")
     log.info(f"Times3: {[t.creation_time for t in tasks3]}")
-    for t1, t3 in zip(tasks1, tasks3):
+    for t1, t3 in zip(tasks1, tasks3, strict=False):
         assert t1.id == t3.id
         assert t3.eval_status == "pending"
         # use assertCountEqual to verify that the lists have

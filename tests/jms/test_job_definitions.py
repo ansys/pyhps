@@ -22,7 +22,6 @@
 
 import logging
 
-from examples.mapdl_motorbike_frame.project_setup import create_project
 from marshmallow.utils import missing
 
 from ansys.hps.client import AuthApi, JmsApi, ProjectApi
@@ -34,12 +33,13 @@ from ansys.hps.client.jms.resource import (
     TaskDefinition,
     WorkerContext,
 )
+from examples.mapdl_motorbike_frame.project_setup import create_project
 
 log = logging.getLogger(__name__)
 
 
 def test_job_definition_delete(client):
-    proj_name = f"rep_client_test_jms_JobDefinitionTest"
+    proj_name = "rep_client_test_jms_JobDefinitionTest"
 
     proj = Project(name=proj_name, active=True)
     jms_api = JmsApi(client)
@@ -59,13 +59,12 @@ def test_job_definition_delete(client):
 
 
 def test_task_definition_fields(client):
-
     # verify that:
     # - store_output is defaulted to True when undefined,
     # - memory and disk_space are correctly stored in bytes
 
     jms_api = JmsApi(client)
-    proj_name = f"test_store_output"
+    proj_name = "test_store_output"
 
     project = Project(name=proj_name, active=False, priority=10)
     project = jms_api.create_project(project)
@@ -88,7 +87,7 @@ def test_task_definition_fields(client):
     assert task_def.resource_requirements.hpc_resources.num_cores_per_node == 2
 
     task_def = project_api.create_task_definitions([task_def])[0]
-    assert task_def.store_output == True
+    assert task_def.store_output
     assert task_def.resource_requirements.memory == 274877906944
     assert task_def.resource_requirements.disk_space == 2199023255552
     assert task_def.resource_requirements.hpc_resources.num_cores_per_node == 2
@@ -103,12 +102,11 @@ def test_task_definition_fields(client):
 
 
 def test_task_and_job_definition_copy(client):
-
     # create new project
     num_jobs = 1
     project = create_project(
         client,
-        f"test_task_definition_copy",
+        "test_task_definition_copy",
         num_jobs=num_jobs,
         use_exec_script=False,
         active=False,

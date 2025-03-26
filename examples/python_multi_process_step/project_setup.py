@@ -20,8 +20,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-"""
-Project set up script for multi-steps (task definitions) and task file replacement testing.
+"""Project set up script for multi-steps (task definitions) and task file replacement testing.
 
 Author(s): R.Walker
 
@@ -34,6 +33,7 @@ Per default the project is inactive. You can activate the project with the `-a` 
 
 
 Example:
+-------
 ```
 python project_setup.py -n 100 -c 10 --no-images
 ```
@@ -42,6 +42,7 @@ Create 100 design points
   and do not write an result image.
 
 """
+
 import argparse
 import logging
 import os
@@ -221,7 +222,7 @@ def main(
         if f"td{i}_results_jpg" in file_ids.keys():
             output_file_ids.append(file_ids[f"td{i}_results_jpg"])
 
-        cmd = f"%executable% %file:td{i}_pyscript% %file:td{i}_input% {i}"  # noqa: E231
+        cmd = f"%executable% %file:td{i}_pyscript% %file:td{i}_input% {i}"
         if images:
             cmd += " --images"
         task_defs.append(
@@ -284,7 +285,6 @@ def main(
 
 
 if __name__ == "__main__":
-
     logger = logging.getLogger()
     logging.basicConfig(format="[%(asctime)s | %(levelname)s] %(message)s", level=logging.DEBUG)
 

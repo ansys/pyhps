@@ -20,6 +20,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 """Module retrieving IDs and providing ID references."""
+
 import logging
 
 from marshmallow import fields
@@ -71,7 +72,7 @@ def id_list_from_ref(ref):
 
 class IdReference(fields.Field):
     def __init__(self, referenced_class, *args, **kwargs):
-        super(IdReference, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.referenced_class = referenced_class
 
     def _deserialize(self, value, attr, data, **kwargs):
@@ -87,7 +88,7 @@ class IdReference(fields.Field):
 
 class IdReferenceList(fields.Field):
     def __init__(self, referenced_class, *args, **kwargs):
-        super(IdReferenceList, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.referenced_class = referenced_class
 
     def _deserialize(self, value, attr, data, **kwargs):

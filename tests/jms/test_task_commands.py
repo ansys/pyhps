@@ -61,9 +61,8 @@ class MyApplicationExecution(ApplicationExecution):
 
 
 def test_job_with_commands(client):
-
     jms_api = JmsApi(client)
-    proj_name = f"test_job_with_commands"
+    proj_name = "test_job_with_commands"
     proj = Project(name=proj_name)
     proj = jms_api.create_project(proj)
     project_api = ProjectApi(client, proj.id)
@@ -104,7 +103,7 @@ def test_job_with_commands(client):
     job_def = project_api.create_job_definitions([job_def])[0]
 
     job = Job(
-        name=f"Test Job",
+        name="Test Job",
         eval_status="pending",
         job_definition_id=job_def.id,
     )

@@ -20,5 +20,6 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 """PyHPS JMS API submodule."""
+
 from .jms_api import JmsApi
 from .project_api import ProjectApi
