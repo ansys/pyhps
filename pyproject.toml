@@ -97,7 +97,7 @@ select = [
     "Q",       # flake8-quotes
     "PT",      # flake8-pytest-style
     "LOG",     # flake8-logging
-    "D",
+    "D",       # pydocstyle
 ]
 ignore = []
 
