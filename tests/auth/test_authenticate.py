@@ -25,19 +25,25 @@ import logging
 import pytest
 import requests
 
-from ansys.hps.client import authenticate
+from ansys.hps.client import Client, authenticate
 
 log = logging.getLogger(__name__)
 
 
 def test_authenticate(url, username, password):
-    resp = authenticate(url=url, username=username, password=password, verify=False)
+    client = Client(url=url, username=username, password=password, verify=False)
+    resp = authenticate(
+        auth_url=client.auth_url, username=username, password=password, verify=False
+    )
 
     assert "access_token" in resp
     assert "refresh_token" in resp
 
 
 def test_authenticate_with_ssl_verification(url, username, password):
+    # Doesn't matter that the auth url is wrong....  The first request will fail
     with pytest.raises(requests.exceptions.SSLError) as ex_info:
-        _ = authenticate(url=url, username=username, password=password, verify=True)
+        _ = authenticate(
+            auth_url=f"{url}/auth/realms/rep", username=username, password=password, verify=True
+        )
     assert "CERTIFICATE_VERIFY_FAILED" in str(ex_info.value)
