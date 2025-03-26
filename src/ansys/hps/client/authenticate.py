@@ -48,6 +48,28 @@ def get_discovery_data(auth_url: str, timeout: int = 10, verify: bool | str = Tr
         return disco.json()
 
 
+def determine_auth_url(hps_url: str, verify_ssl: bool, fallback_realm: str) -> str:
+    """Determine the authentication URL for the HPS server."""
+    with requests.session() as session:
+        session.verify = verify_ssl
+        jms_info_url = hps_url.rstrip("/") + "/jms/api/v1"
+        resp = session.get(jms_info_url)
+        if resp.status_code != 200:
+            raise RuntimeError(
+                f"Failed to contact jms info endpoint {jms_info_url}, \
+                        status code {resp.status_code}: {resp.content.decode()}"
+            )
+        else:
+            jms_data = resp.json()
+            if "services" in jms_data and "external_auth_url" in jms_data["services"]:
+                return resp.json()["services"]["external_auth_url"]
+            elif fallback_realm:
+                return f"{hps_url.rstrip('/')}/auth/realms/{fallback_realm}"
+            else:
+                log.warning("External_auth_url not found from JMS and no realm specified.")
+                return None
+
+
 def authenticate(
     auth_url: str = "https://127.0.0.1:8443/hps/auth/realms/rep",
     grant_type: str = "password",

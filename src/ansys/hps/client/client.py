@@ -34,7 +34,7 @@ import requests
 from ansys.hps.data_transfer.client import Client as DataTransferClient
 from ansys.hps.data_transfer.client import DataTransferApi
 
-from .authenticate import authenticate
+from .authenticate import authenticate, determine_auth_url
 from .connection import create_session
 from .exceptions import HPSError, raise_for_status
 from .warnings import UnverifiedHTTPSRequestsWarning
@@ -183,23 +183,7 @@ class Client:
         self.auth_url = auth_url
 
         if not auth_url:
-            with requests.session() as session:
-                session.verify = self.verify
-                jms_info_url = url.rstrip("/") + "/jms/api/v1"
-                resp = session.get(jms_info_url)
-                if resp.status_code != 200:
-                    raise RuntimeError(
-                        f"Failed to contact jms info endpoint {jms_info_url}, \
-                            status code {resp.status_code}: {resp.content.decode()}"
-                    )
-                else:
-                    jms_data = resp.json()
-                    if "services" in jms_data and "external_auth_url" in jms_data["services"]:
-                        self.auth_url = resp.json()["services"]["external_auth_url"]
-                    elif realm:
-                        self.auth_url = f"{url.rstrip('/')}/auth/realms/{realm}"
-                    else:
-                        log.warning("External_auth_url not found from JMS and no realm specified.")
+            self.auth_url = determine_auth_url(url, self.verify, realm)
 
         if access_token:
             log.debug("Authenticate with access token")
