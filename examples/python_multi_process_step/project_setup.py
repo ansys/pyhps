@@ -221,7 +221,7 @@ def main(
         if f"td{i}_results_jpg" in file_ids.keys():
             output_file_ids.append(file_ids[f"td{i}_results_jpg"])
 
-        cmd = f"%executable% %file:td{i}_pyscript% %file:td{i}_input% {i}"  # noqa: E231
+        cmd = f"%executable% %file:td{i}_pyscript% %file:td{i}_input% {i}"
         if images:
             cmd += " --images"
         task_defs.append(

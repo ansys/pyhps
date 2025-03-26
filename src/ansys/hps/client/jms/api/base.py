@@ -163,7 +163,7 @@ def copy_objects(session: Session, url: str, objects: list[Object], wait: bool =
 
     obj_type = objects[0].__class__
     rest_name = obj_type.Meta.rest_name
-    url = f"{url}/{rest_name}:copy"  # noqa: E231
+    url = f"{url}/{rest_name}:copy"
 
     source_ids = [obj.id for obj in objects]
     r = session.post(url, data=json.dumps({"source_ids": source_ids}))

@@ -109,7 +109,7 @@ def get_objects(
 
 def get_objects_count(session: Session, url: str, obj_type: type[BaseModel], **query_params):
     rest_name = OBJECT_TYPE_TO_ENDPOINT[obj_type]
-    url = f"{url}/{rest_name}:count"  # noqa: E231
+    url = f"{url}/{rest_name}:count"
     r = session.get(url, params=query_params)
 
     return r.json()[f"num_{rest_name}"]

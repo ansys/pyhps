@@ -949,6 +949,6 @@ def copy_jobs(project_api: ProjectApi, jobs: list[Job], as_objects=True, **query
 
 def sync_jobs(project_api: ProjectApi, jobs: list[Job]):
     """Sync jobs."""
-    url = f"{project_api.url}/jobs:sync"  # noqa: E231
+    url = f"{project_api.url}/jobs:sync"
     json_data = json.dumps({"job_ids": [obj.id for obj in jobs]})
     _ = project_api.client.session.put(f"{url}", data=json_data)

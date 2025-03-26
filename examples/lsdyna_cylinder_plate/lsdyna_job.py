@@ -86,7 +86,7 @@ class HPSJob:
 
     def __str__(self):
         repr = json.dumps(self, default=lambda x: x.__dict__, sort_keys=True, indent=4)
-        return f"HPS Job:\n{repr}"  # noqa: E231
+        return f"HPS Job:\n{repr}"
 
     def save(self):
         """Save job info to JSON file"""
