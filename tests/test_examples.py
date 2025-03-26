@@ -126,9 +126,12 @@ def test_python_two_bar_truss_problem(client):
 
     jms_api.delete_project(project)
 
-    # json-file transfer
+
+def test_python_two_bar_truss_problem_with_exec_script(client):
+    from examples.python_two_bar_truss_problem.project_setup import main
+
     num_jobs = 10
-    project = main(client, num_jobs, param_transfer="json-file", use_exec_script=True)
+    project = main(client, num_jobs, param_transfer="mapping", use_exec_script=True)
     assert project is not None
 
     jms_api = JmsApi(client)
@@ -139,11 +142,11 @@ def test_python_two_bar_truss_problem(client):
     jms_api.delete_project(project)
 
 
-def test_python_two_bar_truss_problem_with_exec_script(client):
+def test_python_two_bar_truss_problem_with_param_transfer_json_file(client):
     from examples.python_two_bar_truss_problem.project_setup import main
 
     num_jobs = 10
-    project = main(client, num_jobs, use_exec_script=True)
+    project = main(client, num_jobs, param_transfer="json-file", use_exec_script=True)
     assert project is not None
 
     jms_api = JmsApi(client)
