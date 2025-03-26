@@ -49,7 +49,15 @@ from ansys.hps.client.jms import (
 log = logging.getLogger(__name__)
 
 
-def main(client, num_task_definitions, num_jobs, start, inactive, python_version=None):
+def main(
+    client,
+    num_task_definitions,
+    num_jobs,
+    start,
+    inactive,
+    use_unmapped_params,
+    python_version=None,
+):
     """Create project with multiple dependent Python tasks and linked files in between."""
     log.debug("=== Project")
     proj = Project(
@@ -65,15 +73,24 @@ def main(client, num_task_definitions, num_jobs, start, inactive, python_version
     cwd = os.path.dirname(__file__)
     files = []
     # Start input file for first process step
-    files.append(
-        File(
-            name="input",
-            evaluation_path="input.json",
-            type="application/json",
-            src=os.path.join(cwd, "input.json"),
+    if use_unmapped_params:
+        files.append(
+            File(
+                name="exec_python",
+                evaluation_path="exec_python.py",
+                type="application/x-python-code",
+                src=os.path.join(cwd, "exec_python.py"),
+            )
         )
-    )
-
+    else:
+        files.append(
+            File(
+                name="input",
+                evaluation_path="input.json",
+                type="application/json",
+                src=os.path.join(cwd, "input.json"),
+            )
+        )
     for i in range(num_task_definitions):
         files.append(
             File(
@@ -84,15 +101,16 @@ def main(client, num_task_definitions, num_jobs, start, inactive, python_version
             )
         )
 
-        files.append(
-            File(
-                name=f"td{i}_result",
-                evaluation_path=f"td{i}_result.json",
-                collect=True,
-                monitor=False,
-                type="text/plain",
+        if not use_unmapped_params:
+            files.append(
+                File(
+                    name=f"td{i}_result",
+                    evaluation_path=f"td{i}_result.json",
+                    collect=True,
+                    monitor=False,
+                    type="text/plain",
+                )
             )
-        )
 
     files = project_api.create_files(files)
     file_ids = {f.name: f.id for f in files}
@@ -113,40 +131,48 @@ def main(client, num_task_definitions, num_jobs, start, inactive, python_version
     params = project_api.create_parameter_definitions(params)
     job_def.parameter_definition_ids = [o.id for o in params]
 
-    param_mappings = [
-        ParameterMapping(
-            key_string='"start"',
-            tokenizer=":",
-            parameter_definition_id=params[0].id,
-            file_id=file_ids["input"],
-        )
-    ]
-    param_mappings.extend(
-        [
+    if use_unmapped_params:
+        param_mappings = []
+    else:
+        param_mappings = [
             ParameterMapping(
-                key_string='"product"',
+                key_string='"start"',
                 tokenizer=":",
-                parameter_definition_id=params[i + 1].id,
-                file_id=file_ids[f"td{i}_result"],
+                parameter_definition_id=params[0].id,
+                file_id=file_ids["input"],
             )
-            for i in range(num_task_definitions)
         ]
-    )
-    param_mappings = project_api.create_parameter_mappings(param_mappings)
+        param_mappings.extend(
+            [
+                ParameterMapping(
+                    key_string='"product"',
+                    tokenizer=":",
+                    parameter_definition_id=params[i + 1].id,
+                    file_id=file_ids[f"td{i}_result"],
+                )
+                for i in range(num_task_definitions)
+            ]
+        )
+        param_mappings = project_api.create_parameter_mappings(param_mappings)
+
     job_def.parameter_mapping_ids = [o.id for o in param_mappings]
 
     log.debug("=== Process Steps")
     task_defs = []
     for i in range(num_task_definitions):
         input_file_ids = [file_ids[f"td{i}_pyscript"]]
-        if i == 0:
-            input_file_ids.append(file_ids["input"])
-            cmd = f"%executable% %file:td{i}_pyscript% %file:input% {i}"
+        if use_unmapped_params:
+            cmd = ""
+            output_file_ids = []
         else:
-            input_file_ids.append(file_ids[f"td{i - 1}_result"])
-            cmd = f"%executable% %file:td{i}_pyscript% %file:td{i - 1}_result% {i}"
+            if i == 0:
+                input_file_ids.append(file_ids["input"])
+                cmd = f"%executable% %file:td{i}_pyscript% %file:input% {i}"
+            else:
+                input_file_ids.append(file_ids[f"td{i - 1}_result"])
+                cmd = f"%executable% %file:td{i}_pyscript% %file:td{i - 1}_result% {i}"
 
-        output_file_ids = [file_ids[f"td{i}_result"]]
+            output_file_ids = [file_ids[f"td{i}_result"]]
 
         task_defs.append(
             TaskDefinition(
@@ -168,9 +194,14 @@ def main(client, num_task_definitions, num_jobs, start, inactive, python_version
                 input_file_ids=input_file_ids,
                 output_file_ids=output_file_ids,
                 store_output=True,
-                success_criteria=SuccessCriteria(return_code=0, require_all_output_files=True),
+                success_criteria=SuccessCriteria(
+                    return_code=0, require_all_output_files=True, require_all_output_parameters=True
+                ),
             )
         )
+        if use_unmapped_params:
+            task_defs[-1].use_execution_script = True
+            task_defs[-1].execution_script_id = file_ids["exec_python"]
     task_defs = project_api.create_task_definitions(task_defs)
     job_def.task_definition_ids = [o.id for o in task_defs]
 
@@ -185,11 +216,10 @@ def main(client, num_task_definitions, num_jobs, start, inactive, python_version
     for i in range(num_jobs):
         values = {}
         for p in params:
-            if p.mode == "input":
-                if p.type == "float":
-                    values[p.name] = float(
-                        int(p.lower_limit + random.random() * (p.upper_limit - p.lower_limit))
-                    )
+            if p.mode == "input" and p.type == "float":
+                values[p.name] = float(
+                    int(p.lower_limit + random.random() * (p.upper_limit - p.lower_limit))
+                )
         jobs.append(
             Job(name=f"Job.{i}", values=values, eval_status="pending", job_definition_id=job_def.id)
         )
@@ -210,6 +240,13 @@ if __name__ == "__main__":
     parser.add_argument("-t", "--num-task-definitions", type=int, default=3)
     parser.add_argument("-f", "--start", type=float, default=10.0)
     parser.add_argument(
+        "-up",
+        "--use-unmapped-params",
+        default=False,
+        action="store_true",
+        help="Directly transfer parameters from execution script without file mapping",
+    )
+    parser.add_argument(
         "-i", "--inactive", action="store_true", default=False, help="Set project to inactive"
     )
     parser.add_argument("-v", "--python-version", default="3.10")
@@ -225,6 +262,7 @@ if __name__ == "__main__":
             num_task_definitions=args.num_task_definitions,
             start=args.start,
             inactive=args.inactive,
+            use_unmapped_params=args.use_unmapped_params,
             python_version=args.python_version,
         )
     except HPSError as e:
