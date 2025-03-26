@@ -77,7 +77,7 @@ The following environment commands are provided:
 - ``tox -e style``: Checks for coding style quality.
 - ``tox -e py``: Checks for unit tests.
 - ``tox -e py-coverage``: Checks for unit testing and code coverage.
-- ``tox -e doc``: Checks for documentation building.
+- ``tox -e doc-<html/pdf>-<linux/windows>``: Checks for documentation building. For example, to generate html documentation on linux, run ``tox -e doc-html-linux``
 
 Raw testing
 ^^^^^^^^^^^
@@ -119,15 +119,14 @@ For building documentation, you can manually run these commands:
 
 .. code:: bash
 
-    python archive_examples.py
-    make -C doc html
+    make -C doc html # for building documentation on Linux
 
 However, the recommended way of checking documentation integrity is to use
-``tox``:
+``tox``. For example, the following can be run on Linux:
 
 .. code:: bash
 
-    tox -e doc && your_browser_name .tox/doc_out/index.html
+    tox -e doc-html-linux && your_browser_name doc/_build/html/index.html
 
 Distributing
 ------------

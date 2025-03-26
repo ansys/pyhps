@@ -381,6 +381,12 @@ extlinks = {
     ),
 }
 
+# Configuration for Sphinx Design
+# -----------------------------------------------------------------------------
+suppress_warnings = [
+    "design.fa-build",
+]
+
 
 def archive_examples(app: sphinx.application.Sphinx) -> None:
     """
