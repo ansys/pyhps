@@ -20,11 +20,11 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-"""
-Python example with multiple dependent tasks and linked files in between.
+"""Python example with multiple dependent tasks and linked files in between.
 
 Author(s): R.Walker
 """
+
 import argparse
 import logging
 import os
@@ -138,14 +138,13 @@ def main(client, num_task_definitions, num_jobs, start, inactive, python_version
     log.debug("=== Process Steps")
     task_defs = []
     for i in range(num_task_definitions):
-
         input_file_ids = [file_ids[f"td{i}_pyscript"]]
         if i == 0:
             input_file_ids.append(file_ids["input"])
-            cmd = f"%executable% %file:td{i}_pyscript% %file:input% {i}"  # noqa: E231
+            cmd = f"%executable% %file:td{i}_pyscript% %file:input% {i}"
         else:
-            input_file_ids.append(file_ids[f"td{i-1}_result"])
-            cmd = f"%executable% %file:td{i}_pyscript% %file:td{i-1}_result% {i}"  # noqa: E231
+            input_file_ids.append(file_ids[f"td{i - 1}_result"])
+            cmd = f"%executable% %file:td{i}_pyscript% %file:td{i - 1}_result% {i}"
 
         output_file_ids = [file_ids[f"td{i}_result"]]
 
@@ -200,7 +199,6 @@ def main(client, num_task_definitions, num_jobs, start, inactive, python_version
 
 
 if __name__ == "__main__":
-
     logger = logging.getLogger()
     logging.basicConfig(format="[%(asctime)s | %(levelname)s] %(message)s", level=logging.DEBUG)
 

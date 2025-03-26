@@ -63,9 +63,8 @@ def remove_permissions(project_api: ProjectApi, user):
 
 
 def test_get_project_permissions(client):
-
     jms_api = JmsApi(client)
-    proj_name = f"test_jms_get_permissions_test"
+    proj_name = "test_jms_get_permissions_test"
 
     proj = Project(name=proj_name, active=True, priority=10)
     proj = jms_api.create_project(proj, replace=True)

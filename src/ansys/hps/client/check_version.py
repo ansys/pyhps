@@ -20,13 +20,11 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-"""
-Version compatibility checks.
-"""
+"""Version compatibility checks."""
 
+import logging
 from enum import Enum
 from functools import wraps
-import logging
 from typing import Protocol
 
 from .exceptions import VersionCompatibilityError
@@ -63,6 +61,7 @@ class ApiProtocol(Protocol):
 
     @property
     def version(self) -> str:
+        """API version."""
         pass
 
 
@@ -90,9 +89,7 @@ def check_max_version(version: str, max_version: str) -> bool:
 
 def check_min_version_and_raise(version, min_version: str, msg=None):
     """Check if a version meets a minimum version, raise an exception if not."""
-
     if not check_min_version(version, min_version):
-
         if msg is None:
             msg = f"Version {version} is not supported. Minimum version required: {min_version}"
         raise VersionCompatibilityError(msg)
@@ -100,9 +97,7 @@ def check_min_version_and_raise(version, min_version: str, msg=None):
 
 def check_max_version_and_raise(version, max_version: str, msg=None):
     """Check if a version meets a maximum version, raise an exception if not."""
-
     if not check_max_version(version, max_version):
-
         if msg is None:
             msg = f"Version {version} is not supported. Maximum version required: {max_version}"
         raise VersionCompatibilityError(msg)
@@ -112,7 +107,6 @@ def check_version_and_raise(
     version, min_version: str | None = None, max_version: str | None = None, msg=None
 ):
     """Check if a version meets the min/max requirements, raise an exception if not."""
-
     if min_version is not None:
         check_min_version_and_raise(version, min_version, msg)
 
@@ -121,10 +115,9 @@ def check_version_and_raise(
 
 
 def version_required(min_version=None, max_version=None):
-    """Decorator for API methods to check version requirements."""
+    """Provide a decorator for API methods to check version requirements."""
 
     def decorator(func):
-
         @wraps(func)
         def wrapper(self: ApiProtocol, *args, **kwargs):
             if min_version is not None:
