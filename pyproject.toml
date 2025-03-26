@@ -94,8 +94,9 @@ select = [
     "PLW",     # Pylint warnings
     "PLR1711", # useless-return
     "PLR5501", # collapsible-else-if
-    "Q",
-    "PT",
+    "Q",       # flake8-quotes
+    "PT",      # flake8-pytest-style
+    "LOG",     # flake8-logging
 ]
 ignore = []
 
