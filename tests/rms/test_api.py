@@ -34,3 +34,5 @@ def test_rms_api_info(client):
     info = rms_api.get_api_info()
     assert "time" in info
     assert "build" in info
+
+    assert rms_api.version is not None
