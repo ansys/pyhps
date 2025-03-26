@@ -24,19 +24,18 @@ import copy
 import logging
 import uuid
 
-from examples.mapdl_motorbike_frame.project_setup import create_project
-from marshmallow.utils import missing
 import pytest
+from marshmallow.utils import missing
 
 from ansys.hps.client import AuthApi, JmsApi, ProjectApi
 from ansys.hps.client.jms.resource import Job, JobDefinition, Project
 from ansys.hps.client.jms.schema.job import JobSchema
+from examples.mapdl_motorbike_frame.project_setup import create_project
 
 log = logging.getLogger(__name__)
 
 
 def test_job_deserialization():
-
     job_dict = {
         "id": "02q1DiPEP0nanLN5384q8L",
         "modification_time": "2021-03-03T19:39:38.826286+00:00",
@@ -110,7 +109,6 @@ def test_job_deserialization():
 
 
 def test_job_serialization():
-
     job = Job(
         name="dp0",
         job_definition_id=2,
@@ -128,19 +126,18 @@ def test_job_serialization():
     schema = JobSchema()
     serialized_job = schema.dump(job)
 
-    assert not "elapsed_time" in serialized_job.keys()
+    assert "elapsed_time" not in serialized_job.keys()
     assert serialized_job["values"]["p1"] == "string_value"
     assert serialized_job["values"]["p2"] == 8.9
-    assert serialized_job["values"]["p3"] == True
-    assert not "fitness" in serialized_job.keys()
-    assert not "files" in serialized_job.keys()
+    assert serialized_job["values"]["p3"]
+    assert "fitness" not in serialized_job.keys()
+    assert "files" not in serialized_job.keys()
     assert len(serialized_job["host_ids"]) == 2
     assert serialized_job["host_ids"][1] == "uuid-5"
 
 
 def test_job_integration(client):
-
-    proj_name = f"test_jobs_JobTest"
+    proj_name = "test_jobs_JobTest"
 
     proj = Project(name=proj_name, active=True)
     jms_api = JmsApi(client)
@@ -170,9 +167,9 @@ def test_job_integration(client):
     jobs = project_api.create_jobs(jobs)
     for job in jobs:
         # check that all fields are populated (i.e. request params include fields="all")
-        assert job.creator == None
-        assert job.note == None
-        assert job.fitness == None
+        assert job.creator is None
+        assert job.note is None
+        assert job.fitness is None
         assert job.executed_level is not None
         assert job.modified_by is not missing
         assert job.created_by is not missing
@@ -181,9 +178,9 @@ def test_job_integration(client):
     auth_api = AuthApi(client)
     for job in jobs:
         # check that all fields are populated (i.e. request params include fields="all")
-        assert job.creator == None
-        assert job.note == None
-        assert job.fitness == None
+        assert job.creator is None
+        assert job.note is None
+        assert job.fitness is None
         assert job.executed_level is not None
         assert job.modified_by is not missing
         assert job.created_by is not missing
@@ -199,7 +196,7 @@ def test_job_integration(client):
         assert job.creator is not None
         assert job.note is not None
         assert job.job_definition_id, 1
-        assert job.fitness == None
+        assert job.fitness is None
         assert job.executed_level is not None
 
     jobs = project_api.get_jobs(limit=2, fields=["id", "creator", "note"])

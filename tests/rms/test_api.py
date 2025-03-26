@@ -28,11 +28,13 @@ log = logging.getLogger(__name__)
 
 
 def test_rms_api_info(client):
-
     rms_api = RmsApi(client)
+
+    assert rms_api._api_info is None
 
     info = rms_api.get_api_info()
     assert "time" in info
     assert "build" in info
 
+    assert rms_api._api_info is not None
     assert rms_api.version is not None
