@@ -112,7 +112,9 @@ def monitor_projects(
     if filter is not None:
         log.debug(f"Filtering projects based on name including: {filter}")
         filtered_projects = [
-            proj for proj in projects if proj.name.lower().find(filter.lower()) >= 0
+            proj
+            for proj in projects
+            if proj.name.lower().find(filter.lower()) >= 0 or proj.id == filter
         ]
 
     if limited_monitoring:
@@ -126,8 +128,9 @@ def monitor_projects(
     log.debug(f"=== Projects ({len(filtered_projects)})")
     for project in filtered_projects:
         modified_age = (datetime.now(timezone.utc) - project.modification_time).total_seconds()
-        if len(filtered_projects) > 10 and modified_age > 48 * 60 * 60:
-            continue  # Skip projects older than 2 days
+        if remove is None:
+            if len(filtered_projects) > 10 and modified_age > 48 * 60 * 60:
+                continue  # Skip projects older than 2 days
 
         created_age = (datetime.now(timezone.utc) - project.creation_time).total_seconds()
         age_hours = int(created_age / 3600)
@@ -172,7 +175,8 @@ def monitor_projects(
             for task in tasks:
                 resources = task.task_definition_snapshot.resource_requirements
                 log.debug(
-                    f"{' '*8}{task.task_definition_snapshot.name}:{task.job_id}->{task.eval_status}"
+                    f"{' '*8}{task.task_definition_snapshot.name}:{task.job_id}->"
+                    + f"{task.eval_status}  {task.task_definition_snapshot.software_requirements}"
                 )
                 if task.eval_status == "running":
                     log.debug(f"{' '*10}Running on evaluator: {task.host_id}")
