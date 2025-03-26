@@ -217,7 +217,7 @@ def test_task_files_in_single_task_definition_project(client):
     log.info(f"Tasks 3: {[t.id for t in tasks3]}")
     log.info(f"Times1: {[t.creation_time for t in tasks1]}")
     log.info(f"Times3: {[t.creation_time for t in tasks3]}")
-    for t1, t3 in zip(tasks1, tasks3):
+    for t1, t3 in zip(tasks1, tasks3, strict=False):
         assert t1.id == t3.id
         assert t3.eval_status == "pending"
         # use assertCountEqual to verify that the lists have

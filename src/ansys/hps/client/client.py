@@ -138,7 +138,7 @@ class Client:
         if rep_url is not None:
             url = rep_url
             msg = "The 'rep_url' input argument is deprecated. Use 'url' instead."
-            warnings.warn(msg, DeprecationWarning)
+            warnings.warn(msg, DeprecationWarning, stacklevel=2)
             log.warning(msg)
 
         auth_url = kwargs.get("auth_url", None)
@@ -147,7 +147,7 @@ class Client:
                 "The 'auth_url' input argument is deprecated. Use None instead. "
                 "New HPS deployments will determine this automatically."
             )
-            warnings.warn(msg, DeprecationWarning)
+            warnings.warn(msg, DeprecationWarning, stacklevel=2)
             log.warning(msg)
 
         self.url = url
@@ -171,7 +171,7 @@ class Client:
                 f"Certificate verification is disabled. "
                 f"Unverified HTTPS requests are made to {self.url}."
             )
-            warnings.warn(msg, UnverifiedHTTPSRequestsWarning)
+            warnings.warn(msg, UnverifiedHTTPSRequestsWarning, stacklevel=2)
             log.warning(msg)
 
         if disable_security_warnings:
@@ -289,7 +289,7 @@ class Client:
     @property
     def rep_url(self) -> str:
         msg = "The client 'rep_url' property is deprecated. Use 'url' instead."
-        warnings.warn(msg, DeprecationWarning)
+        warnings.warn(msg, DeprecationWarning, stacklevel=2)
         log.warning(msg)
         return self.url
 
@@ -354,7 +354,7 @@ class Client:
     def auth_api_url(self) -> str:
         msg = "The client 'auth_api_url' property is deprecated. \
                There is no generic auth_api exposed."
-        warnings.warn(msg, DeprecationWarning)
+        warnings.warn(msg, DeprecationWarning, stacklevel=2)
         log.warning(msg)
         auth_api_base, _, tail = self.auth_url.partition("realms")
         if tail:

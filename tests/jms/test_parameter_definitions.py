@@ -229,7 +229,7 @@ def test_mixed_parameter_definition(client):
     original_pds = [ip, sp, fp, bp]
     pds = project_api.create_parameter_definitions(original_pds)
 
-    for pd, original_pd in zip(pds, original_pds):
+    for pd, original_pd in zip(pds, original_pds, strict=False):
         assert type(pd) == type(original_pd)
         assert pd.name == original_pd.name
 

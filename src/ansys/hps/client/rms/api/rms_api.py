@@ -21,7 +21,6 @@
 # SOFTWARE.
 """Module wrapping around RMS root endpoints."""
 import logging
-from functools import cache
 
 from ansys.hps.client.client import Client
 from ansys.hps.client.exceptions import ClientError
@@ -52,20 +51,22 @@ class RmsApi:
 
     def __init__(self, client: Client):
         self.client = client
+        self._api_info = None
 
     @property
     def url(self) -> str:
         """URL of the API."""
         return f"{self.client.url}/rms/api/v1"
 
-    @cache
     def get_api_info(self):
         """Get information on the RMS API the client is connected to.
 
         The information includes the version and build date.
         """
-        r = self.client.session.get(self.url)
-        return r.json()
+        if self._api_info is None:
+            r = self.client.session.get(self.url)
+            self._api_info = r.json()
+        return self._api_info
 
     @property
     def version(self) -> str:

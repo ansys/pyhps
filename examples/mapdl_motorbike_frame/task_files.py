@@ -127,7 +127,7 @@ def modify_task_files(client, project_name):
     proj.update_jobs(jobs)
 
     log.debug("=== Modified tasks and design points:")
-    for t, job in zip(tasks, jobs):
+    for t, _ in zip(tasks, jobs, strict=False):
         msg = f"Task: id={t.id} eval_status={t.eval_status} "
         msg += "input_file_ids={t.input_file_ids} ouptut_file_ids={t.output_file_ids} "
         msg += "Job: id={dp.id} eval_status={dp.eval_status}"

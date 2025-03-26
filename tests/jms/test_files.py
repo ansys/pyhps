@@ -85,7 +85,7 @@ def test_files(client):
 
     # Compare file objects, comparing all attrs that are not missing on created file object
     attrs = [attr for attr in files[0].declared_fields() if getattr(files[0], attr) != missing]
-    for f1, f2 in zip(files, files_queried):
+    for f1, f2 in zip(files, files_queried, strict=False):
         for attr in attrs:
             assert getattr(f1, attr) == getattr(f2, attr)
 

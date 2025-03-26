@@ -81,11 +81,14 @@ line-length = 100
 
 [tool.ruff.lint]
 select = [
-    "E",   # pycodestyle, see https://beta.ruff.rs/docs/rules/#pycodestyle-e-w
-    "F",   # pyflakes, see https://beta.ruff.rs/docs/rules/#pyflakes-f
-    "I",   # isort, see https://beta.ruff.rs/docs/rules/#isort-i
-    "N",   # pep8-naming, see https://beta.ruff.rs/docs/rules/#pep8-naming-n,
-    "UP", "C4", "W", "B006", "B015", "B904",
+    "E",   # pycodestyle errors
+    "W",   # pycodestyle warnings
+    "F",   # pyflakes
+    "I",   # isort
+    "N",   # pep8-naming
+    "UP",  # pyupgrade
+    "C4",  # flake8-comprehensions
+    "B",   # flake8-bugbear
 ]
 ignore = []
 

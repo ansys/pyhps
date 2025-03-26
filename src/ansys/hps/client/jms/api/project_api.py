@@ -207,7 +207,7 @@ class ProjectApi:
         """
         if stream is not None:
             msg = "The 'stream' input argument in ProjectApi.download_file() is deprecated. "
-            warnings.warn(msg, DeprecationWarning)
+            warnings.warn(msg, DeprecationWarning, stacklevel=2)
             log.warning(msg)
         return _download_file(self, file, target_path, progress_handler)
 
@@ -475,7 +475,7 @@ class ProjectApi:
             "'ProjectApi._sync_jobs' is deprecated and is to be removed soon. "
             "Use 'ProjectApi.sync_jobs' instead."
         )
-        warnings.warn(msg, DeprecationWarning)
+        warnings.warn(msg, DeprecationWarning, stacklevel=2)
         log.warning(msg)
         return self.sync_jobs(jobs)
 
@@ -710,7 +710,7 @@ def _download_files(project_api: ProjectApi, files: list[File]):
     if len(srcs) > 0:
         log.info("Downloading files")
         op = project_api.client.data_transfer_api.copy(
-            [SrcDst(src=src, dst=dst) for src, dst in zip(srcs, dsts)]
+            [SrcDst(src=src, dst=dst) for src, dst in zip(srcs, dsts, strict=False)]
         )
         op = project_api.client.data_transfer_api.wait_for([op.id])
         log.info(f"Operation {op[0].state}")
@@ -769,7 +769,7 @@ def _upload_files(project_api: ProjectApi, files):
     if len(srcs) > 0:
         log.info("Uploading files")
         op = project_api.client.data_transfer_api.copy(
-            [SrcDst(src=src, dst=dst) for src, dst in zip(srcs, dsts)]
+            [SrcDst(src=src, dst=dst) for src, dst in zip(srcs, dsts, strict=False)]
         )
         op = project_api.client.data_transfer_api.wait_for(op.id)
         log.info(f"Operation {op[0].state}")
@@ -812,7 +812,7 @@ def create_files(project_api: ProjectApi, files, as_objects=True) -> list[File]:
 
     # (2) Check if there are src properties, files to upload
     num_uploads = 0
-    for f, cf in zip(files, created_files):
+    for f, cf in zip(files, created_files, strict=False):
         if getattr(f, "src", None) is not None:
             cf.src = f.src
             num_uploads += 1

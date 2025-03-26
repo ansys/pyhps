@@ -25,7 +25,6 @@
 import json
 import logging
 import os
-from functools import cache
 
 import backoff
 from ansys.hps.client.check_version import JMS_VERSIONS, HpsRelease, version_required
@@ -69,20 +68,22 @@ class JmsApi:
     def __init__(self, client: Client):
         """Initialize JMS API."""
         self.client = client
+        self._api_info = None
 
     @property
     def url(self) -> str:
         """URL of the API."""
         return f"{self.client.url}/jms/api/v1"
 
-    @cache
     def get_api_info(self):
         """Get information of the JMS API that the client is connected to.
 
         Information includes the version and build date.
         """
-        r = self.client.session.get(self.url)
-        return r.json()
+        if self._api_info is None:
+            r = self.client.session.get(self.url)
+            self._api_info = r.json()
+        return self._api_info
 
     @property
     def version(self) -> str:

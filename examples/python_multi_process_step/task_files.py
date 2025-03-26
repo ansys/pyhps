@@ -74,7 +74,7 @@ def update_eval_script(task):
     file = NamedTemporaryFile(
         delete=False,
         mode="w",
-        **dict(zip(["prefix", "suffix"], os.path.splitext(os.path.basename(path)))),
+        **dict(zip(["prefix", "suffix"], os.path.splitext(os.path.basename(path)), strict=False)),
     )
     file.writelines(lines)
     file.close()
