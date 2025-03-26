@@ -136,8 +136,6 @@ def main(client, use_exec_script, python_version=None) -> Project:
     # Create job_definition in project
     job_def = project_api.create_job_definitions([job_def])[0]
 
-    params = project_api.get_parameter_definitions(job_def.parameter_definition_ids)
-
     log.debug("=== Jobs")
     jobs = []
 

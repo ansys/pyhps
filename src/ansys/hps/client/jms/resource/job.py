@@ -25,11 +25,9 @@
 
 """Module providing the job resource."""
 from datetime import datetime
-from typing import Any, Dict, List, Union
-
-from marshmallow.utils import missing
 
 from ansys.hps.client.common import Object
+from marshmallow.utils import missing
 
 from ..schema.job import JobSchema
 
@@ -92,15 +90,15 @@ class Job(Object):
         eval_status: str = missing,
         job_definition_id: str = missing,
         priority: int = missing,
-        values: Dict[str, any] = missing,
+        values: dict[str, any] = missing,
         fitness: float = missing,
-        fitness_term_values: Dict[str, float] = missing,
+        fitness_term_values: dict[str, float] = missing,
         note: str = missing,
         creator: str = missing,
         executed_level: int = missing,
         elapsed_time: float = missing,
-        host_ids: List = missing,
-        file_ids: List[str] = missing,
+        host_ids: list = missing,
+        file_ids: list[str] = missing,
         **kwargs,
     ):
         self.id = id

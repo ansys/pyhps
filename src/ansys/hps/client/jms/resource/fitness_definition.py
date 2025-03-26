@@ -21,11 +21,9 @@
 # SOFTWARE.
 """Module providing the fitness definition and fitness term definition resources."""
 import logging
-from typing import List
-
-from marshmallow.utils import missing
 
 from ansys.hps.client.common import Object
+from marshmallow.utils import missing
 
 from ..schema.fitness_definition import FitnessDefinitionSchema, FitnessTermDefinitionSchema
 
@@ -141,7 +139,7 @@ class FitnessDefinition(Object):
     def __init__(
         self,
         id: str = missing,
-        fitness_term_definitions: List[FitnessTermDefinition] = missing,
+        fitness_term_definitions: list[FitnessTermDefinition] = missing,
         error_fitness: float = missing,
         **kwargs,
     ):

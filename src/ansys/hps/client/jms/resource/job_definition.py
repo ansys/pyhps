@@ -25,11 +25,9 @@
 
 """Module providing the job definition resource."""
 from datetime import datetime
-from typing import Any, Dict, List, Union
-
-from marshmallow.utils import missing
 
 from ansys.hps.client.common import Object
+from marshmallow.utils import missing
 
 from ..schema.job_definition import JobDefinitionSchema
 from .fitness_definition import FitnessDefinition
@@ -79,9 +77,9 @@ class JobDefinition(Object):
         name: str = missing,
         active: bool = missing,
         client_hash: str = missing,
-        parameter_definition_ids: List[str] = missing,
-        parameter_mapping_ids: List[str] = missing,
-        task_definition_ids: List[str] = missing,
+        parameter_definition_ids: list[str] = missing,
+        parameter_mapping_ids: list[str] = missing,
+        task_definition_ids: list[str] = missing,
         fitness_definition: FitnessDefinition = missing,
         **kwargs,
     ):

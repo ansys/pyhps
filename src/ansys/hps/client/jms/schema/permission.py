@@ -20,9 +20,8 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 """Module providing permission schema."""
-from marshmallow import fields
-
 from ansys.hps.client.common import BaseSchema
+from marshmallow import fields
 
 
 class PermissionSchema(BaseSchema):

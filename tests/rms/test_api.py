@@ -28,7 +28,6 @@ log = logging.getLogger(__name__)
 
 
 def test_rms_api_info(client):
-
     rms_api = RmsApi(client)
 
     info = rms_api.get_api_info()

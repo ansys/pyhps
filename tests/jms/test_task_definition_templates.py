@@ -24,8 +24,6 @@ import json
 import logging
 import uuid
 
-from marshmallow.utils import missing
-
 from ansys.hps.client import HPSError
 from ansys.hps.client.auth import AuthApi
 from ansys.hps.client.jms import JmsApi
@@ -36,13 +34,14 @@ from ansys.hps.client.jms.resource import (
     TemplateResourceRequirements,
 )
 from ansys.hps.client.jms.schema.task_definition_template import TaskDefinitionTemplateSchema
+from marshmallow.utils import missing
+
 from tests.utils import create_new_user_client, delete_user
 
 log = logging.getLogger(__name__)
 
 
 def test_template_deserialization():
-
     json_data = {
         # "modification_time": "2021-09-16T12:27:44.771067+00:00",
         "creation_time": "2021-09-16T12:27:44.771067+00:00",
@@ -124,7 +123,6 @@ def test_template_deserialization():
 
 
 def test_template_integration(client):
-
     jms_api = JmsApi(client)
 
     # Test get queries
@@ -200,7 +198,6 @@ def test_template_integration(client):
 
 
 def test_template_permissions(client, keycloak_client, is_admin):
-
     jms_api = JmsApi(client)
 
     templates = jms_api.get_task_definition_templates()
@@ -296,7 +293,6 @@ def test_template_permissions(client, keycloak_client, is_admin):
 
 
 def test_template_permissions_update(client):
-
     jms_api = JmsApi(client)
 
     # create new template and check default permissions
@@ -322,7 +318,6 @@ def test_template_permissions_update(client):
 
 
 def test_template_anyone_permission(client, keycloak_client):
-
     jms_api = JmsApi(client)
 
     # create new template and check default permissions
@@ -386,11 +381,9 @@ def test_template_anyone_permission(client, keycloak_client):
 
 
 def test_template_delete(client, keycloak_client):
-
     auth_api = AuthApi(client)
 
     # create 2 non-admin users
-    jms_api = JmsApi(client)
     user1, client1 = create_new_user_client(client.url, keycloak_client)
     assert not auth_api.user_is_admin(user1.id)
     jms_api1 = JmsApi(client1)

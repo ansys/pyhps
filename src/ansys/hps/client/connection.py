@@ -22,7 +22,6 @@
 """Module getting the :class:`requests.Session` object configured for HPS with a given access token
 and pinging a given URL."""
 import logging
-from typing import Union
 
 import requests
 from requests.adapters import HTTPAdapter, Retry
@@ -32,7 +31,7 @@ log = logging.getLogger(__name__)
 
 def create_session(
     access_token: str = None,
-    verify: Union[bool, str] = True,
+    verify: bool | str = True,
     disable_security_warnings=False,
 ) -> requests.Session:
     """Get the :class:`requests.Session` object configured for HPS with a given access token.

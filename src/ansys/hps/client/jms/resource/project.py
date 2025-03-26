@@ -25,11 +25,9 @@
 
 """Module providing the project resource."""
 from datetime import datetime
-from typing import Any, Dict, List, Union
-
-from marshmallow.utils import missing
 
 from ansys.hps.client.common import Object
+from marshmallow.utils import missing
 
 from ..schema.project import ProjectSchema
 
@@ -67,7 +65,7 @@ class Project(Object):
         priority: int = missing,
         creation_time: datetime = missing,
         modification_time: datetime = missing,
-        statistics: Dict = missing,
+        statistics: dict = missing,
         **kwargs,
     ):
         self.id = id

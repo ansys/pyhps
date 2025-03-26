@@ -67,7 +67,6 @@ CALL_SUBSCRIPT = False
 
 
 def main(input_file, task_definition, images, in_subscript):
-
     log = logging.getLogger()
     log.info("== Start Evaluation Task Definition ==")
 
@@ -79,7 +78,7 @@ def main(input_file, task_definition, images, in_subscript):
     log.info(f"Task Definition: {task_definition}")
     input_file_path = os.path.abspath(input_file)
     log.info(f"Open input file: {input_file_path}")
-    with open(input_file_path, "r") as f:
+    with open(input_file_path) as f:
         params = json.load(f)
 
     log.info(f"Params read: {params}")
@@ -103,25 +102,23 @@ def main(input_file, task_definition, images, in_subscript):
     out_filename = f"{subs}td{task_definition}_results.txt"
     log.debug(f"Write text results file: {out_filename}")
     with open(out_filename, "w") as out:
-        out.write(f"Script JobDefinition:\n")
+        out.write("Script JobDefinition:\n")
         out.write(f"  Task Definition: {task_definition}\n")
         out.write(f"  Input File: {input_file}\n")
         out.write(f"  Images: {images}\n")
-        out.write(f"Input:\n")
+        out.write("Input:\n")
         out.write(f"  Duration: {duration}\n")
         out.write(f"  Period: {period}\n")
         out.write(f"  Color: {color}\n")
-        out.write(f"Output:\n")
+        out.write("Output:\n")
         out.write(f"  Steps: {steps}\n")
         out.flush()
 
     for i in range(1, steps + 1):
         with open(out_filename, "a+") as out:
             sec = (datetime.datetime.now() - stamp).seconds
-            i_step = "{}/{}".format(i, steps)
-            msg = "Task Definition: {}, Step: {:>8}, Time: {:>6}s".format(
-                task_definition, i_step, sec
-            )
+            i_step = f"{i}/{steps}"
+            msg = f"Task Definition: {task_definition}, Step: {i_step:>8}, Time: {sec:>6}s"
             log.info(msg)
             out.write(msg + "\n")
             out.flush()
@@ -132,7 +129,6 @@ def main(input_file, task_definition, images, in_subscript):
         out.flush()
 
     if images:
-
         # place import here if script should run without image generation
         from PIL import Image, ImageDraw, ImageFont
 
@@ -149,7 +145,7 @@ def main(input_file, task_definition, images, in_subscript):
         text(1, f"{subs}task_definition: {task_definition}")
         i = 2
         for k, v in {**params, **output_parameters}.items():
-            text(i, "{}: {}".format(k, v))
+            text(i, f"{k}: {v}")
             i += 1
         text(i, "Have a lot of fun...")
 
@@ -172,7 +168,6 @@ def main(input_file, task_definition, images, in_subscript):
 
 
 if __name__ == "__main__":
-
     parser = argparse.ArgumentParser()
 
     parser.add_argument("input_file")

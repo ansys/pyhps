@@ -135,7 +135,6 @@ def main(client, num_task_definitions, num_jobs, start, inactive, python_version
     log.debug("=== Process Steps")
     task_defs = []
     for i in range(num_task_definitions):
-
         input_file_ids = [file_ids[f"td{i}_pyscript"]]
         if i == 0:
             input_file_ids.append(file_ids["input"])
@@ -197,7 +196,6 @@ def main(client, num_task_definitions, num_jobs, start, inactive, python_version
 
 
 if __name__ == "__main__":
-
     logger = logging.getLogger()
     logging.basicConfig(format="[%(asctime)s | %(levelname)s] %(message)s", level=logging.DEBUG)
 

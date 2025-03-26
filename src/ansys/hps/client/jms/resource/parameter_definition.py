@@ -25,11 +25,9 @@
 
 """Module providing the parameter definition resource."""
 from datetime import datetime
-from typing import Any, Dict, List, Union
-
-from marshmallow.utils import missing
 
 from ansys.hps.client.common import Object
+from marshmallow.utils import missing
 
 from ..schema.parameter_definition import (
     BoolParameterDefinitionSchema,
@@ -53,7 +51,6 @@ class ParameterDefinition(Object):
         rest_name = "parameter_definitions"
 
     def __init__(self, **kwargs):
-
         self.obj_type = self.__class__.__name__
 
 
@@ -122,7 +119,7 @@ class FloatParameterDefinition(ParameterDefinition):
         upper_limit: float = missing,
         step: float = missing,
         cyclic: bool = missing,
-        value_list: List = missing,
+        value_list: list = missing,
         **kwargs,
     ):
         self.id = id
@@ -353,7 +350,7 @@ class StringParameterDefinition(ParameterDefinition):
         mode: str = missing,
         type: str = missing,
         default: str = missing,
-        value_list: List = missing,
+        value_list: list = missing,
         **kwargs,
     ):
         self.id = id

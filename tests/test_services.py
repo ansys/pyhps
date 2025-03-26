@@ -24,7 +24,6 @@ import json
 import logging
 
 import pytest
-
 from ansys.hps.client import Client
 from ansys.hps.client.jms import JmsApi
 from ansys.hps.client.rms import RmsApi
@@ -65,7 +64,7 @@ def test_services(client: Client, build_info_path: str):
         f.write(json.dumps(info, indent=2))
 
     with open(build_info_path.replace(".json", ".md"), "w") as f:
-        f.write(f"### Build info")
-        f.write(f"\n```json\n")
+        f.write("### Build info")
+        f.write("\n```json\n")
         f.write(json.dumps(info, indent=2))
-        f.write(f"\n```")
+        f.write("\n```")

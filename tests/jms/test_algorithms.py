@@ -22,20 +22,18 @@
 
 import logging
 
-from marshmallow.utils import missing
-
 from ansys.hps.client.jms import JmsApi, ProjectApi
 from ansys.hps.client.jms.resource import Algorithm, Job, JobDefinition, JobSelection, Project
+from marshmallow.utils import missing
 
 log = logging.getLogger(__name__)
 
 
 def test_algorithms(client):
-
     log.debug("=== Client ===")
     client = client
     jms_api = JmsApi(client)
-    proj_name = f"rep_client_test_jms_AlgorithmsTest"
+    proj_name = "rep_client_test_jms_AlgorithmsTest"
 
     proj = Project(name=proj_name, active=True)
     proj = jms_api.create_project(proj, replace=True)

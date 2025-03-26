@@ -23,18 +23,17 @@
 import logging
 import uuid
 
-from keycloak import KeycloakOpenID
 import pytest
-
 from ansys.hps.client import Client, ClientError, HPSError, authenticate
 from ansys.hps.client.auth import AuthApi, User
+from keycloak import KeycloakOpenID
+
 from tests.utils import create_user, delete_user
 
 log = logging.getLogger(__name__)
 
 
 def test_get_users(client, keycloak_client):
-
     api = AuthApi(client)
 
     assert "rep" in api.realm_url
@@ -75,7 +74,6 @@ def test_get_users(client, keycloak_client):
 
 
 def test_get_user_permissions(client):
-
     api = AuthApi(client)
 
     user = api.get_users(username=client.username)[0]
@@ -83,22 +81,22 @@ def test_get_user_permissions(client):
     groups = api.get_user_groups(user.id)
     for g in groups:
         assert g is not None
-        assert type(g) == dict
+        assert isinstance(g, dict)
 
     roles = api.get_user_realm_roles(user.id)
     for r in roles:
         assert r is not None
-        assert type(r) == dict
+        assert isinstance(r, dict)
 
     groups = api.get_user_groups_names(user.id)
     for g in groups:
         assert g is not None
-        assert type(g) == str
+        assert isinstance(g, str)
 
     roles = api.get_user_realm_roles_names(user.id)
     for r in roles:
         assert r is not None
-        assert type(r) == str
+        assert isinstance(r, str)
 
     assert api.user_is_admin is not None
 
@@ -148,7 +146,7 @@ def test_impersonate_user(url, keycloak_client):
         )
     except HPSError as e:
         if e.response.status_code == 501 and "Feature not enabled" in e.reason:
-            pytest.skip(f"This test requires to enable the feature 'token-exchange' in keycloak.")
+            pytest.skip("This test requires to enable the feature 'token-exchange' in keycloak.")
 
     assert r is not None
     assert "refresh_token" in r
@@ -174,14 +172,14 @@ def test_impersonate_user(url, keycloak_client):
         client_secret_key="**********",
         verify=False,
     )
-    KEYCLOAK_PUBLIC_KEY = "-----BEGIN PUBLIC KEY-----\n"
-    KEYCLOAK_PUBLIC_KEY += keycloak_openid.public_key()
-    KEYCLOAK_PUBLIC_KEY += "\n-----END PUBLIC KEY-----"
+    keycloak_public_key = "-----BEGIN PUBLIC KEY-----\n"
+    keycloak_public_key += keycloak_openid.public_key()
+    keycloak_public_key += "\n-----END PUBLIC KEY-----"
 
     options = {"verify_signature": True, "verify_aud": True, "verify_exp": True}
     token_info = keycloak_openid.decode_token(
         client_impersonated.access_token,
-        key=KEYCLOAK_PUBLIC_KEY,
+        key=keycloak_public_key,
         options=options,
     )
     assert token_info["preferred_username"] == new_user.username

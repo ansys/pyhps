@@ -33,7 +33,6 @@ from ansys.rep.evaluator.task_manager import ApplicationExecution
 
 class PythonExecution(ApplicationExecution):
     def execute(self):
-
         log.info("Start Python execution script")
 
         # Identify files

@@ -20,9 +20,8 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 """Module providing operation schema."""
-from marshmallow import fields
-
 from ansys.hps.client.common import ObjectSchema
+from marshmallow import fields
 
 
 class OperationSchema(ObjectSchema):

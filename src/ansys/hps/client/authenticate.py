@@ -22,7 +22,6 @@
 """Module that provides authentication for the user with a password or refresh token against the
 HPS authentication service."""
 import logging
-from typing import Union
 
 import requests
 
@@ -33,7 +32,7 @@ log = logging.getLogger(__name__)
 OIDC_DISCOVERY_ENDPOINT_PATH = "/.well-known/openid-configuration"
 
 
-def get_discovery_data(auth_url: str, timeout: int = 10, verify: Union[bool, str] = True) -> dict:
+def get_discovery_data(auth_url: str, timeout: int = 10, verify: bool | str = True) -> dict:
     disco_url = auth_url.rstrip("/") + OIDC_DISCOVERY_ENDPOINT_PATH
     log.debug(f"Discovery URL: {disco_url}")
     with requests.Session() as session:
@@ -58,7 +57,7 @@ def authenticate(
     password: str = None,
     refresh_token: str = None,
     timeout: float = 10.0,
-    verify: Union[bool, str] = True,
+    verify: bool | str = True,
     **kwargs,
 ):
     """
@@ -133,18 +132,18 @@ def authenticate(
         # If password and username, and its not already defined, this has to be password grant
         if password:
             data["password"] = password
-            if "username" in data and not "grant_type" in data:
+            if "username" in data and "grant_type" not in data:
                 data["grant_type"] = "password"
 
         # If a refresh token is provided, the grant type is refresh token unless otherwise listed.
         if refresh_token:
             data["refresh_token"] = refresh_token
-            if not "grant_type" in data:
+            if "grant_type" not in data:
                 data["grant_type"] = "refresh_token"
 
         # If we have a secret and no other grant types have been suggested,
         # then it must be a simple client_creds
-        if "client_secret" in data and not "grant_type" in data:
+        if "client_secret" in data and "grant_type" not in data:
             data["grant_type"] = "client_credentials"
 
         log.debug(

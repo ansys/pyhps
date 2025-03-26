@@ -20,13 +20,11 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 """Module providing the file resource."""
-from datetime import datetime
 import io
-from typing import Union
-
-from marshmallow.utils import missing
+from datetime import datetime
 
 from ansys.hps.client.common import Object
+from marshmallow.utils import missing
 
 from ..schema.file import FileSchema
 
@@ -82,7 +80,7 @@ class File(Object):
 
     def __init__(
         self,
-        src: Union[str, io.IOBase] = None,
+        src: str | io.IOBase = None,
         id: str = missing,
         creation_time: datetime = missing,
         modification_time: datetime = missing,

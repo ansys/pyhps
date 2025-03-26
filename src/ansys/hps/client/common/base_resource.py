@@ -28,7 +28,7 @@ from marshmallow.utils import missing
 log = logging.getLogger(__name__)
 
 
-class Object(object):
+class Object:
     class Meta:
         schema = None  # To be set in derived classes
         rest_name = (
@@ -54,7 +54,6 @@ class Object(object):
 
         # Instantiate class members for all fields of the corresponding schema
         for k in self.declared_fields():
-
             # If property k is provided as init parameter
             if k in kwargs.keys():
                 setattr(self, k, kwargs[k])
@@ -65,9 +64,9 @@ class Object(object):
 
     def __repr__(self):
         """Printable representation of the object."""
-        return "%s(%s)" % (
+        return "%s(%s)" % (  # noqa
             self.__class__.__name__,
-            ",".join(["%s=%r" % (k, getattr(self, k)) for k in self.declared_fields()]),
+            ",".join(["%s=%r" % (k, getattr(self, k)) for k in self.declared_fields()]),  # noqa
         )
 
     def __eq__(self, other):
@@ -93,7 +92,7 @@ class Object(object):
             value = missing
             try:
                 value = field_obj.serialize(attr_name, self, accessor=schema.get_attribute)
-            except:
+            except Exception:
                 pass
             if value is missing:
                 continue

@@ -21,9 +21,8 @@
 # SOFTWARE.
 """Module providing project schema."""
 
-from marshmallow import fields
-
 from ansys.hps.client.common import BaseSchema
+from marshmallow import fields
 
 
 class ProjectSchema(BaseSchema):

@@ -21,9 +21,8 @@
 # SOFTWARE.
 """Module providing file schema."""
 
-from marshmallow import fields
-
 from ansys.hps.client.common import ObjectSchemaWithModificationInfo
+from marshmallow import fields
 
 from .object_reference import IdReference
 

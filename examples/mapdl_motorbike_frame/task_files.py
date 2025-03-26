@@ -57,12 +57,12 @@ def modify_task_files(client, project_name):
     mac_file = proj.get_files(id=mac_file_id, content=True)[0]
     content = mac_file.content.decode("utf-8")
     lines = content.splitlines()
-    for i, l in enumerate(lines):
-        if "/PREP7" in l:
+    for i, line in enumerate(lines):
+        if "/PREP7" in line:
             lines.insert(i + 1, "/INPUT,task_input_file,mac")
             break
-    for i, l in enumerate(lines):
-        if "*CFCLOSE" in l:
+    for i, line in enumerate(lines):
+        if "*CFCLOSE" in line:
             lines.insert(i + 2, "*CFCLOSE")
             lines.insert(i + 2, "('task_var = ',F20.8)")
             lines.insert(i + 2, "*VWRITE,task_var")
@@ -138,7 +138,6 @@ def modify_task_files(client, project_name):
 
 
 if __name__ == "__main__":
-
     parser = argparse.ArgumentParser()
     parser.add_argument("-n", "--name", type=str, default="mapdl_motorbike_frame")
     parser.add_argument("-j", "--num-jobs", type=int, default=500)

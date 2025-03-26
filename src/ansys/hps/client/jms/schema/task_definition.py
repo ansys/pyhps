@@ -22,9 +22,8 @@
 """Module providing software, HPC resource, resource requirement, success criteria,
 licensing, and task definition schema."""
 
-from marshmallow import fields
-
 from ansys.hps.client.common import BaseSchema, ObjectSchemaWithModificationInfo, RestrictedValue
+from marshmallow import fields
 
 from .object_reference import IdReference, IdReferenceList
 

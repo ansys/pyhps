@@ -81,7 +81,6 @@ def check_min_version_and_raise(version, min_version: str, msg=None):
     """Check if a version meets a minimum version, raise an exception if not."""
 
     if not check_min_version(version, min_version):
-
         if msg is None:
             msg = f"Version {version} is not supported. Minimum version required: {min_version}"
         raise VersionCompatibilityError(msg)
@@ -91,7 +90,6 @@ def check_max_version_and_raise(version, max_version: str, msg=None):
     """Check if a version meets a maximum version, raise an exception if not."""
 
     if not check_max_version(version, max_version):
-
         if msg is None:
             msg = f"Version {version} is not supported. Maximum version required: {max_version}"
         raise VersionCompatibilityError(msg)
@@ -113,7 +111,6 @@ def version_required(min_version=None, max_version=None):
     """Decorator for API methods to check version requirements."""
 
     def decorator(func):
-
         @wraps(func)
         def wrapper(self: ApiProtocol, *args, **kwargs):
             if min_version is not None:

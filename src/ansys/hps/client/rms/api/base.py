@@ -23,14 +23,11 @@
 to and from JSONs."""
 import json
 import logging
-from typing import List, Type
-
-from pydantic import BaseModel
-from pydantic import __version__ as pydantic_version
-from pydantic import create_model
-from requests import Session
 
 from ansys.hps.client.exceptions import ClientError
+from pydantic import BaseModel, create_model
+from pydantic import __version__ as pydantic_version
+from requests import Session
 
 from ..models import (
     ComputeResourceSet,
@@ -52,7 +49,7 @@ log = logging.getLogger(__name__)
 def _create_dynamic_list_model(name, field_name, field_type) -> BaseModel:
     # Helper function to create at runtime a pydantic model storing
     # a list of objects.
-    fields = {f"{field_name}": (List[field_type], ...)}
+    fields = {f"{field_name}": (list[field_type], ...)}
     return create_model(name, **fields)
 
 
@@ -72,13 +69,12 @@ def object_to_json(
 
 
 def objects_to_json(
-    objects: List[BaseModel],
+    objects: list[BaseModel],
     rest_name: str,
     exclude_unset: bool = True,
     exclude_defaults: bool = False,
 ):
-
-    ListOfObjects = _create_dynamic_list_model(
+    ListOfObjects = _create_dynamic_list_model(  # noqa: N806
         name=f"List{objects[0].__class__.__name__}",
         field_name=rest_name,
         field_type=objects[0].__class__,
@@ -98,9 +94,8 @@ def json_to_objects(data, obj_type):
 
 
 def get_objects(
-    session: Session, url: str, obj_type: Type[BaseModel], as_objects=True, **query_params
+    session: Session, url: str, obj_type: type[BaseModel], as_objects=True, **query_params
 ):
-
     rest_name = OBJECT_TYPE_TO_ENDPOINT[obj_type]
     url = f"{url}/{rest_name}"
     r = session.get(url, params=query_params)
@@ -112,8 +107,7 @@ def get_objects(
     return json_to_objects(data, obj_type)
 
 
-def get_objects_count(session: Session, url: str, obj_type: Type[BaseModel], **query_params):
-
+def get_objects_count(session: Session, url: str, obj_type: type[BaseModel], **query_params):
     rest_name = OBJECT_TYPE_TO_ENDPOINT[obj_type]
     url = f"{url}/{rest_name}:count"  # noqa: E231
     r = session.get(url, params=query_params)
@@ -124,12 +118,11 @@ def get_objects_count(session: Session, url: str, obj_type: Type[BaseModel], **q
 def get_object(
     session: Session,
     url: str,
-    obj_type: Type[BaseModel],
+    obj_type: type[BaseModel],
     as_object=True,
     from_collection=False,
     **query_params,
 ):
-
     r = session.get(url, params=query_params)
     data = r.json()
     if from_collection:
@@ -141,7 +134,7 @@ def get_object(
 
 
 def create_objects(
-    session: Session, url: str, objects: List[BaseModel], as_objects=True, **query_params
+    session: Session, url: str, objects: list[BaseModel], as_objects=True, **query_params
 ):
     if not objects:
         return []
@@ -167,12 +160,11 @@ def create_objects(
 def update_objects(
     session: Session,
     url: str,
-    objects: List[BaseModel],
-    obj_type: Type[BaseModel],
+    objects: list[BaseModel],
+    obj_type: type[BaseModel],
     as_objects=True,
     **query_params,
 ):
-
     if not objects:
         return []
 
@@ -193,7 +185,7 @@ def update_objects(
     return json_to_objects(data, obj_type)
 
 
-def delete_objects(session: Session, url: str, objects: List[BaseModel]):
+def delete_objects(session: Session, url: str, objects: list[BaseModel]):
     if not objects:
         return
 
@@ -207,4 +199,4 @@ def delete_objects(session: Session, url: str, objects: List[BaseModel]):
     url = f"{url}/{rest_name}"
     data = json.dumps({"source_ids": [obj.id for obj in objects]})
 
-    r = session.delete(url, data=data)
+    _ = session.delete(url, data=data)

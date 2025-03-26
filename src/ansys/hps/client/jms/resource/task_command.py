@@ -25,11 +25,9 @@
 
 """Module providing the task command resource."""
 from datetime import datetime
-from typing import Any, Dict, List, Union
-
-from marshmallow.utils import missing
 
 from ansys.hps.client.common import Object
+from marshmallow.utils import missing
 
 from ..schema.task_command import TaskCommandSchema
 
@@ -76,7 +74,7 @@ class TaskCommand(Object):
         modified_by: str = missing,
         task_id: str = missing,
         command_definition_id: str = missing,
-        arguments: Dict = missing,
+        arguments: dict = missing,
         running_time: datetime = missing,
         finished_time: datetime = missing,
         status: str = missing,

@@ -22,9 +22,8 @@
 """Module providing parameter mapping schema."""
 import logging
 
-from marshmallow import fields
-
 from ansys.hps.client.common import ObjectSchemaWithModificationInfo
+from marshmallow import fields
 
 from .object_reference import IdReference
 

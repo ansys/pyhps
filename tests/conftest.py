@@ -23,10 +23,9 @@
 
 import os
 
-from keycloak import KeycloakAdmin
 import pytest
-
 from ansys.hps.client import AuthApi, Client
+from keycloak import KeycloakAdmin
 
 
 @pytest.fixture(scope="session")
@@ -61,7 +60,6 @@ def client(url, username, password):
 
 @pytest.fixture()
 def keycloak_client(client: Client, keycloak_username, keycloak_password):
-
     keycloak_client = KeycloakAdmin(
         server_url=client.auth_api_url,
         username=keycloak_username,

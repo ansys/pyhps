@@ -21,9 +21,8 @@
 # SOFTWARE.
 """Module providing template property, resource requirements, file, input file,
 output file, and task definition schema."""
-from marshmallow import fields, validate
-
 from ansys.hps.client.common import BaseSchema, ObjectSchema
+from marshmallow import fields, validate
 
 from .task_definition import HpcResourcesSchema, SoftwareSchema, WorkerContextSchema
 

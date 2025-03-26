@@ -26,13 +26,11 @@ The main goal is to auto-generate the class docstrings and
 allow code completion.
 """
 
-from dataclasses import dataclass
 import importlib
 import os
-from typing import List, Tuple
+from dataclasses import dataclass
 
 import marshmallow
-
 from ansys.hps.client.common.restricted_value import RestrictedValue
 from ansys.hps.client.jms.schema.object_reference import IdReference, IdReferenceList
 
@@ -352,8 +350,7 @@ class Field:
     type: str = "Any"
 
 
-def extract_field_info(name: str, field_object: marshmallow.fields, resources) -> Tuple[Field, str]:
-
+def extract_field_info(name: str, field_object: marshmallow.fields, resources) -> tuple[Field, str]:
     field = Field(name=name)
     v = field_object
 
@@ -381,7 +378,6 @@ def extract_field_info(name: str, field_object: marshmallow.fields, resources) -
 
 
 def _extract_field_type(v, resources) -> str:
-
     if v.__class__ == marshmallow.fields.Constant:
         field_type = type(v.constant).__name__
     elif v.__class__ == marshmallow.fields.Nested:
@@ -401,20 +397,19 @@ def _extract_field_type(v, resources) -> str:
                 else:
                     value_field_type = "any"
                 field_type += f"[{key_field_type}, {value_field_type}]"
-        if hasattr(v, "many") and v.many == True:
+        if hasattr(v, "many") and v.many:
             field_type = f"list[{field_type}]"
 
     return field_type
 
 
-def declared_fields(schema, resources) -> Tuple[List[Field], List[str]]:
+def declared_fields(schema, resources) -> tuple[list[Field], list[str]]:
     """
     Helper function to retrieve the fields that is defined as class members for an object
     """
     fields = []
     fields_doc = []
     for k, v in schema._declared_fields.items():
-
         field, field_doc = extract_field_info(k, v, resources)
         fields.append(field)
         fields_doc.append(field_doc)
@@ -423,7 +418,6 @@ def declared_fields(schema, resources) -> Tuple[List[Field], List[str]]:
 
 
 def get_resource_imports(resource, base_class):
-
     imports = [
         "from datetime import datetime",
         "from typing import List, Dict, Any, Union",
@@ -457,8 +451,7 @@ def get_module_docstring(file_name: str) -> str:
     return code
 
 
-def get_resource_code(resource, base_class, fields: List[Field], field_docs: List[str]):
-
+def get_resource_code(resource, base_class, fields: list[Field], field_docs: list[str]):
     fields_str = ""
     for k in fields:
         fields_str += f"        self.{k.name} = {k.name}\n"
@@ -497,7 +490,6 @@ def get_resource_code(resource, base_class, fields: List[Field], field_docs: Lis
 
 
 def process_resources(subpackage, resources, base_class_path="ansys.hps.client"):
-
     target_folder = os.path.join("src", "ansys", "hps", "client", subpackage, "resource")
     resources_code = {}
     for resource in resources:
@@ -531,7 +523,7 @@ def process_resources(subpackage, resources, base_class_path="ansys.hps.client")
 
         # we're ready to put the pieces together
         file_name = resource["resource_filename"]
-        if not file_name in resources_code:
+        if file_name not in resources_code:
             resources_code[file_name] = {
                 "imports": [],
                 "code": [],

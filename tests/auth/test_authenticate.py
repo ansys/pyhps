@@ -24,7 +24,6 @@ import logging
 
 import pytest
 import requests
-
 from ansys.hps.client import authenticate
 
 log = logging.getLogger(__name__)
@@ -38,7 +37,6 @@ def test_authenticate(url, username, password):
 
 
 def test_authenticate_with_ssl_verification(url, username, password):
-
     with pytest.raises(requests.exceptions.SSLError) as ex_info:
         _ = authenticate(url=url, username=username, password=password, verify=True)
     assert "CERTIFICATE_VERIFY_FAILED" in str(ex_info.value)

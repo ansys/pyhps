@@ -75,14 +75,14 @@ class HPSJob:
         job_definition_id=None,
         job_id=None,
         auth_token=None,
-        task_ids=[],
+        task_ids=None,
     ):
         self.hps_url = hps_url
         self.project_id = project_id
         self.job_definition_id = job_definition_id
         self.job_id = job_id
         self.auth_token = auth_token
-        self.task_ids = task_ids
+        self.task_ids = task_ids or []
 
     def __str__(self):
         repr = json.dumps(self, default=lambda x: x.__dict__, sort_keys=True, indent=4)
@@ -96,7 +96,7 @@ class HPSJob:
     @classmethod
     def load(cls):
         """Load job info from JSON file"""
-        with open("hps_job.json", "r") as f:
+        with open("hps_job.json") as f:
             job = json.load(f, object_hook=lambda d: cls(**d))
         return job
 
@@ -268,9 +268,6 @@ def submit_job(
 
     job_def = project_api.create_job_definitions([job_def])[0]
 
-    # Refresh the parameters
-    params = project_api.get_parameter_definitions(id=job_def.parameter_definition_ids)
-
     log.debug("=== Jobs")
     job = Job(
         eval_status="pending",
@@ -334,13 +331,13 @@ def download_results(app_job: HPSJob):
 
     try:
         from tqdm import tqdm
-    except ImportError as e:
+    except ImportError:
         log.error("The 'tqdm' package is not installed. Please pip install it")
         return
 
     try:
         import humanize
-    except ImportError as e:
+    except ImportError:
         log.error("The 'humanize' package is not installed. Please pip install it")
         return
 
@@ -352,7 +349,6 @@ def download_results(app_job: HPSJob):
     tasks = project_api.get_tasks(job_id=app_job.job_id)
 
     for task in tasks:
-
         if not task.output_file_ids:
             log.info(f"No files are available on the server for Task {task.id}")
             continue
@@ -367,7 +363,6 @@ def download_results(app_job: HPSJob):
         )
 
         for file in files:
-
             target_folder = os.path.join("job_results", task.task_definition_snapshot.name)
             download_path = os.path.join(target_folder, file.evaluation_path)
 
@@ -404,7 +399,6 @@ def download_results(app_job: HPSJob):
 
 
 if __name__ == "__main__":
-
     parser = argparse.ArgumentParser()
     parser.add_argument(
         "action", default="submit", choices=["submit", "monitor", "download"], help="Action to run"

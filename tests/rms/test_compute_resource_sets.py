@@ -28,7 +28,6 @@ log = logging.getLogger(__name__)
 
 
 def test_scaler_integration(client):
-
     rms_api = RmsApi(client)
     scalers = rms_api.get_scalers(limit=1000)
 
@@ -53,7 +52,6 @@ def test_scaler_integration(client):
 
 
 def test_crs_integration(client):
-
     rms_api = RmsApi(client)
     resource_sets = rms_api.get_compute_resource_sets(limit=1000)
 

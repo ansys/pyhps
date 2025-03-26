@@ -25,11 +25,10 @@
 
 """Module providing the task definition template resource."""
 from datetime import datetime
-from typing import Any, Dict, List, Union
-
-from marshmallow.utils import missing
+from typing import Any
 
 from ansys.hps.client.common import Object
+from marshmallow.utils import missing
 
 from ..schema.task_definition_template import (
     TaskDefinitionTemplateSchema,
@@ -108,7 +107,7 @@ class TemplateResourceRequirements(Object):
         distributed: TemplateProperty = missing,
         compute_resource_set_id: TemplateProperty = missing,
         evaluator_id: TemplateProperty = missing,
-        custom: Dict[str, TemplateProperty] = missing,
+        custom: dict[str, TemplateProperty] = missing,
         hpc_resources: HpcResources = missing,
         **kwargs,
     ):
@@ -273,17 +272,17 @@ class TaskDefinitionTemplate(Object):
         name: str = missing,
         version: str = missing,
         description: str = missing,
-        software_requirements: List[Software] = missing,
+        software_requirements: list[Software] = missing,
         resource_requirements: TemplateResourceRequirements = missing,
         worker_context: WorkerContext = missing,
-        execution_context: Dict[str, TemplateProperty] = missing,
-        environment: Dict[str, TemplateProperty] = missing,
+        execution_context: dict[str, TemplateProperty] = missing,
+        environment: dict[str, TemplateProperty] = missing,
         execution_command: str = missing,
         use_execution_script: bool = missing,
         execution_script_storage_id: str = missing,
         execution_script_storage_bucket: str = missing,
-        input_files: List[TemplateInputFile] = missing,
-        output_files: List[TemplateOutputFile] = missing,
+        input_files: list[TemplateInputFile] = missing,
+        output_files: list[TemplateOutputFile] = missing,
         **kwargs,
     ):
         self.id = id

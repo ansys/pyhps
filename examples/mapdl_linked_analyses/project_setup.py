@@ -45,7 +45,6 @@ In both cases, output files from upstream tasks are used as input of downstream 
 import argparse
 import logging
 import os
-from typing import List, Tuple
 
 from ansys.hps.client import Client, HPSError, __ansys_apps_version__
 from ansys.hps.client.jms import (
@@ -67,8 +66,7 @@ log = logging.getLogger(__name__)
 
 def create_prestress_task_definition(
     project_api: ProjectApi, use_exec_script: bool, version: str
-) -> Tuple[str, List[File]]:
-
+) -> tuple[str, list[File]]:
     log.info("=== Files")
     cwd = os.path.dirname(__file__)
     files = [
@@ -146,9 +144,8 @@ def create_prestress_task_definition(
 
 
 def create_modal_task_definition(
-    project_api: ProjectApi, prestress_files: List[File], use_exec_script: bool, version: str
-) -> Tuple[str, List[File]]:
-
+    project_api: ProjectApi, prestress_files: list[File], use_exec_script: bool, version: str
+) -> tuple[str, list[File]]:
     log.info("=== Files")
     cwd = os.path.dirname(__file__)
     # the prestress output files already exist, no need to create them
@@ -242,9 +239,8 @@ def create_modal_task_definition(
 
 
 def create_harmonic_task_definition(
-    project_api: ProjectApi, modal_files: List[File], use_exec_script: bool, version: str
+    project_api: ProjectApi, modal_files: list[File], use_exec_script: bool, version: str
 ) -> str:
-
     log.info("=== Files")
     cwd = os.path.dirname(__file__)
     # the modal_files output files already exist, no need to create them
@@ -312,7 +308,6 @@ def set_last_task_to_pending(project_api: ProjectApi, job_id: str):
 def create_project(
     client: Client, name: str, incremental: bool, use_exec_script: bool, version: str
 ) -> Project:
-
     log.info("=== HPS connection")
     log.info(f"Client connected at {client.url}")
 

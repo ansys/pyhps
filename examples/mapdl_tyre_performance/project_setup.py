@@ -53,7 +53,6 @@ log = logging.getLogger(__name__)
 def create_project(
     client, name, version=__ansys_apps_version__, num_jobs=20, use_exec_script=False, active=True
 ) -> Project:
-
     log.debug("=== Project")
     jms_api = JmsApi(client)
     proj = Project(name=name, priority=1, active=True)

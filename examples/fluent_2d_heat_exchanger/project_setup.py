@@ -134,7 +134,7 @@ def create_project(
 
     log.info("=== Submit Job")
     job = project_api.create_jobs(
-        [Job(name=f"Job", eval_status="pending", job_definition_id=job_def.id)]
+        [Job(name="Job", eval_status="pending", job_definition_id=job_def.id)]
     )[0]
 
     log.info(f"Created project '{proj.name}', ID='{proj.id}'")

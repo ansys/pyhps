@@ -29,6 +29,7 @@ from ansys.hps.client.auth import AuthApi, User
 from ansys.hps.client.exceptions import ClientError
 from ansys.hps.client.jms import JmsApi, ProjectApi
 from ansys.hps.client.jms.resource import JobDefinition, Permission, Project
+
 from tests.utils import create_user, delete_user
 
 log = logging.getLogger(__name__)
@@ -63,9 +64,8 @@ def remove_permissions(project_api: ProjectApi, user):
 
 
 def test_get_project_permissions(client):
-
     jms_api = JmsApi(client)
-    proj_name = f"test_jms_get_permissions_test"
+    proj_name = "test_jms_get_permissions_test"
 
     proj = Project(name=proj_name, active=True, priority=10)
     proj = jms_api.create_project(proj, replace=True)

@@ -24,7 +24,6 @@ import datetime
 import logging
 
 import pytest
-
 from ansys.hps.client.rms import RmsApi
 from ansys.hps.client.rms.models import EvaluatorConfigurationUpdate, EvaluatorRegistration
 
@@ -32,7 +31,6 @@ log = logging.getLogger(__name__)
 
 
 def test_evaluator_deserialization():
-
     evaluator_dict = {
         "id": "02q1DiPEP0nanLN5384q8L",
         # "last_modified": "2019-05-07T05:42:52.493419+00:00",
@@ -52,7 +50,6 @@ def test_evaluator_deserialization():
 
 
 def test_evaluator_integration(client):
-
     rms_api = RmsApi(client)
     evaluators = rms_api.get_evaluators(limit=1000)
 

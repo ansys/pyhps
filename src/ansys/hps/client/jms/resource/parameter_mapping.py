@@ -25,11 +25,9 @@
 
 """Module providing the parameter mapping resource."""
 from datetime import datetime
-from typing import Any, Dict, List, Union
-
-from marshmallow.utils import missing
 
 from ansys.hps.client.common import Object
+from marshmallow.utils import missing
 
 from ..schema.parameter_mapping import ParameterMappingSchema
 

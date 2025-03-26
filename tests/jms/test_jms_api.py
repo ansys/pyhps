@@ -22,10 +22,7 @@
 
 import logging
 
-from examples.mapdl_motorbike_frame.project_setup import create_project
-from marshmallow.utils import missing
 import pytest
-
 from ansys.hps.client import Client, ClientError
 from ansys.hps.client.jms import JmsApi, ProjectApi
 from ansys.hps.client.jms.resource import (
@@ -35,12 +32,14 @@ from ansys.hps.client.jms.resource import (
     JobDefinition,
     Project,
 )
+from marshmallow.utils import missing
+
+from examples.mapdl_motorbike_frame.project_setup import create_project
 
 log = logging.getLogger(__name__)
 
 
 def test_jms_api_info(client):
-
     jms_api = JmsApi(client)
 
     assert jms_api.url.endswith("/jms/api/v1")
@@ -53,7 +52,6 @@ def test_jms_api_info(client):
 
 
 def test_jms_api(client):
-
     log.debug("=== Client ===")
     proj_name = "Mapdl Motorbike Frame"
 
@@ -115,7 +113,6 @@ def test_jms_api(client):
 
 
 def test_fields_query_parameter(url, username, password):
-
     client1 = Client(url, username, password, all_fields=False)
 
     proj_name = "test_fields_query_parameter"
@@ -159,7 +156,6 @@ def test_fields_query_parameter(url, username, password):
 
 
 def test_storage_configuration(client):
-
     jms_api = JmsApi(client)
     storages = jms_api.get_storage()
     for storage in storages:
@@ -169,8 +165,7 @@ def test_storage_configuration(client):
 
 
 def test_objects_type_check(client):
-
-    proj_name = f"test_objects_type_check"
+    proj_name = "test_objects_type_check"
 
     proj = Project(name=proj_name, active=True)
     job_def = JobDefinition(name="Job Def", active=True)

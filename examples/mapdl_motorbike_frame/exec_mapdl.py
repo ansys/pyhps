@@ -35,7 +35,6 @@ from ansys.rep.evaluator.task_manager import ApplicationExecution
 
 class MAPDLExecution(ApplicationExecution):
     def execute(self):
-
         log.info("Starting MAPDL execution script")
 
         # Identify files

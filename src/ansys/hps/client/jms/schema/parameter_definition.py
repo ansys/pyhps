@@ -22,10 +22,9 @@
 """Module providing float, integer, boolean, and string parameter definition schema."""
 import logging
 
+from ansys.hps.client.common import ObjectSchemaWithModificationInfo
 from marshmallow import fields
 from marshmallow_oneofschema import OneOfSchema
-
-from ansys.hps.client.common import ObjectSchemaWithModificationInfo
 
 log = logging.getLogger(__name__)
 

@@ -25,11 +25,9 @@
 
 """Module providing the selection resource."""
 from datetime import datetime
-from typing import Any, Dict, List, Union
-
-from marshmallow.utils import missing
 
 from ansys.hps.client.common import Object
+from marshmallow.utils import missing
 
 from ..schema.selection import JobSelectionSchema
 
@@ -70,7 +68,7 @@ class JobSelection(Object):
         modified_by: str = missing,
         name: str = missing,
         algorithm_id: str = missing,
-        jobs: List[str] = missing,
+        jobs: list[str] = missing,
         **kwargs,
     ):
         self.id = id

@@ -21,7 +21,6 @@
 # SOFTWARE.
 """Module providing the Python interface to the Authorization Service API."""
 
-from typing import Dict, List
 
 from ansys.hps.client.client import Client
 
@@ -65,7 +64,7 @@ class AuthApi:
         """Realm URL."""
         return f"{self.url}/admin/realms/{self.client.realm}"
 
-    def get_users(self, as_objects=True, **query_params) -> List[User]:
+    def get_users(self, as_objects=True, **query_params) -> list[User]:
         """Get users, filtered according to query parameters.
 
         Examples of query parameters are:
@@ -102,22 +101,22 @@ class AuthApi:
         schema = UserSchema(many=False)
         return schema.load(data)
 
-    def get_user_groups_names(self, id: str) -> List[str]:
+    def get_user_groups_names(self, id: str) -> list[str]:
         """Get the name of the groups that the user belongs to."""
         return [g["name"] for g in self.get_user_groups(id)]
 
-    def get_user_realm_roles_names(self, id: str) -> List[str]:
+    def get_user_realm_roles_names(self, id: str) -> list[str]:
         """Get the name of the realm roles for the user."""
         return [r["name"] for r in self.get_user_realm_roles(id)]
 
-    def get_user_groups(self, id: str) -> List[Dict]:
+    def get_user_groups(self, id: str) -> list[dict]:
         """Get the groups that the user belongs to."""
         r = self.client.session.get(
             url=f"{self.realm_url}/users/{id}/groups",
         )
         return r.json()
 
-    def get_user_realm_roles(self, id: str) -> List[Dict]:
+    def get_user_realm_roles(self, id: str) -> list[dict]:
         """Get the realm roles for the user."""
         r = self.client.session.get(
             url=f"{self.realm_url}/users/{id}/role-mappings/realm",

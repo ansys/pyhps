@@ -20,9 +20,8 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 """Module wrapping around RMS root endpoints."""
-from functools import cache
 import logging
-from typing import List
+from functools import cache
 
 from ansys.hps.client.client import Client
 from ansys.hps.client.exceptions import ClientError
@@ -42,7 +41,7 @@ from .base import create_objects, get_object, get_objects, get_objects_count, ob
 log = logging.getLogger(__name__)
 
 
-class RmsApi(object):
+class RmsApi:
     """Wraps around the RMS root endpoints.
 
     Parameters
@@ -81,7 +80,7 @@ class RmsApi(object):
             self.client.session, self.url, EvaluatorRegistration, **query_params
         )
 
-    def get_evaluators(self, as_objects=True, **query_params) -> List[EvaluatorRegistration]:
+    def get_evaluators(self, as_objects=True, **query_params) -> list[EvaluatorRegistration]:
         """Get a list of evaluators, optionally filtered by query parameters.
 
         The server only returns the first 10 objects (``limit=10``) by default.
@@ -138,7 +137,7 @@ class RmsApi(object):
         """Get the number of scalers, optionally filtered by query parameters."""
         return get_objects_count(self.client.session, self.url, ScalerRegistration, **query_params)
 
-    def get_scalers(self, as_objects=True, **query_params) -> List[ScalerRegistration]:
+    def get_scalers(self, as_objects=True, **query_params) -> list[ScalerRegistration]:
         """Get a list of scalers, optionally filtered by query parameters.
 
         The server only returns the first 10 objects (``limit=10``) by default.
@@ -155,7 +154,7 @@ class RmsApi(object):
 
     def get_compute_resource_sets(
         self, as_objects=True, **query_params
-    ) -> List[ComputeResourceSet]:
+    ) -> list[ComputeResourceSet]:
         """Get a list of compute resource sets, optionally filtered by query parameters.
 
         The server only returns the first 10 objects (``limit=10``) by default.
@@ -192,7 +191,7 @@ class RmsApi(object):
     ) -> AnalyzeResponse:
         """Compare resource requirements against available compute resources."""
         if requirements is None:
-            raise ClientError(f"Requirements can't be None.")
+            raise ClientError("Requirements can't be None.")
 
         r = self.client.session.post(
             f"{self.url}/analyze",

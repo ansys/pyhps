@@ -25,11 +25,9 @@
 
 """Module providing the operation resource."""
 from datetime import datetime
-from typing import Any, Dict, List, Union
-
-from marshmallow.utils import missing
 
 from ansys.hps.client.common import Object
+from marshmallow.utils import missing
 
 from ..schema.operation import OperationSchema
 
@@ -61,13 +59,13 @@ class Operation(Object):
         self,
         id: str = missing,
         name: str = missing,
-        target: List = missing,
+        target: list = missing,
         finished: bool = missing,
         succeeded: bool = missing,
         progress: float = missing,
         status: str = missing,
-        result: Dict = missing,
-        messages: List = missing,
+        result: dict = missing,
+        messages: list = missing,
         start_time: datetime = missing,
         end_time: datetime = missing,
         **kwargs,

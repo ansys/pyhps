@@ -42,7 +42,7 @@ class RestrictedValue(fields.Field):
         for field in self.restricted_fields:
             try:
                 return field._deserialize(value, attr, obj, **kwargs)
-            except:
+            except Exception:
                 pass
 
         self.raise_validation_error()

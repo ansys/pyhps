@@ -22,8 +22,6 @@
 
 import logging
 
-from marshmallow.utils import missing
-
 from ansys.hps.client.jms import JmsApi, ProjectApi
 from ansys.hps.client.jms.resource import (
     BoolParameterDefinition,
@@ -40,12 +38,12 @@ from ansys.hps.client.jms.schema.parameter_definition import (
     ParameterDefinitionSchema,
     StringParameterDefinitionSchema,
 )
+from marshmallow.utils import missing
 
 log = logging.getLogger(__name__)
 
 
 def test_parameter_definition_deserialization():
-
     int_parameter = {
         "default": 4,
         "lower_limit": 0,
@@ -67,7 +65,7 @@ def test_parameter_definition_deserialization():
     assert ip.id == int_parameter["id"]
     assert ip.name == int_parameter["name"]
     assert ip.mode == "input"
-    assert ip.cyclic == False
+    assert not ip.cyclic
     assert ip.upper_limit == 40
     assert ip.quantity_name == int_parameter["quantity_name"]
 
@@ -92,7 +90,7 @@ def test_parameter_definition_deserialization():
     assert fp.id == float_parameter["id"]
     assert fp.name == float_parameter["name"]
     assert fp.mode == "output"
-    assert fp.step == None
+    assert fp.step is None
     assert fp.lower_limit == 0.5
     assert fp.upper_limit == missing
     assert fp.display_text == float_parameter["display_text"]
@@ -114,7 +112,7 @@ def test_parameter_definition_deserialization():
     assert sp.type == "string"
     assert sp.id == string_parameter["id"]
     assert sp.name == string_parameter["name"]
-    assert sp.quantity_name == None
+    assert sp.quantity_name is None
     assert sp.value_list == ["steel", "carbon", "resin"]
 
     bool_parameter = {
@@ -133,7 +131,7 @@ def test_parameter_definition_deserialization():
     assert bp.type == "bool"
     assert bp.id == bool_parameter["id"]
     assert bp.name == bool_parameter["name"]
-    assert bp.default == True
+    assert bp.default
 
     parameter_definitions = ParameterDefinitionSchema().load(
         [int_parameter, float_parameter, string_parameter, bool_parameter], many=True
@@ -145,7 +143,6 @@ def test_parameter_definition_deserialization():
 
 
 def test_parameter_definition_serialization():
-
     ip = IntParameterDefinition(name="int_param", upper_limit=27, mode="input")
 
     assert ip.quantity_name == missing
@@ -155,12 +152,12 @@ def test_parameter_definition_serialization():
 
     serialized_ip = IntParameterDefinitionSchema().dump(ip)
 
-    assert not "display_text" in serialized_ip.keys()
-    assert not "lower_limit" in serialized_ip.keys()
+    assert "display_text" not in serialized_ip.keys()
+    assert "lower_limit" not in serialized_ip.keys()
     assert serialized_ip["type"] == "int"
     assert serialized_ip["name"] == "int_param"
     assert serialized_ip["upper_limit"] == 27
-    assert not "mode" in serialized_ip.keys()
+    assert "mode" not in serialized_ip.keys()
 
     sp = StringParameterDefinition(name="s_param", value_list=["l1", "l2"])
     serialized_sp = StringParameterDefinitionSchema().dump(sp)
@@ -170,16 +167,15 @@ def test_parameter_definition_serialization():
     serialized_param_defs = ParameterDefinitionSchema().dump([ip, sp], many=True)
 
     assert len(serialized_param_defs) == 2
-    assert not "id" in serialized_param_defs[0].keys()
+    assert "id" not in serialized_param_defs[0].keys()
     assert serialized_param_defs[0]["type"] == "int"
     assert serialized_param_defs[1]["type"] == "string"
-    assert not "display_text" in serialized_param_defs[0].keys()
+    assert "display_text" not in serialized_param_defs[0].keys()
     assert serialized_param_defs[1]["name"] == "s_param"
 
 
 def test_parameter_definition_integration(client):
-
-    proj_name = f"test_jms_ParameterDefinitionTest"
+    proj_name = "test_jms_ParameterDefinitionTest"
 
     proj = Project(name=proj_name, active=True)
     jms_api = JmsApi(client)
@@ -218,8 +214,7 @@ def test_parameter_definition_integration(client):
 
 
 def test_mixed_parameter_definition(client):
-
-    proj_name = f"test_mixed_parameter_definition"
+    proj_name = "test_mixed_parameter_definition"
 
     proj = Project(name=proj_name, active=True)
     jms_api = JmsApi(client)

@@ -25,11 +25,9 @@
 
 """Module providing the algorithm resource."""
 from datetime import datetime
-from typing import Any, Dict, List, Union
-
-from marshmallow.utils import missing
 
 from ansys.hps.client.common import Object
+from marshmallow.utils import missing
 
 from ..schema.algorithm import AlgorithmSchema
 
@@ -73,7 +71,7 @@ class Algorithm(Object):
         name: str = missing,
         description: str = missing,
         data: str = missing,
-        jobs: List[str] = missing,
+        jobs: list[str] = missing,
         **kwargs,
     ):
         self.id = id

@@ -25,11 +25,9 @@
 
 """Module providing the task definition resource."""
 from datetime import datetime
-from typing import Any, Dict, List, Union
-
-from marshmallow.utils import missing
 
 from ansys.hps.client.common import Object
+from marshmallow.utils import missing
 
 from ..schema.task_definition import (
     HpcResourcesSchema,
@@ -75,7 +73,7 @@ class HpcResources(Object):
         queue: str = missing,
         use_local_scratch: bool = missing,
         native_submit_options: str = missing,
-        custom_orchestration_options: Dict[str, Union[int, float, str, bool]] = missing,
+        custom_orchestration_options: dict[str, int | float | str | bool] = missing,
         **kwargs,
     ):
         self.num_cores_per_node = num_cores_per_node
@@ -130,7 +128,7 @@ class ResourceRequirements(Object):
         distributed: bool = missing,
         compute_resource_set_id: str = missing,
         evaluator_id: str = missing,
-        custom: Dict[str, Union[int, float, str, bool]] = missing,
+        custom: dict[str, int | float | str | bool] = missing,
         hpc_resources: HpcResources = missing,
         **kwargs,
     ):
@@ -226,10 +224,10 @@ class SuccessCriteria(Object):
     def __init__(
         self,
         return_code: int = missing,
-        expressions: List = missing,
-        required_output_file_ids: List[str] = missing,
+        expressions: list = missing,
+        required_output_file_ids: list[str] = missing,
         require_all_output_files: bool = missing,
-        required_output_parameter_ids: List[str] = missing,
+        required_output_parameter_ids: list[str] = missing,
         require_all_output_parameters: bool = missing,
         **kwargs,
     ):
@@ -334,16 +332,16 @@ class TaskDefinition(Object):
         use_execution_script: bool = missing,
         execution_script_id: str = missing,
         execution_level: int = missing,
-        execution_context: Dict[str, Union[int, float, str, bool]] = missing,
-        environment: Dict[str, str] = missing,
+        execution_context: dict[str, int | float | str | bool] = missing,
+        environment: dict[str, str] = missing,
         max_execution_time: float = missing,
         num_trials: int = missing,
         store_output: bool = missing,
-        input_file_ids: List[str] = missing,
-        output_file_ids: List[str] = missing,
+        input_file_ids: list[str] = missing,
+        output_file_ids: list[str] = missing,
         success_criteria: SuccessCriteria = missing,
         licensing: Licensing = missing,
-        software_requirements: List[Software] = missing,
+        software_requirements: list[Software] = missing,
         resource_requirements: ResourceRequirements = missing,
         worker_context: WorkerContext = missing,
         **kwargs,

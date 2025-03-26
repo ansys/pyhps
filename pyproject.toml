@@ -91,6 +91,8 @@ ignore = []
 
 [tool.ruff.lint.per-file-ignores]
 "__init__.py" = ["F401"]
+"src/ansys/hps/client/jms/resource/*.py" = ["E501"]
+"src/ansys/hps/client/rms/models.py" = ["E501"]
 
 [tool.coverage.run]
 relative_files = true

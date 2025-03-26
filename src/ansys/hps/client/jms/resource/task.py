@@ -25,11 +25,9 @@
 
 """Module providing the task resource."""
 from datetime import datetime
-from typing import Any, Dict, List, Union
-
-from marshmallow.utils import missing
 
 from ansys.hps.client.common import Object
+from marshmallow.utils import missing
 
 from ..schema.task import TaskSchema
 from .task_definition import TaskDefinition
@@ -114,13 +112,13 @@ class Task(Object):
         executed_command: str = missing,
         job_id: str = missing,
         host_id: str = missing,
-        input_file_ids: List[str] = missing,
-        output_file_ids: List[str] = missing,
-        monitored_file_ids: List[str] = missing,
-        inherited_file_ids: List[str] = missing,
-        owned_file_ids: List[str] = missing,
+        input_file_ids: list[str] = missing,
+        output_file_ids: list[str] = missing,
+        monitored_file_ids: list[str] = missing,
+        inherited_file_ids: list[str] = missing,
+        owned_file_ids: list[str] = missing,
         license_context_id: str = missing,
-        custom_data: Dict = missing,
+        custom_data: dict = missing,
         working_directory: str = missing,
         **kwargs,
     ):

@@ -26,13 +26,12 @@ import atexit
 import logging
 import os
 import platform
-from typing import Union
 import warnings
 
-from ansys.hps.data_transfer.client import Client as DataTransferClient
-from ansys.hps.data_transfer.client import DataTransferApi
 import jwt
 import requests
+from ansys.hps.data_transfer.client import Client as DataTransferClient
+from ansys.hps.data_transfer.client import DataTransferApi
 
 from .authenticate import authenticate
 from .connection import create_session
@@ -42,7 +41,7 @@ from .warnings import UnverifiedHTTPSRequestsWarning
 log = logging.getLogger(__name__)
 
 
-class Client(object):
+class Client:
     """Provides the Python client to the HPS APIs.
 
     This class uses the provided credentials to create and store
@@ -131,11 +130,10 @@ class Client(object):
         access_token: str = None,
         refresh_token: str = None,
         all_fields=True,
-        verify: Union[bool, str] = None,
+        verify: bool | str = None,
         disable_security_warnings: bool = True,
         **kwargs,
     ):
-
         rep_url = kwargs.get("rep_url", None)
         if rep_url is not None:
             url = rep_url
@@ -162,7 +160,7 @@ class Client(object):
         self.client_id = client_id
         self.client_secret = client_secret
         self.verify = verify
-        self.data_transfer_url = url + f"/dt/api/v1"
+        self.data_transfer_url = url + "/dt/api/v1"
 
         self._dt_client: DataTransferClient | None = None
         self._dt_api: DataTransferApi | None = None
@@ -238,7 +236,7 @@ class Client(object):
         try:
             token = jwt.decode(self.access_token, options={"verify_signature": False})
         except Exception:
-            raise HPSError("Authentication token was invalid.")
+            raise HPSError("Authentication token was invalid.") from None
 
         # Try to get the standard keycloak name, then other possible valid names
         parsed_username = self._get_username(token)
@@ -246,11 +244,9 @@ class Client(object):
         if parsed_username is not None:
             if self.username is not None and self.username != parsed_username:
                 raise HPSError(
-                    (
-                        f"Username: '{self.username}' and "
-                        f"preferred_username: '{parsed_username}' "
-                        "from access token do not match."
-                    )
+                    f"Username: '{self.username}' and "
+                    f"preferred_username: '{parsed_username}' "
+                    "from access token do not match."
                 )
             self.username = parsed_username
 
@@ -319,7 +315,7 @@ class Client(object):
                 self._dt_api.status(wait=True)
             except Exception as ex:
                 log.debug(ex)
-                raise HPSError("Error occurred when starting Data Transfer client.")
+                raise HPSError("Error occurred when starting Data Transfer client.") from ex
 
     def _get_download_dir(self, company=None):
         """
@@ -332,8 +328,8 @@ class Client(object):
         `Linux`: /home/user/.ansys/binaries
         `Windows`: C:\\Users\\user\\AppData\\Local\\Ansys\\binaries
 
-        Note that on Windows we use AppData\Local for this,
-        not AppData\Roaming, as the data stored for an application should typically be kept local.
+        Note that on Windows we use AppData\\Local for this,
+        not AppData\\Roaming, as the data stored for an application should typically be kept local.
 
         """
 
@@ -356,7 +352,7 @@ class Client(object):
 
     @property
     def auth_api_url(self) -> str:
-        msg = f"The client 'auth_api_url' property is deprecated. \
+        msg = "The client 'auth_api_url' property is deprecated. \
                There is no generic auth_api exposed."
         warnings.warn(msg, DeprecationWarning)
         log.warning(msg)
@@ -374,7 +370,7 @@ class Client(object):
             response.status_code == 401
             and self._unauthorized_num_retry < self._unauthorized_max_retry
         ):
-            log.info(f"401 authorization error: Trying to get a new access token.")
+            log.info("401 authorization error: Trying to get a new access token.")
             self._unauthorized_num_retry += 1
             self.refresh_access_token()
             response.request.headers.update(
@@ -382,7 +378,7 @@ class Client(object):
             )
             if self._dt_client is not None:
                 self._dt_client.binary_config.update(token=self.access_token)
-            log.debug(f"Retrying request with updated access token.")
+            log.debug("Retrying request with updated access token.")
             return self.session.send(response.request)
 
         self._unauthorized_num_retry = 0
