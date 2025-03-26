@@ -25,7 +25,6 @@
 import logging
 from enum import Enum
 from functools import wraps
-import logging
 from typing import Protocol
 
 from .exceptions import VersionCompatibilityError
