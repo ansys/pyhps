@@ -24,6 +24,7 @@
 
 Command formed: python <script_file> <input_file (optional)>
 """
+
 import json
 import os
 
@@ -83,7 +84,7 @@ class PythonExecution(ApplicationExecution):
         if parameters["param_transfer"] == "mapping":
             cmd += f" {inp_file['path']}"
         else:
-            cmd += f" input_parameters.json"
+            cmd += " input_parameters.json"
 
         # Execute
         self.run_and_capture_output(cmd, shell=True, env=env)
@@ -91,11 +92,11 @@ class PythonExecution(ApplicationExecution):
         # Extract parameters if needed
         if param_transfer == "json-file":
             try:
-                with open("output_parameters.json", "r") as out_file:
+                with open("output_parameters.json") as out_file:
                     output_parameters = json.load(out_file)
                 self.context.parameter_values.update(output_parameters)
                 os.remove("output_parameters.json")
-            except Exception as ex:
+            except Exception:
                 log.error("Failed to read output_parameters from file: {ex}")
 
         log.info("End Python execution script")
