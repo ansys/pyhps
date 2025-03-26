@@ -27,7 +27,6 @@ from ansys.hps.client.exceptions import VersionCompatibilityError
 
 
 def test_check_version_and_raise():
-
     with pytest.raises(VersionCompatibilityError) as excinfo:
         check_version_and_raise(version="1.0.5", min_version="1.0.6", max_version="1.0.10")
     assert "Minimum version required: 1.0.6" in str(excinfo.value)
@@ -42,9 +41,7 @@ def test_check_version_and_raise():
 
 
 def test_version_required():
-
     class MockApi:
-
         def __init__(self, version):
             self.version = version
 
