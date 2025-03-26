@@ -20,8 +20,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-"""
-Example to submit a nonlinear tire analysis job to HPS.
+"""Example to submit a nonlinear tire analysis job to HPS.
 
 This is the Ansys Parametric Design Language (APDL) Tire Performance Simulation example included
 in the technology demonstration guide (td-57).
@@ -53,7 +52,6 @@ log = logging.getLogger(__name__)
 def create_project(
     client, name, version=__ansys_apps_version__, num_jobs=20, use_exec_script=False, active=True
 ) -> Project:
-
     log.debug("=== Project")
     jms_api = JmsApi(client)
     proj = Project(name=name, priority=1, active=True)

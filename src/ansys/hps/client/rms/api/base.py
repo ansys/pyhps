@@ -19,15 +19,13 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
-"""Module getting, updating, creating, and deleting objects, and converting objects
-to and from JSONs."""
+"""Utilities to convert objects to and from JSON."""
+
 import json
 import logging
-from typing import List, Type
 
-from pydantic import BaseModel
+from pydantic import BaseModel, create_model
 from pydantic import __version__ as pydantic_version
-from pydantic import create_model
 from requests import Session
 
 from ansys.hps.client.exceptions import ClientError
@@ -52,7 +50,7 @@ log = logging.getLogger(__name__)
 def _create_dynamic_list_model(name, field_name, field_type) -> BaseModel:
     # Helper function to create at runtime a pydantic model storing
     # a list of objects.
-    fields = {f"{field_name}": (List[field_type], ...)}
+    fields = {f"{field_name}": (list[field_type], ...)}
     return create_model(name, **fields)
 
 
@@ -60,7 +58,8 @@ def object_to_json(
     object: BaseModel,
     exclude_unset: bool = True,
     exclude_defaults: bool = False,
-):
+) -> str:
+    """Convert a Pydantic object to a JSON string."""
     if pydantic_version.startswith("1."):
         return object.json(exclude_unset=exclude_unset, exclude_defaults=exclude_defaults)
     elif pydantic_version.startswith("2."):
@@ -72,13 +71,13 @@ def object_to_json(
 
 
 def objects_to_json(
-    objects: List[BaseModel],
+    objects: list[BaseModel],
     rest_name: str,
     exclude_unset: bool = True,
     exclude_defaults: bool = False,
-):
-
-    ListOfObjects = _create_dynamic_list_model(
+) -> str:
+    """Convert a list of Pydantic objects to a JSON string."""
+    ListOfObjects = _create_dynamic_list_model(  # noqa: N806
         name=f"List{objects[0].__class__.__name__}",
         field_name=rest_name,
         field_type=objects[0].__class__,
@@ -90,7 +89,7 @@ def objects_to_json(
     return object_to_json(objects_list, exclude_unset, exclude_defaults)
 
 
-def json_to_objects(data, obj_type):
+def _json_to_objects(data, obj_type):
     obj_list = []
     for obj in data:
         obj_list.append(obj_type(**obj))
@@ -98,9 +97,9 @@ def json_to_objects(data, obj_type):
 
 
 def get_objects(
-    session: Session, url: str, obj_type: Type[BaseModel], as_objects=True, **query_params
+    session: Session, url: str, obj_type: type[BaseModel], as_objects=True, **query_params
 ):
-
+    """Get a list of objects of a given type."""
     rest_name = OBJECT_TYPE_TO_ENDPOINT[obj_type]
     url = f"{url}/{rest_name}"
     r = session.get(url, params=query_params)
@@ -109,13 +108,13 @@ def get_objects(
     if not as_objects:
         return data
 
-    return json_to_objects(data, obj_type)
+    return _json_to_objects(data, obj_type)
 
 
-def get_objects_count(session: Session, url: str, obj_type: Type[BaseModel], **query_params):
-
+def get_objects_count(session: Session, url: str, obj_type: type[BaseModel], **query_params):
+    """Get the number of objects of a given type."""
     rest_name = OBJECT_TYPE_TO_ENDPOINT[obj_type]
-    url = f"{url}/{rest_name}:count"  # noqa: E231
+    url = f"{url}/{rest_name}:count"
     r = session.get(url, params=query_params)
 
     return r.json()[f"num_{rest_name}"]
@@ -124,12 +123,12 @@ def get_objects_count(session: Session, url: str, obj_type: Type[BaseModel], **q
 def get_object(
     session: Session,
     url: str,
-    obj_type: Type[BaseModel],
+    obj_type: type[BaseModel],
     as_object=True,
     from_collection=False,
     **query_params,
 ):
-
+    """Get a single object of a given type."""
     r = session.get(url, params=query_params)
     data = r.json()
     if from_collection:
@@ -141,8 +140,9 @@ def get_object(
 
 
 def create_objects(
-    session: Session, url: str, objects: List[BaseModel], as_objects=True, **query_params
+    session: Session, url: str, objects: list[BaseModel], as_objects=True, **query_params
 ):
+    """Create a list of objects."""
     if not objects:
         return []
 
@@ -161,18 +161,18 @@ def create_objects(
     if not as_objects:
         return data
 
-    return json_to_objects(data, obj_type)
+    return _json_to_objects(data, obj_type)
 
 
 def update_objects(
     session: Session,
     url: str,
-    objects: List[BaseModel],
-    obj_type: Type[BaseModel],
+    objects: list[BaseModel],
+    obj_type: type[BaseModel],
     as_objects=True,
     **query_params,
 ):
-
+    """Update a list of objects."""
     if not objects:
         return []
 
@@ -190,10 +190,11 @@ def update_objects(
     if not as_objects:
         return data
 
-    return json_to_objects(data, obj_type)
+    return _json_to_objects(data, obj_type)
 
 
-def delete_objects(session: Session, url: str, objects: List[BaseModel]):
+def delete_objects(session: Session, url: str, objects: list[BaseModel]):
+    """Delete a list of objects."""
     if not objects:
         return
 
@@ -207,4 +208,4 @@ def delete_objects(session: Session, url: str, objects: List[BaseModel]):
     url = f"{url}/{rest_name}"
     data = json.dumps({"source_ids": [obj.id for obj in objects]})
 
-    r = session.delete(url, data=data)
+    _ = session.delete(url, data=data)

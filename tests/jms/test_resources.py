@@ -22,7 +22,6 @@
 
 import logging
 
-from examples.mapdl_motorbike_frame.project_setup import create_project
 from marshmallow import missing
 
 from ansys.hps.client.jms import (
@@ -34,12 +33,12 @@ from ansys.hps.client.jms import (
     Software,
     TaskDefinition,
 )
+from examples.mapdl_motorbike_frame.project_setup import create_project
 
 log = logging.getLogger(__name__)
 
 
 def test_task_definition_equality():
-
     td1 = TaskDefinition(
         name="TD.1",
         execution_command="%executable%",
@@ -52,9 +51,7 @@ def test_task_definition_equality():
         software_requirements=Software(name="app", version="0.1"),
     )
 
-    assert td1 != None
-    assert None != td1
-    assert None != td1
+    assert td1 is not None
 
     td2 = TaskDefinition(
         name="TD.1",
@@ -70,7 +67,7 @@ def test_task_definition_equality():
 
     td3 = td2
 
-    assert not td1 is td2
+    assert td1 is not td2
     assert td3 is td2
     assert td1 == td2
     assert td2 == td1
@@ -91,7 +88,6 @@ def test_task_definition_equality():
 
 
 def test_job_definitions_equality():
-
     fd1 = FitnessDefinition(error_fitness=10.0)
     fd1.add_fitness_term(
         name="weight",
@@ -124,7 +120,7 @@ def test_job_definitions_equality():
     jd2 = JobDefinition(fitness_definition=fd2)
 
     assert jd1 == jd2
-    assert not jd1 is jd2
+    assert jd1 is not jd2
 
     jd2.fitness_definition.fitness_term_definitions[0].expression = "_changed_"
 
@@ -133,12 +129,11 @@ def test_job_definitions_equality():
 
 
 def test_jobs_equality(client):
-
     # create new project
     num_jobs = 1
     project = create_project(
         client,
-        f"test_jobs_equality",
+        "test_jobs_equality",
         num_jobs=num_jobs,
         use_exec_script=False,
         active=False,

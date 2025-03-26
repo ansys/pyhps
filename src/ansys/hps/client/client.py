@@ -26,13 +26,13 @@ import atexit
 import logging
 import os
 import platform
-from typing import Union
 import warnings
+
+import jwt
+import requests
 
 from ansys.hps.data_transfer.client import Client as DataTransferClient
 from ansys.hps.data_transfer.client import DataTransferApi
-import jwt
-import requests
 
 from .authenticate import authenticate
 from .connection import create_session
@@ -42,7 +42,7 @@ from .warnings import UnverifiedHTTPSRequestsWarning
 log = logging.getLogger(__name__)
 
 
-class Client(object):
+class Client:
     """Provides the Python client to the HPS APIs.
 
     This class uses the provided credentials to create and store
@@ -97,7 +97,6 @@ class Client(object):
 
     Examples
     --------
-
     Create a client object and connect to HPS with a username and password.
 
     >>> from ansys.hps.client import Client
@@ -131,16 +130,16 @@ class Client(object):
         access_token: str = None,
         refresh_token: str = None,
         all_fields=True,
-        verify: Union[bool, str] = None,
+        verify: bool | str = None,
         disable_security_warnings: bool = True,
         **kwargs,
     ):
-
+        """Initialize the Client object."""
         rep_url = kwargs.get("rep_url", None)
         if rep_url is not None:
             url = rep_url
             msg = "The 'rep_url' input argument is deprecated. Use 'url' instead."
-            warnings.warn(msg, DeprecationWarning)
+            warnings.warn(msg, DeprecationWarning, stacklevel=2)
             log.warning(msg)
 
         auth_url = kwargs.get("auth_url", None)
@@ -149,7 +148,7 @@ class Client(object):
                 "The 'auth_url' input argument is deprecated. Use None instead. "
                 "New HPS deployments will determine this automatically."
             )
-            warnings.warn(msg, DeprecationWarning)
+            warnings.warn(msg, DeprecationWarning, stacklevel=2)
             log.warning(msg)
 
         self.url = url
@@ -162,7 +161,7 @@ class Client(object):
         self.client_id = client_id
         self.client_secret = client_secret
         self.verify = verify
-        self.data_transfer_url = url + f"/dt/api/v1"
+        self.data_transfer_url = url + "/dt/api/v1"
 
         self._dt_client: DataTransferClient | None = None
         self._dt_api: DataTransferApi | None = None
@@ -173,7 +172,7 @@ class Client(object):
                 f"Certificate verification is disabled. "
                 f"Unverified HTTPS requests are made to {self.url}."
             )
-            warnings.warn(msg, UnverifiedHTTPSRequestsWarning)
+            warnings.warn(msg, UnverifiedHTTPSRequestsWarning, stacklevel=2)
             log.warning(msg)
 
         if disable_security_warnings:
@@ -197,13 +196,10 @@ class Client(object):
                     jms_data = resp.json()
                     if "services" in jms_data and "external_auth_url" in jms_data["services"]:
                         self.auth_url = resp.json()["services"]["external_auth_url"]
+                    elif realm:
+                        self.auth_url = f"{url.rstrip('/')}/auth/realms/{realm}"
                     else:
-                        if realm:
-                            self.auth_url = f"{url.rstrip('/')}/auth/realms/{realm}"
-                        else:
-                            log.warning(
-                                "External_auth_url not found from JMS and no realm specified."
-                            )
+                        log.warning("External_auth_url not found from JMS and no realm specified.")
 
         if access_token:
             log.debug("Authenticate with access token")
@@ -238,7 +234,7 @@ class Client(object):
         try:
             token = jwt.decode(self.access_token, options={"verify_signature": False})
         except Exception:
-            raise HPSError("Authentication token was invalid.")
+            raise HPSError("Authentication token was invalid.") from None
 
         # Try to get the standard keycloak name, then other possible valid names
         parsed_username = self._get_username(token)
@@ -246,11 +242,9 @@ class Client(object):
         if parsed_username is not None:
             if self.username is not None and self.username != parsed_username:
                 raise HPSError(
-                    (
-                        f"Username: '{self.username}' and "
-                        f"preferred_username: '{parsed_username}' "
-                        "from access token do not match."
-                    )
+                    f"Username: '{self.username}' and "
+                    f"preferred_username: '{parsed_username}' "
+                    "from access token do not match."
                 )
             self.username = parsed_username
 
@@ -292,14 +286,14 @@ class Client(object):
 
     @property
     def rep_url(self) -> str:
+        """Deprecated. Use 'url' instead."""
         msg = "The client 'rep_url' property is deprecated. Use 'url' instead."
-        warnings.warn(msg, DeprecationWarning)
+        warnings.warn(msg, DeprecationWarning, stacklevel=2)
         log.warning(msg)
         return self.url
 
     def initialize_data_transfer_client(self):
         """Initialize the Data Transfer client."""
-
         if self._dt_client is None:
             try:
                 log.info("Starting Data Transfer client.")
@@ -319,11 +313,10 @@ class Client(object):
                 self._dt_api.status(wait=True)
             except Exception as ex:
                 log.debug(ex)
-                raise HPSError("Error occurred when starting Data Transfer client.")
+                raise HPSError("Error occurred when starting Data Transfer client.") from ex
 
     def _get_download_dir(self, company=None):
-        """
-        Returns download directory platform dependent
+        r"""Return download directory platform dependent.
 
         :Parameters:
         -`company`: Company name of the software provider
@@ -332,11 +325,10 @@ class Client(object):
         `Linux`: /home/user/.ansys/binaries
         `Windows`: C:\\Users\\user\\AppData\\Local\\Ansys\\binaries
 
-        Note that on Windows we use AppData\Local for this,
-        not AppData\Roaming, as the data stored for an application should typically be kept local.
+        Note that on Windows we use AppData\\Local for this,
+        not AppData\\Roaming, as the data stored for an application should typically be kept local.
 
         """
-
         environment_variable = "HOME"
         if platform.uname()[0].lower() == "windows":
             environment_variable = "LOCALAPPDATA"
@@ -356,9 +348,10 @@ class Client(object):
 
     @property
     def auth_api_url(self) -> str:
-        msg = f"The client 'auth_api_url' property is deprecated. \
+        """Deprecated. There is no generic auth_api exposed."""
+        msg = "The client 'auth_api_url' property is deprecated. \
                There is no generic auth_api exposed."
-        warnings.warn(msg, DeprecationWarning)
+        warnings.warn(msg, DeprecationWarning, stacklevel=2)
         log.warning(msg)
         auth_api_base, _, tail = self.auth_url.partition("realms")
         if tail:
@@ -368,13 +361,16 @@ class Client(object):
             return None
 
     def _auto_refresh_token(self, response, *args, **kwargs):
-        """Automatically refreshes the access token and
-        resends the request in case of an unauthorized error."""
+        """Provide a callback for refreshing an expired token.
+
+        Automatically refreshes the access token and
+        re-sends the request in case of an unauthorized error.
+        """
         if (
             response.status_code == 401
             and self._unauthorized_num_retry < self._unauthorized_max_retry
         ):
-            log.info(f"401 authorization error: Trying to get a new access token.")
+            log.info("401 authorization error: Trying to get a new access token.")
             self._unauthorized_num_retry += 1
             self.refresh_access_token()
             response.request.headers.update(
@@ -382,14 +378,14 @@ class Client(object):
             )
             if self._dt_client is not None:
                 self._dt_client.binary_config.update(token=self.access_token)
-            log.debug(f"Retrying request with updated access token.")
+            log.debug("Retrying request with updated access token.")
             return self.session.send(response.request)
 
         self._unauthorized_num_retry = 0
         return response
 
     def refresh_access_token(self):
-        """Request a new access token"""
+        """Request a new access token."""
         if self.grant_type == "client_credentials":
             # Its not recommended to give refresh tokens to client_credentials grant types
             # as per OAuth 2.0 RFC6749 Section 4.4.3, so handle these specially...
@@ -415,7 +411,7 @@ class Client(object):
             )
         self.access_token = tokens["access_token"]
         self.refresh_token = tokens.get("refresh_token", None)
-        self.session.headers.update({"Authorization": "Bearer %s" % tokens["access_token"]})
+        self.session.headers.update({"Authorization": f"Bearer {tokens['access_token']}"})
 
     @property
     def data_transfer_client(self) -> DataTransferClient:

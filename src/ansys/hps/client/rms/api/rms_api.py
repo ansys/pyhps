@@ -20,9 +20,8 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 """Module wrapping around RMS root endpoints."""
-from functools import cache
+
 import logging
-from typing import List
 
 from ansys.hps.client.client import Client
 from ansys.hps.client.exceptions import ClientError
@@ -42,31 +41,35 @@ from .base import create_objects, get_object, get_objects, get_objects_count, ob
 log = logging.getLogger(__name__)
 
 
-class RmsApi(object):
+class RmsApi:
     """Wraps around the RMS root endpoints.
 
     Parameters
     ----------
     client : Client
         HPS client object.
+
     """
 
     def __init__(self, client: Client):
+        """Initialize the ``RmsApi`` object."""
         self.client = client
+        self._api_info = None
 
     @property
     def url(self) -> str:
         """URL of the API."""
         return f"{self.client.url}/rms/api/v1"
 
-    @cache
     def get_api_info(self):
         """Get information on the RMS API the client is connected to.
 
         The information includes the version and build date.
         """
-        r = self.client.session.get(self.url)
-        return r.json()
+        if self._api_info is None:
+            r = self.client.session.get(self.url)
+            self._api_info = r.json()
+        return self._api_info
 
     @property
     def version(self) -> str:
@@ -81,7 +84,7 @@ class RmsApi(object):
             self.client.session, self.url, EvaluatorRegistration, **query_params
         )
 
-    def get_evaluators(self, as_objects=True, **query_params) -> List[EvaluatorRegistration]:
+    def get_evaluators(self, as_objects=True, **query_params) -> list[EvaluatorRegistration]:
         """Get a list of evaluators, optionally filtered by query parameters.
 
         The server only returns the first 10 objects (``limit=10``) by default.
@@ -91,7 +94,7 @@ class RmsApi(object):
         )
 
     def get_evaluator_configuration(self, id: str, as_object=True) -> EvaluatorConfiguration:
-        """Get an evaluator's configuration"""
+        """Get an evaluator's configuration."""
         return get_object(
             self.client.session,
             f"{self.url}/evaluators/{id}/configuration",
@@ -107,7 +110,6 @@ class RmsApi(object):
 
         Examples
         --------
-
         Set a custom resource property on a Linux evaluator that was active in the past 60 seconds.
 
         >>> import datetime
@@ -138,7 +140,7 @@ class RmsApi(object):
         """Get the number of scalers, optionally filtered by query parameters."""
         return get_objects_count(self.client.session, self.url, ScalerRegistration, **query_params)
 
-    def get_scalers(self, as_objects=True, **query_params) -> List[ScalerRegistration]:
+    def get_scalers(self, as_objects=True, **query_params) -> list[ScalerRegistration]:
         """Get a list of scalers, optionally filtered by query parameters.
 
         The server only returns the first 10 objects (``limit=10``) by default.
@@ -155,7 +157,7 @@ class RmsApi(object):
 
     def get_compute_resource_sets(
         self, as_objects=True, **query_params
-    ) -> List[ComputeResourceSet]:
+    ) -> list[ComputeResourceSet]:
         """Get a list of compute resource sets, optionally filtered by query parameters.
 
         The server only returns the first 10 objects (``limit=10``) by default.
@@ -176,7 +178,6 @@ class RmsApi(object):
 
     def get_cluster_info(self, compute_resource_set_id, as_object=True) -> ClusterInfo:
         """Get the cluster information of a compute resource set."""
-
         return get_object(
             self.client.session,
             f"{self.url}/compute_resource_sets/{compute_resource_set_id}/cluster_info",
@@ -192,7 +193,7 @@ class RmsApi(object):
     ) -> AnalyzeResponse:
         """Compare resource requirements against available compute resources."""
         if requirements is None:
-            raise ClientError(f"Requirements can't be None.")
+            raise ClientError("Requirements can't be None.")
 
         r = self.client.session.post(
             f"{self.url}/analyze",

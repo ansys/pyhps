@@ -34,10 +34,9 @@ log = logging.getLogger(__name__)
 
 
 def test_files(client):
-
     jms_api = JmsApi(client)
     proj = jms_api.create_project(
-        Project(name=f"rep_client_test_jms_FilesTest", active=False), replace=True
+        Project(name="rep_client_test_jms_FilesTest", active=False), replace=True
     )
     project_api = ProjectApi(client, proj.id)
 
@@ -87,7 +86,7 @@ def test_files(client):
 
     # Compare file objects, comparing all attrs that are not missing on created file object
     attrs = [attr for attr in files[0].declared_fields() if getattr(files[0], attr) != missing]
-    for f1, f2 in zip(files, files_queried):
+    for f1, f2 in zip(files, files_queried, strict=False):
         for attr in attrs:
             assert getattr(f1, attr) == getattr(f2, attr)
 
@@ -104,7 +103,6 @@ def test_files(client):
     assert os.path.getsize(mac_path) == files_queried[4].size
 
     with tempfile.TemporaryDirectory() as tpath:
-
         # test chunked file download
         fpath = project_api.download_file(files_queried[0], tpath)
         with open(mac_path, "rb") as f, open(fpath, "rb") as sf:
@@ -120,9 +118,9 @@ def test_files(client):
             assert f.read() == sf.read()
 
         # test progress handler
-        handler = lambda current_size: print(
-            f"{current_size*1.0/files_queried[0].size * 100.0}% completed"
-        )
+        def handler(current_size):
+            print(f"{current_size * 1.0 / files_queried[0].size * 100.0}% completed")
+
         fpath = project_api.download_file(files_queried[0], tpath, progress_handler=handler)
         with open(mac_path, "rb") as f, open(fpath, "rb") as sf:
             assert f.read() == sf.read()
@@ -132,9 +130,8 @@ def test_files(client):
 
 
 def test_download_file_in_subdir(client):
-
     jms_api = JmsApi(client)
-    proj = jms_api.create_project(Project(name=f"rep_test_download_file_in_subdir", active=False))
+    proj = jms_api.create_project(Project(name="rep_test_download_file_in_subdir", active=False))
     project_api = ProjectApi(client, proj.id)
 
     files = [
@@ -150,7 +147,7 @@ def test_download_file_in_subdir(client):
 
     with tempfile.TemporaryDirectory() as tpath:
         fpath = project_api.download_file(file, tpath)
-        with open(fpath, "r") as sf:
+        with open(fpath) as sf:
             assert "This is my file" == sf.read()
 
     # Delete project again

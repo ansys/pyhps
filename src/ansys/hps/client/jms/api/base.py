@@ -20,9 +20,9 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 """Module creating, getting, updating, deleting and copying objects."""
+
 import json
 import logging
-from typing import List, Type
 
 from requests import Session
 
@@ -33,7 +33,7 @@ log = logging.getLogger(__name__)
 
 
 def get_objects(
-    session: Session, url: str, obj_type: Type[Object], as_objects=True, **query_params
+    session: Session, url: str, obj_type: type[Object], as_objects=True, **query_params
 ):
     """Get objects with a session, URL, and object type."""
     rest_name = obj_type.Meta.rest_name
@@ -52,7 +52,7 @@ def get_objects(
 
 
 def get_object(
-    session: Session, url: str, obj_type: Type[Object], id: str, as_object=True, **query_params
+    session: Session, url: str, obj_type: type[Object], id: str, as_object=True, **query_params
 ):
     """Get an object with a session, URL, object type, and object."""
     rest_name = obj_type.Meta.rest_name
@@ -74,11 +74,11 @@ def get_object(
         )
 
 
-def _check_object_types(objects: List[Object], obj_type: Type[Object]):
+def _check_object_types(objects: list[Object], obj_type: type[Object]):
     """Check object types."""
     are_same = [isinstance(o, obj_type) for o in objects]
     if not all(are_same):
-        actual_types = set([type(o) for o in objects])
+        actual_types = {type(o) for o in objects}
         if len(actual_types) == 1:
             actual_types = actual_types.pop()
         raise ClientError(f"Wrong object types: expected '{obj_type}', got {actual_types}.")
@@ -87,8 +87,8 @@ def _check_object_types(objects: List[Object], obj_type: Type[Object]):
 def create_objects(
     session: Session,
     url: str,
-    objects: List[Object],
-    obj_type: Type[Object],
+    objects: list[Object],
+    obj_type: type[Object],
     as_objects=True,
     **query_params,
 ):
@@ -116,8 +116,8 @@ def create_objects(
 def update_objects(
     session: Session,
     url: str,
-    objects: List[Object],
-    obj_type: Type[Object],
+    objects: list[Object],
+    obj_type: type[Object],
     as_objects=True,
     **query_params,
 ):
@@ -142,7 +142,7 @@ def update_objects(
     return schema.load(data)
 
 
-def delete_objects(session: Session, url: str, objects: List[Object], obj_type: Type[Object]):
+def delete_objects(session: Session, url: str, objects: list[Object], obj_type: type[Object]):
     """Delete objects."""
     if not objects:
         return
@@ -154,10 +154,10 @@ def delete_objects(session: Session, url: str, objects: List[Object], obj_type: 
     url = f"{url}/{rest_name}"
     data = json.dumps({"source_ids": [obj.id for obj in objects]})
 
-    r = session.delete(url, data=data)
+    _ = session.delete(url, data=data)
 
 
-def copy_objects(session: Session, url: str, objects: List[Object], wait: bool = True) -> str:
+def copy_objects(session: Session, url: str, objects: list[Object], wait: bool = True) -> str:
     """Copy objects."""
     are_same = [o.__class__ == objects[0].__class__ for o in objects[1:]]
     if not all(are_same):
@@ -165,7 +165,7 @@ def copy_objects(session: Session, url: str, objects: List[Object], wait: bool =
 
     obj_type = objects[0].__class__
     rest_name = obj_type.Meta.rest_name
-    url = f"{url}/{rest_name}:copy"  # noqa: E231
+    url = f"{url}/{rest_name}:copy"
 
     source_ids = [obj.id for obj in objects]
     r = session.post(url, data=json.dumps({"source_ids": source_ids}))

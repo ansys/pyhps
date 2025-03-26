@@ -46,7 +46,6 @@ def test_client_with_ssl_verification(url, username, password):
 
 
 def test_authentication_workflows(url, username, password):
-
     ## Auth with user and password
     client0 = Client(url, username, password)
 
@@ -80,7 +79,6 @@ def test_authentication_workflows(url, username, password):
 
 
 def test_authentication_username(url, username, password, keycloak_client):
-
     # Password workflow
     client0 = Client(url, username, password)
     assert client0.username == username
@@ -100,7 +98,6 @@ def test_authentication_username(url, username, password, keycloak_client):
 
 
 def test_authentication_username_exception(url, username, keycloak_client):
-
     # Impersonation
     realm_clients = keycloak_client.get_clients()
     rep_impersonation_client = next(

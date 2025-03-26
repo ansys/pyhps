@@ -21,7 +21,6 @@
 # SOFTWARE.
 
 
-from typing import Tuple
 import uuid
 
 from keycloak import KeycloakAdmin
@@ -32,7 +31,6 @@ from ansys.hps.client.auth.schema.user import UserSchema
 
 
 def create_user(keycloak_client: KeycloakAdmin, user: User) -> User:
-
     schema = UserSchema(many=False)
     data = schema.dump(user)
 
@@ -62,7 +60,7 @@ def create_new_user_client(
     keycloak_client: KeycloakAdmin,
     username=None,
     password="test",
-) -> Tuple[User, Client]:
+) -> tuple[User, Client]:
     if username is None:
         username = f"testuser-{uuid.uuid4().hex[:8]}"
     user = create_user(keycloak_client, User(username=username, password=password))

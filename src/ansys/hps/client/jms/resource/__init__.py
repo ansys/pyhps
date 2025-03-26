@@ -20,6 +20,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 """PyHPS JMS resource subpackage."""
+
 from .algorithm import Algorithm
 from .file import File
 from .fitness_definition import FitnessDefinition, FitnessTermDefinition

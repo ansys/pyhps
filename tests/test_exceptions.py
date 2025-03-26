@@ -31,7 +31,6 @@ log = logging.getLogger(__name__)
 
 
 def test_server_error(client):
-
     jms_api = JmsApi(client)
     except_obj = None
     try:
@@ -47,7 +46,6 @@ def test_server_error(client):
 
 @pytest.mark.xfail
 def test_client_error(url, username, password, client):
-
     except_obj = None
     try:
         client = Client(url, username, f"{password}_wrong")

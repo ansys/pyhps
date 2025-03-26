@@ -20,8 +20,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-"""
-Example script to set up a simple MAPDL project with parameters in PyHPS.
+"""Example script to set up a simple MAPDL project with parameters in PyHPS.
 
 Author(s): O.Koenig
 """
@@ -56,8 +55,7 @@ log = logging.getLogger(__name__)
 def create_project(
     client, name, version=__ansys_apps_version__, num_jobs=20, use_exec_script=False, active=True
 ) -> Project:
-    """
-    Create an HPS project consisting of an ANSYS APDL beam model of a motorbike frame.
+    """Create an HPS project consisting of an ANSYS APDL beam model of a motorbike frame.
 
     After creating the project job definition, 10 design points with randomly
     chosen parameter values are created and set to pending.
@@ -127,10 +125,10 @@ def create_project(
         float_input_params.extend(
             [
                 FloatParameterDefinition(
-                    name="tube%i_radius" % i, lower_limit=4.0, upper_limit=20.0, default=12.0
+                    name=f"tube{i}_radius", lower_limit=4.0, upper_limit=20.0, default=12.0
                 ),
                 FloatParameterDefinition(
-                    name="tube%i_thickness" % i, lower_limit=0.5, upper_limit=2.5, default=1.0
+                    name=f"tube{i}_thickness", lower_limit=0.5, upper_limit=2.5, default=1.0
                 ),
             ]
         )
@@ -141,7 +139,7 @@ def create_project(
     for i in range(1, 4):
         param_mappings.append(
             ParameterMapping(
-                key_string="radius(%i)" % i,
+                key_string=f"radius({i})",
                 tokenizer="=",
                 parameter_definition_id=float_input_params[pi].id,
                 file_id=file_ids["inp"],
@@ -150,7 +148,7 @@ def create_project(
         pi += 1
         param_mappings.append(
             ParameterMapping(
-                key_string="thickness(%i)" % i,
+                key_string=f"thickness({i})",
                 tokenizer="=",
                 parameter_definition_id=float_input_params[pi].id,
                 file_id=file_ids["inp"],
@@ -162,14 +160,14 @@ def create_project(
     str_input_params = []
     for i in range(1, 22):
         str_input_params.append(
-            StringParameterDefinition(name="tube%s" % i, default="1", value_list=["1", "2", "3"])
+            StringParameterDefinition(name=f"tube{i}", default="1", value_list=["1", "2", "3"])
         )
     str_input_params = project_api.create_parameter_definitions(str_input_params)
 
     for i in range(1, 22):
         param_mappings.append(
             ParameterMapping(
-                key_string="tubes(%i)" % i,
+                key_string=f"tubes({i})",
                 tokenizer="=",
                 parameter_definition_id=str_input_params[i - 1].id,
                 file_id=file_ids["inp"],
@@ -352,7 +350,7 @@ if __name__ == "__main__":
     parser.add_argument("-n", "--name", type=str, default="Mapdl Motorbike Frame")
     parser.add_argument("-j", "--num-jobs", type=int, default=50)
     parser.add_argument("-es", "--use-exec-script", default=False, action="store_true")
-    parser.add_argument("-U", "--url", default="https://10.231.106.165:3000/hps")
+    parser.add_argument("-U", "--url", default="https://localhost:8443/hps")
     parser.add_argument("-u", "--username", default="repuser")
     parser.add_argument("-p", "--password", default="repuser")
     parser.add_argument("-v", "--ansys-version", default=__ansys_apps_version__)

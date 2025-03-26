@@ -38,10 +38,10 @@ class UserSchema(BaseSchema):
     )
     username = fields.Str(metadata={"description": "Username."})
     password = fields.Str(dump_only=True, metadata={"description": "Password."})
-    firstName = fields.Str(
+    firstName = fields.Str(  # noqa
         allow_none=True, metadata={"description": "First name."}, attribute="first_name"
     )
-    lastName = fields.Str(
+    lastName = fields.Str(  # noqa
         allow_none=True, metadata={"description": "Last name."}, attribute="last_name"
     )
     email = fields.Str(allow_none=True, metadata={"description": "E-mail address."})
