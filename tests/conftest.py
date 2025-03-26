@@ -105,6 +105,6 @@ def run_id():
     return f"{agent_id}_{build_id}".lower()
 
 
-@pytest.fixture
+@pytest.fixture()
 def build_info_path():
     return os.path.join(os.getcwd(), "build_info.json")

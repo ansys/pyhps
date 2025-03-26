@@ -118,7 +118,7 @@ def test_project_integration(client):
     jms_api.delete_project(proj)
 
 
-@pytest.mark.xfail
+@pytest.mark.xfail()
 def test_project_replace(client):
     jms_api = JmsApi(client)
 
@@ -156,7 +156,7 @@ def test_project_copy(client):
     jms_api.delete_project(proj)
 
 
-@pytest.mark.xfail
+@pytest.mark.xfail()
 def test_project_license_context(client):
     jms_api = JmsApi(client)
     proj_name = "test_jms_ProjectTest_license_context"

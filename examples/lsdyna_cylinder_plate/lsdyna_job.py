@@ -315,7 +315,6 @@ def monitor_job(app_job: HPSJob):
             )
 
     log.info(f"Job {job.name} final status: {job.eval_status}")
-    return
 
 
 def download_results(app_job: HPSJob):

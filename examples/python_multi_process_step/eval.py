@@ -162,7 +162,7 @@ def main(input_file, task_definition, images, in_subscript):
             "--in-subscript",
         ]
         log.info("Run Subscript with: {cmd}")
-        subprocess.run(cmd)
+        subprocess.run(cmd, check=False)
 
     log.info("Finished.")
 

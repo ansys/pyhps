@@ -31,7 +31,6 @@ log = logging.getLogger(__name__)
 
 def test_algorithms(client):
     log.debug("=== Client ===")
-    client = client
     jms_api = JmsApi(client)
     proj_name = "rep_client_test_jms_AlgorithmsTest"
 

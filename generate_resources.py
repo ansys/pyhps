@@ -536,9 +536,9 @@ def process_resources(subpackage, resources, base_class_path="ansys.hps.client")
         )
 
     # dump generated code to files
-    for file, content in resources_code.items():
-        file_path = os.path.join(target_folder, f"{file}.py")
-        print(f"=== file={file}, file_path={file_path}")
+    for file_n, content in resources_code.items():
+        file_path = os.path.join(target_folder, f"{file_n}.py")
+        print(f"=== file={file_n}, file_path={file_path}")
         unique_imports = list(dict.fromkeys(content["imports"]))
         code = content["code"]
         with open(file_path, "w") as file:

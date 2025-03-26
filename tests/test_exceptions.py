@@ -43,7 +43,7 @@ def test_server_error(client):
     assert except_obj.response.status_code == 500
 
 
-@pytest.mark.xfail
+@pytest.mark.xfail()
 def test_client_error(url, username, password, client):
     except_obj = None
     try:
