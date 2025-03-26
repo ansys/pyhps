@@ -58,6 +58,10 @@ def test_jms_api(client):
     log.debug("=== Projects ===")
     jms_api = JmsApi(client)
 
+    assert jms_api._api_info is None
+    _ = jms_api.get_api_info()
+    assert jms_api._api_info is not None
+
     assert jms_api.version is not None
 
     project = jms_api.get_project_by_name(name=proj_name)
