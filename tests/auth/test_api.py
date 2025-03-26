@@ -132,10 +132,10 @@ def test_impersonate_user(url, keycloak_client):
     r = None
     try:
         r = authenticate(
-            url=url,
+            auth_url=client.auth_url,
             client_id=rep_impersonation_client["clientId"],
             client_secret=rep_impersonation_client["secret"],
-            scope="opendid offline_access",
+            scope="openid offline_access",
             grant_type="urn:ietf:params:oauth:grant-type:token-exchange",
             subject_token=client.access_token,
             requested_token_type="urn:ietf:params:oauth:token-type:refresh_token",
