@@ -24,6 +24,7 @@ import datetime
 import logging
 
 import pytest
+
 from ansys.hps.client.rms import RmsApi
 from ansys.hps.client.rms.models import EvaluatorConfigurationUpdate, EvaluatorRegistration
 

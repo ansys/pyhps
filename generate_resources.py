@@ -31,6 +31,7 @@ import os
 from dataclasses import dataclass
 
 import marshmallow
+
 from ansys.hps.client.common.restricted_value import RestrictedValue
 from ansys.hps.client.jms.schema.object_reference import IdReference, IdReferenceList
 
@@ -462,8 +463,8 @@ def get_resource_code(resource, base_class, fields: list[Field], field_docs: lis
         else:
             init_fields_str = "        **kwargs"
 
-    code = f'''class {resource['class']}({base_class["name"]}):
-    """Provides the {camel_case_split(resource['class'])} resource.
+    code = f'''class {resource["class"]}({base_class["name"]}):
+    """Provides the {camel_case_split(resource["class"])} resource.
 
     Parameters
     ----------
@@ -471,8 +472,8 @@ def get_resource_code(resource, base_class, fields: list[Field], field_docs: lis
     """
 
     class Meta:
-        schema = {resource['schema']}
-        rest_name = "{resource['rest_name']}"
+        schema = {resource["schema"]}
+        rest_name = "{resource["rest_name"]}"
 
     def __init__(
         self,
@@ -482,7 +483,7 @@ def get_resource_code(resource, base_class, fields: list[Field], field_docs: lis
 {additional_initialization}
 
 
-{resource['schema']}.Meta.object_class = {resource['class']}
+{resource["schema"]}.Meta.object_class = {resource["class"]}
 '''
     return code
 

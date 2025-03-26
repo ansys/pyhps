@@ -170,8 +170,7 @@ class ProjectApi:
                 self.version,
                 min_version=min_v,
                 msg=(
-                    f"ProjectApi.get_files with content=True requires"
-                    f" JMS version {min_v} or later."
+                    f"ProjectApi.get_files with content=True requires JMS version {min_v} or later."
                 ),
             )
 

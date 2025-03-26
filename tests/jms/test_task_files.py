@@ -26,9 +26,9 @@ import os
 import time
 
 import pytest
+
 from ansys.hps.client.jms import JmsApi, ProjectApi
 from ansys.hps.client.jms.resource import File
-
 from examples.mapdl_motorbike_frame.project_setup import create_project
 
 log = logging.getLogger(__name__)

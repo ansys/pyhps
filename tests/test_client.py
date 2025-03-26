@@ -25,6 +25,7 @@ import time
 
 import pytest
 import requests
+
 from ansys.hps.client import Client
 from ansys.hps.client.exceptions import HPSError
 

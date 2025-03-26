@@ -24,6 +24,7 @@
 
 Command formed: python <script_file> <input_file (optional)>
 """
+
 import os
 
 from ansys.rep.common.logging import log
@@ -48,7 +49,7 @@ class PythonExecution(ApplicationExecution):
         # Add " around exe if needed for Windows
         exe = app["executable"]
         if " " in exe and not exe.startswith('"'):
-            exe = '"%s"' % exe
+            exe = '"%s"' % exe  # noqa
 
         # Use properties from resource requirements
         # None currently

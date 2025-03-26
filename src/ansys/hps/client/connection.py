@@ -20,6 +20,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 """Utilities to configure a :class:`requests.Session` object."""
+
 import logging
 
 import requests
@@ -66,7 +67,7 @@ def create_session(
     session.headers.update({"content-type": "application/json"})
 
     if access_token:
-        session.headers.update({"Authorization": "Bearer %s" % access_token})
+        session.headers.update({"Authorization": f"Bearer {access_token}"})
 
     retries = Retry(total=5, backoff_factor=0.5, status_forcelist=[502, 503, 504])
     session.mount("http://", HTTPAdapter(max_retries=retries))
@@ -93,11 +94,11 @@ def ping(session: requests.Session, url: str, timeout=10.0) -> bool:
         ``True`` when successful, ``False`` when failed.
 
     """
-    log.debug("Ping %s ..." % url)
+    log.debug(f"Ping {url} ...")
     r = session.get(url, timeout=timeout)
     success = r.status_code == requests.codes.ok
     if success:
         log.debug("Ping successful")
     else:
-        log.debug("Ping failed, HTTP error %s" % r.status_code)
+        log.debug(f"Ping failed, HTTP error {r.status_code}")
     return success

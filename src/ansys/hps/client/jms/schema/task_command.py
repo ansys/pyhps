@@ -22,8 +22,9 @@
 
 """Module providing the task command schema."""
 
-from ansys.hps.client.common import ObjectSchemaWithModificationInfo
 from marshmallow import fields
+
+from ansys.hps.client.common import ObjectSchemaWithModificationInfo
 
 
 class TaskCommandSchema(ObjectSchemaWithModificationInfo):

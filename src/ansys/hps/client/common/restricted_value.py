@@ -20,6 +20,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 """Module providing restricted value fields."""
+
 from marshmallow import fields
 from marshmallow.exceptions import ValidationError
 

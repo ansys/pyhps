@@ -21,6 +21,7 @@
 # SOFTWARE.
 
 """Example to modify task files in a simple rep task definition."""
+
 import argparse
 import logging
 import os

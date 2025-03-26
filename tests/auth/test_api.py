@@ -24,10 +24,10 @@ import logging
 import uuid
 
 import pytest
-from ansys.hps.client import Client, ClientError, HPSError, authenticate
-from ansys.hps.client.auth import AuthApi, User
 from keycloak import KeycloakOpenID
 
+from ansys.hps.client import Client, ClientError, HPSError, authenticate
+from ansys.hps.client.auth import AuthApi, User
 from tests.utils import create_user, delete_user
 
 log = logging.getLogger(__name__)

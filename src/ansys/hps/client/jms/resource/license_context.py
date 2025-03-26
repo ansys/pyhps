@@ -25,8 +25,9 @@
 
 """Module providing the license context resource."""
 
-from ansys.hps.client.common import Object
 from marshmallow.utils import missing
+
+from ansys.hps.client.common import Object
 
 from ..schema.license_context import LicenseContextSchema
 

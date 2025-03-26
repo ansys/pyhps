@@ -20,11 +20,13 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 """Module providing the file resource."""
+
 import io
 from datetime import datetime
 
-from ansys.hps.client.common import Object
 from marshmallow.utils import missing
+
+from ansys.hps.client.common import Object
 
 from ..schema.file import FileSchema
 

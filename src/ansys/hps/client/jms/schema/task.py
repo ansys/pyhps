@@ -21,8 +21,9 @@
 # SOFTWARE.
 """Module providing task schema."""
 
-from ansys.hps.client.common import ObjectSchemaWithModificationInfo
 from marshmallow import fields
+
+from ansys.hps.client.common import ObjectSchemaWithModificationInfo
 
 from .object_reference import IdReference, IdReferenceList
 from .task_definition import TaskDefinitionSchema

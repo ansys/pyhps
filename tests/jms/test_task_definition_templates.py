@@ -24,6 +24,8 @@ import json
 import logging
 import uuid
 
+from marshmallow.utils import missing
+
 from ansys.hps.client import HPSError
 from ansys.hps.client.auth import AuthApi
 from ansys.hps.client.jms import JmsApi
@@ -34,8 +36,6 @@ from ansys.hps.client.jms.resource import (
     TemplateResourceRequirements,
 )
 from ansys.hps.client.jms.schema.task_definition_template import TaskDefinitionTemplateSchema
-from marshmallow.utils import missing
-
 from tests.utils import create_new_user_client, delete_user
 
 log = logging.getLogger(__name__)

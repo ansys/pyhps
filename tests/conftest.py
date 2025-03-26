@@ -24,8 +24,9 @@
 import os
 
 import pytest
-from ansys.hps.client import AuthApi, Client
 from keycloak import KeycloakAdmin
+
+from ansys.hps.client import AuthApi, Client
 
 
 @pytest.fixture(scope="session")
@@ -58,7 +59,7 @@ def client(url, username, password):
     return Client(url, username, password, verify=False)
 
 
-@pytest.fixture()
+@pytest.fixture
 def keycloak_client(client: Client, keycloak_username, keycloak_password):
     keycloak_client = KeycloakAdmin(
         server_url=client.auth_api_url,
@@ -88,7 +89,7 @@ def is_admin(client: Client):
 #     return api.user_is_admin(users[0].id)
 
 
-@pytest.fixture()
+@pytest.fixture
 def run_id():
     # Create a unique run_id (to be used when creating new projects)
     # to avoid conflicts in case of
@@ -105,6 +106,6 @@ def run_id():
     return f"{agent_id}_{build_id}".lower()
 
 
-@pytest.fixture()
+@pytest.fixture
 def build_info_path():
     return os.path.join(os.getcwd(), "build_info.json")

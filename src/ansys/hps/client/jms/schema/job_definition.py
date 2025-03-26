@@ -20,10 +20,12 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 """Module providing job definition schema."""
+
 import logging
 
-from ansys.hps.client.common import ObjectSchemaWithModificationInfo
 from marshmallow import fields
+
+from ansys.hps.client.common import ObjectSchemaWithModificationInfo
 
 from .fitness_definition import FitnessDefinitionSchema
 from .object_reference import IdReferenceList

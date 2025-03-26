@@ -30,8 +30,9 @@ from datetime import datetime
 from enum import Enum
 from typing import Any, Literal
 
-from ansys.hps.client.common import DictModel
 from pydantic import Field
+
+from ansys.hps.client.common import DictModel
 
 
 class Analytics(DictModel):
@@ -650,7 +651,9 @@ class OrchestrationInterfacesBackend(DictModel):
     env: dict[str, Any] | None = Field(
         None, description="Static environment variables needed for job execution.", title="Env"
     )
-    process_runner: ServiceUserProcessRunner | ProcessLauncherProcessRunner | RestLauncherProcessRunner | None = Field(
+    process_runner: (
+        ServiceUserProcessRunner | ProcessLauncherProcessRunner | RestLauncherProcessRunner | None
+    ) = Field(
         {"plugin_name": "service_user_module"},
         description="Process runner to execute commands.",
         discriminator="plugin_name",
@@ -692,7 +695,14 @@ class ComputeResourceSet(DictModel):
     last_modified: datetime | None = Field(
         None, description="Last modified time.", title="Last Modified"
     )
-    backend: KubernetesKedaBackend | OrchestrationInterfacesBackend | OCMBackend | LocalBackend | MockupBackend | None = Field(
+    backend: (
+        KubernetesKedaBackend
+        | OrchestrationInterfacesBackend
+        | OCMBackend
+        | LocalBackend
+        | MockupBackend
+        | None
+    ) = Field(
         {"debug": False, "plugin_name": "local"},
         description="Backend to use in the compute resource set.",
         discriminator="plugin_name",

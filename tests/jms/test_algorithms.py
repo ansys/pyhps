@@ -22,9 +22,10 @@
 
 import logging
 
+from marshmallow.utils import missing
+
 from ansys.hps.client.jms import JmsApi, ProjectApi
 from ansys.hps.client.jms.resource import Algorithm, Job, JobDefinition, JobSelection, Project
-from marshmallow.utils import missing
 
 log = logging.getLogger(__name__)
 

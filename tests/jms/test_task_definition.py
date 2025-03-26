@@ -32,7 +32,6 @@ from ansys.hps.client.jms.resource.task_definition import (
     SuccessCriteria,
 )
 from ansys.hps.client.jms.schema.task_definition import TaskDefinitionSchema
-
 from examples.python_two_bar_truss_problem.project_setup import main as create_project
 
 log = logging.getLogger(__name__)

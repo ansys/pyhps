@@ -125,10 +125,10 @@ def create_project(
         float_input_params.extend(
             [
                 FloatParameterDefinition(
-                    name="tube%i_radius" % i, lower_limit=4.0, upper_limit=20.0, default=12.0
+                    name=f"tube{i}_radius", lower_limit=4.0, upper_limit=20.0, default=12.0
                 ),
                 FloatParameterDefinition(
-                    name="tube%i_thickness" % i, lower_limit=0.5, upper_limit=2.5, default=1.0
+                    name=f"tube{i}_thickness", lower_limit=0.5, upper_limit=2.5, default=1.0
                 ),
             ]
         )
@@ -139,7 +139,7 @@ def create_project(
     for i in range(1, 4):
         param_mappings.append(
             ParameterMapping(
-                key_string="radius(%i)" % i,
+                key_string=f"radius({i})",
                 tokenizer="=",
                 parameter_definition_id=float_input_params[pi].id,
                 file_id=file_ids["inp"],
@@ -148,7 +148,7 @@ def create_project(
         pi += 1
         param_mappings.append(
             ParameterMapping(
-                key_string="thickness(%i)" % i,
+                key_string=f"thickness({i})",
                 tokenizer="=",
                 parameter_definition_id=float_input_params[pi].id,
                 file_id=file_ids["inp"],
@@ -160,14 +160,14 @@ def create_project(
     str_input_params = []
     for i in range(1, 22):
         str_input_params.append(
-            StringParameterDefinition(name="tube%s" % i, default="1", value_list=["1", "2", "3"])
+            StringParameterDefinition(name=f"tube{i}", default="1", value_list=["1", "2", "3"])
         )
     str_input_params = project_api.create_parameter_definitions(str_input_params)
 
     for i in range(1, 22):
         param_mappings.append(
             ParameterMapping(
-                key_string="tubes(%i)" % i,
+                key_string=f"tubes({i})",
                 tokenizer="=",
                 parameter_definition_id=str_input_params[i - 1].id,
                 file_id=file_ids["inp"],

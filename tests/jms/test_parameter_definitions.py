@@ -22,6 +22,8 @@
 
 import logging
 
+from marshmallow.utils import missing
+
 from ansys.hps.client.jms import JmsApi, ProjectApi
 from ansys.hps.client.jms.resource import (
     BoolParameterDefinition,
@@ -38,7 +40,6 @@ from ansys.hps.client.jms.schema.parameter_definition import (
     ParameterDefinitionSchema,
     StringParameterDefinitionSchema,
 )
-from marshmallow.utils import missing
 
 log = logging.getLogger(__name__)
 
@@ -230,7 +231,7 @@ def test_mixed_parameter_definition(client):
     pds = project_api.create_parameter_definitions(original_pds)
 
     for pd, original_pd in zip(pds, original_pds, strict=False):
-        assert type(pd) == type(original_pd)
+        assert type(pd) is type(original_pd)
         assert pd.name == original_pd.name
 
     assert pds[0].upper_limit == 27

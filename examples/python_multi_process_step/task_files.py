@@ -26,6 +26,7 @@
     that the script is run as subscript with new input file
 (3) make sure that newly generated files are added as output of the process step
 """
+
 import json
 import logging
 import os
@@ -45,9 +46,7 @@ def update_input_file(task):
         "color": "white",
         "period": 2,
         "duration": 8,
-        "info": "# changed for task ID: {} Process Step {}".format(
-            task.id, task.task_definition_snapshot.name
-        ),
+        "info": f"# changed for task ID: {task.id} task {task.task_definition_snapshot.name}",
     }
     file = NamedTemporaryFile(delete=False, prefix="input_mod", suffix=".json", mode="w")
     json.dump(data, file)

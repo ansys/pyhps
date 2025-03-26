@@ -20,12 +20,14 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 """Module creating, getting, updating, deleting and copying objects."""
+
 import json
 import logging
 
+from requests import Session
+
 from ansys.hps.client.common import Object
 from ansys.hps.client.exceptions import ClientError
-from requests import Session
 
 log = logging.getLogger(__name__)
 

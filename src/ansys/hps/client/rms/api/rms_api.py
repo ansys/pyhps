@@ -20,6 +20,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 """Module wrapping around RMS root endpoints."""
+
 import logging
 
 from ansys.hps.client.client import Client

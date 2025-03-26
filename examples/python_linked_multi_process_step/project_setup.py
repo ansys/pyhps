@@ -24,6 +24,7 @@
 
 Author(s): R.Walker
 """
+
 import argparse
 import logging
 import os
@@ -139,8 +140,8 @@ def main(client, num_task_definitions, num_jobs, start, inactive, python_version
             input_file_ids.append(file_ids["input"])
             cmd = f"%executable% %file:td{i}_pyscript% %file:input% {i}"
         else:
-            input_file_ids.append(file_ids[f"td{i-1}_result"])
-            cmd = f"%executable% %file:td{i}_pyscript% %file:td{i-1}_result% {i}"
+            input_file_ids.append(file_ids[f"td{i - 1}_result"])
+            cmd = f"%executable% %file:td{i}_pyscript% %file:td{i - 1}_result% {i}"
 
         output_file_ids = [file_ids[f"td{i}_result"]]
 

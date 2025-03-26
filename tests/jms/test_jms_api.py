@@ -23,6 +23,8 @@
 import logging
 
 import pytest
+from marshmallow.utils import missing
+
 from ansys.hps.client import Client, ClientError
 from ansys.hps.client.jms import JmsApi, ProjectApi
 from ansys.hps.client.jms.resource import (
@@ -32,8 +34,6 @@ from ansys.hps.client.jms.resource import (
     JobDefinition,
     Project,
 )
-from marshmallow.utils import missing
-
 from examples.mapdl_motorbike_frame.project_setup import create_project
 
 log = logging.getLogger(__name__)

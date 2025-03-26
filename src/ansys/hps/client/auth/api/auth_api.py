@@ -21,7 +21,6 @@
 # SOFTWARE.
 """Module providing the Python interface to the Authorization Service API."""
 
-
 from ansys.hps.client.client import Client
 
 from ..resource import User

@@ -21,8 +21,9 @@
 # SOFTWARE.
 """Module that creates the user schema."""
 
-from ansys.hps.client.common.base_schema import BaseSchema
 from marshmallow import fields
+
+from ansys.hps.client.common.base_schema import BaseSchema
 
 
 class UserSchema(BaseSchema):

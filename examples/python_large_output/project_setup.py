@@ -20,8 +20,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-"""Python job that can create large output files
-"""
+"""Python job that can create large output files"""
 
 import argparse
 import logging

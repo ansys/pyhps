@@ -1,4 +1,5 @@
 """Sphinx documentation configuration file."""
+
 import os
 import shutil
 import sys
@@ -7,8 +8,9 @@ from pathlib import Path
 from zipfile import ZipFile
 
 import sphinx
-from ansys.hps.client import __version__
 from ansys_sphinx_theme import ansys_favicon, get_version_match, pyansys_logo_black
+
+from ansys.hps.client import __version__
 
 # Constants declaration
 EXAMPLES = {

@@ -30,6 +30,7 @@ import warnings
 
 import jwt
 import requests
+
 from ansys.hps.data_transfer.client import Client as DataTransferClient
 from ansys.hps.data_transfer.client import DataTransferApi
 
@@ -410,7 +411,7 @@ class Client:
             )
         self.access_token = tokens["access_token"]
         self.refresh_token = tokens.get("refresh_token", None)
-        self.session.headers.update({"Authorization": "Bearer %s" % tokens["access_token"]})
+        self.session.headers.update({"Authorization": f"Bearer {tokens['access_token']}"})
 
     @property
     def data_transfer_client(self) -> DataTransferClient:

@@ -25,6 +25,7 @@
 Command formed: ansys.exe -b -i <inp_file> -o <out_file> -np 4
 
 """
+
 import os
 import subprocess
 
@@ -50,7 +51,7 @@ class MAPDLExecution(ApplicationExecution):
         # Add " around exe if needed for Windows
         exe = app["executable"]
         if " " in exe and not exe.startswith('"'):
-            exe = '"%s"' % exe
+            exe = '"%s"' % exe  # noqa
 
         # Use properties from resource requirements
         num_cores = self.context.resource_requirements["num_cores"]

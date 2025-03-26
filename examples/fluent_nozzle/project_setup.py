@@ -21,6 +21,7 @@
 # SOFTWARE.
 
 """Example script to set up a simple Fluent project in PyHPS."""
+
 import argparse
 import logging
 import os

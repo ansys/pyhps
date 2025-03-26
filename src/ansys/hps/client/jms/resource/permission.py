@@ -25,8 +25,9 @@
 
 """Module providing the permission resource."""
 
-from ansys.hps.client.common import Object
 from marshmallow.utils import missing
+
+from ansys.hps.client.common import Object
 
 from ..schema.permission import PermissionSchema
 

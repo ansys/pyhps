@@ -20,8 +20,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-"""Python two-bar truss example.
-"""
+"""Python two-bar truss example."""
 
 import argparse
 import logging

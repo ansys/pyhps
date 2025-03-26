@@ -21,9 +21,10 @@
 # SOFTWARE.
 """Module providing fitness term definition schema."""
 
-from ansys.hps.client.common import ObjectSchema
 from marshmallow import fields
 from marshmallow.validate import OneOf
+
+from ansys.hps.client.common import ObjectSchema
 
 fitness_term_types = ["design_objective", "limit_constraint", "target_constraint"]
 

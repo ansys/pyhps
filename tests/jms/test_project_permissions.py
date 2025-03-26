@@ -29,7 +29,6 @@ from ansys.hps.client.auth import AuthApi, User
 from ansys.hps.client.exceptions import ClientError
 from ansys.hps.client.jms import JmsApi, ProjectApi
 from ansys.hps.client.jms.resource import JobDefinition, Permission, Project
-
 from tests.utils import create_user, delete_user
 
 log = logging.getLogger(__name__)

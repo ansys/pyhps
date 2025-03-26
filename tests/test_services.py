@@ -24,6 +24,7 @@ import json
 import logging
 
 import pytest
+
 from ansys.hps.client import Client
 from ansys.hps.client.jms import JmsApi
 from ansys.hps.client.rms import RmsApi

@@ -25,11 +25,11 @@ import logging
 import uuid
 
 import pytest
+from marshmallow.utils import missing
+
 from ansys.hps.client import AuthApi, JmsApi, ProjectApi
 from ansys.hps.client.jms.resource import Job, JobDefinition, Project
 from ansys.hps.client.jms.schema.job import JobSchema
-from marshmallow.utils import missing
-
 from examples.mapdl_motorbike_frame.project_setup import create_project
 
 log = logging.getLogger(__name__)

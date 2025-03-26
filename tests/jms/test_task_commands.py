@@ -24,6 +24,7 @@ import io
 import logging
 
 import pytest
+
 from ansys.hps.client import ClientError
 from ansys.hps.client.jms import JmsApi, ProjectApi
 from ansys.hps.client.jms.resource import (

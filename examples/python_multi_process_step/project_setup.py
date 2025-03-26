@@ -42,6 +42,7 @@ Create 100 design points
   and do not write an result image.
 
 """
+
 import argparse
 import logging
 import os

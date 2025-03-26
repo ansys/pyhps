@@ -20,10 +20,12 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 """Module providing the fitness definition and fitness term definition resources."""
+
 import logging
 
-from ansys.hps.client.common import Object
 from marshmallow.utils import missing
+
+from ansys.hps.client.common import Object
 
 from ..schema.fitness_definition import FitnessDefinitionSchema, FitnessTermDefinitionSchema
 

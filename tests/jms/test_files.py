@@ -25,9 +25,10 @@ import logging
 import os
 import tempfile
 
+from marshmallow.utils import missing
+
 from ansys.hps.client.jms import JmsApi, ProjectApi
 from ansys.hps.client.jms.resource import File, Project
-from marshmallow.utils import missing
 
 log = logging.getLogger(__name__)
 
@@ -118,7 +119,7 @@ def test_files(client):
 
         # test progress handler
         def handler(current_size):
-            print(f"{current_size*1.0/files_queried[0].size * 100.0}% completed")
+            print(f"{current_size * 1.0 / files_queried[0].size * 100.0}% completed")
 
         fpath = project_api.download_file(files_queried[0], tpath, progress_handler=handler)
         with open(mac_path, "rb") as f, open(fpath, "rb") as sf:

@@ -26,12 +26,12 @@ import tempfile
 import time
 
 import pytest
+from marshmallow.utils import missing
+
 from ansys.hps.client import __ansys_apps_version__ as ansys_version
 from ansys.hps.client.jms import JmsApi, ProjectApi
 from ansys.hps.client.jms.resource import JobDefinition, LicenseContext, Project
 from ansys.hps.client.jms.schema.project import ProjectSchema
-from marshmallow.utils import missing
-
 from examples.mapdl_motorbike_frame.project_setup import create_project as motorbike_create_project
 
 log = logging.getLogger(__name__)
@@ -118,7 +118,7 @@ def test_project_integration(client):
     jms_api.delete_project(proj)
 
 
-@pytest.mark.xfail()
+@pytest.mark.xfail
 def test_project_replace(client):
     jms_api = JmsApi(client)
 
@@ -156,7 +156,7 @@ def test_project_copy(client):
     jms_api.delete_project(proj)
 
 
-@pytest.mark.xfail()
+@pytest.mark.xfail
 def test_project_license_context(client):
     jms_api = JmsApi(client)
     proj_name = "test_jms_ProjectTest_license_context"

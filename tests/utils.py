@@ -23,10 +23,11 @@
 
 import uuid
 
+from keycloak import KeycloakAdmin
+
 from ansys.hps.client import Client
 from ansys.hps.client.auth import User
 from ansys.hps.client.auth.schema.user import UserSchema
-from keycloak import KeycloakAdmin
 
 
 def create_user(keycloak_client: KeycloakAdmin, user: User) -> User:

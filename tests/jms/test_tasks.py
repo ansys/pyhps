@@ -26,11 +26,11 @@ import time
 import uuid
 
 import pytest
+from marshmallow.utils import missing
+
 from ansys.hps.client.jms import JmsApi, ProjectApi
 from ansys.hps.client.jms.resource import Job, JobDefinition, Project, Software, TaskDefinition
 from ansys.hps.client.jms.schema.task import TaskSchema
-from marshmallow.utils import missing
-
 from examples.mapdl_motorbike_frame.project_setup import create_project
 
 log = logging.getLogger(__name__)

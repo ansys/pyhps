@@ -21,6 +21,7 @@
 # SOFTWARE.get_projects
 
 import pytest
+
 from ansys.hps.client.check_version import check_version_and_raise, version_required
 from ansys.hps.client.exceptions import VersionCompatibilityError
 

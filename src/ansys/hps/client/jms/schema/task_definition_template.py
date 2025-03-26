@@ -21,8 +21,9 @@
 # SOFTWARE.
 """Provides task definition template related schemas."""
 
-from ansys.hps.client.common import BaseSchema, ObjectSchema
 from marshmallow import fields, validate
+
+from ansys.hps.client.common import BaseSchema, ObjectSchema
 
 from .task_definition import HpcResourcesSchema, SoftwareSchema, WorkerContextSchema
 

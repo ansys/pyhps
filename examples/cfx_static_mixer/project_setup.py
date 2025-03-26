@@ -21,6 +21,7 @@
 # SOFTWARE.
 
 """Example script to set up a simple CFX project in PyHPS."""
+
 import argparse
 import logging
 import os

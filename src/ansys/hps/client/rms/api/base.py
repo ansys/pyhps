@@ -24,10 +24,11 @@
 import json
 import logging
 
-from ansys.hps.client.exceptions import ClientError
 from pydantic import BaseModel, create_model
 from pydantic import __version__ as pydantic_version
 from requests import Session
+
+from ansys.hps.client.exceptions import ClientError
 
 from ..models import (
     ComputeResourceSet,
