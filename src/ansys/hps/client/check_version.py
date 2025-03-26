@@ -22,6 +22,7 @@
 
 """Version compatibility checks."""
 
+import logging
 from enum import Enum
 from functools import wraps
 from typing import Protocol
