@@ -20,13 +20,13 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-"""
-Example to query resources from a project.
+"""Example to query resources from a project.
 
 - Query values from evaluated jobs, computing some simple statistics on parameter values.
 - Download files from the project
 
 """
+
 import argparse
 import logging
 import os
@@ -133,7 +133,6 @@ def download_files(client, project_name):
 
 
 if __name__ == "__main__":
-
     parser = argparse.ArgumentParser()
     parser.add_argument("-n", "--name", type=str, default="Mapdl Motorbike Frame")
     parser.add_argument("-j", "--num-jobs", type=int, default=500)

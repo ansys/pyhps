@@ -20,6 +20,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 """Module providing float, integer, boolean, and string parameter definition schema."""
+
 import logging
 
 from marshmallow import fields
@@ -139,4 +140,5 @@ class ParameterDefinitionSchema(OneOfSchema):
     }
 
     def get_obj_type(self, obj):
+        """Return the type of parameter definition."""
         return obj.__class__.__name__.replace("ParameterDefinition", "").lower()

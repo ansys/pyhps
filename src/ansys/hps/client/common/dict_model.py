@@ -20,15 +20,22 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+"""Provides a base Pydantic model that allows dictionary-like access."""
+
 from pydantic import BaseModel
 
 
 class DictModel(BaseModel):
+    """Pydantic model that allows dictionary-like access."""
+
     def __getitem__(self, key):
+        """Get a value from the model."""
         return getattr(self, key)
 
     def __setitem__(self, key, value):
+        """Set a value in the model."""
         return setattr(self, key, value)
 
     def get(self, key, default_value):
+        """Get a value from the model, returning a default value if the key is not found."""
         return getattr(self, key, default_value)

@@ -28,6 +28,8 @@ class BaseSchema(Schema):
     """Base schema class."""
 
     class Meta:
+        """Meta class for the schema."""
+
         ordered = True
         unknown = INCLUDE
         object_class = None  # To be set in derived objects
