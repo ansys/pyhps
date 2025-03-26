@@ -88,3 +88,8 @@ def test_version_required():
 
     assert MockApi("0.1.8").fn3()
     assert MockApi("1.2.3").fn3()
+
+    # test skipping check for dev version
+    assert MockApi("0.0.dev").fn1()
+    assert MockApi("0.0.0").fn2()
+    assert MockApi("0.0.dev").fn3()
