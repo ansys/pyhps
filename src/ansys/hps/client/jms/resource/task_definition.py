@@ -59,6 +59,7 @@ class HpcResources(Object):
         Additional command line options to pass directly to the scheduler.
     custom_orchestration_options : dict[str, Union[int, float, str, bool]], optional
         Dictionary of custom orchestration options.
+
     """
 
     class Meta:
@@ -113,6 +114,7 @@ class ResourceRequirements(Object):
         Dictionary of custom resource requirements.
     hpc_resources : HpcResources, optional
         HPC resource requirements.
+
     """
 
     class Meta:
@@ -157,6 +159,7 @@ class Software(Object):
         Name of the app.
     version : str, optional
         Version of the app.
+
     """
 
     class Meta:
@@ -182,6 +185,7 @@ class WorkerContext(Object):
         Maximum run time (in seconds) for an ephemeral evaluator.
     max_num_parallel_tasks : int, optional
         Maximum number of tasks that an ephemeral evaluator can run in parallel.
+
     """
 
     class Meta:
@@ -215,6 +219,7 @@ class SuccessCriteria(Object):
         List of names of the required output parameters.
     require_all_output_parameters : bool, optional
         Whether to require all output parameters.
+
     """
 
     class Meta:
@@ -251,6 +256,7 @@ class Licensing(Object):
     ----------
     enable_shared_licensing : bool, optional
         Whether to enable shared licensing contexts for Ansys simulations.
+
     """
 
     class Meta:
@@ -314,6 +320,7 @@ class TaskDefinition(Object):
         :class:`ResourceRequirements` object.
     worker_context : WorkerContext, optional
         :class:`WorkerContext` object.
+
     """
 
     class Meta:

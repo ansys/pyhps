@@ -95,6 +95,7 @@ class FloatParameterDefinition(ParameterDefinition):
         Whether the parameter is cyclic.
     value_list : list, optional
         List of allowed values. This parameter provides an alternative to specifying upper and lower limits.
+
     """
 
     class Meta:
@@ -182,6 +183,7 @@ class IntParameterDefinition(ParameterDefinition):
         The default is ``1``.
     cyclic : bool, optional
         Whether the parameter is cyclic.
+
     """
 
     class Meta:
@@ -259,6 +261,7 @@ class BoolParameterDefinition(ParameterDefinition):
     type : str
     default : bool, optional
         Default parameter value.
+
     """
 
     class Meta:
@@ -330,6 +333,7 @@ class StringParameterDefinition(ParameterDefinition):
         Default parameter value.
     value_list : list, optional
         List of allowed values.
+
     """
 
     class Meta:

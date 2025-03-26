@@ -20,8 +20,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-"""
-Script showing how to submit an MAPDL linked analysis workflow (prestress-modal-harmonic)
+"""Script showing how to submit an MAPDL linked analysis workflow (prestress-modal-harmonic)
 as a multi-task job to HPS.
 
 The script shows two possible ways to submit the individual tasks:

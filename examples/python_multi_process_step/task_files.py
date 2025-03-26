@@ -20,8 +20,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-"""
-Update some task files
+"""Update some task files
 (1) Create a new input file with changed data
 (2) change parameter `CALL_SUBSCRIPT` to true in `eval.py`
     that the script is run as subscript with new input file

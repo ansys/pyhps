@@ -20,9 +20,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-"""
-Example script to set up a simple Fluent project in PyHPS.
-"""
+"""Example script to set up a simple Fluent project in PyHPS."""
 import argparse
 import logging
 import os
@@ -45,9 +43,7 @@ log = logging.getLogger(__name__)
 
 
 def create_project(client, name, num_jobs=20, version=__ansys_apps_version__):
-    """
-    Create an HPS project consisting of an Ansys Fluent model.
-    """
+    """Create an HPS project consisting of an Ansys Fluent model."""
     jms_api = JmsApi(client)
     log.debug("=== Project")
     proj = Project(name=name, priority=1, active=True)

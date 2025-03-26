@@ -137,4 +137,5 @@ class ParameterDefinitionSchema(OneOfSchema):
     }
 
     def get_obj_type(self, obj):
+        """Return the type of parameter definition."""
         return obj.__class__.__name__.replace("ParameterDefinition", "").lower()

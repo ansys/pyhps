@@ -20,8 +20,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-"""
-Project set up script for multi-steps (task definitions) and task file replacement testing.
+"""Project set up script for multi-steps (task definitions) and task file replacement testing.
 
 Author(s): R.Walker
 
@@ -34,6 +33,7 @@ Per default the project is inactive. You can activate the project with the `-a` 
 
 
 Example:
+-------
 ```
 python project_setup.py -n 100 -c 10 --no-images
 ```

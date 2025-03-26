@@ -20,9 +20,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-"""
-This example shows how to submit a simple Fluent 2D job to HPS.
-"""
+"""Example showing how to submit a simple Fluent 2D job to HPS."""
 
 import argparse
 import logging

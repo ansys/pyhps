@@ -20,8 +20,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-"""
-Example script to set up a simple MAPDL project with parameters in PyHPS.
+"""Example script to set up a simple MAPDL project with parameters in PyHPS.
 
 Author(s): O.Koenig
 """
@@ -56,8 +55,7 @@ log = logging.getLogger(__name__)
 def create_project(
     client, name, version=__ansys_apps_version__, num_jobs=20, use_exec_script=False, active=True
 ) -> Project:
-    """
-    Create an HPS project consisting of an ANSYS APDL beam model of a motorbike frame.
+    """Create an HPS project consisting of an ANSYS APDL beam model of a motorbike frame.
 
     After creating the project job definition, 10 design points with randomly
     chosen parameter values are created and set to pending.

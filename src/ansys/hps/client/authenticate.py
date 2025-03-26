@@ -19,8 +19,7 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
-"""Module that provides authentication for the user with a password or refresh token against the
-HPS authentication service."""
+"""Provides authentication utils."""
 import logging
 
 import requests
@@ -33,6 +32,7 @@ OIDC_DISCOVERY_ENDPOINT_PATH = "/.well-known/openid-configuration"
 
 
 def get_discovery_data(auth_url: str, timeout: int = 10, verify: bool | str = True) -> dict:
+    """Retrieve the discovery data from the authentication server."""
     disco_url = auth_url.rstrip("/") + OIDC_DISCOVERY_ENDPOINT_PATH
     log.debug(f"Discovery URL: {disco_url}")
     with requests.Session() as session:
@@ -60,16 +60,14 @@ def authenticate(
     verify: bool | str = True,
     **kwargs,
 ):
-    """
-    Authenticates the user with a password or refresh token against the HPS authentication service.
+    """Authenticate the user against the HPS authentication service.
 
     If this method is successful, the response includes access and refresh tokens.
 
     Parameters
     ----------
-
-    url : str, optional
-        Base path for the server to call. The default is ``'https://127.0.0.1:8443/rep'``.
+    auth_url : str, optional
+        Authentication url.
     realm : str, optional
         Keycloak realm. The default is ``'rep'``.
     grant_type: str, optional
@@ -92,13 +90,15 @@ def authenticate(
         If a Boolean, whether to verify the server's TLS certificate. If a string, the
         path to the CA bundle to use. For more information, see the :class:`requests.Session`
         documentation.
+    kwargs : dict, optional
+        Additional keyword arguments to pass to the authentication endpoint.
 
     Returns
     -------
     dict
         JSON-encoded content of a :class:`requests.Response` object.
-    """
 
+    """
     auth_url = str(auth_url)
     disco_dict = get_discovery_data(auth_url, timeout, verify)
     token_url = disco_dict["token_endpoint"]

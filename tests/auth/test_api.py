@@ -102,13 +102,11 @@ def test_get_user_permissions(client):
 
 
 def test_impersonate_user(url, keycloak_client):
-    """
-    Test token exchange for impersonation, see https://www.rfc-editor.org/rfc/rfc8693.html
+    """Test token exchange for impersonation, see https://www.rfc-editor.org/rfc/rfc8693.html.
 
     Requires activating the token-exchange feature in keycloak
     by passing --features=token-exchange to the start command.
     """
-
     username = f"test_user_{uuid.uuid4()}"
     new_user = User(
         username=username,

@@ -97,13 +97,22 @@ select = [
     "Q",       # flake8-quotes
     "PT",      # flake8-pytest-style
     "LOG",     # flake8-logging
+    "D",
 ]
 ignore = []
 
 [tool.ruff.lint.per-file-ignores]
 "__init__.py" = ["F401"]
-"src/ansys/hps/client/jms/resource/*.py" = ["E501"]
-"src/ansys/hps/client/rms/models.py" = ["E501"]
+# ignore some rules for auto-generated code
+"src/ansys/hps/client/jms/schema/*.py" = ["D101", "D106", "D107", "D103"]
+"src/ansys/hps/client/jms/resource/*.py" = ["E501", "D106", "D107", "D414"]
+"src/ansys/hps/client/auth/schema/*.py" = ["D101", "D106"]
+"src/ansys/hps/client/auth/resource/*.py" = ["E501", "D106", "D107"]
+"src/ansys/hps/client/rms/models.py" = ["E501", "D101", "D100"]
+# ignore docstring requirements for tests, examples and build scripts
+"tests/**/*.py" = ["D"]
+"examples/**/*.py" = ["D"]
+"generate_resources.py" = ["D"]
 
 [tool.coverage.run]
 relative_files = true

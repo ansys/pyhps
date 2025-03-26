@@ -53,6 +53,7 @@ class TemplateProperty(Object):
         Type of the property. Options are ``bool``, ``float``, ``int``, and ``string``.
     value_list : any, optional
         List of possible values for the property.
+
     """
 
     class Meta:
@@ -92,6 +93,7 @@ class TemplateResourceRequirements(Object):
     evaluator_id : TemplateProperty, optional
     custom : dict[str, TemplateProperty], optional
     hpc_resources : HpcResources, optional
+
     """
 
     class Meta:
@@ -142,6 +144,7 @@ class TemplateInputFile(Object):
         Description of the file's purpose.
     required : bool
         Whether the file is required by the task.
+
     """
 
     class Meta:
@@ -188,6 +191,7 @@ class TemplateOutputFile(Object):
         Whether to live monitor the file's contents.
     collect : bool, optional
         Whether to collect files per job.
+
     """
 
     class Meta:
@@ -258,6 +262,7 @@ class TaskDefinitionTemplate(Object):
         List of predefined input files.
     output_files : list[TemplateOutputFile], optional
         List of predefined output files.
+
     """
 
     class Meta:

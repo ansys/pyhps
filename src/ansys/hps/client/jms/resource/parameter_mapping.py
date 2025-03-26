@@ -64,6 +64,7 @@ class ParameterMapping(Object):
     task_definition_property : str, optional
     file_id : str, optional
         ID of the file resource.
+
     """
 
     class Meta:

@@ -49,6 +49,7 @@ class Operation(Object):
     messages : list, optional
     start_time : datetime, optional
     end_time : datetime, optional
+
     """
 
     class Meta:

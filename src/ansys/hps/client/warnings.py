@@ -23,4 +23,6 @@
 
 
 class UnverifiedHTTPSRequestsWarning(Warning):
+    """Warning for unverified HTTPS requests."""
+
     pass

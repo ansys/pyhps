@@ -35,6 +35,7 @@ class RestrictedValue(fields.Field):
     ]
 
     def __init__(self):
+        """Initialize a RestrictedValue object."""
         super().__init__(allow_none=True)
 
     def _deserialize(self, value, attr, obj, **kwargs):

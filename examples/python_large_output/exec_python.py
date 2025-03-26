@@ -20,8 +20,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-"""
-Simplistic execution script for Python.
+"""Simplistic execution script for Python.
 
 Command formed: python <script_file> <input_file (optional)>
 """

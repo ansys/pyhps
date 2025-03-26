@@ -38,7 +38,6 @@ class AuthApi:
 
     Examples
     --------
-
     Get users whose first name contains ``john``.
 
     >>> from ansys.hps.client import Client
@@ -52,6 +51,7 @@ class AuthApi:
     """
 
     def __init__(self, client: Client):
+        """Initialize the AuthApi object."""
         self.client = client
 
     @property
@@ -125,7 +125,6 @@ class AuthApi:
 
     def user_is_admin(self, id: str) -> bool:
         """Determine if the user is a system administrator."""
-
         from ansys.hps.client.jms import JmsApi
 
         # the admin keys are configurable settings of JMS

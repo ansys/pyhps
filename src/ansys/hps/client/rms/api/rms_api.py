@@ -47,9 +47,11 @@ class RmsApi:
     ----------
     client : Client
         HPS client object.
+
     """
 
     def __init__(self, client: Client):
+        """Initialize the ``RmsApi`` object."""
         self.client = client
         self._api_info = None
 
@@ -91,7 +93,7 @@ class RmsApi:
         )
 
     def get_evaluator_configuration(self, id: str, as_object=True) -> EvaluatorConfiguration:
-        """Get an evaluator's configuration"""
+        """Get an evaluator's configuration."""
         return get_object(
             self.client.session,
             f"{self.url}/evaluators/{id}/configuration",
@@ -107,7 +109,6 @@ class RmsApi:
 
         Examples
         --------
-
         Set a custom resource property on a Linux evaluator that was active in the past 60 seconds.
 
         >>> import datetime
@@ -176,7 +177,6 @@ class RmsApi:
 
     def get_cluster_info(self, compute_resource_set_id, as_object=True) -> ClusterInfo:
         """Get the cluster information of a compute resource set."""
-
         return get_object(
             self.client.session,
             f"{self.url}/compute_resource_sets/{compute_resource_set_id}/cluster_info",

@@ -96,7 +96,6 @@ class Client:
 
     Examples
     --------
-
     Create a client object and connect to HPS with a username and password.
 
     >>> from ansys.hps.client import Client
@@ -134,6 +133,7 @@ class Client:
         disable_security_warnings: bool = True,
         **kwargs,
     ):
+        """Initialize the Client object."""
         rep_url = kwargs.get("rep_url", None)
         if rep_url is not None:
             url = rep_url
@@ -285,6 +285,7 @@ class Client:
 
     @property
     def rep_url(self) -> str:
+        """Deprecated. Use 'url' instead."""
         msg = "The client 'rep_url' property is deprecated. Use 'url' instead."
         warnings.warn(msg, DeprecationWarning, stacklevel=2)
         log.warning(msg)
@@ -292,7 +293,6 @@ class Client:
 
     def initialize_data_transfer_client(self):
         """Initialize the Data Transfer client."""
-
         if self._dt_client is None:
             try:
                 log.info("Starting Data Transfer client.")
@@ -315,8 +315,7 @@ class Client:
                 raise HPSError("Error occurred when starting Data Transfer client.") from ex
 
     def _get_download_dir(self, company=None):
-        """
-        Returns download directory platform dependent
+        r"""Return download directory platform dependent.
 
         :Parameters:
         -`company`: Company name of the software provider
@@ -329,7 +328,6 @@ class Client:
         not AppData\\Roaming, as the data stored for an application should typically be kept local.
 
         """
-
         environment_variable = "HOME"
         if platform.uname()[0].lower() == "windows":
             environment_variable = "LOCALAPPDATA"
@@ -349,6 +347,7 @@ class Client:
 
     @property
     def auth_api_url(self) -> str:
+        """Deprecated. There is no generic auth_api exposed."""
         msg = "The client 'auth_api_url' property is deprecated. \
                There is no generic auth_api exposed."
         warnings.warn(msg, DeprecationWarning, stacklevel=2)
@@ -361,8 +360,11 @@ class Client:
             return None
 
     def _auto_refresh_token(self, response, *args, **kwargs):
-        """Automatically refreshes the access token and
-        resends the request in case of an unauthorized error."""
+        """Provide a callback for refreshing an expired token.
+
+        Automatically refreshes the access token and
+        re-sends the request in case of an unauthorized error.
+        """
         if (
             response.status_code == 401
             and self._unauthorized_num_retry < self._unauthorized_max_retry
@@ -382,7 +384,7 @@ class Client:
         return response
 
     def refresh_access_token(self):
-        """Request a new access token"""
+        """Request a new access token."""
         if self.grant_type == "client_credentials":
             # Its not recommended to give refresh tokens to client_credentials grant types
             # as per OAuth 2.0 RFC6749 Section 4.4.3, so handle these specially...

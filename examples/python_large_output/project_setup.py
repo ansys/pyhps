@@ -20,8 +20,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-"""
-Python job that can create large output files
+"""Python job that can create large output files
 """
 
 import argparse
@@ -47,9 +46,7 @@ log = logging.getLogger(__name__)
 
 
 def main(client, use_exec_script, python_version=None) -> Project:
-    """
-    Create project that runs a Python script to generate a large output file.
-    """
+    """Create project that runs a Python script to generate a large output file."""
     log.debug("=== Project")
     proj = Project(name="Python Large Output Files", priority=1, active=True)
     jms_api = JmsApi(client)

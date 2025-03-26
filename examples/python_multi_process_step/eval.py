@@ -20,8 +20,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-"""
-Evaluation script for multi task definition testing
+"""Evaluation script for multi task definition testing
 run *python eval.py --help* for command line arguments
 The script has JSON-File as input and writes *text* and *json* as result files.
 Input file has 3 parameters

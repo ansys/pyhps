@@ -53,6 +53,7 @@ class JobSelection(Object):
         ID of the :class:`Algorithm` instance that the selection belongs to.
     jobs : list[str]
         List of job IDs.
+
     """
 
     class Meta:

@@ -51,6 +51,7 @@ class Project(Object):
         Date and time that the project was last modified.
     statistics : dict, optional
         Dictionary containing various project statistics.
+
     """
 
     class Meta:

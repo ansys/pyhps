@@ -55,6 +55,7 @@ class Algorithm(Object):
         Generic string field to hold arbitrary algorithm configuration data. For example, as a JSON dictionary.
     jobs : list[str]
         List of job IDs.
+
     """
 
     class Meta:

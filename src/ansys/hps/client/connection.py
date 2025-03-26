@@ -19,8 +19,7 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
-"""Module getting the :class:`requests.Session` object configured for HPS with a given access token
-and pinging a given URL."""
+"""Utilities to configure a :class:`requests.Session` object."""
 import logging
 
 import requests
@@ -51,6 +50,7 @@ def create_session(
     -------
     :class:`requests.Session`
         Session object.
+
     """
     session = requests.Session()
 
@@ -91,6 +91,7 @@ def ping(session: requests.Session, url: str, timeout=10.0) -> bool:
     -------
     bool
         ``True`` when successful, ``False`` when failed.
+
     """
     log.debug("Ping %s ..." % url)
     r = session.get(url, timeout=timeout)

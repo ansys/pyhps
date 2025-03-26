@@ -43,6 +43,7 @@ class Permission(Object):
     value_name : str, optional
     role : str
         Role of the user. Options are ``'admin'``, ``'reader'``, and ``'writer'``.
+
     """
 
     class Meta:

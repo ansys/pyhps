@@ -29,16 +29,18 @@ log = logging.getLogger(__name__)
 
 
 class Object:
+    """Base resource object."""
+
     class Meta:
+        """Meta class for the object."""
+
         schema = None  # To be set in derived classes
         rest_name = (
             None  # String used in REST URI's to access this resource, to be set in derived classes
         )
 
     def declared_fields(self):
-        """
-        Provides a helper function for retrieving fields to define as class members for an object.
-        """
+        """Provide a helper function for retrieving fields."""
         fields = []
         for k, v in self.Meta.schema._declared_fields.items():
             field = k
@@ -49,6 +51,7 @@ class Object:
         return fields
 
     def __init__(self, **kwargs):
+        """Initialize the object."""
         # obj_type in JSON equals class name in API
         self.obj_type = self.__class__.__name__
 
@@ -79,7 +82,7 @@ class Object:
         return True
 
     def __str__(self):
-        """String representation of the object."""
+        """Provide the string representation of the object."""
         # Ideally we'd simply do
         #   return json.dumps(self.Meta.schema(many=False).dump(self), indent=2)
         # However the schema.dump() function (rightfully) ignores fields marked as load_only.
@@ -102,10 +105,13 @@ class Object:
         return json.dumps(dict_repr, indent=2)
 
     def __getitem__(self, key):
+        """Get item from object."""
         return getattr(self, key)
 
     def __setitem__(self, key, value):
+        """Set item in object."""
         return setattr(self, key, value)
 
     def get(self, key, default=None):
+        """Get an item from the object, returning a default value if the key is not found."""
         return getattr(self, key, default)

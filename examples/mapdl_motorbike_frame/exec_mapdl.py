@@ -20,8 +20,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-"""
-Basic execution script for MAPDL.
+"""Basic execution script for MAPDL.
 
 Command formed: ansys.exe -b -i <inp_file> -o <out_file> -np 4
 

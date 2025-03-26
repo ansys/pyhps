@@ -78,7 +78,6 @@ class ProjectApi:
 
     Examples
     --------
-
     >>> from ansys.hps.client import Client
     >>> from ansys.hps.client.jms import JmsApi, Project, ProjectApi
     >>> cl = Client(
@@ -153,19 +152,18 @@ class ProjectApi:
         -------
         str
             Path to the archive.
+
         """
         return archive_project(self, path, include_job_files)
 
     ################################################################
     # Files
     def get_files(self, as_objects=True, content=False, **query_params) -> list[File]:
-        """
-        Get a list of file resources, optionally filtered by query parameters.
+        """Get a list of file resources, optionally filtered by query parameters.
 
         If ``content=True``, each file's content is also downloaded and stored in memory
         as the :attr:`ansys.hps.client.jms.File.content` attribute.
         """
-
         if content:
             min_v = JMS_VERSIONS[HpsRelease.v1_2_0]
             check_version_and_raise(
@@ -199,8 +197,7 @@ class ProjectApi:
         stream: bool = None,
         progress_handler: Callable[[int], None] = None,
     ) -> str:
-        """
-        Download file content and save it to disk.
+        """Download file content and save it to disk.
 
         If ``stream=True``, data is retrieved in chunks, which avoids storing the entire content
         in memory.
@@ -298,6 +295,7 @@ class ProjectApi:
             If ``wait=True``, returns the list of newly created task definition IDs.
             If ``wait=False``, returns an operation ID that can be used to
             track progress.
+
         """
         return _copy_objects(self.client, self.url, task_definitions, wait=wait)
 
@@ -316,7 +314,6 @@ class ProjectApi:
         as_object: bool = True,
     ) -> AnalyzeResponse:
         """Compare resource requirements against available compute resources."""
-
         # Task definition is retrieved as a native dictionary to more easily translate
         # the subobjects into RMS models
         tds = self.get_task_definitions(id=task_definition_id, fields="all", as_objects=False)
@@ -379,6 +376,7 @@ class ProjectApi:
             If ``wait=True``, returns the list of newly created job definition IDs.
             If ``wait=False``, returns an operation ID that can be used to
             track progress.
+
         """
         return _copy_objects(self.client, self.url, job_definitions, wait=wait)
 
@@ -404,6 +402,7 @@ class ProjectApi:
         list
             List of :class:`ansys.hps.client.jms.Job` objects if ``as_objects=True`` or
             a list of dictionaries if ``as_objects=False``.
+
         """
         return self._create_objects(jobs, Job, as_objects=as_objects)
 
@@ -424,6 +423,7 @@ class ProjectApi:
             If ``wait=True``, returns the list of newly created job IDs.
             If ``wait=False``, returns an operation ID that can be used to
             track progress.
+
         """
         return _copy_objects(self.client, self.url, jobs, wait=wait)
 
@@ -443,6 +443,7 @@ class ProjectApi:
         list
             List of :class:`ansys.hps.client.jms.Job` objects if ``as_objects=True`` or a list of
             dictionaries if ``as_objects=False``.
+
         """
         return self._update_objects(jobs, Job, as_objects=as_objects)
 
@@ -470,7 +471,7 @@ class ProjectApi:
         return sync_jobs(self, jobs)
 
     def _sync_jobs(self, jobs: list[Job]):
-        """Deprecated function that syncs a list of jobs."""
+        """Sync a list of jobs (deprecated)."""
         msg = (
             "'ProjectApi._sync_jobs' is deprecated and is to be removed soon. "
             "Use 'ProjectApi.sync_jobs' instead."
@@ -493,7 +494,6 @@ class ProjectApi:
     # Commands
     def queue_task_command(self, task_id: str, name: str, **command_arguments) -> TaskCommand:
         """Queue a command to a task."""
-
         # get the task definition id
         task = self.get_tasks(id=task_id, fields=["id", "task_definition_id"])[0]
 
@@ -621,11 +621,10 @@ class ProjectApi:
         """Copy a default execution script to the current project.
 
         Example:
-
+        -------
             >>> file = project_api.copy_default_execution_script("exec_mapdl.py")
 
         """
-
         # create file resource
         name = os.path.splitext(filename)[0]
         file = File(name=name, evaluation_path=filename, type="application/x-python-code")
@@ -687,11 +686,7 @@ class ProjectApi:
 
 
 def _download_files(project_api: ProjectApi, files: list[File]):
-    """
-    Download files directly using data transfer worker.
-
-    """
-
+    """Download files directly using data transfer worker."""
     temp_dir = tempfile.TemporaryDirectory()
 
     project_api.client.initialize_data_transfer_client()
@@ -737,8 +732,7 @@ def get_files(project_api: ProjectApi, as_objects=True, content=False, **query_p
 
 
 def _upload_files(project_api: ProjectApi, files):
-    """Uploads files directly using data transfer worker."""
-
+    """Upload files directly using the data transfer worker."""
     min_v = JMS_VERSIONS[HpsRelease.v1_2_0]
     check_version_and_raise(
         project_api.version,
@@ -846,7 +840,6 @@ def _download_file(
     progress_handler: Callable[[int], None] = None,
 ) -> str:
     """Download a file."""
-
     project_api.client.initialize_data_transfer_client()
 
     if getattr(file, "hash", None) is None:
@@ -942,7 +935,6 @@ def _download_archive(project_api: ProjectApi, download_link, target_path):
 
 def copy_jobs(project_api: ProjectApi, jobs: list[Job], as_objects=True, **query_params):
     """Create jobs by copying existing jobs."""
-
     ids = _copy_objects(client=project_api.client, api_url=project_api.url, objects=jobs, wait=True)
     return ids
 

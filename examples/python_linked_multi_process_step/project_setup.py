@@ -20,8 +20,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-"""
-Python example with multiple dependent tasks and linked files in between.
+"""Python example with multiple dependent tasks and linked files in between.
 
 Author(s): R.Walker
 """

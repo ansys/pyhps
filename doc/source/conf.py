@@ -1,4 +1,4 @@
-# Sphinx documentation configuration file
+"""Sphinx documentation configuration file."""
 import os
 import shutil
 import sys
@@ -139,12 +139,12 @@ autosummary_generate = True
 
 
 def prepare_jinja_env(jinja_env) -> None:
-    """
-    Customize the jinja env.
+    """Customize the jinja env.
 
     Notes
     -----
     See https://jinja.palletsprojects.com/en/3.0.x/api/#jinja2.Environment
+
     """
     jinja_env.globals["project_name"] = project
 
@@ -389,8 +389,7 @@ suppress_warnings = [
 
 
 def archive_examples(app: sphinx.application.Sphinx) -> None:
-    """
-    Create a zip archive for each listed example included in the examples folder.
+    """Create a zip archive for each listed example included in the examples folder.
 
     Parameters
     ----------
@@ -398,7 +397,6 @@ def archive_examples(app: sphinx.application.Sphinx) -> None:
         Sphinx application instance containing the all the doc build configuration.
 
     """
-
     source_dir = Path(app.srcdir)
     root_path = source_dir.parent.parent
 
@@ -424,13 +422,12 @@ def archive_examples(app: sphinx.application.Sphinx) -> None:
 
 
 def setup(app: sphinx.application.Sphinx) -> None:
-    """
-    Run hook function(s) during the documentation build.
+    """Run hook function(s) during the documentation build.
 
     Parameters
     ----------
     app : sphinx.application.Sphinx
         Sphinx application instance containing the all the doc build configuration.
-    """
 
+    """
     app.connect("builder-inited", archive_examples)

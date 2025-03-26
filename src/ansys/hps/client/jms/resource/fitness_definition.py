@@ -48,7 +48,6 @@ class FitnessTermDefinition(Object):
 
     Examples
     --------
-
     Create a fitness term of the objective type.
 
     >>> ft1 = FitnessTermDefinition(
@@ -77,6 +76,7 @@ class FitnessTermDefinition(Object):
     ...     expression="map_limit_constraint(
     ...         values['max_stress'], 451.0, 50.0 )"
     ... )
+
     """
 
     class Meta:
@@ -130,6 +130,7 @@ class FitnessDefinition(Object):
     ...                         5.0,
     ...                         30.0 )"
     ...                     )
+
     """
 
     class Meta:
@@ -150,9 +151,7 @@ class FitnessDefinition(Object):
         self.obj_type = self.__class__.__name__
 
     def add_fitness_term(self, **kwargs):
-        """
-        Add a fitness term easily using a helper function.
-        """
+        """Add a fitness term easily using a helper function."""
         ft = FitnessTermDefinition(**kwargs)
 
         if self.fitness_term_definitions == missing:

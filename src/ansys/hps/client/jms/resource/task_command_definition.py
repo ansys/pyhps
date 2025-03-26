@@ -53,6 +53,7 @@ class TaskCommandDefinition(Object):
         Name of the command (corresponds to the function name in the execution script).
     parameters : dict, optional
         Command parameters.
+
     """
 
     class Meta:

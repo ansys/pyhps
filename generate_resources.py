@@ -20,8 +20,8 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-"""
-Script to auto generate (most of the) JMS Resources.
+"""Script to auto generate (most of the) JMS Resources.
+
 The main goal is to auto-generate the class docstrings and
 allow code completion.
 """
@@ -404,9 +404,7 @@ def _extract_field_type(v, resources) -> str:
 
 
 def declared_fields(schema, resources) -> tuple[list[Field], list[str]]:
-    """
-    Helper function to retrieve the fields that is defined as class members for an object
-    """
+    """Helper function to retrieve the fields that is defined as class members for an object"""
     fields = []
     fields_doc = []
     for k, v in schema._declared_fields.items():

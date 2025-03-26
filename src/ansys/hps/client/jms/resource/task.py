@@ -87,6 +87,7 @@ class Task(Object):
         Dictionary type field for storing custom data.
     working_directory : str, optional
         Working directory of the task.
+
     """
 
     class Meta:

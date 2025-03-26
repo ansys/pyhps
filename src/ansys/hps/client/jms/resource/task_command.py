@@ -59,6 +59,7 @@ class TaskCommand(Object):
         Date and time that the command was completed.
     status : str, optional
         Evaluation status.
+
     """
 
     class Meta:

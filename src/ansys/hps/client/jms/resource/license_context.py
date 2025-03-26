@@ -40,6 +40,7 @@ class LicenseContext(Object):
         License context ID.
     environment : dict, optional
         License context environment dict.
+
     """
 
     class Meta:

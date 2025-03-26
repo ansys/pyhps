@@ -52,7 +52,6 @@ class JmsApi:
 
     Examples
     --------
-
     Create a project.
 
     >>> from ansys.hps.client import Client
@@ -151,13 +150,7 @@ class JmsApi:
     def create_task_definition_templates(
         self, templates: list[TaskDefinitionTemplate], as_objects=True, **query_params
     ) -> list[TaskDefinitionTemplate]:
-        """Create task definition templates.
-
-        Parameters
-        ----------
-        templates : list of :class:`ansys.hps.client.jms.TaskDefinitionTemplate`
-            List of task definition templates.
-        """
+        """Create task definition templates."""
         return create_objects(
             self.client.session,
             self.url,
@@ -170,13 +163,7 @@ class JmsApi:
     def update_task_definition_templates(
         self, templates: list[TaskDefinitionTemplate], as_objects=True, **query_params
     ) -> list[TaskDefinitionTemplate]:
-        """Update task definition templates.
-
-        Parameters
-        ----------
-        templates : list of :class:`ansys.hps.client.jms.TaskDefinitionTemplate`
-            List of task definition templates.
-        """
+        """Update task definition templates."""
         return update_objects(
             self.client.session,
             self.url,
@@ -187,13 +174,7 @@ class JmsApi:
         )
 
     def delete_task_definition_templates(self, templates: list[TaskDefinitionTemplate]):
-        """Delete task definition templates.
-
-        Parameters
-        ----------
-        templates : list of :class:`ansys.hps.client.jms.TaskDefinitionTemplate`
-            List of task definition templates.
-        """
+        """Delete task definition templates."""
         return delete_objects(self.client.session, self.url, templates, TaskDefinitionTemplate)
 
     def copy_task_definition_templates(
@@ -215,6 +196,7 @@ class JmsApi:
             If ``wait=True``, returns the list of newly created template IDs.
             If ``wait=False``, returns an operation ID that can be used to
             track progress.
+
         """
         return _copy_objects(self.client, self.url, templates, wait=wait)
 
@@ -268,6 +250,7 @@ class JmsApi:
             Maximum interval in seconds between consecutive calls.
         max_time: float, optional
             Maximum time in seconds to pool the operation before giving up.
+
         """
         return _monitor_operation(self, operation_id, max_value, max_time)
 
@@ -279,9 +262,7 @@ class JmsApi:
 
 
 def get_projects(client, api_url, as_objects=True, **query_params) -> list[Project]:
-    """
-    Get a list of projects.
-    """
+    """Get a list of projects."""
     url = f"{api_url}/projects"
     r = client.session.get(url, params=query_params)
 
@@ -294,10 +275,7 @@ def get_projects(client, api_url, as_objects=True, **query_params) -> list[Proje
 
 
 def get_project(client, api_url, id) -> Project:
-    """
-    Get a single project.
-    """
-
+    """Get a single project."""
     url = f"{api_url}/projects/{id}"
     r = client.session.get(url)
 
@@ -308,10 +286,7 @@ def get_project(client, api_url, id) -> Project:
 
 
 def get_project_by_name(client, api_url, name, last_created=True) -> Project | list[Project]:
-    """
-    Get a single project by name.
-    """
-
+    """Get a single project by name."""
     params = {"name": name}
     if last_created:
         params["sort"] = "-creation_time"
@@ -457,7 +432,7 @@ def _restore_project(jms_api, archive_path):
 
 
 def _upload_archive(jms_api: JmsApi, archive_path, bucket):
-    """Uploads archive using data transfer worker."""
+    """Uploads archive using data transfer worker."""  # noqa: D401
     jms_api.client.initialize_data_transfer_client()
 
     src = StoragePath(path=archive_path, remote="local")
@@ -472,9 +447,7 @@ def _upload_archive(jms_api: JmsApi, archive_path, bucket):
 
 
 def _get_storages(client: Client, api_url: str) -> list[dict]:
-    """
-    Get a list of storages.
-    """
+    """Get a list of storages."""
     url = f"{api_url}/storage"
     r = client.session.get(url)
     return r.json()["backends"]

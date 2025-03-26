@@ -31,6 +31,7 @@ class HPSError(RequestException):
     base class.
 
     Example:
+    -------
         >>> from ansys.hps.client import HPSError
         >>> from ansys.hps.client.jms import Client
         >>> try:
@@ -41,9 +42,11 @@ class HPSError(RequestException):
         >>>     print(e)
         401 Client Error: invalid_grant for: POST https://127.0.0.1:8443/hps/auth...
         Invalid user credentials
+
     """
 
     def __init__(self, *args, **kwargs):
+        """Initialize the HPSError object."""
         self.reason = kwargs.pop("reason", None)
         self.description = kwargs.pop("description", None)
         super().__init__(*args, **kwargs)
@@ -53,6 +56,7 @@ class APIError(HPSError):
     """Provides server-side related errors."""
 
     def __init__(self, *args, **kwargs):
+        """Initialize the APIError object."""
         super().__init__(*args, **kwargs)
 
 
@@ -60,6 +64,7 @@ class ClientError(HPSError):
     """Provides client-side related errors."""
 
     def __init__(self, *args, **kwargs):
+        """Initialize the ClientError object."""
         super().__init__(*args, **kwargs)
 
 
@@ -67,6 +72,7 @@ class VersionCompatibilityError(ClientError):
     """Provides version compatibility errors."""
 
     def __init__(self, *args, **kwargs):
+        """Initialize the VersionCompatibilityError object."""
         super().__init__(*args, **kwargs)
 
 

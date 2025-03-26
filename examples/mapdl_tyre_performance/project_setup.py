@@ -20,8 +20,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-"""
-Example to submit a nonlinear tire analysis job to HPS.
+"""Example to submit a nonlinear tire analysis job to HPS.
 
 This is the Ansys Parametric Design Language (APDL) Tire Performance Simulation example included
 in the technology demonstration guide (td-57).

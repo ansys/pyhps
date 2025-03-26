@@ -61,6 +61,7 @@ class JobDefinition(Object):
         List of task definition IDs.
     fitness_definition : FitnessDefinition, optional
         A :class:`FitnessDefinition` object.
+
     """
 
     class Meta:

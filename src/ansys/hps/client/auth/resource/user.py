@@ -48,6 +48,7 @@ class User(Object):
         Last name.
     email : str, optional
         E-mail address.
+
     """
 
     class Meta:

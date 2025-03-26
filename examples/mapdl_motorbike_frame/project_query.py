@@ -20,8 +20,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-"""
-Example to query resources from a project.
+"""Example to query resources from a project.
 
 - Query values from evaluated jobs, computing some simple statistics on parameter values.
 - Download files from the project
