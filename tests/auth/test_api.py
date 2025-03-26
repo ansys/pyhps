@@ -143,6 +143,7 @@ def test_impersonate_user(url, keycloak_client):
             verify=False,
         )
     except HPSError as e:
+        log.error(e)
         if e.response.status_code == 501 and "Feature not enabled" in e.reason:
             pytest.skip("This test requires to enable the feature 'token-exchange' in keycloak.")
 
