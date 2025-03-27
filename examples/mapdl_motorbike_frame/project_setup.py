@@ -72,6 +72,7 @@ def create_project(
 
     project_api = ProjectApi(client, proj.id)
 
+    # File definitions
     log.debug("=== Files")
     cwd = os.path.dirname(__file__)
     files = []
@@ -119,21 +120,46 @@ def create_project(
     log.debug("=== JobDefinition with simulation workflow and parameters")
     job_def = JobDefinition(name="JobDefinition.1", active=True)
 
+    # Parameter definitions
+    params = []
     # Input params: Dimensions of three custom tubes
-    float_input_params = []
     for i in range(1, 4):
-        float_input_params.extend(
+        params.extend(
             [
                 FloatParameterDefinition(
-                    name=f"tube{i}_radius", lower_limit=4.0, upper_limit=20.0, default=12.0
+                    name=f"tube{i}_radius",
+                    lower_limit=4.0,
+                    upper_limit=20.0,
+                    default=12.0,
+                    mode="input",
                 ),
                 FloatParameterDefinition(
-                    name=f"tube{i}_thickness", lower_limit=0.5, upper_limit=2.5, default=1.0
+                    name=f"tube{i}_thickness",
+                    lower_limit=0.5,
+                    upper_limit=2.5,
+                    default=1.0,
+                    mode="input",
                 ),
             ]
         )
+    # Input params: Custom types used for all the different tubes of the frame
+    for i in range(1, 22):
+        params.append(
+            StringParameterDefinition(
+                name=f"tube{i}", default="1", value_list=["1", "2", "3"], mode="input"
+            )
+        )
+    # Output params
+    for pname in ["weight", "torsion_stiffness", "max_stress"]:
+        params.append(FloatParameterDefinition(name=pname, mode="output"))
+    # Runtime stats from MAPDL out file
+    params.append(FloatParameterDefinition(name="mapdl_elapsed_time_obtain_license", mode="output"))
+    params.append(FloatParameterDefinition(name="mapdl_cp_time", mode="output"))
+    params.append(FloatParameterDefinition(name="mapdl_elapsed_time", mode="output"))
+    # Create parameter definitions in project
+    params = project_api.create_parameter_definitions(params)
 
-    float_input_params = project_api.create_parameter_definitions(float_input_params)
+    # Parameter mappings
     param_mappings = []
     pi = 0
     for i in range(1, 4):
@@ -141,7 +167,7 @@ def create_project(
             ParameterMapping(
                 key_string=f"radius({i})",
                 tokenizer="=",
-                parameter_definition_id=float_input_params[pi].id,
+                parameter_definition_id=params[pi].id,
                 file_id=file_ids["inp"],
             )
         )
@@ -150,77 +176,57 @@ def create_project(
             ParameterMapping(
                 key_string=f"thickness({i})",
                 tokenizer="=",
-                parameter_definition_id=float_input_params[pi].id,
+                parameter_definition_id=params[pi].id,
                 file_id=file_ids["inp"],
             )
         )
         pi += 1
-
-    # Input params: Custom types used for all the different tubes of the frame
-    str_input_params = []
-    for i in range(1, 22):
-        str_input_params.append(
-            StringParameterDefinition(name=f"tube{i}", default="1", value_list=["1", "2", "3"])
-        )
-    str_input_params = project_api.create_parameter_definitions(str_input_params)
-
     for i in range(1, 22):
         param_mappings.append(
             ParameterMapping(
                 key_string=f"tubes({i})",
                 tokenizer="=",
-                parameter_definition_id=str_input_params[i - 1].id,
+                parameter_definition_id=params[pi].id,
                 file_id=file_ids["inp"],
             )
         )
-
-    # Output Params
-    output_params = []
-    for pname in ["weight", "torsion_stiffness", "max_stress"]:
-        output_params.append(FloatParameterDefinition(name=pname))
-    output_params = project_api.create_parameter_definitions(output_params)
-    for pd in output_params:
+        pi += 1
+    for name in ["weight", "torsion_stiffness", "max_stress"]:
         param_mappings.append(
             ParameterMapping(
-                key_string=pd.name,
+                key_string=name,
                 tokenizer="=",
-                parameter_definition_id=pd.id,
+                parameter_definition_id=params[pi].id,
                 file_id=file_ids["results"],
             )
         )
-
-    stat_params = []
-    # # Collect some runtime stats from MAPDL out file
-    stat_params.append(FloatParameterDefinition(name="mapdl_elapsed_time_obtain_license"))
-    stat_params.append(FloatParameterDefinition(name="mapdl_cp_time"))
-    stat_params.append(FloatParameterDefinition(name="mapdl_elapsed_time"))
-    stat_params = project_api.create_parameter_definitions(stat_params)
-
+        pi += 1
     param_mappings.append(
         ParameterMapping(
             key_string="Elapsed time spent obtaining a license",
             tokenizer=":",
-            parameter_definition_id=stat_params[0].id,
+            parameter_definition_id=params[pi].id,
             file_id=file_ids["out"],
         )
     )
+    pi += 1
     param_mappings.append(
         ParameterMapping(
             key_string="CP Time      (sec)",
             tokenizer="=",
-            parameter_definition_id=stat_params[1].id,
+            parameter_definition_id=params[pi].id,
             file_id=file_ids["out"],
         )
     )
+    pi += 1
     param_mappings.append(
         ParameterMapping(
             key_string="Elapsed Time (sec)",
             tokenizer="=",
-            parameter_definition_id=stat_params[2].id,
+            parameter_definition_id=params[pi].id,
             file_id=file_ids["out"],
         )
     )
-
     # For demonstration purpose we also define some parameter replacements
     # that refer to task definition properties
     param_mappings.append(
@@ -257,6 +263,7 @@ def create_project(
             file_id=file_ids["inp"],
         )
     )
+    param_mappings = project_api.create_parameter_mappings(param_mappings)
 
     # Task definition
     task_def = TaskDefinition(
@@ -290,8 +297,9 @@ def create_project(
         task_def.execution_script_id = file_ids["exec_mapdl"]
 
     task_defs = [task_def]
+    task_defs = project_api.create_task_definitions(task_defs)
 
-    # # Fitness definition
+    # Fitness definition
     fd = FitnessDefinition(error_fitness=10.0)
     fd.add_fitness_term(
         name="weight",
@@ -313,28 +321,24 @@ def create_project(
     )
     job_def.fitness_definition = fd
 
-    task_defs = project_api.create_task_definitions(task_defs)
-    param_mappings = project_api.create_parameter_mappings(param_mappings)
-
-    job_def.parameter_definition_ids = [
-        pd.id for pd in float_input_params + str_input_params + output_params + stat_params
-    ]
+    job_def.parameter_definition_ids = [pd.id for pd in params]
     job_def.parameter_mapping_ids = [pm.id for pm in param_mappings]
     job_def.task_definition_ids = [td.id for td in task_defs]
 
     # Create job_definition in project
     job_def = project_api.create_job_definitions([job_def])[0]
 
-    job_def = project_api.get_job_definitions()[0]
-
     log.debug(f"=== Create {num_jobs} jobs")
     jobs = []
+    params = project_api.get_parameter_definitions()
+    input_float_params = [p for p in params if p.mode == "input" and p.type == "float"]
+    input_str_params = [p for p in params if p.mode == "input" and p.type == "string"]
     for i in range(num_jobs):
         values = {
             p.name: p.lower_limit + random.random() * (p.upper_limit - p.lower_limit)
-            for p in float_input_params
+            for p in input_float_params
         }
-        values.update({p.name: random.choice(p.value_list) for p in str_input_params})
+        values.update({p.name: random.choice(p.value_list) for p in input_str_params})
         jobs.append(
             Job(name=f"Job.{i}", values=values, eval_status="pending", job_definition_id=job_def.id)
         )

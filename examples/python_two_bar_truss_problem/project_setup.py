@@ -106,25 +106,45 @@ def main(client, num_jobs, use_exec_script, python_version=None) -> Project:
     # Input params
     input_params = [
         FloatParameterDefinition(
-            name="height", lower_limit=10, upper_limit=100.0, default=30, units="in"
+            name="height", lower_limit=10, upper_limit=100.0, default=30, units="in", mode="input"
         ),
         FloatParameterDefinition(
-            name="diameter", lower_limit=0.2, upper_limit=5, default=3, units="in"
+            name="diameter", lower_limit=0.2, upper_limit=5, default=3, units="in", mode="input"
         ),
         FloatParameterDefinition(
-            name="thickness", lower_limit=0.03, upper_limit=0.6, default=0.15, units="in"
+            name="thickness",
+            lower_limit=0.03,
+            upper_limit=0.6,
+            default=0.15,
+            units="in",
+            mode="input",
         ),
         FloatParameterDefinition(
-            name="separation_distance", lower_limit=40, upper_limit=150, default=60, units="in"
+            name="separation_distance",
+            lower_limit=40,
+            upper_limit=150,
+            default=60,
+            units="in",
+            mode="input",
         ),
         FloatParameterDefinition(
-            name="young_modulus", lower_limit=1e6, upper_limit=1e8, default=3e7, units="lbs in^-2"
+            name="young_modulus",
+            lower_limit=1e6,
+            upper_limit=1e8,
+            default=3e7,
+            units="lbs in^-2",
+            mode="input",
         ),
         FloatParameterDefinition(
-            name="density", lower_limit=0.1, upper_limit=0.6, default=0.3, units="lbs in^-2"
+            name="density",
+            lower_limit=0.1,
+            upper_limit=0.6,
+            default=0.3,
+            units="lbs in^-2",
+            mode="input",
         ),
         FloatParameterDefinition(
-            name="load", lower_limit=1e1, upper_limit=1e5, default=66e3, units="lbs"
+            name="load", lower_limit=1e1, upper_limit=1e5, default=66e3, units="lbs", mode="input"
         ),
     ]
     input_params = project_api.create_parameter_definitions(input_params)
@@ -175,10 +195,10 @@ def main(client, num_jobs, use_exec_script, python_version=None) -> Project:
     ]
 
     output_params = [
-        FloatParameterDefinition(name="weight", units="lbs"),
-        FloatParameterDefinition(name="stress", units="ksi"),
-        FloatParameterDefinition(name="buckling_stress", units="ksi"),
-        FloatParameterDefinition(name="deflection", units="in"),
+        FloatParameterDefinition(name="weight", units="lbs", mode="output"),
+        FloatParameterDefinition(name="stress", units="ksi", mode="output"),
+        FloatParameterDefinition(name="buckling_stress", units="ksi", mode="output"),
+        FloatParameterDefinition(name="deflection", units="in", mode="output"),
     ]
     output_params = project_api.create_parameter_definitions(output_params)
 
