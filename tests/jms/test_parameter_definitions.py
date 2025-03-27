@@ -158,7 +158,7 @@ def test_parameter_definition_serialization():
     assert serialized_ip["type"] == "int"
     assert serialized_ip["name"] == "int_param"
     assert serialized_ip["upper_limit"] == 27
-    assert "mode" not in serialized_ip.keys()
+    assert "mode" in serialized_ip.keys()
 
     sp = StringParameterDefinition(name="s_param", value_list=["l1", "l2"])
     serialized_sp = StringParameterDefinitionSchema().dump(sp)
