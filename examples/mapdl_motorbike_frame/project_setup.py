@@ -127,14 +127,14 @@ def create_project(
         params.extend(
             [
                 FloatParameterDefinition(
-                    name="tube%i_radius" % i,
+                    name=f"tube{i}_radius",
                     lower_limit=4.0,
                     upper_limit=20.0,
                     default=12.0,
                     mode="input",
                 ),
                 FloatParameterDefinition(
-                    name="tube%i_thickness" % i,
+                    name=f"tube{i}_thickness",
                     lower_limit=0.5,
                     upper_limit=2.5,
                     default=1.0,
@@ -146,7 +146,7 @@ def create_project(
     for i in range(1, 22):
         params.append(
             StringParameterDefinition(
-                name="tube%s" % i, default="1", value_list=["1", "2", "3"], mode="input"
+                name=f"tube{i}", default="1", value_list=["1", "2", "3"], mode="input"
             )
         )
     # Output params
