@@ -146,6 +146,7 @@ def create_project(
     for i in range(1, 22):
         params.append(
             StringParameterDefinition(
+                name="tube%s" % i, default="1", value_list=["1", "2", "3"], mode="input"
                 name=f"tube{i}", default="1", value_list=["1", "2", "3"], mode="input"
             )
         )

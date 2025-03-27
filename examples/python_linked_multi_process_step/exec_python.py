@@ -37,30 +37,26 @@ class PythonExecution(ApplicationExecution):
         log.info("Start Python execution script")
 
         # Identify files
-        script_file = next((f for f in self.context.input_files if f["name"] == "script"), None)
+        script_file = next((f for f in self.context.input_files if "_pyscript" in f["name"]), None)
         assert script_file, "Python script file script missing"
-        inp_file = next((f for f in self.context.input_files if f["name"] == "inp"), None)
+        try:
+            exec_level = int(script_file["name"].split("_")[0][2:])
+        except Exception as ex:
+            log.error(f"Failed to extract execution level from filename {script_file.name}: {ex}")
+            exec_level = 0
 
-        param_transfer = self.context.parameter_values["param_transfer"]
+        # Write input param into file
         parameters = self.context.parameter_values
-        # Write input params into file if needed
-        if param_transfer == "json-file":
-            param_name_to_label = {
-                "height": "H",
-                "diameter": "d",
-                "thickness": "t",
-                "separation_distance": "B",
-                "young_modulus": "E",
-                "density": "rho",
-                "load": "P",
-            }
+        if exec_level == 0:
+            input_parameters = {"start": parameters.get("start", 0.0)}
+        else:
             input_parameters = {
-                param_name_to_label[name]: value
-                for name, value in parameters.items()
-                if name in param_name_to_label.keys()
+                f"product{exec_level - 1}": parameters.get(f"product{exec_level - 1}", 0.0)
             }
-            with open("input_parameters.json", "w") as in_file:
-                json.dump(input_parameters, in_file, indent=4)
+
+        in_filename = "input_parameters.json"
+        with open(in_filename, "w") as in_file:
+            json.dump(input_parameters, in_file, indent=4)
 
         # Identify application
         app_name = "Python"
@@ -80,23 +76,19 @@ class PythonExecution(ApplicationExecution):
         env.update(self.context.environment)
 
         # Form command
-        cmd = f"{exe} {script_file['path']}"
-        if parameters["param_transfer"] == "mapping":
-            cmd += f" {inp_file['path']}"
-        else:
-            cmd += " input_parameters.json"
+        cmd = f"{exe} {script_file['path']} {in_filename} {exec_level}"
 
         # Execute
         self.run_and_capture_output(cmd, shell=True, env=env)
 
-        # Extract parameters if needed
-        if param_transfer == "json-file":
-            try:
-                with open("output_parameters.json") as out_file:
-                    output_parameters = json.load(out_file)
-                self.context.parameter_values.update(output_parameters)
-                os.remove("output_parameters.json")
-            except Exception:
-                log.error("Failed to read output_parameters from file: {ex}")
+        # Extract result
+        try:
+            with open(f"td{exec_level}_result.json") as out_file:
+                output_parameters = json.load(out_file)
+            self.context.parameter_values.clear()
+            self.context.parameter_values[f"product{exec_level}"] = output_parameters["product"]
+            os.remove(f"td{exec_level}_result.json")
+        except Exception as ex:
+            log.error(f"Failed to read output_parameters from file: {ex}")
 
         log.info("End Python execution script")
