@@ -54,7 +54,7 @@ class ParameterDefinitionBaseSchema(ObjectSchemaWithModificationInfo):
         metadata={
             "description": "Indicates whether it's an input "
             "or output parameter. If not provided, the server "
-            "will default the mode to input."
+            "will default the mode to ``input``"
         },
     )
 
