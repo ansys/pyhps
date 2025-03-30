@@ -1,4 +1,4 @@
-# Copyright (C) 2022 - 2024 ANSYS, Inc. and/or its affiliates.
+# Copyright (C) 2022 - 2025 ANSYS, Inc. and/or its affiliates.
 # SPDX-License-Identifier: MIT
 #
 #
@@ -20,12 +20,12 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-"""
-Basic execution script for MAPDL.
+"""Basic execution script for MAPDL.
 
 Command formed: ansys.exe -b -i <inp_file> -o <out_file> -np 4
 
 """
+
 import os
 import subprocess
 
@@ -35,7 +35,6 @@ from ansys.rep.evaluator.task_manager import ApplicationExecution
 
 class MAPDLExecution(ApplicationExecution):
     def execute(self):
-
         log.info("Starting MAPDL execution script")
 
         # Identify files
@@ -52,7 +51,7 @@ class MAPDLExecution(ApplicationExecution):
         # Add " around exe if needed for Windows
         exe = app["executable"]
         if " " in exe and not exe.startswith('"'):
-            exe = '"%s"' % exe
+            exe = '"%s"' % exe  # noqa
 
         # Use properties from resource requirements
         num_cores = self.context.resource_requirements["num_cores"]

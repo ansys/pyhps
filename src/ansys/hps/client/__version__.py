@@ -1,4 +1,4 @@
-# Copyright (C) 2022 - 2024 ANSYS, Inc. and/or its affiliates.
+# Copyright (C) 2022 - 2025 ANSYS, Inc. and/or its affiliates.
 # SPDX-License-Identifier: MIT
 #
 #
@@ -20,6 +20,8 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+"""Provides the PyHPS version."""
+
 try:
     import importlib.metadata as importlib_metadata
 except ModuleNotFoundError:  # pragma: no cover
@@ -31,4 +33,4 @@ __version__ = importlib_metadata.version("ansys-hps-client")
 
 # this is only a convenience to default the version
 # of Ansys simulation applications in PyHPS examples
-__ansys_apps_version__ = "2024 R1"
+__ansys_apps_version__ = "2025 R1"

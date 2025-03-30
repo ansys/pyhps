@@ -1,4 +1,4 @@
-# Copyright (C) 2022 - 2024 ANSYS, Inc. and/or its affiliates.
+# Copyright (C) 2022 - 2025 ANSYS, Inc. and/or its affiliates.
 # SPDX-License-Identifier: MIT
 #
 #
@@ -34,12 +34,11 @@ log = logging.getLogger(__name__)
 
 
 def test_mapdl_motorbike_frame(client):
-
     from examples.mapdl_motorbike_frame.project_setup import create_project
 
     num_jobs = 5
     project = create_project(
-        client, f"Test mapdl_motorbike_frame", num_jobs=num_jobs, use_exec_script=False
+        client, "Test mapdl_motorbike_frame", num_jobs=num_jobs, use_exec_script=False
     )
     assert project is not None
 
@@ -54,12 +53,11 @@ def test_mapdl_motorbike_frame(client):
 
 
 def test_mapdl_motorbike_frame_with_exec_script(client):
-
     from examples.mapdl_motorbike_frame.project_setup import create_project
 
     num_jobs = 5
     project = create_project(
-        client, f"Test mapdl_motorbike_frame", num_jobs=num_jobs, use_exec_script=True
+        client, "Test mapdl_motorbike_frame", num_jobs=num_jobs, use_exec_script=True
     )
     assert project is not None
 
@@ -72,13 +70,12 @@ def test_mapdl_motorbike_frame_with_exec_script(client):
 
 
 def test_mapdl_motorbike_frame_with_user_defined_version(client):
-
     from examples.mapdl_motorbike_frame.project_setup import create_project
 
     num_jobs = 5
     project = create_project(
         client,
-        f"Test mapdl_motorbike_frame",
+        "Test mapdl_motorbike_frame",
         version="2022 R1",
         num_jobs=num_jobs,
         use_exec_script=False,
@@ -100,11 +97,10 @@ def test_mapdl_motorbike_frame_with_user_defined_version(client):
 
 
 def test_mapdl_tyre_performance(client):
-
     from examples.mapdl_tyre_performance.project_setup import create_project
 
     num_jobs = 1
-    project = create_project(client, f"Test mapdl_tyre_performance", ansys_version, num_jobs)
+    project = create_project(client, "Test mapdl_tyre_performance", ansys_version, num_jobs)
     assert project is not None
 
     jms_api = JmsApi(client)
@@ -116,7 +112,6 @@ def test_mapdl_tyre_performance(client):
 
 
 def test_python_two_bar_truss_problem(client):
-
     from examples.python_two_bar_truss_problem.project_setup import main
 
     num_jobs = 10
@@ -132,7 +127,6 @@ def test_python_two_bar_truss_problem(client):
 
 
 def test_python_two_bar_truss_problem_with_exec_script(client):
-
     from examples.python_two_bar_truss_problem.project_setup import main
 
     num_jobs = 10
@@ -148,7 +142,6 @@ def test_python_two_bar_truss_problem_with_exec_script(client):
 
 
 def test_mapdl_linked_analyses(client):
-
     from examples.mapdl_linked_analyses.project_setup import create_project
 
     for incremental_version in [True, False]:
@@ -171,7 +164,6 @@ def test_mapdl_linked_analyses(client):
 
 
 def test_fluent_2d_heat_exchanger(client):
-
     from examples.fluent_2d_heat_exchanger.project_setup import create_project
 
     project = create_project(client, name="Fluent test (command)", version=ansys_version)
@@ -187,7 +179,6 @@ def test_fluent_2d_heat_exchanger(client):
 
 
 def test_fluent_2d_heat_exchanger_with_exec_script(client):
-
     from examples.fluent_2d_heat_exchanger.project_setup import create_project
 
     project = create_project(
@@ -205,7 +196,6 @@ def test_fluent_2d_heat_exchanger_with_exec_script(client):
 
 
 def test_fluent_nozzle(client):
-
     from examples.fluent_nozzle.project_setup import create_project
 
     project = create_project(client, name="Fluent nozzle test", num_jobs=1, version=ansys_version)
@@ -221,7 +211,6 @@ def test_fluent_nozzle(client):
 
 
 def test_lsdyna_cylinder_plate(client):
-
     from examples.lsdyna_cylinder_plate.lsdyna_job import submit_job
 
     app_job = submit_job(
@@ -240,7 +229,6 @@ def test_lsdyna_cylinder_plate(client):
 
 
 def test_lsdyna_cylinder_plate_with_exec_script(client):
-
     from examples.lsdyna_cylinder_plate.lsdyna_job import submit_job
 
     app_job = submit_job(client, name="LS-DYNA Cylinder Plate", version=ansys_version)
@@ -257,7 +245,6 @@ def test_lsdyna_cylinder_plate_with_exec_script(client):
 
 
 def test_cfx_static_mixer(client):
-
     from examples.cfx_static_mixer.project_setup import create_project
 
     project = create_project(
@@ -268,14 +255,13 @@ def test_cfx_static_mixer(client):
     jms_api = JmsApi(client)
     project_api = ProjectApi(client, project.id)
 
-    len(project_api.get_jobs()) == 1
-    jms_api.get_project(id=project.id).name == "CFX static mixer test"
+    assert len(project_api.get_jobs()) == 1
+    assert jms_api.get_project(id=project.id).name == "CFX static mixer test"
 
     jms_api.delete_project(project)
 
 
 def test_python_multi_steps(client):
-
     from examples.python_multi_process_step.project_setup import main as create_project
 
     num_jobs = 3

@@ -1,14 +1,13 @@
 .. _example_fluent_2d_heat_exchanger:
 
+.. note::
+
+    Go to the `bottom of this page`_ to download the ZIP file for the Fluent 2D heat exchanger example.
+
 Fluent 2D heat exchanger
 ========================
 
 This example shows how to submit a simple Fluent solve job to Ansys HPS. The model consists of a 2D heat exchanger.
-
-.. only:: builder_html
-
-     You can download the  :download:`ZIP file <../../../build/fluent_2d_heat_exchanger.zip>` for the Fluent 2D heat
-     exchanger example and use a tool such as 7-Zip to extract the files.
 
 Here is the ``project_setup.py`` script for this example:
 
@@ -16,3 +15,14 @@ Here is the ``project_setup.py`` script for this example:
     :language: python
     :lines: 23-
     :caption: project_setup.py
+
+Download the ZIP file for the fluent 2D heat exchanger example and use
+a tool such as 7-Zip to extract the files.
+
+.. _bottom of this page:
+
+.. button-link:: ../_downloads/fluent_2d_heat_exchanger.zip
+    :color: black
+    :expand:
+
+    Download ZIP file

@@ -1,4 +1,4 @@
-# Copyright (C) 2022 - 2024 ANSYS, Inc. and/or its affiliates.
+# Copyright (C) 2022 - 2025 ANSYS, Inc. and/or its affiliates.
 # SPDX-License-Identifier: MIT
 #
 #
@@ -20,8 +20,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-"""
-Script showing how to submit an LS-DYNA job to HPS.
+"""Script showing how to submit an LS-DYNA job to HPS.
 
 Once submitted, minimal job information is serialized to a ``hps_job.json`` file.
 This mimics what an app would need to store to subsequently monitor the job and download results.
@@ -63,8 +62,7 @@ log = logging.getLogger(__name__)
 
 
 class HPSJob:
-    """
-    Simplistic helper class to store job information similarly to
+    """Simplistic helper class to store job information similarly to
     what a pre/post processing application would do.
     """
 
@@ -75,28 +73,28 @@ class HPSJob:
         job_definition_id=None,
         job_id=None,
         auth_token=None,
-        task_ids=[],
+        task_ids=None,
     ):
         self.hps_url = hps_url
         self.project_id = project_id
         self.job_definition_id = job_definition_id
         self.job_id = job_id
         self.auth_token = auth_token
-        self.task_ids = task_ids
+        self.task_ids = task_ids or []
 
     def __str__(self):
         repr = json.dumps(self, default=lambda x: x.__dict__, sort_keys=True, indent=4)
-        return f"HPS Job:\n{repr}"  # noqa: E231
+        return f"HPS Job:\n{repr}"
 
     def save(self):
-        """Save job info to JSON file"""
+        """Save job info to JSON file."""
         with open("hps_job.json", "w") as f:
             f.write(json.dumps(self, default=lambda x: x.__dict__, sort_keys=True, indent=4))
 
     @classmethod
     def load(cls):
-        """Load job info from JSON file"""
-        with open("hps_job.json", "r") as f:
+        """Load job info from JSON file."""
+        with open("hps_job.json") as f:
             job = json.load(f, object_hook=lambda d: cls(**d))
         return job
 
@@ -112,7 +110,6 @@ def submit_job(
     job simulating the impact of a cylinder made of Aluminum
     against a plate made of steel.
     """
-
     log.info("=== Connect to the HPS server")
     jms_api = JmsApi(client)
 
@@ -268,9 +265,6 @@ def submit_job(
 
     job_def = project_api.create_job_definitions([job_def])[0]
 
-    # Refresh the parameters
-    params = project_api.get_parameter_definitions(id=job_def.parameter_definition_ids)
-
     log.debug("=== Jobs")
     job = Job(
         eval_status="pending",
@@ -292,10 +286,7 @@ def submit_job(
 
 
 def monitor_job(app_job: HPSJob):
-    """
-    Monitor the evaluation status of an existing HPS job.
-    """
-
+    """Monitor the evaluation status of an existing HPS job."""
     # Since the auth token is stored in the job info, there's no need
     # to enter user and password anymore to connect to the HPS server.
     client = Client(url=app_job.hps_url, refresh_token=app_job.auth_token)
@@ -318,12 +309,10 @@ def monitor_job(app_job: HPSJob):
             )
 
     log.info(f"Job {job.name} final status: {job.eval_status}")
-    return
 
 
 def download_results(app_job: HPSJob):
-    """
-    Download the job output files (if any).
+    """Download the job output files (if any).
 
     This method requires the packages ``tqdm`` and ``humanize``.
     You can install them with:
@@ -331,16 +320,15 @@ def download_results(app_job: HPSJob):
         python -m pip install tqdm humanize
 
     """
-
     try:
         from tqdm import tqdm
-    except ImportError as e:
+    except ImportError:
         log.error("The 'tqdm' package is not installed. Please pip install it")
         return
 
     try:
         import humanize
-    except ImportError as e:
+    except ImportError:
         log.error("The 'humanize' package is not installed. Please pip install it")
         return
 
@@ -352,7 +340,6 @@ def download_results(app_job: HPSJob):
     tasks = project_api.get_tasks(job_id=app_job.job_id)
 
     for task in tasks:
-
         if not task.output_file_ids:
             log.info(f"No files are available on the server for Task {task.id}")
             continue
@@ -367,7 +354,6 @@ def download_results(app_job: HPSJob):
         )
 
         for file in files:
-
             target_folder = os.path.join("job_results", task.task_definition_snapshot.name)
             download_path = os.path.join(target_folder, file.evaluation_path)
 
@@ -404,7 +390,6 @@ def download_results(app_job: HPSJob):
 
 
 if __name__ == "__main__":
-
     parser = argparse.ArgumentParser()
     parser.add_argument(
         "action", default="submit", choices=["submit", "monitor", "download"], help="Action to run"

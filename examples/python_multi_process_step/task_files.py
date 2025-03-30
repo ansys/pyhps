@@ -1,4 +1,4 @@
-# Copyright (C) 2022 - 2024 ANSYS, Inc. and/or its affiliates.
+# Copyright (C) 2022 - 2025 ANSYS, Inc. and/or its affiliates.
 # SPDX-License-Identifier: MIT
 #
 #
@@ -20,13 +20,13 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-"""
-Update some task files
+"""Update some task files
 (1) Create a new input file with changed data
 (2) change parameter `CALL_SUBSCRIPT` to true in `eval.py`
     that the script is run as subscript with new input file
 (3) make sure that newly generated files are added as output of the process step
 """
+
 import json
 import logging
 import os
@@ -40,16 +40,13 @@ ADDITIONAL_TASK_FILE = ""
 
 
 def update_input_file(task):
-
-    log.info("Update input file for task {}".format(task.task_definition_snapshot.name))
+    log.info(f"Update input file for task {task.task_definition_snapshot.name}")
 
     data = {
         "color": "white",
         "period": 2,
         "duration": 8,
-        "info": "# changed for task ID: {} Process Step {}".format(
-            task.id, task.task_definition_snapshot.name
-        ),
+        "info": f"# changed for task ID: {task.id} task {task.task_definition_snapshot.name}",
     }
     file = NamedTemporaryFile(delete=False, prefix="input_mod", suffix=".json", mode="w")
     json.dump(data, file)
@@ -57,15 +54,14 @@ def update_input_file(task):
 
 
 def update_eval_script(task):
-
     path = "eval.py"
     lines = open(path).readlines()
 
-    log.info("Update input file {} for task {}".format(path, task.task_definition_snapshot.name))
+    log.info(f"Update input file {path} for task {task.task_definition_snapshot.name}")
 
     lines = [
         "#" * 20 + "\n",
-        "# Changed Task File\n".format(task.id, task.task_definition_snapshot.name),
+        "# Changed Task File\n".format(),
         "#" * 20 + "\n",
     ] + lines
 
@@ -76,7 +72,7 @@ def update_eval_script(task):
     file = NamedTemporaryFile(
         delete=False,
         mode="w",
-        **dict(zip(["prefix", "suffix"], os.path.splitext(os.path.basename(path)))),
+        **dict(zip(["prefix", "suffix"], os.path.splitext(os.path.basename(path)), strict=False)),
     )
     file.writelines(lines)
     file.close()
@@ -84,15 +80,13 @@ def update_eval_script(task):
 
 
 def update_task_files(project_api, num_jobs, write_images):
-
     log.debug("=== Update Task files ===")
-    cwd = os.path.dirname(__file__)
 
     config = project_api.get_job_definitions()[0]
     jobs = config.get_jobs(limit=num_jobs)
 
     for dp in jobs:
-        log.debug(" Update job {}".format(dp.name))
+        log.debug(f" Update job {dp.name}")
         dp.name = dp.name + " Modified"
         tasks = dp.get_tasks()
         for i, task in enumerate(tasks, 1):
@@ -105,18 +99,18 @@ def update_task_files(project_api, num_jobs, write_images):
             ##                src=os.path.join(cwd, "input.json".format(i)) ) )
             # new input_file will be used by subprocess
             new_input_file = update_input_file(task)
-            new_input_name = "sub_td_{}_input".format(i)
+            new_input_name = f"sub_td_{i}_input"
             files.append(
                 File(
                     name=new_input_name,
-                    evaluation_path="sub_td_{}_input.json".format(i),
+                    evaluation_path=f"sub_td_{i}_input.json",
                     type="application/json",
                     src=new_input_file,
                 )
             )
             # overwrite the eval script: same name --> will be overwritten
             new_eval_script = update_eval_script(task)
-            new_eval_name = "td_{}_pyscript".format(i)
+            new_eval_name = f"td_{i}_pyscript"
             files.append(
                 File(
                     name=new_eval_name,
@@ -132,11 +126,11 @@ def update_task_files(project_api, num_jobs, write_images):
             #                collect=True, monitor=True,
             #                type="text/plain" ) )
             # new output text
-            new_out_name = "sub_td_{}_results".format(i)
+            new_out_name = f"sub_td_{i}_results"
             files.append(
                 File(
                     name=new_out_name,
-                    evaluation_path="sub_td_{}_results.txt".format(i),
+                    evaluation_path=f"sub_td_{i}_results.txt",
                     collect=True,
                     monitor=True,
                     type="text/plain",
@@ -144,11 +138,11 @@ def update_task_files(project_api, num_jobs, write_images):
             )
             # new image
             if write_images:
-                new_image_name = "sub_td_{}_results_jpg".format(i)
+                new_image_name = f"sub_td_{i}_results_jpg"
                 files.append(
                     File(
                         name=new_image_name,
-                        evaluation_path="sub_td_{}_results.jpg".format(i),
+                        evaluation_path=f"sub_td_{i}_results.jpg",
                         type="image/jpeg",
                         collect=True,
                     )
@@ -167,4 +161,4 @@ def update_task_files(project_api, num_jobs, write_images):
         project_api.update_tasks(tasks)
 
     project_api.update_jobs(jobs)
-    log.info("Updated {} design points".format(len(jobs)))
+    log.info(f"Updated {len(jobs)} design points")

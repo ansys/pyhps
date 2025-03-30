@@ -1,4 +1,4 @@
-# Copyright (C) 2022 - 2024 ANSYS, Inc. and/or its affiliates.
+# Copyright (C) 2022 - 2025 ANSYS, Inc. and/or its affiliates.
 # SPDX-License-Identifier: MIT
 #
 #
@@ -48,7 +48,7 @@ def test_services(client: Client, build_info_path: str):
     assert "execution_script_default_bucket" in jms_info["settings"]
 
     # check dts api
-    r = client.session.get(f"{client.rep_url}/dt/api/v1")
+    r = client.session.get(f"{client.url}/dt/api/v1")
     dt_info = r.json()
     log.info(f"Dt api info\n{json.dumps(dt_info, indent=2)}")
     assert "build_info" in dt_info
@@ -65,7 +65,7 @@ def test_services(client: Client, build_info_path: str):
         f.write(json.dumps(info, indent=2))
 
     with open(build_info_path.replace(".json", ".md"), "w") as f:
-        f.write(f"### Build info")
-        f.write(f"\n```json\n")
+        f.write("### Build info")
+        f.write("\n```json\n")
         f.write(json.dumps(info, indent=2))
-        f.write(f"\n```")
+        f.write("\n```")

@@ -1,4 +1,4 @@
-# Copyright (C) 2022 - 2024 ANSYS, Inc. and/or its affiliates.
+# Copyright (C) 2022 - 2025 ANSYS, Inc. and/or its affiliates.
 # SPDX-License-Identifier: MIT
 #
 #
@@ -25,20 +25,19 @@ import os
 import tempfile
 import time
 
-from examples.mapdl_motorbike_frame.project_setup import create_project as motorbike_create_project
-from marshmallow.utils import missing
 import pytest
+from marshmallow.utils import missing
 
 from ansys.hps.client import __ansys_apps_version__ as ansys_version
 from ansys.hps.client.jms import JmsApi, ProjectApi
 from ansys.hps.client.jms.resource import JobDefinition, LicenseContext, Project
 from ansys.hps.client.jms.schema.project import ProjectSchema
+from examples.mapdl_motorbike_frame.project_setup import create_project as motorbike_create_project
 
 log = logging.getLogger(__name__)
 
 
 def test_project_deserialization():
-
     project_dict = {
         "name": "Fluent_2D_Cooling_mp",
         "active": False,
@@ -76,7 +75,6 @@ def test_project_deserialization():
 
 
 def test_project_serialization():
-
     project = Project(name="new_project")
 
     assert project.creation_time == missing
@@ -89,9 +87,8 @@ def test_project_serialization():
 
 
 def test_project_integration(client):
-
     jms_api = JmsApi(client)
-    proj_name = f"test_jms_ProjectTest"
+    proj_name = "test_jms_ProjectTest"
 
     proj = Project(name=proj_name, active=True, priority=10)
     proj = jms_api.create_project(proj, replace=True)
@@ -99,7 +96,7 @@ def test_project_integration(client):
     proj = jms_api.get_project(id=proj.id)
     assert proj.creation_time is not None
     assert proj.priority == 10
-    assert proj.active == True
+    assert proj.active
 
     proj = jms_api.get_projects(name=proj.name, statistics=True)[0]
     assert proj.statistics["num_jobs"] == 0
@@ -115,7 +112,7 @@ def test_project_integration(client):
     proj = jms_api.get_project(id=proj.id)
     proj.active = False
     proj = jms_api.update_project(proj)
-    assert proj.active == False
+    assert not proj.active
 
     # Delete project
     jms_api.delete_project(proj)
@@ -123,7 +120,6 @@ def test_project_integration(client):
 
 @pytest.mark.xfail
 def test_project_replace(client):
-
     jms_api = JmsApi(client)
 
     p = Project(name="Original Project")
@@ -137,9 +133,8 @@ def test_project_replace(client):
 
 
 def test_project_copy(client):
-
     jms_api = JmsApi(client)
-    proj_name = f"test_jms_ProjectCopyTest"
+    proj_name = "test_jms_ProjectCopyTest"
 
     proj = Project(name=proj_name, active=True, priority=10)
     proj = jms_api.create_project(proj, replace=True)
@@ -163,9 +158,8 @@ def test_project_copy(client):
 
 @pytest.mark.xfail
 def test_project_license_context(client):
-
     jms_api = JmsApi(client)
-    proj_name = f"test_jms_ProjectTest_license_context"
+    proj_name = "test_jms_ProjectTest_license_context"
 
     proj = Project(id=proj_name, active=True, priority=10)
     proj = jms_api.create_project(proj, replace=True)
@@ -218,9 +212,8 @@ def test_project_license_context(client):
 
 
 def test_project_delete_job_definition(client):
-
     jms_api = JmsApi(client)
-    proj_name = f"test_jms_ProjectTest_delete_config"
+    proj_name = "test_jms_ProjectTest_delete_config"
 
     proj = Project(name=proj_name, active=True, priority=10)
     proj = jms_api.create_project(proj, replace=True)
@@ -237,10 +230,9 @@ def test_project_delete_job_definition(client):
 
 
 def test_project_archive_restore(client):
-
     num_jobs = 2
     jms_api = JmsApi(client)
-    proj_name = f"test_jms_project_archive_restore"
+    proj_name = "test_jms_project_archive_restore"
 
     # Setup project to work with
     project = motorbike_create_project(client=client, name=proj_name, num_jobs=num_jobs)
@@ -251,7 +243,6 @@ def test_project_archive_restore(client):
     restored_project = None
     project_api = ProjectApi(client, project.id)
     with tempfile.TemporaryDirectory() as tpath:
-
         # Archive project
         archive_path = project_api.archive_project(tpath, include_job_files=True)
         assert os.path.exists(archive_path)
@@ -262,7 +253,7 @@ def test_project_archive_restore(client):
         restored_project = jms_api.restore_project(archive_path)
         restored_project_api = ProjectApi(client, restored_project.id)
 
-        assert restored_project.active == False
+        assert not restored_project.active
         assert restored_project.priority == 6
         assert len(project_api.get_job_definitions()) == len(
             restored_project_api.get_job_definitions()
@@ -274,20 +265,22 @@ def test_project_archive_restore(client):
 
 
 def test_copy_exec_script(client):
-
     jms_api = JmsApi(client)
-    proj_name = f"test_copy_exec_script"
+    proj_name = "test_copy_exec_script"
 
     proj = Project(name=proj_name)
     proj = jms_api.create_project(proj)
 
     project_api = ProjectApi(client, proj.id)
+
     ansys_short_version = f"v{ansys_version[2:4]}{ansys_version[6]}"
-    script_name = f"mapdl-{ansys_short_version}-exec_mapdl"
-    file = project_api.copy_default_execution_script(f"{script_name}.py")
-    assert file.name == script_name
-    assert file.evaluation_path == f"{script_name}.py"
-    assert file.hash is not None
-    assert file.storage_id is not None
+    script_names = [f"mapdl-{ansys_short_version}-exec_mapdl", "mechanical-exec_mechanical"]
+
+    for script_name in script_names:
+        file = project_api.copy_default_execution_script(f"{script_name}.py")
+        assert file.name == script_name
+        assert file.evaluation_path == f"{script_name}.py"
+        assert file.hash is not None
+        assert file.storage_id is not None
 
     jms_api.delete_project(proj)

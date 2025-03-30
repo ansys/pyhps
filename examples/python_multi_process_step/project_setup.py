@@ -1,4 +1,4 @@
-# Copyright (C) 2022 - 2024 ANSYS, Inc. and/or its affiliates.
+# Copyright (C) 2022 - 2025 ANSYS, Inc. and/or its affiliates.
 # SPDX-License-Identifier: MIT
 #
 #
@@ -20,8 +20,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-"""
-Project set up script for multi-steps (task definitions) and task file replacement testing.
+"""Project set up script for multi-steps (task definitions) and task file replacement testing.
 
 Author(s): R.Walker
 
@@ -34,6 +33,7 @@ Per default the project is inactive. You can activate the project with the `-a` 
 
 
 Example:
+-------
 ```
 python project_setup.py -n 100 -c 10 --no-images
 ```
@@ -42,6 +42,7 @@ Create 100 design points
   and do not write an result image.
 
 """
+
 import argparse
 import logging
 import os
@@ -79,6 +80,7 @@ def main(
     change_job_tasks,
     inactive,
     sequential,
+    python_version=None,
 ) -> Project:
     """Python project implementing multiple steps and optional image generation."""
     log.debug("=== Project")
@@ -220,14 +222,14 @@ def main(
         if f"td{i}_results_jpg" in file_ids.keys():
             output_file_ids.append(file_ids[f"td{i}_results_jpg"])
 
-        cmd = f"%executable% %file:td{i}_pyscript% %file:td{i}_input% {i}"  # noqa: E231
+        cmd = f"%executable% %file:td{i}_pyscript% %file:td{i}_input% {i}"
         if images:
             cmd += " --images"
         task_defs.append(
             TaskDefinition(
                 name=f"td{i}_py_eval",
                 software_requirements=[
-                    Software(name="Python", version="3.10"),
+                    Software(name="Python", version=python_version),
                 ],
                 execution_command=cmd,
                 max_execution_time=duration * 1.5,
@@ -283,7 +285,6 @@ def main(
 
 
 if __name__ == "__main__":
-
     logger = logging.getLogger()
     logging.basicConfig(format="[%(asctime)s | %(levelname)s] %(message)s", level=logging.DEBUG)
 
@@ -317,6 +318,7 @@ if __name__ == "__main__":
         default=False,
         help="Whether to evaluate all tasks of same exec level per job sequentially or in parallel",
     )
+    parser.add_argument("-v", "--python-version", default="3.10")
 
     args = parser.parse_args()
 
@@ -334,6 +336,7 @@ if __name__ == "__main__":
             change_job_tasks=args.change_job_tasks,
             inactive=args.inactive,
             sequential=args.sequential,
+            python_version=args.python_version,
         )
     except HPSError as e:
         log.error(str(e))

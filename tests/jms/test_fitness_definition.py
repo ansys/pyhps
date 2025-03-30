@@ -1,4 +1,4 @@
-# Copyright (C) 2022 - 2024 ANSYS, Inc. and/or its affiliates.
+# Copyright (C) 2022 - 2025 ANSYS, Inc. and/or its affiliates.
 # SPDX-License-Identifier: MIT
 #
 #
@@ -39,7 +39,6 @@ log = logging.getLogger(__name__)
 
 
 def test_fitness_definition_deserialization():
-
     fd_dict = {
         "obj_type": "FitnessDefinition",
         "error_fitness": 10.0,
@@ -100,7 +99,6 @@ def test_fitness_definition_deserialization():
 
 
 def test_fitness_definition_serialization():
-
     ftd = FitnessTermDefinition(name="ftd0", type="target_constraint", weighting_factor=0.1)
 
     assert ftd.expression == missing
@@ -132,8 +130,7 @@ def test_fitness_definition_serialization():
 
 
 def test_fitness_definition_integration(client):
-
-    proj_name = f"test_jms_FitnessDefinitionTest"
+    proj_name = "test_jms_FitnessDefinitionTest"
 
     proj = Project(name=proj_name, active=True)
     jms_api = JmsApi(client)

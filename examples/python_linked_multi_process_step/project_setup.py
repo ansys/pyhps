@@ -1,4 +1,4 @@
-# Copyright (C) 2022 - 2024 ANSYS, Inc. and/or its affiliates.
+# Copyright (C) 2022 - 2025 ANSYS, Inc. and/or its affiliates.
 # SPDX-License-Identifier: MIT
 #
 #
@@ -20,11 +20,11 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-"""
-Python example with multiple dependent tasks and linked files in between.
+"""Python example with multiple dependent tasks and linked files in between.
 
 Author(s): R.Walker
 """
+
 import argparse
 import logging
 import os
@@ -49,7 +49,7 @@ from ansys.hps.client.jms import (
 log = logging.getLogger(__name__)
 
 
-def main(client, num_task_definitions, num_jobs, start, inactive):
+def main(client, num_task_definitions, num_jobs, start, inactive, python_version=None):
     """Create project with multiple dependent Python tasks and linked files in between."""
     log.debug("=== Project")
     proj = Project(
@@ -135,14 +135,13 @@ def main(client, num_task_definitions, num_jobs, start, inactive):
     log.debug("=== Process Steps")
     task_defs = []
     for i in range(num_task_definitions):
-
         input_file_ids = [file_ids[f"td{i}_pyscript"]]
         if i == 0:
             input_file_ids.append(file_ids["input"])
-            cmd = f"%executable% %file:td{i}_pyscript% %file:input% {i}"  # noqa: E231
+            cmd = f"%executable% %file:td{i}_pyscript% %file:input% {i}"
         else:
-            input_file_ids.append(file_ids[f"td{i-1}_result"])
-            cmd = f"%executable% %file:td{i}_pyscript% %file:td{i-1}_result% {i}"  # noqa: E231
+            input_file_ids.append(file_ids[f"td{i - 1}_result"])
+            cmd = f"%executable% %file:td{i}_pyscript% %file:td{i - 1}_result% {i}"
 
         output_file_ids = [file_ids[f"td{i}_result"]]
 
@@ -152,7 +151,7 @@ def main(client, num_task_definitions, num_jobs, start, inactive):
                 software_requirements=[
                     Software(
                         name="Python",
-                        version="3.10",
+                        version=python_version,
                     )
                 ],
                 execution_command=cmd,
@@ -197,7 +196,6 @@ def main(client, num_task_definitions, num_jobs, start, inactive):
 
 
 if __name__ == "__main__":
-
     logger = logging.getLogger()
     logging.basicConfig(format="[%(asctime)s | %(levelname)s] %(message)s", level=logging.DEBUG)
 
@@ -211,6 +209,7 @@ if __name__ == "__main__":
     parser.add_argument(
         "-i", "--inactive", action="store_true", default=False, help="Set project to inactive"
     )
+    parser.add_argument("-v", "--python-version", default="3.10")
 
     args = parser.parse_args()
 
@@ -223,6 +222,7 @@ if __name__ == "__main__":
             num_task_definitions=args.num_task_definitions,
             start=args.start,
             inactive=args.inactive,
+            python_version=args.python_version,
         )
     except HPSError as e:
         log.error(str(e))

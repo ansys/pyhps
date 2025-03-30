@@ -1,4 +1,4 @@
-# Copyright (C) 2022 - 2024 ANSYS, Inc. and/or its affiliates.
+# Copyright (C) 2022 - 2025 ANSYS, Inc. and/or its affiliates.
 # SPDX-License-Identifier: MIT
 #
 #
@@ -20,6 +20,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 """Module providing restricted value fields."""
+
 from marshmallow import fields
 from marshmallow.exceptions import ValidationError
 
@@ -35,6 +36,7 @@ class RestrictedValue(fields.Field):
     ]
 
     def __init__(self):
+        """Initialize a RestrictedValue object."""
         super().__init__(allow_none=True)
 
     def _deserialize(self, value, attr, obj, **kwargs):
@@ -42,7 +44,7 @@ class RestrictedValue(fields.Field):
         for field in self.restricted_fields:
             try:
                 return field._deserialize(value, attr, obj, **kwargs)
-            except:
+            except Exception:
                 pass
 
         self.raise_validation_error()

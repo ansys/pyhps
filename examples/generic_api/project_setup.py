@@ -28,25 +28,25 @@ in the technology demonstration guide (td-57).
 """
 
 import argparse
-from datetime import datetime, timezone
 import json
 import logging
-from pprint import pprint
 import time
+from datetime import datetime, timezone
+from pprint import pprint
 
-from ansys.rep.common.auth.self_signed_token_provider import SelfSignedTokenProvider
 import jwt
 from marshmallow.utils import missing
 
 from ansys.hps.client import Client, HPSError
 from ansys.hps.client.jms import JmsApi, Project, ProjectApi
-from ansys.hps.client.jms.resource.project import Project, ProjectSchema
+from ansys.hps.client.jms.resource.project import ProjectSchema
 from ansys.hps.client.rms import RmsApi
+from ansys.rep.common.auth.self_signed_token_provider import SelfSignedTokenProvider
 
 log = logging.getLogger(__name__)
 
 
-def filter_dict(input_dict, desired_keys=["evaluated", "pending", "failed", "running"]):
+def filter_dict(input_dict, desired_keys=None):
     """
     Filters the input dictionary to only include the keys in desired_keys.
 
@@ -57,6 +57,8 @@ def filter_dict(input_dict, desired_keys=["evaluated", "pending", "failed", "run
     Returns:
     dict: A new dictionary containing only the desired keys.
     """
+    if desired_keys is None:
+        desired_keys = ["evaluated", "pending", "failed", "running"]
     return {key: input_dict[key] for key in desired_keys if key in input_dict}
 
 
@@ -82,7 +84,7 @@ def check_project_stats(
     proj: Project, greater_than_zero: list[str], equal_zero: list[str], empty_value=True
 ) -> bool:
     # If no stats yet, then dont remove it...
-    if not "pending" in proj.statistics["eval_status"]:
+    if "pending" not in proj.statistics["eval_status"]:
         return empty_value
 
     for item in greater_than_zero:
@@ -118,7 +120,7 @@ def monitor_projects(
         ]
 
     if limited_monitoring:
-        log.debug(f"Limited monitoring enabled: Showing only states pending/running/failed not 0")
+        log.debug("Limited monitoring enabled: Showing only states pending/running/failed not 0")
         filtered_projects = [
             p
             for p in list(filtered_projects)
@@ -159,14 +161,13 @@ def monitor_projects(
                             )
                             jms_api.delete_project(project)
                             continue
-                    else:
-                        # Project with pending for a long time (error in setup or cluster)
-                        if age_hours > 6:
-                            log.debug(
-                                f"    === Removing project pending for 1/2 day: age {age_hours}h."
-                            )
-                            jms_api.delete_project(project)
-                            continue
+                    # Project with pending for a long time (error in setup or cluster)
+                    elif age_hours > 6:
+                        log.debug(
+                            f"    === Removing project pending for 1/2 day: age {age_hours}h."
+                        )
+                        jms_api.delete_project(project)
+                        continue
             tasks = proj_api.get_tasks()
             if len(tasks) > 0:
                 log.debug(f"    === Tasks {filter_dict(project.statistics['eval_status'])}")
@@ -175,22 +176,26 @@ def monitor_projects(
             for task in tasks:
                 resources = task.task_definition_snapshot.resource_requirements
                 log.debug(
-                    f"{' '*8}{task.task_definition_snapshot.name}:{task.job_id}->"
+                    f"{' ' * 8}{task.task_definition_snapshot.name}:{task.job_id}->"
                     + f"{task.eval_status}  {task.task_definition_snapshot.software_requirements}"
                 )
                 if task.eval_status == "running":
-                    log.debug(f"{' '*10}Running on evaluator: {task.host_id}")
+                    log.debug(f"{' ' * 10}Running on evaluator: {task.host_id}")
                 if resources not in [None, missing]:
                     queue = (
                         resources.hpc_resources.queue
                         if resources.hpc_resources not in [None, missing]
                         else "NotSet"
                     )
-                    log.debug(f"{' '*10}CRS: {resources.compute_resource_set_id} -> {queue}")
+                    log.debug(f"{' ' * 10}CRS: {resources.compute_resource_set_id} -> {queue}")
 
-                """
-                log.debug(f"{' '*10}Files:")
-                files = proj_api.get_files(id=task.output_file_ids)
+                log.debug(f"{' ' * 10}Files:")
+                files = []
+                file_ids = task.output_file_ids
+                batch_size = 210
+                for i in range(0, len(file_ids), batch_size):
+                    batch_ids = file_ids[i : i + batch_size]
+                    files.extend(proj_api.get_files(id=batch_ids))
                 file_counts = {}
                 for f in files:
                     if f.name in file_counts:
@@ -204,21 +209,21 @@ def monitor_projects(
                     # and f.storage_id in [None, missing])
                     # print(file)
                     if count > 3:
-                        log.debug(f"{' '*12}{file_name}:{file.format} -> {count} times")
-                    line = f"{' '*12}---"
+                        log.debug(f"{' ' * 12}{file_name}:{file.format} -> {count} times")
+                    line = f"{' ' * 12}---"
                     counter = 0
                     for f in [f for f in files if f.name == file_name]:
                         counter += 1
-                        line += f" {f.evaluation_path[:20].rjust(20)}"
+                        line += f" {f.evaluation_path[:30].rjust(30)}"
                         line += f" -{f.size}b-{f.type.split('/')[0][:6].ljust(6)} "
                         incomplete = True
                         if counter % 4 == 0:
                             log.debug(line)
-                            line = f"{' '*12}---"
+                            line = f"{' ' * 12}---"
                             incomplete = False
                 if incomplete:
                     log.debug(line)
-                """
+
         except HPSError as e:
             log.debug(e)
             continue
@@ -247,7 +252,7 @@ def show_rms_data(client: Client, verbose: bool) -> Project:
             log.debug(f"   Config: {crs.backend.json()}")
             try:
                 info = rms_api.get_cluster_info(crs.id)
-            except:
+            except Exception:
                 log.warning(f"       Cluster info not available for {crs.name}")
                 log.debug("")
                 continue
@@ -338,9 +343,6 @@ def _main(log, monitor_latest_project, show_rms_data, args):
 
 def run_main_and_monitor(log, monitor_projects, show_rms_data, _main, args):
     errors = {}
-    runtime_errors = 0
-    exceptions = 0
-    start_time = datetime.now()
     while True:
         try:
             _main(log, monitor_projects, show_rms_data, args)
@@ -354,8 +356,8 @@ def run_main_and_monitor(log, monitor_projects, show_rms_data, _main, args):
                 errors[key] = {str(datetime.now()): exception}
 
         log.info("")
-        log.info(f"=== Logged errors")
-        for error, times in errors.items():
+        log.info("=== Logged errors")
+        for _error, times in errors.items():
             log.info(f"---> {next(times.items())}")
             log.info(f"---> ---> {len(times)} times @ {times}")
         time.sleep(10)

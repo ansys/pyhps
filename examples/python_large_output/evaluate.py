@@ -20,33 +20,30 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-"""Module providing the task command definition schema."""
+import logging
+import os
+import sys
+import time
 
-from marshmallow import fields
-
-from ansys.hps.client.common import ObjectSchemaWithModificationInfo
+log = logging.getLogger(__name__)
 
 
-class TaskCommandDefinitionSchema(ObjectSchemaWithModificationInfo):
-    class Meta(ObjectSchemaWithModificationInfo.Meta):
-        pass
+def main():
+    start_time = time.time()
 
-    task_definition_id = fields.String(
-        allow_none=False,
-        load_only=True,
-        metadata={
-            "description": "ID of the :class:`TaskDefinition` instance "
-            "that the task command definition is linked to."
-        },
-    )
-    name = fields.String(
-        allow_none=False,
-        load_only=True,
-        metadata={
-            "description": "Name of the command (corresponds to the "
-            "function name in the execution script)."
-        },
-    )
-    parameters = fields.Dict(
-        allow_none=True, load_only=True, metadata={"description": "Command parameters."}
-    )
+    file_name = "output.bin"
+    size = 1
+
+    log.info(f"Generating file {file_name} with size {size} GB")
+    one_gb = 1024 * 1024 * 1024  # 1GB
+    with open(file_name, "wb") as fout:
+        for _ in range(size):
+            fout.write(os.urandom(one_gb))
+    log.info(f"File {file_name} has been generated after {(time.time() - start_time):.2f} seconds")
+    return 0
+
+
+if __name__ == "__main__":
+    logger = logging.getLogger()
+    logging.basicConfig(format="%(message)s", level=logging.DEBUG)
+    sys.exit(main())

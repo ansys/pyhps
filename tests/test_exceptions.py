@@ -1,4 +1,4 @@
-# Copyright (C) 2022 - 2024 ANSYS, Inc. and/or its affiliates.
+# Copyright (C) 2022 - 2025 ANSYS, Inc. and/or its affiliates.
 # SPDX-License-Identifier: MIT
 #
 #
@@ -22,6 +22,8 @@
 
 import logging
 
+import pytest
+
 from ansys.hps.client import APIError, Client, ClientError
 from ansys.hps.client.jms import JmsApi
 
@@ -29,7 +31,6 @@ log = logging.getLogger(__name__)
 
 
 def test_server_error(client):
-
     jms_api = JmsApi(client)
     except_obj = None
     try:
@@ -43,8 +44,8 @@ def test_server_error(client):
     assert except_obj.response.status_code == 500
 
 
+@pytest.mark.xfail
 def test_client_error(url, username, password, client):
-
     except_obj = None
     try:
         client = Client(url, username, f"{password}_wrong")

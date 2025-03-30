@@ -1,4 +1,4 @@
-# Copyright (C) 2022 - 2024 ANSYS, Inc. and/or its affiliates.
+# Copyright (C) 2022 - 2025 ANSYS, Inc. and/or its affiliates.
 # SPDX-License-Identifier: MIT
 #
 #
@@ -28,6 +28,8 @@ class BaseSchema(Schema):
     """Base schema class."""
 
     class Meta:
+        """Meta class for the schema."""
+
         ordered = True
         unknown = INCLUDE
         object_class = None  # To be set in derived objects

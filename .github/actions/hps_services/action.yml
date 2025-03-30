@@ -24,6 +24,10 @@ inputs:
     description: 'Token to access the ansys-internal github docker registry'
     required: true
 
+  profile:
+    description: 'Docker compose profiles to use'
+    required: false
+
 outputs:
   url:
     description: 'HPS URL'
@@ -85,6 +89,8 @@ runs:
 
     - name: Start services (internal package)
       if: ${{ inputs.version == 'latest-dev' }}
+      env:
+        PROFILE: ${{ inputs.profile }}
       shell: bash
       run: |
         echo "$(pwd)"
@@ -93,15 +99,20 @@ runs:
         tar -xvzf docker-compose-internal.tar.gz
         cd docker-compose
         docker-compose pull
-        docker-compose up -d
+        if [ -z "$PROFILE"]; then
+          docker-compose up -d
+        else
+          docker-compose --profile $PROFILE up -d
+        fi        
       working-directory: ./docker-compose-artifact
 
     - name: Wait for services
       shell: bash
       run: |
-        curl -k --head -X GET --retry 30 --retry-connrefused --retry-delay 5 https://localhost:8443/hps/jms/api/v1
-        curl -k --head -X GET --retry 30 --retry-connrefused --retry-delay 1 https://localhost:8443/hps/fs/api/v1
-        curl -k --head -X GET --retry 30 --retry-connrefused --retry-delay 1 https://localhost:8443/hps/rms/api/v1
+        # retry each service max 20 times
+        wget --retry-connrefused --retry-on-http-error=503,404 --no-check-certificate -t 20 -O- https://localhost:8443/hps/jms/api/v1
+        wget --retry-connrefused --retry-on-http-error=503,404 --no-check-certificate -t 20 -O- https://localhost:8443/hps/fs/api/v1
+        wget --retry-connrefused --retry-on-http-error=503,404 --no-check-certificate -t 20 -O- https://localhost:8443/hps/rms/api/v1
 
     - name: Set outputs
       id: set-outputs

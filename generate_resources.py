@@ -1,4 +1,4 @@
-# Copyright (C) 2022 - 2024 ANSYS, Inc. and/or its affiliates.
+# Copyright (C) 2022 - 2025 ANSYS, Inc. and/or its affiliates.
 # SPDX-License-Identifier: MIT
 #
 #
@@ -20,16 +20,15 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-"""
-Script to auto generate (most of the) JMS Resources.
+"""Script to auto generate (most of the) JMS Resources.
+
 The main goal is to auto-generate the class docstrings and
 allow code completion.
 """
 
-from dataclasses import dataclass
 import importlib
 import os
-from typing import List, Tuple
+from dataclasses import dataclass
 
 import marshmallow
 
@@ -352,8 +351,7 @@ class Field:
     type: str = "Any"
 
 
-def extract_field_info(name: str, field_object: marshmallow.fields, resources) -> Tuple[Field, str]:
-
+def extract_field_info(name: str, field_object: marshmallow.fields, resources) -> tuple[Field, str]:
     field = Field(name=name)
     v = field_object
 
@@ -381,7 +379,6 @@ def extract_field_info(name: str, field_object: marshmallow.fields, resources) -
 
 
 def _extract_field_type(v, resources) -> str:
-
     if v.__class__ == marshmallow.fields.Constant:
         field_type = type(v.constant).__name__
     elif v.__class__ == marshmallow.fields.Nested:
@@ -401,20 +398,17 @@ def _extract_field_type(v, resources) -> str:
                 else:
                     value_field_type = "any"
                 field_type += f"[{key_field_type}, {value_field_type}]"
-        if hasattr(v, "many") and v.many == True:
+        if hasattr(v, "many") and v.many:
             field_type = f"list[{field_type}]"
 
     return field_type
 
 
-def declared_fields(schema, resources) -> Tuple[List[Field], List[str]]:
-    """
-    Helper function to retrieve the fields that is defined as class members for an object
-    """
+def declared_fields(schema, resources) -> tuple[list[Field], list[str]]:
+    """Helper function to retrieve the fields that is defined as class members for an object"""
     fields = []
     fields_doc = []
     for k, v in schema._declared_fields.items():
-
         field, field_doc = extract_field_info(k, v, resources)
         fields.append(field)
         fields_doc.append(field_doc)
@@ -423,7 +417,6 @@ def declared_fields(schema, resources) -> Tuple[List[Field], List[str]]:
 
 
 def get_resource_imports(resource, base_class):
-
     imports = [
         "from datetime import datetime",
         "from typing import List, Dict, Any, Union",
@@ -457,8 +450,7 @@ def get_module_docstring(file_name: str) -> str:
     return code
 
 
-def get_resource_code(resource, base_class, fields: List[Field], field_docs: List[str]):
-
+def get_resource_code(resource, base_class, fields: list[Field], field_docs: list[str]):
     fields_str = ""
     for k in fields:
         fields_str += f"        self.{k.name} = {k.name}\n"
@@ -471,8 +463,8 @@ def get_resource_code(resource, base_class, fields: List[Field], field_docs: Lis
         else:
             init_fields_str = "        **kwargs"
 
-    code = f'''class {resource['class']}({base_class["name"]}):
-    """Provides the {camel_case_split(resource['class'])} resource.
+    code = f'''class {resource["class"]}({base_class["name"]}):
+    """Provides the {camel_case_split(resource["class"])} resource.
 
     Parameters
     ----------
@@ -480,8 +472,8 @@ def get_resource_code(resource, base_class, fields: List[Field], field_docs: Lis
     """
 
     class Meta:
-        schema = {resource['schema']}
-        rest_name = "{resource['rest_name']}"
+        schema = {resource["schema"]}
+        rest_name = "{resource["rest_name"]}"
 
     def __init__(
         self,
@@ -491,13 +483,12 @@ def get_resource_code(resource, base_class, fields: List[Field], field_docs: Lis
 {additional_initialization}
 
 
-{resource['schema']}.Meta.object_class = {resource['class']}
+{resource["schema"]}.Meta.object_class = {resource["class"]}
 '''
     return code
 
 
 def process_resources(subpackage, resources, base_class_path="ansys.hps.client"):
-
     target_folder = os.path.join("src", "ansys", "hps", "client", subpackage, "resource")
     resources_code = {}
     for resource in resources:
@@ -531,7 +522,7 @@ def process_resources(subpackage, resources, base_class_path="ansys.hps.client")
 
         # we're ready to put the pieces together
         file_name = resource["resource_filename"]
-        if not file_name in resources_code:
+        if file_name not in resources_code:
             resources_code[file_name] = {
                 "imports": [],
                 "code": [],
@@ -544,9 +535,9 @@ def process_resources(subpackage, resources, base_class_path="ansys.hps.client")
         )
 
     # dump generated code to files
-    for file, content in resources_code.items():
-        file_path = os.path.join(target_folder, f"{file}.py")
-        print(f"=== file={file}, file_path={file_path}")
+    for file_n, content in resources_code.items():
+        file_path = os.path.join(target_folder, f"{file_n}.py")
+        print(f"=== file={file_n}, file_path={file_path}")
         unique_imports = list(dict.fromkeys(content["imports"]))
         code = content["code"]
         with open(file_path, "w") as file:

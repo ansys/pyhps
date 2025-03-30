@@ -1,4 +1,4 @@
-# Copyright (C) 2022 - 2024 ANSYS, Inc. and/or its affiliates.
+# Copyright (C) 2022 - 2025 ANSYS, Inc. and/or its affiliates.
 # SPDX-License-Identifier: MIT
 #
 #
@@ -20,9 +20,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-"""
-This example shows how to submit a simple Fluent 2D job to HPS.
-"""
+"""Example showing how to submit a simple Fluent 2D job to HPS."""
 
 import argparse
 import logging
@@ -134,7 +132,7 @@ def create_project(
 
     log.info("=== Submit Job")
     job = project_api.create_jobs(
-        [Job(name=f"Job", eval_status="pending", job_definition_id=job_def.id)]
+        [Job(name="Job", eval_status="pending", job_definition_id=job_def.id)]
     )[0]
 
     log.info(f"Created project '{proj.name}', ID='{proj.id}'")

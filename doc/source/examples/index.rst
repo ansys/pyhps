@@ -1,5 +1,10 @@
 .. _examples:
 
+.. note::
+    Go to the `bottom of this page`_ to download the ZIP file containing the resources required 
+    to follow all examples. A link to download the required resources for each example
+    is also available on each example page.
+
 Examples
 ========
 
@@ -54,3 +59,14 @@ one :download:`ZIP file <../../../build/pyhps_examples.zip>`.
      - Submit a CFX solve job to the HPS server using an execution script.
    * - :ref:`example_python_two_bar`
      - Create an HPS project that solves a two-bar truss problem with Python.
+
+A link to download the required resources is available on each example page. If desired, 
+you can download the required resources for all examples through the link below.
+
+.. _bottom of this page:
+
+.. button-link:: ../_downloads/pyhps_examples.zip
+    :color: black
+    :expand:
+
+    Download ZIP file for all examples
