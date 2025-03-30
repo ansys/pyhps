@@ -82,8 +82,8 @@ class FloatParameterDefinition(ParameterDefinition):
         Units for the parameter.
     display_text : str, optional
         Text to display as the parameter name.
-    mode : str
-        Indicates whether it's an input or output parameter. The mode is filled server-side.
+    mode : str, optional
+        Indicates whether it's an input or output parameter. If not provided, the server will default the mode to ``input``.
     type : str
     default : float, optional
         Default parameter value.
@@ -172,8 +172,8 @@ class IntParameterDefinition(ParameterDefinition):
         Units for the parameter.
     display_text : str, optional
         Text to display as the parameter name.
-    mode : str
-        Indicates whether it's an input or output parameter. The mode is filled server-side.
+    mode : str, optional
+        Indicates whether it's an input or output parameter. If not provided, the server will default the mode to ``input``.
     type : str
     default : int, optional
         Default parameter value.
@@ -258,8 +258,8 @@ class BoolParameterDefinition(ParameterDefinition):
         Units for the parameter.
     display_text : str, optional
         Text to display as the parameter name.
-    mode : str
-        Indicates whether it's an input or output parameter. The mode is filled server-side.
+    mode : str, optional
+        Indicates whether it's an input or output parameter. If not provided, the server will default the mode to ``input``.
     type : str
     default : bool, optional
         Default parameter value.
@@ -328,8 +328,8 @@ class StringParameterDefinition(ParameterDefinition):
         Units for the parameter.
     display_text : str, optional
         Text to display as the parameter name.
-    mode : str
-        Indicates whether it's an input or output parameter. The mode is filled server-side.
+    mode : str, optional
+        Indicates whether it's an input or output parameter. If not provided, the server will default the mode to ``input``.
     type : str
     default : str, optional
         Default parameter value.
