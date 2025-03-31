@@ -50,6 +50,7 @@ import random
 
 from ansys.hps.client import Client, HPSError
 from ansys.hps.client.jms import (
+    BoolParameterDefinition,
     File,
     IntParameterDefinition,
     JmsApi,
@@ -80,6 +81,8 @@ def main(
     change_job_tasks,
     inactive,
     sequential,
+    param_transfer,
+    use_exec_script,
     python_version=None,
 ) -> Project:
     """Python project implementing multiple steps and optional image generation."""
@@ -101,15 +104,6 @@ def main(
 
     files = []
     for i in range(num_task_definitions):
-        # input
-        files.append(
-            File(
-                name=f"td{i}_input",
-                evaluation_path=f"td{i}_input.json",
-                type="application/json",
-                src=os.path.join(cwd, "input.json"),
-            )
-        )
         # eval script
         files.append(
             File(
@@ -129,16 +123,25 @@ def main(
                 type="text/plain",
             )
         )
-        # output json
-        files.append(
-            File(
-                name=f"td{i}_results_json",
-                evaluation_path=f"td{i}_results.json",
-                collect=True,
-                monitor=False,
-                type="application/json",
+        # json input/output
+        if param_transfer == "mapping":
+            files.append(
+                File(
+                    name=f"td{i}_input",
+                    evaluation_path=f"td{i}_input.json",
+                    type="application/json",
+                    src=os.path.join(cwd, "input.json"),
+                )
             )
-        )
+            files.append(
+                File(
+                    name=f"td{i}_results_json",
+                    evaluation_path=f"td{i}_results.json",
+                    collect=True,
+                    monitor=False,
+                    type="application/json",
+                )
+            )
         # output image
         if images:
             files.append(
@@ -147,6 +150,16 @@ def main(
                     evaluation_path=f"td{i}_results.jpg",
                     type="image/jpeg",
                     collect=True,
+                )
+            )
+        if use_exec_script:
+            # Define and upload the exec script
+            files.append(
+                File(
+                    name="exec_script",
+                    evaluation_path="exec_script.py",
+                    type="application/x-python-code",
+                    src=os.path.join(cwd, "exec_script.py"),
                 )
             )
 
@@ -178,50 +191,62 @@ def main(
         new_params = project_api.create_parameter_definitions(new_params)
         params.extend(new_params)
 
-        input_file_id = file_ids[f"td{i}_input"]
-        result_file_id = file_ids[f"td{i}_results_json"]
+        if param_transfer == "mapping":
+            input_file_id = file_ids[f"td{i}_input"]
+            result_file_id = file_ids[f"td{i}_results_json"]
 
-        mappings.append(
-            ParameterMapping(
-                key_string='"period"',
-                tokenizer=":",
-                parameter_definition_id=new_params[0].id,
-                file_id=input_file_id,
+            mappings.append(
+                ParameterMapping(
+                    key_string='"period"',
+                    tokenizer=":",
+                    parameter_definition_id=new_params[0].id,
+                    file_id=input_file_id,
+                )
             )
-        )
-        mappings.append(
-            ParameterMapping(
-                key_string='"duration"',
-                tokenizer=":",
-                parameter_definition_id=new_params[1].id,
-                file_id=input_file_id,
+            mappings.append(
+                ParameterMapping(
+                    key_string='"duration"',
+                    tokenizer=":",
+                    parameter_definition_id=new_params[1].id,
+                    file_id=input_file_id,
+                )
             )
-        )
-        mappings.append(
-            ParameterMapping(
-                key_string='"steps"',
-                tokenizer=":",
-                parameter_definition_id=new_params[2].id,
-                file_id=result_file_id,
+            mappings.append(
+                ParameterMapping(
+                    key_string='"steps"',
+                    tokenizer=":",
+                    parameter_definition_id=new_params[2].id,
+                    file_id=result_file_id,
+                )
             )
-        )
-        mappings.append(
-            ParameterMapping(
-                key_string='"color"',
-                tokenizer=":",
-                string_quote='"',
-                parameter_definition_id=new_params[3].id,
-                file_id=input_file_id,
+            mappings.append(
+                ParameterMapping(
+                    key_string='"color"',
+                    tokenizer=":",
+                    string_quote='"',
+                    parameter_definition_id=new_params[3].id,
+                    file_id=input_file_id,
+                )
             )
-        )
-
-    mappings = project_api.create_parameter_mappings(mappings)
+    new_params = [
+        StringParameterDefinition(
+            name="param_transfer", value_list=[param_transfer], default=param_transfer, mode="input"
+        ),
+        BoolParameterDefinition(name="images", default=images, mode="input"),
+    ]
+    new_params = project_api.create_parameter_definitions(new_params)
+    params.extend(new_params)
+    if param_transfer == "mapping":
+        mappings = project_api.create_parameter_mappings(mappings)
 
     log.debug("=== Task definitions")
     task_defs = []
     for i in range(num_task_definitions):
-        input_file_ids = [file_ids[f"td{i}_input"], file_ids[f"td{i}_pyscript"]]
-        output_file_ids = [file_ids[f"td{i}_results"], file_ids[f"td{i}_results_json"]]
+        input_file_ids = [file_ids[f"td{i}_pyscript"]]
+        output_file_ids = [file_ids[f"td{i}_results"]]
+        if param_transfer == "mapping":
+            input_file_ids.append(file_ids[f"td{i}_input"])
+            output_file_ids.append(file_ids[f"td{i}_results_json"])
         if f"td{i}_results_jpg" in file_ids.keys():
             output_file_ids.append(file_ids[f"td{i}_results_jpg"])
 
@@ -248,6 +273,9 @@ def main(
                 success_criteria=SuccessCriteria(return_code=0, require_all_output_files=True),
             )
         )
+        if use_exec_script:
+            task_defs[-1].use_execution_script = True
+            task_defs[-1].execution_script_id = file_ids["exec_script"]
 
     task_defs = project_api.create_task_definitions(task_defs)
 
@@ -280,7 +308,7 @@ def main(
     # change dp task files
     if change_job_tasks > 0:
         log.info(f"Change tasks for {change_job_tasks} jobs")
-        update_task_files(proj, change_job_tasks, images)
+        update_task_files(project_api, change_job_tasks, images, param_transfer)
 
     log.info(f"Created project '{proj.name}', ID='{proj.id}'")
 
@@ -297,8 +325,17 @@ if __name__ == "__main__":
     parser.add_argument("-p", "--password", default="repuser")
     parser.add_argument("-n", "--num-jobs", type=int, default=10)
     parser.add_argument("-t", "--num-task-definitions", type=int, default=3)
+    parser.add_argument("-es", "--use-exec-script", default=False, action="store_true")
     parser.add_argument("-d", "--duration", type=int, default=10)
     parser.add_argument("-e", "--period", type=int, default=3)
+    parser.add_argument(
+        "-pt",
+        "--param-transfer",
+        type=str,
+        default="mapping",
+        choices=["mapping", "json-file"],
+        help="Method used to transfer parameters between evaluator and execution script",
+    )
     parser.add_argument(
         "-c",
         "--change-job-tasks",
@@ -339,6 +376,8 @@ if __name__ == "__main__":
             change_job_tasks=args.change_job_tasks,
             inactive=args.inactive,
             sequential=args.sequential,
+            param_transfer=args.param_transfer,
+            use_exec_script=args.use_exec_script,
             python_version=args.python_version,
         )
     except HPSError as e:
