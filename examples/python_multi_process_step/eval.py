@@ -80,19 +80,30 @@ def main(input_file, task_definition, images, in_subscript):
     log.info(f"Open input file: {input_file_path}")
     with open(input_file_path) as f:
         params = json.load(f)
-
     log.info(f"Params read: {params}")
-    period = params["period"]
-    duration = params["duration"]
-    color = params["color"]
+    if "param_transfer" not in params.keys():
+        params["param_transfer"] = "mapping"
+
+    if params["param_transfer"] == "json-file":
+        period = params[f"period{task_definition}"]
+        duration = params[f"duration{task_definition}"]
+        color = params[f"color{task_definition}"]
+    else:
+        period = params["period"]
+        duration = params["duration"]
+        color = params["color"]
 
     # Calculate the Output: Number of steps
     steps = int(duration // period)
 
-    output_parameters = {"steps": steps}
+    output_parameters = {f"steps{task_definition}": steps}
+
+    print(f"Output parameters: {output_parameters}")
 
     # create json-results file
     out_filename = f"{subs}td{task_definition}_results.json"
+    if params["param_transfer"] == "json-file":
+        out_filename = "output_parameters.json"
     log.debug(f"Write JSON results file: {out_filename}")
     with open(out_filename, "w") as out_file:
         json.dump(output_parameters, out_file, indent=4)
@@ -161,7 +172,7 @@ def main(input_file, task_definition, images, in_subscript):
             f"{task_definition}",
             "--in-subscript",
         ]
-        log.info("Run Subscript with: {cmd}")
+        log.info(f"Run Subscript with: {cmd}")
         subprocess.run(cmd, check=False)
 
     log.info("Finished.")
