@@ -24,22 +24,27 @@
 
 Author(s): R.Walker
 
-Run *python eval.py --help* for command line arguments.
+Run *python project_setup.py --help* for command line arguments.
 
 The project id is generated as
-"py_{NUM_PROCESS_STEPS}_ps" and the `_img` is appended if result image is written.
+"Python - {NUM_PROCESS_STEPS} Task Defs (- Img )- Sequential/Parallel"
 
-Per default the project is inactive. You can activate the project with the `-a` flag
-
-
-Example:
+Examples:
 -------
 ```
-python project_setup.py -n 100 -c 10 --no-images
+python project_setup.py -n 100 -c 10
 ```
-Create 100 design points
+Create 100 design points with the default 3 tasks each
   and change the first 10 design points
   and do not write an result image.
+-------
+```
+python project_setup.py -n=10 -t=5 --use-exec-script --param-transfer=json-file --images
+```
+Create 10 design points with 5 tasks each
+  use an execution script
+  with unmapped parameters transferred via local json files
+  and write a result image.
 
 """
 
@@ -213,7 +218,7 @@ def main(
             )
             mappings.append(
                 ParameterMapping(
-                    key_string='"steps"',
+                    key_string=f'"steps{i}"',
                     tokenizer=":",
                     parameter_definition_id=new_params[2].id,
                     file_id=result_file_id,
