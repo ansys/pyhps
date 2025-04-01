@@ -20,7 +20,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-"""Python example with multiple dependent tasks and linked files in between.
+"""Python example with multiple dependent tasks and linked files/params in between.
 
 Author(s): R.Walker
 """
@@ -58,7 +58,7 @@ def main(
     use_unmapped_params,
     python_version=None,
 ):
-    """Create project with multiple dependent Python tasks and linked files in between."""
+    """Create project with multiple dependent Python tasks and linked files/params in between."""
     log.debug("=== Project")
     proj = Project(
         name=f"Python - Linked Files - {num_task_definitions} Tasks",
