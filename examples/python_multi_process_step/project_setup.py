@@ -260,7 +260,7 @@ def main(
                     Software(name="Python", version=python_version),
                 ],
                 execution_command=cmd,
-                max_execution_time=max(duration * 1.5, 12.0),
+                max_execution_time=max(duration * 1.5 + 12.0),
                 resource_requirements=ResourceRequirements(
                     num_cores=0.2,
                     memory=100 * 1024 * 1024,  # 100 MB
