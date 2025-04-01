@@ -22,7 +22,7 @@
 
 """Simplistic execution script for Python.
 
-Command formed: python <script_file> <input_file (optional)>
+Command formed: python <script_file> <input_file> <execution_level>
 """
 
 import json
