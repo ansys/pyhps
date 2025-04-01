@@ -146,8 +146,8 @@ def main(input_file, task_definition, images, in_subscript):
         # create an image !!!
         img = Image.new("RGB", (600, 400), color=color)
         d = ImageDraw.Draw(img)
-        line_height = 36
-        font = ImageFont.truetype("arial.ttf", 24)
+        line_height = 18
+        font = ImageFont.truetype("arial.ttf", 12)
 
         def text(i, txt):
             d.text((line_height, line_height * i), txt, fill=(0, 0, 1), font=font)
@@ -172,6 +172,8 @@ def main(input_file, task_definition, images, in_subscript):
             f"{task_definition}",
             "--in-subscript",
         ]
+        if "images":
+            cmd.append("--images")
         log.info(f"Run Subscript with: {cmd}")
         subprocess.run(cmd, check=False)
 
