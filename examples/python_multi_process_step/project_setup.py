@@ -270,7 +270,9 @@ def main(
                 input_file_ids=input_file_ids,
                 output_file_ids=output_file_ids,
                 store_output=True,
-                success_criteria=SuccessCriteria(return_code=0, require_all_output_files=True),
+                success_criteria=SuccessCriteria(
+                    return_code=0, require_all_output_files=True, require_all_output_parameters=True
+                ),
             )
         )
         if use_exec_script:
@@ -361,6 +363,11 @@ if __name__ == "__main__":
     parser.add_argument("-v", "--python-version", default="3.10")
 
     args = parser.parse_args()
+
+    if args.param_transfer != "mapping" and not args.use_exec_script:
+        log.warning(f"--param-transfer={args.param_transfer} requires --use-exec-script.")
+        log.warning("Automatically enabling --use-exec-script")
+        args.use_exec_script = True
 
     log.debug("=== HPS connection")
     client = Client(url=args.url, username=args.username, password=args.password)
