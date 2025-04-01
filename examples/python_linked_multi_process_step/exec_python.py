@@ -66,7 +66,7 @@ class PythonExecution(ApplicationExecution):
         # Add " around exe if needed for Windows
         exe = app["executable"]
         if " " in exe and not exe.startswith('"'):
-            exe = '"%s"' % exe  # noqa
+            exe = f'"{exe}"'  # noqa
 
         # Use properties from resource requirements
         # None currently
