@@ -96,7 +96,7 @@ class PythonExecution(ApplicationExecution):
                     output_parameters = json.load(out_file)
                 self.context.parameter_values.update(output_parameters)
                 os.remove("output_parameters.json")
-            except Exception:
-                log.error("Failed to read output_parameters from file: {ex}")
+            except Exception as ex:
+                log.error(f"Failed to read output_parameters from file: {ex}")
 
         log.info("End Python execution script")
