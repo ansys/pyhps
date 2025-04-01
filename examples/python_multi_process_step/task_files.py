@@ -85,6 +85,13 @@ def update_task_files(project_api, num_jobs, write_images, param_transfer):
 
     jobs = project_api.get_jobs(limit=num_jobs)
 
+    # Stop the jobs we're about to change
+    for job in jobs:
+        job["eval_status"] = "inactive"
+    project_api.update_jobs(jobs)
+    for job in jobs:
+        job["eval_status"] = "pending"
+
     for dp in jobs:
         log.debug(f" Update job {dp.name}")
         dp.name = dp.name + " Modified"
