@@ -65,14 +65,17 @@ class PythonExecution(ApplicationExecution):
         # Form command
         cmd = f"{exe} {script_file['path']} {input_filename}"
 
+        log.debug(f"Executing command: {cmd}")
         # Execute
         self.run_and_capture_output(cmd, shell=True, env=env)
 
         # Extract parameters if needed
         try:
+            log.debug(f"Loading output parameters from {output_filename}")
             with open(output_filename) as out_file:
                 output_parameters = json.load(out_file)
             self.context.parameter_values.update(output_parameters)
+            log.debug(f"Loaded output parameters: {output_parameters}")
         except Exception as ex:
             log.error(f"Failed to read output_parameters from file: {ex}")
 
