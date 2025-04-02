@@ -80,6 +80,7 @@ def main(client, num_jobs, python_version=None) -> Project:
     )
     files = project_api.create_files(files)
     file_ids = {f.name: f.id for f in files}
+    input_file_ids = [file_ids["script"]]
 
     log.debug("=== Job Definition with simulation workflow and parameters")
     job_def = JobDefinition(
@@ -88,7 +89,7 @@ def main(client, num_jobs, python_version=None) -> Project:
     )
 
     # Input params
-    input_params = [
+    params = [
         FloatParameterDefinition(
             name="height", lower_limit=10, upper_limit=100.0, default=30, units="in", mode="input"
         ),
@@ -131,19 +132,17 @@ def main(client, num_jobs, python_version=None) -> Project:
             name="load", lower_limit=1e1, upper_limit=1e5, default=66e3, units="lbs", mode="input"
         ),
     ]
-    input_params = project_api.create_parameter_definitions(input_params)
-
-    output_params = [
-        FloatParameterDefinition(name="weight", units="lbs", mode="output"),
-        FloatParameterDefinition(name="stress", units="ksi", mode="output"),
-        FloatParameterDefinition(name="buckling_stress", units="ksi", mode="output"),
-        FloatParameterDefinition(name="deflection", units="in", mode="output"),
-    ]
-    output_params = project_api.create_parameter_definitions(output_params)
-
-    job_def.parameter_definition_ids = [o.id for o in input_params + output_params]
-
-    input_file_ids = [file_ids["script"]]
+    # Output params
+    params.extend(
+        [
+            FloatParameterDefinition(name="weight", units="lbs", mode="output"),
+            FloatParameterDefinition(name="stress", units="ksi", mode="output"),
+            FloatParameterDefinition(name="buckling_stress", units="ksi", mode="output"),
+            FloatParameterDefinition(name="deflection", units="in", mode="output"),
+        ]
+    )
+    params = project_api.create_parameter_definitions(params)
+    job_def.parameter_definition_ids = [o.id for o in params]
 
     task_def = TaskDefinition(
         name="python_evaluation",
@@ -190,6 +189,7 @@ def main(client, num_jobs, python_version=None) -> Project:
     # Create job_definition in project
     job_def = project_api.create_job_definitions([job_def])[0]
 
+    # Refresh parameters
     params = project_api.get_parameter_definitions(job_def.parameter_definition_ids)
 
     log.debug("=== Jobs")
@@ -198,7 +198,7 @@ def main(client, num_jobs, python_version=None) -> Project:
         values = {
             p.name: p.lower_limit + random.random() * (p.upper_limit - p.lower_limit)
             for p in params
-            if p.mode == "input" and p.type == "float"
+            if p.mode == "input"
         }
         jobs.append(
             Job(name=f"Job.{i}", values=values, eval_status="pending", job_definition_id=job_def.id)
