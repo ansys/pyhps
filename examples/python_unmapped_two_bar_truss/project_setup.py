@@ -35,12 +35,10 @@ from ansys.hps.client.jms import (
     JmsApi,
     Job,
     JobDefinition,
-    ParameterMapping,
     Project,
     ProjectApi,
     ResourceRequirements,
     Software,
-    StringParameterDefinition,
     SuccessCriteria,
     TaskDefinition,
 )
@@ -48,9 +46,10 @@ from ansys.hps.client.jms import (
 log = logging.getLogger(__name__)
 
 
-def main(client, num_jobs, use_exec_script, param_transfer, python_version=None) -> Project:
+def main(client, num_jobs, python_version=None) -> Project:
     """
     Create project solving a two-bar truss problem with Python.
+    This version showcases how an execution script allows the use of unmapped parameters.
 
     For the original problem description, see R.L. Fox, Optimization Methods in Engineering Design, Addison Wesley, 1971.
     Also see `Optimization Methods for Engineering Design <https://apmonitor.com/me575/uploads/Main/optimization_book.pdf>`_.
@@ -61,16 +60,8 @@ def main(client, num_jobs, use_exec_script, param_transfer, python_version=None)
     proj = jms_api.create_project(proj, replace=True)
     project_api = ProjectApi(client, proj.id)
 
-    if not use_exec_script and param_transfer != "mapping":
-        log.warning(
-            "Parameter transfers other than 'mapping' require an execution script."
-            + " Setting param_transfer to 'mapping'."
-        )
-        param_transfer = "mapping"
-
     log.debug("=== Files")
     cwd = os.path.dirname(__file__)
-
     files = [
         File(
             name="script",
@@ -79,37 +70,14 @@ def main(client, num_jobs, use_exec_script, param_transfer, python_version=None)
             src=os.path.join(cwd, "evaluate.py"),
         ),
     ]
-
-    # Define input and output files for parameter transfer if needed
-    if param_transfer == "mapping":
-        files.extend(
-            [
-                File(
-                    name="inp",
-                    evaluation_path="input_parameters.json",
-                    type="text/plain",
-                    src=os.path.join(cwd, "input_parameters.json"),
-                ),
-                File(
-                    name="result",
-                    evaluation_path="output_parameters.json",
-                    type="text/plain",
-                    collect=True,
-                ),
-            ]
+    files.append(
+        File(
+            name="exec_python",
+            evaluation_path="exec_python.py",
+            type="application/x-python-code",
+            src=os.path.join(cwd, "exec_python.py"),
         )
-
-    if use_exec_script:
-        # Define and upload an exemplary exec script to run Python
-        files.append(
-            File(
-                name="exec_python",
-                evaluation_path="exec_python.py",
-                type="application/x-python-code",
-                src=os.path.join(cwd, "exec_python.py"),
-            )
-        )
-
+    )
     files = project_api.create_files(files)
     file_ids = {f.name: f.id for f in files}
 
@@ -162,9 +130,6 @@ def main(client, num_jobs, use_exec_script, param_transfer, python_version=None)
         FloatParameterDefinition(
             name="load", lower_limit=1e1, upper_limit=1e5, default=66e3, units="lbs", mode="input"
         ),
-        StringParameterDefinition(
-            name="param_transfer", default=param_transfer, mode="input", value_list=[param_transfer]
-        ),
     ]
     input_params = project_api.create_parameter_definitions(input_params)
 
@@ -176,109 +141,26 @@ def main(client, num_jobs, use_exec_script, param_transfer, python_version=None)
     ]
     output_params = project_api.create_parameter_definitions(output_params)
 
-    # Define mappings if needed
-    if param_transfer == "mapping":
-        mappings = [
-            ParameterMapping(
-                key_string='"H"',
-                tokenizer=":",
-                parameter_definition_id=input_params[0].id,
-                file_id=file_ids["inp"],
-            ),
-            ParameterMapping(
-                key_string='"d"',
-                tokenizer=":",
-                parameter_definition_id=input_params[1].id,
-                file_id=file_ids["inp"],
-            ),
-            ParameterMapping(
-                key_string='"t"',
-                tokenizer=":",
-                parameter_definition_id=input_params[2].id,
-                file_id=file_ids["inp"],
-            ),
-            ParameterMapping(
-                key_string='"B"',
-                tokenizer=":",
-                parameter_definition_id=input_params[3].id,
-                file_id=file_ids["inp"],
-            ),
-            ParameterMapping(
-                key_string='"E"',
-                tokenizer=":",
-                parameter_definition_id=input_params[4].id,
-                file_id=file_ids["inp"],
-            ),
-            ParameterMapping(
-                key_string='"rho"',
-                tokenizer=":",
-                parameter_definition_id=input_params[5].id,
-                file_id=file_ids["inp"],
-            ),
-            ParameterMapping(
-                key_string='"P"',
-                tokenizer=":",
-                parameter_definition_id=input_params[6].id,
-                file_id=file_ids["inp"],
-            ),
-            ParameterMapping(
-                key_string='"weight"',
-                tokenizer=":",
-                parameter_definition_id=output_params[0].id,
-                file_id=file_ids["result"],
-            ),
-            ParameterMapping(
-                key_string='"stress"',
-                tokenizer=":",
-                parameter_definition_id=output_params[1].id,
-                file_id=file_ids["result"],
-            ),
-            ParameterMapping(
-                key_string='"buckling_stress"',
-                tokenizer=":",
-                parameter_definition_id=output_params[2].id,
-                file_id=file_ids["result"],
-            ),
-            ParameterMapping(
-                key_string='"deflection"',
-                tokenizer=":",
-                parameter_definition_id=output_params[3].id,
-                file_id=file_ids["result"],
-            ),
-        ]
-        mappings = project_api.create_parameter_mappings(mappings)
-    else:
-        mappings = []
-
     job_def.parameter_definition_ids = [o.id for o in input_params + output_params]
-    job_def.parameter_mapping_ids = [o.id for o in mappings]
 
     input_file_ids = [file_ids["script"]]
-    output_file_ids = []
-    if param_transfer == "mapping":
-        input_file_ids.append(file_ids["inp"])
-        output_file_ids.append(file_ids["result"])
 
     task_def = TaskDefinition(
         name="python_evaluation",
         software_requirements=[Software(name="Python", version=python_version)],
-        execution_command="%executable% %file:script% %file:inp%",
         resource_requirements=ResourceRequirements(
             num_cores=0.5,
         ),
+        use_execution_script=True,
+        execution_script_id=file_ids["exec_python"],
         execution_level=0,
         max_execution_time=30.0,
         input_file_ids=input_file_ids,
-        output_file_ids=output_file_ids,
         success_criteria=SuccessCriteria(
             return_code=0,
             require_all_output_parameters=True,
         ),
     )
-
-    if use_exec_script:
-        task_def.use_execution_script = True
-        task_def.execution_script_id = file_ids["exec_python"]
 
     task_def = project_api.create_task_definitions([task_def])[0]
     job_def.task_definition_ids = [task_def.id]
@@ -334,16 +216,8 @@ if __name__ == "__main__":
     parser.add_argument("-u", "--username", default="repuser")
     parser.add_argument("-p", "--password", default="repuser")
     parser.add_argument("-n", "--num-jobs", type=int, default=50)
-    parser.add_argument("-es", "--use-exec-script", default=False, action="store_true")
     parser.add_argument("-v", "--python-version", default="3.10")
-    parser.add_argument(
-        "-pt",
-        "--param-transfer",
-        type=str,
-        default="mapping",
-        choices=["mapping", "json-file"],
-        help="Method used to transfer parameters between evaluator and execution script",
-    )
+
     args = parser.parse_args()
 
     logger = logging.getLogger()
@@ -355,8 +229,6 @@ if __name__ == "__main__":
         main(
             client,
             num_jobs=args.num_jobs,
-            use_exec_script=args.use_exec_script,
-            param_transfer=args.param_transfer,
             python_version=args.python_version,
         )
     except HPSError as e:
