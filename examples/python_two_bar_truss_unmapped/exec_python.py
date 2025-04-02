@@ -20,31 +20,33 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-"""Basic execution script for MAPDL.
+"""Simplistic execution script for Python.
 
-Command formed: ansys.exe -b -i <inp_file> -o <out_file> -np 4
-
+Command formed: python <script_file> <input_file>
 """
 
+import json
 import os
-import subprocess
 
 from ansys.rep.common.logging import log
 from ansys.rep.evaluator.task_manager import ApplicationExecution
 
 
-class MAPDLExecution(ApplicationExecution):
+class PythonExecution(ApplicationExecution):
     def execute(self):
-        log.info("Starting MAPDL execution script")
+        log.info("Start Python execution script")
 
         # Identify files
-        inp_file = next((f for f in self.context.input_files if f["name"] == "inp"), None)
-        assert inp_file, "Input file inp missing"
-        out_file = next((f for f in self.context.output_files if f["name"] == "out"), None)
-        assert out_file, "Output file out missing"
+        script_file = next((f for f in self.context.input_files if f["name"] == "script"), None)
+        assert script_file, "Python script file script missing"
+        input_filename = "input_parameters.json"
+        output_filename = "output_parameters.json"
+
+        with open(input_filename, "w") as in_file:
+            json.dump(self.context.parameter_values, in_file, indent=4)
 
         # Identify application
-        app_name = "Ansys Mechanical APDL"
+        app_name = "Python"
         app = next((a for a in self.context.software if a["name"] == app_name), None)
         assert app, f"Cannot find app {app_name}"
 
@@ -54,17 +56,27 @@ class MAPDLExecution(ApplicationExecution):
             exe = f'"{exe}"'  # noqa
 
         # Use properties from resource requirements
-        num_cores = self.context.resource_requirements["num_cores"]
+        # None currently
 
         # Pass env vars correctly
         env = dict(os.environ)
         env.update(self.context.environment)
 
         # Form command
-        cmd = f"{exe} -b -i {inp_file['path']} -o {out_file['path']} -np {num_cores}"
+        cmd = f"{exe} {script_file['path']} {input_filename}"
 
-        # Execute command
-        log.info(f"Executing: {cmd}")
-        subprocess.run(cmd, shell=True, check=True, env=env)
+        log.debug(f"Executing command: {cmd}")
+        # Execute
+        self.run_and_capture_output(cmd, shell=True, env=env)
 
-        log.info("End MAPDL execution script")
+        # Extract parameters if needed
+        try:
+            log.debug(f"Loading output parameters from {output_filename}")
+            with open(output_filename) as out_file:
+                output_parameters = json.load(out_file)
+            self.context.parameter_values.update(output_parameters)
+            log.debug(f"Loaded output parameters: {output_parameters}")
+        except Exception as ex:
+            log.error(f"Failed to read output_parameters from file: {ex}")
+
+        log.info("End Python execution script")
