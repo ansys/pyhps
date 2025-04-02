@@ -44,9 +44,7 @@ def main(input_file, task_definition):
         params = json.load(f)
 
     log.info(f"Params read: {params}")
-    start = params.get(
-        "start", params.get("product", params.get(f"product{int(task_definition) - 1}", 0.0))
-    )
+    start = params.get("start", params.get("product", 0.0))
     # Calculate the Output: Number of steps
     product = start * start
 
