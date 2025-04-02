@@ -22,7 +22,7 @@
 
 """Simplistic execution script for Python.
 
-Command formed: python <script_file> <input_file (optional)>
+Command formed: python <script_file> <input_file>
 """
 
 import json
@@ -39,28 +39,11 @@ class PythonExecution(ApplicationExecution):
         # Identify files
         script_file = next((f for f in self.context.input_files if f["name"] == "script"), None)
         assert script_file, "Python script file script missing"
-        inp_file = next((f for f in self.context.input_files if f["name"] == "inp"), None)
+        input_filename = "input_parameters.json"
+        output_filename = "output_parameters.json"
 
-        param_transfer = self.context.parameter_values["param_transfer"]
-        parameters = self.context.parameter_values
-        # Write input params into file if needed
-        if param_transfer == "json-file":
-            param_name_to_label = {
-                "height": "H",
-                "diameter": "d",
-                "thickness": "t",
-                "separation_distance": "B",
-                "young_modulus": "E",
-                "density": "rho",
-                "load": "P",
-            }
-            input_parameters = {
-                param_name_to_label[name]: value
-                for name, value in parameters.items()
-                if name in param_name_to_label.keys()
-            }
-            with open("input_parameters.json", "w") as in_file:
-                json.dump(input_parameters, in_file, indent=4)
+        with open(input_filename, "w") as in_file:
+            json.dump(self.context.parameter_values, in_file, indent=4)
 
         # Identify application
         app_name = "Python"
@@ -80,23 +63,17 @@ class PythonExecution(ApplicationExecution):
         env.update(self.context.environment)
 
         # Form command
-        cmd = f"{exe} {script_file['path']}"
-        if parameters["param_transfer"] == "mapping":
-            cmd += f" {inp_file['path']}"
-        else:
-            cmd += " input_parameters.json"
+        cmd = f"{exe} {script_file['path']} {input_filename}"
 
         # Execute
         self.run_and_capture_output(cmd, shell=True, env=env)
 
         # Extract parameters if needed
-        if param_transfer == "json-file":
-            try:
-                with open("output_parameters.json") as out_file:
-                    output_parameters = json.load(out_file)
-                self.context.parameter_values.update(output_parameters)
-                os.remove("output_parameters.json")
-            except Exception as ex:
-                log.error(f"Failed to read output_parameters from file: {ex}")
+        try:
+            with open(output_filename) as out_file:
+                output_parameters = json.load(out_file)
+            self.context.parameter_values.update(output_parameters)
+        except Exception as ex:
+            log.error(f"Failed to read output_parameters from file: {ex}")
 
         log.info("End Python execution script")
