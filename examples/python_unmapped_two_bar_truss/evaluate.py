@@ -48,22 +48,42 @@ def deflection(P, d, t, B, H, rho, E):
     return f
 
 
+def filter_params(params):
+    for key in ["weight", "stress", "buckling_stress", "deflection"]:
+        params.pop(key)
+
+
+def rename_params(params):
+    param_name_to_label = {
+        "height": "H",
+        "diameter": "d",
+        "thickness": "t",
+        "separation_distance": "B",
+        "young_modulus": "E",
+        "density": "rho",
+        "load": "P",
+    }
+    for key in param_name_to_label.keys():
+        params[param_name_to_label[key]] = params.pop(key)
+
+
 def main():
+    # Load, filter and rename parameters
     input_file_name = sys.argv[1]
     input_file_path = os.path.abspath(input_file_name)
     with open(input_file_path) as input_file:
         params = json.load(input_file)
+    filter_params(params)
+    rename_params(params)
 
-    # print(params)
-
+    # Calculate results
     output_parameters = {}
     output_parameters.update(weight=weight(**params))
     output_parameters.update(stress=stress(**params))
     output_parameters.update(buckling_stress=buckling_stress(**params))
     output_parameters.update(deflection=deflection(**params))
 
-    # print(output_parameters)
-
+    # Output results
     with open("output_parameters.json", "w") as out_file:
         json.dump(output_parameters, out_file, indent=4)
 
