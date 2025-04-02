@@ -24,7 +24,6 @@ import logging
 
 from ansys.hps.client import __ansys_apps_version__ as ansys_version
 from ansys.hps.client.jms import (
-    BoolParameterDefinition,
     IntParameterDefinition,
     JmsApi,
     ProjectApi,
@@ -115,9 +114,8 @@ def test_mapdl_tyre_performance(client):
 def test_python_two_bar_truss_problem(client):
     from examples.python_two_bar_truss_problem.project_setup import main
 
-    # mapping transfer
     num_jobs = 10
-    project = main(client, num_jobs, param_transfer="mapping", use_exec_script=False)
+    project = main(client, num_jobs, use_exec_script=False)
     assert project is not None
 
     jms_api = JmsApi(client)
@@ -128,11 +126,26 @@ def test_python_two_bar_truss_problem(client):
     jms_api.delete_project(project)
 
 
-def test_python_two_bar_truss_problem_with_param_transfer_json_file(client):
+def test_python_two_bar_truss_problem_with_exec_script(client):
     from examples.python_two_bar_truss_problem.project_setup import main
 
     num_jobs = 10
-    project = main(client, num_jobs, param_transfer="json-file", use_exec_script=True)
+    project = main(client, num_jobs, use_exec_script=True)
+    assert project is not None
+
+    jms_api = JmsApi(client)
+    project_api = ProjectApi(client, project.id)
+
+    assert len(project_api.get_jobs()) == num_jobs
+
+    jms_api.delete_project(project)
+
+
+def test_python_unmapped_two_bar_truss(client):
+    from examples.python_unmapped_two_bar_truss.project_setup import main
+
+    num_jobs = 10
+    project = main(client, num_jobs)
     assert project is not None
 
     jms_api = JmsApi(client)
@@ -278,8 +291,6 @@ def test_python_multi_steps(client):
         change_job_tasks=0,
         inactive=True,
         sequential=False,
-        param_transfer="mapping",
-        use_exec_script=False,
     )
     assert project is not None
 
@@ -287,21 +298,15 @@ def test_python_multi_steps(client):
 
     assert len(project_api.get_jobs()) == num_jobs
 
-    # verify we created int, bool and string type parameter definitions
+    # verify we created int and string type parameter definitions
     pds = project_api.get_parameter_definitions()
     types = [type(pd) for pd in pds]
 
-    assert len(types) == 4 * num_task_definitions + 2
+    assert len(types) == 4 * num_task_definitions
 
     types = set(types)
-    assert len(types) == 3
+    assert len(types) == 2
     assert StringParameterDefinition in types
     assert IntParameterDefinition in types
-    assert BoolParameterDefinition in types
-
-    # verify we have input and output parameters
-    modes = [pd.mode for pd in pds]
-    assert "input" in modes
-    assert "output" in modes
 
     JmsApi(client).delete_project(project)

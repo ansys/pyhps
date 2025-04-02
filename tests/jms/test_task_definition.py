@@ -289,7 +289,7 @@ def test_analyze_task_definition(client):
     # Because compute resources can't be assumed to be available,
     # so we just hit the endpoint
 
-    project = create_project(client, 1, param_transfer="mapping", use_exec_script=False)
+    project = create_project(client, 1, use_exec_script=False)
     api = ProjectApi(client, project.id)
     task_def = api.get_task_definitions()[0]
 
