@@ -54,8 +54,7 @@ def update_input_file(task):
 
 
 def update_eval_script(task):
-    cwd = os.path.dirname(__file__)
-    path = os.path.join(cwd, "eval.py")
+    path = "eval.py"
     lines = open(path).readlines()
 
     log.info(f"Update input file {path} for task {task.task_definition_snapshot.name}")
@@ -80,24 +79,17 @@ def update_eval_script(task):
     return file.name
 
 
-def update_task_files(project_api, num_jobs, write_images, param_transfer):
+def update_task_files(project_api, num_jobs, write_images):
     log.debug("=== Update Task files ===")
 
-    jobs = project_api.get_jobs(limit=num_jobs)
-
-    # Stop the jobs we're about to change
-    for job in jobs:
-        job["eval_status"] = "inactive"
-    project_api.update_jobs(jobs)
-    for job in jobs:
-        job["eval_status"] = "pending"
+    config = project_api.get_job_definitions()[0]
+    jobs = config.get_jobs(limit=num_jobs)
 
     for dp in jobs:
         log.debug(f" Update job {dp.name}")
         dp.name = dp.name + " Modified"
-        tasks = project_api.get_tasks()
-        tasks_sel = [t for t in tasks if t.job_id == dp.id]
-        for i, task in enumerate(tasks_sel):
+        tasks = dp.get_tasks()
+        for i, task in enumerate(tasks, 1):
             files = []
             # input_file
             ##input_name = "ps_{}_input".format(i)
@@ -106,20 +98,19 @@ def update_task_files(project_api, num_jobs, write_images, param_transfer):
             ##                type="application/json",
             ##                src=os.path.join(cwd, "input.json".format(i)) ) )
             # new input_file will be used by subprocess
-            if param_transfer == "mapping":
-                new_input_file = update_input_file(task)
-                new_input_name = f"sub_td{i}_input"
-                files.append(
-                    File(
-                        name=new_input_name,
-                        evaluation_path=f"sub_td{i}_input.json",
-                        type="application/json",
-                        src=new_input_file,
-                    )
+            new_input_file = update_input_file(task)
+            new_input_name = f"sub_td_{i}_input"
+            files.append(
+                File(
+                    name=new_input_name,
+                    evaluation_path=f"sub_td_{i}_input.json",
+                    type="application/json",
+                    src=new_input_file,
                 )
+            )
             # overwrite the eval script: same name --> will be overwritten
             new_eval_script = update_eval_script(task)
-            new_eval_name = f"td{i}_pyscript"
+            new_eval_name = f"td_{i}_pyscript"
             files.append(
                 File(
                     name=new_eval_name,
@@ -135,11 +126,11 @@ def update_task_files(project_api, num_jobs, write_images, param_transfer):
             #                collect=True, monitor=True,
             #                type="text/plain" ) )
             # new output text
-            new_out_name = f"sub_td{i}_results"
+            new_out_name = f"sub_td_{i}_results"
             files.append(
                 File(
                     name=new_out_name,
-                    evaluation_path=f"sub_td{i}_results.txt",
+                    evaluation_path=f"sub_td_{i}_results.txt",
                     collect=True,
                     monitor=True,
                     type="text/plain",
@@ -147,11 +138,11 @@ def update_task_files(project_api, num_jobs, write_images, param_transfer):
             )
             # new image
             if write_images:
-                new_image_name = f"sub_td{i}_results_jpg"
+                new_image_name = f"sub_td_{i}_results_jpg"
                 files.append(
                     File(
                         name=new_image_name,
-                        evaluation_path=f"sub_td{i}_results.jpg",
+                        evaluation_path=f"sub_td_{i}_results.jpg",
                         type="image/jpeg",
                         collect=True,
                     )
@@ -165,11 +156,9 @@ def update_task_files(project_api, num_jobs, write_images, param_transfer):
                 output_file_ids.append(file_ids[new_image_name])
 
             task.output_file_ids = output_file_ids
-            task.input_file_ids = [file_ids[new_eval_name]]
-            if param_transfer == "mapping":
-                task.input_file_ids.append(file_ids[new_input_name])
+            task.input_file_ids = [file_ids[new_input_name], file_ids[new_eval_name]]
 
-        project_api.update_tasks(tasks_sel)
+        project_api.update_tasks(tasks)
 
     project_api.update_jobs(jobs)
     log.info(f"Updated {len(jobs)} design points")

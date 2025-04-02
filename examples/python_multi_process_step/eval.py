@@ -80,30 +80,19 @@ def main(input_file, task_definition, images, in_subscript):
     log.info(f"Open input file: {input_file_path}")
     with open(input_file_path) as f:
         params = json.load(f)
-    log.info(f"Params read: {params}")
-    if "param_transfer" not in params.keys():
-        params["param_transfer"] = "mapping"
 
-    if params["param_transfer"] == "json-file":
-        period = params[f"period{task_definition}"]
-        duration = params[f"duration{task_definition}"]
-        color = params[f"color{task_definition}"]
-    else:
-        period = params["period"]
-        duration = params["duration"]
-        color = params["color"]
+    log.info(f"Params read: {params}")
+    period = params["period"]
+    duration = params["duration"]
+    color = params["color"]
 
     # Calculate the Output: Number of steps
     steps = int(duration // period)
 
-    output_parameters = {f"steps{task_definition}": steps}
-
-    print(f"Output parameters: {output_parameters}")
+    output_parameters = {"steps": steps}
 
     # create json-results file
     out_filename = f"{subs}td{task_definition}_results.json"
-    if params["param_transfer"] == "json-file":
-        out_filename = "output_parameters.json"
     log.debug(f"Write JSON results file: {out_filename}")
     with open(out_filename, "w") as out_file:
         json.dump(output_parameters, out_file, indent=4)
@@ -146,8 +135,8 @@ def main(input_file, task_definition, images, in_subscript):
         # create an image !!!
         img = Image.new("RGB", (600, 400), color=color)
         d = ImageDraw.Draw(img)
-        line_height = 18
-        font = ImageFont.truetype("arial.ttf", 12)
+        line_height = 36
+        font = ImageFont.truetype("arial.ttf", 24)
 
         def text(i, txt):
             d.text((line_height, line_height * i), txt, fill=(0, 0, 1), font=font)
@@ -172,9 +161,7 @@ def main(input_file, task_definition, images, in_subscript):
             f"{task_definition}",
             "--in-subscript",
         ]
-        if "images":
-            cmd.append("--images")
-        log.info(f"Run Subscript with: {cmd}")
+        log.info("Run Subscript with: {cmd}")
         subprocess.run(cmd, check=False)
 
     log.info("Finished.")
