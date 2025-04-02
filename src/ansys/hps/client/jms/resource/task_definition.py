@@ -322,6 +322,8 @@ class TaskDefinition(Object):
         :class:`ResourceRequirements` object.
     worker_context : WorkerContext, optional
         :class:`WorkerContext` object.
+    debug : bool, optional
+        Enable debug logging and retain Task working directory.
 
     """
 
@@ -353,6 +355,7 @@ class TaskDefinition(Object):
         software_requirements: list[Software] = missing,
         resource_requirements: ResourceRequirements = missing,
         worker_context: WorkerContext = missing,
+        debug: bool = missing,
         **kwargs,
     ):
         self.id = id
@@ -377,6 +380,7 @@ class TaskDefinition(Object):
         self.software_requirements = software_requirements
         self.resource_requirements = resource_requirements
         self.worker_context = worker_context
+        self.debug = debug
 
         self.obj_type = self.__class__.__name__
 

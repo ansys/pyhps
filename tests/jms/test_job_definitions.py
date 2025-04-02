@@ -83,10 +83,12 @@ def test_task_definition_fields(client):
             compute_resource_set_id="abc123",
         ),
         worker_context=WorkerContext(max_runtime=3600, max_num_parallel_tasks=4),
+        debug=True,
     )
     assert task_def.resource_requirements.hpc_resources.num_cores_per_node == 2
 
     task_def = project_api.create_task_definitions([task_def])[0]
+
     assert task_def.store_output
     assert task_def.resource_requirements.memory == 274877906944
     assert task_def.resource_requirements.disk_space == 2199023255552
@@ -95,6 +97,7 @@ def test_task_definition_fields(client):
     assert task_def.resource_requirements.compute_resource_set_id == "abc123"
     assert task_def.modified_by is not missing
     assert task_def.created_by is not missing
+    assert task_def.debug
     assert auth_api.get_user(id=task_def.created_by).username == client.username
     assert auth_api.get_user(id=task_def.modified_by).username == client.username
 

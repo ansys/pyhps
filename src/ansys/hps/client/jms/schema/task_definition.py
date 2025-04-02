@@ -260,3 +260,8 @@ class TaskDefinitionSchema(ObjectSchemaWithModificationInfo):
         allow_none=True,
         metadata={"description": ":class:`WorkerContext` object."},
     )
+
+    debug = fields.Bool(
+        allow_none=True,
+        metadata={"description": "Enable debug logging and retain Task working directory."},
+    )
