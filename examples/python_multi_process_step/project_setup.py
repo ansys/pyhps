@@ -46,6 +46,8 @@ import logging
 import os
 import random
 
+from utils.task_files import update_task_files
+
 from ansys.hps.client import Client, HPSError
 from ansys.hps.client.jms import (
     File,
@@ -62,8 +64,6 @@ from ansys.hps.client.jms import (
     SuccessCriteria,
     TaskDefinition,
 )
-
-from .task_files import update_task_files
 
 log = logging.getLogger(__name__)
 
@@ -278,7 +278,9 @@ def main(
     # change dp task files
     if change_job_tasks > 0:
         log.info(f"Change tasks for {change_job_tasks} jobs")
-        update_task_files(project_api, change_job_tasks, images)
+        cwd = os.path.dirname(__file__)
+        eval_path = os.path.join(cwd, "eval.py")
+        update_task_files(project_api, change_job_tasks, images, eval_path)
 
     log.info(f"Created project '{proj.name}', ID='{proj.id}'")
 
