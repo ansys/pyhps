@@ -53,7 +53,9 @@ def update_input_file(task):
     return file.name
 
 
-def update_eval_script(task, path):
+def update_eval_script(task):
+    cwd = os.path.dirname(__file__)
+    path = os.path.join(cwd, "eval.py")
     lines = open(path).readlines()
 
     log.info(f"Update input file {path} for task {task.task_definition_snapshot.name}")
@@ -78,7 +80,7 @@ def update_eval_script(task, path):
     return file.name
 
 
-def update_task_files(project_api, num_jobs, write_images, eval_path):
+def update_task_files(project_api, num_jobs, write_images):
     log.debug("=== Update Task files ===")
 
     jobs = project_api.get_jobs(limit=num_jobs)
@@ -115,7 +117,7 @@ def update_task_files(project_api, num_jobs, write_images, eval_path):
                 )
             )
             # overwrite the eval script: same name --> will be overwritten
-            new_eval_script = update_eval_script(task, eval_path)
+            new_eval_script = update_eval_script(task)
             new_eval_name = f"td{i}_pyscript"
             files.append(
                 File(
