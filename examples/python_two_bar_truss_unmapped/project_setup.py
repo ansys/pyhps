@@ -20,7 +20,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-"""Python two-bar truss example."""
+"""Python two-bar truss example with direct parameter exchange."""
 
 import argparse
 import logging
@@ -47,13 +47,7 @@ log = logging.getLogger(__name__)
 
 
 def main(client, num_jobs, python_version=None) -> Project:
-    """
-    Create project solving a two-bar truss problem with Python.
-    This version showcases how an execution script allows the use of unmapped parameters.
-
-    For the original problem description, see R.L. Fox, Optimization Methods in Engineering Design, Addison Wesley, 1971.
-    Also see `Optimization Methods for Engineering Design <https://apmonitor.com/me575/uploads/Main/optimization_book.pdf>`_.
-    """  # noqa
+    """This example demonstrates how parameters can directly be exchanged with the application from within the execution script."""  # noqa
     log.debug("=== Project")
     proj = Project(name="Two-bar Truss Problem", priority=1, active=True)
     jms_api = JmsApi(client)
