@@ -142,7 +142,7 @@ def test_python_two_bar_truss_problem_with_exec_script(client):
 
 
 def test_python_two_bar_truss_unmapped(client):
-    from examples.python_two_bar_truss_unmapped.project_setup import main
+    from examples.python_two_bar_trusss_params_in_exec_script.project_setup import main
 
     num_jobs = 10
     project = main(client, num_jobs)
