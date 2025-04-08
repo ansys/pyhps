@@ -141,8 +141,8 @@ def test_python_two_bar_truss_problem_with_exec_script(client):
     jms_api.delete_project(project)
 
 
-def test_python_two_bar_truss_unmapped(client):
-    from examples.python_two_bar_trusss_params_in_exec_script.project_setup import main
+def test_python_two_bar_truss_params_in_exec_script(client):
+    from examples.python_two_bar_truss_params_in_exec_script.project_setup import main
 
     num_jobs = 10
     project = main(client, num_jobs)
