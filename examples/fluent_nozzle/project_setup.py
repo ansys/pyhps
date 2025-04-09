@@ -186,6 +186,7 @@ def create_project(client, name, num_jobs=20, version=__ansys_apps_version__):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
+    parser.add_argument("-t", "--token", default=None)
     parser.add_argument("-n", "--name", type=str, default="Fluent nozzle")
     parser.add_argument("-j", "--num-jobs", type=int, default=1)
     parser.add_argument("-U", "--url", default="https://127.0.0.1:8443/hps")
@@ -199,7 +200,10 @@ if __name__ == "__main__":
 
     try:
         log.info("Connect to HPC Platform Services")
-        client = Client(url=args.url, username=args.username, password=args.password)
+        if args.token:
+            client = Client(url=args.url, token=args.token)
+        else:
+            client = Client(url=args.url, username=args.username, password=args.password)
         log.info(f"HPS URL: {client.url}")
         proj = create_project(
             client=client, name=args.name, num_jobs=args.num_jobs, version=args.ansys_version

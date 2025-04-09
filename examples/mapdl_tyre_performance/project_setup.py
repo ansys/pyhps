@@ -264,6 +264,7 @@ def create_project(
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
+    parser.add_argument("-t", "--token", default=None)
     parser.add_argument("-n", "--name", type=str, default="Mapdl Tyre Performance")
     parser.add_argument("-j", "--num-jobs", type=int, default=10)
     parser.add_argument("-es", "--use-exec-script", default=False, type=bool)
@@ -278,7 +279,10 @@ if __name__ == "__main__":
     logging.basicConfig(format="[%(asctime)s | %(levelname)s] %(message)s", level=logging.DEBUG)
 
     log.debug("=== HPS connection")
-    client = Client(url=args.url, username=args.username, password=args.password)
+    if args.token:
+        client = Client(url=args.url, token=args.token)
+    else:
+        client = Client(url=args.url, username=args.username, password=args.password)
 
     try:
         log.info(f"HPS URL: {client.url}")

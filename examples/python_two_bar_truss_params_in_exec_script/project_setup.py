@@ -206,6 +206,7 @@ def main(client, num_jobs, python_version=None) -> Project:
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
+    parser.add_argument("-t", "--token", default=None)
     parser.add_argument("-U", "--url", default="https://127.0.0.1:8443/hps")
     parser.add_argument("-u", "--username", default="repuser")
     parser.add_argument("-p", "--password", default="repuser")
@@ -217,7 +218,10 @@ if __name__ == "__main__":
     logger = logging.getLogger()
     logging.basicConfig(format="[%(asctime)s | %(levelname)s] %(message)s", level=logging.DEBUG)
 
-    client = Client(url=args.url, username=args.username, password=args.password)
+    if args.token:
+        client = Client(url=args.url, token=args.token)
+    else:
+        client = Client(url=args.url, username=args.username, password=args.password)
 
     try:
         main(
