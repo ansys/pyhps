@@ -169,12 +169,12 @@ def create_project(client, name, num_jobs=20, version=__ansys_apps_version__):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("-t", "--token", default=None)
     parser.add_argument("-n", "--name", type=str, default="cfx_static_mixer")
     parser.add_argument("-j", "--num-jobs", type=int, default=1)
     parser.add_argument("-U", "--url", default="https://127.0.0.1:8443/hps")
     parser.add_argument("-u", "--username", default="repuser")
     parser.add_argument("-p", "--password", default="repuser")
+    parser.add_argument("-t", "--token", default=None)
     parser.add_argument("-v", "--ansys-version", default=__ansys_apps_version__)
     args = parser.parse_args()
 

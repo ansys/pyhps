@@ -264,13 +264,13 @@ def create_project(
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("-t", "--token", default=None)
     parser.add_argument("-n", "--name", type=str, default="Mapdl Tyre Performance")
     parser.add_argument("-j", "--num-jobs", type=int, default=10)
     parser.add_argument("-es", "--use-exec-script", default=False, type=bool)
     parser.add_argument("-U", "--url", default="https://localhost:8443/hps")
     parser.add_argument("-u", "--username", default="repuser")
     parser.add_argument("-p", "--password", default="repuser")
+    parser.add_argument("-t", "--token", default=None)
     parser.add_argument("-v", "--ansys-version", default=__ansys_apps_version__)
 
     args = parser.parse_args()

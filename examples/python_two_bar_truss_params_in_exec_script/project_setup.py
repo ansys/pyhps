@@ -206,10 +206,10 @@ def main(client, num_jobs, python_version=None) -> Project:
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("-t", "--token", default=None)
     parser.add_argument("-U", "--url", default="https://127.0.0.1:8443/hps")
     parser.add_argument("-u", "--username", default="repuser")
     parser.add_argument("-p", "--password", default="repuser")
+    parser.add_argument("-t", "--token", default=None)
     parser.add_argument("-n", "--num-jobs", type=int, default=50)
     parser.add_argument("-v", "--python-version", default="3.10")
 
