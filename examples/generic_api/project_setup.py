@@ -131,14 +131,19 @@ def monitor_projects(
     for project in filtered_projects:
         modified_age = (datetime.now(timezone.utc) - project.modification_time).total_seconds()
         if remove is None:
-            if len(filtered_projects) > 10 and modified_age > 48 * 60 * 60:
+            if len(filtered_projects) > 10 and modified_age > 12 * 60 * 60:
                 continue  # Skip projects older than 2 days
 
         created_age = (datetime.now(timezone.utc) - project.creation_time).total_seconds()
         age_hours = int(created_age / 3600)
         age_minutes = int((created_age % 3600) / 60)
+        mod_age_hours = int(modified_age / 3600)
+        mod_age_minutes = int((modified_age % 3600) / 60)
         log.debug("")
-        log.debug(f"    Project: ({age_hours}h {age_minutes}m old) {project.name}: {project.id}")
+        log.debug(
+            f"    Project: LastModified: ({mod_age_hours}h {mod_age_minutes}m old)"
+            + f" Created: ({age_hours}h {age_minutes}m old)  {project.name}: {project.id}"
+        )
         permissions = [d["value_name"] for d in find_by_id(projects_raw, project.id)["permissions"]]
         log.debug(f"    Permissions: {permissions}")
 
@@ -178,6 +183,7 @@ def monitor_projects(
                 log.debug(
                     f"{' ' * 8}{task.task_definition_snapshot.name}:{task.job_id}->"
                     + f"{task.eval_status}  {task.task_definition_snapshot.software_requirements}"
+                    + f" {resources.num_cores}Cores"
                 )
                 if task.eval_status == "running":
                     log.debug(f"{' ' * 10}Running on evaluator: {task.host_id}")
@@ -350,10 +356,10 @@ def run_main_and_monitor(log, monitor_projects, show_rms_data, _main, args):
             exception = str(e)
             log.error(exception)
             key = exception[:150]
-            if key in errors:
-                errors[key][str(datetime.now())] = exception
-            else:
-                errors[key] = {str(datetime.now()): exception}
+            # if key in errors:
+            errors[key][str(datetime.now())] = exception
+            # else:
+            #    errors[key] = {str(datetime.now()): exception}
 
         log.info("")
         log.info("=== Logged errors")
