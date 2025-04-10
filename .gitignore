@@ -166,3 +166,4 @@ examples/mapdl_motorbike_frame/task_input_file*
 build_info.*
 doc/source/api/ansys
 doc/source/api/_autosummary
+docker-compose-artifact
