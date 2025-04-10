@@ -3,6 +3,8 @@ on:
   workflow_dispatch:
   schedule:
   - cron: "0 5 * * *"
+  # temporary
+  pull_request:
 
 env:
   MAIN_PYTHON_VERSION: '3.12'
