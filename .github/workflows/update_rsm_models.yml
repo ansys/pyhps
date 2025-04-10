@@ -3,8 +3,6 @@ on:
   workflow_dispatch:
   schedule:
   - cron: "0 5 * * *"
-  # temporary
-  pull_request:
 
 env:
   MAIN_PYTHON_VERSION: '3.12'
@@ -42,11 +40,11 @@ jobs:
           python .ci/generate_rsm_models.py
 
       - name: "Create PR if changes detected"
-        # if: startsWith(github.ref, 'refs/heads/main')
+        if: startsWith(github.ref, 'refs/heads/main')
         uses: peter-evans/create-pull-request@v7
         with:
           title: "[Auto] Update RMS models"
-          body: An update of generated RMS models has been triggered either manually or by a scheduled update.
+          body: An update of auto-generated RMS models has been triggered either manually or by a scheduled workflow.
           base: main
           branch: maint/rms-model-update
           delete-branch: true
