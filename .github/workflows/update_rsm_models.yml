@@ -1,0 +1,58 @@
+name: Update RSM Models
+on:
+  workflow_dispatch:
+  schedule:
+  - cron: "0 5 * * *"
+
+env:
+  MAIN_PYTHON_VERSION: '3.12'
+
+jobs:
+
+  update-models:
+    name: Update models
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.MAIN_PYTHON_VERSION }}
+
+      - name: Start HPS services
+        id: hps-services
+        uses: ansys/pyhps/.github/actions/hps_services@main
+        with:
+          token: ${{ secrets.PYANSYS_CI_BOT_TOKEN }}
+          ghcr-username: ${{ secrets.PYANSYS_CI_BOT_USERNAME }}
+          ghcr-token: ${{ secrets.PYANSYS_CI_BOT_PACKAGE_TOKEN }}
+          version: 'latest-dev'
+          feature: 'main'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install -e .[build]
+          pip install pre-commit
+
+      - name: Run script
+        run: |
+          python .ci/update_rsm_models.py
+
+    #   - name: Style
+    #     run: |
+    #       pip install pre-commit
+    #       pre-commit run --files src/ansys/hps/client/rms/models.py
+
+      - name: "Create PR if changes detected"
+        id: create-pr
+        if: startsWith(github.ref, 'refs/heads/main')
+        uses: peter-evans/create-pull-request@v7
+        with:
+          title: "[Auto] Update RMS models"
+          base: main
+          branch: maint/rms-model-update
+          delete-branch: true
+          add-paths: |
+            src/ansys/hps/client/rms/models.py
+
