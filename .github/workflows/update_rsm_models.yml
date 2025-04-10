@@ -46,9 +46,11 @@ jobs:
         uses: peter-evans/create-pull-request@v7
         with:
           title: "[Auto] Update RMS models"
+          body: An update of generated RMS models has been triggered either manually or by a scheduled update.
           base: main
           branch: maint/rms-model-update
           delete-branch: true
+          token: ${{ secrets.PYANSYS_CI_BOT_TOKEN }}
           add-paths: |
             src/ansys/hps/client/rms/models.py
 
