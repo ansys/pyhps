@@ -41,14 +41,8 @@ jobs:
         run: |
           python .ci/generate_rsm_models.py
 
-    #   - name: Style
-    #     run: |
-    #       pip install pre-commit
-    #       pre-commit run --files src/ansys/hps/client/rms/models.py
-
       - name: "Create PR if changes detected"
-        id: create-pr
-        if: startsWith(github.ref, 'refs/heads/main')
+        # if: startsWith(github.ref, 'refs/heads/main')
         uses: peter-evans/create-pull-request@v7
         with:
           title: "[Auto] Update RMS models"
