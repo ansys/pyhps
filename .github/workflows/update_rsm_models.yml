@@ -39,7 +39,7 @@ jobs:
 
       - name: Run script
         run: |
-          python .ci/update_rsm_models.py
+          python .ci/generate_rsm_models.py
 
     #   - name: Style
     #     run: |
