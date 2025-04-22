@@ -160,7 +160,9 @@ class Software(Object):
     name : str
         Name of the app.
     version : str, optional
-        Version of the app.
+        Default version of the app.
+    versions : list, optional
+        Other versions of the app.
 
     """
 
@@ -168,9 +170,12 @@ class Software(Object):
         schema = SoftwareSchema
         rest_name = "None"
 
-    def __init__(self, name: str = missing, version: str = missing, **kwargs):
+    def __init__(
+        self, name: str = missing, version: str = missing, versions: list = missing, **kwargs
+    ):
         self.name = name
         self.version = version
+        self.versions = versions
 
         self.obj_type = self.__class__.__name__
 
