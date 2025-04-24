@@ -773,6 +773,11 @@ class OrchestrationInterfacesBackend(DictModel):
         description="Path to the shell script to template for the scheduler.",
         title="Scheduler Script Override",
     )
+    scheduler_parsing_override: str | None = Field(
+        None,
+        description="Path to the python script that handles the scheduler command output parsing.",
+        title="Scheduler Parsing Override",
+    )
     evaluator_exe: str | None = Field(
         None, description="Path to evaluator executable.", title="Evaluator Exe"
     )
