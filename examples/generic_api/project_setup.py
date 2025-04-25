@@ -131,7 +131,7 @@ def monitor_projects(
     for project in filtered_projects:
         modified_age = (datetime.now(timezone.utc) - project.modification_time).total_seconds()
         if remove is None:
-            if len(filtered_projects) > 10 and modified_age > 12 * 60 * 60:
+            if len(filtered_projects) > 10 and modified_age > 72 * 60 * 60:
                 continue  # Skip projects older than 2 days
 
         created_age = (datetime.now(timezone.utc) - project.creation_time).total_seconds()
