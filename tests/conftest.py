@@ -1,4 +1,4 @@
-# Copyright (C) 2022 - 2024 ANSYS, Inc. and/or its affiliates.
+# Copyright (C) 2022 - 2025 ANSYS, Inc. and/or its affiliates.
 # SPDX-License-Identifier: MIT
 #
 #
@@ -23,8 +23,8 @@
 
 import os
 
-from keycloak import KeycloakAdmin
 import pytest
+from keycloak import KeycloakAdmin
 
 from ansys.hps.client import AuthApi, Client
 
@@ -59,9 +59,8 @@ def client(url, username, password):
     return Client(url, username, password, verify=False)
 
 
-@pytest.fixture()
+@pytest.fixture
 def keycloak_client(client: Client, keycloak_username, keycloak_password):
-
     keycloak_client = KeycloakAdmin(
         server_url=client.auth_api_url,
         username=keycloak_username,
@@ -90,7 +89,7 @@ def is_admin(client: Client):
 #     return api.user_is_admin(users[0].id)
 
 
-@pytest.fixture()
+@pytest.fixture
 def run_id():
     # Create a unique run_id (to be used when creating new projects)
     # to avoid conflicts in case of

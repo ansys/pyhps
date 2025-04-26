@@ -1,4 +1,4 @@
-# Copyright (C) 2022 - 2024 ANSYS, Inc. and/or its affiliates.
+# Copyright (C) 2022 - 2025 ANSYS, Inc. and/or its affiliates.
 # SPDX-License-Identifier: MIT
 #
 #
@@ -23,7 +23,7 @@
 
 from .__version__ import __ansys_apps_version__, __version__
 from .auth import AuthApi
-from .authenticate import authenticate, authenticate_via_action_token
+from .authenticate import authenticate, determine_auth_url , authenticate_via_action_token
 from .client import Client
 from .exceptions import APIError, ClientError, HPSError
 from .jms import JmsApi, ProjectApi

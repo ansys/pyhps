@@ -1,25 +1,17 @@
 repos:
 
-- repo: https://github.com/psf/black
-  rev: 24.10.0
+- repo: https://github.com/astral-sh/ruff-pre-commit
+  # Ruff version.
+  rev: v0.11.5
   hooks:
-  - id: black
-    exclude: ^(src/ansys/hps/client/rms/models.py)
-
-- repo: https://github.com/pycqa/isort
-  rev: 5.13.2
-  hooks:
-  - id: isort
-    # exclude: ^(src/ansys/hps/client/jms/resource/|src/ansys/hps/client/auth/resource/)
-
-- repo: https://github.com/PyCQA/flake8
-  rev: 7.1.1
-  hooks:
-  - id: flake8
-    exclude: ^(src/ansys/hps/client/jms/resource/|src/ansys/hps/client/auth/resource/)
+    # Run the linter.
+    - id: ruff
+      args: [ --fix ]
+    # Run the formatter.
+    - id: ruff-format
 
 - repo: https://github.com/codespell-project/codespell
-  rev: v2.3.0
+  rev: v2.4.1
   hooks:
   - id: codespell
     exclude: >
@@ -32,10 +24,10 @@ repos:
     args: [-I, .codespellignore]
 
 - repo: https://github.com/ansys/pre-commit-hooks
-  rev: v0.4.4
+  rev: v0.5.2
   hooks:
   - id: add-license-headers
-    files: '(ansys|examples|tests)/.*\.(py)|\.(proto)|generate_resources.py|archive_examples.py'
+    files: '(ansys|examples|tests)/.*\.(py)|generate_resources.py|archive_examples.py'
     args:
     - --start_year=2022
 

@@ -1,4 +1,4 @@
-# Copyright (C) 2022 - 2024 ANSYS, Inc. and/or its affiliates.
+# Copyright (C) 2022 - 2025 ANSYS, Inc. and/or its affiliates.
 # SPDX-License-Identifier: MIT
 #
 #
@@ -20,9 +20,9 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 """Module providing the file resource."""
-from datetime import datetime
+
 import io
-from typing import Union
+from datetime import datetime
 
 from marshmallow.utils import missing
 
@@ -74,6 +74,7 @@ class File(Object):
         that the evaluator should decide. Another value indicates the interval in seconds.
     reference_id : str, optional
         ID of the reference file that this file was created from.
+
     """
 
     class Meta:
@@ -82,7 +83,7 @@ class File(Object):
 
     def __init__(
         self,
-        src: Union[str, io.IOBase] = None,
+        src: str | io.IOBase = None,
         id: str = missing,
         creation_time: datetime = missing,
         modification_time: datetime = missing,

@@ -1,4 +1,4 @@
-# Copyright (C) 2022 - 2024 ANSYS, Inc. and/or its affiliates.
+# Copyright (C) 2022 - 2025 ANSYS, Inc. and/or its affiliates.
 # SPDX-License-Identifier: MIT
 #
 #
@@ -20,28 +20,27 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-"""
-Project set up script for multi-steps (task definitions) and task file replacement testing.
+"""Project set up script for multi-steps (task definitions) and task file replacement testing.
 
 Author(s): R.Walker
 
-Run *python eval.py --help* for command line arguments.
+Run *python project_setup.py --help* for command line arguments.
 
 The project id is generated as
-"py_{NUM_PROCESS_STEPS}_ps" and the `_img` is appended if result image is written.
-
-Per default the project is inactive. You can activate the project with the `-a` flag
+"Python - {NUM_PROCESS_STEPS} Task Defs (- Img )- Sequential/Parallel"
 
 
 Example:
+-------
 ```
-python project_setup.py -n 100 -c 10 --no-images
+python project_setup.py -n 100 -c 10
 ```
-Create 100 design points
+Create 100 design points with the default 3 tasks each
   and change the first 10 design points
-  and do not write an result image.
+  and do not write a result image.
 
 """
+
 import argparse
 import logging
 import os
@@ -160,15 +159,18 @@ def main(
     mappings = []
     for i in range(num_task_definitions):
         new_params = [
-            IntParameterDefinition(name=f"period{i}", lower_limit=1, upper_limit=period, units="s"),
             IntParameterDefinition(
-                name=f"duration{i}", lower_limit=0, upper_limit=duration, units="s"
+                name=f"period{i}", lower_limit=1, upper_limit=period, units="s", mode="input"
             ),
-            IntParameterDefinition(name=f"steps{i}", units=""),
+            IntParameterDefinition(
+                name=f"duration{i}", lower_limit=0, upper_limit=duration, units="s", mode="input"
+            ),
+            IntParameterDefinition(name=f"steps{i}", units="", mode="output"),
             StringParameterDefinition(
                 name=f"color{i}",
                 value_list=["red", "blue", "green", "yellow", "cyan"],
                 default='"orange"',
+                mode="input",
             ),
         ]
         new_params = project_api.create_parameter_definitions(new_params)
@@ -221,7 +223,7 @@ def main(
         if f"td{i}_results_jpg" in file_ids.keys():
             output_file_ids.append(file_ids[f"td{i}_results_jpg"])
 
-        cmd = f"%executable% %file:td{i}_pyscript% %file:td{i}_input% {i}"  # noqa: E231
+        cmd = f"%executable% %file:td{i}_pyscript% %file:td{i}_input% {i}"
         if images:
             cmd += " --images"
         task_defs.append(
@@ -231,7 +233,7 @@ def main(
                     Software(name="Python", version=python_version),
                 ],
                 execution_command=cmd,
-                max_execution_time=duration * 1.5,
+                max_execution_time=duration * 1.5 + 12.0,
                 resource_requirements=ResourceRequirements(
                     num_cores=0.2,
                     memory=100 * 1024 * 1024,  # 100 MB
@@ -276,7 +278,7 @@ def main(
     # change dp task files
     if change_job_tasks > 0:
         log.info(f"Change tasks for {change_job_tasks} jobs")
-        update_task_files(proj, change_job_tasks, images)
+        update_task_files(project_api, change_job_tasks, images)
 
     log.info(f"Created project '{proj.name}', ID='{proj.id}'")
 
@@ -284,7 +286,6 @@ def main(
 
 
 if __name__ == "__main__":
-
     logger = logging.getLogger()
     logging.basicConfig(format="[%(asctime)s | %(levelname)s] %(message)s", level=logging.DEBUG)
 

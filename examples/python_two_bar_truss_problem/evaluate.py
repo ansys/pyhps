@@ -1,4 +1,4 @@
-# Copyright (C) 2022 - 2024 ANSYS, Inc. and/or its affiliates.
+# Copyright (C) 2022 - 2025 ANSYS, Inc. and/or its affiliates.
 # SPDX-License-Identifier: MIT
 #
 #
@@ -20,7 +20,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from __future__ import division
+# ruff: noqa
 
 import json
 import math
@@ -49,10 +49,9 @@ def deflection(P, d, t, B, H, rho, E):
 
 
 def main():
-
     input_file_name = sys.argv[1]
     input_file_path = os.path.abspath(input_file_name)
-    with open(input_file_path, "r") as input_file:
+    with open(input_file_path) as input_file:
         params = json.load(input_file)
 
     # print(params)

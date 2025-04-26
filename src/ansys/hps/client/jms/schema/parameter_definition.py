@@ -1,4 +1,4 @@
-# Copyright (C) 2022 - 2024 ANSYS, Inc. and/or its affiliates.
+# Copyright (C) 2022 - 2025 ANSYS, Inc. and/or its affiliates.
 # SPDX-License-Identifier: MIT
 #
 #
@@ -20,6 +20,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 """Module providing float, integer, boolean, and string parameter definition schema."""
+
 import logging
 
 from marshmallow import fields
@@ -49,10 +50,11 @@ class ParameterDefinitionBaseSchema(ObjectSchemaWithModificationInfo):
     )
 
     mode = fields.String(
-        load_only=True,
+        allow_none=True,
         metadata={
             "description": "Indicates whether it's an input "
-            "or output parameter. The mode is filled server-side."
+            "or output parameter. If not provided, the server "
+            "will default the mode to ``input``."
         },
     )
 
@@ -138,4 +140,5 @@ class ParameterDefinitionSchema(OneOfSchema):
     }
 
     def get_obj_type(self, obj):
+        """Return the type of parameter definition."""
         return obj.__class__.__name__.replace("ParameterDefinition", "").lower()

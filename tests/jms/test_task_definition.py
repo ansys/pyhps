@@ -1,4 +1,4 @@
-# Copyright (C) 2022 - 2024 ANSYS, Inc. and/or its affiliates.
+# Copyright (C) 2022 - 2025 ANSYS, Inc. and/or its affiliates.
 # SPDX-License-Identifier: MIT
 #
 #
@@ -20,10 +20,8 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from collections import OrderedDict
 import logging
-
-from examples.python_two_bar_truss_problem.project_setup import main as create_project
+from collections import OrderedDict
 
 from ansys.hps.client import ProjectApi
 from ansys.hps.client.jms.resource import TaskDefinition
@@ -34,12 +32,12 @@ from ansys.hps.client.jms.resource.task_definition import (
     SuccessCriteria,
 )
 from ansys.hps.client.jms.schema.task_definition import TaskDefinitionSchema
+from examples.python_two_bar_truss_problem.project_setup import main as create_project
 
 log = logging.getLogger(__name__)
 
 
 def test_task_definition_deserialization():
-
     task_def_dict = {
         "environment": {"test_env": "test_env_value"},
         "execution_command": "echo 'hello world'",
@@ -96,15 +94,17 @@ def test_task_definition_deserialization():
             "return_code": 0,
         },
         "use_execution_script": False,
+        "debug": True,
     }
 
     task_def = TaskDefinitionSchema().load(task_def_dict)
 
     assert task_def.name == "test_task_def"
     assert task_def.execution_command == "echo 'hello world'"
+    assert task_def.debug
 
-    assert task_def.use_execution_script == False
-    assert task_def.execution_script_id == None
+    assert not task_def.use_execution_script
+    assert task_def.execution_script_id is None
     assert task_def.execution_level == 0
     assert task_def.execution_context == {
         "test_str": "5",
@@ -118,7 +118,7 @@ def test_task_definition_deserialization():
     assert task_def.environment == {"test_env": "test_env_value"}
     assert task_def.max_execution_time == 50
     assert task_def.num_trials == 1
-    assert task_def.store_output == True
+    assert task_def.store_output
     assert task_def.input_file_ids == ["FAKE_FILE_ID"]
     assert task_def.output_file_ids == [
         "FAKE_FILE_ID",
@@ -158,7 +158,6 @@ def test_task_definition_deserialization():
 
 
 def test_task_definition_serialization():
-
     task_def = TaskDefinition(
         name="test_task_def",
         environment={"test_env": "test_env_value"},
@@ -217,14 +216,16 @@ def test_task_definition_serialization():
             return_code=0,
         ),
         use_execution_script=False,
+        debug=True,
     )
 
     serialized_task_def = TaskDefinitionSchema().dump(task_def)
 
     assert serialized_task_def["name"] == "test_task_def"
     assert serialized_task_def["execution_command"] == "echo 'hello world'"
+    assert serialized_task_def["debug"]
 
-    assert serialized_task_def["use_execution_script"] == False
+    assert not serialized_task_def["use_execution_script"]
     assert serialized_task_def["execution_level"] == 0
     assert serialized_task_def["execution_context"] == {
         "test_str": "5",
@@ -238,7 +239,7 @@ def test_task_definition_serialization():
     assert serialized_task_def["environment"] == {"test_env": "test_env_value"}
     assert serialized_task_def["max_execution_time"] == 50
     assert serialized_task_def["num_trials"] == 1
-    assert serialized_task_def["store_output"] == True
+    assert serialized_task_def["store_output"]
     assert serialized_task_def["input_file_ids"] == ["FAKE_FILE_ID"]
     assert serialized_task_def["output_file_ids"] == [
         "FAKE_FILE_ID",

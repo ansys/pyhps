@@ -77,13 +77,13 @@ The following environment commands are provided:
 - ``tox -e style``: Checks for coding style quality.
 - ``tox -e py``: Checks for unit tests.
 - ``tox -e py-coverage``: Checks for unit testing and code coverage.
-- ``tox -e doc``: Checks for documentation building.
+- ``tox -e doc-<html/pdf>-<linux/windows>``: Checks for documentation building. For example, to generate html documentation on linux, run ``tox -e doc-html-linux``
 
 Raw testing
 ^^^^^^^^^^^
 
 If required, from the command line, you can call style commands like
-`Black`_, `isort`_, and `Flake8`_. You can also call unit testing commands like `pytest`_.
+`ruff`_. You can also call unit testing commands like `pytest`_.
 However, running these commands do not guarantee that your project is being tested
 in an isolated environment, which is the reason why tools like ``tox`` exist.
 
@@ -107,9 +107,8 @@ This way, it's not possible for you to push code that fails the style checks::
 
   $ pre-commit install
   $ git commit -am "added my cool feature"
-  black....................................................................Passed
-  isort....................................................................Passed
-  flake8...................................................................Passed
+  ruff.....................................................................Passed
+  ruff-format..............................................................Passed
   codespell................................................................Passed
   Add License Headers......................................................Passed
 
@@ -120,15 +119,14 @@ For building documentation, you can manually run these commands:
 
 .. code:: bash
 
-    python archive_examples.py
-    make -C doc html
+    make -C doc html # for building documentation on Linux
 
 However, the recommended way of checking documentation integrity is to use
-``tox``:
+``tox``. For example, the following can be run on Linux:
 
 .. code:: bash
 
-    tox -e doc && your_browser_name .tox/doc_out/index.html
+    tox -e doc-html-linux && your_browser_name doc/_build/html/index.html
 
 Distributing
 ------------
@@ -183,9 +181,7 @@ you can post questions, share ideas, and get community feedback.
 To reach the project support team, email `pyansys.core@ansys.com <pyansys.core@ansys.com>`_.
 
 .. LINKS AND REFERENCES
-.. _Black: https://github.com/psf/black
-.. _isort: https://github.com/PyCQA/isort
-.. _Flake8: https://flake8.pycqa.org/en/latest/
+.. _ruff: https://github.com/astral-sh/ruff
 .. _pytest: https://docs.pytest.org/en/stable/
 .. _pip: https://pypi.org/project/pip/
 .. _pre-commit: https://pre-commit.com/

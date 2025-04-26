@@ -1,4 +1,4 @@
-# Copyright (C) 2022 - 2024 ANSYS, Inc. and/or its affiliates.
+# Copyright (C) 2022 - 2025 ANSYS, Inc. and/or its affiliates.
 # SPDX-License-Identifier: MIT
 #
 #
@@ -19,8 +19,8 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
-"""Module that provides authentication for the user with a password or refresh token against the
-HPS authentication service."""
+"""Provides authentication utils."""
+
 import logging
 from typing import List, Union
 
@@ -33,7 +33,8 @@ log = logging.getLogger(__name__)
 OIDC_DISCOVERY_ENDPOINT_PATH = "/.well-known/openid-configuration"
 
 
-def get_discovery_data(auth_url: str, timeout: int = 10, verify: Union[bool, str] = True) -> dict:
+def get_discovery_data(auth_url: str, timeout: int = 10, verify: bool | str = True) -> dict:
+    """Retrieve the discovery data from the authentication server."""
     disco_url = auth_url.rstrip("/") + OIDC_DISCOVERY_ENDPOINT_PATH
     log.debug(f"Discovery URL: {disco_url}")
     with requests.Session() as session:
@@ -48,6 +49,28 @@ def get_discovery_data(auth_url: str, timeout: int = 10, verify: Union[bool, str
         return disco.json()
 
 
+def determine_auth_url(hps_url: str, verify_ssl: bool, fallback_realm: str) -> str:
+    """Determine the authentication URL for the HPS server."""
+    with requests.session() as session:
+        session.verify = verify_ssl
+        jms_info_url = hps_url.rstrip("/") + "/jms/api/v1"
+        resp = session.get(jms_info_url)
+        if resp.status_code != 200:
+            raise RuntimeError(
+                f"Failed to contact jms info endpoint {jms_info_url}, \
+                        status code {resp.status_code}: {resp.content.decode()}"
+            )
+        else:
+            jms_data = resp.json()
+            if "services" in jms_data and "external_auth_url" in jms_data["services"]:
+                return resp.json()["services"]["external_auth_url"]
+            elif fallback_realm:
+                return f"{hps_url.rstrip('/')}/auth/realms/{fallback_realm}"
+            else:
+                log.warning("External_auth_url not found from JMS and no realm specified.")
+                return None
+
+
 def authenticate(
     auth_url: str = "https://127.0.0.1:8443/hps/auth/realms/rep",
     grant_type: str = "password",
@@ -58,19 +81,17 @@ def authenticate(
     password: str = None,
     refresh_token: str = None,
     timeout: float = 10.0,
-    verify: Union[bool, str] = True,
+    verify: bool | str = True,
     **kwargs,
 ):
-    """
-    Authenticates the user with a password or refresh token against the HPS authentication service.
+    """Authenticate the user against the HPS authentication service.
 
     If this method is successful, the response includes access and refresh tokens.
 
     Parameters
     ----------
-
-    url : str, optional
-        Base path for the server to call. The default is ``'https://127.0.0.1:8443/rep'``.
+    auth_url : str, optional
+        Authentication url.
     realm : str, optional
         Keycloak realm. The default is ``'rep'``.
     grant_type: str, optional
@@ -93,13 +114,15 @@ def authenticate(
         If a Boolean, whether to verify the server's TLS certificate. If a string, the
         path to the CA bundle to use. For more information, see the :class:`requests.Session`
         documentation.
+    kwargs : dict, optional
+        Additional keyword arguments to pass to the authentication endpoint.
 
     Returns
     -------
     dict
         JSON-encoded content of a :class:`requests.Response` object.
-    """
 
+    """
     auth_url = str(auth_url)
     disco_dict = get_discovery_data(auth_url, timeout, verify)
     token_url = disco_dict["token_endpoint"]
@@ -133,18 +156,18 @@ def authenticate(
         # If password and username, and its not already defined, this has to be password grant
         if password:
             data["password"] = password
-            if "username" in data and not "grant_type" in data:
+            if "username" in data and "grant_type" not in data:
                 data["grant_type"] = "password"
 
         # If a refresh token is provided, the grant type is refresh token unless otherwise listed.
         if refresh_token:
             data["refresh_token"] = refresh_token
-            if not "grant_type" in data:
+            if "grant_type" not in data:
                 data["grant_type"] = "refresh_token"
 
         # If we have a secret and no other grant types have been suggested,
         # then it must be a simple client_creds
-        if "client_secret" in data and not "grant_type" in data:
+        if "client_secret" in data and "grant_type" not in data:
             data["grant_type"] = "client_credentials"
 
         log.debug(

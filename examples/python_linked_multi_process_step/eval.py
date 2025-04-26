@@ -1,4 +1,4 @@
-# Copyright (C) 2022 - 2024 ANSYS, Inc. and/or its affiliates.
+# Copyright (C) 2022 - 2025 ANSYS, Inc. and/or its affiliates.
 # SPDX-License-Identifier: MIT
 #
 #
@@ -20,8 +20,8 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-"""
-"""
+""" """
+
 import argparse
 import json
 import logging
@@ -32,7 +32,6 @@ logging.basicConfig(stream=sys.stdout, level=logging.DEBUG)
 
 
 def main(input_file, task_definition):
-
     log = logging.getLogger()
     log.info("== Start Evaluation Process Step ==")
 
@@ -41,7 +40,7 @@ def main(input_file, task_definition):
     log.info(f"Process Step: {task_definition}")
     input_file_path = os.path.abspath(input_file)
     log.info(f"Open input file: {input_file_path}")
-    with open(input_file_path, "r") as f:
+    with open(input_file_path) as f:
         params = json.load(f)
 
     log.info(f"Params read: {params}")
@@ -61,7 +60,6 @@ def main(input_file, task_definition):
 
 
 if __name__ == "__main__":
-
     parser = argparse.ArgumentParser()
     parser.add_argument("input_file")
     parser.add_argument("task_definition", help="The task definition number the script is used in.")

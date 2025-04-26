@@ -1,4 +1,4 @@
-# Copyright (C) 2022 - 2024 ANSYS, Inc. and/or its affiliates.
+# Copyright (C) 2022 - 2025 ANSYS, Inc. and/or its affiliates.
 # SPDX-License-Identifier: MIT
 #
 #
@@ -31,11 +31,9 @@ log = logging.getLogger(__name__)
 
 
 def test_algorithms(client):
-
     log.debug("=== Client ===")
-    client = client
     jms_api = JmsApi(client)
-    proj_name = f"rep_client_test_jms_AlgorithmsTest"
+    proj_name = "rep_client_test_jms_AlgorithmsTest"
 
     proj = Project(name=proj_name, active=True)
     proj = jms_api.create_project(proj, replace=True)

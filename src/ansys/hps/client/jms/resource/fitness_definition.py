@@ -1,4 +1,4 @@
-# Copyright (C) 2022 - 2024 ANSYS, Inc. and/or its affiliates.
+# Copyright (C) 2022 - 2025 ANSYS, Inc. and/or its affiliates.
 # SPDX-License-Identifier: MIT
 #
 #
@@ -20,8 +20,8 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 """Module providing the fitness definition and fitness term definition resources."""
+
 import logging
-from typing import List
 
 from marshmallow.utils import missing
 
@@ -50,7 +50,6 @@ class FitnessTermDefinition(Object):
 
     Examples
     --------
-
     Create a fitness term of the objective type.
 
     >>> ft1 = FitnessTermDefinition(
@@ -79,6 +78,7 @@ class FitnessTermDefinition(Object):
     ...     expression="map_limit_constraint(
     ...         values['max_stress'], 451.0, 50.0 )"
     ... )
+
     """
 
     class Meta:
@@ -132,6 +132,7 @@ class FitnessDefinition(Object):
     ...                         5.0,
     ...                         30.0 )"
     ...                     )
+
     """
 
     class Meta:
@@ -141,7 +142,7 @@ class FitnessDefinition(Object):
     def __init__(
         self,
         id: str = missing,
-        fitness_term_definitions: List[FitnessTermDefinition] = missing,
+        fitness_term_definitions: list[FitnessTermDefinition] = missing,
         error_fitness: float = missing,
         **kwargs,
     ):
@@ -152,9 +153,7 @@ class FitnessDefinition(Object):
         self.obj_type = self.__class__.__name__
 
     def add_fitness_term(self, **kwargs):
-        """
-        Add a fitness term easily using a helper function.
-        """
+        """Add a fitness term easily using a helper function."""
         ft = FitnessTermDefinition(**kwargs)
 
         if self.fitness_term_definitions == missing:

@@ -1,4 +1,4 @@
-# Copyright (C) 2022 - 2024 ANSYS, Inc. and/or its affiliates.
+# Copyright (C) 2022 - 2025 ANSYS, Inc. and/or its affiliates.
 # SPDX-License-Identifier: MIT
 #
 #
@@ -20,9 +20,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-"""
-Python job that can create large output files
-"""
+"""Python job that can create large output files"""
 
 import argparse
 import logging
@@ -47,9 +45,7 @@ log = logging.getLogger(__name__)
 
 
 def main(client, use_exec_script, python_version=None) -> Project:
-    """
-    Create project that runs a Python script to generate a large output file.
-    """
+    """Create project that runs a Python script to generate a large output file."""
     log.debug("=== Project")
     proj = Project(name="Python Large Output Files", priority=1, active=True)
     jms_api = JmsApi(client)
@@ -94,7 +90,9 @@ def main(client, use_exec_script, python_version=None) -> Project:
 
     # Input params
     input_params = [
-        IntParameterDefinition(name="size", lower_limit=1, upper_limit=1000, default=1),
+        IntParameterDefinition(
+            name="size", lower_limit=1, upper_limit=1000, default=1, mode="input"
+        ),
     ]
     input_params = project_api.create_parameter_definitions(input_params)
 
@@ -135,8 +133,6 @@ def main(client, use_exec_script, python_version=None) -> Project:
 
     # Create job_definition in project
     job_def = project_api.create_job_definitions([job_def])[0]
-
-    params = project_api.get_parameter_definitions(job_def.parameter_definition_ids)
 
     log.debug("=== Jobs")
     jobs = []

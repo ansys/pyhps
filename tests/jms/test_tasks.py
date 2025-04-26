@@ -1,4 +1,4 @@
-# Copyright (C) 2022 - 2024 ANSYS, Inc. and/or its affiliates.
+# Copyright (C) 2022 - 2025 ANSYS, Inc. and/or its affiliates.
 # SPDX-License-Identifier: MIT
 #
 #
@@ -25,19 +25,18 @@ import logging
 import time
 import uuid
 
-from examples.mapdl_motorbike_frame.project_setup import create_project
-from marshmallow.utils import missing
 import pytest
+from marshmallow.utils import missing
 
 from ansys.hps.client.jms import JmsApi, ProjectApi
 from ansys.hps.client.jms.resource import Job, JobDefinition, Project, Software, TaskDefinition
 from ansys.hps.client.jms.schema.task import TaskSchema
+from examples.mapdl_motorbike_frame.project_setup import create_project
 
 log = logging.getLogger(__name__)
 
 
 def test_task_deserialization():
-
     task_dict = {
         "id": "02q3zCLSbavqZAeO3VjChL",
         "modification_time": "2021-02-26T09:02:47.818186+00:00",
@@ -102,7 +101,6 @@ def test_task_deserialization():
 
 
 def test_task_integration(client):
-
     proj_name = "Mapdl Motorbike Frame"
 
     project = create_project(client, proj_name, num_jobs=5, use_exec_script=False)
@@ -120,7 +118,6 @@ def test_task_integration(client):
 
 
 def test_job_sync(client):
-
     # create base project with 1 task and 3 jobs
     num_jobs = 3
     jms_api = JmsApi(client)
@@ -284,9 +281,8 @@ def test_sync_task_definition_snapshot(client):
 
 
 def test_register_external_job(client):
-
     jms_api = JmsApi(client)
-    proj_name = f"test_register_external_job"
+    proj_name = "test_register_external_job"
     proj = Project(name=proj_name, priority=1, active=True)
     proj = jms_api.create_project(proj)
     project_api = ProjectApi(client, proj.id)
@@ -308,7 +304,7 @@ def test_register_external_job(client):
     job_def = project_api.create_job_definitions([job_def])[0]
 
     job = Job(
-        name=f"Fluent Session",
+        name="Fluent Session",
         eval_status="running",
         job_definition_id=job_def.id,
     )

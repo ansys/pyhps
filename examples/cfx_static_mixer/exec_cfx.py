@@ -1,4 +1,4 @@
-# Copyright (C) 2022 - 2024 ANSYS, Inc. and/or its affiliates.
+# Copyright (C) 2022 - 2025 ANSYS, Inc. and/or its affiliates.
 # SPDX-License-Identifier: MIT
 #
 #
@@ -23,17 +23,20 @@
 """
 Copyright (C) 2021 ANSYS, Inc. and its subsidiaries.  All Rights Reserved.
 """
+
+# ruff: noqa
+
 import _thread
 import json
 import logging
 import os
-from os import path
 import platform
 import re
 import shlex
 import subprocess
 import time
 import traceback
+from os import path
 
 from ansys.rep.common.logging import log
 from ansys.rep.evaluator.task_manager import ApplicationExecution
@@ -137,7 +140,7 @@ class CfxExecution(ApplicationExecution):
                 for i in ["definitionFile", "mdefFile", "contFile", "iniFile", "mcontFile"]:
                     k = "cfx_" + i
                     if not inputs[k] == None:
-                        probname = re.sub("(_\d{3})?\.[^\.]+$", "", inputs[k])
+                        probname = re.sub(r"(_\d{3})?\.[^\.]+$", "", inputs[k])
                         self.set_putative_run_name(probname)
                         break
 
@@ -150,7 +153,7 @@ class CfxExecution(ApplicationExecution):
                     and not inputs["cfx_additionalArgs"] == None
                 ):
                     for opt in ["-eg", "-example", "-name"]:
-                        m = re.search(opt + "\s+([^\s-]+)", inputs["cfx_additionalArgs"])
+                        m = re.search(opt + r"\s+([^\s-]+)", inputs["cfx_additionalArgs"])
                         if m:
                             self.set_putative_run_name(m.group(1))
 
@@ -244,7 +247,7 @@ class CfxExecution(ApplicationExecution):
             return
         imax = 0
         for dI in os.listdir(os.getcwd()):
-            m = re.match("^" + probname + "_(\d+)(\.(ansys|dir|out|res|mres|trn|cfx))?$", dI)
+            m = re.match("^" + probname + r"_(\d+)(\.(ansys|dir|out|res|mres|trn|cfx))?$", dI)
             if m:
                 i = int(m.group(1))
                 if i > imax:
@@ -293,7 +296,7 @@ if __name__ == "__main__":
     try:
         log.info("Loading sample CFX context...")
 
-        with open("cfx_context.json", "r") as f:
+        with open("cfx_context.json") as f:
             context = json.load(f)
             print(context)
 

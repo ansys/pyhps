@@ -1,4 +1,4 @@
-# Copyright (C) 2022 - 2024 ANSYS, Inc. and/or its affiliates.
+# Copyright (C) 2022 - 2025 ANSYS, Inc. and/or its affiliates.
 # SPDX-License-Identifier: MIT
 #
 #
@@ -20,11 +20,11 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-"""
-Simplistic execution script for Python.
+"""Simplistic execution script for Python.
 
 Command formed: python <script_file> <input_file (optional)>
 """
+
 import os
 
 from ansys.rep.common.logging import log
@@ -33,7 +33,6 @@ from ansys.rep.evaluator.task_manager import ApplicationExecution
 
 class PythonExecution(ApplicationExecution):
     def execute(self):
-
         log.info("Start Python execution script")
 
         # Identify files
@@ -50,7 +49,7 @@ class PythonExecution(ApplicationExecution):
         # Add " around exe if needed for Windows
         exe = app["executable"]
         if " " in exe and not exe.startswith('"'):
-            exe = '"%s"' % exe
+            exe = f'"{exe}"'  # noqa
 
         # Use properties from resource requirements
         # None currently
