@@ -22,7 +22,6 @@
 """Provides authentication utils."""
 
 import logging
-from typing import List, Union
 
 import requests
 
@@ -33,9 +32,7 @@ log = logging.getLogger(__name__)
 OIDC_DISCOVERY_ENDPOINT_PATH = "/.well-known/openid-configuration"
 
 
-def get_discovery_data(
-    auth_url: str, timeout: int = 10, verify: bool | str = True
-) -> dict:
+def get_discovery_data(auth_url: str, timeout: int = 10, verify: bool | str = True) -> dict:
     """Retrieve the discovery data from the authentication server."""
     disco_url = auth_url.rstrip("/") + OIDC_DISCOVERY_ENDPOINT_PATH
     log.debug(f"Discovery URL: {disco_url}")
@@ -69,9 +66,7 @@ def determine_auth_url(hps_url: str, verify_ssl: bool, fallback_realm: str) -> s
             elif fallback_realm:
                 return f"{hps_url.rstrip('/')}/auth/realms/{fallback_realm}"
             else:
-                log.warning(
-                    "External_auth_url not found from JMS and no realm specified."
-                )
+                log.warning("External_auth_url not found from JMS and no realm specified.")
                 return None
 
 
@@ -188,22 +183,20 @@ def authenticate_via_action_token(
     auth_url: str = "https://127.0.0.1:8443/hps/auth/realms/rep",
     action_token_pathprefix: str = "job-action-token",
     username: str = None,
-    scope: List[str] = None,
+    scope: list[str] = None,
     client_id: str = "rep-cli",
-    audience: List[str] = None,
+    audience: list[str] = None,
     access_token: str = None,
     timeout: float = 10.0,
-    verify: Union[bool, str] = True,
+    verify: bool | str = True,
     **kwargs,
 ):
-    """
-    Authenticates the user by requesting an action token.
+    """Authenticates the user by requesting an action token.
 
     If this method is successful, the response includes access and refresh tokens.
 
     Parameters
     ----------
-
     auth_url : str, optional
         Base path for the server to call. The default is ``'https://127.0.0.1:8443/hps/auth/realms/rep'``.
     scope : str, optional
@@ -225,6 +218,7 @@ def authenticate_via_action_token(
     -------
     dict
         JSON-encoded content of a :class:`requests.Response` object.
+
     """
     action_token_resp = _request_action_token(
         auth_url,
@@ -239,9 +233,7 @@ def authenticate_via_action_token(
         **kwargs,
     )
     auth_api = action_token_resp["link"]
-    log.info(
-        f"Generating an access and refresh tokens for {username} using client {client_id}"
-    )
+    log.info(f"Generating an access and refresh tokens for {username} using client {client_id}")
     with requests.Session() as session:
         session.verify = verify
         response = session.get(auth_api, timeout=timeout)
@@ -264,23 +256,21 @@ def _request_action_token(
     auth_url: str = "https://127.0.0.1:8443/hps/auth/realms/rep",
     action_token_pathprefix: str = "job-action-token",
     username: str = None,
-    scope: List[str] = None,
+    scope: list[str] = None,
     client_id: str = None,
     access_token: str = None,
-    audience: List[str] = None,
+    audience: list[str] = None,
     timeout: float = 10.0,
-    verify: Union[bool, str] = True,
+    verify: bool | str = True,
     **kwargs,
 ):
-    """
-    Request an action token for a user fully authenticated.
+    """Request an action token for a user fully authenticated.
 
     If this method is successful, the response includes an action token and
     the link that can be used to get an access and refresh tokens.
 
     Parameters
     ----------
-
     auth_url : str, optional
         Base path for the server to call. The default is ``'https://127.0.0.1:8443/rep'``.
     username : str, optional
@@ -306,8 +296,8 @@ def _request_action_token(
     -------
     dict
         JSON-encoded content of a :class:`requests.Response` object.
-    """
 
+    """
     if not access_token:
         raise ValueError("Access token must be provided to request an action token.")
     if not username:
