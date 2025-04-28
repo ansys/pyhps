@@ -191,7 +191,7 @@ def authenticate_via_action_token(
     verify: bool | str = True,
     **kwargs,
 ):
-    """Authenticates the user by requesting an action token.
+    """Authenticate the user by requesting an action token.
 
     If this method is successful, the response includes access and refresh tokens.
 
@@ -199,20 +199,26 @@ def authenticate_via_action_token(
     ----------
     auth_url : str, optional
         Base path for the server to call. The default is ``'https://127.0.0.1:8443/hps/auth/realms/rep'``.
+    action_token_pathprefix: str, optional
+        Path prefix of the action token endpoint.
+    username : str, optional
+        Username.
     scope : str, optional
         String containing one or more requested scopes.
     client_id : str, optional
         Client type. The default is ``'rep-cli'``.
-    client_secret : str, optional
-        Client secret. The default is ``None``.
-    username : str, optional
-        Username.
+    audience : str, optional.
+        The audience of the impersonated session (clientId).
+    access_token : str
+        The access token for the client service account.
     timeout : float, optional
         Timeout in seconds. The default is ``10.0``.
     verify: Union[bool, str], optional
         If a Boolean, whether to verify the server's TLS certificate. If a string, the
         path to the CA bundle to use. For more information, see the :class:`requests.Session`
         documentation.
+    kwargs : dict, optional
+        Additional keyword arguments to pass to the authentication endpoint.
 
     Returns
     -------
@@ -275,22 +281,24 @@ def _request_action_token(
         Base path for the server to call. The default is ``'https://127.0.0.1:8443/rep'``.
     username : str, optional
         Username of the user to impersonate.
-    action_token_pathprefix : str, optional
-        Path prefix of the action token endpoint.
     scope : str, optional
         String containing one or more requested scopes of the impersonated session.
+    action_token_pathprefix : str, optional
+        Path prefix of the action token endpoint.
     client_id : str, optional
         target client id to impersonate.
+    access_token : str, optional
+        The access token for the client service account.
     audience : str, optional.
         The audience of the impersonated session (clientId).
-    acces_token : str, optional
-        Access token.
     timeout : float, optional
         Timeout in seconds. The default is ``10.0``.
     verify: Union[bool, str], optional
         If a Boolean, whether to verify the server's TLS certificate. If a string, the
         path to the CA bundle to use. For more information, see the :class:`requests.Session`
         documentation.
+    kwargs : dict, optional
+        Additional keyword arguments to pass to the authentication endpoint.
 
     Returns
     -------
@@ -336,8 +344,9 @@ def _request_action_token(
                     "Fix this error by adding the necessary role to the service account."
                 ),
                 "client": (
-                    f"The client {client_id} does not have the permission to request an action token."
-                    "Fix this by adding the client to the list of authored clients and then restart OIDC provider."
+                    f"The client {client_id} does not have the permission to request"
+                    "an action token. Fix this by adding the client to the list of"
+                    "authored clients and then restart OIDC provider."
                 ),
             }
             log.error(
