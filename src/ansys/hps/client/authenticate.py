@@ -33,7 +33,9 @@ log = logging.getLogger(__name__)
 OIDC_DISCOVERY_ENDPOINT_PATH = "/.well-known/openid-configuration"
 
 
-def get_discovery_data(auth_url: str, timeout: int = 10, verify: bool | str = True) -> dict:
+def get_discovery_data(
+    auth_url: str, timeout: int = 10, verify: bool | str = True
+) -> dict:
     """Retrieve the discovery data from the authentication server."""
     disco_url = auth_url.rstrip("/") + OIDC_DISCOVERY_ENDPOINT_PATH
     log.debug(f"Discovery URL: {disco_url}")
@@ -67,7 +69,9 @@ def determine_auth_url(hps_url: str, verify_ssl: bool, fallback_realm: str) -> s
             elif fallback_realm:
                 return f"{hps_url.rstrip('/')}/auth/realms/{fallback_realm}"
             else:
-                log.warning("External_auth_url not found from JMS and no realm specified.")
+                log.warning(
+                    "External_auth_url not found from JMS and no realm specified."
+                )
                 return None
 
 
@@ -184,7 +188,7 @@ def authenticate_via_action_token(
     auth_url: str = "https://127.0.0.1:8443/hps/auth/realms/rep",
     action_token_pathprefix: str = "job-action-token",
     username: str = None,
-    scope: List[str] = ["openid"],
+    scope: List[str] = None,
     client_id: str = "rep-cli",
     audience: List[str] = None,
     access_token: str = None,
@@ -203,7 +207,7 @@ def authenticate_via_action_token(
     auth_url : str, optional
         Base path for the server to call. The default is ``'https://127.0.0.1:8443/hps/auth/realms/rep'``.
     scope : str, optional
-        String containing one or more requested scopes. The default is ``'openid'``.
+        String containing one or more requested scopes.
     client_id : str, optional
         Client type. The default is ``'rep-cli'``.
     client_secret : str, optional
@@ -222,8 +226,7 @@ def authenticate_via_action_token(
     dict
         JSON-encoded content of a :class:`requests.Response` object.
     """
-
-    action_token_resp = request_action_token(
+    action_token_resp = _request_action_token(
         auth_url,
         action_token_pathprefix,
         username,
@@ -235,34 +238,34 @@ def authenticate_via_action_token(
         verify=verify,
         **kwargs,
     )
-
     auth_api = action_token_resp["link"]
-
-    log.debug(f"Action token received {action_token_resp['token']}.")
-
+    log.info(
+        f"Generating an access and refresh tokens for {username} using client {client_id}"
+    )
     with requests.Session() as session:
         session.verify = verify
-        resp = session.get(auth_api, timeout=timeout)
-
-        raise_for_status(resp)
-
-        resp_jsonify = resp.json()
-
+        response = session.get(auth_api, timeout=timeout)
+        raise_for_status(response)
+        use_action_token_response = response.json()
         log.debug(
-            f"Tokens generated via an action token. \
-                Access token: {resp_jsonify['access_token']}, \
-                    Refresh token: {resp_jsonify['refresh_token']}."
+            "Action token response:\n"
+            f"\taccess_token: {use_action_token_response.get('access_token')}\n"
+            f"\texpires_in: {use_action_token_response.get('expires_in')}\n"
+            f"\trefresh_expires_in: {use_action_token_response.get('refresh_expires_in')}\n"
+            f"\trefresh_token: {use_action_token_response.get('refresh_token')}\n"
+            f"\ttoken_type: {use_action_token_response.get('token_type')}\n"
+            f"\tid_token: {use_action_token_response.get('id_token')}\n"
+            f"\tscope: {use_action_token_response.get('scope')}"
         )
+        return use_action_token_response
 
-        return resp_jsonify
 
-
-def request_action_token(
+def _request_action_token(
     auth_url: str = "https://127.0.0.1:8443/hps/auth/realms/rep",
     action_token_pathprefix: str = "job-action-token",
     username: str = None,
-    scope: List[str] = ["openid"],
-    client_id: str = "job-api-call",
+    scope: List[str] = None,
+    client_id: str = None,
     access_token: str = None,
     audience: List[str] = None,
     timeout: float = 10.0,
@@ -285,9 +288,9 @@ def request_action_token(
     action_token_pathprefix : str, optional
         Path prefix of the action token endpoint.
     scope : str, optional
-        String containing one or more requested scopes of the impersonated session. The default is ``'openid'``.
+        String containing one or more requested scopes of the impersonated session.
     client_id : str, optional
-        Client type. The default is ``'rep-cli'``.
+        target client id to impersonate.
     audience : str, optional.
         The audience of the impersonated session (clientId).
     acces_token : str, optional
@@ -309,32 +312,61 @@ def request_action_token(
         raise ValueError("Access token must be provided to request an action token.")
     if not username:
         raise ValueError("A username must be provided to request an action token.")
+    if not client_id:
+        raise ValueError("A client ID must be provided to request an action token.")
 
+    log.info(f"Generating an action token for {username} using client {client_id}")
     auth_url = str(auth_url)
     action_token_url = auth_url.rstrip("/") + "/" + action_token_pathprefix
+    headers = {
+        "Authorization": f"Bearer {access_token}",
+        "Content-Type": "application/json",
+    }
+    data = {
+        "clientId": client_id,
+        "username": username,
+        **({"scope": scope} if scope else {}),
+        **({"audience": audience} if audience else {}),
+    }
 
     with requests.Session() as session:
         session.verify = verify
-        session.headers.update({"content-type": "application/json"})
-        session.headers.update({"Authorization": f"Bearer {access_token}"})
-
-        data = {
-            "clientId": client_id,
-            "scope": scope,
-            "username": username,
-        }
-
-        if audience:
-            data["audience"] = audience
-
-        for key, value in kwargs.items():
-            data[key] = value
-
+        session.headers = headers
         log.debug(
             f"Requesting an action token for {client_id} from {auth_url} to impersonate {username}."
         )
-
-        resp = session.post(action_token_url, json=data, timeout=timeout)
-
-        raise_for_status(resp)
-        return resp.json()
+        response = session.post(action_token_url, json=data, timeout=timeout)
+        get_action_token_response = response.json()
+        error = get_action_token_response.get("error")
+        if error:
+            error_messages = {
+                "role": (
+                    f"The client {client_id} service account "
+                    "does not have the 'manage-job-access-token' role.\n"
+                    "Fix this error by adding the necessary role to the service account."
+                ),
+                "client": (
+                    f"The client {client_id} does not have the permission to request an action token."
+                    "Fix this by adding the client to the list of authored clients and then restart OIDC provider."
+                ),
+            }
+            log.error(
+                error_messages.get(
+                    error,
+                    f"Failed to get action token for '{username}' using client '{client_id}'. "
+                    f"The request returned the error: '{error}'",
+                )
+            )
+        else:
+            log.debug(
+                "Action token generated:\n"
+                f"\tAction token: {get_action_token_response.get('access_token')}\n"
+                f"\tAction token URL: {get_action_token_response.get('link')}\n"
+                f"\tSubject: {get_action_token_response.get('subject')}\n"
+                f"\tExpire in: {get_action_token_response.get('expire_in')}\n"
+                f"\tIssued for: {get_action_token_response.get('issued_for')}\n"
+                f"\tAudience: {get_action_token_response.get('audience')}\n"
+                f"\tScope: {get_action_token_response.get('scope')}"
+            )
+        raise_for_status(response)
+        return get_action_token_response
