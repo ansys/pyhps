@@ -33,9 +33,6 @@ class AvailableSoftwareSchema(BaseSchema):
         pass
 
     name = fields.String(metadata={"description": "Name of the app."})
-    version = fields.String(
-        allow_none=True, metadata={"description": "Default version of the app."}
-    )
     versions = fields.List(
         fields.String(), allow_none=True, metadata={"description": "Other versions of the app."}
     )
