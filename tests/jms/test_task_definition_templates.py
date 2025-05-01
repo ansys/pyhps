@@ -52,7 +52,7 @@ def test_template_deserialization():
         "software_requirements": [
             {
                 "name": "Ansys Mechanical APDL",
-                "version": "21.1",
+                "versions": ["21.1"],
             }
         ],
         "input_files": [],
@@ -142,7 +142,7 @@ def test_template_integration(client):
     if templates:
         assert "software_requirements" in templates[0].keys()
         assert "name" in templates[0]["software_requirements"][0].keys()
-        assert "version" in templates[0]["software_requirements"][0].keys()
+        assert "versions" in templates[0]["software_requirements"][0].keys()
 
     templates = jms_api.get_task_definition_templates(fields=["name"])
     if templates:
