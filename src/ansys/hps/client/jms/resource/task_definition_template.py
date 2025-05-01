@@ -33,30 +33,30 @@ from marshmallow.utils import missing
 from ansys.hps.client.common import Object
 
 from ..schema.task_definition_template import (
-    AvailableSoftwareSchema,
     TaskDefinitionTemplateSchema,
     TemplateInputFileSchema,
     TemplateOutputFileSchema,
     TemplatePropertySchema,
     TemplateResourceRequirementsSchema,
+    TemplateSoftwareSchema,
 )
 from .task_definition import HpcResources, WorkerContext
 
 
-class AvailableSoftware(Object):
-    """Provides the available software resource.
+class TemplateSoftware(Object):
+    """Provides the template software resource.
 
     Parameters
     ----------
     name : str
         Name of the app.
     versions : list, optional
-        Other versions of the app.
+        Versions of the app.
 
     """
 
     class Meta:
-        schema = AvailableSoftwareSchema
+        schema = TemplateSoftwareSchema
         rest_name = "None"
 
     def __init__(self, name: str = missing, versions: list = missing, **kwargs):
@@ -66,7 +66,7 @@ class AvailableSoftware(Object):
         self.obj_type = self.__class__.__name__
 
 
-AvailableSoftwareSchema.Meta.object_class = AvailableSoftware
+TemplateSoftwareSchema.Meta.object_class = TemplateSoftware
 
 
 class TemplateProperty(Object):
@@ -269,7 +269,7 @@ class TaskDefinitionTemplate(Object):
         Version of the template.
     description : str, optional
         Description of the template.
-    software_requirements : list[AvailableSoftware], optional
+    software_requirements : list[TemplateSoftware], optional
         List of required software.
     resource_requirements : TemplateResourceRequirements, optional
         Hardware requirements such as the number of cores, memory, and disk space.
@@ -306,7 +306,7 @@ class TaskDefinitionTemplate(Object):
         name: str = missing,
         version: str = missing,
         description: str = missing,
-        software_requirements: list[AvailableSoftware] = missing,
+        software_requirements: list[TemplateSoftware] = missing,
         resource_requirements: TemplateResourceRequirements = missing,
         worker_context: WorkerContext = missing,
         execution_context: dict[str, TemplateProperty] = missing,

@@ -28,13 +28,13 @@ from ansys.hps.client.common import BaseSchema, ObjectSchema
 from .task_definition import HpcResourcesSchema, WorkerContextSchema
 
 
-class AvailableSoftwareSchema(BaseSchema):
+class TemplateSoftwareSchema(BaseSchema):
     class Meta(BaseSchema.Meta):
         pass
 
     name = fields.String(metadata={"description": "Name of the app."})
     versions = fields.List(
-        fields.String(), allow_none=True, metadata={"description": "Available versions of the app."}
+        fields.String(), allow_none=True, metadata={"description": "Versions of the app."}
     )
 
 
@@ -136,7 +136,7 @@ class TaskDefinitionTemplateSchema(ObjectSchema):
     )
 
     software_requirements = fields.Nested(
-        AvailableSoftwareSchema,
+        TemplateSoftwareSchema,
         many=True,
         allow_none=True,
         metadata={"description": "List of required software."},

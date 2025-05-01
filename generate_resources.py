@@ -198,11 +198,11 @@ JMS_RESOURCES = [
         "resource_filename": "selection",
     },
     {
-        "schema": "AvailableSoftwareSchema",
+        "schema": "TemplateSoftwareSchema",
         "schema_filename": "task_definition_template",
         "rest_name": None,
         "additional_fields": [],
-        "class": "AvailableSoftware",
+        "class": "TemplateSoftware",
         "resource_filename": "task_definition_template",
     },
     {
