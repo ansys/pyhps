@@ -25,7 +25,17 @@ from marshmallow import fields, validate
 
 from ansys.hps.client.common import BaseSchema, ObjectSchema
 
-from .task_definition import HpcResourcesSchema, SoftwareSchema, WorkerContextSchema
+from .task_definition import HpcResourcesSchema, WorkerContextSchema
+
+
+class TemplateSoftwareSchema(BaseSchema):
+    class Meta(BaseSchema.Meta):
+        pass
+
+    name = fields.String(metadata={"description": "Name of the app."})
+    versions = fields.List(
+        fields.String(), allow_none=True, metadata={"description": "Versions of the app."}
+    )
 
 
 class TemplatePropertySchema(BaseSchema):
@@ -126,7 +136,7 @@ class TaskDefinitionTemplateSchema(ObjectSchema):
     )
 
     software_requirements = fields.Nested(
-        SoftwareSchema,
+        TemplateSoftwareSchema,
         many=True,
         allow_none=True,
         metadata={"description": "List of required software."},

@@ -198,6 +198,14 @@ JMS_RESOURCES = [
         "resource_filename": "selection",
     },
     {
+        "schema": "TemplateSoftwareSchema",
+        "schema_filename": "task_definition_template",
+        "rest_name": None,
+        "additional_fields": [],
+        "class": "TemplateSoftware",
+        "resource_filename": "task_definition_template",
+    },
+    {
         "schema": "TemplatePropertySchema",
         "schema_filename": "task_definition_template",
         "rest_name": None,

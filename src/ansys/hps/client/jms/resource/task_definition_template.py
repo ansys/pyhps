@@ -38,8 +38,35 @@ from ..schema.task_definition_template import (
     TemplateOutputFileSchema,
     TemplatePropertySchema,
     TemplateResourceRequirementsSchema,
+    TemplateSoftwareSchema,
 )
-from .task_definition import HpcResources, Software, WorkerContext
+from .task_definition import HpcResources, WorkerContext
+
+
+class TemplateSoftware(Object):
+    """Provides the template software resource.
+
+    Parameters
+    ----------
+    name : str
+        Name of the app.
+    versions : list, optional
+        Versions of the app.
+
+    """
+
+    class Meta:
+        schema = TemplateSoftwareSchema
+        rest_name = "None"
+
+    def __init__(self, name: str = missing, versions: list = missing, **kwargs):
+        self.name = name
+        self.versions = versions
+
+        self.obj_type = self.__class__.__name__
+
+
+TemplateSoftwareSchema.Meta.object_class = TemplateSoftware
 
 
 class TemplateProperty(Object):
@@ -242,7 +269,7 @@ class TaskDefinitionTemplate(Object):
         Version of the template.
     description : str, optional
         Description of the template.
-    software_requirements : list[Software], optional
+    software_requirements : list[TemplateSoftware], optional
         List of required software.
     resource_requirements : TemplateResourceRequirements, optional
         Hardware requirements such as the number of cores, memory, and disk space.
@@ -279,7 +306,7 @@ class TaskDefinitionTemplate(Object):
         name: str = missing,
         version: str = missing,
         description: str = missing,
-        software_requirements: list[Software] = missing,
+        software_requirements: list[TemplateSoftware] = missing,
         resource_requirements: TemplateResourceRequirements = missing,
         worker_context: WorkerContext = missing,
         execution_context: dict[str, TemplateProperty] = missing,
