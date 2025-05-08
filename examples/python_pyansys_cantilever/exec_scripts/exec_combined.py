@@ -20,9 +20,9 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-"""Simplistic execution script for Python.
+"""Simplistic execution script for Python with Uv.
 
-Command formed: python <script_file> <input_file>
+Command formed: uv run <script_file> <input_file>
 """
 
 import json
@@ -34,13 +34,13 @@ from ansys.rep.evaluator.task_manager import ApplicationExecution
 
 class PythonExecution(ApplicationExecution):
     def execute(self):
-        log.info("Start Python execution script")
+        log.info("Start Uv execution script")
 
         # Identify files
         script_file = next(
             (f for f in self.context.input_files if f["name"] == "eval_combined"), None
         )
-        assert script_file, "Python script file script missing"
+        assert script_file, "Python script file missing"
         input_filename = "input_parameters.json"
         output_filename = "output_parameters.json"
 
@@ -82,6 +82,7 @@ class PythonExecution(ApplicationExecution):
             self.context.parameter_values.update(output_parameters)
             log.debug(f"Loaded output parameters: {output_parameters}")
         except Exception as ex:
-            log.error(f"Failed to read output_parameters from file: {ex}")
+            log.info("No output parameters found.")
+            log.debug(f"Failed to read output_parameters from file: {ex}")
 
         log.info("End Python execution script")
