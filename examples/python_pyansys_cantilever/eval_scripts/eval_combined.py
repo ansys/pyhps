@@ -21,7 +21,7 @@
 # SOFTWARE.
 
 # /// script
-# requires-python = ">=3.10"
+# requires-python = ">=3.10,<=3.10"
 # dependencies = [
 #     "ansys-geometry-core[all]",
 #     "ansys-meshing-prime[all]==0.7",
@@ -43,123 +43,155 @@ from ansys.meshing.prime.graphics import PrimePlotter
 
 
 def geometry(params):
-    # Extract dimensions and convert to meters
+    # Read parameters, convert to meters
     um2m = 1e-6
     width = params["canti_width"] * um2m
     length = params["canti_length"] * um2m
     thickness = params["canti_thickness"] * um2m
+    arm_cutoff_width = params["arm_cutoff_width"] * um2m
+    arm_cutoff_length = params["arm_cutoff_length"] * um2m
+    arm_slot = params["arm_slot"]
+    arm_slot_width = params["arm_slot_width"] * um2m
     popup_plots = params["popup_plots"]
+    port = params["port"]
+    arm_width = width - 2 * arm_cutoff_width
 
     # Draw Cantilever in 2D Sketch
-    sketch = Sketch()
-    sketch.box(Point2D([length / 2.0, width / 2.0]), length, width)
-
-    # Create a modeler and extrude the sketch
-    modeler = launch_modeler()
-    print(modeler)
-
-    design = modeler.create_design("cantilever")
-    design.extrude_sketch("cantilever", sketch, thickness)
-
-    # Plot if requested
-    if popup_plots:
-        design.plot()
-
-    design.download(
-        os.path.join(os.getcwd(), design.name + ".x_t"), DesignFileFormat.PARASOLID_TEXT
+    canti_sketch = Sketch()
+    canti_sketch.segment(
+        start=Point2D([0.0, -arm_width / 2.0]), end=Point2D([0.0, arm_width / 2.0])
     )
-    modeler.exit()
+    canti_sketch.segment_to_point(end=Point2D([arm_cutoff_length, arm_width / 2.0]))
+    canti_sketch.segment_to_point(end=Point2D([arm_cutoff_length, width / 2.0]))
+    canti_sketch.segment_to_point(end=Point2D([length, width / 2.0]))
+    canti_sketch.segment_to_point(end=Point2D([length, -width / 2.0]))
+    canti_sketch.segment_to_point(end=Point2D([arm_cutoff_length, -width / 2.0]))
+    canti_sketch.segment_to_point(end=Point2D([arm_cutoff_length, -arm_width / 2.0]))
+    canti_sketch.segment_to_point(end=Point2D([0.0, -arm_width / 2.0]))
+
+    # Add arm slot if it exists
+    if arm_slot:
+        canti_sketch.box(
+            Point2D([arm_cutoff_length / 2.0 + 2.5e-6, 0.0]),
+            arm_cutoff_length - 5e-6,
+            arm_slot_width,
+        )
+
+    # Create a modeler, extrude sketches, union bodies
+    try:
+        modeler = launch_modeler(port=port)
+        print(modeler)
+
+        design = modeler.create_design("cantilever")
+        design.extrude_sketch("cantilever", canti_sketch, thickness)
+
+        # Plot if requested
+        if popup_plots:
+            design.plot()
+
+        # export has different extensions on different OSs (.x_t, .xmt_txt)
+        # design.export_to_parasolid_text(os.getcwd())
+        design.download(
+            os.path.join(os.getcwd(), design.name + ".x_t"), DesignFileFormat.PARASOLID_TEXT
+        )
+    except Exception as e:
+        print(f"Exception in geometry: {e}")
+    finally:
+        modeler.exit()
 
 
 def mesh(params, ansys_prime_root):
+    # Read relevant dimensions from parameters
+    um2mm = 1e-3
+    swept_layers = params["mesh_swept_layers"]
+    thickness = params["canti_thickness"] * um2mm
+    length = min(params["canti_length"], params["arm_cutoff_length"]) * um2mm
+    width = (params["canti_width"] - 2 * params["arm_cutoff_width"]) * um2mm
+    if params["arm_slot"]:
+        width -= params["arm_slot_width"] * um2mm
+        width /= 2.0
+    min_size = min(length, width) * 0.05
+    max_size = min(length, width) * 0.3
+    popup_plots = params["popup_plots"]
+    port = params["port"]
+
     cad_file = "cantilever.x_t"
     if not os.path.isfile(cad_file):
         print(f"ERROR: Input file {cad_file} does not exist.")
         return 1
 
-    # prime_client = prime.launch_prime(prime_root="/ansys_inc/v252/meshing/Prime")
-    prime_client = prime.launch_prime(prime_root=ansys_prime_root)
-    model = prime_client.model
-    mesh_util = prime.lucid.Mesh(model=model)
+    with prime.launch_prime(prime_root=ansys_prime_root, port=port) as prime_client:
+        model = prime_client.model
+        mesh_util = prime.lucid.Mesh(model=model)
 
-    mesh_util.read(file_name=cad_file, cad_reader_route=prime.CadReaderRoute.PROGRAMCONTROLLED)
+        # Import geometry
+        mesh_util.read(file_name=cad_file, cad_reader_route=prime.CadReaderRoute.PROGRAMCONTROLLED)
 
-    # Params
-    um2mm = 1e-3
-    swept_layers = params["mesh_swept_layers"]
-    thickness = params["canti_thickness"] * um2mm
-    length = params["canti_length"] * um2mm
-    width = params["canti_width"] * um2mm
-    min_size = min(length, width) * 0.05
-    max_size = min(length, width) * 0.2
-    popup_plots = params["popup_plots"]
+        # Set mesh size
+        sizing_params = prime.GlobalSizingParams(model=model, min=min_size, max=max_size)
+        model.set_global_sizing_params(params=sizing_params)
 
-    sizing_params = prime.GlobalSizingParams(model=model, min=min_size, max=max_size)
-    model.set_global_sizing_params(params=sizing_params)
+        part = model.parts[0]
+        sweeper = prime.VolumeSweeper(model)
 
-    part = model.parts[0]
-    sweeper = prime.VolumeSweeper(model)
+        stacker_params = prime.MeshStackerParams(
+            model=model,
+            direction=[0, 0, 1],
+            max_offset_size=thickness / swept_layers,
+            delete_base=True,
+        )
 
-    stacker_params = prime.MeshStackerParams(
-        model=model,
-        direction=[0, 0, 1],
-        max_offset_size=thickness / swept_layers,
-        delete_base=True,
-    )
+        # Create the base face
+        createbase_results = sweeper.create_base_face(
+            part_id=part.id,
+            topo_volume_ids=part.get_topo_volumes(),
+            params=stacker_params,
+        )
 
-    createbase_results = sweeper.create_base_face(
-        part_id=part.id,
-        topo_volume_ids=part.get_topo_volumes(),
-        params=stacker_params,
-    )
+        base_faces = createbase_results.base_face_ids
 
-    base_faces = createbase_results.base_face_ids
+        part.add_labels_on_topo_entities(["base_faces"], base_faces)
 
-    part.add_labels_on_topo_entities(["base_faces"], base_faces)
+        if popup_plots:
+            scope = prime.ScopeDefinition(model=model, label_expression="base_faces")
+            display = PrimePlotter()
+            display.plot(model, scope=scope)
+            display.show()
 
-    if popup_plots:
-        scope = prime.ScopeDefinition(model=model, label_expression="base_faces")
-        display = PrimePlotter()
-        display.plot(model, scope=scope)
-        display.show()
+        base_scope = prime.lucid.SurfaceScope(
+            entity_expression="base_faces",
+            part_expression=part.name,
+            scope_evaluation_type=prime.ScopeEvaluationType.LABELS,
+        )
 
-    base_scope = prime.lucid.SurfaceScope(
-        entity_expression="base_faces",
-        part_expression=part.name,
-        scope_evaluation_type=prime.ScopeEvaluationType.LABELS,
-    )
+        # Create mesh on base face
+        mesh_util.surface_mesh(
+            min_size=min_size, max_size=max_size, scope=base_scope, generate_quads=True
+        )
 
-    mesh_util.surface_mesh(min_size=min_size, scope=base_scope, generate_quads=True)
+        if popup_plots:
+            display = PrimePlotter()
+            display.plot(model, scope=scope, update=True)
+            display.show()
 
-    if popup_plots:
-        display = PrimePlotter()
-        display.plot(model, scope=scope, update=True)
-        display.show()
+        # Sweep base mesh through body
+        sweeper.stack_base_face(
+            part_id=part.id,
+            base_face_ids=base_faces,
+            topo_volume_ids=part.get_topo_volumes(),
+            params=stacker_params,
+        )
 
-    sweeper.stack_base_face(
-        part_id=part.id,
-        base_face_ids=base_faces,
-        topo_volume_ids=part.get_topo_volumes(),
-        params=stacker_params,
-    )
+        if popup_plots:
+            display = PrimePlotter()
+            display.plot(model, update=True)
+            display.show()
 
-    if popup_plots:
-        display = PrimePlotter()
-        display.plot(model, update=True)
-        display.show()
-
-    mesh_file = "cantilever.cdb"
-    mesh_util.write(os.path.join(os.getcwd(), mesh_file))
-
-    prime_client.exit()
+        mesh_file = "cantilever.cdb"
+        mesh_util.write(os.path.join(os.getcwd(), mesh_file))
 
 
 def extract_frequencies(output_string, num_freqs):
-    print("----EXTRACT_FREQUENCIES")
-    print("OUTPUT_STRING:")
-    print("----")
-    print(f"{output_string}")
-    print("----")
     mode_freqs = {}
     lines = output_string.split("\n")
     for line in lines:
@@ -176,7 +208,7 @@ def extract_frequencies(output_string, num_freqs):
 
 
 def mapdl(params):
-    print("Loading and setting up model")
+    # Read Parameters
     num_modes = params["num_modes"]
     young_modulus = params["young_modulus"]
     density = params["density"]
@@ -189,70 +221,72 @@ def mapdl(params):
         print(f"ERROR: Input file {input_filename} does not exist.")
         return 1
 
-    # mapdl = launch_mapdl(loglevel="DEBUG")
-    mapdl = launch_mapdl(
-        start_instance=True, mode="grpc", loglevel="INFO", run_location=f"{os.getcwd()}", port=port
-    )
-    print(f"IP: {mapdl.ip}:{mapdl.port}")
-    print(f"State: {mapdl.channel_state}")
-    print(f"Status: {mapdl.check_status}")
-    print(f"Connection: {mapdl.connection}")
-    print(f"is_local: {mapdl.is_local}")
-    print(mapdl)
-    mapdl.mute = True
-    mapdl.clear()
+    try:
+        # Launch MAPDL as a service
+        mapdl = launch_mapdl(
+            start_instance=True,
+            mode="grpc",
+            loglevel="DEBUG",
+            run_location=f"{os.getcwd()}",
+            port=port,
+        )
+        print(mapdl)
+        mapdl.mute = True
+        mapdl.clear()
 
-    mapdl.input("cantilever.cdb")
-    mapdl.prep7()
+        # Load input file
+        mapdl.input("cantilever.cdb")
+        mapdl.prep7()
 
-    mapdl.mp("EX", 1, young_modulus)
-    mapdl.mp("EY", 1, young_modulus)
-    mapdl.mp("EZ", 1, young_modulus)
-    mapdl.mp("PRXY", 1, poisson_ratio)
-    mapdl.mp("PRYZ", 1, poisson_ratio)
-    mapdl.mp("PRXZ", 1, poisson_ratio)
-    mapdl.mp("DENS", 1, density)
+        # Define material properties
+        mapdl.mp("EX", 1, young_modulus)
+        mapdl.mp("EY", 1, young_modulus)
+        mapdl.mp("EZ", 1, young_modulus)
+        mapdl.mp("PRXY", 1, poisson_ratio)
+        mapdl.mp("PRYZ", 1, poisson_ratio)
+        mapdl.mp("PRXZ", 1, poisson_ratio)
+        mapdl.mp("DENS", 1, density)
 
-    mapdl.allsel()
-    mapdl.inistate("DEFINE", val5=100.0e6, val6=100.0e6, val7=0.0)
+        # Apply prestress
+        mapdl.allsel()
+        mapdl.inistate("DEFINE", val5=100.0e6, val6=100.0e6, val7=0.0)
 
-    mapdl.allsel()
-    mapdl.emodif("ALL", "MAT", i1=1)
-    mapdl.nsel("S", "LOC", "X", 0)
-    print(f"Fixing {len(mapdl.get_array('NODE', item1='NLIST'))} nodes")
-    mapdl.d("ALL", "ALL")
+        # Apply cantilever boundary conditions
+        mapdl.allsel()
+        mapdl.emodif("ALL", "MAT", i1=1)
+        mapdl.nsel("S", "LOC", "X", 0)
+        print(f"Fixing {len(mapdl.get_array('NODE', item1='NLIST'))} nodes")
+        mapdl.d("ALL", "ALL")
 
-    mapdl.allsel()
-    mapdl.etlist()
-    element_type_id = int(mapdl.get("ETYPE", "ELEM", "1", "ATTR", "TYPE"))
-    mapdl.keyopt(f"{element_type_id}", "2", "3", verbose=True)
+        # Set keyopt properties
+        mapdl.allsel()
+        mapdl.etlist()
+        element_type_id = int(mapdl.get("ETYPE", "ELEM", "1", "ATTR", "TYPE"))
+        mapdl.keyopt(f"{element_type_id}", "2", "3", verbose=True)
 
-    print("Solving model")
-    mapdl.slashsolu()
-    mapdl.antype("MODAL")
-    mapdl.modopt("LANB", num_modes)
-    mapdl.mxpand(num_modes)
-    output = mapdl.solve(verbose=True)
-    # output=mapdl.solve(verbose=False)
-    # print(f"{mapdl.list_files()}")
-    # mapdl.download("file0.err", ".")
-    # mapdl.download("file1.err", ".")
-    # mapdl.download("file1.out", ".")
+        # Solve modal
+        mapdl.slashsolu()
+        mapdl.antype("MODAL")
+        mapdl.modopt("LANB", num_modes)
+        mapdl.mxpand(num_modes)
+        output = mapdl.solve(verbose=False)
 
-    mapdl.post1()
-    print("getting frequencies")
-    output = mapdl.set("LIST", mute=False)
-    mode_freqs = extract_frequencies(output, 20)
-    print(f"Frequencies: {mode_freqs}")
-    if popup_plots:
-        mode_num = 1
-        mapdl.set(1, mode_num)
-        mapdl.plnsol("u", "sum")
+        # Extract calculated Eigenfrequencies
+        mapdl.post1()
+        output = mapdl.set("LIST", mute=False)
+        mode_freqs = extract_frequencies(output, 20)
+        if popup_plots:
+            mode_num = 1
+            mapdl.set(1, mode_num)
+            mapdl.plnsol("u", "sum")
 
-    with open("output_parameters.json", "w") as out_file:
-        json.dump(mode_freqs, out_file, indent=4)
+        with open("output_parameters.json", "w") as out_file:
+            json.dump(mode_freqs, out_file, indent=4)
 
-    mapdl.exit()
+    except Exception as e:
+        print(f"Exception in mapdl: {e}")
+    finally:
+        mapdl.exit()
 
 
 if __name__ == "__main__":

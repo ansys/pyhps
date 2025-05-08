@@ -21,7 +21,7 @@
 # SOFTWARE.
 
 # /// script
-# requires-python = ">=3.10"
+# requires-python = "==3.12"
 # dependencies = [
 #     "ansys.mapdl.core",
 # ]
@@ -34,11 +34,6 @@ from ansys.mapdl.core import launch_mapdl
 
 
 def extract_frequencies(output_string, num_freqs):
-    print("----EXTRACT_FREQUENCIES")
-    print("OUTPUT_STRING:")
-    print("----")
-    print(f"{output_string}")
-    print("----")
     mode_freqs = {}
     lines = output_string.split("\n")
     for line in lines:
@@ -55,7 +50,7 @@ def extract_frequencies(output_string, num_freqs):
 
 
 def main(params):
-    print("Loading and setting up model")
+    # Read Parameters
     num_modes = params["num_modes"]
     young_modulus = params["young_modulus"]
     density = params["density"]
@@ -68,70 +63,72 @@ def main(params):
         print(f"ERROR: Input file {input_filename} does not exist.")
         return 1
 
-    # mapdl = launch_mapdl(loglevel="DEBUG")
-    mapdl = launch_mapdl(
-        start_instance=True, mode="grpc", loglevel="INFO", run_location=f"{os.getcwd()}", port=port
-    )
-    print(f"IP: {mapdl.ip}:{mapdl.port}")
-    print(f"State: {mapdl.channel_state}")
-    print(f"Status: {mapdl.check_status}")
-    print(f"Connection: {mapdl.connection}")
-    print(f"is_local: {mapdl.is_local}")
-    print(mapdl)
-    mapdl.mute = True
-    mapdl.clear()
+    try:
+        # Launch MAPDL as a service
+        mapdl = launch_mapdl(
+            start_instance=True,
+            mode="grpc",
+            loglevel="DEBUG",
+            run_location=f"{os.getcwd()}",
+            port=port,
+        )
+        print(mapdl)
+        mapdl.mute = True
+        mapdl.clear()
 
-    mapdl.input("cantilever.cdb")
-    mapdl.prep7()
+        # Load input file
+        mapdl.input("cantilever.cdb")
+        mapdl.prep7()
 
-    mapdl.mp("EX", 1, young_modulus)
-    mapdl.mp("EY", 1, young_modulus)
-    mapdl.mp("EZ", 1, young_modulus)
-    mapdl.mp("PRXY", 1, poisson_ratio)
-    mapdl.mp("PRYZ", 1, poisson_ratio)
-    mapdl.mp("PRXZ", 1, poisson_ratio)
-    mapdl.mp("DENS", 1, density)
+        # Define material properties
+        mapdl.mp("EX", 1, young_modulus)
+        mapdl.mp("EY", 1, young_modulus)
+        mapdl.mp("EZ", 1, young_modulus)
+        mapdl.mp("PRXY", 1, poisson_ratio)
+        mapdl.mp("PRYZ", 1, poisson_ratio)
+        mapdl.mp("PRXZ", 1, poisson_ratio)
+        mapdl.mp("DENS", 1, density)
 
-    mapdl.allsel()
-    mapdl.inistate("DEFINE", val5=100.0e6, val6=100.0e6, val7=0.0)
+        # Apply prestress
+        mapdl.allsel()
+        mapdl.inistate("DEFINE", val5=100.0e6, val6=100.0e6, val7=0.0)
 
-    mapdl.allsel()
-    mapdl.emodif("ALL", "MAT", i1=1)
-    mapdl.nsel("S", "LOC", "X", 0)
-    print(f"Fixing {len(mapdl.get_array('NODE', item1='NLIST'))} nodes")
-    mapdl.d("ALL", "ALL")
+        # Apply cantilever boundary conditions
+        mapdl.allsel()
+        mapdl.emodif("ALL", "MAT", i1=1)
+        mapdl.nsel("S", "LOC", "X", 0)
+        print(f"Fixing {len(mapdl.get_array('NODE', item1='NLIST'))} nodes")
+        mapdl.d("ALL", "ALL")
 
-    mapdl.allsel()
-    mapdl.etlist()
-    element_type_id = int(mapdl.get("ETYPE", "ELEM", "1", "ATTR", "TYPE"))
-    mapdl.keyopt(f"{element_type_id}", "2", "3", verbose=True)
+        # Set keyopt properties
+        mapdl.allsel()
+        mapdl.etlist()
+        element_type_id = int(mapdl.get("ETYPE", "ELEM", "1", "ATTR", "TYPE"))
+        mapdl.keyopt(f"{element_type_id}", "2", "3", verbose=True)
 
-    print("Solving model")
-    mapdl.slashsolu()
-    mapdl.antype("MODAL")
-    mapdl.modopt("LANB", num_modes)
-    mapdl.mxpand(num_modes)
-    output = mapdl.solve(verbose=True)
-    # output=mapdl.solve(verbose=False)
-    # print(f"{mapdl.list_files()}")
-    # mapdl.download("file0.err", ".")
-    # mapdl.download("file1.err", ".")
-    # mapdl.download("file1.out", ".")
+        # Solve modal
+        mapdl.slashsolu()
+        mapdl.antype("MODAL")
+        mapdl.modopt("LANB", num_modes)
+        mapdl.mxpand(num_modes)
+        output = mapdl.solve(verbose=False)
 
-    mapdl.post1()
-    print("getting frequencies")
-    output = mapdl.set("LIST", mute=False)
-    mode_freqs = extract_frequencies(output, 20)
-    print(f"Frequencies: {mode_freqs}")
-    if popup_plots:
-        mode_num = 1
-        mapdl.set(1, mode_num)
-        mapdl.plnsol("u", "sum")
+        # Extract calculated Eigenfrequencies
+        mapdl.post1()
+        output = mapdl.set("LIST", mute=False)
+        mode_freqs = extract_frequencies(output, 20)
+        if popup_plots:
+            mode_num = 1
+            mapdl.set(1, mode_num)
+            mapdl.plnsol("u", "sum")
 
-    with open("output_parameters.json", "w") as out_file:
-        json.dump(mode_freqs, out_file, indent=4)
+        with open("output_parameters.json", "w") as out_file:
+            json.dump(mode_freqs, out_file, indent=4)
 
-    mapdl.exit()
+    except Exception as e:
+        print(f"Exception in mapdl: {e}")
+    finally:
+        mapdl.exit()
 
 
 if __name__ == "__main__":
