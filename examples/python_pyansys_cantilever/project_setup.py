@@ -114,7 +114,7 @@ def main(client, num_jobs, num_modes, target_frequency, split_tasks):
         FloatParameterDefinition(
             name="canti_width",
             lower_limit=10.0,
-            upper_limit=200.0,
+            upper_limit=500.0,
             default=50,
             units="um",
             mode="input",
@@ -127,6 +127,31 @@ def main(client, num_jobs, num_modes, target_frequency, split_tasks):
             units="um",
             mode="input",
         ),
+        FloatParameterDefinition(
+            name="arm_cutoff_width",
+            lower_limit=0.0,
+            upper_limit=250.0,
+            default=0.0,
+            units="um",
+            mode="input",
+        ),
+        FloatParameterDefinition(
+            name="arm_cutoff_length",
+            lower_limit=20.0,
+            upper_limit=1000.0,
+            default=0.0,
+            units="um",
+            mode="input",
+        ),
+        FloatParameterDefinition(
+            name="arm_slot_width",
+            lower_limit=0.0,
+            upper_limit=200.0,
+            default=0.0,
+            units="um",
+            mode="input",
+        ),
+        BoolParameterDefinition(name="arm_slot", default=False, mode="input"),
         FloatParameterDefinition(
             name="young_modulus",
             lower_limit=1e6,
@@ -217,6 +242,7 @@ def main(client, num_jobs, num_modes, target_frequency, split_tasks):
             success_criteria=SuccessCriteria(
                 return_code=0,
                 require_all_output_files=True,
+                # hpc_resources=HpcResources(exclusive=True),
             ),
         )
         task_def_mapdl = TaskDefinition(
@@ -229,6 +255,7 @@ def main(client, num_jobs, num_modes, target_frequency, split_tasks):
                 num_cores=2.0,
                 memory=8 * 1024 * 1024 * 1024,  # 8 GB
                 disk_space=200 * 1024 * 1024,  # 200 MB
+                # hpc_resources=HpcResources(exclusive=True),
             ),
             execution_level=2,
             max_execution_time=500.0,
@@ -257,6 +284,7 @@ def main(client, num_jobs, num_modes, target_frequency, split_tasks):
                 num_cores=2.0,
                 memory=8 * 1024 * 1024 * 1024,  # 8 GB
                 disk_space=100 * 1024 * 1024,  # 200 MB
+                # hpc_resources=HpcResources(exclusive=True),
             ),
             execution_level=0,
             max_execution_time=1200.0,
@@ -274,13 +302,13 @@ def main(client, num_jobs, num_modes, target_frequency, split_tasks):
         task_defs = project_api.create_task_definitions([task_def_combined])
 
     log.debug("== Define Fitness")
-    fd = FitnessDefinition(error_fitness=-1.0)
+    fd = FitnessDefinition(error_fitness=2.0)
     fd.add_fitness_term(
         name="frequency",
         type="target_constraint",
         weighting_factor=1.0,
         expression=f"map_target_constraint(values['freq_mode_1'], \
-            {target_frequency}, {0.01 * target_frequency}, {0.8 * target_frequency})",
+            {target_frequency}, {0.01 * target_frequency}, {0.5 * target_frequency})",
     )
 
     log.debug("== Define Job")
@@ -295,16 +323,12 @@ def main(client, num_jobs, num_modes, target_frequency, split_tasks):
 
     # Refresh parameters
     params = project_api.get_parameter_definitions(job_def.parameter_definition_ids)
+    params_by_name = {p["name"]: p for p in params}
 
     log.debug(f"== Create {num_jobs} Jobs")
     jobs = []
     for i in range(num_jobs):
-        values = {
-            p.name: p.lower_limit + random.random() * (p.upper_limit - p.lower_limit)
-            for p in params
-            if (p.mode == "input" and "canti" in p.name)
-        }
-        values["port"] = 50052 + i
+        values = generate_parameter_values_for_job(i, params_by_name)
         jobs.append(
             Job(name=f"Job.{i}", values=values, eval_status="pending", job_definition_id=job_def.id)
         )
@@ -336,6 +360,32 @@ def entrypoint(
         main(client, num_jobs, num_modes, freq_tgt, split_tasks)
     except HPSError as e:
         log.error(str(e))
+
+
+def sample_parameter(p, minval=None, maxval=None):
+    if minval is None:
+        minval = p.lower_limit
+    if maxval is None:
+        maxval = p.upper_limit
+    return minval + random.random() * (maxval - minval)
+
+
+def generate_parameter_values_for_job(i, params_by_name):
+    values = {}
+    values["canti_length"] = sample_parameter(params_by_name["canti_length"])
+    values["canti_width"] = sample_parameter(params_by_name["canti_width"])
+    values["canti_thickness"] = sample_parameter(params_by_name["canti_thickness"])
+    values["arm_cutoff_width"] = sample_parameter(None, 0.0, values["canti_width"] / 2.5)
+    values["arm_cutoff_length"] = sample_parameter(None, 10.0, values["canti_length"])
+    if random.random() > 0.5:
+        values["arm_slot"] = True
+        values["arm_slot_width"] = sample_parameter(
+            None,
+            (values["canti_width"] - 2 * values["arm_cutoff_width"]) * 0.2,
+            (values["canti_width"] - 2 * values["arm_cutoff_width"]) * 0.25,
+        )
+    values["port"] = 50052 + i
+    return values
 
 
 if __name__ == "__main__":
