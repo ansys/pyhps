@@ -1,0 +1,6 @@
+version
+=======
+
+.. currentmodule:: ansys.hps.client.jms.api
+
+.. autoproperty:: ProjectApi.version
