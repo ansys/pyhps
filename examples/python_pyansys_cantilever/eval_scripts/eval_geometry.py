@@ -48,7 +48,7 @@ def main(params):
     arm_slot = params["arm_slot"]
     arm_slot_width = params["arm_slot_width"] * um2m
     popup_plots = params["popup_plots"]
-    port = params["port"]
+    port = params["port_geometry"]
     arm_width = width - 2 * arm_cutoff_width
 
     # Draw Cantilever in 2D Sketch

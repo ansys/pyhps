@@ -56,7 +56,7 @@ def main(params):
     density = params["density"]
     poisson_ratio = params["poisson_ratio"]
     popup_plots = params["popup_plots"]
-    port = params["port"]
+    port = params["port_mapdl"]
 
     input_filename = "cantilever.cdb"
     if not os.path.isfile(input_filename):

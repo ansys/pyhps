@@ -31,6 +31,7 @@
 
 import json
 import os
+import random
 import sys
 
 import ansys.meshing.prime as prime
@@ -53,7 +54,7 @@ def geometry(params):
     arm_slot = params["arm_slot"]
     arm_slot_width = params["arm_slot_width"] * um2m
     popup_plots = params["popup_plots"]
-    port = params["port"]
+    port = params["port_geometry"]
     arm_width = width - 2 * arm_cutoff_width
 
     # Draw Cantilever in 2D Sketch
@@ -113,7 +114,7 @@ def mesh(params, ansys_prime_root):
     min_size = min(length, width) * 0.05
     max_size = min(length, width) * 0.3
     popup_plots = params["popup_plots"]
-    port = params["port"]
+    port = params["port_mesh"]
 
     cad_file = "cantilever.x_t"
     if not os.path.isfile(cad_file):
@@ -214,7 +215,7 @@ def mapdl(params):
     density = params["density"]
     poisson_ratio = params["poisson_ratio"]
     popup_plots = params["popup_plots"]
-    port = params["port"]
+    port = params["port_mapdl"]
 
     input_filename = "cantilever.cdb"
     if not os.path.isfile(input_filename):
@@ -295,6 +296,8 @@ if __name__ == "__main__":
     input_file_path = os.path.abspath(input_file_name)
     with open(input_file_path) as input_file:
         params = json.load(input_file)
+    params["port"] = random.randint(49153, 59999)  # pymapdl wants ports in [1000, 60000]
+    print(f"Generated Port: {params['port']}")
 
     ansys_prime_root = os.environ.get("ANSYS_PRIME_ROOT", None)
 

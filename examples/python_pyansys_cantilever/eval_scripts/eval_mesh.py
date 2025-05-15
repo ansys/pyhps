@@ -48,7 +48,7 @@ def main(params, ansys_prime_root):
     min_size = min(length, width) * 0.05
     max_size = min(length, width) * 0.3
     popup_plots = params["popup_plots"]
-    port = params["port"]
+    port = params["port_mesh"]
 
     cad_file = "cantilever.x_t"
     if not os.path.isfile(cad_file):
