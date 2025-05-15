@@ -193,7 +193,9 @@ def main(client, num_jobs, num_modes, target_frequency, split_tasks):
             mode="input",
         ),
         BoolParameterDefinition(name="popup_plots", default=False, mode="input"),
-        IntParameterDefinition(name="port", default=50052, mode="input"),
+        IntParameterDefinition(name="port_geometry", default=50052, mode="input"),
+        IntParameterDefinition(name="port_mesh", default=50052, mode="input"),
+        IntParameterDefinition(name="port_mapdl", default=50052, mode="input"),
     ]
     # Output parameters
     for i in range(num_modes):
@@ -384,7 +386,9 @@ def generate_parameter_values_for_job(i, params_by_name):
             (values["canti_width"] - 2 * values["arm_cutoff_width"]) * 0.2,
             (values["canti_width"] - 2 * values["arm_cutoff_width"]) * 0.25,
         )
-    values["port"] = 50052 + i
+    values["port_geometry"] = random.randint(49153, 59999)
+    values["port_mesh"] = random.randint(49153, 59999)
+    values["port_mapdl"] = random.randint(49153, 59999)
     return values
 
 
