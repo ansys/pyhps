@@ -113,7 +113,7 @@ runs:
       run: |
         # retry each service max 20 times
         if [ "$PROFILE" = "backend" ]; then
-          wget --retry-connrefused --retry-on-http-error=503,404 --no-check-certificate -t 20 -O- https://localhost:8443/hps/dt/api/v1          
+          wget --retry-connrefused --retry-on-http-error=503,404,502 --no-check-certificate -t 20 -O- https://localhost:8443/hps/dt/api/v1          
         else
           wget --retry-connrefused --retry-on-http-error=503,404 --no-check-certificate -t 20 -O- https://localhost:8443/hps/jms/api/v1
           wget --retry-connrefused --retry-on-http-error=503,404 --no-check-certificate -t 20 -O- https://localhost:8443/hps/fs/api/v1
