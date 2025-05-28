@@ -295,6 +295,11 @@ class KubernetesKedaBackend(DictModel):
         description="Kubernetes resource kind that the scaler should target. Options are ``deployment``, ``job``, and ``statefulset``.",
         title="Target Resource Kind",
     )
+    service_name: str | None = Field(
+        "ansys/rep/scaling",
+        description="Service name to be used in prometheus query when fetching metric data.",
+        title="Service Name",
+    )
 
 
 class KubernetesResourceScaling(DictModel):
