@@ -400,6 +400,7 @@ if __name__ == "__main__":
     parser.add_argument("-U", "--url", default="https://localhost:8443/hps")
     parser.add_argument("-u", "--username", default="repuser")
     parser.add_argument("-p", "--password", default="repuser")
+    parser.add_argument("-t", "--token", default=None)
     parser.add_argument("-v", "--ansys-version", default=__ansys_apps_version__)
 
     args = parser.parse_args()
@@ -412,14 +413,18 @@ if __name__ == "__main__":
     try:
         log.info(f"HPS URL: {args.url}")
         if args.action == "submit":
-            # create client with offline_access scope
-            # to persist a long-lived refresh token
-            client = Client(
-                url=args.url,
-                username=args.username,
-                password=args.password,
-                scope="openid offline_access",
-            )
+            if args.token:
+                client = Client(url=args.url, token=args.token)
+            else:
+                # create client with offline_access scope
+                # to persist a long-lived refresh token
+                client = Client(
+                    url=args.url,
+                    username=args.username,
+                    password=args.password,
+                    scope="openid offline_access",
+                )
+
             job = submit_job(
                 client=client,
                 name=args.name,

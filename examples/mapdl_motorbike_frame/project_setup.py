@@ -351,6 +351,7 @@ def create_project(
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
+    parser.add_argument("-t", "--token", default=None)
     parser.add_argument("-n", "--name", type=str, default="Mapdl Motorbike Frame")
     parser.add_argument("-j", "--num-jobs", type=int, default=50)
     parser.add_argument("-es", "--use-exec-script", default=False, action="store_true")
@@ -365,7 +366,10 @@ if __name__ == "__main__":
 
     try:
         log.info("Connect to HPC Platform Services")
-        client = Client(url=args.url, username=args.username, password=args.password)
+        if args.token:
+            client = Client(url=args.url, token=args.token)
+        else:
+            client = Client(url=args.url, username=args.username, password=args.password)
         log.info(f"HPS URL: {client.url}")
         proj = create_project(
             client=client,
