@@ -22,7 +22,7 @@ UV is used to run arbitrary python scripts in environments created on the fly. I
 and set up in the following way:
 
 ```bash
-pip3 install --target=<target dir> # Install UV via pip
+pip3 install --target=/ansys_inc/v252/uv uv # Install UV via pip
 mkdir -p /shared/rep_file_storage/uv/uv_cache # Create cache dir
 echo cache-dir = \"/shared/uv/uv_cache\" > /shared/rep_file_storage/uv/uv.toml # Set cache dir in config
 ```
