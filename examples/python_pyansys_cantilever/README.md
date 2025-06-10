@@ -125,10 +125,68 @@ work properly:
 | AWP_ROOT252        | /ansys_inc/v252                    |
 | PYMAPDL_MAPDL_EXEC | /ansys_inc/v252/ansys/bin/ansys252 |
 
+## HPS Python Client
+To run the example, a `ansys-hps-client` version released after 27 March 2025 is required. 
+
+
 # Running the example
+To run the example, execute the `project_setup.py` script, for example via `uv run project_setup.py`. 
+The required packages are `ansys-hps-client` (released after 27 March 2025) and `typer`.
 
-Pipeline ipsum dolor sit amet, kubernetes elit. Terraform apply sed do docker-compose up incididunt ut labore et Jenkins pipeline. Ut enim ad minim deploy, quis git push origin main exercitation helm upgrade laboris nisi ut ansible-playbook. CI/CD aute irure dolor in observability in grafana reprehenderit in monitoring velit esse error budget. Excepteur sint occaecat scaling non proident, sunt in culpa qui rollback deserunt mollit id SRE.
+## Options
+The example supports the following command line arguments:
 
-# Logic of the code
+| **Flag**               | **Example** | **Description**                                                              |
+|------------------------|----------------------------------|---------------------------------------------------------|
+| -U, --url              | --url=https://localhost:8443/hps |URL of the target HPS instance                           |
+| -u, --username         | --username=repuser               |Username to log into HPS                                 |
+| -p, --password         | --password=topSecret             |Password to log into HPS                                 |
+| -n, --num-jobs         | --num-jobs=50                    | Number of design points to generate                     |
+| -m, --num-modes        | --num-modes=3                    | Number of lowest Eigenfrequencies to calculate          |
+| -f, --target-frequency | --target-frequency=100.0         | Frequency [Hz] to target for the lowest cantilever mode |
+| -s, --split-tasks      | --split-tasks                    | Split each step into a different task                   |
 
-Pipeline ipsum dolor sit amet, kubernetes elit. Terraform apply sed do docker-compose up incididunt ut labore et Jenkins pipeline. Ut enim ad minim deploy, quis git push origin main exercitation helm upgrade laboris nisi ut ansible-playbook. CI/CD aute irure dolor in observability in grafana reprehenderit in monitoring velit esse error budget. Excepteur sint occaecat scaling non proident, sunt in culpa qui rollback deserunt mollit id SRE.
+Furthermore, it defines the following HPS parameters that are accessible via the HPS web interface:
+
+| **Parameter**     | **Description**                                                    |
+|-------------------|--------------------------------------------------------------------|
+| canti_length      | Length of the cantilever [um]                                      |
+| canti_width       | Width of the cantilever [um]                                       |
+| canti_thickness   | Thickness of the cantilever [um]                                   |
+| arm_cutoff_width  | By how much should the cantilever arm be thinned [um]              |
+| arm_cutoff_length | Length of cantilever arm [um]                                      |
+| arm_slot_width    | Width of the slot cut into the cantilever arm [um]                 |
+| arm_slot          | Whether there is a slot in the cantilever arm                      |
+| young_modulus     | Young Modulus of cantilever material [Pa]                          |
+| density           | Density of cantilever material [kg/m^3]                            |
+| poisson_ratio     | Poisson ratio of cantilever material                               |
+| mesh_swept_layers | Number of layers to generate when sweeping the mesh                |
+| num_modes         | Number of lowest lying Eigenfrequencies to calculate               |
+| popup_plots       | Whether to show popup plots while running (requires a framebuffer) |
+| port_geometry     | Port used by the Ansys GeometryService                             |
+| port_mesh         | Port used by the Ansys Prime Server                                |
+| port_mapdl        | Port used by the Ansys Mechanical APDL service                     |
+| freq_mode_i       | Frequency of i-th Eigenmode [Hz], iϵ\{1,...,num_modes\}            |
+
+# Logic of the example
+
+The example is built up of several files; the logic of this organization shall be explained in the 
+following.
+
+The script `project_setup.py` orchestrates it all. It sets up a HPS project, uploads files, defines 
+parameters and applies settings. All communication with HPS is done via this script.
+
+The folder `exec_scripts` contains the execution scripts used to run the tasks. They all have the 
+same basic function: First they write all HPS parameters to a `input_parameters.json` file, then they 
+discover the available software and run the desired python script using UV, and finally they fetch 
+parameters that may have been written to `output_parameters.json` by the executed python script, and 
+send them back to the evaluator. There is an execution script `exec_combined.py` that is used when 
+all stages are run in a single task, and three more execution scripts used to split the three stages 
+into different tasks.
+
+The folder `eval_scripts` contains the pyAnsys python scripts. There is one `eval_combined.py` script 
+that combines all the functionality into one monolithic script, and there are three other eval scripts 
+to split the three stages into three successive tasks. Each of the eval scripts first reads in the 
+parameters supplied by the execution script in the `input_parameters.json` file, starts a pyAnsys 
+service, and then runs the pyAnsys program. For more information on the content on this script, please 
+check the pyAnsys documentation.
