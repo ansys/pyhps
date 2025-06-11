@@ -1,0 +1,1253 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Migration of DCS Python client scripts &#8212; PyHPS</title>
+  
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../_static/autodoc_pydantic.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/ansys_sphinx_theme.css?v=0909a4fa" />
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.23/css/jquery.dataTables.min.css" />
+    <link rel="stylesheet" type="text/css" href="https://www.nerdfonts.com/assets/css/webfont.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../_static/tabs.css?v=a5c4661c" />
+  
+  <!-- So that users can add custom icons -->
+  <script src="../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+
+
+  <!-- Include desired assets -->
+  <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+  
+
+  
+    <link href="../_static/css/breadcrumbs.css" rel="stylesheet" />
+  
+    <script src="../_static/documentation_options.js?v=d714ba09"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../_static/copybutton.js?v=f281be69"></script>
+    <script src="https://cdn.datatables.net/1.10.23/js/jquery.dataTables.min.js"></script>
+    <script src="../_static/design-tabs.js?v=f930bc37"></script>
+    <script src="../_static/tabs.js?v=3030b3cb"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'user_guide/dcs_migration';</script>
+    <script>
+        DOCUMENTATION_OPTIONS.theme_version = '0.16.1';
+        DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://hps.docs.pyansys.com/versions.json';
+        DOCUMENTATION_OPTIONS.theme_switcher_version_match = '0.10';
+        DOCUMENTATION_OPTIONS.show_version_warning_banner =
+            false;
+        </script>
+    <link rel="icon" href="../_static/ansys-favicon.png"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="API reference" href="../api/index.html" />
+    <link rel="prev" title="Managing users" href="managing_users.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="0.10.1" />
+  <link rel="canonical" href="https://hps.docs.pyansys.com/version/stable/user_guide/dcs_migration.html" />
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../_static/pyansys_logo_transparent_black.png" class="logo__image only-light" alt="PyHPS - Home"/>
+    <img src="../_static/pyansys_logo_transparent_white.png" class="logo__image only-dark pst-js-only" alt="PyHPS - Home"/>
+  
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../getting_started/index.html">
+    Getting started
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="index.html">
+    User guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../api/index.html">
+    API reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../examples/index.html">
+    Examples
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../contribute.html">
+    Contribute
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+<div class="search-bar pst-js-only" id="search-bar">
+  <form class="bd-search d-flex align-items-center" action="../search.html" method="get">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <input type="search" class="form-control" name="q" placeholder="Search the docs ..."
+      aria-label="Search the docs ..." autocomplete="off" autocorrect="off"
+      autocapitalize="off" spellcheck="false" />
+    <span class="search-button__kbd-shortcut">
+      <kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd>
+    </span>
+  </form>
+  <div id="static-search-results" class="static-search-results" style="display:none;" tabindex="0"></div>
+</div>
+        </div>
+      
+      
+        <div class="navbar-item">
+<div class="version-switcher__container dropdown pst-js-only">
+  <button id="pst-version-switcher-button-2"
+    type="button"
+    class="version-switcher__button btn btn-sm dropdown-toggle"
+    data-bs-toggle="dropdown"
+    aria-haspopup="listbox"
+    aria-controls="pst-version-switcher-list-2"
+    aria-label="Version switcher list"
+  >
+    Choose version  <!-- this text may get changed later by javascript -->
+    <span class="caret"></span>
+  </button>
+  <div id="pst-version-switcher-list-2"
+    class="version-switcher__menu dropdown-menu list-group-flush py-0"
+    role="listbox" aria-labelledby="pst-version-switcher-button-2">
+    <!-- dropdown will be populated by javascript on page load -->
+  </div>
+</div></div>
+      
+        <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/ansys/pyhps" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+<div class="search-bar pst-js-only" id="search-bar">
+  <form class="bd-search d-flex align-items-center" action="../search.html" method="get">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <input type="search" class="form-control" name="q" placeholder="Search the docs ..."
+      aria-label="Search the docs ..." autocomplete="off" autocorrect="off"
+      autocapitalize="off" spellcheck="false" />
+    <span class="search-button__kbd-shortcut">
+      <kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd>
+    </span>
+  </form>
+  <div id="static-search-results" class="static-search-results" style="display:none;" tabindex="0"></div>
+</div>
+    </div>
+  
+
+  
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+  
+    <div id="announcement_msg"></div>
+<script>
+  fetch("announcement.html")
+    .then((response) => {
+      if (!response.ok) {
+        throw new Error(`HTTP error: ${response.status}`);
+      }
+      return response.text();
+    })
+    .then(
+      (text) => (document.getElementById("announcement_msg").innerHTML = text),
+    )
+    .catch((error) => console.error(`Fetch problem: ${error.message}`));
+</script>
+  
+
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../getting_started/index.html">
+    Getting started
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="index.html">
+    User guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../api/index.html">
+    API reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../examples/index.html">
+    Examples
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../contribute.html">
+    Contribute
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+<div class="version-switcher__container dropdown pst-js-only">
+  <button id="pst-version-switcher-button-3"
+    type="button"
+    class="version-switcher__button btn btn-sm dropdown-toggle"
+    data-bs-toggle="dropdown"
+    aria-haspopup="listbox"
+    aria-controls="pst-version-switcher-list-3"
+    aria-label="Version switcher list"
+  >
+    Choose version  <!-- this text may get changed later by javascript -->
+    <span class="caret"></span>
+  </button>
+  <div id="pst-version-switcher-list-3"
+    class="version-switcher__menu dropdown-menu list-group-flush py-0"
+    role="listbox" aria-labelledby="pst-version-switcher-button-3">
+    <!-- dropdown will be populated by javascript on page load -->
+  </div>
+</div></div>
+        
+          <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/ansys/pyhps" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="query_parameters.html">Query parameters</a></li>
+<li class="toctree-l1"><a class="reference internal" href="exceptions.html">Exception handling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="managing_users.html">Managing users</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Migration of DCS Python client scripts</a></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+<nav aria-label="Breadcrumb">
+  <ul class="bd-breadcrumbs">
+         
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="https://docs.pyansys.com/" class="nav-link">PyAnsys</a>
+    </li>
+     
+    <li class="breadcrumb-item">
+      <a
+        href="../index.html"
+        class="nav-link"
+        aria-label="Home"
+      >
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+     
+    <li class="breadcrumb-item">
+      <a href="index.html" class="nav-link">User guide</a>
+    </li>
+      
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Migration of DCS Python client scripts</span></li>
+    
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="migration-of-dcs-python-client-scripts">
+<h1>Migration of DCS Python client scripts<a class="headerlink" href="#migration-of-dcs-python-client-scripts" title="Link to this heading">#</a></h1>
+<p>Just as HPS is the successor to DCS (Distributed Compute Services), PyHPS is the successor to the DCS Python client.
+For more information, see the latest <a class="reference external" href="https://storage.ansys.com/dcs_python_client/v241/index.html">DCS Python Client documentation</a>.</p>
+<section id="key-terminology-and-api-changes">
+<h2>Key terminology and API changes<a class="headerlink" href="#key-terminology-and-api-changes" title="Link to this heading">#</a></h2>
+<p>The Design Points Service (DPS) in DCS has evolved into the Job Management Service (JMS) in HPS.
+Some key entities that were part of DPS are renamed in JMS:</p>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>DPS</p></th>
+<th class="head"><p>JMS</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Configuration</p></td>
+<td><p>Job definition</p></td>
+</tr>
+<tr class="row-odd"><td><p>Design point</p></td>
+<td><p>Job</p></td>
+</tr>
+<tr class="row-even"><td><p>Process step</p></td>
+<td><p>Task definition</p></td>
+</tr>
+<tr class="row-odd"><td><p>Parameter location</p></td>
+<td><p>Parameter mapping</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>Here are some other key changes impacting scripts that use the DCS Python Client:</p>
+<ul>
+<li><p>All resource IDs are strings now (as opposed to integers).</p></li>
+<li><p>In DCS, the client specifies the ID of the project when creating it.
+In HPS, the client specifies only the name of the project. The ID is assigned server-side.</p></li>
+<li><p>Some nested endpoints have been removed. For example, the following endpoints do not have a counterpart in the JMS API:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">GET</span> <span class="o">/</span><span class="n">dps</span><span class="o">/</span><span class="n">api</span><span class="o">/</span><span class="n">projects</span><span class="o">/</span><span class="p">{</span><span class="n">project_id</span><span class="p">}</span><span class="o">/</span><span class="n">configurations</span><span class="o">/</span><span class="p">{</span><span class="n">configuration_id</span><span class="p">}</span><span class="o">/</span><span class="n">design_points</span>
+<span class="n">GET</span> <span class="o">/</span><span class="n">dps</span><span class="o">/</span><span class="n">api</span><span class="o">/</span><span class="n">projects</span><span class="o">/</span><span class="p">{</span><span class="n">project_id</span><span class="p">}</span><span class="o">/</span><span class="n">design_points</span><span class="o">/</span><span class="p">{</span><span class="n">design_point_id</span><span class="p">}</span><span class="o">/</span><span class="n">tasks</span>
+</pre></div>
+</div>
+</li>
+<li><p>In the DPS API, the configuration resource (now job definition) used to include process steps, parameter definitions, and parameter locations.
+These are now separate resources (with corresponding endpoints) in the JMS API, namely task definitions, parameter definitions, and parameter mappings.</p></li>
+<li><p>Within a task definition (previously process step), you can now also specify the following information:</p>
+<ul class="simple">
+<li><p>Multiple software requirements</p></li>
+<li><p>Environment variables</p></li>
+<li><p>Execution context</p></li>
+<li><p>Custom resource requirements</p></li>
+<li><p>HPC resource requirements</p></li>
+</ul>
+<p>The <code class="docutils literal notranslate"><span class="pre">cpu_core_usage</span></code> field has been renamed to <code class="docutils literal notranslate"><span class="pre">num_cores</span></code>.
+The <code class="docutils literal notranslate"><span class="pre">memory</span></code> and <code class="docutils literal notranslate"><span class="pre">disk_space</span></code> fields are expressed in bytes rather than megabytes.</p>
+</li>
+</ul>
+</section>
+<section id="python-client-changes">
+<h2>Python client changes<a class="headerlink" href="#python-client-changes" title="Link to this heading">#</a></h2>
+<section id="installation">
+<h3>Installation<a class="headerlink" href="#installation" title="Link to this heading">#</a></h3>
+<p>The DCS Python client used to be distributed as a wheel in the Ansys installation.
+You can install PyHPS as indicated in <a class="reference internal" href="../getting_started/index.html#getting-started"><span class="std std-ref">Getting started</span></a>.</p>
+</section>
+<section id="client-and-api-objects">
+<h3>Client and API objects<a class="headerlink" href="#client-and-api-objects" title="Link to this heading">#</a></h3>
+<p>With respect to the DCS Python client, the PyHPS structure has been streamlined.
+The main <a class="reference internal" href="../api/_autosummary/ansys.hps.client.client.Client.html#ansys.hps.client.client.Client" title="ansys.hps.client.client.Client"><code class="xref py py-exc docutils literal notranslate"><span class="pre">Client</span></code></a> object stores only the connection, without exposing any service API.
+Similarly, resources like <a class="reference internal" href="../api/_autosummary/ansys.hps.client.jms.Project.html#ansys.hps.client.jms.Project" title="ansys.hps.client.jms.Project"><code class="xref py py-exc docutils literal notranslate"><span class="pre">Project</span></code></a> and <a class="reference internal" href="../api/_autosummary/ansys.hps.client.jms.Job.html#ansys.hps.client.jms.Job" title="ansys.hps.client.jms.Job"><code class="xref py py-exc docutils literal notranslate"><span class="pre">Job</span></code></a> do not expose API endpoints.
+Instead, objects like <a class="reference internal" href="../api/_autosummary/ansys.hps.client.jms.api.JmsApi.html#ansys.hps.client.jms.api.JmsApi" title="ansys.hps.client.jms.api.JmsApi"><code class="xref py py-exc docutils literal notranslate"><span class="pre">JmsApi</span></code></a>, <a class="reference internal" href="../api/_autosummary/ansys.hps.client.jms.api.ProjectApi.html#ansys.hps.client.jms.api.ProjectApi" title="ansys.hps.client.jms.api.ProjectApi"><code class="xref py py-exc docutils literal notranslate"><span class="pre">ProjectApi</span></code></a>,
+and <a class="reference internal" href="../api/_autosummary/ansys.hps.client.rms.api.RmsApi.html#ansys.hps.client.rms.api.RmsApi" title="ansys.hps.client.rms.api.RmsApi"><code class="xref py py-exc docutils literal notranslate"><span class="pre">RmsApi</span></code></a> wrap around HPS REST APIs.</p>
+<p>This code shows how to instantiate a <code class="docutils literal notranslate"><span class="pre">Client</span></code> object and retrieve projects:</p>
+<div class="sphinx-tabs docutils container">
+<div aria-label="Tabbed content" class="closeable" role="tablist"><button aria-controls="panel-0-RENTIGNsaWVudA==" aria-selected="true" class="sphinx-tabs-tab code-tab group-tab" id="tab-0-RENTIGNsaWVudA==" name="RENTIGNsaWVudA==" role="tab" tabindex="0">DCS client</button><button aria-controls="panel-0-UHlIUFM=" aria-selected="false" class="sphinx-tabs-tab code-tab group-tab" id="tab-0-UHlIUFM=" name="UHlIUFM=" role="tab" tabindex="-1">PyHPS</button></div><div aria-labelledby="tab-0-RENTIGNsaWVudA==" class="sphinx-tabs-panel code-tab group-tab" id="panel-0-RENTIGNsaWVudA==" name="RENTIGNsaWVudA==" role="tabpanel" tabindex="0"><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">ansys.dcs.client.dps</span><span class="w"> </span><span class="kn">import</span> <span class="n">Client</span>
+
+<span class="n">client</span> <span class="o">=</span> <span class="n">Client</span><span class="p">(</span>
+    <span class="n">dcs_url</span><span class="o">=</span><span class="s2">&quot;https://localhost/dcs&quot;</span><span class="p">,</span>
+    <span class="n">username</span><span class="o">=</span><span class="s2">&quot;dcadmin&quot;</span><span class="p">,</span>
+    <span class="n">password</span><span class="o">=</span><span class="s2">&quot;dcadmin&quot;</span>
+<span class="p">)</span>
+<span class="n">projects</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">get_projects</span><span class="p">()</span>
+</pre></div>
+</div>
+</div><div aria-labelledby="tab-0-UHlIUFM=" class="sphinx-tabs-panel code-tab group-tab" hidden="true" id="panel-0-UHlIUFM=" name="UHlIUFM=" role="tabpanel" tabindex="0"><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">ansys.hps.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">Client</span><span class="p">,</span> <span class="n">JmsApi</span>
+
+<span class="n">client</span> <span class="o">=</span> <span class="n">Client</span><span class="p">(</span>
+    <span class="n">url</span><span class="o">=</span><span class="s2">&quot;https://localhost:8443/hps&quot;</span><span class="p">,</span>
+    <span class="n">username</span><span class="o">=</span><span class="s2">&quot;repuser&quot;</span><span class="p">,</span>
+    <span class="n">password</span><span class="o">=</span><span class="s2">&quot;repuser&quot;</span>
+<span class="p">)</span>
+<span class="n">jms_api</span> <span class="o">=</span> <span class="n">JmsApi</span><span class="p">(</span><span class="n">client</span><span class="p">)</span>
+<span class="n">projects</span> <span class="o">=</span> <span class="n">jms_api</span><span class="o">.</span><span class="n">get_projects</span><span class="p">()</span>
+</pre></div>
+</div>
+</div></div>
+</section>
+<section id="project-id">
+<h3>Project ID<a class="headerlink" href="#project-id" title="Link to this heading">#</a></h3>
+<p>As mentioned earlier, in HPS the client only specifies the name of the project.
+The project ID is assigned server-side. This code shows how to create a project:</p>
+<div class="sphinx-tabs docutils container">
+<div aria-label="Tabbed content" class="closeable" role="tablist"><button aria-controls="panel-1-RENTIGNsaWVudA==" aria-selected="true" class="sphinx-tabs-tab code-tab group-tab" id="tab-1-RENTIGNsaWVudA==" name="RENTIGNsaWVudA==" role="tab" tabindex="0">DCS client</button><button aria-controls="panel-1-UHlIUFM=" aria-selected="false" class="sphinx-tabs-tab code-tab group-tab" id="tab-1-UHlIUFM=" name="UHlIUFM=" role="tab" tabindex="-1">PyHPS</button></div><div aria-labelledby="tab-1-RENTIGNsaWVudA==" class="sphinx-tabs-panel code-tab group-tab" id="panel-1-RENTIGNsaWVudA==" name="RENTIGNsaWVudA==" role="tabpanel" tabindex="0"><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">ansys.dcs.client.dps</span><span class="w"> </span><span class="kn">import</span> <span class="n">Client</span><span class="p">,</span> <span class="n">Project</span>
+
+<span class="n">client</span> <span class="o">=</span> <span class="n">Client</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
+
+<span class="n">proj</span> <span class="o">=</span> <span class="n">Project</span><span class="p">(</span>
+    <span class="nb">id</span><span class="o">=</span><span class="s2">&quot;my_new_project&quot;</span><span class="p">,</span>
+    <span class="n">display_name</span><span class="o">=</span><span class="s2">&quot;My New Project&quot;</span>
+<span class="p">)</span>
+<span class="n">proj</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">create_project</span><span class="p">(</span><span class="n">proj</span><span class="p">)</span>
+</pre></div>
+</div>
+</div><div aria-labelledby="tab-1-UHlIUFM=" class="sphinx-tabs-panel code-tab group-tab" hidden="true" id="panel-1-UHlIUFM=" name="UHlIUFM=" role="tabpanel" tabindex="0"><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">ansys.hps.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">Client</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">ansys.hps.client.jms</span><span class="w"> </span><span class="kn">import</span> <span class="n">JmsApi</span><span class="p">,</span> <span class="n">Project</span>
+
+<span class="n">client</span> <span class="o">=</span> <span class="n">Client</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
+
+<span class="n">jms_api</span> <span class="o">=</span> <span class="n">JmsApi</span><span class="p">(</span><span class="n">client</span><span class="p">)</span>
+<span class="n">proj</span> <span class="o">=</span> <span class="n">Project</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;My New Project&quot;</span><span class="p">)</span>
+<span class="n">proj</span> <span class="o">=</span> <span class="n">jms_api</span><span class="o">.</span><span class="n">create_project</span><span class="p">(</span><span class="n">proj</span><span class="p">)</span>
+</pre></div>
+</div>
+</div></div>
+</section>
+<section id="removed-nested-endpoints">
+<h3>Removed nested endpoints<a class="headerlink" href="#removed-nested-endpoints" title="Link to this heading">#</a></h3>
+<p>Following the changes in the API, nested endpoints are removed.</p>
+</section>
+<section id="exceptions">
+<h3>Exceptions<a class="headerlink" href="#exceptions" title="Link to this heading">#</a></h3>
+<p>Exception handling works the same. However,  the <code class="docutils literal notranslate"><span class="pre">DCSError</span></code> class has been renamed to <code class="docutils literal notranslate"><span class="pre">HPSError</span></code>.</p>
+<div class="sphinx-tabs docutils container">
+<div aria-label="Tabbed content" class="closeable" role="tablist"><button aria-controls="panel-2-RENTIGNsaWVudA==" aria-selected="true" class="sphinx-tabs-tab code-tab group-tab" id="tab-2-RENTIGNsaWVudA==" name="RENTIGNsaWVudA==" role="tab" tabindex="0">DCS client</button><button aria-controls="panel-2-UHlIUFM=" aria-selected="false" class="sphinx-tabs-tab code-tab group-tab" id="tab-2-UHlIUFM=" name="UHlIUFM=" role="tab" tabindex="-1">PyHPS</button></div><div aria-labelledby="tab-2-RENTIGNsaWVudA==" class="sphinx-tabs-panel code-tab group-tab" id="panel-2-RENTIGNsaWVudA==" name="RENTIGNsaWVudA==" role="tabpanel" tabindex="0"><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">ansys.dcs.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">DCSError</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">ansys.dcs.client.dps</span><span class="w"> </span><span class="kn">import</span> <span class="n">Client</span>
+
+<span class="k">try</span><span class="p">:</span>
+    <span class="n">client</span> <span class="o">=</span> <span class="n">Client</span><span class="p">(</span>
+        <span class="n">dcs_url</span><span class="o">=</span><span class="s2">&quot;https://localhost/dcs/&quot;</span><span class="p">,</span>
+        <span class="n">username</span><span class="o">=</span><span class="s2">&quot;dcadmin&quot;</span><span class="p">,</span>
+        <span class="n">password</span><span class="o">=</span><span class="s2">&quot;wrong_psw&quot;</span>
+    <span class="p">)</span>
+<span class="k">except</span> <span class="n">DCSError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+</pre></div>
+</div>
+</div><div aria-labelledby="tab-2-UHlIUFM=" class="sphinx-tabs-panel code-tab group-tab" hidden="true" id="panel-2-UHlIUFM=" name="UHlIUFM=" role="tabpanel" tabindex="0"><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">ansys.hps.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">Client</span><span class="p">,</span> <span class="n">HPSError</span>
+
+<span class="k">try</span><span class="p">:</span>
+    <span class="n">client</span> <span class="o">=</span> <span class="n">Client</span><span class="p">(</span>
+        <span class="n">url</span><span class="o">=</span><span class="s2">&quot;https://localhost:8443/hps&quot;</span><span class="p">,</span>
+        <span class="n">username</span><span class="o">=</span><span class="s2">&quot;repuser&quot;</span><span class="p">,</span>
+        <span class="n">password</span><span class="o">=</span><span class="s2">&quot;wrong_psw&quot;</span>
+    <span class="p">)</span>
+<span class="k">except</span> <span class="n">HPSError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+</pre></div>
+</div>
+</div></div>
+</section>
+<section id="evaluators">
+<h3>Evaluators<a class="headerlink" href="#evaluators" title="Link to this heading">#</a></h3>
+<p>The evaluator resources and corresponding endpoints have been moved to the new Resource Management Service (RMS).
+This is reflected in PyHPS accordingly.</p>
+<div class="sphinx-tabs docutils container">
+<div aria-label="Tabbed content" class="closeable" role="tablist"><button aria-controls="panel-3-RENTIGNsaWVudA==" aria-selected="true" class="sphinx-tabs-tab code-tab group-tab" id="tab-3-RENTIGNsaWVudA==" name="RENTIGNsaWVudA==" role="tab" tabindex="0">DCS client</button><button aria-controls="panel-3-UHlIUFM=" aria-selected="false" class="sphinx-tabs-tab code-tab group-tab" id="tab-3-UHlIUFM=" name="UHlIUFM=" role="tab" tabindex="-1">PyHPS</button></div><div aria-labelledby="tab-3-RENTIGNsaWVudA==" class="sphinx-tabs-panel code-tab group-tab" id="panel-3-RENTIGNsaWVudA==" name="RENTIGNsaWVudA==" role="tabpanel" tabindex="0"><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">ansys.dcs.client.dps</span><span class="w"> </span><span class="kn">import</span> <span class="n">Client</span>
+
+<span class="n">client</span> <span class="o">=</span> <span class="n">Client</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
+
+<span class="n">evaluators</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">get_evaluators</span><span class="p">()</span>
+</pre></div>
+</div>
+</div><div aria-labelledby="tab-3-UHlIUFM=" class="sphinx-tabs-panel code-tab group-tab" hidden="true" id="panel-3-UHlIUFM=" name="UHlIUFM=" role="tabpanel" tabindex="0"><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">ansys.hps.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">Client</span><span class="p">,</span> <span class="n">RmsApi</span>
+
+<span class="n">client</span> <span class="o">=</span> <span class="n">Client</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
+
+<span class="n">rms_api</span> <span class="o">=</span> <span class="n">RmsApi</span><span class="p">(</span><span class="n">client</span><span class="p">)</span>
+<span class="n">evaluators</span> <span class="o">=</span> <span class="n">rms_api</span><span class="o">.</span><span class="n">get_evaluators</span><span class="p">()</span>
+</pre></div>
+</div>
+</div></div>
+</section>
+</section>
+<section id="example-project">
+<h2>Example project<a class="headerlink" href="#example-project" title="Link to this heading">#</a></h2>
+<p>This example shows how to migrate a script that creates a DCS project consisting
+of an Ansys APDL beam model of a tubular motorbike-frame.
+The script was originally included in the <a class="reference external" href="https://storage.ansys.com/dcs_python_client/v241/ex_motorbike_frame.html">DCS Python Client documentation</a>
+and is now available as a PyHPS script in the <a class="reference external" href="https://hps.docs.pyansys.com/version/0.10/examples/ex_motorbike_frame.html#example-mapdl-motorbike-frame" title="(in Ansys pyhps v0.10.0)"><span class="xref std std-ref">example_mapdl_motorbike_frame</span></a> example.</p>
+<section id="import-modules-and-instantiate-the-client">
+<h3>Import modules and instantiate the client<a class="headerlink" href="#import-modules-and-instantiate-the-client" title="Link to this heading">#</a></h3>
+<div class="sphinx-tabs docutils container">
+<div aria-label="Tabbed content" class="closeable" role="tablist"><button aria-controls="panel-4-RENTIGNsaWVudA==" aria-selected="true" class="sphinx-tabs-tab code-tab group-tab" id="tab-4-RENTIGNsaWVudA==" name="RENTIGNsaWVudA==" role="tab" tabindex="0">DCS client</button><button aria-controls="panel-4-UHlIUFM=" aria-selected="false" class="sphinx-tabs-tab code-tab group-tab" id="tab-4-UHlIUFM=" name="UHlIUFM=" role="tab" tabindex="-1">PyHPS</button></div><div aria-labelledby="tab-4-RENTIGNsaWVudA==" class="sphinx-tabs-panel code-tab group-tab" id="panel-4-RENTIGNsaWVudA==" name="RENTIGNsaWVudA==" role="tabpanel" tabindex="0"><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">ansys.dcs.client.dps</span><span class="w"> </span><span class="kn">import</span> <span class="n">Client</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">ansys.dcs.client.dps.resource</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">Configuration</span><span class="p">,</span>
+    <span class="n">DesignPoint</span><span class="p">,</span>
+    <span class="n">File</span><span class="p">,</span>
+    <span class="n">FitnessDefinition</span><span class="p">,</span>
+    <span class="n">Project</span><span class="p">,</span>
+    <span class="n">SuccessCriteria</span>
+<span class="p">)</span>
+
+<span class="n">client</span> <span class="o">=</span> <span class="n">Client</span><span class="p">(</span>
+    <span class="n">dcs_url</span><span class="o">=</span><span class="s2">&quot;https://127.0.0.1/dcs&quot;</span><span class="p">,</span>
+    <span class="n">username</span><span class="o">=</span><span class="s2">&quot;dcadmin&quot;</span><span class="p">,</span>
+    <span class="n">password</span><span class="o">=</span><span class="s2">&quot;dcadmin&quot;</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div><div aria-labelledby="tab-4-UHlIUFM=" class="sphinx-tabs-panel code-tab group-tab" hidden="true" id="panel-4-UHlIUFM=" name="UHlIUFM=" role="tabpanel" tabindex="0"><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">ansys.hps.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">Client</span><span class="p">,</span> <span class="n">JmsApi</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">ansys.hps.client.jms</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">File</span><span class="p">,</span>
+    <span class="n">FitnessDefinition</span><span class="p">,</span>
+    <span class="n">FloatParameterDefinition</span><span class="p">,</span>
+    <span class="n">Job</span><span class="p">,</span>
+    <span class="n">JobDefinition</span><span class="p">,</span>
+    <span class="n">ParameterMapping</span><span class="p">,</span>
+    <span class="n">Project</span><span class="p">,</span>
+    <span class="n">ProjectApi</span><span class="p">,</span>
+    <span class="n">ResourceRequirements</span><span class="p">,</span>
+    <span class="n">Software</span><span class="p">,</span>
+    <span class="n">StringParameterDefinition</span><span class="p">,</span>
+    <span class="n">SuccessCriteria</span><span class="p">,</span>
+    <span class="n">TaskDefinition</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="n">client</span> <span class="o">=</span> <span class="n">Client</span><span class="p">(</span>
+    <span class="n">url</span><span class="o">=</span><span class="s2">&quot;https://localhost:8443/hps&quot;</span><span class="p">,</span>
+    <span class="n">username</span><span class="o">=</span><span class="s2">&quot;repuser&quot;</span><span class="p">,</span>
+    <span class="n">password</span><span class="o">=</span><span class="s2">&quot;repuser&quot;</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div></div>
+</section>
+<section id="create-an-empty-project-and-a-job-definition">
+<h3>Create an empty project and a job definition<a class="headerlink" href="#create-an-empty-project-and-a-job-definition" title="Link to this heading">#</a></h3>
+<div class="sphinx-tabs docutils container">
+<div aria-label="Tabbed content" class="closeable" role="tablist"><button aria-controls="panel-5-RENTIGNsaWVudA==" aria-selected="true" class="sphinx-tabs-tab code-tab group-tab" id="tab-5-RENTIGNsaWVudA==" name="RENTIGNsaWVudA==" role="tab" tabindex="0">DCS client</button><button aria-controls="panel-5-UHlIUFM=" aria-selected="false" class="sphinx-tabs-tab code-tab group-tab" id="tab-5-UHlIUFM=" name="UHlIUFM=" role="tab" tabindex="-1">PyHPS</button></div><div aria-labelledby="tab-5-RENTIGNsaWVudA==" class="sphinx-tabs-panel code-tab group-tab" id="panel-5-RENTIGNsaWVudA==" name="RENTIGNsaWVudA==" role="tabpanel" tabindex="0"><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">proj</span> <span class="o">=</span> <span class="n">Project</span><span class="p">(</span>
+    <span class="nb">id</span><span class="o">=</span><span class="s2">&quot;mapdl_motorbike_frame&quot;</span><span class="p">,</span>
+    <span class="n">display_name</span><span class="o">=</span><span class="s2">&quot;MAPDL motorbike frame&quot;</span><span class="p">,</span>
+    <span class="n">priority</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+    <span class="n">active</span><span class="o">=</span><span class="kc">True</span>
+<span class="p">)</span>
+<span class="n">proj</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">create_project</span><span class="p">(</span><span class="n">proj</span><span class="p">,</span> <span class="n">replace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+<span class="n">cfg</span> <span class="o">=</span> <span class="n">Configuration</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;Configuration.1&quot;</span><span class="p">,</span> <span class="n">active</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+</div><div aria-labelledby="tab-5-UHlIUFM=" class="sphinx-tabs-panel code-tab group-tab" hidden="true" id="panel-5-UHlIUFM=" name="UHlIUFM=" role="tabpanel" tabindex="0"><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">jms_api</span> <span class="o">=</span> <span class="n">JmsApi</span><span class="p">(</span><span class="n">client</span><span class="p">)</span>
+<span class="n">proj</span> <span class="o">=</span> <span class="n">Project</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;MAPDL motorbike frame&quot;</span><span class="p">,</span> <span class="n">priority</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">active</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">proj</span> <span class="o">=</span> <span class="n">jms_api</span><span class="o">.</span><span class="n">create_project</span><span class="p">(</span><span class="n">proj</span><span class="p">)</span>
+
+<span class="n">project_api</span> <span class="o">=</span> <span class="n">ProjectApi</span><span class="p">(</span><span class="n">client</span><span class="p">,</span> <span class="n">proj</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+
+<span class="n">job_def</span> <span class="o">=</span> <span class="n">JobDefinition</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;JobDefinition.1&quot;</span><span class="p">,</span> <span class="n">active</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+</div></div>
+</section>
+<section id="create-file-resources">
+<h3>Create file resources<a class="headerlink" href="#create-file-resources" title="Link to this heading">#</a></h3>
+<div class="sphinx-tabs docutils container">
+<div aria-label="Tabbed content" class="closeable" role="tablist"><button aria-controls="panel-6-RENTIGNsaWVudA==" aria-selected="true" class="sphinx-tabs-tab code-tab group-tab" id="tab-6-RENTIGNsaWVudA==" name="RENTIGNsaWVudA==" role="tab" tabindex="0">DCS client</button><button aria-controls="panel-6-UHlIUFM=" aria-selected="false" class="sphinx-tabs-tab code-tab group-tab" id="tab-6-UHlIUFM=" name="UHlIUFM=" role="tab" tabindex="-1">PyHPS</button></div><div aria-labelledby="tab-6-RENTIGNsaWVudA==" class="sphinx-tabs-panel code-tab group-tab" id="panel-6-RENTIGNsaWVudA==" name="RENTIGNsaWVudA==" role="tabpanel" tabindex="0"><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">cwd</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)</span>
+<span class="n">files</span> <span class="o">=</span> <span class="p">[]</span>
+
+<span class="c1"># Input File</span>
+<span class="n">files</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+    <span class="n">File</span><span class="p">(</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;mac&quot;</span><span class="p">,</span>
+        <span class="n">evaluation_path</span><span class="o">=</span><span class="s2">&quot;motorbike_frame.mac&quot;</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="s2">&quot;text/plain&quot;</span><span class="p">,</span>
+        <span class="n">src</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">cwd</span><span class="p">,</span> <span class="s2">&quot;motorbike_frame.mac&quot;</span><span class="p">)</span>
+    <span class="p">)</span>
+<span class="p">)</span>
+
+<span class="c1"># Output Files</span>
+<span class="n">files</span><span class="o">.</span><span class="n">append</span><span class="p">(</span> <span class="n">File</span><span class="p">(</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;results&quot;</span><span class="p">,</span> <span class="n">evaluation_path</span><span class="o">=</span><span class="s2">&quot;motorbike_frame_results.txt&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="s2">&quot;text/plain&quot;</span> <span class="p">)</span> <span class="p">)</span>
+<span class="n">files</span><span class="o">.</span><span class="n">append</span><span class="p">(</span> <span class="n">File</span><span class="p">(</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;img&quot;</span><span class="p">,</span> <span class="n">evaluation_path</span><span class="o">=</span><span class="s2">&quot;file000.jpg&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="s2">&quot;image/jpeg&quot;</span><span class="p">,</span> <span class="n">collect</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="p">)</span>
+<span class="n">files</span><span class="o">.</span><span class="n">append</span><span class="p">(</span> <span class="n">File</span><span class="p">(</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;img2&quot;</span><span class="p">,</span> <span class="n">evaluation_path</span><span class="o">=</span><span class="s2">&quot;file001.jpg&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="s2">&quot;image/jpeg&quot;</span><span class="p">,</span> <span class="n">collect</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="p">)</span>
+<span class="n">files</span><span class="o">.</span><span class="n">append</span><span class="p">(</span> <span class="n">File</span><span class="p">(</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;out&quot;</span><span class="p">,</span> <span class="n">evaluation_path</span><span class="o">=</span><span class="s2">&quot;file.out&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="s2">&quot;text/plain&quot;</span><span class="p">,</span> <span class="n">collect</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="p">)</span>
+
+<span class="c1"># create file resources on the server</span>
+<span class="n">files</span> <span class="o">=</span> <span class="n">proj</span><span class="o">.</span><span class="n">create_files</span><span class="p">(</span><span class="n">files</span><span class="p">)</span>
+
+<span class="c1"># For convenience, keep a reference to the input and result files.</span>
+<span class="n">mac_file</span> <span class="o">=</span> <span class="n">files</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+<span class="n">result_file</span> <span class="o">=</span> <span class="n">files</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+</pre></div>
+</div>
+</div><div aria-labelledby="tab-6-UHlIUFM=" class="sphinx-tabs-panel code-tab group-tab" hidden="true" id="panel-6-UHlIUFM=" name="UHlIUFM=" role="tabpanel" tabindex="0"><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">cwd</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)</span>
+<span class="n">files</span> <span class="o">=</span> <span class="p">[]</span>
+
+<span class="c1"># Input File</span>
+<span class="n">files</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+    <span class="n">File</span><span class="p">(</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;mac&quot;</span><span class="p">,</span>
+        <span class="n">evaluation_path</span><span class="o">=</span><span class="s2">&quot;motorbike_frame.mac&quot;</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="s2">&quot;text/plain&quot;</span><span class="p">,</span>
+        <span class="n">src</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">cwd</span><span class="p">,</span> <span class="s2">&quot;motorbike_frame.mac&quot;</span><span class="p">),</span>
+    <span class="p">)</span>
+<span class="p">)</span>
+
+<span class="c1"># Output Files</span>
+<span class="n">files</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+    <span class="n">File</span><span class="p">(</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;results&quot;</span><span class="p">,</span>
+        <span class="n">evaluation_path</span><span class="o">=</span><span class="s2">&quot;motorbike_frame_results.txt&quot;</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="s2">&quot;text/plain&quot;</span><span class="p">,</span>
+        <span class="n">src</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">cwd</span><span class="p">,</span> <span class="s2">&quot;motorbike_frame_results.txt&quot;</span><span class="p">),</span>
+    <span class="p">)</span>
+<span class="p">)</span>
+<span class="n">files</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">File</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;img&quot;</span><span class="p">,</span> <span class="n">evaluation_path</span><span class="o">=</span><span class="s2">&quot;file000.jpg&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="s2">&quot;image/jpeg&quot;</span><span class="p">,</span> <span class="n">collect</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
+<span class="n">files</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">File</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;img2&quot;</span><span class="p">,</span> <span class="n">evaluation_path</span><span class="o">=</span><span class="s2">&quot;file001.jpg&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="s2">&quot;image/jpeg&quot;</span><span class="p">,</span> <span class="n">collect</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
+<span class="n">files</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+    <span class="n">File</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;out&quot;</span><span class="p">,</span> <span class="n">evaluation_path</span><span class="o">=</span><span class="s2">&quot;file.out&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="s2">&quot;text/plain&quot;</span><span class="p">,</span> <span class="n">collect</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">monitor</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="p">)</span>
+
+<span class="c1"># create file resources on the server</span>
+<span class="n">files</span> <span class="o">=</span> <span class="n">project_api</span><span class="o">.</span><span class="n">create_files</span><span class="p">(</span><span class="n">files</span><span class="p">)</span>
+
+<span class="c1"># For convenience, keep a reference to the input and result files.</span>
+<span class="n">mac_file</span> <span class="o">=</span> <span class="n">files</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+<span class="n">result_file</span> <span class="o">=</span> <span class="n">files</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+</pre></div>
+</div>
+</div></div>
+</section>
+<section id="create-parameter-definitions">
+<h3>Create parameter definitions<a class="headerlink" href="#create-parameter-definitions" title="Link to this heading">#</a></h3>
+<div class="sphinx-tabs docutils container">
+<div aria-label="Tabbed content" class="closeable" role="tablist"><button aria-controls="panel-7-RENTIGNsaWVudA==" aria-selected="true" class="sphinx-tabs-tab code-tab group-tab" id="tab-7-RENTIGNsaWVudA==" name="RENTIGNsaWVudA==" role="tab" tabindex="0">DCS client</button><button aria-controls="panel-7-UHlIUFM=" aria-selected="false" class="sphinx-tabs-tab code-tab group-tab" id="tab-7-UHlIUFM=" name="UHlIUFM=" role="tab" tabindex="-1">PyHPS</button></div><div aria-labelledby="tab-7-RENTIGNsaWVudA==" class="sphinx-tabs-panel code-tab group-tab" id="panel-7-RENTIGNsaWVudA==" name="RENTIGNsaWVudA==" role="tabpanel" tabindex="0"><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Input params: Dimensions of three custom tubes</span>
+<span class="n">float_input_params</span><span class="o">=</span><span class="p">[]</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">4</span><span class="p">):</span>
+    <span class="n">pd</span> <span class="o">=</span> <span class="n">cfg</span><span class="o">.</span><span class="n">add_float_parameter_definition</span><span class="p">(</span>
+        <span class="n">name</span><span class="o">=</span><span class="s1">&#39;tube</span><span class="si">%i</span><span class="s1">_radius&#39;</span> <span class="o">%</span><span class="n">i</span><span class="p">,</span>
+        <span class="n">lower_limit</span><span class="o">=</span><span class="mf">4.0</span><span class="p">,</span>
+        <span class="n">upper_limit</span><span class="o">=</span><span class="mf">20.0</span><span class="p">,</span><span class="n">default</span><span class="o">=</span><span class="mf">12.0</span>
+    <span class="p">)</span>
+    <span class="n">cfg</span><span class="o">.</span><span class="n">add_parameter_location</span><span class="p">(</span>
+        <span class="n">key_string</span><span class="o">=</span><span class="s1">&#39;radius(</span><span class="si">%i</span><span class="s1">)&#39;</span> <span class="o">%</span> <span class="n">i</span><span class="p">,</span>
+        <span class="n">tokenizer</span><span class="o">=</span><span class="s2">&quot;=&quot;</span><span class="p">,</span>
+        <span class="n">parameter_definition_name</span><span class="o">=</span><span class="n">pd</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+        <span class="n">file_id</span><span class="o">=</span><span class="n">mac_file</span><span class="o">.</span><span class="n">id</span>
+    <span class="p">)</span>
+    <span class="n">float_input_params</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">pd</span><span class="p">)</span>
+    <span class="n">pd</span> <span class="o">=</span> <span class="n">cfg</span><span class="o">.</span><span class="n">add_float_parameter_definition</span><span class="p">(</span>
+        <span class="n">name</span><span class="o">=</span><span class="s1">&#39;tube</span><span class="si">%i</span><span class="s1">_thickness&#39;</span> <span class="o">%</span><span class="n">i</span><span class="p">,</span>
+        <span class="n">lower_limit</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span>
+        <span class="n">upper_limit</span><span class="o">=</span><span class="mf">2.5</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="mf">1.0</span> <span class="p">)</span>
+    <span class="n">cfg</span><span class="o">.</span><span class="n">add_parameter_location</span><span class="p">(</span>
+        <span class="n">key_string</span><span class="o">=</span><span class="s1">&#39;thickness(</span><span class="si">%i</span><span class="s1">)&#39;</span> <span class="o">%</span> <span class="n">i</span><span class="p">,</span>
+        <span class="n">tokenizer</span><span class="o">=</span><span class="s2">&quot;=&quot;</span><span class="p">,</span>
+        <span class="n">parameter_definition_name</span><span class="o">=</span><span class="n">pd</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+        <span class="n">file_id</span><span class="o">=</span><span class="n">mac_file</span><span class="o">.</span><span class="n">id</span>
+    <span class="p">)</span>
+    <span class="n">float_input_params</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">pd</span><span class="p">)</span>
+
+<span class="c1"># Input params: Custom types used for all the different tubes of the frame</span>
+<span class="n">str_input_params</span><span class="o">=</span><span class="p">[]</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">22</span><span class="p">):</span>
+    <span class="n">pd</span> <span class="o">=</span> <span class="n">cfg</span><span class="o">.</span><span class="n">add_string_parameter_definition</span><span class="p">(</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;tube</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span><span class="n">i</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="s2">&quot;1&quot;</span><span class="p">,</span>
+        <span class="n">value_list</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;1&quot;</span><span class="p">,</span><span class="s2">&quot;2&quot;</span><span class="p">,</span><span class="s2">&quot;3&quot;</span><span class="p">]</span>
+    <span class="p">)</span>
+    <span class="n">cfg</span><span class="o">.</span><span class="n">add_parameter_location</span><span class="p">(</span>
+        <span class="n">key_string</span><span class="o">=</span><span class="s1">&#39;tubes(</span><span class="si">%i</span><span class="s1">)&#39;</span> <span class="o">%</span> <span class="n">i</span><span class="p">,</span>
+        <span class="n">tokenizer</span><span class="o">=</span><span class="s2">&quot;=&quot;</span><span class="p">,</span>
+        <span class="n">parameter_definition_name</span><span class="o">=</span><span class="n">pd</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+        <span class="n">file_id</span><span class="o">=</span><span class="n">mac_file</span><span class="o">.</span><span class="n">id</span>
+    <span class="p">)</span>
+    <span class="n">str_input_params</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">pd</span><span class="p">)</span>
+
+<span class="c1"># Output Parames</span>
+<span class="k">for</span> <span class="n">pname</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;weight&quot;</span><span class="p">,</span> <span class="s2">&quot;torsion_stiffness&quot;</span><span class="p">,</span> <span class="s2">&quot;max_stress&quot;</span><span class="p">]:</span>
+    <span class="n">pd</span> <span class="o">=</span> <span class="n">cfg</span><span class="o">.</span><span class="n">add_float_parameter_definition</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">pname</span><span class="p">)</span>
+    <span class="n">cfg</span><span class="o">.</span><span class="n">add_parameter_location</span><span class="p">(</span>
+        <span class="n">key_string</span><span class="o">=</span><span class="n">pname</span><span class="p">,</span>
+        <span class="n">tokenizer</span><span class="o">=</span><span class="s2">&quot;=&quot;</span><span class="p">,</span>
+        <span class="n">parameter_definition_name</span><span class="o">=</span><span class="n">pd</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+        <span class="n">file_id</span><span class="o">=</span><span class="n">result_file</span><span class="o">.</span><span class="n">id</span>
+    <span class="p">)</span>
+</pre></div>
+</div>
+</div><div aria-labelledby="tab-7-UHlIUFM=" class="sphinx-tabs-panel code-tab group-tab" hidden="true" id="panel-7-UHlIUFM=" name="UHlIUFM=" role="tabpanel" tabindex="0"><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Input params: Dimensions of three custom tubes</span>
+<span class="n">float_input_params</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">4</span><span class="p">):</span>
+    <span class="n">float_input_params</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span>
+        <span class="p">[</span>
+            <span class="n">FloatParameterDefinition</span><span class="p">(</span>
+                <span class="n">name</span><span class="o">=</span><span class="s2">&quot;tube</span><span class="si">%i</span><span class="s2">_radius&quot;</span> <span class="o">%</span> <span class="n">i</span><span class="p">,</span> <span class="n">lower_limit</span><span class="o">=</span><span class="mf">4.0</span><span class="p">,</span> <span class="n">upper_limit</span><span class="o">=</span><span class="mf">20.0</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mf">12.0</span>
+            <span class="p">),</span>
+            <span class="n">FloatParameterDefinition</span><span class="p">(</span>
+                <span class="n">name</span><span class="o">=</span><span class="s2">&quot;tube</span><span class="si">%i</span><span class="s2">_thickness&quot;</span> <span class="o">%</span> <span class="n">i</span><span class="p">,</span> <span class="n">lower_limit</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">upper_limit</span><span class="o">=</span><span class="mf">2.5</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mf">1.0</span>
+            <span class="p">),</span>
+        <span class="p">]</span>
+    <span class="p">)</span>
+
+<span class="n">float_input_params</span> <span class="o">=</span> <span class="n">project_api</span><span class="o">.</span><span class="n">create_parameter_definitions</span><span class="p">(</span><span class="n">float_input_params</span><span class="p">)</span>
+<span class="n">param_mappings</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="n">pi</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">4</span><span class="p">):</span>
+    <span class="n">param_mappings</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+        <span class="n">ParameterMapping</span><span class="p">(</span>
+            <span class="n">key_string</span><span class="o">=</span><span class="s2">&quot;radius(</span><span class="si">%i</span><span class="s2">)&quot;</span> <span class="o">%</span> <span class="n">i</span><span class="p">,</span>
+            <span class="n">tokenizer</span><span class="o">=</span><span class="s2">&quot;=&quot;</span><span class="p">,</span>
+            <span class="n">parameter_definition_id</span><span class="o">=</span><span class="n">float_input_params</span><span class="p">[</span><span class="n">pi</span><span class="p">]</span><span class="o">.</span><span class="n">id</span><span class="p">,</span>
+            <span class="n">file_id</span><span class="o">=</span><span class="n">mac_file</span><span class="o">.</span><span class="n">id</span><span class="p">,</span>
+        <span class="p">)</span>
+    <span class="p">)</span>
+    <span class="n">pi</span> <span class="o">+=</span> <span class="mi">1</span>
+    <span class="n">param_mappings</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+        <span class="n">ParameterMapping</span><span class="p">(</span>
+            <span class="n">key_string</span><span class="o">=</span><span class="s2">&quot;thickness(</span><span class="si">%i</span><span class="s2">)&quot;</span> <span class="o">%</span> <span class="n">i</span><span class="p">,</span>
+            <span class="n">tokenizer</span><span class="o">=</span><span class="s2">&quot;=&quot;</span><span class="p">,</span>
+            <span class="n">parameter_definition_id</span><span class="o">=</span><span class="n">float_input_params</span><span class="p">[</span><span class="n">pi</span><span class="p">]</span><span class="o">.</span><span class="n">id</span><span class="p">,</span>
+            <span class="n">file_id</span><span class="o">=</span><span class="n">mac_file</span><span class="o">.</span><span class="n">id</span><span class="p">,</span>
+        <span class="p">)</span>
+    <span class="p">)</span>
+    <span class="n">pi</span> <span class="o">+=</span> <span class="mi">1</span>
+
+<span class="c1"># Input params: Custom types used for all the different tubes of the frame</span>
+<span class="n">str_input_params</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">22</span><span class="p">):</span>
+    <span class="n">str_input_params</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+        <span class="n">StringParameterDefinition</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;tube</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">i</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s2">&quot;1&quot;</span><span class="p">,</span> <span class="n">value_list</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;1&quot;</span><span class="p">,</span> <span class="s2">&quot;2&quot;</span><span class="p">,</span> <span class="s2">&quot;3&quot;</span><span class="p">])</span>
+    <span class="p">)</span>
+<span class="n">str_input_params</span> <span class="o">=</span> <span class="n">project_api</span><span class="o">.</span><span class="n">create_parameter_definitions</span><span class="p">(</span><span class="n">str_input_params</span><span class="p">)</span>
+
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">22</span><span class="p">):</span>
+    <span class="n">param_mappings</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+        <span class="n">ParameterMapping</span><span class="p">(</span>
+            <span class="n">key_string</span><span class="o">=</span><span class="s2">&quot;tubes(</span><span class="si">%i</span><span class="s2">)&quot;</span> <span class="o">%</span> <span class="n">i</span><span class="p">,</span>
+            <span class="n">tokenizer</span><span class="o">=</span><span class="s2">&quot;=&quot;</span><span class="p">,</span>
+            <span class="n">parameter_definition_id</span><span class="o">=</span><span class="n">str_input_params</span><span class="p">[</span><span class="n">i</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">id</span><span class="p">,</span>
+            <span class="n">file_id</span><span class="o">=</span><span class="n">mac_file</span><span class="o">.</span><span class="n">id</span><span class="p">,</span>
+        <span class="p">)</span>
+    <span class="p">)</span>
+
+<span class="c1"># Output Params</span>
+<span class="n">output_params</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="k">for</span> <span class="n">pname</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;weight&quot;</span><span class="p">,</span> <span class="s2">&quot;torsion_stiffness&quot;</span><span class="p">,</span> <span class="s2">&quot;max_stress&quot;</span><span class="p">]:</span>
+    <span class="n">output_params</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">FloatParameterDefinition</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">pname</span><span class="p">))</span>
+<span class="n">output_params</span> <span class="o">=</span> <span class="n">project_api</span><span class="o">.</span><span class="n">create_parameter_definitions</span><span class="p">(</span><span class="n">output_params</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">pd</span> <span class="ow">in</span> <span class="n">output_params</span><span class="p">:</span>
+    <span class="n">param_mappings</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+        <span class="n">ParameterMapping</span><span class="p">(</span>
+            <span class="n">key_string</span><span class="o">=</span><span class="n">pd</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+            <span class="n">tokenizer</span><span class="o">=</span><span class="s2">&quot;=&quot;</span><span class="p">,</span>
+            <span class="n">parameter_definition_id</span><span class="o">=</span><span class="n">pd</span><span class="o">.</span><span class="n">id</span><span class="p">,</span>
+            <span class="n">file_id</span><span class="o">=</span><span class="n">result_file</span><span class="o">.</span><span class="n">id</span><span class="p">,</span>
+        <span class="p">)</span>
+    <span class="p">)</span>
+</pre></div>
+</div>
+</div></div>
+</section>
+<section id="create-process-steps-now-tasks">
+<h3>Create process steps (now tasks)<a class="headerlink" href="#create-process-steps-now-tasks" title="Link to this heading">#</a></h3>
+<div class="sphinx-tabs docutils container">
+<div aria-label="Tabbed content" class="closeable" role="tablist"><button aria-controls="panel-8-RENTIGNsaWVudA==" aria-selected="true" class="sphinx-tabs-tab code-tab group-tab" id="tab-8-RENTIGNsaWVudA==" name="RENTIGNsaWVudA==" role="tab" tabindex="0">DCS client</button><button aria-controls="panel-8-UHlIUFM=" aria-selected="false" class="sphinx-tabs-tab code-tab group-tab" id="tab-8-UHlIUFM=" name="UHlIUFM=" role="tab" tabindex="-1">PyHPS</button></div><div aria-labelledby="tab-8-RENTIGNsaWVudA==" class="sphinx-tabs-panel code-tab group-tab" id="panel-8-RENTIGNsaWVudA==" name="RENTIGNsaWVudA==" role="tabpanel" tabindex="0"><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">cfg</span><span class="o">.</span><span class="n">add_process_step</span><span class="p">(</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;MAPDL_run&quot;</span><span class="p">,</span>
+    <span class="n">application_name</span><span class="o">=</span><span class="s2">&quot;ANSYS Mechanical APDL&quot;</span><span class="p">,</span>
+    <span class="n">application_version</span><span class="o">=</span><span class="s2">&quot;2024 R1&quot;</span><span class="p">,</span>
+    <span class="n">execution_command</span><span class="o">=</span><span class="s2">&quot;</span><span class="si">%e</span><span class="s2">xecutable% -b -i </span><span class="si">%f</span><span class="s2">ile:mac</span><span class="si">% -o</span><span class="s2"> file.out&quot;</span><span class="p">,</span>
+    <span class="n">max_execution_time</span><span class="o">=</span><span class="mf">20.0</span><span class="p">,</span>
+    <span class="n">cpu_core_usage</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+    <span class="n">execution_level</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+    <span class="n">memory</span><span class="o">=</span><span class="mi">250</span><span class="p">,</span>
+    <span class="n">disk_space</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span>
+    <span class="n">input_file_ids</span><span class="o">=</span><span class="p">[</span><span class="n">f</span><span class="o">.</span><span class="n">id</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">files</span><span class="p">[:</span><span class="mi">1</span><span class="p">]],</span>
+    <span class="n">output_file_ids</span><span class="o">=</span><span class="p">[</span><span class="n">f</span><span class="o">.</span><span class="n">id</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">files</span><span class="p">[</span><span class="mi">1</span><span class="p">:]],</span>
+    <span class="n">success_criteria</span><span class="o">=</span> <span class="n">SuccessCriteria</span><span class="p">(</span>
+        <span class="n">return_code</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+        <span class="n">expressions</span><span class="o">=</span> <span class="p">[</span><span class="s2">&quot;values[&#39;tube1_radius&#39;]&gt;=4.0&quot;</span><span class="p">,</span> <span class="s2">&quot;values[&#39;tube1_thickness&#39;]&gt;=0.5&quot;</span><span class="p">],</span>
+        <span class="n">required_output_file_ids</span><span class="o">=</span><span class="p">[</span> <span class="n">f</span><span class="o">.</span><span class="n">id</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">files</span><span class="p">[</span><span class="mi">2</span><span class="p">:]</span> <span class="p">],</span>
+        <span class="n">require_all_output_files</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">required_output_parameter_names</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;weight&quot;</span><span class="p">,</span> <span class="s2">&quot;torsion_stiffness&quot;</span><span class="p">,</span> <span class="s2">&quot;max_stress&quot;</span><span class="p">],</span>
+        <span class="n">require_all_output_parameters</span><span class="o">=</span><span class="kc">False</span>
+    <span class="p">)</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div><div aria-labelledby="tab-8-UHlIUFM=" class="sphinx-tabs-panel code-tab group-tab" hidden="true" id="panel-8-UHlIUFM=" name="UHlIUFM=" role="tabpanel" tabindex="0"><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">task_def</span> <span class="o">=</span> <span class="n">TaskDefinition</span><span class="p">(</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;MAPDL_run&quot;</span><span class="p">,</span>
+    <span class="n">software_requirements</span><span class="o">=</span><span class="p">[</span>
+        <span class="n">Software</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;Ansys Mechanical APDL&quot;</span><span class="p">,</span> <span class="n">version</span><span class="o">=</span><span class="s2">&quot;2024 R1&quot;</span><span class="p">),</span>
+    <span class="p">],</span>
+    <span class="n">execution_command</span><span class="o">=</span><span class="s2">&quot;</span><span class="si">%e</span><span class="s2">xecutable% -b -i </span><span class="si">%f</span><span class="s2">ile:mac</span><span class="si">% -o</span><span class="s2"> file.out -np </span><span class="si">%r</span><span class="s2">esource:num_cores%&quot;</span><span class="p">,</span>
+    <span class="n">max_execution_time</span><span class="o">=</span><span class="mf">20.0</span><span class="p">,</span>
+    <span class="n">resource_requirements</span><span class="o">=</span><span class="n">ResourceRequirements</span><span class="p">(</span>
+        <span class="n">num_cores</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span>
+        <span class="n">memory</span><span class="o">=</span><span class="mi">250</span> <span class="o">*</span> <span class="mi">1024</span> <span class="o">*</span> <span class="mi">1024</span><span class="p">,</span>  <span class="c1"># 250 MB</span>
+        <span class="n">disk_space</span><span class="o">=</span><span class="mi">5</span> <span class="o">*</span> <span class="mi">1024</span> <span class="o">*</span> <span class="mi">1024</span><span class="p">,</span>  <span class="c1"># 5 MB</span>
+    <span class="p">),</span>
+    <span class="n">execution_level</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+    <span class="n">num_trials</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+    <span class="n">input_file_ids</span><span class="o">=</span><span class="p">[</span><span class="n">f</span><span class="o">.</span><span class="n">id</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">files</span><span class="p">[:</span><span class="mi">1</span><span class="p">]],</span>
+    <span class="n">output_file_ids</span><span class="o">=</span><span class="p">[</span><span class="n">f</span><span class="o">.</span><span class="n">id</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">files</span><span class="p">[</span><span class="mi">1</span><span class="p">:]],</span>
+    <span class="n">success_criteria</span><span class="o">=</span><span class="n">SuccessCriteria</span><span class="p">(</span>
+        <span class="n">return_code</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+        <span class="n">expressions</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;values[&#39;tube1_radius&#39;]&gt;=4.0&quot;</span><span class="p">,</span> <span class="s2">&quot;values[&#39;tube1_thickness&#39;]&gt;=0.5&quot;</span><span class="p">],</span>
+        <span class="n">required_output_file_ids</span><span class="o">=</span><span class="p">[</span> <span class="n">f</span><span class="o">.</span><span class="n">id</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">files</span><span class="p">[</span><span class="mi">2</span><span class="p">:]</span> <span class="p">],</span>
+        <span class="n">require_all_output_files</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">required_output_parameter_names</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;weight&quot;</span><span class="p">,</span> <span class="s2">&quot;torsion_stiffness&quot;</span><span class="p">,</span> <span class="s2">&quot;max_stress&quot;</span><span class="p">],</span>
+        <span class="n">require_all_output_parameters</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="p">),</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div></div>
+</section>
+<section id="add-a-fitness-definition">
+<h3>Add a fitness definition<a class="headerlink" href="#add-a-fitness-definition" title="Link to this heading">#</a></h3>
+<div class="sphinx-tabs docutils container">
+<div aria-label="Tabbed content" class="closeable" role="tablist"><button aria-controls="panel-9-RENTIGNsaWVudA==" aria-selected="true" class="sphinx-tabs-tab code-tab group-tab" id="tab-9-RENTIGNsaWVudA==" name="RENTIGNsaWVudA==" role="tab" tabindex="0">DCS client</button><button aria-controls="panel-9-UHlIUFM=" aria-selected="false" class="sphinx-tabs-tab code-tab group-tab" id="tab-9-UHlIUFM=" name="UHlIUFM=" role="tab" tabindex="-1">PyHPS</button></div><div aria-labelledby="tab-9-RENTIGNsaWVudA==" class="sphinx-tabs-panel code-tab group-tab" id="panel-9-RENTIGNsaWVudA==" name="RENTIGNsaWVudA==" role="tabpanel" tabindex="0"><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">fd</span> <span class="o">=</span> <span class="n">FitnessDefinition</span><span class="p">(</span><span class="n">error_fitness</span><span class="o">=</span><span class="mf">10.0</span><span class="p">)</span>
+<span class="n">fd</span><span class="o">.</span><span class="n">add_fitness_term</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;weight&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="s2">&quot;design_objective&quot;</span><span class="p">,</span> <span class="n">weighting_factor</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span>
+                    <span class="n">expression</span><span class="o">=</span><span class="s2">&quot;map_design_objective( values[&#39;weight&#39;], 7.5, 5.5)&quot;</span><span class="p">)</span>
+<span class="n">fd</span><span class="o">.</span><span class="n">add_fitness_term</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;torsional_stiffness&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="s2">&quot;target_constraint&quot;</span><span class="p">,</span> <span class="n">weighting_factor</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span>
+                <span class="n">expression</span><span class="o">=</span><span class="s2">&quot;map_target_constraint( values[&#39;torsion_stiffness&#39;], 1313.0, 5.0, 30.0 )&quot;</span> <span class="p">)</span>
+<span class="n">fd</span><span class="o">.</span><span class="n">add_fitness_term</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;max_stress&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="s2">&quot;limit_constraint&quot;</span><span class="p">,</span> <span class="n">weighting_factor</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span>
+                <span class="n">expression</span><span class="o">=</span><span class="s2">&quot;map_limit_constraint( values[&#39;max_stress&#39;], 451.0, 50.0 )&quot;</span><span class="p">)</span>
+<span class="n">cfg</span><span class="o">.</span><span class="n">fitness_definition</span> <span class="o">=</span><span class="n">fd</span>
+</pre></div>
+</div>
+</div><div aria-labelledby="tab-9-UHlIUFM=" class="sphinx-tabs-panel code-tab group-tab" hidden="true" id="panel-9-UHlIUFM=" name="UHlIUFM=" role="tabpanel" tabindex="0"><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">fd</span> <span class="o">=</span> <span class="n">FitnessDefinition</span><span class="p">(</span><span class="n">error_fitness</span><span class="o">=</span><span class="mf">10.0</span><span class="p">)</span>
+<span class="n">fd</span><span class="o">.</span><span class="n">add_fitness_term</span><span class="p">(</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;weight&quot;</span><span class="p">,</span>
+    <span class="nb">type</span><span class="o">=</span><span class="s2">&quot;design_objective&quot;</span><span class="p">,</span>
+    <span class="n">weighting_factor</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span>
+    <span class="n">expression</span><span class="o">=</span><span class="s2">&quot;map_design_objective( values[&#39;weight&#39;], 7.5, 5.5)&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="n">fd</span><span class="o">.</span><span class="n">add_fitness_term</span><span class="p">(</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;torsional_stiffness&quot;</span><span class="p">,</span>
+    <span class="nb">type</span><span class="o">=</span><span class="s2">&quot;target_constraint&quot;</span><span class="p">,</span>
+    <span class="n">weighting_factor</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span>
+    <span class="n">expression</span><span class="o">=</span><span class="s2">&quot;map_target_constraint( values[&#39;torsion_stiffness&#39;], 1313.0, 5.0, 30.0 )&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="n">fd</span><span class="o">.</span><span class="n">add_fitness_term</span><span class="p">(</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;max_stress&quot;</span><span class="p">,</span>
+    <span class="nb">type</span><span class="o">=</span><span class="s2">&quot;limit_constraint&quot;</span><span class="p">,</span>
+    <span class="n">weighting_factor</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span>
+    <span class="n">expression</span><span class="o">=</span><span class="s2">&quot;map_limit_constraint( values[&#39;max_stress&#39;], 451.0, 50.0 )&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="n">job_def</span><span class="o">.</span><span class="n">fitness_definition</span> <span class="o">=</span> <span class="n">fd</span>
+</pre></div>
+</div>
+</div></div>
+</section>
+<section id="create-a-configuration-now-job-definition">
+<h3>Create a configuration (now job definition)<a class="headerlink" href="#create-a-configuration-now-job-definition" title="Link to this heading">#</a></h3>
+<div class="sphinx-tabs docutils container">
+<div aria-label="Tabbed content" class="closeable" role="tablist"><button aria-controls="panel-10-RENTIGNsaWVudA==" aria-selected="true" class="sphinx-tabs-tab code-tab group-tab" id="tab-10-RENTIGNsaWVudA==" name="RENTIGNsaWVudA==" role="tab" tabindex="0">DCS client</button><button aria-controls="panel-10-UHlIUFM=" aria-selected="false" class="sphinx-tabs-tab code-tab group-tab" id="tab-10-UHlIUFM=" name="UHlIUFM=" role="tab" tabindex="-1">PyHPS</button></div><div aria-labelledby="tab-10-RENTIGNsaWVudA==" class="sphinx-tabs-panel code-tab group-tab" id="panel-10-RENTIGNsaWVudA==" name="RENTIGNsaWVudA==" role="tabpanel" tabindex="0"><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">cfg</span> <span class="o">=</span> <span class="n">proj</span><span class="o">.</span><span class="n">create_configurations</span><span class="p">([</span><span class="n">cfg</span><span class="p">])[</span><span class="mi">0</span><span class="p">]</span>
+</pre></div>
+</div>
+</div><div aria-labelledby="tab-10-UHlIUFM=" class="sphinx-tabs-panel code-tab group-tab" hidden="true" id="panel-10-UHlIUFM=" name="UHlIUFM=" role="tabpanel" tabindex="0"><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">task_defs</span> <span class="o">=</span> <span class="p">[</span><span class="n">task_def</span><span class="p">]</span>
+
+<span class="n">task_defs</span> <span class="o">=</span> <span class="n">project_api</span><span class="o">.</span><span class="n">create_task_definitions</span><span class="p">(</span><span class="n">task_defs</span><span class="p">)</span>
+<span class="n">param_mappings</span> <span class="o">=</span> <span class="n">project_api</span><span class="o">.</span><span class="n">create_parameter_mappings</span><span class="p">(</span><span class="n">param_mappings</span><span class="p">)</span>
+
+<span class="n">job_def</span><span class="o">.</span><span class="n">parameter_definition_ids</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="n">pd</span><span class="o">.</span><span class="n">id</span> <span class="k">for</span> <span class="n">pd</span> <span class="ow">in</span> <span class="n">float_input_params</span> <span class="o">+</span> <span class="n">str_input_params</span> <span class="o">+</span> <span class="n">output_params</span>
+<span class="p">]</span>
+<span class="n">job_def</span><span class="o">.</span><span class="n">parameter_mapping_ids</span> <span class="o">=</span> <span class="p">[</span><span class="n">pm</span><span class="o">.</span><span class="n">id</span> <span class="k">for</span> <span class="n">pm</span> <span class="ow">in</span> <span class="n">param_mappings</span><span class="p">]</span>
+<span class="n">job_def</span><span class="o">.</span><span class="n">task_definition_ids</span> <span class="o">=</span> <span class="p">[</span><span class="n">td</span><span class="o">.</span><span class="n">id</span> <span class="k">for</span> <span class="n">td</span> <span class="ow">in</span> <span class="n">task_defs</span><span class="p">]</span>
+
+<span class="n">job_def</span> <span class="o">=</span> <span class="n">project_api</span><span class="o">.</span><span class="n">create_job_definitions</span><span class="p">([</span><span class="n">job_def</span><span class="p">])[</span><span class="mi">0</span><span class="p">]</span>
+</pre></div>
+</div>
+</div></div>
+</section>
+<section id="create-design-points-now-jobs">
+<h3>Create design points (now jobs)<a class="headerlink" href="#create-design-points-now-jobs" title="Link to this heading">#</a></h3>
+<div class="sphinx-tabs docutils container">
+<div aria-label="Tabbed content" class="closeable" role="tablist"><button aria-controls="panel-11-RENTIGNsaWVudA==" aria-selected="true" class="sphinx-tabs-tab code-tab group-tab" id="tab-11-RENTIGNsaWVudA==" name="RENTIGNsaWVudA==" role="tab" tabindex="0">DCS client</button><button aria-controls="panel-11-UHlIUFM=" aria-selected="false" class="sphinx-tabs-tab code-tab group-tab" id="tab-11-UHlIUFM=" name="UHlIUFM=" role="tab" tabindex="-1">PyHPS</button></div><div aria-labelledby="tab-11-RENTIGNsaWVudA==" class="sphinx-tabs-panel code-tab group-tab" id="panel-11-RENTIGNsaWVudA==" name="RENTIGNsaWVudA==" role="tabpanel" tabindex="0"><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">random</span>
+
+<span class="n">dps</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">10</span><span class="p">):</span>
+    <span class="n">values</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="n">p</span><span class="o">.</span><span class="n">name</span><span class="p">:</span> <span class="n">p</span><span class="o">.</span><span class="n">lower_limit</span> <span class="o">+</span> <span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">()</span> <span class="o">*</span> <span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">upper_limit</span> <span class="o">-</span> <span class="n">p</span><span class="o">.</span><span class="n">lower_limit</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">float_input_params</span>
+    <span class="p">}</span>
+    <span class="n">values</span><span class="o">.</span><span class="n">update</span><span class="p">({</span> <span class="n">p</span><span class="o">.</span><span class="n">name</span><span class="p">:</span> <span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">value_list</span><span class="p">)</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">str_input_params</span><span class="p">})</span>
+    <span class="n">dps</span><span class="o">.</span><span class="n">append</span><span class="p">(</span> <span class="n">DesignPoint</span><span class="p">(</span> <span class="n">name</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;DesignPoint.</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">values</span><span class="o">=</span><span class="n">values</span><span class="p">,</span> <span class="n">eval_status</span><span class="o">=</span><span class="s2">&quot;pending&quot;</span><span class="p">)</span> <span class="p">)</span>
+
+<span class="n">dps</span> <span class="o">=</span> <span class="n">cfg</span><span class="o">.</span><span class="n">create_design_points</span><span class="p">(</span><span class="n">dps</span><span class="p">)</span>
+</pre></div>
+</div>
+</div><div aria-labelledby="tab-11-UHlIUFM=" class="sphinx-tabs-panel code-tab group-tab" hidden="true" id="panel-11-UHlIUFM=" name="UHlIUFM=" role="tabpanel" tabindex="0"><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">random</span>
+
+<span class="n">jobs</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">10</span><span class="p">):</span>
+    <span class="n">values</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="n">p</span><span class="o">.</span><span class="n">name</span><span class="p">:</span> <span class="n">p</span><span class="o">.</span><span class="n">lower_limit</span> <span class="o">+</span> <span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">()</span> <span class="o">*</span> <span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">upper_limit</span> <span class="o">-</span> <span class="n">p</span><span class="o">.</span><span class="n">lower_limit</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">float_input_params</span>
+    <span class="p">}</span>
+    <span class="n">values</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="n">p</span><span class="o">.</span><span class="n">name</span><span class="p">:</span> <span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">value_list</span><span class="p">)</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">str_input_params</span><span class="p">})</span>
+    <span class="n">jobs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+        <span class="n">Job</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;Job.</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">values</span><span class="o">=</span><span class="n">values</span><span class="p">,</span> <span class="n">eval_status</span><span class="o">=</span><span class="s2">&quot;pending&quot;</span><span class="p">,</span> <span class="n">job_definition_id</span><span class="o">=</span><span class="n">job_def</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+    <span class="p">)</span>
+<span class="n">jobs</span> <span class="o">=</span> <span class="n">project_api</span><span class="o">.</span><span class="n">create_jobs</span><span class="p">(</span><span class="n">jobs</span><span class="p">)</span>
+</pre></div>
+</div>
+</div></div>
+</section>
+</section>
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#key-terminology-and-api-changes">Key terminology and API changes</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#python-client-changes">Python client changes</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#installation">Installation</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#client-and-api-objects">Client and API objects</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#project-id">Project ID</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#removed-nested-endpoints">Removed nested endpoints</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#exceptions">Exceptions</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#evaluators">Evaluators</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#example-project">Example project</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#import-modules-and-instantiate-the-client">Import modules and instantiate the client</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#create-an-empty-project-and-a-job-definition">Create an empty project and a job definition</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#create-file-resources">Create file resources</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#create-parameter-definitions">Create parameter definitions</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#create-process-steps-now-tasks">Create process steps (now tasks)</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#add-a-fitness-definition">Add a fitness definition</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#create-a-configuration-now-job-definition">Create a configuration (now job definition)</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#create-design-points-now-jobs">Create design points (now jobs)</a></li>
+</ul>
+</li>
+</ul>
+  </nav></div>
+
+  <div class="sidebar-secondary-item">
+<!-- If there is no fix edit button function, use the PyData edit-this-button-->
+</div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+
+
+  <!-- Include desired assets -->
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.7/require.min.js"></script>
+
+<script>
+// Passing the search options to the search.js file
+const SEARCH_OPTIONS = JSON.parse('{"keys": ["title", "text"], "limit": 10, "threshold": 0.2}');
+const SEARCH_FILE = "../_static/search.json";
+</script>
+
+
+<script src="../_static/js/search.js"></script>
+  
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright (c) 2025 ANSYS, Inc. All rights reserved.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.1.3.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item"><p class="theme-version">
+  Built with the
+  <a href="https://sphinxdocs.ansys.com/version/stable/index.html"
+    >Ansys Sphinx Theme</a
+  >
+  1.3.3. <br />Last updated on
+  <span id="ast_build_date"></span>
+</p>
+<script>
+  var options = { day: "numeric", month: "long", year: "numeric" };
+  var ast_lastModifiedDate = new Date(document.lastModified);
+  var ast_build_date = ast_lastModifiedDate.toLocaleDateString("en-US", options);
+  document.getElementById("ast_build_date").innerHTML = ast_build_date;
+</script></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>
