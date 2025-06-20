@@ -193,19 +193,39 @@ class ProjectApi:
         self,
         file: File,
         target_path: str,
-        stream: bool = None,
         progress_handler: Callable[[int], None] = None,
+        file_name: str = None,
+        **kwargs,
     ) -> str:
         """Download file content and save it to disk.
 
-        If ``stream=True``, data is retrieved in chunks, which avoids storing the entire content
-        in memory.
+        Parameters
+        ----------
+        file : File
+            File object to download.
+        target_path : str
+            Path to the directory where to save the file.
+        progress_handler : Callable[[int], None], optional
+            Function to handle progress updates. The default is None.
+            The function should accept a single argument, which is the current
+            size of the downloaded file in bytes.
+        file_name : str, optional
+            Name of the file to save. If None, the original file name is used.
+        kwargs : dict, optional
+            Additional arguments to pass to the download function.
+            The 'stream' argument is deprecated and should not be used.
+
+        Returns
+        -------
+        str
+            Path to the downloaded file.
+
         """
-        if stream is not None:
+        if "stream" in kwargs:
             msg = "The 'stream' input argument in ProjectApi.download_file() is deprecated. "
             warnings.warn(msg, DeprecationWarning, stacklevel=2)
             log.warning(msg)
-        return _download_file(self, file, target_path, progress_handler)
+        return _download_file(self, file, target_path, progress_handler, file_name)
 
     ################################################################
     # Parameter definitions
@@ -837,13 +857,13 @@ def _download_file(
     file: File,
     target_path: str,
     progress_handler: Callable[[int], None] = None,
+    file_name: str | None = None,
 ) -> str:
     """Download a file."""
-    project_api.client.initialize_data_transfer_client()
-
     if getattr(file, "hash", None) is None:
         log.warning(f"No hash found for file {file.name}.")
 
+    file_name = file_name or file.evaluation_path
     download_path = os.path.join(target_path, file.evaluation_path)
     base_dir = project_api.project_id
 
@@ -855,7 +875,14 @@ def _download_file(
         progress_handler(0)
 
     op = project_api.client.data_transfer_api.copy([SrcDst(src=src, dst=dst)])
-    op = project_api.client.data_transfer_api.wait_for([op.id])
+
+    def _prog_handler(op_id: str, progress_percent: float):
+        # turn progress percent into bytes
+        if op_id == op.id:
+            progress_handler(int(progress_percent * file.size))
+
+    handler = _prog_handler if progress_handler else None
+    op = project_api.client.data_transfer_api.wait_for([op.id], progress_handler=handler)
 
     log.info(f"Operation {op[0].state}")
 

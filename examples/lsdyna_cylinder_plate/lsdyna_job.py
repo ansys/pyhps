@@ -384,9 +384,15 @@ def download_results(app_job: HPSJob):
                 ascii=True,
                 ncols=100,
             ) as pbar:
-                project_api.download_file(
-                    file, target_folder, progress_handler=lambda chunk_size: pbar.update(chunk_size)
-                )
+                previous_size = 0
+
+                def _progress_callback(current_size):
+                    nonlocal previous_size
+                    chunk_size = current_size - previous_size
+                    previous_size = current_size
+                    pbar.update(chunk_size)
+
+                project_api.download_file(file, target_folder, progress_handler=_progress_callback)
 
 
 if __name__ == "__main__":
