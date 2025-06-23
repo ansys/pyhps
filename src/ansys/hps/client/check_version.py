@@ -27,6 +27,8 @@ from enum import Enum
 from functools import wraps
 from typing import Protocol
 
+from packaging.version import parse
+
 from .exceptions import VersionCompatibilityError
 
 log = logging.getLogger(__name__)
@@ -67,8 +69,6 @@ class ApiProtocol(Protocol):
 
 def check_min_version(version: str, min_version: str) -> bool:
     """Check if a version string meets a minimum version."""
-    from packaging.version import parse
-
     if version in ["0.0.dev", "0.0.0"]:
         log.warning("Skipping min version check for backend development version")
         return True
@@ -78,8 +78,6 @@ def check_min_version(version: str, min_version: str) -> bool:
 
 def check_max_version(version: str, max_version: str) -> bool:
     """Check if a version string meets a maximum version."""
-    from packaging.version import parse
-
     if version in ["0.0.dev", "0.0.0"]:
         log.warning("Skipping max version check for backend development version")
         return True

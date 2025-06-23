@@ -110,8 +110,8 @@ ignore = []
 "src/ansys/hps/client/auth/resource/*.py" = ["E501", "D106", "D107"]
 "src/ansys/hps/client/rms/models.py" = ["E501", "D101", "D100"]
 # ignore docstring requirements for tests, examples and build scripts
-"tests/**/*.py" = ["D"]
-"examples/**/*.py" = ["D"]
+"tests/**/*.py" = ["D", "PLC0415"]
+"examples/**/*.py" = ["D", "PLC0415"]
 "generate_resources.py" = ["D"]
 
 [tool.coverage.run]

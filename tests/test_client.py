@@ -25,6 +25,7 @@ import time
 
 import pytest
 import requests
+from urllib3.exceptions import InsecureRequestWarning
 
 from ansys.hps.client import Client
 from ansys.hps.client.exceptions import HPSError
@@ -33,7 +34,7 @@ log = logging.getLogger(__name__)
 
 
 def test_client_ssl_warning(url, username, password):
-    with pytest.warns(Warning) as record:
+    with pytest.warns(InsecureRequestWarning) as record:
         _ = Client(url, username, password)
     assert len(record) == 1
     assert "Unverified HTTPS requests" in str(record[0].message)
