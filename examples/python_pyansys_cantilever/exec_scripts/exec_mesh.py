@@ -27,6 +27,7 @@ Command formed: uv run <script_file> <input_file>
 
 import json
 import os
+import shutil
 
 from ansys.rep.common.logging import log
 from ansys.rep.evaluator.task_manager import ApplicationExecution
@@ -82,5 +83,19 @@ class PythonExecution(ApplicationExecution):
         except Exception as ex:
             log.info("No output parameters found.")
             log.debug(f"Failed to read output parameters from file: {ex}")
+
+        # Clean up venv cache
+        if "exe" in output_parameters.keys() and self.context.parameter_values.get("clean_venv"):
+            try:
+                venv_cache = os.path.abspath(os.path.join(output_parameters["exe"], "..", ".."))
+                venv_cache_parent = os.path.join(venv_cache, "..")
+                if os.path.exists(venv_cache):
+                    log.debug(f"Current venv cache: {os.listdir(venv_cache_parent)}")
+                    log.debug(f"Cleaning venv cache at {venv_cache}...")
+                    shutil.rmtree(venv_cache)
+                else:
+                    log.debug(f"Venv cache path {venv_cache} does not exist.")
+            except Exception as ex:
+                log.debug(f"Couldn't clean venv cache at {venv_cache}: {ex}")
 
         log.info("End Python execution script")
