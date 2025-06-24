@@ -31,7 +31,6 @@
 
 import json
 import os
-import random
 import sys
 
 import ansys.meshing.prime as prime
@@ -281,6 +280,7 @@ def mapdl(params):
             mapdl.set(1, mode_num)
             mapdl.plnsol("u", "sum")
 
+        mode_freqs["exe"] = sys.executable
         with open("output_parameters.json", "w") as out_file:
             json.dump(mode_freqs, out_file, indent=4)
 
@@ -291,13 +291,12 @@ def mapdl(params):
 
 
 if __name__ == "__main__":
+    print(f"python exe: {sys.executable}")
     # Fetch parameters
     input_file_name = sys.argv[1]
     input_file_path = os.path.abspath(input_file_name)
     with open(input_file_path) as input_file:
         params = json.load(input_file)
-    params["port"] = random.randint(49153, 59999)  # pymapdl wants ports in [1000, 60000]
-    print(f"Generated Port: {params['port']}")
 
     ansys_prime_root = os.environ.get("ANSYS_PRIME_ROOT", None)
 
