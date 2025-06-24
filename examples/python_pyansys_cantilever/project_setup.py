@@ -196,6 +196,7 @@ def main(client, num_jobs, num_modes, target_frequency, split_tasks):
         IntParameterDefinition(name="port_geometry", default=50052, mode="input"),
         IntParameterDefinition(name="port_mesh", default=50052, mode="input"),
         IntParameterDefinition(name="port_mapdl", default=50052, mode="input"),
+        BoolParameterDefinition(name="clean_venv", default=True, mode="input"),
     ]
     # Output parameters
     for i in range(num_modes):
