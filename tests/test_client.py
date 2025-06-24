@@ -25,10 +25,10 @@ import time
 
 import pytest
 import requests
-from urllib3.exceptions import UnverifiedHTTPSRequestsWarning
 
 from ansys.hps.client import Client
 from ansys.hps.client.exceptions import HPSError
+from ansys.hps.client.warnings import UnverifiedHTTPSRequestsWarning
 
 log = logging.getLogger(__name__)
 
