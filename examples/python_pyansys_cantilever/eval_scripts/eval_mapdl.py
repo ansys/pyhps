@@ -122,6 +122,7 @@ def main(params):
             mapdl.set(1, mode_num)
             mapdl.plnsol("u", "sum")
 
+        mode_freqs["exe"] = sys.executable
         with open("output_parameters.json", "w") as out_file:
             json.dump(mode_freqs, out_file, indent=4)
 

@@ -100,5 +100,6 @@ if __name__ == "__main__":
     input_file_path = os.path.abspath(input_file_name)
     with open(input_file_path) as input_file:
         params = json.load(input_file)
-
     main(params)
+    with open("output_parameters.json", "w") as out_file:
+        json.dump({"exe": sys.executable}, out_file, indent=4)

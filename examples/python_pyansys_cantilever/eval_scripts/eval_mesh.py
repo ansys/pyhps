@@ -133,3 +133,5 @@ if __name__ == "__main__":
         params = json.load(input_file)
     ansys_prime_root = os.environ.get("ANSYS_PRIME_ROOT", None)
     main(params, ansys_prime_root)
+    with open("output_parameters.json", "w") as out_file:
+        json.dump({"exe": sys.executable}, out_file, indent=4)
