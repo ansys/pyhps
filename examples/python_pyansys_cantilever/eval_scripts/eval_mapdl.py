@@ -24,6 +24,7 @@
 # requires-python = "==3.12"
 # dependencies = [
 #     "ansys.mapdl.core",
+#     "vtk==9.4.2",
 # ]
 # ///
 import json
