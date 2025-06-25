@@ -97,6 +97,9 @@ def main(client, num_jobs, num_modes, target_frequency, split_tasks):
             ),
         ]
     )
+    files.append(
+        File(name="canti_plot", evaluation_path="canti_plot.png", collect=True, type="image/png")
+    )
     files = project_api.create_files(files)
     file_ids = {f.name: f.id for f in files}
 
@@ -221,7 +224,7 @@ def main(client, num_jobs, num_modes, target_frequency, split_tasks):
             use_execution_script=True,
             execution_script_id=file_ids["exec_geometry"],
             input_file_ids=[file_ids["eval_geometry"]],
-            output_file_ids=[file_ids["cantilever_geometry"]],
+            output_file_ids=[file_ids["cantilever_geometry"], file_ids["canti_plot"]],
             success_criteria=SuccessCriteria(
                 return_code=0,
                 require_all_output_files=True,
@@ -295,7 +298,11 @@ def main(client, num_jobs, num_modes, target_frequency, split_tasks):
             use_execution_script=True,
             execution_script_id=file_ids["exec_combined"],
             input_file_ids=[file_ids["eval_combined"]],
-            output_file_ids=[file_ids["cantilever_mesh"], file_ids["cantilever_geometry"]],
+            output_file_ids=[
+                file_ids["cantilever_mesh"],
+                file_ids["cantilever_geometry"],
+                file_ids["canti_plot"],
+            ],
             success_criteria=SuccessCriteria(
                 return_code=0,
                 require_all_output_parameters=True,
@@ -390,6 +397,7 @@ def generate_parameter_values_for_job(i, params_by_name):
     values["port_geometry"] = random.randint(49153, 59999)
     values["port_mesh"] = random.randint(49153, 59999)
     values["port_mapdl"] = random.randint(49153, 59999)
+    values["clean_venv"] = True
     return values
 
 
