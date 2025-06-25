@@ -24,7 +24,6 @@ and set up in the following way:
 ```bash
 pip3 install --target=/ansys_inc/v252/uv uv # Install UV via pip
 mkdir -p /shared/rep_file_storage/uv/uv_cache # Create cache dir
-echo cache-dir = \"/shared/uv/uv_cache\" > /shared/rep_file_storage/uv/uv.toml # Set cache dir in config
 ```
 
 The UV application should then also be registered in the scaler with the following properties:
@@ -36,12 +35,11 @@ The UV application should then also be registered in the scaler with the followi
 | Installation Path | /ansys_inc/v252/uv        |
 | Executable        | /ansys_inc/v252/uv/bin/uv |
 
-and the following environment variables:
+and the following environment variable:
 
 | **Env Variable** | **Value**                            |
 |------------------|--------------------------------------|
 | UV_CACHE_DIR     | /shared/rep_file_storage/uv/uv_cache |
-| UV_CONFIG_FILE   | /shared/rep_file_storage/uv/uv.toml  |
 
 This will setup UV with the cache located in a shared folder, accessible from all nodes, such that
 any package will only need to be downloaded once. However, if the bandwidth between this shared 
@@ -56,11 +54,7 @@ node will have to download all dependencies individually. Once the required pack
 venv setup times will be on the order of 100 ms, 2 orders of magnitude faster than for the shared 
 case. To use node-local cache, the cache dir must be specified differently from what's shown above:
 
-1. Update the cache dir in the config file:
-```bash
-echo cache-dir = \"/tmp/scratch/uv_cache\" > /shared/rep_file_storage/uv/uv.toml # Set cache dir in config
-```
-2. Update the corresponding environment variable in the UV application registration:
+1. Update the corresponding environment variable in the UV application registration:
 
 | **Env Variable** | **Value**                            |
 |------------------|--------------------------------------|
@@ -167,6 +161,7 @@ Furthermore, it defines the following HPS parameters that are accessible via the
 | port_mesh         | Port used by the Ansys Prime Server                                |
 | port_mapdl        | Port used by the Ansys Mechanical APDL service                     |
 | freq_mode_i       | Frequency of i-th Eigenmode [Hz], iϵ\{1,...,num_modes\}            |
+| clean_venv        | Whether to clean up the (ephemeral) UV venv directory afterwards   |
 
 # Logic of the example
 
