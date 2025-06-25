@@ -24,12 +24,17 @@
 # requires-python = "==3.10"
 # dependencies = [
 #     "ansys-geometry-core[all]",
+#     "matplotlib"
 # ]
 # ///
 
 import json
 import os
 import sys
+
+import matplotlib.patches as patches
+import matplotlib.pyplot as plt
+from matplotlib.ticker import FuncFormatter
 
 from ansys.geometry.core import launch_modeler
 from ansys.geometry.core.designer import DesignFileFormat
@@ -50,6 +55,15 @@ def main(params):
     popup_plots = params["popup_plots"]
     port = params["port_geometry"]
     arm_width = width - 2 * arm_cutoff_width
+
+    # Check input
+    if (
+        arm_cutoff_length > length
+        or arm_width <= 0.0
+        or (arm_slot and arm_slot_width > arm_width)
+        or (arm_slot and arm_slot_width > width)
+    ):
+        print("SanityError: Cantilever dimensions are not sane.")
 
     # Draw Cantilever in 2D Sketch
     canti_sketch = Sketch()
@@ -83,6 +97,53 @@ def main(params):
         # Plot if requested
         if popup_plots:
             design.plot()
+
+        # Draw matplotlib figure
+        points = [
+            [0.0, -arm_width / 2.0],
+            [0.0, arm_width / 2.0],
+            [arm_cutoff_length, arm_width / 2.0],
+            [arm_cutoff_length, width / 2.0],
+            [length, width / 2.0],
+            [length, -width / 2.0],
+            [arm_cutoff_length, -width / 2.0],
+            [arm_cutoff_length, -arm_width / 2.0],
+            [0.0, -arm_width / 2.0],
+        ]
+        xs, ys = zip(*points, strict=False)
+        fig, ax = plt.subplots()
+        ax.fill(xs, ys, color="green", alpha=1, edgecolor="black", linewidth=0.3)
+        if arm_slot:
+            slot_points = [
+                [2.5e-6, arm_slot_width / 2.0],
+                [arm_cutoff_length - 2.5e-6, arm_slot_width / 2.0],
+                [arm_cutoff_length - 2.5e-6, -arm_slot_width / 2.0],
+                [2.5e-6, -arm_slot_width / 2.0],
+            ]
+            slot_xs, slot_ys = zip(*slot_points, strict=False)
+            ax.fill(slot_xs, slot_ys, color="white", alpha=1, edgecolor="black", linewidth=0.3)
+        wall = patches.Rectangle(
+            xy=(-length, -max(width, length)),
+            width=length,
+            height=2 * max(width, length),
+            linewidth=0.3,
+            edgecolor="black",
+            facecolor="#B16100",
+            hatch="///",
+            alpha=1.0,
+        )
+        ax.add_patch(wall)
+        ax.set_aspect("equal", adjustable="box")
+        ax_length = 0.05 * length + 1.1 * max(length, width)
+        ax.set_xlim(-0.05 * length, 1.1 * max(length, width))
+        ax.set_ylim(-ax_length / 2.0, ax_length / 2.0)
+        ax.set_title("Cantilever")
+        formatter = FuncFormatter(lambda x, _: f"{x * 1e6:.1f}")
+        ax.xaxis.set_major_formatter(formatter)
+        ax.yaxis.set_major_formatter(formatter)
+        ax.set_xlabel("x [um]")
+        ax.set_ylabel("y [um]")
+        plt.savefig("canti_plot.png", dpi=500)
 
         # export has different extensions on different OSs (.x_t, .xmt_txt)
         # design.export_to_parasolid_text(os.getcwd())
