@@ -82,6 +82,8 @@ class Object:
                 return False
         return True
 
+    __hash__ = object.__hash__
+
     def __str__(self):
         """Provide the string representation of the object."""
         # Ideally we'd simply do

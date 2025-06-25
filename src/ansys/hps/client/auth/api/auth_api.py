@@ -124,7 +124,7 @@ class AuthApi:
 
     def user_is_admin(self, id: str) -> bool:
         """Determine if the user is a system administrator."""
-        from ansys.hps.client.jms import JmsApi
+        from ansys.hps.client.jms import JmsApi  # noqa PLC0415
 
         # the admin keys are configurable settings of JMS
         # they need to be queried, can't be hardcoded

@@ -32,6 +32,7 @@ dependencies = [
     "backoff>=2.0.0",
     "pydantic>=1.10.0",
     "PyJWT>=2.8.0",
+    "packaging",
     "ansys-hps-data-transfer-client@git+https://github.com/ansys/pyhps-data-transfer.git"
 ]
 
@@ -110,8 +111,8 @@ ignore = []
 "src/ansys/hps/client/auth/resource/*.py" = ["E501", "D106", "D107"]
 "src/ansys/hps/client/rms/models.py" = ["E501", "D101", "D100"]
 # ignore docstring requirements for tests, examples and build scripts
-"tests/**/*.py" = ["D"]
-"examples/**/*.py" = ["D"]
+"tests/**/*.py" = ["D", "PLC0415"]
+"examples/**/*.py" = ["D", "PLC0415"]
 "generate_resources.py" = ["D"]
 
 [tool.coverage.run]
