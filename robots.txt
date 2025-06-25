@@ -1,0 +1,7 @@
+User-agent: *
+
+Disallow: /version/0.9
+Disallow: /version/0.8
+Disallow: /version/0.7
+
+Sitemap: https://hps.docs.pyansys.com/sitemap.xml
