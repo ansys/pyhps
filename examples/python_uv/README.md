@@ -5,6 +5,21 @@ the required environments on the fly.
 The example sets up a project that will plot `sin(x)` using numpy and matplotlib, and then save 
 the figure to a file. After the run is completed, the generated ephemeral venv is cleaned up.
 
+The main feature enabling UV to take care of the environment setup is the metadata header present 
+in the `eval.py` script, which defines the dependencies:
+
+```python
+# /// script
+# requires-python = "==3.12"
+# dependencies = [
+#     "numpy",
+#     "matplotlib"
+# ]
+# ///
+```
+
+More information can be found [here (python.org)](https://packaging.python.org/en/latest/specifications/inline-script-metadata/#inline-script-metadata) and [here (astral.sh)](https://docs.astral.sh/uv/guides/scripts/#running-a-script-with-dependencies).
+
 # Prerequisites
 In order for the example to run, `UV` must be installed and registered on the scaler/evaluator. 
 On a pcluster, this can be done in the following way:
