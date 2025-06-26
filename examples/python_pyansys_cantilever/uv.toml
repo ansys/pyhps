@@ -1,3 +1,0 @@
-[dependencies]
-ansys-hps-client = { git = "https://github.com/ansys/pyhps.git" }
-typer = "*"
