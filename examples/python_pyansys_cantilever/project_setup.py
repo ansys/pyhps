@@ -20,6 +20,14 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+# /// script
+# requires-python = ">=3.10,<=3.10"
+# dependencies = [
+#     "typer",
+#     "ansys-hps-client @ git+https://github.com/ansys/pyhps.git@main"
+# ]
+# ///
+
 import logging
 import os
 import random
