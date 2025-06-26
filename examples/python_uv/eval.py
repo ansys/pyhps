@@ -41,6 +41,8 @@ if __name__ == "__main__":
 
     fig, ax = plt.subplots()
     ax.plot(ts, ys)
+    ax.set_xlabel("Time [s]")
+    ax.set_ylabel("Displacement [cm]")
     plt.savefig("plot.png", dpi=200)
 
     # Communicate location of venv for cleanup
