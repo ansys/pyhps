@@ -21,7 +21,7 @@
 # SOFTWARE.
 
 # /// script
-# requires-python = ">=3.10,<=3.10"
+# requires-python = "==3.10"
 # dependencies = [
 #     "typer",
 #     "ansys-hps-client @ git+https://github.com/ansys/pyhps.git@main"
