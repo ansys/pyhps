@@ -82,7 +82,7 @@ In order to disable network access, one can either set the `UV_OFFLINE` environm
 use the `--offline` flag with many UV commands. 
 
 # Running the example
-To run the example, execute the `project_setup.py` script, for example via `poetry run python project_setup.py`.
+To run the example, execute the `project_setup.py` script, for example via `uv run project_setup.py`.
 This will setup a project with a number of jobs, and each job will generate a `plot.png` file.
 
 
