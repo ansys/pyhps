@@ -43,6 +43,10 @@ class PythonExecution(ApplicationExecution):
         input_filename = "input_parameters.json"
         output_filename = "output_parameters.json"
 
+        # Use assigned resources
+        self.context.parameter_values["num_cores"] = self.context.resource_requirements["num_cores"]
+        self.context.parameter_values["memory_b"] = self.context.resource_requirements["memory"]
+
         # Pass parameters
         with open(input_filename, "w") as in_file:
             json.dump(self.context.parameter_values, in_file, indent=4)
