@@ -17,20 +17,20 @@ and steps given in the following setup instructions are optimized for installati
 They can easily be adapted to other systems. Also note that version numbers should be adjusted to 
 reflect reality.
 
-## UV
-UV is used to run arbitrary python scripts in environments created on the fly. It can be installed 
+## uv
+uv is used to run arbitrary python scripts in environments created on the fly. It can be installed 
 and set up in the following way:
 
 ```bash
-pip3 install --target=/ansys_inc/v252/uv uv # Install UV via pip
+pip3 install --target=/ansys_inc/v252/uv uv # Install uv via pip
 mkdir -p /shared/rep_file_storage/uv/uv_cache # Create cache dir
 ```
 
-The UV application should then also be registered in the scaler with the following properties:
+The uv application should then also be registered in the scaler with the following properties:
 
 | **Property**      | **Value**                 |
 |-------------------|---------------------------|
-|   Name            |   Uv                      | 
+|   Name            |   uv                      | 
 |   Version         |  0.6.14                   | 
 | Installation Path | /ansys_inc/v252/uv        |
 | Executable        | /ansys_inc/v252/uv/bin/uv |
@@ -41,7 +41,7 @@ and the following environment variable:
 |------------------|--------------------------------------|
 | UV_CACHE_DIR     | /shared/rep_file_storage/uv/uv_cache |
 
-This will setup UV with the cache located in a shared folder, accessible from all nodes, such that
+This will setup uv with the cache located in a shared folder, accessible from all nodes, such that
 any package will only need to be downloaded once. However, if the bandwidth between this shared 
 folder and the compute nodes is relatively slow, this can lead to long venv setup times (on 
 pClusters, a dozen seconds is typical for reasonably large dependencies). 
@@ -49,12 +49,12 @@ pClusters, a dozen seconds is typical for reasonably large dependencies).
 ### Node local cache
 
 In cases where many short tasks are run, shorter runtimes can often be found by relocating the 
-UV cache to node-local storage. In such a setup, each compute node has its own cache, meaning each 
+uv cache to node-local storage. In such a setup, each compute node has its own cache, meaning each 
 node will have to download all dependencies individually. Once the required packages are cached, 
 venv setup times will be on the order of 100 ms, 2 orders of magnitude faster than for the shared 
 case. To use node-local cache, the cache dir must be specified differently from what's shown above:
 
-1. Update the corresponding environment variable in the UV application registration:
+1. Update the corresponding environment variable in the uv application registration:
 
 | **Env Variable** | **Value**                            |
 |------------------|--------------------------------------|
@@ -63,16 +63,16 @@ case. To use node-local cache, the cache dir must be specified differently from 
 ### Airgapped setups
 
 For airgapped setups where no internet connectivity is available, there are several options for a 
-successful UV setup:
+successful uv setup:
 
-1. Pre-populate the UV cache with all desired dependencies.
-2. Provide a local python package index, and set UV to use it. More information can be found
+1. Pre-populate the uv cache with all desired dependencies.
+2. Provide a local python package index, and set uv to use it. More information can be found
 [here](https://docs.astral.sh/uv/configuration/indexes/). This index could then sit in a shared 
 location, with node-local caching applied.
 3. Use pre-generated virtual environments, see [here](https://docs.astral.sh/uv/reference/cli/#uv-venv)
 
 In order to disable network access, one can either set the `UV_OFFLINE` environment variable, or 
-use the `--offline` flag with many UV commands. 
+use the `--offline` flag with many uv commands. 
 
 ## Ansys Geometry Service
 The Ansys Geometry Service must be installed for pyAnsys Geometry to function on a pCluster. This is done by 
@@ -161,7 +161,7 @@ Furthermore, it defines the following HPS parameters that are accessible via the
 | port_mesh         | Port used by the Ansys Prime Server                                |
 | port_mapdl        | Port used by the Ansys Mechanical APDL service                     |
 | freq_mode_i       | Frequency of i-th Eigenmode [Hz], iϵ\{1,...,num_modes\}            |
-| clean_venv        | Whether to clean up the (ephemeral) UV venv directory afterwards   |
+| clean_venv        | Whether to clean up the (ephemeral) uv venv directory afterwards   |
 
 # Logic of the example
 
@@ -173,7 +173,7 @@ parameters and applies settings. All communication with HPS is done via this scr
 
 The folder `exec_scripts` contains the execution scripts used to run the tasks. They all have the 
 same basic function: First they write all HPS parameters to a `input_parameters.json` file, then they 
-discover the available software and run the desired python script using UV, and finally they fetch 
+discover the available software and run the desired python script using uv, and finally they fetch 
 parameters that may have been written to `output_parameters.json` by the executed python script, and 
 send them back to the evaluator. There is an execution script `exec_combined.py` that is used when 
 all stages are run in a single task, and three more execution scripts used to split the three stages 

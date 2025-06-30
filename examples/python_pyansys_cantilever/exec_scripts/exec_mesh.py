@@ -20,7 +20,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-"""Simplistic execution script for Python with Uv.
+"""Simplistic execution script for Python with uv.
 
 Command formed: uv run <script_file> <input_file>
 """
@@ -35,7 +35,7 @@ from ansys.rep.evaluator.task_manager import ApplicationExecution
 
 class PythonExecution(ApplicationExecution):
     def execute(self):
-        log.info("Start Uv execution script")
+        log.info("Start uv execution script")
 
         # Identify files
         script_file = next((f for f in self.context.input_files if f["name"] == "eval_mesh"), None)
@@ -48,9 +48,9 @@ class PythonExecution(ApplicationExecution):
             json.dump(self.context.parameter_values, in_file, indent=4)
 
         # Identify applications
-        app_uv = next((a for a in self.context.software if a["name"] == "Uv"), None)
+        app_uv = next((a for a in self.context.software if a["name"] == "uv"), None)
         # app_xvfb = next((a for a in self.context.software if a["name"] == "Xvfb-run"), None)
-        assert app_uv, "Cannot find app Uv"
+        assert app_uv, "Cannot find app uv"
 
         # Add " around exe if needed for Windows
         exes = {"uv": app_uv["executable"]}
