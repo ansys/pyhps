@@ -20,9 +20,9 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-"""Simplistic execution script for Python with uv.
+"""Simple execution script for Python with uv.
 
-Command formed: uv run <script_file> <input_file>
+Command formed: uv run <script_file>
 """
 
 import json
