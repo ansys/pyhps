@@ -222,7 +222,7 @@ def main(client, num_jobs, num_modes, target_frequency, split_tasks):
             name="geometry",
             software_requirements=[Software(name="Uv"), Software(name="Ansys GeometryService")],
             resource_requirements=ResourceRequirements(
-                num_cores=2.0,
+                num_cores=1.0,
                 memory=2 * 1024 * 1024 * 1024,  # 2 GB
                 disk_space=10 * 1024 * 1024,  # 10 MB
             ),
@@ -242,7 +242,7 @@ def main(client, num_jobs, num_modes, target_frequency, split_tasks):
             name="mesh",
             software_requirements=[Software(name="Uv"), Software(name="Ansys Prime Server")],
             resource_requirements=ResourceRequirements(
-                num_cores=2.0,
+                num_cores=1.0,
                 memory=8 * 1024 * 1024 * 1024,  # 8 GB
                 disk_space=100 * 1024 * 1024,  # 100 MB
             ),
@@ -297,7 +297,7 @@ def main(client, num_jobs, num_modes, target_frequency, split_tasks):
             resource_requirements=ResourceRequirements(
                 num_cores=2.0,
                 memory=8 * 1024 * 1024 * 1024,  # 8 GB
-                disk_space=100 * 1024 * 1024,  # 200 MB
+                disk_space=300 * 1024 * 1024,  # 200 MB
                 # hpc_resources=HpcResources(exclusive=True),
             ),
             execution_level=0,
