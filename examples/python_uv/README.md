@@ -22,51 +22,34 @@ More information can be found [here (python.org)](https://packaging.python.org/e
 
 # Prerequisites
 In order for the example to run, `uv` must be installed and registered on the scaler/evaluator. 
-On a pcluster, this can be done in the following way:
+Instructions to this end can be found [here](https://docs.astral.sh/uv/getting-started/installation/).
 
-```bash
-pip3 install --target=/ansys_inc/uv uv # Install uv via pip
-mkdir -p /shared/rep_file_storage/uv/uv_cache # Create cache dir
-```
-
-Note that the directories `/ansys_inc/uv` and `/shared/rep_file_storage/uv/uv_cache` are shared 
-directories, they are both accessible by all evaluators.
-
-Next, the application must be registered in the scaler/evaluator with the following properties:
+Once uv is installed, the application must be registered in the scaler/evaluator with the following properties:
 
 | **Property**      | **Value**                 |
 |-------------------|---------------------------|
-|   Name            |   uv                      | 
+|   Name            |   uv                      |
 |   Version         |  0.6.14                   | 
-| Installation Path | /ansys_inc/uv             |
-| Executable        | /ansys_inc/uv/bin/uv      |
-
-and the following environment variable:
-
-| **Env Variable** | **Value**                            |
-|------------------|--------------------------------------|
-| UV_CACHE_DIR     | /shared/rep_file_storage/uv/uv_cache |
+| Installation Path | /path/to/uv               |
+| Executable        | /path/to/uv/bin/uv        |
 
 Note that the version should be adjusted to the case at hand. 
 
-The above steps setup uv with the cache located in a shared folder, such that any dependency will 
-only need to be downloaded once. However, if the bandwidth between this shared folder and the 
-compute nodes is relatively slow, this can lead to long venv setup times (on pclusters, a dozen 
-seconds is typical for reasonably large dependencies).
+By default, the uv cache is located in the home directory (~/.cache/uv). 
 
-Instead, uv can also be setup to use node local caching:
+## Custom cache directory
+The above steps setup uv with the cache located in its default location in the user home directory (~/.cache/uv). 
+Depending on the case at hand, other cache locations may be preferred, such as a globally accessible 
+cache used by all evaluators. An important observation is that venv setup time (in the cached case) 
+is largely dictated by the transfer bandwidth between the cache directory and the computing machine. 
+Setup times on the order of 100 ms are achievable for reasonably large dependencies.
 
-## Node local cache
-In cases where many short tasks are run, shorter runtimes can often be found by relocating the 
-uv cache to node local storage. In such a setup, each compute node has its own cache, meaning each 
-node will have to download all dependencies individually. Once the required packages are cached, 
-venv setup times will be on the order of 100 ms, 2 orders of magnitude faster than for the shared 
-case. To use node-local cache, the cache dir must be set to a directory local to each node. On 
-pclusters, for example, one could use the following value:
+In order to define a custom uv cache directory, the following environment variable can be added to 
+the uv application registration in the scaler/evaluator:
 
 | **Env Variable** | **Value**                            |
 |------------------|--------------------------------------|
-| UV_CACHE_DIR     | /tmp/scratch/uv_cache                |
+| UV_CACHE_DIR     | /path/to/custom/uv/cache/dir         |
 
 ## Airgapped setups
 For airgapped setups where no internet connectivity is available, there are several options for a 
