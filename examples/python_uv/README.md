@@ -1,5 +1,5 @@
 # Running arbitrary python scripts on HPS
-This example shows how arbitrary python scripts can be run on HPS, by using uv to generate 
+This example shows how arbitrary python scripts can be run on HPS, by using [uv](https://docs.astral.sh/uv/) to generate 
 the required environments on the fly.
 
 The example sets up a project that will plot `sin(x)` using numpy and matplotlib, and then save 
