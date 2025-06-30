@@ -90,7 +90,7 @@ def create_project(client, num_jobs):
     log.debug("=== Define Task")
     task_def = TaskDefinition(
         name="plotting",
-        software_requirements=[Software(name="Uv")],
+        software_requirements=[Software(name="uv")],
         resource_requirements=ResourceRequirements(
             num_cores=0.5,
             memory=100 * 1024 * 1024,  # 100 MB
