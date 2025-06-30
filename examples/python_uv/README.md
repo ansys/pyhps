@@ -51,7 +51,7 @@ Note that the version should be adjusted to the case at hand.
 
 The above steps setup uv with the cache located in a shared folder, such that any dependency will 
 only need to be downloaded once. However, if the bandwidth between this shared folder and the 
-compute nodes is relatively slow, this can lead to long venv setuo times (on pclusters, a dozen 
+compute nodes is relatively slow, this can lead to long venv setup times (on pclusters, a dozen 
 seconds is typical for reasonably large dependencies).
 
 Instead, uv can also be setup to use node local caching:
