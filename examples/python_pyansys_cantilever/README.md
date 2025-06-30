@@ -1,5 +1,5 @@
 # Running pyAnsys on HPS
-This example shows how pyAnsys applications can be deployed to HPS. 
+This example shows how to run pyAnsys scripts on HPS. 
 
 The application simulates a parametrized cantilever by chaining several pyAnsys packages:
 
