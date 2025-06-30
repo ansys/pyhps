@@ -3,7 +3,7 @@ This example shows how arbitrary python scripts can be run on HPS, by using [uv]
 the required environments on the fly.
 
 The example sets up a project that will plot `sin(x)` using numpy and matplotlib, and then save 
-the figure to a file. After the run is completed, the generated ephemeral venv is cleaned up.
+the figure to a file.
 
 The main feature enabling uv to take care of the environment setup is the metadata header present 
 in the `eval.py` script, which defines the dependencies:
@@ -22,7 +22,7 @@ More information can be found [here (python.org)](https://packaging.python.org/e
 
 # Prerequisites
 In order for the example to run, `uv` must be installed and registered on the scaler/evaluator. 
-Instructions to this end can be found [here](https://docs.astral.sh/uv/getting-started/installation/).
+Installation instructions can be found [here](https://docs.astral.sh/uv/getting-started/installation/).
 
 Once uv is installed, the application must be registered in the scaler/evaluator with the following properties:
 
@@ -35,16 +35,10 @@ Once uv is installed, the application must be registered in the scaler/evaluator
 
 Note that the version should be adjusted to the case at hand. 
 
-By default, the uv cache is located in the home directory (~/.cache/uv). 
-
 ## Custom cache directory
 The above steps setup uv with the cache located in its default location in the user home directory (~/.cache/uv). 
-Depending on the case at hand, other cache locations may be preferred, such as a globally accessible 
-cache used by all evaluators. An important observation is that venv setup time (in the cached case) 
-is largely dictated by the transfer bandwidth between the cache directory and the computing machine. 
-Setup times on the order of 100 ms are achievable for reasonably large dependencies.
-
-In order to define a custom uv cache directory, the following environment variable can be added to 
+Depending on the individual situation, other cache locations may be preferred, such as a shared directory 
+accessible to all evaluators. In order to define a custom uv cache directory, the following environment variable can be added to 
 the uv application registration in the scaler/evaluator:
 
 | **Env Variable** | **Value**                            |
