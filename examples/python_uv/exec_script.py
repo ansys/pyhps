@@ -44,7 +44,6 @@ class PythonExecution(ApplicationExecution):
 
         # Identify applications
         app_uv = next((a for a in self.context.software if a["name"] == "uv"), None)
-        # app_xvfb = next((a for a in self.context.software if a["name"] == "Xvfb-run"), None)
         assert app_uv, "Cannot find app uv"
 
         # Add " around exe if needed for Windows
