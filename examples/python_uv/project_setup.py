@@ -27,6 +27,8 @@
 # ]
 # ///
 
+"""Python with uv example."""
+
 import argparse
 import logging
 import os
