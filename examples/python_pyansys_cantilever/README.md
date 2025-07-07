@@ -38,7 +38,7 @@ With the following environment variables:
 | ANSYS_GEOMETRY_SERVICE_ROOT | /ansys_inc/v252/GeometryService |
 
 ## Ansys Prime Server
-The Ansys Prime Server is automatically installed with Ansys 2023 R1 or newer, and is needed for 
+The Ansys Prime Server is automatically installed with Ansys 2023 R1 or later, and is needed for 
 pyPrimeMesh. It should be registered in the scaler as:
 
 | **Property**      | **Value**                       |
