@@ -17,7 +17,7 @@ pyAnsys packages:
 2. Use `pyPrimeMesh <https://prime.docs.pyansys.com/>`__ to apply a
    swept mesh to the cantilever design
 3. Use `pyMAPDL <https://mapdl.docs.pyansys.com/>`__ to calculate
-   Eigenfrequencies of the cantilever, then display them as output
+   eigenfrequencies of the cantilever, then display them as output
    parameters
 
 The physical cantilever dimensions, as well as several mesh and
@@ -57,7 +57,7 @@ Installation Path /ansys_inc/v252/GeometryService
 With the following environment variables:
 
 =========================== ===============================
-**Env Variable**            **Value**
+**Environment Variable**            **Value**
 =========================== ===============================
 ANSRV_GEO_LICENSE_SERVER    <LICENSE@SERVER>
 ANSYS_GEOMETRY_SERVICE_ROOT /ansys_inc/v252/GeometryService
@@ -80,12 +80,12 @@ Installation Path /ansys_inc/v252/GeometryService
 
 With environment variables:
 
-================ =============================
-**Env Variable** **Value**
-================ =============================
-AWP_ROOT252      /ansys_inc/v252
-ANSYS_PRIME_ROOT /ansys_inc/v252/meshing/Prime
-================ =============================
+======================== =============================
+**Environment Variable** **Value**
+======================== =============================
+AWP_ROOT252              /ansys_inc/v252
+ANSYS_PRIME_ROOT         /ansys_inc/v252/meshing/Prime
+======================== =============================
 
 Ansys Mechanical APDL
 ---------------------
@@ -94,12 +94,12 @@ Ansys Mechanical APDL is installed with the Ansys unified installer, and
 should be auto-detected by the scaler. Two environment variables need to
 be added to the application registration for pyMAPDL to work properly:
 
-================== ==================================
-**Env Variable**   **Value**
-================== ==================================
-AWP_ROOT252        /ansys_inc/v252
-PYMAPDL_MAPDL_EXEC /ansys_inc/v252/ansys/bin/ansys252
-================== ==================================
+======================== ==================================
+**Environment Variable** **Value**
+======================== ==================================
+AWP_ROOT252              /ansys_inc/v252
+PYMAPDL_MAPDL_EXEC       /ansys_inc/v252/ansys/bin/ansys252
+======================== ==================================
 
 HPS Python Client
 -----------------
@@ -132,7 +132,7 @@ The example supports the following command line arguments:
 |                    |                                  | generate                         |
 +--------------------+----------------------------------+----------------------------------+
 | -m, --num-modes    | --num-modes=3                    | Number of lowest                 |
-|                    |                                  | Eigenfrequencies to calculate    |
+|                    |                                  | eigenfrequencies to calculate    |
 +--------------------+----------------------------------+----------------------------------+
 | -f,                | --target-frequency=100.0         | Frequency [Hz] to target for the |
 | --target-frequency |                                  | lowest cantilever mode           |
@@ -144,6 +144,7 @@ The example supports the following command line arguments:
 Furthermore, it defines the following HPS parameters that are accessible
 via the HPS web interface:
 
+<!-- vale off -->
 +-------------------+-------------------------------------------------------+
 | **Parameter**     | **Description**                                       |
 +===================+=======================================================+
@@ -169,7 +170,7 @@ via the HPS web interface:
 +-------------------+-------------------------------------------------------+
 | mesh_swept_layers | Number of layers to generate when sweeping the mesh   |
 +-------------------+-------------------------------------------------------+
-| num_modes         | Number of lowest lying Eigenfrequencies to calculate  |
+| num_modes         | Number of lowest lying eigenfrequencies to calculate  |
 +-------------------+-------------------------------------------------------+
 | popup_plots       | Whether to show popup plots while running (requires a |
 |                   | framebuffer)                                          |
@@ -180,11 +181,12 @@ via the HPS web interface:
 +-------------------+-------------------------------------------------------+
 | port_mapdl        | Port used by the Ansys Mechanical APDL service        |
 +-------------------+-------------------------------------------------------+
-| freq_mode_i       | Frequency of i-th Eigenmode [Hz], iϵ{1,…,num_modes}   |
+| freq_mode_i       | Frequency of i-th eigenmode [Hz], iϵ{1,…,num_modes}   |
 +-------------------+-------------------------------------------------------+
 | clean_venv        | Whether to clean up the (ephemeral) uv venv directory |
 |                   | afterwards                                            |
 +-------------------+-------------------------------------------------------+
+<!-- vale off -->
 
 Logic of the example
 ====================
@@ -207,9 +209,9 @@ that is used when all stages are run in a single task, and three more
 execution scripts used to split the three stages into different tasks.
 
 The folder ``eval_scripts`` contains the pyAnsys python scripts. There
-is one ``eval_combined.py`` script that combines all the functionality
-into one monolithic script, and there are three other eval scripts to
-split the three stages into three successive tasks. Each of the eval
+is one ``eval_combined.py`` script that combines all the capability
+into one monolithic script, and there are three other evaluation scripts to
+split the three stages into three successive tasks. Each of the evaluation
 scripts first reads in the parameters supplied by the execution script
 in the ``input_parameters.json`` file, starts a pyAnsys service, and
 then runs the pyAnsys program. For more information on the content on
