@@ -4,10 +4,10 @@
 
     Go to the `bottom of this page`_ to download the ZIP file for the uv example.
 
-Running arbitrary python scripts on HPS
+Running arbitrary Python scripts on HPS
 =======================================
 
-This example shows how arbitrary python scripts can be run on HPS, by
+This example shows how arbitrary Python scripts can be run on HPS, by
 using `uv <https://docs.astral.sh/uv/>`__ to generate the required
 environments on the fly.
 
@@ -77,7 +77,7 @@ For air-gapped setups where no internet connectivity is available, there
 are several options for a successful uv setup:
 
 1. Pre-populate the uv cache with all desired dependencies.
-2. Provide a local python package index, and set uv to use it. More
+2. Provide a local Python package index, and set uv to use it. More
    information can be found
    `here <https://docs.astral.sh/uv/configuration/indexes/>`__. This
    index could then sit in a shared location, with node-local caching
