@@ -144,7 +144,6 @@ The example supports the following command line arguments:
 Furthermore, it defines the following HPS parameters that are accessible
 via the HPS web interface:
 
-<!-- vale off -->
 +-------------------+-------------------------------------------------------+
 | **Parameter**     | **Description**                                       |
 +===================+=======================================================+
@@ -183,10 +182,9 @@ via the HPS web interface:
 +-------------------+-------------------------------------------------------+
 | freq_mode_i       | Frequency of i-th eigenmode [Hz], iϵ{1,…,num_modes}   |
 +-------------------+-------------------------------------------------------+
-| clean_venv        | Whether to clean up the (ephemeral) uv venv directory |
-|                   | afterwards                                            |
+| clean_venv        | Whether to clean up the (ephemeral) uv virtual        |
+|                   | environment directory afterwards                      |
 +-------------------+-------------------------------------------------------+
-<!-- vale off -->
 
 Logic of the example
 ====================
