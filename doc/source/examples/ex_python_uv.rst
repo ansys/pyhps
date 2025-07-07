@@ -40,7 +40,7 @@ In order for the example to run, ``uv`` must be installed and registered
 on the scaler/evaluator. Installation instructions can be found
 `here <https://docs.astral.sh/uv/getting-started/installation/>`__.
 
-Once uv is installed, the app must be registered in the
+Once uv is installed, the application must be registered in the
 scaler/evaluator with the following properties:
 
 ================= ==================
@@ -62,7 +62,7 @@ in the user home directory (~/.cache/uv). Depending on the individual
 situation, other cache locations may be preferred, such as a shared
 directory accessible to all evaluators. In order to define a custom uv
 cache directory, the following environment variable can be added to the
-uv app registration in the scaler/evaluator:
+uv application registration in the scaler/evaluator:
 
 ================ ============================
 **Environment Variable** **Value**
