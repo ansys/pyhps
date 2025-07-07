@@ -65,15 +65,15 @@ cache directory, the following environment variable can be added to the
 uv app registration in the scaler/evaluator:
 
 ================ ============================
-**Env Variable** **Value**
+**Environment Variable** **Value**
 ================ ============================
 UV_CACHE_DIR     /path/to/custom/uv/cache/dir
 ================ ============================
 
-Airgapped setups
+Air gapped setups
 ----------------
 
-For airgapped setups where no internet connectivity is available, there
+For air gapped setups where no internet connectivity is available, there
 are several options for a successful uv setup:
 
 1. Pre-populate the uv cache with all desired dependencies.
