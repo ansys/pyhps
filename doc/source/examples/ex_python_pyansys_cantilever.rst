@@ -4,19 +4,19 @@
 
     Go to the `bottom of this page`_ to download the ZIP file for the PyAnsys cantilever example.
 
-Running pyAnsys on HPS
+Running PyAnsys on HPS
 ======================
 
-This example shows how to run pyAnsys scripts on HPS.
+This example shows how to run PyAnsys scripts on HPS.
 
 The application simulates a parametrized cantilever by chaining several
-pyAnsys packages:
+PyAnsys packages:
 
-1. Use `pyAnsys Geometry <https://geometry.docs.pyansys.com/>`__ to draw
+1. Use `PyAnsys Geometry <https://geometry.docs.pyansys.com/>`__ to draw
    a cantilever design
-2. Use `pyPrimeMesh <https://prime.docs.pyansys.com/>`__ to apply a
+2. Use `PyPrimeMesh <https://prime.docs.pyansys.com/>`__ to apply a
    swept mesh to the cantilever design
-3. Use `pyMAPDL <https://mapdl.docs.pyansys.com/>`__ to calculate
+3. Use `PyMAPDL <https://mapdl.docs.pyansys.com/>`__ to calculate
    eigenfrequencies of the cantilever, then display them as output
    parameters
 
@@ -34,14 +34,14 @@ uv
 --
 
 The `uv package manager <https://docs.astral.sh/uv/>`__ is used to run
-arbitrary python scripts in environments created on the fly. Setup
+arbitrary Python scripts in environments created on the fly. Setup
 instructions can be found in the
 `python-uv-example <ToBeFilledInWhenBasicExampleMerged>`__.
 
 Ansys Geometry Service
 ----------------------
 
-The Ansys Geometry Service must be installed for pyAnsys Geometry to
+The Ansys Geometry Service must be installed for PyAnsys Geometry to
 function. Installation instructions can be found
 `here <https://geometry.docs.pyansys.com/version/stable/getting_started/faq.html#how-is-the-ansys-geometry-service-installed>`__.
 The application should then be registered in the scaler as follows:
@@ -199,21 +199,21 @@ communication with HPS is done via this script.
 The folder ``exec_scripts`` contains the execution scripts used to run
 the tasks. They all have the same basic function: First they write all
 HPS parameters to a ``input_parameters.json`` file, then they discover
-the available software and run the desired python script using uv, and
+the available software and run the desired Python script using uv, and
 finally they fetch parameters that may have been written to
-``output_parameters.json`` by the executed python script, and send them
+``output_parameters.json`` by the executed Python script, and send them
 back to the evaluator. There is an execution script ``exec_combined.py``
 that is used when all stages are run in a single task, and three more
 execution scripts used to split the three stages into different tasks.
 
-The folder ``eval_scripts`` contains the pyAnsys python scripts. There
+The folder ``eval_scripts`` contains the PyAnsys Python scripts. There
 is one ``eval_combined.py`` script that combines all the capability
 into one monolithic script, and there are three other evaluation scripts to
 split the three stages into three successive tasks. Each of the evaluation
 scripts first reads in the parameters supplied by the execution script
-in the ``input_parameters.json`` file, starts a pyAnsys service, and
-then runs the pyAnsys program. For more information on the content on
-this script, please check the pyAnsys documentation.
+in the ``input_parameters.json`` file, starts a PyAnsys service, and
+then runs the PyAnsys program. For more information on the content on
+this script, please check the PyAnsys documentation.
 
 Code
 ====
