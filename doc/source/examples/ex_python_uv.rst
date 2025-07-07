@@ -11,7 +11,7 @@ This example shows how arbitrary python scripts can be run on HPS, by
 using `uv <https://docs.astral.sh/uv/>`__ to generate the required
 environments on the fly.
 
-The example sets up a project that will plot ``sin(x)`` using numpy and
+The example sets up a project that shall plot ``sin(x)`` using numpy and
 matplotlib, and then save the figure to a file.
 
 The main feature enabling uv to take care of the environment setup is
@@ -40,7 +40,7 @@ In order for the example to run, ``uv`` must be installed and registered
 on the scaler/evaluator. Installation instructions can be found
 `here <https://docs.astral.sh/uv/getting-started/installation/>`__.
 
-Once uv is installed, the application must be registered in the
+Once uv is installed, the app must be registered in the
 scaler/evaluator with the following properties:
 
 ================= ==================
@@ -57,12 +57,12 @@ Note that the version should be adjusted to the case at hand.
 Custom cache directory
 ----------------------
 
-The above steps setup uv with the cache located in its default location
+The preceding steps setup uv with the cache located in its default location
 in the user home directory (~/.cache/uv). Depending on the individual
 situation, other cache locations may be preferred, such as a shared
 directory accessible to all evaluators. In order to define a custom uv
 cache directory, the following environment variable can be added to the
-uv application registration in the scaler/evaluator:
+uv app registration in the scaler/evaluator:
 
 ================ ============================
 **Env Variable** **Value**
@@ -85,7 +85,7 @@ are several options for a successful uv setup:
 3. Use pre-generated virtual environments, see
    `here <https://docs.astral.sh/uv/reference/cli/#uv-venv>`__
 
-In order to disable network access, one can either set the
+In order to turn off network access, one can either set the
 ``UV_OFFLINE`` environment variable, or use the ``--offline`` flag with
 many uv commands.
 
@@ -93,8 +93,8 @@ Running the example
 ===================
 
 To run the example, execute the ``project_setup.py`` script, for example
-via ``uv run project_setup.py``. This will setup a project with a number
-of jobs, and each job will generate a ``plot.png`` file.
+via ``uv run project_setup.py``. This sets up a project with a number
+of jobs, and each job shall generate a ``plot.png`` file.
 
 Options
 -------
