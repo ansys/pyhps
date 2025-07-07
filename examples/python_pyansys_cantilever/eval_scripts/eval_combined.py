@@ -277,6 +277,8 @@ def mapdl(params):
     poisson_ratio = params["poisson_ratio"]
     popup_plots = params["popup_plots"]
     port = params["port_mapdl"]
+    num_cores = params["num_cores"]
+    memory_mb = params["memory_b"] / 1024.0**2
 
     input_filename = "cantilever.cdb"
     if not os.path.isfile(input_filename):
@@ -291,6 +293,9 @@ def mapdl(params):
             loglevel="DEBUG",
             run_location=f"{os.getcwd()}",
             port=port,
+            nproc=num_cores,
+            ram=memory_mb,
+            running_on_hpc=False,
         )
         print(mapdl)
         mapdl.mute = True
