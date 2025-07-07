@@ -2,7 +2,7 @@
 
 .. note::
 
-    Go to the `bottom of this page`_ to download the ZIP file for the two-bar truss example.
+    Go to the `bottom of this page`_ to download the ZIP file for the uv example.
 
 Running arbitrary python scripts on HPS
 =======================================
@@ -144,3 +144,14 @@ The relevant files of the example are:
     :language: python
     :lines: 23-
     :caption: exec_script.py
+
+Download the ZIP file for the uv example and use
+a tool such as 7-Zip to extract the files.
+
+.. _bottom of this page:
+
+.. button-link:: ../_downloads/python_uv.zip
+    :color: black
+    :expand:
+
+    Download ZIP file
