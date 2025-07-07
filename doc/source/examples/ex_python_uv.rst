@@ -70,10 +70,10 @@ uv app registration in the scaler/evaluator:
 UV_CACHE_DIR     /path/to/custom/uv/cache/dir
 ================ ============================
 
-Air gapped setups
+Air-gapped setups
 ----------------
 
-For air gapped setups where no internet connectivity is available, there
+For air-gapped setups where no internet connectivity is available, there
 are several options for a successful uv setup:
 
 1. Pre-populate the uv cache with all desired dependencies.
