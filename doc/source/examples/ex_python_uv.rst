@@ -64,11 +64,11 @@ directory accessible to all evaluators. In order to define a custom uv
 cache directory, the following environment variable can be added to the
 uv application registration in the scaler/evaluator:
 
-================ ============================
+======================== ============================
 **Environment Variable** **Value**
-================ ============================
-UV_CACHE_DIR     /path/to/custom/uv/cache/dir
-================ ============================
+======================== ============================
+UV_CACHE_DIR             /path/to/custom/uv/cache/dir
+======================== ============================
 
 Air-gapped setups
 ----------------
