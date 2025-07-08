@@ -43,14 +43,19 @@ on the scaler/evaluator. Installation instructions can be found
 Once uv is installed, the application must be registered in the
 scaler/evaluator with the following properties:
 
-================= ==================
-**Property**      **Value**
-================= ==================
-Name              uv
-Version           0.6.14
-Installation Path /path/to/uv
-Executable        /path/to/uv/bin/uv
-================= ==================
+.. list-table::
+   :header-rows: 1
+
+   * - Property
+     - Value
+   * - Name
+     - uv
+   * - Version
+     - 0.7.19
+   * - Installation Path
+     - /path/to/uv
+   * - Executable
+     - /path/to/uv/bin/uv
 
 Note that the version should be adjusted to the case at hand.
 
@@ -64,11 +69,13 @@ directory accessible to all evaluators. In order to define a custom uv
 cache directory, the following environment variable can be added to the
 uv application registration in the scaler/evaluator:
 
-======================== ============================
-**Environment Variable** **Value**
-======================== ============================
-UV_CACHE_DIR             /path/to/custom/uv/cache/dir
-======================== ============================
+.. list-table::
+   :header-rows: 1
+
+   * - Environment Variable
+     - Value
+   * - UV_CACHE_DIR
+     - /path/to/custom/uv/cache/dir
 
 Air-gapped setups
 ----------------
@@ -101,20 +108,24 @@ Options
 
 The example supports the following command line arguments:
 
-+--------------+----------------------------------+----------------------------------+
-| **Flag**     | **Example**                      | **Description**                  |
-+==============+==================================+==================================+
-| -U, --url    | --url=https://localhost:8443/hps | URL of the target HPS instance   |
-+--------------+----------------------------------+----------------------------------+
-| -u,          | --username=repuser               | Username to log into HPS         |
-| --username   |                                  |                                  |
-+--------------+----------------------------------+----------------------------------+
-| -p,          | --password=topSecret             | Password to log into HPS         |
-| --password   |                                  |                                  |
-+--------------+----------------------------------+----------------------------------+
-| -j,          | --num-jobs=10                    | Number of jobs to generate       |
-| --num-jobs   |                                  |                                  |
-+--------------+----------------------------------+----------------------------------+
+.. list-table::
+   :header-rows: 1
+
+   * - Flag
+     - Example
+     - Description
+   * - -U, --url
+     - --url=https://localhost:8443/hps
+     - URL of the target HPS instance
+   * - -u, --username
+     - --username=repuser
+     - Username to log into HPS
+   * - -p, --password
+     - --password=topSecret
+     - Password to log into HPS
+   * - -j, --num-jobs
+     - --num-jobs=10
+     - Number of jobs to generate
 
 Files
 -----
