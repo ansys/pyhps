@@ -99,7 +99,7 @@ class Object:
             try:
                 value = field_obj.serialize(attr_name, self, accessor=schema.get_attribute)
             except Exception:
-                pass
+                pass  # nosec
             if value is missing:
                 continue
             key = field_obj.data_key if field_obj.data_key is not None else attr_name

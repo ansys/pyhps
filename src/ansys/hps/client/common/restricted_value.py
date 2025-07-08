@@ -45,7 +45,7 @@ class RestrictedValue(fields.Field):
             try:
                 return field._deserialize(value, attr, obj, **kwargs)
             except Exception:
-                pass
+                pass  # nosec
 
         self.raise_validation_error()
 
