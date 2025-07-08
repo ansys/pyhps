@@ -28,7 +28,8 @@ Prerequisites
 
 There are several applications that need to be installed for the example
 to function. The precise paths and versions given in the following setup
-instructions should be adjusted to the system at hand.
+instructions are exemplary for an Ansys 2025 R2 installation on a Linux 
+system, and should be adjusted to the system and version at hand.
 
 uv
 --
@@ -44,62 +45,79 @@ Ansys Geometry Service
 The Ansys Geometry Service must be installed for PyAnsys Geometry to
 function. Installation instructions can be found
 `here <https://geometry.docs.pyansys.com/version/stable/getting_started/faq.html#how-is-the-ansys-geometry-service-installed>`__.
-The application should then be registered in the scaler as follows:
+The application should then be registered in the scaler/evaluator as follows:
 
-================= ===============================
-**Property**      **Value**
-================= ===============================
-Name              Ansys GeometryService
-Version           2025 R2
-Installation Path /ansys_inc/v252/GeometryService
-================= ===============================
+.. list-table::
+   :header-rows: 1
+
+   * - Property
+     - Value
+   * - Name
+     - Ansys GeometryService
+   * - Version
+     - 2025 R2
+   * - Installation Path
+     - /ansys_inc/v252/GeometryService
 
 With the following environment variables:
 
-=========================== ===============================
-**Environment Variable**            **Value**
-=========================== ===============================
-ANSRV_GEO_LICENSE_SERVER    <LICENSE@SERVER>
-ANSYS_GEOMETRY_SERVICE_ROOT /ansys_inc/v252/GeometryService
-=========================== ===============================
+.. list-table::
+   :header-rows: 1
+
+   * - Environment Variable
+     - Value
+   * - ANSRV_GEO_LICENSE_SERVER
+     - <LICENSE@SERVER>
+   * - ANSYS_GEOMETRY_SERVICE_ROOT
+     - /ansys_inc/v252/GeometryService
 
 Ansys Prime Server
 ------------------
 
 The Ansys Prime Server is automatically installed with Ansys 2023 R1 or
 later, and is needed for pyPrimeMesh. It should be registered in the
-scaler as:
+scaler/evaluator as:
 
-================= ===============================
-**Property**      **Value**
-================= ===============================
-Name              Ansys Prime Server
-Version           2025 R2
-Installation Path /ansys_inc/v252/GeometryService
-================= ===============================
+.. list-table::
+   :header-rows: 1
+
+   * - Property
+     - Value
+   * - Name
+     - Ansys Prime Server
+   * - Version
+     - 2025 R2
+   * - Installation Path
+     - /ansys_inc/v252/GeometryService
 
 With environment variables:
 
-======================== =============================
-**Environment Variable** **Value**
-======================== =============================
-AWP_ROOT252              /ansys_inc/v252
-ANSYS_PRIME_ROOT         /ansys_inc/v252/meshing/Prime
-======================== =============================
+.. list-table::
+   :header-rows: 1
+
+   * - Environment Variable
+     - Value
+   * - AWP_ROOT252   
+     - /ansys_inc/v252
+   * - ANSYS_PRIME_ROOT 
+     - /ansys_inc/v252/meshing/Prime
 
 Ansys Mechanical APDL
 ---------------------
 
 Ansys Mechanical APDL is installed with the Ansys unified installer, and
-should be auto-detected by the scaler. Two environment variables need to
+should be auto-detected by the scaler/evaluator. Two environment variables need to
 be added to the application registration for pyMAPDL to work properly:
 
-======================== ==================================
-**Environment Variable** **Value**
-======================== ==================================
-AWP_ROOT252              /ansys_inc/v252
-PYMAPDL_MAPDL_EXEC       /ansys_inc/v252/ansys/bin/ansys252
-======================== ==================================
+.. list-table::
+   :header-rows: 1
+
+   * - Environment Variable
+     - Value
+   * - AWP_ROOT252   
+     - /ansys_inc/v252
+   * - PYMAPDL_MAPDL_EXEC
+     - /ansys_inc/v252/ansys/bin/ansys252
 
 HPS Python Client
 -----------------
@@ -119,72 +137,78 @@ Options
 
 The example supports the following command line arguments:
 
-+--------------------+----------------------------------+----------------------------------+
-| **Flag**           | **Example**                      | **Description**                  |
-+====================+==================================+==================================+
-| -U, --url          | --url=https://localhost:8443/hps | URL of the target HPS instance   |
-+--------------------+----------------------------------+----------------------------------+
-| -u, --username     | --username=repuser               | Username to log into HPS         |
-+--------------------+----------------------------------+----------------------------------+
-| -p, --password     | --password=topSecret             | Password to log into HPS         |
-+--------------------+----------------------------------+----------------------------------+
-| -n, --num-jobs     | --num-jobs=50                    | Number of design points to       |
-|                    |                                  | generate                         |
-+--------------------+----------------------------------+----------------------------------+
-| -m, --num-modes    | --num-modes=3                    | Number of lowest                 |
-|                    |                                  | eigenfrequencies to calculate    |
-+--------------------+----------------------------------+----------------------------------+
-| -f,                | --target-frequency=100.0         | Frequency [Hz] to target for the |
-| --target-frequency |                                  | lowest cantilever mode           |
-+--------------------+----------------------------------+----------------------------------+
-| -s, --split-tasks  | --split-tasks                    | Split each step into a different |
-|                    |                                  | task                             |
-+--------------------+----------------------------------+----------------------------------+
+.. list-table::
+   :header-rows: 1
+
+   * - Flag
+     - Example
+     - Description
+   * - -U, --url
+     - --url=https://localhost:8443/hps
+     - URL of the target HPS instance
+   * - -u, --username
+     - --username=repuser
+     - Username to log into HPS
+   * - -p, --password
+     - --password=topSecret
+     - Password to log into HPS
+   * - -n, --num-jobs
+     - --num-jobs=50
+     - Number of design points to generate
+   * - -m, --num-modes
+     - --num-modes=3
+     - Number of lowest eigenfrequencies to calculate
+   * - -f, --target-frequency
+     - --target-frequency=100.0
+     - Frequency [Hz] to target for the lowest cantilever mode
+   * - -s, --split-tasks
+     - --split-tasks
+     - Split each step into a different task
 
 Furthermore, it defines the following HPS parameters that are accessible
 via the HPS web interface:
 
-+-------------------+-------------------------------------------------------+
-| **Parameter**     | **Description**                                       |
-+===================+=======================================================+
-| canti_length      | Length of the cantilever [um]                         |
-+-------------------+-------------------------------------------------------+
-| canti_width       | Width of the cantilever [um]                          |
-+-------------------+-------------------------------------------------------+
-| canti_thickness   | Thickness of the cantilever [um]                      |
-+-------------------+-------------------------------------------------------+
-| arm_cutoff_width  | By how much should the cantilever arm be thinned [um] |
-+-------------------+-------------------------------------------------------+
-| arm_cutoff_length | Length of cantilever arm [um]                         |
-+-------------------+-------------------------------------------------------+
-| arm_slot_width    | Width of the slot cut into the cantilever arm [um]    |
-+-------------------+-------------------------------------------------------+
-| arm_slot          | Whether there is a slot in the cantilever arm         |
-+-------------------+-------------------------------------------------------+
-| young_modulus     | Young Modulus of cantilever material [Pa]             |
-+-------------------+-------------------------------------------------------+
-| density           | Density of cantilever material [kg/m^3]               |
-+-------------------+-------------------------------------------------------+
-| poisson_ratio     | Poisson ratio of cantilever material                  |
-+-------------------+-------------------------------------------------------+
-| mesh_swept_layers | Number of layers to generate when sweeping the mesh   |
-+-------------------+-------------------------------------------------------+
-| num_modes         | Number of lowest lying eigenfrequencies to calculate  |
-+-------------------+-------------------------------------------------------+
-| popup_plots       | Whether to show popup plots while running (requires a |
-|                   | framebuffer)                                          |
-+-------------------+-------------------------------------------------------+
-| port_geometry     | Port used by the Ansys GeometryService                |
-+-------------------+-------------------------------------------------------+
-| port_mesh         | Port used by the Ansys Prime Server                   |
-+-------------------+-------------------------------------------------------+
-| port_mapdl        | Port used by the Ansys Mechanical APDL service        |
-+-------------------+-------------------------------------------------------+
-| freq_mode_i       | Frequency of i-th eigenmode [Hz], iϵ{1,…,num_modes}   |
-+-------------------+-------------------------------------------------------+
-| clean_venv        | Whether to clean up the (ephemeral) uv virtual        |
-|                   | environment directory afterwards                      |
-+-------------------+-------------------------------------------------------+
+.. list-table::
+   :header-rows: 1
+
+   * - Parameter
+     - Description
+   * - canti_length
+     - Length of the cantilever [um]
+   * - canti_width
+     - Width of the cantilever [um]
+   * - canti_thickness
+     - Thickness of the cantilever [um]
+   * - arm_cutoff_width
+     - By how much should the cantilever arm be thinned [um]
+   * - arm_cutoff_length
+     - Length of cantilever arm [um]
+   * - arm_slot_width
+     - Width of the slot cut into the cantilever arm [um]
+   * - arm_slot
+     - Whether there is a slot in the cantilever arm
+   * - young_modulus
+     - Young Modulus of cantilever material [Pa]
+   * - density
+     - Density of cantilever material [kg/m^3]
+   * - poisson_ratio
+     - Poisson ratio of cantilever material
+   * - mesh_swept_layers
+     - Number of layers to generate when sweeping the mesh
+   * - num_modes
+     - Number of lowest lying eigenfrequencies to calculate
+   * - popup_plots
+     - Whether to show popup plots while running (requires a framebuffer)
+   * - port_geometry
+     - Port used by the Ansys GeometryService
+   * - port_mesh
+     - Port used by the Ansys Prime Server
+   * - port_mapdl
+     - Port used by the Ansys Mechanical APDL service
+   * - freq_mode_i
+     - Frequency of i-th eigenmode [Hz], iϵ{1,…,num_modes}
+   * - clean_venv
+     - Whether to clean up the (ephemeral) uv virtual environment directory afterwards
 
 Logic of the example
 ====================
