@@ -88,7 +88,7 @@ scaler/evaluator as:
    * - Version
      - 2025 R2
    * - Installation Path
-     - /ansys_inc/v252/GeometryService
+     - /ansys_inc/v252/meshing/Prime
 
 With environment variables:
 
