@@ -715,7 +715,7 @@ def _download_files(project_api: ProjectApi, files: list[File]):
     srcs = []
     dsts = []
     for f in files:
-        if getattr(f, "hash", None) is not None:
+        if getattr(f, "hash", None) is not None and getattr(f, "skip_upload", False) is False:
             fpath = os.path.join(out_path, f"{f.id}")
             download_path = os.path.join(fpath, f.evaluation_path)
             srcs.append(StoragePath(path=f"{base_dir}/{os.path.basename(f.storage_id)}"))
@@ -768,7 +768,7 @@ def _upload_files(project_api: ProjectApi, files):
     temp_dir = tempfile.TemporaryDirectory()
 
     for f in files:
-        if getattr(f, "src", None) is None:
+        if getattr(f, "src", None) is None or getattr(f, "skip_upload", False):
             continue
         file_path = f.src
         if isinstance(f.src, io.IOBase):
@@ -826,7 +826,7 @@ def create_files(project_api: ProjectApi, files, as_objects=True) -> list[File]:
     # (2) Check if there are src properties, files to upload
     num_uploads = 0
     for f, cf in zip(files, created_files, strict=False):
-        if getattr(f, "src", None) is not None:
+        if getattr(f, "src", None) is not None and getattr(f, "skip_upload", False) is False:
             cf.src = f.src
             num_uploads += 1
 

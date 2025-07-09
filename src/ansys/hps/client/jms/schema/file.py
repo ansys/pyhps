@@ -84,3 +84,5 @@ class FileSchema(ObjectSchemaWithModificationInfo):
         allow_none=True,
         metadata={"description": "Reference file from which this one was created"},
     )
+    
+    skip_upload = fields.Bool(allow_none=True, metadata={"description": "Should the file's contents be upload to storage backend"})
