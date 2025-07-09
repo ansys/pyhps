@@ -224,7 +224,7 @@ def main(client, num_jobs, num_modes, target_frequency, split_tasks):
             resource_requirements=ResourceRequirements(
                 num_cores=1.0,
                 memory=2 * 1024 * 1024 * 1024,  # 2 GB
-                disk_space=10 * 1024 * 1024,  # 10 MB
+                disk_space=500 * 1024 * 1024,  # 500 MB
             ),
             execution_level=0,
             max_execution_time=500.0,
@@ -244,7 +244,7 @@ def main(client, num_jobs, num_modes, target_frequency, split_tasks):
             resource_requirements=ResourceRequirements(
                 num_cores=1.0,
                 memory=8 * 1024 * 1024 * 1024,  # 8 GB
-                disk_space=100 * 1024 * 1024,  # 100 MB
+                disk_space=500 * 1024 * 1024,  # 500 MB
             ),
             execution_level=1,
             max_execution_time=500.0,
@@ -268,7 +268,7 @@ def main(client, num_jobs, num_modes, target_frequency, split_tasks):
             resource_requirements=ResourceRequirements(
                 num_cores=2.0,
                 memory=8 * 1024 * 1024 * 1024,  # 8 GB
-                disk_space=200 * 1024 * 1024,  # 200 MB
+                disk_space=500 * 1024 * 1024,  # 500 MB
                 # hpc_resources=HpcResources(exclusive=True),
             ),
             execution_level=2,
@@ -297,7 +297,7 @@ def main(client, num_jobs, num_modes, target_frequency, split_tasks):
             resource_requirements=ResourceRequirements(
                 num_cores=2.0,
                 memory=8 * 1024 * 1024 * 1024,  # 8 GB
-                disk_space=300 * 1024 * 1024,  # 200 MB
+                disk_space=1000 * 1024 * 1024,  # 1 GB
                 # hpc_resources=HpcResources(exclusive=True),
             ),
             execution_level=0,
