@@ -56,12 +56,12 @@ class AuthApi:
     @property
     def url(self) -> str:
         """API URL."""
-        return f"{self.client.url}/auth"
+        return f"{self.client.auth_api_url}"
 
     @property
     def realm_url(self) -> str:
         """Realm URL."""
-        return f"{self.url}/admin/realms/{self.client.realm}"
+        return f"{self.client.auth_url}"
 
     def get_users(self, as_objects=True, **query_params) -> list[User]:
         """Get users, filtered according to query parameters.
