@@ -32,7 +32,6 @@ import json
 import logging
 import time
 from datetime import datetime, timezone
-from pprint import pprint
 
 import jwt
 from marshmallow.utils import missing
@@ -150,6 +149,12 @@ def monitor_projects(
         proj_api = ProjectApi(client, project.id)
         try:
             if remove is not None:
+                if "quick" in remove:
+                    # Quick remove projects based on time alone
+                    if age_hours >= 1:
+                        log.debug(f"    === Removing project older than 1 hour: age {age_hours}h.")
+                        jms_api.delete_project(project)
+                        continue
                 if "old" in remove:
                     # Old remove old projects based on time alone
                     if age_hours > 48:
@@ -193,7 +198,10 @@ def monitor_projects(
                         if resources.hpc_resources not in [None, missing]
                         else "NotSet"
                     )
-                    log.debug(f"{' ' * 10}CRS: {resources.compute_resource_set_id} -> {queue}")
+                    log.debug(
+                        f"{' ' * 10}Task Def: {task.task_definition_id}"
+                        + f" CRS: {resources.compute_resource_set_id} -> {queue}"
+                    )
 
                 log.debug(f"{' ' * 10}Files:")
                 files = []
@@ -235,17 +243,28 @@ def monitor_projects(
             continue
 
 
-def show_rms_data(client: Client, verbose: bool) -> Project:
+def show_rms_data(client: Client, verbose: bool, filter: str) -> Project:
     rms_api = RmsApi(client)
     try:
+        if filter is not None:
+            log.debug(f"Filtering CRS Sets based on name/id/config including: '{filter}'")
+
         scalers = rms_api.get_scalers()
         log.debug("=== Scalers")
-        pprint(scalers)
+        # pprint(scalers)
         crs_sets = rms_api.get_compute_resource_sets()
         log.debug("")
         log.debug("=== CRS Sets")
         for crs in crs_sets:
-            log.debug(f"    === {crs.name}: {crs.backend.plugin_name} -> {crs.id}")
+            if filter is not None:
+                if (
+                    filter.lower() not in crs.name.lower()
+                    and filter.lower() not in crs.id.lower()
+                    and filter.lower() not in crs.backend.json().lower()
+                ):
+                    continue
+            # log.debug(f"    {crs.name}: {crs.id}")
+            # log.debug(f"    === {crs.name}: {crs.backend.plugin_name} -> {crs.id}")
             scaler = find_by_id(scalers, crs.scaler_id)
             if scaler:
                 log.debug(
@@ -258,6 +277,7 @@ def show_rms_data(client: Client, verbose: bool) -> Project:
             log.debug(f"   Config: {crs.backend.json()}")
             try:
                 info = rms_api.get_cluster_info(crs.id)
+                log.debug(f"       Cluster info: {crs.name}: {crs.id}")
             except Exception:
                 log.warning(f"       Cluster info not available for {crs.name}")
                 log.debug("")
@@ -312,7 +332,7 @@ def _main(log, monitor_latest_project, show_rms_data, args):
                     else:
                         extra = {"service_admin": True, "oid": user_id}
                     token = provider.generate_signed_token(user_id, user_id, account, 6000, extra)
-                    # log.debug(f"Token: {token}")
+                    log.debug(f"Token: {token}")
                 else:
                     token = args.token
                 client = Client(
@@ -341,7 +361,7 @@ def _main(log, monitor_latest_project, show_rms_data, args):
                         limited_monitoring=args.limited_monitor,
                     )
                 else:
-                    show_rms_data(client=client, verbose=args.verbose)
+                    show_rms_data(client=client, verbose=args.verbose, filter=args.filter)
 
             except HPSError as e:
                 log.error(str(e))

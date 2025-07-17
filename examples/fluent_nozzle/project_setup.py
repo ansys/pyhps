@@ -29,6 +29,7 @@ import os
 from ansys.hps.client import Client, HPSError, __ansys_apps_version__
 from ansys.hps.client.jms import (
     File,
+    HpcResources,
     JmsApi,
     Job,
     JobDefinition,
@@ -43,9 +44,10 @@ from ansys.hps.client.jms import (
 log = logging.getLogger(__name__)
 
 
-def create_project(client, name, num_jobs=20, version=__ansys_apps_version__):
+def create_project(client, name, num_jobs=20, version=__ansys_apps_version__, queue=None):
     """Create an HPS project consisting of an Ansys Fluent model."""
     jms_api = JmsApi(client)
+
     log.debug("=== Project")
     proj = Project(name=name, priority=1, active=True)
     proj = jms_api.create_project(proj, replace=True)
@@ -58,17 +60,33 @@ def create_project(client, name, num_jobs=20, version=__ansys_apps_version__):
     files.append(
         File(
             name="case",
-            evaluation_path="nozzle.cas",
+            evaluation_path="combustor_24m_compressible.cas.h5",
+            # evaluation_path="sedan_4m.cas.gz",
+            # evaluation_path="nozzle.cas",
             type="application/octet-stream",
-            src=os.path.join(cwd, "nozzle.cas"),
+            src=os.path.join(cwd, "combustor_24m_compressible.cas.h5"),
+            # src=os.path.join(cwd, "sedan_4m.cas.gz"),
+            # src=os.path.join(cwd, "nozzle.cas"),
         )
     )
     files.append(
         File(
             name="jou",
-            evaluation_path="solve.jou",
+            evaluation_path="combustor.jou",
+            # evaluation_path="sedan.jou",
+            # evaluation_path="solve.jou",
             type="text/plain",
-            src=os.path.join(cwd, "solve.jou"),
+            src=os.path.join(cwd, "combustor.jou"),
+            # src=os.path.join(cwd, "sedan.jou"),
+            # src=os.path.join(cwd, "solve.jou"),
+        )
+    )
+    files.append(
+        File(
+            name="script",
+            evaluation_path="exec_fluent.py",
+            type="text/plain",
+            src=os.path.join(cwd, "exec_fluent.py"),
         )
     )
 
@@ -79,31 +97,13 @@ def create_project(client, name, num_jobs=20, version=__ansys_apps_version__):
     )
     files.append(
         File(
-            name="surf_out",
-            evaluation_path="surf*.out",
-            type="text/plain",
-            collect=True,
-            monitor=True,
-        )
-    )
-    files.append(
-        File(
-            name="vol_out",
-            evaluation_path="vol*.out",
-            type="text/plain",
-            collect=True,
-            monitor=True,
-        )
-    )
-    files.append(
-        File(
             name="err", evaluation_path="*error.log", type="text/plain", collect=True, monitor=True
         )
     )
     files.append(
         File(
             name="output_cas",
-            evaluation_path="nozzle.cas.h5",
+            evaluation_path="*.cas*",
             type="application/octet-stream",
             collect=True,
             monitor=False,
@@ -112,7 +112,7 @@ def create_project(client, name, num_jobs=20, version=__ansys_apps_version__):
     files.append(
         File(
             name="output_data",
-            evaluation_path="nozzle.dat.h5",
+            evaluation_path="*.dat*",
             type="application/octet-stream",
             collect=True,
             monitor=False,
@@ -120,65 +120,100 @@ def create_project(client, name, num_jobs=20, version=__ansys_apps_version__):
     )
 
     files = project_api.create_files(files)
-    file_ids = {f.name: f.id for f in files}
+    # file_ids = {f.name: f.id for f in files}
 
     log.debug("=== JobDefinition with simulation workflow and parameters")
-    job_def = JobDefinition(name="JobDefinition.1", active=True)
 
-    exec_script_file = project_api.copy_default_execution_script(
-        f"fluent-v{version[2:4]}{version[6]}-exec_fluent.py"
-    )
+    # exec_script_file = project_api.copy_default_execution_script(
+    #    f"fluent-v{version[2:4]}{version[6]}-exec_fluent.py"
+    # )
 
-    # Task definition
-    num_input_files = 2
-    task_def = TaskDefinition(
-        name="Fluent Run",
-        software_requirements=[
-            Software(name="Ansys Fluent", version=version),
-        ],
-        execution_command=None,  # Only execution currently supported
-        use_execution_script=True,
-        execution_script_id=exec_script_file.id,
-        resource_requirements=ResourceRequirements(
-            num_cores=4,
-            distributed=True,
-        ),
-        execution_level=0,
-        execution_context={
-            "dimension": "3d",
-            "double_precision": True,
-            "mode": "solution",
-        },
-        max_execution_time=120.0,
-        num_trials=1,
-        input_file_ids=[f.id for f in files[:num_input_files]],
-        output_file_ids=[f.id for f in files[num_input_files:]],
-        success_criteria=SuccessCriteria(
-            return_code=0,
-            required_output_file_ids=[
-                file_ids["output_cas"],
-                file_ids["surf_out"],
-                file_ids["vol_out"],
-            ],
-            require_all_output_files=False,
-        ),
-    )
+    core_counts = [8]
+    gpu_opts = [True]
+    mpi_opts = [None]  # , "openmpi"]
+    num = 0
+    for cores in core_counts:
+        for gpu_enabled in gpu_opts:
+            for mpi in mpi_opts:
+                num += 1
+                job_def = JobDefinition(name=f"JobDefinition.{num}", active=True)
+                # Task definition
+                num_input_files = 2
+                task_def = TaskDefinition(
+                    name=(
+                        f"Fluent (inp={files[0].evaluation_path}) (NC={cores})"
+                        + f" (gpu={gpu_enabled}) (mpi={mpi}) (-peth)"
+                    ),
+                    software_requirements=[
+                        Software(name="Ansys Fluent", version=version),
+                    ],
+                    execution_command=None,  # Only execution currently supported
+                    use_execution_script=True,
+                    execution_script_id=files[2].id,
+                    resource_requirements=ResourceRequirements(
+                        num_cores=cores,
+                        distributed=False,
+                    ),
+                    execution_level=0,
+                    execution_context={
+                        "dimension": "3d",
+                        "double_precision": True,
+                        "mode": "solution",
+                        "interconnect": "eth",
+                    },
+                    max_execution_time=60 * 60 * 8,  # 8 hours
+                    num_trials=1,
+                    input_file_ids=[f.id for f in files[:num_input_files]],
+                    output_file_ids=[f.id for f in files[num_input_files + 1 :]],
+                    success_criteria=SuccessCriteria(
+                        return_code=0,
+                        # required_output_file_ids=[
+                        #    file_ids["output_cas"],
+                        #    file_ids["surf_out"],
+                        #    file_ids["vol_out"],
+                        # ],
+                        require_all_output_files=False,
+                    ),
+                )
+                if mpi is not None:
+                    task_def.execution_context["mpi_type"] = mpi
 
-    task_defs = [task_def]
-    task_defs = project_api.create_task_definitions(task_defs)
+                if gpu_enabled:
+                    task_def.execution_context["additional_args"] = "-gpu"
 
-    job_def.task_definition_ids = [td.id for td in task_defs]
+                if queue:
+                    task_def.resource_requirements.hpc_resources = HpcResources()
+                    task_def.resource_requirements.hpc_resources.queue = queue
 
-    # Create job_definition in project
-    job_def = project_api.create_job_definitions([job_def])[0]
+                task_defs = [task_def]
+                task_defs = project_api.create_task_definitions(task_defs)
 
-    job_def = project_api.get_job_definitions()[0]
+                job_def.task_definition_ids = [td.id for td in task_defs]
 
-    log.debug(f"=== Create {num_jobs} jobs")
-    jobs = []
-    for i in range(num_jobs):
-        jobs.append(Job(name=f"Job.{i}", eval_status="pending", job_definition_id=job_def.id))
-    jobs = project_api.create_jobs(jobs)
+                # Create job_definition in project
+                job_def = project_api.create_job_definitions([job_def])[0]
+
+                job_defs = project_api.get_job_definitions()
+                real_job_def = None
+                for jd in job_defs:
+                    if jd.name == job_def.name:
+                        real_job_def = jd
+                        break
+
+                log.debug(f"=== Create {num_jobs} jobs")
+                jobs = []
+                for i in range(num_jobs):
+                    jobs.append(
+                        Job(
+                            name=(
+                                f"Fluent (inp={files[0].evaluation_path}) (NC={cores})"
+                                + f" (gpu={gpu_enabled}) (mpi={mpi}) (-peth).{i}"
+                            ),
+                            eval_status="pending",
+                            job_definition_id=real_job_def.id,
+                        )
+                    )
+                jobs = project_api.create_jobs(jobs)
 
     log.info(f"Created project '{proj.name}', ID='{proj.id}'")
     return proj
@@ -192,6 +227,9 @@ if __name__ == "__main__":
     parser.add_argument("-u", "--username", default="repuser")
     parser.add_argument("-p", "--password", default="repuser")
     parser.add_argument("-v", "--ansys-version", default=__ansys_apps_version__)
+    parser.add_argument("-t", "--token", default=None)
+    parser.add_argument("-a", "--account", default=None)
+    parser.add_argument("-q", "--queue", default=None)
     args = parser.parse_args()
 
     logger = logging.getLogger()
@@ -199,10 +237,21 @@ if __name__ == "__main__":
 
     try:
         log.info("Connect to HPC Platform Services")
-        client = Client(url=args.url, username=args.username, password=args.password)
+        if args.token is not None:
+            log.info("Using access token for authentication")
+            client = Client(url=args.url, access_token=args.token)
+        else:
+            client = Client(url=args.url, username=args.username, password=args.password)
+        if args.account is not None:
+            log.info(f"Using account ID: {args.account}")
+            client.session.headers.update({"accountid": args.account})
         log.info(f"HPS URL: {client.url}")
         proj = create_project(
-            client=client, name=args.name, num_jobs=args.num_jobs, version=args.ansys_version
+            client=client,
+            name=args.name,
+            num_jobs=args.num_jobs,
+            version=args.ansys_version,
+            queue=args.queue,
         )
 
     except HPSError as e:

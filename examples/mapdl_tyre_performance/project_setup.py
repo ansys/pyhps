@@ -32,10 +32,13 @@ import os
 import random
 import time
 
+import jwt
+
 from ansys.hps.client import Client, HPSError, __ansys_apps_version__
 from ansys.hps.client.jms import (
     File,
     FloatParameterDefinition,
+    HpcResources,
     JmsApi,
     Job,
     JobDefinition,
@@ -46,6 +49,7 @@ from ansys.hps.client.jms import (
     Software,
     TaskDefinition,
 )
+from ansys.rep.common.auth.self_signed_token_provider import SelfSignedTokenProvider
 
 log = logging.getLogger(__name__)
 
@@ -57,6 +61,7 @@ def create_project(
     num_jobs=20,
     use_exec_script=False,
     active=True,
+    queue="",
 ) -> Project:
     log.debug("=== Project")
     jms_api = JmsApi(client)
@@ -227,6 +232,9 @@ def create_project(
         input_file_ids=[f.id for f in files[:2]],
         output_file_ids=[f.id for f in files[2:]],
     )
+    if queue:
+        task_def.resource_requirements.hpc_resources = HpcResources()
+        task_def.resource_requirements.hpc_resources.queue = queue
 
     if use_exec_script:
         retry = 0
@@ -287,8 +295,10 @@ if __name__ == "__main__":
     parser.add_argument("-U", "--url", default="https://localhost:8443/hps")
     parser.add_argument("-u", "--username", default="repuser")
     parser.add_argument("-p", "--password", default="repuser")
-    parser.add_argument("-t", "--token", default="")
+    parser.add_argument("-t", "--token", default=None)
     parser.add_argument("-a", "--account", default="onprem_account")
+    parser.add_argument("-s", "--signing_key", default="")
+    parser.add_argument("-q", "--queue", default="")
     parser.add_argument("-v", "--ansys-version", default=__ansys_apps_version__)
 
     args = parser.parse_args()
@@ -297,8 +307,23 @@ if __name__ == "__main__":
     logging.basicConfig(format="[%(asctime)s | %(levelname)s] %(message)s", level=logging.DEBUG)
 
     log.debug("=== HPS connection")
+
     if args.token:
-        client = Client(url=args.url, access_token=args.token)
+        if args.signing_key:
+            payload = jwt.decode(
+                args.token, algorithms=["RS256"], options={"verify_signature": False}
+            )
+            user_id = payload["sub"]
+            log.debug(f"Found user_id from token: {payload['sub']}")
+            provider = SelfSignedTokenProvider({"hps-default": args.signing_key})
+            extra = {"preferred_username": user_id}
+            # extra = {"account_admin": True, "oid": user_id}
+            token = provider.generate_signed_token(user_id, user_id, args.account, 6000, extra)
+            log.debug(f"Token: {token}")
+        else:
+            token = args.token
+
+        client = Client(url=args.url, access_token=token)
         client.session.headers.update({"accountid": args.account})
     else:
         client = Client(url=args.url, username=args.username, password=args.password)
@@ -311,6 +336,7 @@ if __name__ == "__main__":
             version=args.ansys_version,
             num_jobs=args.num_jobs,
             use_exec_script=args.use_exec_script,
+            queue=args.queue,
         )
     except HPSError as e:
         log.error(str(e))
