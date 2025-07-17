@@ -161,6 +161,8 @@ def main(input_file, task_definition, images, in_subscript):
             f"{task_definition}",
             "--in-subscript",
         ]
+        if "images":
+            cmd.append("--images")
         log.info("Run Subscript with: {cmd}")
         subprocess.run(cmd, check=False)
 

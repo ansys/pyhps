@@ -129,10 +129,8 @@ def test_files(client):
     jms_api.delete_project(proj)
 
 
-def test_download_file_in_subdir(client):
-    jms_api = JmsApi(client)
-    proj = jms_api.create_project(Project(name="rep_test_download_file_in_subdir", active=False))
-    project_api = ProjectApi(client, proj.id)
+def test_download_file_in_subdir(client, inactive_temporary_project):
+    project_api = ProjectApi(client, inactive_temporary_project.id)
 
     files = [
         File(
@@ -150,5 +148,49 @@ def test_download_file_in_subdir(client):
         with open(fpath) as sf:
             assert "This is my file" == sf.read()
 
-    # Delete project again
-    jms_api.delete_project(proj)
+
+def _write_file(file_path, size_in_mb):
+    log.info(f"Generating file {file_path} with size {size_in_mb} MB")
+    one_mb = 1024 * 1024  # 1MB
+    with open(file_path, "wb") as f:
+        for _ in range(size_in_mb):
+            f.write(os.urandom(one_mb))
+
+
+def test_file_download_progress(client, inactive_temporary_project):
+    with tempfile.TemporaryDirectory() as temp_dir:
+        file_path = os.path.join(temp_dir, "test_file.bin")
+        _write_file(file_path, 300)
+
+        project_api = ProjectApi(client, inactive_temporary_project.id)
+        files = [
+            File(
+                name="file",
+                evaluation_path="test_file.bin",
+                type="application/octet-stream",
+                src=file_path,
+            )
+        ]
+
+        file = project_api.create_files(files)[0]
+
+        progress = []
+
+        def _progress_handler(file_size):
+            progress.append(file_size)
+            log.info(f"Progress: {file_size / 1024.0 / 1024.0: .1f} MB downloaded")
+
+        d_path = project_api.download_file(
+            file, temp_dir, file_name="downloaded.bin", progress_handler=_progress_handler
+        )
+        assert os.path.exists(d_path)
+        assert os.path.getsize(d_path) == os.path.getsize(file_path)
+
+        assert len(progress) >= 2
+        assert progress[0] == 0
+        assert progress[-1] == file.size
+
+        for i in range(1, len(progress)):
+            assert progress[i] >= 0
+            assert progress[i] <= file.size
+            assert progress[i] >= progress[i - 1]

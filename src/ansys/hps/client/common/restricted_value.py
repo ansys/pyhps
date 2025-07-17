@@ -41,11 +41,13 @@ class RestrictedValue(fields.Field):
 
     def _deserialize(self, value, attr, obj, **kwargs):
         """Convert string to restricted value object."""
+        # try each restricted field type until one succeeds
+        # if none succeed, raise a validation error
         for field in self.restricted_fields:
             try:
                 return field._deserialize(value, attr, obj, **kwargs)
             except Exception:
-                pass
+                pass  # nosec B110
 
         self.raise_validation_error()
 

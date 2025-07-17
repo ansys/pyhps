@@ -26,7 +26,8 @@ import os
 import pytest
 from keycloak import KeycloakAdmin
 
-from ansys.hps.client import AuthApi, Client
+from ansys.hps.client import AuthApi, Client, JmsApi
+from ansys.hps.client.jms.resource import Project
 
 
 @pytest.fixture(scope="session")
@@ -109,3 +110,11 @@ def run_id():
 @pytest.fixture
 def build_info_path():
     return os.path.join(os.getcwd(), "build_info.json")
+
+
+@pytest.fixture
+def inactive_temporary_project(client):
+    jms_api = JmsApi(client)
+    proj = jms_api.create_project(Project(name="pyhps_temporary_project", active=False))
+    yield proj
+    jms_api.delete_project(proj)
