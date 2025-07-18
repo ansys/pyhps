@@ -63,7 +63,7 @@ class AuthApi:
     def realm_url(self) -> str:
         """Realm URL."""
         # return f"{self.url}/admin/realms/{self.client.realm}"
-        return f"{self.client.auth_url}".replace("/auth/realms", "/admin/realms")
+        return f"{self.client.auth_url}".replace("/auth/realms", "/auth/admin/realms")
 
     def get_users(self, as_objects=True, **query_params) -> list[User]:
         """Get users, filtered according to query parameters.
