@@ -74,8 +74,8 @@ class File(Object):
         that the evaluator should decide. Another value indicates the interval in seconds.
     reference_id : str, optional
         ID of the reference file that this file was created from.
-    skip_upload : bool, optional
-        Whether the file's contents be upload to storage backend.
+    access_mode : str, optional
+        Access mode of file.
 
     """
 
@@ -103,7 +103,7 @@ class File(Object):
         collect: bool = missing,
         collect_interval: int = missing,
         reference_id: str = missing,
-        skip_upload: bool = missing,
+        access_mode: str = missing,
         **kwargs,
     ):
         self.src = src
@@ -126,7 +126,7 @@ class File(Object):
         self.collect = collect
         self.collect_interval = collect_interval
         self.reference_id = reference_id
-        self.skip_upload = skip_upload
+        self.access_mode = access_mode
 
         self.obj_type = self.__class__.__name__
 
