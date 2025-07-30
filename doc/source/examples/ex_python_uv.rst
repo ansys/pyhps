@@ -78,7 +78,7 @@ uv application registration in the scaler/evaluator:
      - /path/to/custom/uv/cache/dir
 
 Air-gapped setups
-----------------
+-----------------
 
 For air-gapped setups where no internet connectivity is available, there
 are several options for a successful uv setup:
@@ -114,17 +114,17 @@ The example supports the following command line arguments:
    * - Flag
      - Example
      - Description
-   * - -U, --url
-     - --url=https://localhost:8443/hps
+   * - ``-U``, ``--url``
+     - ``--url=https://localhost:8443/hps``
      - URL of the target HPS instance
-   * - -u, --username
-     - --username=repuser
+   * - ``-u``, ``--username``
+     - ``--username=repuser``
      - Username to log into HPS
-   * - -p, --password
-     - --password=topSecret
+   * - ``-p``, ``--password``
+     - ``--password=topSecret``
      - Password to log into HPS
-   * - -j, --num-jobs
-     - --num-jobs=10
+   * - ``-j``, ``--num-jobs``
+     - ``--num-jobs=10``
      - Number of jobs to generate
 
 Files
