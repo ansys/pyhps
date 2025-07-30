@@ -27,6 +27,7 @@ Command formed: uv run <script_file>
 
 import json
 import os
+import shutil
 
 from ansys.rep.common.logging import log
 from ansys.rep.evaluator.task_manager import ApplicationExecution
@@ -59,7 +60,7 @@ class PythonExecution(ApplicationExecution):
         cmd = f"{exes['uv']} run {script_file['path']}"
         self.run_and_capture_output(cmd, shell=True, env=env)
 
-        # Extract parameters if needed
+        # Read eval.py output parameters
         output_parameters = {}
         try:
             log.debug(f"Loading output parameters from {output_filename}")
@@ -70,5 +71,18 @@ class PythonExecution(ApplicationExecution):
         except Exception as ex:
             log.info("No output parameters found.")
             log.debug(f"Failed to read output_parameters from file: {ex}")
+
+        # If exe path is in out params, clean up virtual environment to avoid runaway uv venv cache
+        # See https://github.com/astral-sh/uv/issues/13431
+        if "exe" in output_parameters.keys():
+            try:
+                venv_cache = os.path.abspath(os.path.join(output_parameters["exe"], "..", ".."))
+                if os.path.exists(venv_cache):
+                    log.debug(f"Cleaning venv cache at {venv_cache}...")
+                    shutil.rmtree(venv_cache)
+                else:
+                    log.debug(f"Venv cache path {venv_cache} does not exist.")
+            except Exception as ex:
+                log.debug(f"Couldn't clean venv cache at {venv_cache}: {ex}")
 
         log.info("End Python execution script")
