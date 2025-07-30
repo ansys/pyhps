@@ -143,26 +143,26 @@ The example supports the following command line arguments:
    * - Flag
      - Example
      - Description
-   * - -U, --url
-     - --url=https://localhost:8443/hps
+   * - ``-U``, ``--url``
+     - ``--url=https://localhost:8443/hps``
      - URL of the target HPS instance
-   * - -u, --username
-     - --username=repuser
+   * - ``-u``, ``--username``
+     - ``--username=repuser``
      - Username to log into HPS
-   * - -p, --password
-     - --password=topSecret
+   * - ``-p``, ``--password``
+     - ``--password=topSecret``
      - Password to log into HPS
-   * - -n, --num-jobs
-     - --num-jobs=50
+   * - ``-n``, ``--num-jobs``
+     - ``--num-jobs=50``
      - Number of design points to generate
-   * - -m, --num-modes
-     - --num-modes=3
+   * - ``-m``, ``--num-modes``
+     - ``--num-modes=3``
      - Number of lowest eigenfrequencies to calculate
-   * - -f, --target-frequency
-     - --target-frequency=100.0
+   * - ``-f``, ``--target-frequency``
+     - ``--target-frequency=100.0``
      - Frequency [Hz] to target for the lowest cantilever mode
-   * - -s, --split-tasks
-     - --split-tasks
+   * - ``-s``, ``--split-tasks``
+     - ``--split-tasks``
      - Split each step into a different task
 
 Furthermore, it defines the following HPS parameters that are accessible
@@ -244,21 +244,21 @@ Code
 
 The files in play for the single task version are the following:
 
-``project_setup.py``:
+The project creation script ``project_setup.py``:
 
 .. literalinclude:: ../../../examples/python_pyansys_cantilever/project_setup.py
     :language: python
     :lines: 23-
     :caption: project_setup.py
 
-``exec_combined.py``:
+The combined execution script ``exec_combined.py``:
 
 .. literalinclude:: ../../../examples/python_pyansys_cantilever/exec_scripts/exec_combined.py
     :language: python
     :lines: 23-
     :caption: project_setup.py
 
-``eval_combined.py``:
+And the combined evaluation script ``eval_combined.py``:
 
 .. literalinclude:: ../../../examples/python_pyansys_cantilever/eval_scripts/eval_combined.py
     :language: python
