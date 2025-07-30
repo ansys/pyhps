@@ -23,17 +23,21 @@
 # /// script
 # requires-python = "==3.10"
 # dependencies = [
+#     "ansys-hps-client @ git+https://github.com/ansys/pyhps.git@main",
+#     "packaging",
 #     "typer",
-#     "ansys-hps-client @ git+https://github.com/ansys/pyhps.git@main"
 # ]
 # ///
 
 import logging
 import os
 import random
+import sys
 
 import typer
+from packaging import version
 
+import ansys.hps.client
 from ansys.hps.client import Client, HPSError
 from ansys.hps.client.jms import (
     BoolParameterDefinition,
@@ -410,4 +414,11 @@ def generate_parameter_values_for_job(i, params_by_name):
 
 
 if __name__ == "__main__":
+    # Verify that ansys-hps-client version is > 0.10.1 to ensure support for unmapped parameters
+    if version.parse(ansys.hps.client.__version__) <= version.parse("0.10.1"):
+        print(
+            f"ERR: ansys-hps-client version {ansys.hps.client.__version__} \
+                does not satisfy '>0.10.1'"
+        )
+        sys.exit(1)
     typer.run(entrypoint)
