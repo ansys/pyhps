@@ -72,7 +72,7 @@ class PythonExecution(ApplicationExecution):
             log.info("No output parameters found.")
             log.debug(f"Failed to read output_parameters from file: {ex}")
 
-        # If exe path is in out params, clean up virtual environment to avoid runaway uv venv cache
+        # If exe path is in out params, delete the venv folder to avoid runaway uv venv cache
         # See https://github.com/astral-sh/uv/issues/13431
         if "exe" in output_parameters.keys():
             try:
