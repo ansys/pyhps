@@ -132,24 +132,23 @@ Files
 
 The relevant files of the example are:
 
-``project_setup.py``: Handles all communication with the HPS instance.
-  Defines the project and generates the jobs.
+The project creation script ``project_setup.py``. Handles all communication with the HPS instance,
+defines the project and generates the jobs.
 
 .. literalinclude:: ../../../examples/python_uv/project_setup.py
     :language: python
     :lines: 23-
     :caption: project_setup.py
 
-``eval.py``: The script that is evaluated on HPS. Contains the code to
-  plot a sine, and then save the figure.
+The script ``eval.py`` that is evaluated on HPS. Contains the code to plot a sine, and then save 
+the figure.
 
 .. literalinclude:: ../../../examples/python_uv/eval.py
     :language: python
     :lines: 23-
     :caption: eval.py
 
-``exec_script.py``: Execution script that uses uv to run the
-  evaluation script.
+The execution script ``exec_script.py`` that uses uv to run the evaluation script.
 
 .. literalinclude:: ../../../examples/python_uv/exec_script.py
     :language: python
