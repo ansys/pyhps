@@ -44,5 +44,7 @@ if __name__ == "__main__":
     plt.savefig("plot.png", dpi=200)
 
     # Uncomment to enable venv cleanup in exec script, see execution script for details
+    # import json
+    # import sys
     # with open("output_parameters.json", "w") as out_file:
     #    json.dump({"exe": sys.executable}, out_file, indent=4)
