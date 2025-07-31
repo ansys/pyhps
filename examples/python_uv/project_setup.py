@@ -23,7 +23,8 @@
 # /// script
 # requires-python = "==3.10"
 # dependencies = [
-#     "ansys-hps-client"
+#     "ansys-hps-client",
+#     "packaging"
 # ]
 # ///
 
