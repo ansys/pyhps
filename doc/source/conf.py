@@ -60,6 +60,7 @@ EXAMPLES = {
         "StaticMixer_001.cfx",
         "StaticMixer_001.def",
     ],
+    "python_uv": ["project_setup.py", "exec_script.py", "eval.py"],
 }
 
 sys.path.append(os.path.abspath(os.path.dirname(__file__)))
