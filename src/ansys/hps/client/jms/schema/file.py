@@ -20,6 +20,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 from marshmallow.validate import OneOf
+
 """Module providing file schema."""
 
 from marshmallow import fields
@@ -32,6 +33,7 @@ valid_access_mode = [
     "transfer",
     "direct_access",
 ]
+
 
 class FileSchema(ObjectSchemaWithModificationInfo):
     class Meta(ObjectSchemaWithModificationInfo.Meta):
@@ -89,7 +91,7 @@ class FileSchema(ObjectSchemaWithModificationInfo):
         allow_none=True,
         metadata={"description": "Reference file from which this one was created"},
     )
-    
+
     access_mode = fields.String(
         validate=OneOf(valid_access_mode), metadata={"description": "Access mode of file."}
     )
