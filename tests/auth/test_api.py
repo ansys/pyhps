@@ -22,6 +22,7 @@
 
 import logging
 import uuid
+from unittest.mock import MagicMock
 
 import pytest
 from keycloak import KeycloakOpenID
@@ -184,3 +185,25 @@ def test_impersonate_user(url, keycloak_client):
     assert token_info["preferred_username"] == new_user.username
 
     delete_user(keycloak_client, new_user)
+
+
+def test_auth_api_url(client):
+    """Test that the auth_api_url property returns the
+    correct URL for the default instance of JMS."""
+    api = AuthApi(client)
+    auth_api_url = client.auth_api_url.rstrip("/")
+    assert api.realm_url == f"{auth_api_url}/admin/realms/{client.realm}"
+    assert api.url == auth_api_url
+
+
+def test_customized_auth_api_url(client):
+    """Test that the auth_api_url property returns the correct URL for custom entries."""
+    # Mock the client object so we can easily force a specific URL that's not the default
+    mock_client = MagicMock()
+    mock_client.auth_url = "https://example.com/dev/hps/auth/realms/myrealm"
+
+    # Create an instance of AuthApi with the mocked client
+    auth_api = AuthApi(client=mock_client)
+
+    # Assert the expected transformation
+    assert auth_api.realm_url == "https://example.com/dev/hps/auth/admin/realms/myrealm"
