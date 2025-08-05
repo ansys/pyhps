@@ -19,11 +19,11 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
-from marshmallow.validate import OneOf
 
 """Module providing file schema."""
 
 from marshmallow import fields
+from marshmallow.validate import OneOf
 
 from ansys.hps.client.common import ObjectSchemaWithModificationInfo
 
