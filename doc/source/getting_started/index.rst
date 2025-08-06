@@ -112,6 +112,7 @@ Legend:
 
 **[1]** HPS 1.3.45 introduces breaking changes to the schema for task definition templates.
 When using PyHPS versions < 0.11.X, functionalities related to task definition templates may not work correctly.
+See the HPS 1.3.45 release notes for more information on the changes introduced in this version.
 
 .. _note-2:
 
