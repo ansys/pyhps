@@ -74,7 +74,7 @@ jobs:
 
       - name: Upload coverage results
         uses: actions/upload-artifact@v4
-        if: ${{ inputs.python-version == '3.10' }}
+        if: ${{ inputs.python-version == '3.10' && inputs.upload-coverage }}
         with:
           name: coverage-html
           path: .cov/html
@@ -82,7 +82,7 @@ jobs:
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v5
-        if: ${{ inputs.python-version == '3.10' }}
+        if: ${{ inputs.python-version == '3.10' && inputs.upload-coverage }}
         env:
           CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
         with:
