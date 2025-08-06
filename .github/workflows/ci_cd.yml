@@ -73,6 +73,7 @@ jobs:
       runner: 'ubuntu-latest'
       hps-version: ${{ matrix.hps-version }}
       hps-feature: 'main'
+      upload-coverage: false
 
   docs:
     name: Documentation
