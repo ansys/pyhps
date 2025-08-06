@@ -168,7 +168,7 @@ def test_storage_configuration(client):
         assert "obj_type" in storage
 
 
-def test_objects_type_check(client):
+def test_objects_type_check(client, has_hps_version_ge_1_3_45):
     proj_name = "test_objects_type_check"
 
     proj = Project(name=proj_name, active=True)
@@ -177,10 +177,11 @@ def test_objects_type_check(client):
 
     jms_api = JmsApi(client)
 
-    with pytest.raises(ClientError) as ex_info:
-        _ = jms_api.create_task_definition_templates([job])
-    assert "Wrong object type" in str(ex_info.value)
-    assert "got <class 'ansys.hps.client.jms.resource.job.Job'>" in str(ex_info.value)
+    if has_hps_version_ge_1_3_45:
+        with pytest.raises(ClientError) as ex_info:
+            _ = jms_api.create_task_definition_templates([job])
+        assert "Wrong object type" in str(ex_info.value)
+        assert "got <class 'ansys.hps.client.jms.resource.job.Job'>" in str(ex_info.value)
 
     proj = jms_api.create_project(proj, replace=True)
     project_api = ProjectApi(client, proj.id)

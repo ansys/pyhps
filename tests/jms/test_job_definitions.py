@@ -58,7 +58,7 @@ def test_job_definition_delete(client):
     jms_api.delete_project(proj)
 
 
-def test_task_definition_fields(client):
+def test_task_definition_fields(client, has_hps_version_ge_1_3_45):
     # verify that:
     # - store_output is defaulted to True when undefined,
     # - memory and disk_space are correctly stored in bytes
@@ -97,7 +97,10 @@ def test_task_definition_fields(client):
     assert task_def.resource_requirements.compute_resource_set_id == "abc123"
     assert task_def.modified_by is not missing
     assert task_def.created_by is not missing
-    assert task_def.debug
+
+    if has_hps_version_ge_1_3_45:
+        assert task_def.debug
+
     assert auth_api.get_user(id=task_def.created_by).username == client.username
     assert auth_api.get_user(id=task_def.modified_by).username == client.username
 

@@ -28,6 +28,7 @@ from marshmallow.utils import missing
 
 from ansys.hps.client import HPSError
 from ansys.hps.client.auth import AuthApi
+from ansys.hps.client.check_version import HpsRelease
 from ansys.hps.client.jms import JmsApi
 from ansys.hps.client.jms.resource import (
     HpcResources,
@@ -37,6 +38,8 @@ from ansys.hps.client.jms.resource import (
 )
 from ansys.hps.client.jms.schema.task_definition_template import TaskDefinitionTemplateSchema
 from tests.utils import create_new_user_client, delete_user
+
+from ..conftest import xfail_for_hps_version_under
 
 log = logging.getLogger(__name__)
 
@@ -122,8 +125,8 @@ def test_template_deserialization():
     assert template.execution_context["my_new_field"].default == "value"
 
 
-def test_template_integration(client):
-    jms_api = JmsApi(client)
+def test_template_integration(jms_api, request):
+    xfail_for_hps_version_under(HpsRelease.v1_3_45, jms_api, request)
 
     # Test get queries
     templates = jms_api.get_task_definition_templates()
@@ -197,8 +200,10 @@ def test_template_integration(client):
     jms_api.delete_task_definition_templates([new_template])
 
 
-def test_template_permissions(client, keycloak_client, is_admin):
+def test_template_permissions(client, keycloak_client, is_admin, request):
     jms_api = JmsApi(client)
+
+    xfail_for_hps_version_under(HpsRelease.v1_3_45, jms_api, request)
 
     templates = jms_api.get_task_definition_templates()
 
@@ -292,8 +297,8 @@ def test_template_permissions(client, keycloak_client, is_admin):
     delete_user(keycloak_client, user1)
 
 
-def test_template_permissions_update(client):
-    jms_api = JmsApi(client)
+def test_template_permissions_update(jms_api, request):
+    xfail_for_hps_version_under(HpsRelease.v1_3_45, jms_api, request)
 
     # create new template and check default permissions
     template = TaskDefinitionTemplate(name="my_template", version=uuid.uuid4())
@@ -317,8 +322,9 @@ def test_template_permissions_update(client):
     jms_api.delete_task_definition_templates([template])
 
 
-def test_template_anyone_permission(client, keycloak_client):
+def test_template_anyone_permission(client, keycloak_client, request):
     jms_api = JmsApi(client)
+    xfail_for_hps_version_under(HpsRelease.v1_3_45, jms_api, request)
 
     # create new template and check default permissions
     template = TaskDefinitionTemplate(name="my_template", version=uuid.uuid4())
@@ -380,7 +386,9 @@ def test_template_anyone_permission(client, keycloak_client):
     delete_user(keycloak_client, user1)
 
 
-def test_template_delete(client, keycloak_client):
+def test_template_delete(client, keycloak_client, request):
+    xfail_for_hps_version_under(HpsRelease.v1_3_45, JmsApi(client), request)
+
     auth_api = AuthApi(client)
 
     # create 2 non-admin users

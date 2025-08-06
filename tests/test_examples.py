@@ -22,6 +22,8 @@
 
 import logging
 
+import pytest
+
 from ansys.hps.client import __ansys_apps_version__ as ansys_version
 from ansys.hps.client.jms import (
     IntParameterDefinition,
@@ -141,7 +143,10 @@ def test_python_two_bar_truss_problem_with_exec_script(client):
     jms_api.delete_project(project)
 
 
-def test_python_two_bar_truss_params_in_exec_script(client):
+def test_python_two_bar_truss_params_in_exec_script(client, has_hps_version_ge_1_3_45):
+    if not has_hps_version_ge_1_3_45:
+        pytest.skip("Returning output parameters in the execution script was added in HPS 1.3.45.")
+
     from examples.python_two_bar_truss_params_in_exec_script.project_setup import main
 
     num_jobs = 10
