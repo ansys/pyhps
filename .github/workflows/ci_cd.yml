@@ -60,6 +60,20 @@ jobs:
       hps-version: ${{ inputs.hps-version || 'latest-dev' }}
       hps-feature: ${{ inputs.hps-feature || 'main' }}
 
+  backward-compatibility-tests:
+    strategy:
+      matrix:
+          hps-version: ['v1.2.0']
+      fail-fast: false
+    uses: ./.github/workflows/tests.yml
+    secrets: inherit
+    with:
+      python-version: '3.10'
+      toxenv: 'py310'
+      runner: 'ubuntu-latest'
+      hps-version: ${{ matrix.hps-version }}
+      hps-feature: 'main'
+
   docs:
     name: Documentation
     runs-on: ubuntu-latest
