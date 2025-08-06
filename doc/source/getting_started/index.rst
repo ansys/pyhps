@@ -66,20 +66,53 @@ Compatibility with HPS releases
 
 The following table summarizes the compatibility between PyHPS versions and HPS releases.
 
-+------------------------------+-------------------------------+-------------------------------+------------------------------+
-| PyHPS version / HPS release  | ``1.0.2``                     | ``1.1.1``                     | ``1.2.0``                    |
-+==============================+===============================+===============================+==============================+
-|         ``0.7.X``            | :octicon:`check-circle-fill`  | :octicon:`check-circle-fill`  | :octicon:`check-circle-fill` |
-+------------------------------+-------------------------------+-------------------------------+------------------------------+
-|         ``0.8.X``            | :octicon:`check-circle-fill`  | :octicon:`check-circle-fill`  | :octicon:`check-circle-fill` |
-+------------------------------+-------------------------------+-------------------------------+------------------------------+
-|         ``0.9.X``            | :octicon:`check-circle`       | :octicon:`check-circle-fill`  | :octicon:`check-circle-fill` |
-+------------------------------+-------------------------------+-------------------------------+------------------------------+
-|         ``0.10.X``           | :octicon:`x`                  | :octicon:`x`                  | :octicon:`check-circle-fill` |
-+------------------------------+-------------------------------+-------------------------------+------------------------------+
+.. list-table::
+   :header-rows: 1
+   :widths: 40 15 15 15 15
+
+   * - PyHPS version / HPS release
+     - ``1.0.2``
+     - ``1.1.1``
+     - ``1.2.0``
+     - ``1.3.45``
+   * - ``0.7.X``
+     - :octicon:`check-circle-fill`
+     - :octicon:`check-circle-fill`
+     - :octicon:`check-circle-fill`
+     - :octicon:`check-circle-fill` `[1] <#note-1>`__
+   * - ``0.8.X``
+     - :octicon:`check-circle-fill`
+     - :octicon:`check-circle-fill`
+     - :octicon:`check-circle-fill`
+     - :octicon:`check-circle-fill` `[1] <#note-1>`__
+   * - ``0.9.X``
+     - :octicon:`check-circle`
+     - :octicon:`check-circle-fill`
+     - :octicon:`check-circle-fill`
+     - :octicon:`check-circle-fill` `[1] <#note-1>`__
+   * - ``0.10.X``
+     - :octicon:`x`
+     - :octicon:`x`
+     - :octicon:`check-circle-fill`
+     - :octicon:`check-circle-fill` `[1] <#note-1>`__
+   * - ``0.11.X``
+     - :octicon:`x`
+     - :octicon:`x`
+     - :octicon:`check-circle-fill` `[2] <#note-2>`__
+     - :octicon:`check-circle-fill`
+
 
 Legend:
 
 - :octicon:`check-circle-fill` Compatible
 - :octicon:`check-circle` Backward compatible (new features exposed in PyHPS may not be available in older HPS releases)
 - :octicon:`x` Incompatible
+
+.. _note-1:
+
+**[1]** HPS 1.3.45 introduces breaking changes to the schema for task definition templates.
+When using PyHPS versions < 0.11.X, functionalities related to task definition templates may not work correctly.
+
+.. _note-2:
+
+**[2]** In PyHPS 0.11.X, functionalities related to task definition templates are only compatible with HPS 1.3.45 and later.
