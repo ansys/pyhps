@@ -303,8 +303,8 @@ class Client:
         r"""Return download directory platform dependent.
 
         Resulting paths:
-        `Linux`: /home/user/.ansys/hps/binaries
-        `Windows`: C:\\Users\\user\\AppData\\Local\\Ansys\\hps\\binaries
+        `Linux`: /home/user/.ansys/hps/data-transfer/binaries
+        `Windows`: C:\\Users\\user\\AppData\\Local\\Ansys\\hps\\data-transfer\\binaries
 
         Note that on Windows we use AppData\\Local for this,
         not AppData\\Roaming, as the data stored for an application should typically be kept local.
