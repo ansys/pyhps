@@ -194,3 +194,55 @@ def test_file_download_progress(client, inactive_temporary_project):
             assert progress[i] >= 0
             assert progress[i] <= file.size
             assert progress[i] >= progress[i - 1]
+
+
+def test_files_access_mode(client):
+    jms_api = JmsApi(client)
+    proj = jms_api.create_project(
+        Project(name="rep_client_test_jms_FilesTest_access_mode", active=False), replace=True
+    )
+    project_api = ProjectApi(client, proj.id)
+
+    cwd = os.path.dirname(__file__)
+    example_dir = os.path.join(cwd, "..", "..", "examples", "mapdl_motorbike_frame")
+    log.debug(f"example_dir: {example_dir}")
+
+    # Create some files
+    files = []
+    mac_path = os.path.join(example_dir, "motorbike_frame.mac")
+    files.append(
+        File(
+            name="mac",
+            evaluation_path="motorbike_frame.mac",
+            type="text/plain",
+            src=mac_path,
+            access_mode="direct_access",
+        )
+    )
+
+    with open(mac_path, "rb") as f:
+        file_object_string = f.read()
+    files.append(
+        File(
+            name="file-object",
+            evaluation_path="my-file.txt",
+            type="text/plain",
+            src=io.BytesIO(file_object_string),
+        )
+    )
+
+    files_created = project_api.create_files(files)
+    for file in files_created:
+        assert file.created_by is not missing
+        assert file.creation_time is not missing
+        assert file.modified_by is not missing
+        assert file.modification_time is not missing
+        assert file.created_by == file.modified_by
+        assert file.access_mode is not missing
+        if file.name == "mac":
+            assert file.access_mode == "direct_access"
+        if file.name == "file-object":
+            assert file.access_mode == "transfer"
+
+    # Delete project again
+    jms_api.delete_project(proj)

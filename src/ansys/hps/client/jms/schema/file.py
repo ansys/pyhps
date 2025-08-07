@@ -22,6 +22,8 @@
 
 """Module providing file schema."""
 
+from enum import Enum
+
 from marshmallow import fields
 from marshmallow.validate import OneOf
 
@@ -29,10 +31,10 @@ from ansys.hps.client.common import ObjectSchemaWithModificationInfo
 
 from .object_reference import IdReference
 
-valid_access_mode = [
-    "transfer",
-    "direct_access",
-]
+
+class FileAccessMode(Enum):
+    transfer = "transfer"
+    direct_access = "direct_access"
 
 
 class FileSchema(ObjectSchemaWithModificationInfo):
@@ -93,5 +95,6 @@ class FileSchema(ObjectSchemaWithModificationInfo):
     )
 
     access_mode = fields.String(
-        validate=OneOf(valid_access_mode), metadata={"description": "Access mode of file."}
+        validate=OneOf([access_mode.value for access_mode in FileAccessMode]),
+        metadata={"description": "Access mode of file."},
     )

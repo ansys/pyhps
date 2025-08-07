@@ -55,6 +55,7 @@ from ansys.hps.client.jms.resource import (
     TaskCommandDefinition,
     TaskDefinition,
 )
+from ansys.hps.client.jms.schema.file import FileAccessMode
 from ansys.hps.client.rms.api import RmsApi
 from ansys.hps.client.rms.models import AnalyzeRequirements, AnalyzeResponse
 from ansys.hps.data_transfer.client.models.msg import SrcDst, StoragePath
@@ -773,7 +774,8 @@ def _upload_files(project_api: ProjectApi, files):
     for f in files:
         if (
             getattr(f, "src", None) is None
-            or getattr(f, "access_mode", "transfer") == "direct_access"
+            or getattr(f, "access_mode", FileAccessMode.transfer.value)
+            == FileAccessMode.direct_access.value
         ):
             continue
         file_path = f.src
