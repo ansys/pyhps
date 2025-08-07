@@ -35,6 +35,7 @@ one :download:`ZIP file <../../../build/pyhps_examples.zip>`.
   ex_fluent_nozzle
   ex_cfx_static_mixer
   ex_python_two_bar
+  ex_python_uv
 
 .. list-table::
    :header-rows: 1
@@ -59,6 +60,8 @@ one :download:`ZIP file <../../../build/pyhps_examples.zip>`.
      - Submit a CFX solve job to the HPS server using an execution script.
    * - :ref:`example_python_two_bar`
      - Create an HPS project that solves a two-bar truss problem with Python.
+   * - :ref:`example_python_uv`
+     - Run arbitrary Python scripts on HPS using uv.
 
 A link to download the required resources is available on each example page. If desired, 
 you can download the required resources for all examples through the link below.
