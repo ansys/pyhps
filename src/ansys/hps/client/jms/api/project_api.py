@@ -836,7 +836,8 @@ def create_files(project_api: ProjectApi, files, as_objects=True) -> list[File]:
     for f, cf in zip(files, created_files, strict=False):
         if (
             getattr(f, "src", None) is not None
-            and getattr(f, "access_mode", "transfer") == "transfer"
+            and getattr(f, "access_mode", FileAccessMode.transfer.value)
+            != FileAccessMode.direct_access.value
         ):
             cf.src = f.src
             num_uploads += 1
