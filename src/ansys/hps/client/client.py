@@ -282,7 +282,7 @@ class Client:
             try:
                 log.info("Starting Data Transfer client.")
                 # start Data transfer client
-                self._dt_client = DataTransferClient(download_dir=self._get_download_dir("Ansys"))
+                self._dt_client = DataTransferClient(download_dir=self._get_download_dir())
 
                 self._dt_client.binary_config.update(
                     verbosity=3,
@@ -299,36 +299,26 @@ class Client:
                 log.debug(ex)
                 raise HPSError("Error occurred when starting Data Transfer client.") from ex
 
-    def _get_download_dir(self, company=None):
+    def _get_download_dir(self):
         r"""Return download directory platform dependent.
 
-        :Parameters:
-        -`company`: Company name of the software provider
-
         Resulting paths:
-        `Linux`: /home/user/.ansys/binaries
-        `Windows`: C:\\Users\\user\\AppData\\Local\\Ansys\\binaries
+        `Linux`: /home/user/.ansys/hps/binaries
+        `Windows`: C:\\Users\\user\\AppData\\Local\\Ansys\\hps\\binaries
 
         Note that on Windows we use AppData\\Local for this,
         not AppData\\Roaming, as the data stored for an application should typically be kept local.
 
         """
-        environment_variable = "HOME"
-        if platform.uname()[0].lower() == "windows":
-            environment_variable = "LOCALAPPDATA"
-        path = os.environ.get(environment_variable, None)
+        environment_variable = "LOCALAPPDATA"
+        company_folder = "Ansys"
+        if platform.uname()[0].lower() != "windows":
+            environment_variable = "HOME"
+            company_folder = ".ansys"
 
-        app_dir = ""
-        if company:
-            app_dir = os.path.join(app_dir, company)
-        if app_dir:
-            if platform.uname()[0].lower() != "windows":
-                app_dir = "." + app_dir.lower()
-            path = os.path.join(path, app_dir)
+        home_path = os.environ.get(environment_variable, None)
 
-        path = os.path.join(path, "binaries")
-
-        return path
+        return os.path.join(home_path, company_folder, "hps", "data-transfer", "binaries")
 
     @property
     def auth_api_url(self) -> str:
