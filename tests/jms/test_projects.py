@@ -273,8 +273,7 @@ def test_copy_exec_script(client):
 
     project_api = ProjectApi(client, proj.id)
 
-    ansys_short_version = f"v{ansys_version[2:4]}{ansys_version[6]}"
-    script_names = [f"mapdl-{ansys_short_version}-exec_mapdl", "mechanical-exec_mechanical"]
+    script_names = [f"mapdl-exec_mapdl", "mechanical-exec_mechanical"]
 
     for script_name in script_names:
         file = project_api.copy_default_execution_script(f"{script_name}.py")
