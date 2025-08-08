@@ -57,7 +57,7 @@ jobs:
       python-version: ${{ matrix.cfg.python-version }}   
       toxenv: ${{ matrix.cfg.toxenv }}
       runner: ${{ matrix.os }}
-      hps-version: ${{ inputs.hps-version || 'latest-dev' }}
+      hps-version: ${{ inputs.hps-version || 'v1.3.45' }}
       hps-feature: ${{ inputs.hps-feature || 'main' }}
 
   backward-compatibility-tests:
