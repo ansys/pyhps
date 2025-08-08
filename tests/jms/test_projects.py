@@ -28,7 +28,6 @@ import time
 import pytest
 from marshmallow.utils import missing
 
-from ansys.hps.client import __ansys_apps_version__ as ansys_version
 from ansys.hps.client.jms import JmsApi, ProjectApi
 from ansys.hps.client.jms.resource import JobDefinition, LicenseContext, Project
 from ansys.hps.client.jms.schema.project import ProjectSchema
@@ -273,7 +272,7 @@ def test_copy_exec_script(client):
 
     project_api = ProjectApi(client, proj.id)
 
-    script_names = [f"mapdl-exec_mapdl", "mechanical-exec_mechanical"]
+    script_names = ["mapdl-exec_mapdl", "mechanical-exec_mechanical"]
 
     for script_name in script_names:
         file = project_api.copy_default_execution_script(f"{script_name}.py")
