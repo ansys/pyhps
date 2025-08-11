@@ -9,8 +9,8 @@ isort
 [Kk]eycloak
 Koenig
 marshmallow_oneofschema
-matplotlib
-numpy
+Matplotlib
+NumPy
 Mises
 postprocess
 [Pp]ydantic

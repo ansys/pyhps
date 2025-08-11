@@ -64,7 +64,7 @@ one :download:`ZIP file <../../../build/pyhps_examples.zip>`.
      - Run arbitrary Python scripts on HPS using uv.
 
 A link to download the required resources is available on each example page. If desired, 
-you can download the required resources for all examples through the link below.
+you can download the required resources for all examples using the following link.
 
 .. _bottom of this page:
 

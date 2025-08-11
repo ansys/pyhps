@@ -4,19 +4,18 @@
 
     Go to the `bottom of this page`_ to download the ZIP file for the uv example.
 
-Running arbitrary Python scripts on HPS
-=======================================
+Run arbitrary Python scripts on HPS
+===================================
 
-This example shows how arbitrary Python scripts can be run on HPS, by
-using `uv <https://docs.astral.sh/uv/>`__ to generate the required
+This example shows how to run arbitrary Python scripts. It uses
+the `uv <https://docs.astral.sh/uv/>`__ package to generate the required
 environments on the fly.
 
-The example sets up a project that shall plot ``sin(x)`` using numpy and
-matplotlib, and then save the figure to a file.
+The example sets up a project that plots ``sin(x)`` using NumPy and
+Matplotlib and then saves the figure to a file.
 
-The main feature enabling uv to take care of the environment setup is
-the metadata header present in the ``eval.py`` script, which defines the
-dependencies:
+The metadata header present in the ``eval.py`` script, which defines the
+dependencies, enables uv to take care of the environment setup:
 
 .. code:: python
 
@@ -28,19 +27,20 @@ dependencies:
    # ]
    # ///
 
-More information can be found `here
-(python.org) <https://packaging.python.org/en/latest/specifications/inline-script-metadata/#inline-script-metadata>`__
-and `here
-(astral.sh) <https://docs.astral.sh/uv/guides/scripts/#running-a-script-with-dependencies>`__.
+For more information, see `Inline script metadata
+<https://packaging.python.org/en/latest/specifications/inline-script-metadata/#inline-script-metadata>`__
+in the *Python Packaging User Guide* and `Running a script with dependencies <https://docs.astral.sh/uv/guides/scripts/#running-a-script-with-dependencies>`__
+in the uv documentation.
 
 Prerequisites
 =============
 
-In order for the example to run, ``uv`` must be installed and registered
-on the scaler/evaluator. Installation instructions can be found
-`here <https://docs.astral.sh/uv/getting-started/installation/>`__.
+For the example to run, uv must be installed and registered
+on the scaler/evaluator. For installation instructions, see
+`Installing uv <https://docs.astral.sh/uv/getting-started/installation/>`__
+in the uv documentation.
 
-Once uv is installed, the application must be registered in the
+Once uv is installed, the package must be registered in the
 scaler/evaluator with the following properties:
 
 .. list-table::
@@ -59,15 +59,15 @@ scaler/evaluator with the following properties:
 
 Note that the version should be adjusted to the case at hand.
 
-Custom cache directory
-----------------------
+Define a custom cache directory
+-------------------------------
 
-The preceding steps setup uv with the cache located in its default location
-in the user home directory (~/.cache/uv). Depending on the individual
-situation, other cache locations may be preferred, such as a shared
-directory accessible to all evaluators. In order to define a custom uv
-cache directory, the following environment variable can be added to the
-uv application registration in the scaler/evaluator:
+The preceding steps set up uv with the cache located in its default location
+in the user home directory (~/.cache/uv). Depending on your
+situation, you might prefer a different cache location, such as a shared
+directory accessible to all evaluators. To define a custom uv
+cache directory, add the following environment variable to the
+uv package registration in the scaler/evaluator:
 
 .. list-table::
    :header-rows: 1
@@ -77,31 +77,35 @@ uv application registration in the scaler/evaluator:
    * - UV_CACHE_DIR
      - /path/to/custom/uv/cache/dir
 
-Air-gapped setups
------------------
+Create offline air-gapped setups
+--------------------------------
 
-For air-gapped setups where no internet connectivity is available, there
-are several options for a successful uv setup:
+If internet is not available, you can create offline air-gapped setups for uv
+using one of these options:
 
-1. Pre-populate the uv cache with all desired dependencies.
-2. Provide a local Python package index, and set uv to use it. More
-   information can be found
-   `here <https://docs.astral.sh/uv/configuration/indexes/>`__. This
-   index could then sit in a shared location, with node-local caching
-   applied.
-3. Use pre-generated virtual environments, see
-   `here <https://docs.astral.sh/uv/reference/cli/#uv-venv>`__
+* Pre-populate the uv cache with all desired dependencies.
+* Provide a local Python package index and set uv to use it. For
+  more information, see
+  `Package indexes <https://docs.astral.sh/uv/configuration/indexes/>`__
+  in the uv documentation. This index can then sit in a shared location,
+  with node-local caching applied.
+* Use pre-generated virtual environments. For more information, see
+  `uv venv <https://docs.astral.sh/uv/reference/cli/#uv-venv>`__ in the
+  uv documentation.
 
-In order to turn off network access, one can either set the
-``UV_OFFLINE`` environment variable, or use the ``--offline`` flag with
+To turn off network access, you can either set the
+``UV_OFFLINE`` environment variable or use the ``--offline`` flag with
 many uv commands.
 
-Running the example
-===================
+Run the example
+===============
 
-To run the example, execute the ``project_setup.py`` script, for example
-via ``uv run project_setup.py``. This sets up a project with a number
-of jobs, and each job shall generate a ``plot.png`` file.
+To run the example, execute the ``project_setup.py`` script::
+
+uv run project_setup.py
+
+This command sets up a project with a number
+of jobs. Each job generates a ``plot.png`` file.
 
 Options
 -------
@@ -130,17 +134,17 @@ The example supports the following command line arguments:
 Files
 -----
 
-The relevant files of the example are:
+Descriptions follow of the relevant example files.
 
-The project creation script ``project_setup.py``. Handles all communication with the HPS instance,
-defines the project and generates the jobs.
+The project creation script, ``project_setup.py``, handles all communication with the
+HPS instance, defines the project, and generates the jobs.
 
 .. literalinclude:: ../../../examples/python_uv/project_setup.py
     :language: python
     :lines: 23-
     :caption: project_setup.py
 
-The script ``eval.py`` that is evaluated on HPS. Contains the code to plot a sine, and then save 
+The script ``eval.py``, which is evaluated on HPS, contains the code to plot a sine and then save 
 the figure.
 
 .. literalinclude:: ../../../examples/python_uv/eval.py
@@ -148,7 +152,7 @@ the figure.
     :lines: 23-
     :caption: eval.py
 
-The execution script ``exec_script.py`` that uses uv to run the evaluation script.
+The execution script, ``exec_script.py``, uses uv to run the evaluation script.
 
 .. literalinclude:: ../../../examples/python_uv/exec_script.py
     :language: python
