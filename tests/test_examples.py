@@ -23,7 +23,6 @@
 import logging
 
 import pytest
-from conftest import xfail_for_hps_version_under
 
 from ansys.hps.client import __ansys_apps_version__ as ansys_version
 from ansys.hps.client.check_version import HpsRelease
@@ -33,6 +32,7 @@ from ansys.hps.client.jms import (
     ProjectApi,
     StringParameterDefinition,
 )
+from tests.conftest import xfail_for_hps_version_under
 
 log = logging.getLogger(__name__)
 
