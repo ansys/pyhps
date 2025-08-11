@@ -23,8 +23,10 @@
 import logging
 
 import pytest
+from conftest import xfail_for_hps_version_under
 
 from ansys.hps.client import __ansys_apps_version__ as ansys_version
+from ansys.hps.client.check_version import HpsRelease
 from ansys.hps.client.jms import (
     IntParameterDefinition,
     JmsApi,
@@ -248,7 +250,9 @@ def test_lsdyna_cylinder_plate(client):
     jms_api.delete_project(proj)
 
 
-def test_lsdyna_cylinder_plate_with_exec_script(client):
+def test_lsdyna_cylinder_plate_with_exec_script(client, request):
+    xfail_for_hps_version_under(HpsRelease.v1_3_45, JmsApi(client), request)
+
     from examples.lsdyna_cylinder_plate.lsdyna_job import submit_job
 
     app_job = submit_job(client, name="LS-DYNA Cylinder Plate", version=ansys_version)

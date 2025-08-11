@@ -28,11 +28,13 @@ import time
 import pytest
 from marshmallow.utils import missing
 
-from ansys.hps.client import __ansys_apps_version__ as ansys_version
+from ansys.hps.client.check_version import HpsRelease
 from ansys.hps.client.jms import JmsApi, ProjectApi
 from ansys.hps.client.jms.resource import JobDefinition, LicenseContext, Project
 from ansys.hps.client.jms.schema.project import ProjectSchema
 from examples.mapdl_motorbike_frame.project_setup import create_project as motorbike_create_project
+
+from ..conftest import xfail_for_hps_version_under
 
 log = logging.getLogger(__name__)
 
@@ -264,7 +266,9 @@ def test_project_archive_restore(client):
     jms_api.delete_project(restored_project)
 
 
-def test_copy_exec_script(client):
+def test_copy_exec_script(client, request):
+    xfail_for_hps_version_under(HpsRelease.v1_3_45, JmsApi(client), request)
+
     jms_api = JmsApi(client)
     proj_name = "test_copy_exec_script"
 
@@ -273,7 +277,7 @@ def test_copy_exec_script(client):
 
     project_api = ProjectApi(client, proj.id)
 
-    script_names = [f"mapdl-exec_mapdl", "mechanical-exec_mechanical"]
+    script_names = ["mapdl-exec_mapdl", "mechanical-exec_mechanical"]
 
     for script_name in script_names:
         file = project_api.copy_default_execution_script(f"{script_name}.py")

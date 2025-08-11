@@ -63,7 +63,7 @@ jobs:
   backward-compatibility-tests:
     strategy:
       matrix:
-          hps-version: ['v1.2.0']
+          hps-version: ['v1.2.0', 'v1.3.45']
       fail-fast: false
     uses: ./.github/workflows/tests.yml
     secrets: inherit
