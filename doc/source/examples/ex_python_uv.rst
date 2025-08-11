@@ -57,7 +57,7 @@ scaler/evaluator with the following properties:
    * - Executable
      - /path/to/uv/bin/uv
 
-Note that the version should be adjusted to the case at hand.
+Be sure to adjust the version to the one you have installed.
 
 Define a custom cache directory
 -------------------------------
