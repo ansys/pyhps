@@ -4,7 +4,7 @@
 
     Go to the `bottom of this page`_ to download the ZIP file for the PyAnsys cantilever example.
 
-Run PyAnsys on HPS
+PyAnsys workflow: Cantilever
 ======================
 
 This example shows how to run PyAnsys scripts on HPS. 
@@ -134,7 +134,7 @@ Each job samples a different cantilever design point.
 Options
 -------
 
-The example supports command line arguments:
+The example supports the following command line arguments:
 
 .. list-table::
    :header-rows: 1
@@ -164,7 +164,7 @@ The example supports command line arguments:
      - ``--split-tasks``
      - Split each step into a different task
 
-The example defines HPS parameters that are accessible via the HPS web interface:
+The example defines the following HPS parameters:
 
 .. list-table::
    :header-rows: 1
