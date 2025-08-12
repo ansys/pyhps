@@ -206,7 +206,7 @@ The example defines the following HPS parameters:
    * - freq_mode_i
      - Frequency of i-th eigenmode [Hz], iϵ{1,…,num_modes}
    * - clean_venv
-     - Whether to clean up the (ephemeral) uv virtual environment
+     - Whether to delete the venvs after execution
 
 Logic of the example
 ====================
