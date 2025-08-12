@@ -140,6 +140,8 @@ class JmsApi:
 
     ################################################################
     # Task Definition Templates
+
+    @version_required(min_version=JMS_VERSIONS[HpsRelease.v1_3_45])
     def get_task_definition_templates(
         self, as_objects=True, **query_params
     ) -> list[TaskDefinitionTemplate]:
@@ -148,6 +150,7 @@ class JmsApi:
             self.client.session, self.url, TaskDefinitionTemplate, as_objects, **query_params
         )
 
+    @version_required(min_version=JMS_VERSIONS[HpsRelease.v1_3_45])
     def create_task_definition_templates(
         self, templates: list[TaskDefinitionTemplate], as_objects=True, **query_params
     ) -> list[TaskDefinitionTemplate]:
@@ -161,6 +164,7 @@ class JmsApi:
             **query_params,
         )
 
+    @version_required(min_version=JMS_VERSIONS[HpsRelease.v1_3_45])
     def update_task_definition_templates(
         self, templates: list[TaskDefinitionTemplate], as_objects=True, **query_params
     ) -> list[TaskDefinitionTemplate]:
@@ -178,6 +182,7 @@ class JmsApi:
         """Delete task definition templates."""
         return delete_objects(self.client.session, self.url, templates, TaskDefinitionTemplate)
 
+    @version_required(min_version=JMS_VERSIONS[HpsRelease.v1_3_45])
     def copy_task_definition_templates(
         self, templates: list[TaskDefinitionTemplate], wait: bool = True
     ) -> str | list[str]:
