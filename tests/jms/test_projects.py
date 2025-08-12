@@ -28,13 +28,11 @@ import time
 import pytest
 from marshmallow.utils import missing
 
-from ansys.hps.client.check_version import HpsRelease
 from ansys.hps.client.jms import JmsApi, ProjectApi
 from ansys.hps.client.jms.resource import JobDefinition, LicenseContext, Project
 from ansys.hps.client.jms.schema.project import ProjectSchema
 from examples.mapdl_motorbike_frame.project_setup import create_project as motorbike_create_project
 
-from ..conftest import xfail_for_hps_version_under
 
 log = logging.getLogger(__name__)
 
@@ -266,10 +264,12 @@ def test_project_archive_restore(client):
     jms_api.delete_project(restored_project)
 
 
-def test_copy_exec_script(client, request):
-    jms_api = JmsApi(client)
-    xfail_for_hps_version_under(HpsRelease.v1_3_45, jms_api, request)
+def test_copy_exec_script(client, has_hps_version_ge_1_3_45):
 
+    if not has_hps_version_ge_1_3_45:
+        pytest.skip("Execution script name has changed starting from HPS v1.3.45.")
+
+    jms_api = JmsApi(client)
     proj_name = "test_copy_exec_script"
 
     proj = Project(name=proj_name)
