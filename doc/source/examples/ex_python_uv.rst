@@ -102,7 +102,7 @@ Run the example
 
 To run the example, execute the ``project_setup.py`` script::
 
-uv run project_setup.py
+  uv run project_setup.py
 
 This command sets up a project with a number
 of jobs. Each job generates a ``plot.png`` file.
