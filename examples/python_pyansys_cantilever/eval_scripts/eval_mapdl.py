@@ -21,10 +21,9 @@
 # SOFTWARE.
 
 # /// script
-# requires-python = "==3.12"
+# requires-python = "==3.10"
 # dependencies = [
 #     "ansys.mapdl.core",
-#     "vtk==9.4.2",
 # ]
 # ///
 import json

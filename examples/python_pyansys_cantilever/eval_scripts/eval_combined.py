@@ -21,12 +21,11 @@
 # SOFTWARE.
 
 # /// script
-# requires-python = ">=3.10,<=3.10"
+# requires-python = "==3.10"
 # dependencies = [
 #     "ansys-geometry-core[all]",
 #     "ansys-meshing-prime[all]==0.7",
 #     "ansys.mapdl.core",
-#     "vtk==9.4.2",
 #     "matplotlib"
 # ]
 # ///
