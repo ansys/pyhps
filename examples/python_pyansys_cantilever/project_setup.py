@@ -301,7 +301,7 @@ def main(client, num_jobs, num_modes, target_frequency, split_tasks):
             resource_requirements=ResourceRequirements(
                 num_cores=2.0,
                 memory=8 * 1024 * 1024 * 1024,  # 8 GB
-                disk_space=1000 * 1024 * 1024,  # 1 GB
+                disk_space=1024 * 1024 * 1024,  # 1 GB
                 # hpc_resources=HpcResources(exclusive=True),
             ),
             execution_level=0,
