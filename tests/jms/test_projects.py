@@ -33,7 +33,6 @@ from ansys.hps.client.jms.resource import JobDefinition, LicenseContext, Project
 from ansys.hps.client.jms.schema.project import ProjectSchema
 from examples.mapdl_motorbike_frame.project_setup import create_project as motorbike_create_project
 
-
 log = logging.getLogger(__name__)
 
 
@@ -265,7 +264,6 @@ def test_project_archive_restore(client):
 
 
 def test_copy_exec_script(client, has_hps_version_ge_1_3_45):
-
     if not has_hps_version_ge_1_3_45:
         pytest.skip("Execution script name has changed starting from HPS v1.3.45.")
 
