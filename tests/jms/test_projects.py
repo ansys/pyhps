@@ -267,9 +267,9 @@ def test_project_archive_restore(client):
 
 
 def test_copy_exec_script(client, request):
-    xfail_for_hps_version_under(HpsRelease.v1_3_45, JmsApi(client), request)
-
     jms_api = JmsApi(client)
+    xfail_for_hps_version_under(HpsRelease.v1_3_45, jms_api, request)
+
     proj_name = "test_copy_exec_script"
 
     proj = Project(name=proj_name)
