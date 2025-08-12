@@ -4,13 +4,11 @@
 
     Go to the `bottom of this page`_ to download the ZIP file for the PyAnsys cantilever example.
 
-Running PyAnsys on HPS
+Run PyAnsys on HPS
 ======================
 
-This example shows how to run PyAnsys scripts on HPS.
-
-The application simulates a parametrized cantilever by chaining several
-PyAnsys packages:
+This example shows how to run PyAnsys scripts on HPS. 
+It simulates a cantilever with a chain of several PyAnsys packages:
 
 1. Use `PyAnsys Geometry <https://geometry.docs.pyansys.com/>`__ to draw
    a cantilever design
@@ -20,32 +18,31 @@ PyAnsys packages:
    eigenfrequencies of the cantilever, then display them as output
    parameters
 
-The physical cantilever dimensions, as well as several mesh and
-simulation properties are parametrized.
+The example parametrizes the physical cantilever dimensions, as well as several mesh and simulation 
+properties.
 
 Prerequisites
 =============
 
-There are several applications that need to be installed for the example
-to function. The precise paths and versions given in the following setup
-instructions are exemplary for an Ansys 2025 R2 installation on a Linux 
-system, and should be adjusted to the system and version at hand.
+Several packages need to be installed for the example. 
+The paths and versions in the following setup instructions are 
+exemplary for an Ansys 2025 R2 installation on a Linux 
+system. Be sure to adjust them to your installation.
 
 uv
 --
 
-The `uv package manager <https://docs.astral.sh/uv/>`__ is used to run
-arbitrary Python scripts in environments created on the fly. Setup
-instructions can be found in the
-`python-uv-example <ToBeFilledInWhenBasicExampleMerged>`__.
+The example uses the `uv package manager <https://docs.astral.sh/uv/>`__ to run
+Python scripts. You can find more information, including installation instructions, in the 
+`Run arbitrary Python scripts on HPS <ToBeFilledInWhenBasicExampleMerged>`__ example.
 
 Ansys Geometry Service
 ----------------------
 
-The Ansys Geometry Service must be installed for PyAnsys Geometry to
-function. Installation instructions can be found
-`here <https://geometry.docs.pyansys.com/version/stable/getting_started/faq.html#how-is-the-ansys-geometry-service-installed>`__.
-The application should then be registered in the scaler/evaluator as follows:
+The PyAnsys Geometry package requires Ansys Geometry Service. For installation instructions, see
+`How is the Ansys Geometry Service installed? <https://geometry.docs.pyansys.com/version/stable/getting_started/faq.html#how-is-the-ansys-geometry-service-installed>`__ 
+in the *Frequently asked questions* of PyAnsys Geometry. 
+Once installed, the package must be registered in the scaler/evaluator as follows:
 
 .. list-table::
    :header-rows: 1
@@ -59,7 +56,7 @@ The application should then be registered in the scaler/evaluator as follows:
    * - Installation Path
      - /ansys_inc/v252/GeometryService
 
-With the following environment variables:
+With these environment variables:
 
 .. list-table::
    :header-rows: 1
@@ -74,9 +71,8 @@ With the following environment variables:
 Ansys Prime Server
 ------------------
 
-The Ansys Prime Server is automatically installed with Ansys 2023 R1 or
-later, and is needed for pyPrimeMesh. It should be registered in the
-scaler/evaluator as:
+The PyPrimeMesh package requires Ansys Prime Server, which is automatically installed with Ansys 
+2023 R1 or later. Ansys Prime Server must be registered in the scaler/evaluator as follows:
 
 .. list-table::
    :header-rows: 1
@@ -90,7 +86,7 @@ scaler/evaluator as:
    * - Installation Path
      - /ansys_inc/v252/meshing/Prime
 
-With environment variables:
+With these environment variables:
 
 .. list-table::
    :header-rows: 1
@@ -105,9 +101,9 @@ With environment variables:
 Ansys Mechanical APDL
 ---------------------
 
-Ansys Mechanical APDL is installed with the Ansys unified installer, and
-should be auto-detected by the scaler/evaluator. Two environment variables need to
-be added to the application registration for pyMAPDL to work properly:
+Ansys Mechanical APDL is installed with the Ansys unified installer. 
+The scaler/evaluator automatically detects this package, but two environment variables must 
+be added to its registration for PyMAPDL:
 
 .. list-table::
    :header-rows: 1
@@ -122,20 +118,23 @@ be added to the application registration for pyMAPDL to work properly:
 HPS Python Client
 -----------------
 
-To run the example, ``ansys-hps-client`` version 0.11 or higher is
-required.
+The example uses unmapped HPS parameters and therefore requires ``ansys-hps-client`` 
+version 0.11 or higher.
 
-Running the example
+Run the example
 ===================
 
-To run the example, execute the ``project_setup.py`` script, for example
-via ``uv run project_setup.py``. The required packages are
-``ansys-hps-client>=0.11`` and ``typer``.
+To run the example, execute the ``project_setup.py`` script::
+
+    uv run project_setup.py
+
+This command sets up a project with a number of jobs. 
+Each job samples a different cantilever design point.
 
 Options
 -------
 
-The example supports the following command line arguments:
+The example supports command line arguments:
 
 .. list-table::
    :header-rows: 1
@@ -160,13 +159,12 @@ The example supports the following command line arguments:
      - Number of lowest eigenfrequencies to calculate
    * - ``-f``, ``--target-frequency``
      - ``--target-frequency=100.0``
-     - Frequency [Hz] to target for the lowest cantilever mode
+     - Frequency in Hertz to target for the lowest cantilever mode
    * - ``-s``, ``--split-tasks``
      - ``--split-tasks``
      - Split each step into a different task
 
-Furthermore, it defines the following HPS parameters that are accessible
-via the HPS web interface:
+The example defines HPS parameters that are accessible via the HPS web interface:
 
 .. list-table::
    :header-rows: 1
@@ -182,67 +180,69 @@ via the HPS web interface:
    * - arm_cutoff_width
      - By how much should the cantilever arm be thinned [um]
    * - arm_cutoff_length
-     - Length of cantilever arm [um]
+     - Length of the cantilever arm [um]
    * - arm_slot_width
      - Width of the slot cut into the cantilever arm [um]
    * - arm_slot
      - Whether there is a slot in the cantilever arm
    * - young_modulus
-     - Young Modulus of cantilever material [Pa]
+     - Young Modulus of the cantilever material [Pa]
    * - density
-     - Density of cantilever material [kg/m^3]
+     - Density of the cantilever material [kg/m^3]
    * - poisson_ratio
-     - Poisson ratio of cantilever material
+     - Poisson ratio of the cantilever material
    * - mesh_swept_layers
      - Number of layers to generate when sweeping the mesh
    * - num_modes
-     - Number of lowest lying eigenfrequencies to calculate
+     - Number of eigenfrequencies to calculate
    * - popup_plots
-     - Whether to show popup plots while running (requires a framebuffer)
+     - Whether to show popup plots (requires a framebuffer)
    * - port_geometry
-     - Port used by the Ansys GeometryService
+     - Port used by Ansys GeometryService
    * - port_mesh
-     - Port used by the Ansys Prime Server
+     - Port used by Ansys Prime Server
    * - port_mapdl
      - Port used by the Ansys Mechanical APDL service
    * - freq_mode_i
      - Frequency of i-th eigenmode [Hz], iϵ{1,…,num_modes}
    * - clean_venv
-     - Whether to clean up the (ephemeral) uv virtual environment directory afterwards
+     - Whether to clean up the (ephemeral) uv virtual environment
 
 Logic of the example
 ====================
 
-The example is built up of several files; the logic of this organization
-shall be explained in the following.
+The example comprises several files. Their roles are as follows:
 
-The script ``project_setup.py`` orchestrates it all. It sets up a HPS
-project, uploads files, defines parameters and applies settings. All
-communication with HPS is done via this script.
+The script ``project_setup.py`` handles all communication with the HPS instance. 
+It sets up a project, uploads files, defines parameters, and applies settings.
 
-The folder ``exec_scripts`` contains the execution scripts used to run
-the tasks. They all have the same basic function: First they write all
-HPS parameters to a ``input_parameters.json`` file, then they discover
-the available software and run the desired Python script using uv, and
-finally they fetch parameters that may have been written to
-``output_parameters.json`` by the executed Python script, and send them
-back to the evaluator. There is an execution script ``exec_combined.py``
-that is used when all stages are run in a single task, and three more
-execution scripts used to split the three stages into different tasks.
+The folder ``exec_scripts`` contains the execution scripts that start
+the evaluation scripts. Each of them first writes all
+HPS parameters to an ``input_parameters.json`` file, discovers
+the available software, and then runs the corresponding evaluation script with uv. 
+Finally each execution script fetches parameters that may have been written to
+``output_parameters.json`` by the evaluation script and sends them
+back to the evaluator. Optionally, the execution scripts clean up the ephemeral venvs
+created by uv. 
+The execution script ``exec_combined.py`` runs all steps in a single task, the other three
+execution scripts split the three steps into individual tasks.
 
-The folder ``eval_scripts`` contains the PyAnsys Python scripts. There
-is one ``eval_combined.py`` script that combines all the capability
-into one monolithic script, and there are three other evaluation scripts to
-split the three stages into three successive tasks. Each of the evaluation
-scripts first reads in the parameters supplied by the execution script
-in the ``input_parameters.json`` file, starts a PyAnsys service, and
-then runs the PyAnsys program. For more information on the content on
-this script, please check the PyAnsys documentation.
+The folder ``eval_scripts`` contains the PyAnsys evaluation scripts.  
+Each of the evaluation scripts first reads in the parameters supplied by the execution script
+in the ``input_parameters.json`` file, then starts a PyAnsys service, and
+finally runs the PyAnsys program. 
+The script ``eval_combined.py`` combines all stages in one monolithic task, 
+the other three evaluation scripts split the three stages into three successive tasks.
+You can find more information on the content of these scripts in the 
+`User guide <https://docs.pyansys.com/version/dev/user_guide.html>`__ 
+of the *PyAnsys project*.
+
+
 
 Code
 ====
 
-The files in play for the single task version are the following:
+The files relevant for the single task version follow.
 
 The project creation script ``project_setup.py``:
 
@@ -258,7 +258,7 @@ The combined execution script ``exec_combined.py``:
     :lines: 23-
     :caption: project_setup.py
 
-And the combined evaluation script ``eval_combined.py``:
+The combined evaluation script ``eval_combined.py``:
 
 .. literalinclude:: ../../../examples/python_pyansys_cantilever/eval_scripts/eval_combined.py
     :language: python
