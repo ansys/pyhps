@@ -80,7 +80,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: [style]
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -185,7 +185,7 @@ jobs:
       library_version: ${{ steps.version.outputs.library_version }}
     steps:
       - name: "Install Git and clone project"
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         
       - uses: extractions/netrc@v2
         with:
