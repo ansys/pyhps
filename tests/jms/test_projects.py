@@ -33,7 +33,6 @@ from ansys.hps.client.jms.resource import JobDefinition, LicenseContext, Project
 from ansys.hps.client.jms.schema.project import ProjectSchema
 from examples.mapdl_motorbike_frame.project_setup import create_project as motorbike_create_project
 
-
 log = logging.getLogger(__name__)
 
 
