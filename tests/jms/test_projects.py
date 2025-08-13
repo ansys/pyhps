@@ -264,9 +264,9 @@ def test_project_archive_restore(client):
     jms_api.delete_project(restored_project)
 
 
-def test_copy_exec_script(client, has_hps_version_ge_1_3_45):
+def test_copy_exec_script(client, has_hps_version_le_1_3_45):
 
-    if not has_hps_version_ge_1_3_45:
+    if has_hps_version_le_1_3_45:
         pytest.skip("Execution script name has changed starting from HPS v1.3.45.")
 
     jms_api = JmsApi(client)
