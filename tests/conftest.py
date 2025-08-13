@@ -143,6 +143,7 @@ def xfail_for_hps_version_under(hps_version: HpsRelease, jsm_api: JmsApi, reques
 def has_hps_version_ge_1_3_45(jms_api) -> bool:
     return check_min_version(jms_api.version, JMS_VERSIONS[HpsRelease.v1_3_45])
 
+
 @pytest.fixture
 def has_hps_version_le_1_3_45(jms_api) -> bool:
     return check_max_version(jms_api.version, JMS_VERSIONS[HpsRelease.v1_3_45])
