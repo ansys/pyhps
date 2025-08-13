@@ -21,7 +21,9 @@ isort
 [Kk]eycloak
 Koenig
 marshmallow_oneofschema
+Matplotlib
 mesh_swept_layers
+NumPy
 Mises
 num_modes
 poisson_ratio
