@@ -264,7 +264,6 @@ def test_project_archive_restore(client):
 
 
 def test_copy_exec_script(client, has_hps_version_le_1_3_45):
-
     if has_hps_version_le_1_3_45:
         pytest.skip("Execution script name has changed starting from HPS v1.3.45.")
 
