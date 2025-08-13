@@ -9,10 +9,14 @@ isort
 [Kk]eycloak
 Koenig
 marshmallow_oneofschema
+Matplotlib
+NumPy
 Mises
 postprocess
 [Pp]ydantic
 pytest
 subpackage
+uv
+venv
 von
 Wintermantel
