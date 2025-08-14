@@ -641,7 +641,7 @@ class ProjectApi:
 
         Example:
         -------
-            >>> file = project_api.copy_default_execution_script("exec_mapdl.py")
+            >>> file = project_api.copy_default_execution_script("mapdl-exec_mapdl.py")
 
         """
         # create file resource

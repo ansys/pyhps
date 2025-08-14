@@ -223,9 +223,14 @@ def submit_job(
     )
 
     if use_exec_script:
-        exec_script_file = project_api.copy_default_execution_script(
-            f"lsdyna-v{version[2:4]}{version[6]}-exec_lsdyna.py"
-        )
+        if version >= "2025 R2":
+            exec_script_file = project_api.copy_default_execution_script(
+                "lsdyna-lsdynawrapper-exec_lsdyna.py"
+            )
+        else:
+            exec_script_file = project_api.copy_default_execution_script(
+                "lsdyna-pre-lsdynawrapper-exec_lsdyna.py"
+            )
 
         task_def1.use_execution_script = True
         task_def1.execution_script_id = exec_script_file.id

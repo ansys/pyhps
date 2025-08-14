@@ -248,7 +248,10 @@ def test_lsdyna_cylinder_plate(client):
     jms_api.delete_project(proj)
 
 
-def test_lsdyna_cylinder_plate_with_exec_script(client):
+def test_lsdyna_cylinder_plate_with_exec_script(client, has_hps_version_le_1_3_45):
+    if has_hps_version_le_1_3_45:
+        pytest.skip("LSDYNA execution script name has changed after HPS v1.3.45.")
+
     from examples.lsdyna_cylinder_plate.lsdyna_job import submit_job
 
     app_job = submit_job(client, name="LS-DYNA Cylinder Plate", version=ansys_version)
