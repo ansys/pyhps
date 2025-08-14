@@ -34,7 +34,7 @@ uv
 
 The example uses the `uv package manager <https://docs.astral.sh/uv/>`__ to run
 Python scripts. You can find more information, including installation instructions, in the 
-`Run arbitrary Python scripts on HPS <ToBeFilledInWhenBasicExampleMerged>`__ example.
+:ref:`example_python_uv` example.
 
 Ansys Geometry Service
 ----------------------
