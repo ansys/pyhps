@@ -8,7 +8,7 @@ PyAnsys workflow: Cantilever
 ======================
 
 This example shows how to run PyAnsys scripts on HPS. 
-It simulates a cantilever using a chain of several PyAnsys packages:
+It simulates a cantilever using a chain of PyAnsys packages:
 
 1. Use `PyAnsys Geometry <https://geometry.docs.pyansys.com/>`__ to draw
    a cantilever design
