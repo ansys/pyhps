@@ -164,6 +164,9 @@ The example supports the following command line arguments:
      - ``--split-tasks``
      - Split each step into a different task
 
+Parameters
+----------
+
 The example defines the following HPS parameters:
 
 .. list-table::
@@ -220,15 +223,15 @@ The folder ``exec_scripts`` contains the execution scripts that start
 the evaluation scripts. Each of them first writes all
 HPS parameters to an ``input_parameters.json`` file, discovers
 the available software, and then runs the corresponding evaluation script with uv. 
-Finally each execution script fetches parameters that may have been written to
+Finally, each execution script fetches parameters that may have been written to
 ``output_parameters.json`` by the evaluation script and sends them
 back to the evaluator. Optionally, the execution scripts clean up the ephemeral venvs
 created by uv. 
-The execution script ``exec_combined.py`` runs all steps in a single task, the other three
+The execution script ``exec_combined.py`` runs all simulation steps in a single task, the other three
 execution scripts split the three steps into individual tasks.
 
 The folder ``eval_scripts`` contains the PyAnsys evaluation scripts.  
-Each of the evaluation scripts first reads in the parameters supplied by the execution script
+Each of the evaluation scripts first reads the parameters supplied by the execution script
 in the ``input_parameters.json`` file, then starts a PyAnsys service, and
 finally runs the PyAnsys program. 
 The script ``eval_combined.py`` combines all stages in one monolithic task, 
