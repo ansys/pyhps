@@ -26,8 +26,8 @@ import atexit
 import logging
 import os
 import platform
-import warnings
 import tempfile
+import warnings
 
 import jwt
 import requests
@@ -326,9 +326,7 @@ class Client:
             )
             home_path = tempfile.gettempdir()
 
-            log.info(
-                f"Using temporary directory {home_path} for data transfer binaries."
-            )
+            log.info(f"Using temporary directory {home_path} for data transfer binaries.")
 
         return os.path.join(home_path, company_folder, "hps", "data-transfer", "binaries")
 
