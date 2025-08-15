@@ -26,6 +26,7 @@ import atexit
 import logging
 import os
 import platform
+import tempfile
 import warnings
 
 import jwt
@@ -317,6 +318,15 @@ class Client:
             company_folder = ".ansys"
 
         home_path = os.environ.get(environment_variable, None)
+        if home_path is None:
+            # Fallback to the temporary directory
+            log.error(
+                f"Environment variable {environment_variable} is not set. "
+                "Falling back to temporary directory."
+            )
+            home_path = tempfile.gettempdir()
+
+            log.info(f"Using temporary directory {home_path} for data transfer binaries.")
 
         return os.path.join(home_path, company_folder, "hps", "data-transfer", "binaries")
 
