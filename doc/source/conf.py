@@ -60,6 +60,17 @@ EXAMPLES = {
         "StaticMixer_001.cfx",
         "StaticMixer_001.def",
     ],
+    "python_pyansys_cantilever": [
+        "project_setup.py",
+        "exec_scripts/exec_combined.py",
+        "exec_scripts/exec_geometry.py",
+        "exec_scripts/exec_mesh.py",
+        "exec_scripts/exec_mapdl.py",
+        "eval_scripts/eval_combined.py",
+        "eval_scripts/eval_geometry.py",
+        "eval_scripts/eval_mesh.py",
+        "eval_scripts/eval_mapdl.py",
+    ],
     "python_uv": ["project_setup.py", "exec_script.py", "eval.py"],
 }
 
