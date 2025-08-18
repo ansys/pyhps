@@ -719,7 +719,7 @@ def _download_files(project_api: ProjectApi, files: list[File]):
         if (
             getattr(f, "hash", None) is not None
             and getattr(f, "access_mode", FileAccessMode.transfer.value)
-            == FileAccessMode.transfer.value
+            != FileAccessMode.direct_access.value
         ):
             fpath = os.path.join(out_path, f"{f.id}")
             download_path = os.path.join(fpath, f.evaluation_path)
