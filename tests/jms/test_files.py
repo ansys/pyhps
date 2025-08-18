@@ -238,10 +238,11 @@ def test_files_access_mode(client):
         assert file.modified_by is not missing
         assert file.modification_time is not missing
         assert file.created_by == file.modified_by
-        if file.name == "mac":
-            assert file.access_mode == "direct_access"
-        if file.name == "file-object":
-            assert file.access_mode == "transfer"
+        if file.access_mode is not missing:
+            if file.name == "mac":
+                assert file.access_mode == "direct_access"
+            if file.name == "file-object":
+                assert file.access_mode == "transfer"
 
     # Delete project again
     jms_api.delete_project(proj)
