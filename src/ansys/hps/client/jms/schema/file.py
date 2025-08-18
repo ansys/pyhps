@@ -19,13 +19,22 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
+
 """Module providing file schema."""
 
+from enum import Enum
+
 from marshmallow import fields
+from marshmallow.validate import OneOf
 
 from ansys.hps.client.common import ObjectSchemaWithModificationInfo
 
 from .object_reference import IdReference
+
+
+class FileAccessMode(Enum):
+    transfer = "transfer"
+    direct_access = "direct_access"
 
 
 class FileSchema(ObjectSchemaWithModificationInfo):
@@ -83,4 +92,9 @@ class FileSchema(ObjectSchemaWithModificationInfo):
         referenced_class="File",
         allow_none=True,
         metadata={"description": "Reference file from which this one was created"},
+    )
+
+    access_mode = fields.String(
+        validate=OneOf([access_mode.value for access_mode in FileAccessMode]),
+        metadata={"description": "Access mode of file."},
     )
