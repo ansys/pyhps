@@ -222,9 +222,7 @@ def create_project(
     )
 
     if use_exec_script:
-        exec_script_file = project_api.copy_default_execution_script(
-            f"mapdl-v{version[2:4]}{version[6]}-exec_mapdl.py"
-        )
+        exec_script_file = project_api.copy_default_execution_script("mapdl-exec_mapdl.py")
 
         task_def.use_execution_script = True
         task_def.execution_script_id = exec_script_file.id
