@@ -3,7 +3,6 @@ API
 APIs
 Api
 OAuth
-canti
 eigenfrequenc(y|ies)
 eigenmodes?
 Ermanni
