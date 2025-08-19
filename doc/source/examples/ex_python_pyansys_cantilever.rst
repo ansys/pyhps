@@ -32,7 +32,7 @@ system. Be sure to adjust them to your installation.
 uv
 --
 
-The example uses the `uv<https://docs.astral.sh/uv/>`__ package manager to run
+The example uses the `uv <https://docs.astral.sh/uv/>`__ package manager to run
 Python scripts. You can find more information, including installation instructions, in the 
 :ref:`example_python_uv` example.
 
@@ -237,9 +237,12 @@ The ``eval_combined.py`` script  combines all stages in one monolithic task.
 The other three evaluation scripts split the three stages into three successive tasks.
 You can find more information on the content of these scripts in the 
 `User guide <https://geometry.docs.pyansys.com/version/stable/user_guide/index.html>`__ 
-of PyAnsys Geometry, in the `User guide <https://prime.docs.pyansys.com/version/stable/user_guide/index.html>`__ 
-of PyPrimeMesh, and in the `User guide <https://mapdl.docs.pyansys.com/version/stable/user_guide/index.html>`__ 
-of PyMAPDL.
+of *PyAnsys Geometry*, in the 
+`User guide <https://prime.docs.pyansys.com/version/stable/user_guide/index.html>`__ 
+of *PyPrimeMesh*, and in the 
+`User guide <https://mapdl.docs.pyansys.com/version/stable/user_guide/index.html>`__ 
+of *PyMAPDL*.
+
 
 
 Code
