@@ -3,8 +3,11 @@ API
 APIs
 Api
 OAuth
+eigenfrequenc(y|ies)
+eigenmodes?
 Ermanni
 Fasel
+framebuffer
 isort
 [Kk]eycloak
 Koenig
@@ -17,6 +20,6 @@ postprocess
 pytest
 subpackage
 uv
-venv
+venvs?
 von
 Wintermantel
