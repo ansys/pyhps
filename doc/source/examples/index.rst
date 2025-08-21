@@ -17,6 +17,7 @@ You can execute many Python scripts with these command-line arguments:
 * ``-u``, ``--username``: HPS username (default: repuser)
 * ``-p``, ``--password``: HPS password (default: repuser)
 * ``-v``, ``--ansys-version``: Ansys version
+* ``-t``, ``--token``: OAuth2 Token for automated workflows that don't support password logins
 
 A link to download the required resources is available on each example page. If
 desired, you can download the required resources for all examples by downloading
