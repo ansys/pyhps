@@ -218,16 +218,14 @@ The example comprises several files. Their roles are as follows:
 The ``project_setup.py`` script handles all communication with the HPS instance. 
 It sets up a project, uploads files, defines parameters, and applies settings.
 
-The ``exec_scripts`` folder contains the execution scripts that start
-the evaluation scripts. Each of them first writes all
+The ``exec_script`` script is the execution script that starts
+the evaluation scripts. It first writes all
 HPS parameters to an ``input_parameters.json`` file, discovers
-the available software, and then runs the corresponding evaluation script with uv. 
-Finally, each execution script fetches parameters that may have been written to
+the available software, and then runs the active evaluation script with uv. 
+Finally, the execution script fetches parameters that may have been written to
 the ``output_parameters.json`` file by the evaluation script and sends them
-back to the evaluator. Optionally, the execution scripts clean up the ephemeral virtual environments
-created by uv. 
-The ``exec_combined.py`` execution script runs all simulation steps in a single task. The other three
-execution scripts split the three steps into individual tasks.
+back to the evaluator. Optionally, the execution script cleans up the ephemeral virtual environments
+created by uv.
 
 The ``eval_scripts`` folder contains the PyAnsys evaluation scripts.  
 Each of the evaluation scripts first reads the parameters supplied by the execution script
@@ -257,19 +255,19 @@ Here is the ``project_setup.py`` script for project creation:
     :lines: 23-
     :caption: project_setup.py
 
-Here is the ``exec_combined.py`` script for combined execution:
+Here is the ``exec_script.py`` script:
 
-.. literalinclude:: ../../../examples/python_pyansys_cantilever/exec_scripts/exec_combined.py
+.. literalinclude:: ../../../examples/python_pyansys_cantilever/exec_script.py
     :language: python
     :lines: 23-
-    :caption: project_setup.py
+    :caption: exec_script.py
 
 Here is the ``eval_combined.py`` script for combined evaluation:
 
 .. literalinclude:: ../../../examples/python_pyansys_cantilever/eval_scripts/eval_combined.py
     :language: python
     :lines: 23-
-    :caption: project_setup.py
+    :caption: eval_combined.py
 
 Download the ZIP file for the PyAnsys cantilever example and use
 a tool such as 7-Zip to extract the files.
