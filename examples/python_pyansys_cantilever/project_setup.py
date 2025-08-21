@@ -81,17 +81,24 @@ def main(client, num_jobs, num_modes, target_frequency, split_tasks):
     if not split_tasks:
         step_names = ["combined"]
     files = []
-    for script_type in ["eval", "exec"]:
-        for step_name in step_names:
-            name = f"{script_type}_{step_name}"
-            files.append(
-                File(
-                    name=f"{name}",
-                    evaluation_path=f"{name}.py",
-                    type="text/plain",
-                    src=os.path.join(cwd, f"{script_type}_scripts", f"{name}.py"),
-                )
+    for step_name in step_names:
+        name = f"eval_{step_name}"
+        files.append(
+            File(
+                name=f"{name}",
+                evaluation_path=f"{name}.py",
+                type="text/plain",
+                src=os.path.join(cwd, "eval_scripts", f"{name}.py"),
             )
+        )
+    files.append(
+        File(
+            name="exec_script",
+            evaluation_path="exec_script.py",
+            type="text/plain",
+            src=os.path.join(cwd, "exec_script.py"),
+        )
+    )
     # Output files
     files.extend(
         [
@@ -234,7 +241,7 @@ def main(client, num_jobs, num_modes, target_frequency, split_tasks):
             max_execution_time=500.0,
             num_trials=3,
             use_execution_script=True,
-            execution_script_id=file_ids["exec_geometry"],
+            execution_script_id=file_ids["exec_script"],
             input_file_ids=[file_ids["eval_geometry"]],
             output_file_ids=[file_ids["cantilever_geometry"], file_ids["canti_plot"]],
             success_criteria=SuccessCriteria(
@@ -254,7 +261,7 @@ def main(client, num_jobs, num_modes, target_frequency, split_tasks):
             max_execution_time=500.0,
             num_trials=3,
             use_execution_script=True,
-            execution_script_id=file_ids["exec_mesh"],
+            execution_script_id=file_ids["exec_script"],
             input_file_ids=[file_ids["eval_mesh"], file_ids["cantilever_geometry"]],
             output_file_ids=[file_ids["cantilever_mesh"]],
             success_criteria=SuccessCriteria(
@@ -279,7 +286,7 @@ def main(client, num_jobs, num_modes, target_frequency, split_tasks):
             max_execution_time=500.0,
             num_trials=3,
             use_execution_script=True,
-            execution_script_id=file_ids["exec_mapdl"],
+            execution_script_id=file_ids["exec_script"],
             input_file_ids=[file_ids["eval_mapdl"], file_ids["cantilever_mesh"]],
             success_criteria=SuccessCriteria(
                 return_code=0,
@@ -308,7 +315,7 @@ def main(client, num_jobs, num_modes, target_frequency, split_tasks):
             max_execution_time=1200.0,
             num_trials=3,
             use_execution_script=True,
-            execution_script_id=file_ids["exec_combined"],
+            execution_script_id=file_ids["exec_script"],
             input_file_ids=[file_ids["eval_combined"]],
             output_file_ids=[
                 file_ids["cantilever_mesh"],
