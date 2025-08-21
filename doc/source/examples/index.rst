@@ -36,6 +36,7 @@ one :download:`ZIP file <../../../build/pyhps_examples.zip>`.
   ex_cfx_static_mixer
   ex_python_two_bar
   ex_python_uv
+  ex_python_pyansys_cantilever
 
 .. list-table::
    :header-rows: 1
@@ -62,6 +63,8 @@ one :download:`ZIP file <../../../build/pyhps_examples.zip>`.
      - Create an HPS project that solves a two-bar truss problem with Python.
    * - :ref:`example_python_uv`
      - Run arbitrary Python scripts on HPS using uv.
+   * - :ref:`example_python_pyansys_cantilever`
+     - Run PyAnsys scripts on HPS. This example parametrizes a cantilever and submits a number of design points.
 
 A link to download the required resources is available on each example page. If desired, 
 you can download the required resources for all examples using the following link.
