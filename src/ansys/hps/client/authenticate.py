@@ -177,3 +177,195 @@ def authenticate(
 
         raise_for_status(r)
         return r.json()
+
+
+def authenticate_via_action_token(
+    auth_url: str = "https://127.0.0.1:8443/hps/auth/realms/rep",
+    action_token_pathprefix: str = "job-action-token",
+    username: str = None,
+    scope: list[str] = None,
+    client_id: str = "rep-cli",
+    audience: list[str] = None,
+    access_token: str = None,
+    timeout: float = 10.0,
+    verify: bool | str = True,
+    **kwargs,
+):
+    """Authenticate the user by requesting an action token.
+
+    If this method is successful, the response includes access and refresh tokens.
+
+    Parameters
+    ----------
+    auth_url : str, optional
+        Base path for the server to call. The default is ``'https://127.0.0.1:8443/hps/auth/realms/rep'``.
+    action_token_pathprefix: str, optional
+        Path prefix of the action token endpoint.
+    username : str, optional
+        Username.
+    scope : str, optional
+        String containing one or more requested scopes.
+    client_id : str, optional
+        Client type. The default is ``'rep-cli'``.
+    audience : str, optional.
+        The audience of the impersonated session (clientId).
+    access_token : str
+        The access token for the client service account.
+    timeout : float, optional
+        Timeout in seconds. The default is ``10.0``.
+    verify: Union[bool, str], optional
+        If a Boolean, whether to verify the server's TLS certificate. If a string, the
+        path to the CA bundle to use. For more information, see the :class:`requests.Session`
+        documentation.
+    kwargs : dict, optional
+        Additional keyword arguments to pass to the authentication endpoint.
+
+    Returns
+    -------
+    dict
+        JSON-encoded content of a :class:`requests.Response` object.
+
+    """
+    action_token_resp = _request_action_token(
+        auth_url,
+        action_token_pathprefix,
+        username,
+        scope,
+        client_id,
+        access_token,
+        audience,
+        timeout=timeout,
+        verify=verify,
+        **kwargs,
+    )
+    auth_api = action_token_resp["link"]
+    log.info(f"Generating an access and refresh tokens for {username} using client {client_id}")
+    with requests.Session() as session:
+        session.verify = verify
+        response = session.get(auth_api, timeout=timeout)
+        raise_for_status(response)
+        use_action_token_response = response.json()
+        log.debug(
+            "Action token response:\n"
+            f"\taccess_token: {use_action_token_response.get('access_token')}\n"
+            f"\texpires_in: {use_action_token_response.get('expires_in')}\n"
+            f"\trefresh_expires_in: {use_action_token_response.get('refresh_expires_in')}\n"
+            f"\trefresh_token: {use_action_token_response.get('refresh_token')}\n"
+            f"\ttoken_type: {use_action_token_response.get('token_type')}\n"
+            f"\tid_token: {use_action_token_response.get('id_token')}\n"
+            f"\tscope: {use_action_token_response.get('scope')}"
+        )
+        return use_action_token_response
+
+
+def _request_action_token(
+    auth_url: str = "https://127.0.0.1:8443/hps/auth/realms/rep",
+    action_token_pathprefix: str = "job-action-token",
+    username: str = None,
+    scope: list[str] = None,
+    client_id: str = None,
+    access_token: str = None,
+    audience: list[str] = None,
+    timeout: float = 10.0,
+    verify: bool | str = True,
+    **kwargs,
+):
+    """Request an action token for a user fully authenticated.
+
+    If this method is successful, the response includes an action token and
+    the link that can be used to get an access and refresh tokens.
+
+    Parameters
+    ----------
+    auth_url : str, optional
+        Base path for the server to call. The default is ``'https://127.0.0.1:8443/rep'``.
+    username : str, optional
+        Username of the user to impersonate.
+    scope : str, optional
+        String containing one or more requested scopes of the impersonated session.
+    action_token_pathprefix : str, optional
+        Path prefix of the action token endpoint.
+    client_id : str, optional
+        target client id to impersonate.
+    access_token : str, optional
+        The access token for the client service account.
+    audience : str, optional.
+        The audience of the impersonated session (clientId).
+    timeout : float, optional
+        Timeout in seconds. The default is ``10.0``.
+    verify: Union[bool, str], optional
+        If a Boolean, whether to verify the server's TLS certificate. If a string, the
+        path to the CA bundle to use. For more information, see the :class:`requests.Session`
+        documentation.
+    kwargs : dict, optional
+        Additional keyword arguments to pass to the authentication endpoint.
+
+    Returns
+    -------
+    dict
+        JSON-encoded content of a :class:`requests.Response` object.
+
+    """
+    if not access_token:
+        raise ValueError("Access token must be provided to request an action token.")
+    if not username:
+        raise ValueError("A username must be provided to request an action token.")
+    if not client_id:
+        raise ValueError("A client ID must be provided to request an action token.")
+
+    log.info(f"Generating an action token for {username} using client {client_id}")
+    auth_url = str(auth_url)
+    action_token_url = auth_url.rstrip("/") + "/" + action_token_pathprefix
+    headers = {
+        "Authorization": f"Bearer {access_token}",
+        "Content-Type": "application/json",
+    }
+    data = {
+        "clientId": client_id,
+        "username": username,
+        **({"scope": scope} if scope else {}),
+        **({"audience": audience} if audience else {}),
+    }
+
+    with requests.Session() as session:
+        session.verify = verify
+        session.headers = headers
+        log.debug(
+            f"Requesting an action token for {client_id} from {auth_url} to impersonate {username}."
+        )
+        response = session.post(action_token_url, json=data, timeout=timeout)
+        get_action_token_response = response.json()
+        error = get_action_token_response.get("error")
+        if error:
+            error_messages = {
+                "role": (
+                    f"The client {client_id} service account "
+                    "does not have the 'manage-job-access-token' role.\n"
+                    "Fix this error by adding the necessary role to the service account."
+                ),
+                "client": (
+                    f"The client {client_id} does not have the permission to request"
+                    "an action token. Fix this by adding the client to the list of"
+                    "authored clients and then restart OIDC provider."
+                ),
+            }
+            log.error(
+                error_messages.get(
+                    error,
+                    f"Failed to get action token for '{username}' using client '{client_id}'. "
+                    f"The request returned the error: '{error}'",
+                )
+            )
+        else:
+            log.debug(
+                "Action token generated:\n"
+                f"\tAction token: {get_action_token_response.get('access_token')}\n"
+                f"\tAction token URL: {get_action_token_response.get('link')}\n"
+                f"\tSubject: {get_action_token_response.get('subject')}\n"
+                f"\tExpire in: {get_action_token_response.get('expire_in')}\n"
+                f"\tIssued for: {get_action_token_response.get('issued_for')}\n"
+                f"\tAudience: {get_action_token_response.get('audience')}\n"
+                f"\tScope: {get_action_token_response.get('scope')}"
+            )
+        raise_for_status(response)
+        return get_action_token_response
