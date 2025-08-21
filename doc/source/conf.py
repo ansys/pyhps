@@ -60,6 +60,7 @@ EXAMPLES = {
         "StaticMixer_001.cfx",
         "StaticMixer_001.def",
     ],
+    "python_uv": ["project_setup.py", "exec_script.py", "eval.py"],
     "python_pyansys_cantilever": [
         "project_setup.py",
         "exec_scripts/exec_combined.py",
@@ -71,7 +72,6 @@ EXAMPLES = {
         "eval_scripts/eval_mesh.py",
         "eval_scripts/eval_mapdl.py",
     ],
-    "python_uv": ["project_setup.py", "exec_script.py", "eval.py"],
 }
 
 sys.path.append(os.path.abspath(os.path.dirname(__file__)))
