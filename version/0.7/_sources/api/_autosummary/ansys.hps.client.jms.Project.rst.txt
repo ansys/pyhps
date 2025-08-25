@@ -1,0 +1,25 @@
+﻿Project
+=======
+
+.. currentmodule:: ansys.hps.client.jms
+
+.. autoclass:: Project
+
+   
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+      :toctree:
+   
+      
+      
+      Project.declared_fields
+      
+   
+   
+
+   
+   
+   
