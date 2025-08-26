@@ -40,7 +40,7 @@ dependencies = [
 tests = [
     "pytest==8.4.1",
     "coverage==7.10.3",
-    "python-keycloak>=3.9.1,<4.0.0",
+    "python-keycloak>=3.9.1,<6.0.0",
 ]
 
 doc = [
