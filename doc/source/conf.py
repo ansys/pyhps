@@ -442,3 +442,8 @@ def setup(app: sphinx.application.Sphinx) -> None:
 
     """
     app.connect("builder-inited", archive_examples)
+
+# PyAnsys tags configuration
+html_context = {
+    "pyansys_tags": ['Platform']
+}
