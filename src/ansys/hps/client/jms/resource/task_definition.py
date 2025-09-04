@@ -356,6 +356,7 @@ class TaskDefinition(Object):
         resource_requirements: ResourceRequirements = missing,
         worker_context: WorkerContext = missing,
         debug: bool = missing,
+        working_directory: str = missing,
         **kwargs,
     ):
         self.id = id
@@ -381,6 +382,7 @@ class TaskDefinition(Object):
         self.resource_requirements = resource_requirements
         self.worker_context = worker_context
         self.debug = debug
+        self.working_directory = working_directory
 
         self.obj_type = self.__class__.__name__
 
