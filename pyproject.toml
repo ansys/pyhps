@@ -33,7 +33,7 @@ dependencies = [
     "pydantic>=1.10.0",
     "PyJWT>=2.8.0",
     "packaging",
-    "ansys-hps-data-transfer-client@git+https://github.com/ansys/pyhps-data-transfer.git@maint/logging_cleanup"
+    "ansys-hps-data-transfer-client@git+https://github.com/ansys/pyhps-data-transfer.git"
 ]
 
 [project.optional-dependencies]
