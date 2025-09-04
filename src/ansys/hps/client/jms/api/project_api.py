@@ -58,8 +58,9 @@ from ansys.hps.client.jms.resource import (
 from ansys.hps.client.jms.schema.file import FileAccessMode
 from ansys.hps.client.rms.api import RmsApi
 from ansys.hps.client.rms.models import AnalyzeRequirements, AnalyzeResponse
+from ansys.hps.data_transfer.client.api.handler import WaitHandler
 from ansys.hps.data_transfer.client.models.msg import SrcDst, StoragePath
-from ansys.hps.data_transfer.client.models.ops import OperationState
+from ansys.hps.data_transfer.client.models.ops import Operation, OperationState
 
 from .base import create_objects, delete_objects, get_objects, update_objects
 from .jms_api import JmsApi, _copy_objects
@@ -865,6 +866,26 @@ def update_files(project_api: ProjectApi, files: list[File], as_objects=True) ->
     )
 
 
+class _DownloadHandler(WaitHandler):
+    """Handles download operations.
+
+    Subclass the WaitHandler class to retain logging behavior
+    but add custom progress reporting.
+    """
+
+    def __init__(self, op_id: str, file_size: int, progress_handler: Callable[[int], None] = None):
+        super().__init__()
+        self.op_id = op_id
+        self.progress_handler = progress_handler
+        self.file_size = file_size
+
+    def __call__(self, ops: list[Operation]):
+        for op in ops:
+            if op.id == self.op_id and self.progress_handler is not None:
+                self.progress_handler(int(op.progress * self.file_size))
+        super().__call__(ops)
+
+
 def _download_file(
     project_api: ProjectApi,
     file: File,
@@ -884,22 +905,15 @@ def _download_file(
     src = StoragePath(path=f"{base_dir}/{os.path.basename(file.storage_id)}")
     dst = StoragePath(path=download_path, remote="local")
 
-    if progress_handler is not None:
-        progress_handler(0)
-
     op = project_api.client.data_transfer_api.copy([SrcDst(src=src, dst=dst)])
 
-    def _prog_handler(op_id: str, progress_percent: float):
-        # turn progress percent into bytes
-        if op_id == op.id:
-            progress_handler(int(progress_percent * file.size))
+    if progress_handler is not None:
+        progress_handler(0)
+    _handler = _DownloadHandler(op.id, file.size, progress_handler)
 
-    handler = _prog_handler if progress_handler else None
-    op = project_api.client.data_transfer_api.wait_for([op.id], progress_handler=handler)
+    op = project_api.client.data_transfer_api.wait_for([op.id], handler=_handler)[0]
 
-    log.info(f"Operation {op[0].state}")
-
-    if op[0].state != OperationState.Succeeded:
+    if op.state != OperationState.Succeeded:
         log.error(f"Download of file {file.evaluation_path} with id {file.id} failed")
         return None
 
