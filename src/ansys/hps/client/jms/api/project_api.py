@@ -54,6 +54,7 @@ from ansys.hps.client.jms.resource import (
     TaskCommand,
     TaskCommandDefinition,
     TaskDefinition,
+    TaskDefinitionTemplate,
 )
 from ansys.hps.client.jms.schema.file import FileAccessMode
 from ansys.hps.client.rms.api import RmsApi
@@ -636,49 +637,105 @@ class ProjectApi:
         _ = self.client.session.delete(url)
 
     ################################################################
-
-    @version_required(min_version=JMS_VERSIONS[HpsRelease.v1_2_0])
-    def copy_default_execution_script(self, filename: str) -> File:
-        """Copy a default execution script to the current project.
-
-        Example:
-        -------
-            >>> file = project_api.copy_default_execution_script("mapdl-exec_mapdl.py")
-
-        """
-        # create file resource
+    # Execution scripts
+    def _copy_execution_script(self, storage_bucket: str, storage_id: str, filename: str) -> File:
+        """Copy an execution script to the current project."""
+        # create a new file resource
         name = os.path.splitext(filename)[0]
         file = File(name=name, evaluation_path=filename, type="application/x-python-code")
         file = self.create_files([file])[0]
 
-        # query location of default execution scripts from server
-        info = self._jms_api.get_api_info()
-        execution_script_default_bucket = info["settings"]["execution_script_default_bucket"]
-
         # server side copy of the file to project bucket
         self.client.initialize_data_transfer_client()
-        src = StoragePath(path=f"{execution_script_default_bucket}/{filename}")
+        src = StoragePath(path=f"{storage_bucket}/{storage_id}")
         dst = StoragePath(path=f"{self.project_id}/{file.storage_id}")
-        log.info(f"Copying default execution script {filename}")
+        log.info(f"Copying execution script {filename}")
         op = self.client.data_transfer_api.copy([SrcDst(src=src, dst=dst)])
         op = self.client.data_transfer_api.wait_for(op.id)[0]
         log.debug(f"Operation {op.state}")
         if op.state != OperationState.Succeeded:
-            raise HPSError(f"Copying of default execution script {filename} failed")
+            raise HPSError(
+                f"Copying of execution script {filename} from {src.path} to {dst.path}failed."
+            )
 
         # get checksum of copied file
         op = self.client.data_transfer_api.get_metadata([dst])
         op = self.client.data_transfer_api.wait_for(op.id)[0]
         log.debug(f"Operation {op.state}")
         if op.state != OperationState.Succeeded:
-            raise HPSError(
-                f"Retrieval of meta data of copied default execution script {filename} failed"
-            )
+            raise HPSError(f"Retrieval of meta data of copied execution script {filename} failed")
         checksum = op.result[dst.path]["checksum"]
 
         # update file resource
         file.hash = checksum
         return self.update_files([file])[0]
+
+    @version_required(min_version=JMS_VERSIONS[HpsRelease.v1_2_0])
+    def copy_execution_script(self, template: TaskDefinitionTemplate) -> File:
+        """Copy the execution script from task definition template to the current project.
+
+        Parameters
+        ----------
+        template : TaskDefinitionTemplate
+            The task definition template containing the execution script to copy.
+
+        Returns
+        -------
+        File
+            File resource of the copied execution script.
+
+        Example:
+        -------
+            >>> file = project_api.copy_execution_script(template)
+
+        """
+        if (
+            template.execution_script_storage_id is None
+            or template.execution_script_storage_bucket is None
+        ):
+            raise HPSError(
+                f"Template {template.name} does not have an associated execution script."
+            )
+
+        # Try to extract an understandable name for the execution script
+        exec_script_name = "exec_script.py"
+        if template.software_requirements and template.software_requirements[0].name:
+            exec_script_name = (
+                "exec_" + template.software_requirements[0].name.replace(" ", "_").lower() + ".py"
+            )
+
+        return self._copy_execution_script(
+            storage_bucket=template.execution_script_storage_bucket,
+            storage_id=template.execution_script_storage_id,
+            filename=exec_script_name,
+        )
+
+    @version_required(min_version=JMS_VERSIONS[HpsRelease.v1_2_0])
+    def copy_default_execution_script(self, filename: str) -> File:
+        """Copy a default execution script to the current project.
+
+        Parameters
+        ----------
+        filename : str
+            The file name of the default execution script to copy.
+
+        Returns
+        -------
+        File
+            File resource of the copied execution script.
+
+        Example:
+        -------
+            >>> file = project_api.copy_default_execution_script("mapdl-exec_mapdl.py")
+
+        """
+        # Query location of default execution scripts from server
+        info = self._jms_api.get_api_info()
+        storage_bucket = info["settings"]["execution_script_default_bucket"]
+
+        return self._copy_execution_script(
+            storage_bucket=storage_bucket, storage_id=filename, filename=filename
+        )
 
     ################################################################
     def _get_objects(self, obj_type: Object, as_objects=True, **query_params):

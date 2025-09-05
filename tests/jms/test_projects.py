@@ -284,4 +284,16 @@ def test_copy_exec_script(client, has_hps_version_le_1_3_45):
         assert file.hash is not None
         assert file.storage_id is not None
 
+    apps = ["Ansys Fluent", "Ansys LS-DYNA", "Ansys Mechanical APDL"]
+
+    templates = jms_api.get_task_definition_templates()
+    for template in templates:
+        if template.software_requirements and template.software_requirements[0].name in apps:
+            file = project_api.copy_execution_script(template)
+            name = "exec_" + template.software_requirements[0].name.replace(" ", "_").lower()
+            assert file.name == name
+            assert file.evaluation_path == name + ".py"
+            assert file.hash is not None
+            assert file.storage_id is not None
+
     jms_api.delete_project(proj)
