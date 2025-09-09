@@ -269,6 +269,7 @@ class TaskDefinitionSchema(ObjectSchemaWithModificationInfo):
     working_directory = fields.String(
         allow_none=True,
         metadata={
-            "description": "Root working directory to be used by the evaluator for task execution"
+            "description": "Optional root working directory to be used by the evaluator"
+            " for task execution"
         },
     )

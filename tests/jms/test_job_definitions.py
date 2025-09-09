@@ -84,6 +84,7 @@ def test_task_definition_fields(client, has_hps_version_ge_1_3_45):
         ),
         worker_context=WorkerContext(max_runtime=3600, max_num_parallel_tasks=4),
         debug=True,
+        working_directory="/tmp",
     )
     assert task_def.resource_requirements.hpc_resources.num_cores_per_node == 2
 
@@ -100,6 +101,7 @@ def test_task_definition_fields(client, has_hps_version_ge_1_3_45):
 
     if has_hps_version_ge_1_3_45:
         assert task_def.debug
+        assert task_def.working_directory == "/tmp"
 
     assert auth_api.get_user(id=task_def.created_by).username == client.username
     assert auth_api.get_user(id=task_def.modified_by).username == client.username

@@ -325,7 +325,7 @@ class TaskDefinition(Object):
     debug : bool, optional
         Enable debug logging and retain Task working directory.
     working_directory : str, optional
-        Root working directory to be used by the evaluator for task execution.
+        Optional root working directory to be used by the evaluator for task execution.
 
     """
 
