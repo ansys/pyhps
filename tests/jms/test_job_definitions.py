@@ -101,6 +101,8 @@ def test_task_definition_fields(client, has_hps_version_ge_1_3_45):
 
     if has_hps_version_ge_1_3_45:
         assert task_def.debug
+
+    if task_def.working_directory is not missing:
         assert task_def.working_directory == "/tmp"
 
     assert auth_api.get_user(id=task_def.created_by).username == client.username
