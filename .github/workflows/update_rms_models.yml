@@ -1,4 +1,4 @@
-name: Update RSM Models
+name: Update RMS Models
 on:
   workflow_dispatch:
   schedule:
@@ -37,7 +37,7 @@ jobs:
 
       - name: Run script
         run: |
-          python .ci/generate_rsm_models.py
+          python .ci/generate_rms_models.py
 
       - name: "Create PR if changes detected"
         if: startsWith(github.ref, 'refs/heads/main')
