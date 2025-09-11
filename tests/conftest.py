@@ -147,3 +147,8 @@ def has_hps_version_ge_1_3_45(jms_api) -> bool:
 @pytest.fixture
 def has_hps_version_le_1_3_45(jms_api) -> bool:
     return check_max_version(jms_api.version, JMS_VERSIONS[HpsRelease.v1_3_45])
+
+
+@pytest.fixture
+def has_hps_version_gt_1_3_45(jms_api) -> bool:
+    return not check_max_version(jms_api.version, JMS_VERSIONS[HpsRelease.v1_3_45])

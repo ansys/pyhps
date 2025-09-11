@@ -95,6 +95,7 @@ def test_task_definition_deserialization():
         },
         "use_execution_script": False,
         "debug": True,
+        "working_directory": "/tmp",
     }
 
     task_def = TaskDefinitionSchema().load(task_def_dict)
@@ -102,6 +103,7 @@ def test_task_definition_deserialization():
     assert task_def.name == "test_task_def"
     assert task_def.execution_command == "echo 'hello world'"
     assert task_def.debug
+    assert task_def.working_directory == "/tmp"
 
     assert not task_def.use_execution_script
     assert task_def.execution_script_id is None
@@ -217,6 +219,7 @@ def test_task_definition_serialization():
         ),
         use_execution_script=False,
         debug=True,
+        working_directory="/tmp",
     )
 
     serialized_task_def = TaskDefinitionSchema().dump(task_def)
@@ -224,6 +227,7 @@ def test_task_definition_serialization():
     assert serialized_task_def["name"] == "test_task_def"
     assert serialized_task_def["execution_command"] == "echo 'hello world'"
     assert serialized_task_def["debug"]
+    assert serialized_task_def["working_directory"] == "/tmp"
 
     assert not serialized_task_def["use_execution_script"]
     assert serialized_task_def["execution_level"] == 0
