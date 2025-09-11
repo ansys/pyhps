@@ -1,0 +1,6 @@
+restore\_project
+================
+
+.. currentmodule:: ansys.hps.client.jms.api
+
+.. automethod:: JmsApi.restore_project
