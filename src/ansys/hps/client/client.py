@@ -31,7 +31,6 @@ import warnings
 
 import jwt
 import requests
-
 from ansys.hps.data_transfer.client import Client as DataTransferClient
 from ansys.hps.data_transfer.client import DataTransferApi
 

@@ -34,17 +34,16 @@ import json
 import os
 import sys
 
+import ansys.meshing.prime as prime
 import matplotlib.patches as patches
 import matplotlib.pyplot as plt
-from matplotlib.ticker import FuncFormatter
-
-import ansys.meshing.prime as prime
 from ansys.geometry.core import launch_modeler
 from ansys.geometry.core.designer import DesignFileFormat
 from ansys.geometry.core.math import Point2D
 from ansys.geometry.core.sketch import Sketch
 from ansys.mapdl.core import launch_mapdl
 from ansys.meshing.prime.graphics import PrimePlotter
+from matplotlib.ticker import FuncFormatter
 
 
 def geometry(params):
