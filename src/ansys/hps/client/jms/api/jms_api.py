@@ -27,6 +27,7 @@ import logging
 import os
 
 import backoff
+from ansys.hps.data_transfer.client.models import OperationState, SrcDst, StoragePath
 
 from ansys.hps.client.check_version import JMS_VERSIONS, HpsRelease, version_required
 from ansys.hps.client.client import Client
@@ -34,7 +35,6 @@ from ansys.hps.client.common import Object
 from ansys.hps.client.exceptions import HPSError
 from ansys.hps.client.jms.resource import Operation, Permission, Project, TaskDefinitionTemplate
 from ansys.hps.client.jms.schema.project import ProjectSchema
-from ansys.hps.data_transfer.client.models import OperationState, SrcDst, StoragePath
 
 from .base import copy_objects as base_copy_objects
 from .base import create_objects, delete_objects, get_object, get_objects, update_objects

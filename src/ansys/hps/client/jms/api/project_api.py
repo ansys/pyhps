@@ -30,6 +30,9 @@ import tempfile
 import warnings
 from collections.abc import Callable
 
+from ansys.hps.data_transfer.client.api.handler import WaitHandler
+from ansys.hps.data_transfer.client.models import Operation, OperationState, SrcDst, StoragePath
+
 from ansys.hps.client.check_version import (
     JMS_VERSIONS,
     HpsRelease,
@@ -59,8 +62,6 @@ from ansys.hps.client.jms.resource import (
 from ansys.hps.client.jms.schema.file import FileAccessMode
 from ansys.hps.client.rms.api import RmsApi
 from ansys.hps.client.rms.models import AnalyzeRequirements, AnalyzeResponse
-from ansys.hps.data_transfer.client.api.handler import WaitHandler
-from ansys.hps.data_transfer.client.models import Operation, OperationState, SrcDst, StoragePath
 
 from .base import create_objects, delete_objects, get_objects, update_objects
 from .jms_api import JmsApi, _copy_objects
