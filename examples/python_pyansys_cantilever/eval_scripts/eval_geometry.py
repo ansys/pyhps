@@ -34,12 +34,11 @@ import sys
 
 import matplotlib.patches as patches
 import matplotlib.pyplot as plt
-from matplotlib.ticker import FuncFormatter
-
 from ansys.geometry.core import launch_modeler
 from ansys.geometry.core.designer import DesignFileFormat
 from ansys.geometry.core.math import Point2D
 from ansys.geometry.core.sketch import Sketch
+from matplotlib.ticker import FuncFormatter
 
 
 def main(params):
