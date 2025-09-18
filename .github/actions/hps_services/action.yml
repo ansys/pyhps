@@ -83,6 +83,11 @@ runs:
         tar -xvzf docker-compose-customer.tar.gz
         mv docker-compose-customer docker-compose
         cd docker-compose
+        # Temporary workaround: use legacy bitnami images
+        if [ -f docker-compose.yaml ]; then
+          echo "Applying bitnami -> bitnamilegacy image replacement"
+          sed -i 's|image: bitnami/|image: bitnamilegacy/|g' docker-compose.yaml
+        fi
         docker-compose build
         docker-compose up -d
       working-directory: ./docker-compose-artifact
