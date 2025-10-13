@@ -30,6 +30,9 @@ import tempfile
 import warnings
 from collections.abc import Callable
 
+from ansys.hps.data_transfer.client.api.handler import WaitHandler
+from ansys.hps.data_transfer.client.models import Operation, OperationState, SrcDst, StoragePath
+
 from ansys.hps.client.check_version import (
     JMS_VERSIONS,
     HpsRelease,
@@ -54,11 +57,11 @@ from ansys.hps.client.jms.resource import (
     TaskCommand,
     TaskCommandDefinition,
     TaskDefinition,
+    TaskDefinitionTemplate,
 )
+from ansys.hps.client.jms.schema.file import FileAccessMode
 from ansys.hps.client.rms.api import RmsApi
 from ansys.hps.client.rms.models import AnalyzeRequirements, AnalyzeResponse
-from ansys.hps.data_transfer.client.models.msg import SrcDst, StoragePath
-from ansys.hps.data_transfer.client.models.ops import OperationState
 
 from .base import create_objects, delete_objects, get_objects, update_objects
 from .jms_api import JmsApi, _copy_objects
@@ -193,19 +196,39 @@ class ProjectApi:
         self,
         file: File,
         target_path: str,
-        stream: bool = None,
         progress_handler: Callable[[int], None] = None,
+        file_name: str = None,
+        **kwargs,
     ) -> str:
         """Download file content and save it to disk.
 
-        If ``stream=True``, data is retrieved in chunks, which avoids storing the entire content
-        in memory.
+        Parameters
+        ----------
+        file : File
+            File object to download.
+        target_path : str
+            Path to the directory where to save the file.
+        progress_handler : Callable[[int], None], optional
+            Function to handle progress updates. The default is None.
+            The function should accept a single argument, which is the current
+            size of the downloaded file in bytes.
+        file_name : str, optional
+            Name of the file to save. If None, the original file name is used.
+        kwargs : dict, optional
+            Additional arguments to pass to the download function.
+            The 'stream' argument is deprecated and should not be used.
+
+        Returns
+        -------
+        str
+            Path to the downloaded file.
+
         """
-        if stream is not None:
+        if "stream" in kwargs:
             msg = "The 'stream' input argument in ProjectApi.download_file() is deprecated. "
             warnings.warn(msg, DeprecationWarning, stacklevel=2)
             log.warning(msg)
-        return _download_file(self, file, target_path, progress_handler)
+        return _download_file(self, file, target_path, progress_handler, file_name)
 
     ################################################################
     # Parameter definitions
@@ -614,49 +637,103 @@ class ProjectApi:
         _ = self.client.session.delete(url)
 
     ################################################################
-
-    @version_required(min_version=JMS_VERSIONS[HpsRelease.v1_2_0])
-    def copy_default_execution_script(self, filename: str) -> File:
-        """Copy a default execution script to the current project.
-
-        Example:
-        -------
-            >>> file = project_api.copy_default_execution_script("exec_mapdl.py")
-
-        """
-        # create file resource
+    # Execution scripts
+    def _copy_execution_script(self, storage_bucket: str, storage_id: str, filename: str) -> File:
+        """Copy an execution script to the current project."""
+        # create a new file resource
         name = os.path.splitext(filename)[0]
         file = File(name=name, evaluation_path=filename, type="application/x-python-code")
         file = self.create_files([file])[0]
 
-        # query location of default execution scripts from server
-        info = self._jms_api.get_api_info()
-        execution_script_default_bucket = info["settings"]["execution_script_default_bucket"]
-
         # server side copy of the file to project bucket
         self.client.initialize_data_transfer_client()
-        src = StoragePath(path=f"{execution_script_default_bucket}/{filename}")
+        src = StoragePath(path=f"{storage_bucket}/{storage_id}")
         dst = StoragePath(path=f"{self.project_id}/{file.storage_id}")
-        log.info(f"Copying default execution script {filename}")
+        log.info(f"Copying execution script {filename}")
         op = self.client.data_transfer_api.copy([SrcDst(src=src, dst=dst)])
         op = self.client.data_transfer_api.wait_for(op.id)[0]
-        log.debug(f"Operation {op.state}")
         if op.state != OperationState.Succeeded:
-            raise HPSError(f"Copying of default execution script {filename} failed")
+            raise HPSError(
+                f"Copying of execution script {filename} from {src.path} to {dst.path}failed."
+            )
 
         # get checksum of copied file
         op = self.client.data_transfer_api.get_metadata([dst])
         op = self.client.data_transfer_api.wait_for(op.id)[0]
-        log.debug(f"Operation {op.state}")
         if op.state != OperationState.Succeeded:
-            raise HPSError(
-                f"Retrieval of meta data of copied default execution script {filename} failed"
-            )
+            raise HPSError(f"Retrieval of meta data of copied execution script {filename} failed")
         checksum = op.result[dst.path]["checksum"]
 
         # update file resource
         file.hash = checksum
         return self.update_files([file])[0]
+
+    @version_required(min_version=JMS_VERSIONS[HpsRelease.v1_2_0])
+    def copy_execution_script(self, template: TaskDefinitionTemplate) -> File:
+        """Copy the execution script from task definition template to the current project.
+
+        Parameters
+        ----------
+        template : TaskDefinitionTemplate
+            The task definition template containing the execution script to copy.
+
+        Returns
+        -------
+        File
+            File resource of the copied execution script.
+
+        Example:
+        -------
+            >>> file = project_api.copy_execution_script(template)
+
+        """
+        if (
+            template.execution_script_storage_id is None
+            or template.execution_script_storage_bucket is None
+        ):
+            raise HPSError(
+                f"Template {template.name} does not have an associated execution script."
+            )
+
+        # Try to extract an understandable name for the execution script
+        exec_script_name = "exec_script.py"
+        if template.software_requirements and template.software_requirements[0].name:
+            exec_script_name = (
+                "exec_" + template.software_requirements[0].name.replace(" ", "_").lower() + ".py"
+            )
+
+        return self._copy_execution_script(
+            storage_bucket=template.execution_script_storage_bucket,
+            storage_id=template.execution_script_storage_id,
+            filename=exec_script_name,
+        )
+
+    @version_required(min_version=JMS_VERSIONS[HpsRelease.v1_2_0])
+    def copy_default_execution_script(self, filename: str) -> File:
+        """Copy a default execution script to the current project.
+
+        Parameters
+        ----------
+        filename : str
+            The file name of the default execution script to copy.
+
+        Returns
+        -------
+        File
+            File resource of the copied execution script.
+
+        Example:
+        -------
+            >>> file = project_api.copy_default_execution_script("mapdl-exec_mapdl.py")
+
+        """
+        # Query location of default execution scripts from server
+        info = self._jms_api.get_api_info()
+        storage_bucket = info["settings"]["execution_script_default_bucket"]
+
+        return self._copy_execution_script(
+            storage_bucket=storage_bucket, storage_id=filename, filename=filename
+        )
 
     ################################################################
     def _get_objects(self, obj_type: Object, as_objects=True, **query_params):
@@ -695,7 +772,11 @@ def _download_files(project_api: ProjectApi, files: list[File]):
     srcs = []
     dsts = []
     for f in files:
-        if getattr(f, "hash", None) is not None:
+        if (
+            getattr(f, "hash", None) is not None
+            and getattr(f, "access_mode", FileAccessMode.transfer.value)
+            != FileAccessMode.direct_access.value
+        ):
             fpath = os.path.join(out_path, f"{f.id}")
             download_path = os.path.join(fpath, f.evaluation_path)
             srcs.append(StoragePath(path=f"{base_dir}/{os.path.basename(f.storage_id)}"))
@@ -707,7 +788,6 @@ def _download_files(project_api: ProjectApi, files: list[File]):
             [SrcDst(src=src, dst=dst) for src, dst in zip(srcs, dsts, strict=False)]
         )
         op = project_api.client.data_transfer_api.wait_for([op.id])
-        log.info(f"Operation {op[0].state}")
         if op[0].state == OperationState.Succeeded:
             for f in files:
                 if getattr(f, "hash", None) is not None:
@@ -748,7 +828,11 @@ def _upload_files(project_api: ProjectApi, files):
     temp_dir = tempfile.TemporaryDirectory()
 
     for f in files:
-        if getattr(f, "src", None) is None:
+        if (
+            getattr(f, "src", None) is None
+            or getattr(f, "access_mode", FileAccessMode.transfer.value)
+            == FileAccessMode.direct_access.value
+        ):
             continue
         file_path = f.src
         if isinstance(f.src, io.IOBase):
@@ -765,7 +849,6 @@ def _upload_files(project_api: ProjectApi, files):
             [SrcDst(src=src, dst=dst) for src, dst in zip(srcs, dsts, strict=False)]
         )
         op = project_api.client.data_transfer_api.wait_for(op.id)
-        log.info(f"Operation {op[0].state}")
         if op[0].state == OperationState.Succeeded:
             _fetch_file_metadata(project_api, files, dsts)
         else:
@@ -782,7 +865,6 @@ def _fetch_file_metadata(
     log.info("Getting upload file metadata")
     op = project_api.client.data_transfer_api.get_metadata(storage_paths)
     op = project_api.client.data_transfer_api.wait_for(op.id)[0]
-    log.info(f"Operation {op.state}")
     if op.state == OperationState.Succeeded:
         base_dir = project_api.project_id
         for f in files:
@@ -806,7 +888,11 @@ def create_files(project_api: ProjectApi, files, as_objects=True) -> list[File]:
     # (2) Check if there are src properties, files to upload
     num_uploads = 0
     for f, cf in zip(files, created_files, strict=False):
-        if getattr(f, "src", None) is not None:
+        if (
+            getattr(f, "src", None) is not None
+            and getattr(f, "access_mode", FileAccessMode.transfer.value)
+            != FileAccessMode.direct_access.value
+        ):
             cf.src = f.src
             num_uploads += 1
 
@@ -832,18 +918,38 @@ def update_files(project_api: ProjectApi, files: list[File], as_objects=True) ->
     )
 
 
+class _DownloadHandler(WaitHandler):
+    """Handles download operations.
+
+    Subclass the WaitHandler class to retain logging behavior
+    but add custom progress reporting.
+    """
+
+    def __init__(self, op_id: str, file_size: int, progress_handler: Callable[[int], None] = None):
+        super().__init__()
+        self.op_id = op_id
+        self.progress_handler = progress_handler
+        self.file_size = file_size
+
+    def __call__(self, ops: list[Operation]):
+        for op in ops:
+            if op.id == self.op_id and self.progress_handler is not None:
+                self.progress_handler(int(op.progress * self.file_size))
+        super().__call__(ops)
+
+
 def _download_file(
     project_api: ProjectApi,
     file: File,
     target_path: str,
     progress_handler: Callable[[int], None] = None,
+    file_name: str | None = None,
 ) -> str:
     """Download a file."""
-    project_api.client.initialize_data_transfer_client()
-
     if getattr(file, "hash", None) is None:
         log.warning(f"No hash found for file {file.name}.")
 
+    file_name = file_name or file.evaluation_path
     download_path = os.path.join(target_path, file.evaluation_path)
     base_dir = project_api.project_id
 
@@ -851,15 +957,15 @@ def _download_file(
     src = StoragePath(path=f"{base_dir}/{os.path.basename(file.storage_id)}")
     dst = StoragePath(path=download_path, remote="local")
 
+    op = project_api.client.data_transfer_api.copy([SrcDst(src=src, dst=dst)])
+
     if progress_handler is not None:
         progress_handler(0)
+    _handler = _DownloadHandler(op.id, file.size, progress_handler)
 
-    op = project_api.client.data_transfer_api.copy([SrcDst(src=src, dst=dst)])
-    op = project_api.client.data_transfer_api.wait_for([op.id])
+    op = project_api.client.data_transfer_api.wait_for([op.id], handler=_handler)[0]
 
-    log.info(f"Operation {op[0].state}")
-
-    if op[0].state != OperationState.Succeeded:
+    if op.state != OperationState.Succeeded:
         log.error(f"Download of file {file.evaluation_path} with id {file.id} failed")
         return None
 
@@ -925,8 +1031,6 @@ def _download_archive(project_api: ProjectApi, download_link, target_path):
     dst = StoragePath(path=target_path, remote="local")
     op = project_api.client.data_transfer_api.copy([SrcDst(src=src, dst=dst)])
     op = project_api.client.data_transfer_api.wait_for([op.id])
-
-    log.info(f"Operation {op[0].state}")
 
     if op[0].state != OperationState.Succeeded:
         raise HPSError(f"Download of archive {download_link} failed")

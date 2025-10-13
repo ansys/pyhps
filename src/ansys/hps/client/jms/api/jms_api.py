@@ -27,6 +27,7 @@ import logging
 import os
 
 import backoff
+from ansys.hps.data_transfer.client.models import OperationState, SrcDst, StoragePath
 
 from ansys.hps.client.check_version import JMS_VERSIONS, HpsRelease, version_required
 from ansys.hps.client.client import Client
@@ -34,8 +35,6 @@ from ansys.hps.client.common import Object
 from ansys.hps.client.exceptions import HPSError
 from ansys.hps.client.jms.resource import Operation, Permission, Project, TaskDefinitionTemplate
 from ansys.hps.client.jms.schema.project import ProjectSchema
-from ansys.hps.data_transfer.client.models.msg import SrcDst, StoragePath
-from ansys.hps.data_transfer.client.models.ops import OperationState
 
 from .base import copy_objects as base_copy_objects
 from .base import create_objects, delete_objects, get_object, get_objects, update_objects
@@ -140,6 +139,8 @@ class JmsApi:
 
     ################################################################
     # Task Definition Templates
+
+    @version_required(min_version=JMS_VERSIONS[HpsRelease.v1_3_45])
     def get_task_definition_templates(
         self, as_objects=True, **query_params
     ) -> list[TaskDefinitionTemplate]:
@@ -148,6 +149,7 @@ class JmsApi:
             self.client.session, self.url, TaskDefinitionTemplate, as_objects, **query_params
         )
 
+    @version_required(min_version=JMS_VERSIONS[HpsRelease.v1_3_45])
     def create_task_definition_templates(
         self, templates: list[TaskDefinitionTemplate], as_objects=True, **query_params
     ) -> list[TaskDefinitionTemplate]:
@@ -161,6 +163,7 @@ class JmsApi:
             **query_params,
         )
 
+    @version_required(min_version=JMS_VERSIONS[HpsRelease.v1_3_45])
     def update_task_definition_templates(
         self, templates: list[TaskDefinitionTemplate], as_objects=True, **query_params
     ) -> list[TaskDefinitionTemplate]:
@@ -178,6 +181,7 @@ class JmsApi:
         """Delete task definition templates."""
         return delete_objects(self.client.session, self.url, templates, TaskDefinitionTemplate)
 
+    @version_required(min_version=JMS_VERSIONS[HpsRelease.v1_3_45])
     def copy_task_definition_templates(
         self, templates: list[TaskDefinitionTemplate], wait: bool = True
     ) -> str | list[str]:

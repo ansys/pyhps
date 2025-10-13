@@ -26,7 +26,14 @@ import os
 import pytest
 from keycloak import KeycloakAdmin
 
-from ansys.hps.client import AuthApi, Client
+from ansys.hps.client import AuthApi, Client, JmsApi, VersionCompatibilityError
+from ansys.hps.client.check_version import (
+    JMS_VERSIONS,
+    HpsRelease,
+    check_max_version,
+    check_min_version,
+)
+from ansys.hps.client.jms.resource import Project
 
 
 @pytest.fixture(scope="session")
@@ -57,6 +64,11 @@ def keycloak_password():
 @pytest.fixture(scope="session")
 def client(url, username, password):
     return Client(url, username, password, verify=False)
+
+
+@pytest.fixture
+def jms_api(client):
+    return JmsApi(client)
 
 
 @pytest.fixture
@@ -109,3 +121,34 @@ def run_id():
 @pytest.fixture
 def build_info_path():
     return os.path.join(os.getcwd(), "build_info.json")
+
+
+@pytest.fixture
+def inactive_temporary_project(jms_api):
+    proj = jms_api.create_project(Project(name="pyhps_temporary_project", active=False))
+    yield proj
+    jms_api.delete_project(proj)
+
+
+def xfail_for_hps_version_under(hps_version: HpsRelease, jsm_api: JmsApi, request):
+    if not check_min_version(jsm_api.version, JMS_VERSIONS[hps_version]):
+        mark = pytest.mark.xfail(
+            reason=f"Requires HPS version greater than or equal to {hps_version}",
+            raises=VersionCompatibilityError,
+        )
+        request.node.add_marker(mark)
+
+
+@pytest.fixture
+def has_hps_version_ge_1_3_45(jms_api) -> bool:
+    return check_min_version(jms_api.version, JMS_VERSIONS[HpsRelease.v1_3_45])
+
+
+@pytest.fixture
+def has_hps_version_le_1_3_45(jms_api) -> bool:
+    return check_max_version(jms_api.version, JMS_VERSIONS[HpsRelease.v1_3_45])
+
+
+@pytest.fixture
+def has_hps_version_gt_1_3_45(jms_api) -> bool:
+    return not check_max_version(jms_api.version, JMS_VERSIONS[HpsRelease.v1_3_45])

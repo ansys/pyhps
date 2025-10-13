@@ -28,7 +28,6 @@ import time
 import pytest
 from marshmallow.utils import missing
 
-from ansys.hps.client import __ansys_apps_version__ as ansys_version
 from ansys.hps.client.jms import JmsApi, ProjectApi
 from ansys.hps.client.jms.resource import JobDefinition, LicenseContext, Project
 from ansys.hps.client.jms.schema.project import ProjectSchema
@@ -264,7 +263,10 @@ def test_project_archive_restore(client):
     jms_api.delete_project(restored_project)
 
 
-def test_copy_exec_script(client):
+def test_copy_exec_script(client, has_hps_version_le_1_3_45):
+    if has_hps_version_le_1_3_45:
+        pytest.skip("Execution script name has changed after HPS v1.3.45.")
+
     jms_api = JmsApi(client)
     proj_name = "test_copy_exec_script"
 
@@ -273,8 +275,7 @@ def test_copy_exec_script(client):
 
     project_api = ProjectApi(client, proj.id)
 
-    ansys_short_version = f"v{ansys_version[2:4]}{ansys_version[6]}"
-    script_names = [f"mapdl-{ansys_short_version}-exec_mapdl", "mechanical-exec_mechanical"]
+    script_names = ["mapdl-exec_mapdl", "mechanical-exec_mechanical"]
 
     for script_name in script_names:
         file = project_api.copy_default_execution_script(f"{script_name}.py")
@@ -282,5 +283,17 @@ def test_copy_exec_script(client):
         assert file.evaluation_path == f"{script_name}.py"
         assert file.hash is not None
         assert file.storage_id is not None
+
+    apps = ["Ansys Fluent", "Ansys LS-DYNA", "Ansys Mechanical APDL"]
+
+    templates = jms_api.get_task_definition_templates()
+    for template in templates:
+        if template.software_requirements and template.software_requirements[0].name in apps:
+            file = project_api.copy_execution_script(template)
+            name = "exec_" + template.software_requirements[0].name.replace(" ", "_").lower()
+            assert file.name == name
+            assert file.evaluation_path == name + ".py"
+            assert file.hash is not None
+            assert file.storage_id is not None
 
     jms_api.delete_project(proj)

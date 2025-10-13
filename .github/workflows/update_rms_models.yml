@@ -1,4 +1,4 @@
-name: Update RSM Models
+name: Update RMS Models
 on:
   workflow_dispatch:
   schedule:
@@ -13,10 +13,10 @@ jobs:
     name: Update models
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - name: Set up Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
           python-version: ${{ env.MAIN_PYTHON_VERSION }}
 
@@ -37,7 +37,7 @@ jobs:
 
       - name: Run script
         run: |
-          python .ci/generate_rsm_models.py
+          python .ci/generate_rms_models.py
 
       - name: "Create PR if changes detected"
         if: startsWith(github.ref, 'refs/heads/main')

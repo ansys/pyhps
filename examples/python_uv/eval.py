@@ -19,13 +19,32 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
-"""PyHPS is a Python client for Ansys HPC Platform Services (HPS)."""
 
-from .__version__ import __ansys_apps_version__, __version__
-from .auth import AuthApi
-from .authenticate import authenticate, authenticate_via_action_token, determine_auth_url
-from .client import Client
-from .exceptions import APIError, ClientError, HPSError, VersionCompatibilityError
-from .jms import JmsApi, ProjectApi
-from .rms import RmsApi
-from .warnings import UnverifiedHTTPSRequestsWarning
+# /// script
+# requires-python = "==3.12"
+# dependencies = [
+#     "numpy",
+#     "matplotlib"
+# ]
+# ///
+
+
+import matplotlib.pyplot as plt
+import numpy as np
+
+if __name__ == "__main__":
+    # Generate plot
+    ts = np.linspace(0.0, 10.0, 100)
+    ys = np.sin(ts)
+
+    fig, ax = plt.subplots()
+    ax.plot(ts, ys)
+    ax.set_xlabel("Time [s]")
+    ax.set_ylabel("Displacement [cm]")
+    plt.savefig("plot.png", dpi=200)
+
+    # Uncomment to enable venv cleanup in exec script, see execution script for details
+    # import json
+    # import sys
+    # with open("output_parameters.json", "w") as out_file:
+    #    json.dump({"exe": sys.executable}, out_file, indent=4)

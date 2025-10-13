@@ -265,3 +265,11 @@ class TaskDefinitionSchema(ObjectSchemaWithModificationInfo):
         allow_none=True,
         metadata={"description": "Enable debug logging and retain Task working directory."},
     )
+
+    working_directory = fields.String(
+        allow_none=True,
+        metadata={
+            "description": "Optional root working directory to be used by the evaluator"
+            " for task execution"
+        },
+    )

@@ -27,6 +27,8 @@ from enum import Enum
 from functools import wraps
 from typing import Protocol
 
+from packaging.version import parse
+
 from .exceptions import VersionCompatibilityError
 
 log = logging.getLogger(__name__)
@@ -38,6 +40,7 @@ class HpsRelease(Enum):
     v1_0_2 = "1.0.2"
     v1_1_1 = "1.1.1"
     v1_2_0 = "1.2.0"
+    v1_3_45 = "1.3.45"
 
 
 """HPS to JMS version mapping."""
@@ -45,6 +48,7 @@ JMS_VERSIONS: dict[HpsRelease, str] = {
     HpsRelease.v1_0_2: "1.0.12",
     HpsRelease.v1_1_1: "1.0.20",
     HpsRelease.v1_2_0: "1.1.4",
+    HpsRelease.v1_3_45: "1.1.60",
 }
 
 
@@ -53,6 +57,7 @@ RMS_VERSIONS: dict[HpsRelease, str] = {
     HpsRelease.v1_0_2: "1.0.0",
     HpsRelease.v1_1_1: "1.1.5",
     HpsRelease.v1_2_0: "1.1.10",
+    HpsRelease.v1_3_45: "1.1.71",
 }
 
 
@@ -67,8 +72,6 @@ class ApiProtocol(Protocol):
 
 def check_min_version(version: str, min_version: str) -> bool:
     """Check if a version string meets a minimum version."""
-    from packaging.version import parse
-
     if version in ["0.0.dev", "0.0.0"]:
         log.warning("Skipping min version check for backend development version")
         return True
@@ -78,8 +81,6 @@ def check_min_version(version: str, min_version: str) -> bool:
 
 def check_max_version(version: str, max_version: str) -> bool:
     """Check if a version string meets a maximum version."""
-    from packaging.version import parse
-
     if version in ["0.0.dev", "0.0.0"]:
         log.warning("Skipping max version check for backend development version")
         return True

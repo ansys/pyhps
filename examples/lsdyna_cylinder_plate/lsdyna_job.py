@@ -223,9 +223,14 @@ def submit_job(
     )
 
     if use_exec_script:
-        exec_script_file = project_api.copy_default_execution_script(
-            f"lsdyna-v{version[2:4]}{version[6]}-exec_lsdyna.py"
-        )
+        if version >= "2025 R2":
+            exec_script_file = project_api.copy_default_execution_script(
+                "lsdyna-lsdynawrapper-exec_lsdyna.py"
+            )
+        else:
+            exec_script_file = project_api.copy_default_execution_script(
+                "lsdyna-pre-lsdynawrapper-exec_lsdyna.py"
+            )
 
         task_def1.use_execution_script = True
         task_def1.execution_script_id = exec_script_file.id
@@ -384,9 +389,15 @@ def download_results(app_job: HPSJob):
                 ascii=True,
                 ncols=100,
             ) as pbar:
-                project_api.download_file(
-                    file, target_folder, progress_handler=lambda chunk_size: pbar.update(chunk_size)
-                )
+                previous_size = 0
+
+                def _progress_callback(current_size):
+                    nonlocal previous_size
+                    chunk_size = current_size - previous_size
+                    previous_size = current_size
+                    pbar.update(chunk_size)
+
+                project_api.download_file(file, target_folder, progress_handler=_progress_callback)
 
 
 if __name__ == "__main__":

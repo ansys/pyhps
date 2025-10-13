@@ -7,6 +7,7 @@
 
 ## Individual Contributors
 
+* [davel94](https://github.com/davel94)
 * [Dominik Gresch](https://github.com/greschd)
 * [Jon Novak](https://github.com/Buzz1167)
 * [Jonathan Zopes](https://github.com/jonathanzopes)
@@ -21,4 +22,3 @@
 * [Roberto Pastor Muela](https://github.com/RobPasMue)
 * [Ryan Wehrle](https://github.com/wehrler)
 * [Sashanka Krishna Somisetti](https://github.com/sashankh01)
-* [davel94](https://github.com/davel94)

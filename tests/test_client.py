@@ -28,12 +28,13 @@ import requests
 
 from ansys.hps.client import Client
 from ansys.hps.client.exceptions import HPSError
+from ansys.hps.client.warnings import UnverifiedHTTPSRequestsWarning
 
 log = logging.getLogger(__name__)
 
 
 def test_client_ssl_warning(url, username, password):
-    with pytest.warns(Warning) as record:
+    with pytest.warns(UnverifiedHTTPSRequestsWarning) as record:
         _ = Client(url, username, password)
     assert len(record) == 1
     assert "Unverified HTTPS requests" in str(record[0].message)

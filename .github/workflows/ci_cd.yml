@@ -10,6 +10,7 @@ on:
           - 'v1.0.2'
           - 'v1.1.1'
           - 'v1.2.0'
+          - 'v1.3.45'
           - 'latest-dev'
       hps-feature:
         description: HPS feature to test against
@@ -59,15 +60,30 @@ jobs:
       hps-version: ${{ inputs.hps-version || 'latest-dev' }}
       hps-feature: ${{ inputs.hps-feature || 'main' }}
 
+  backward-compatibility-tests:
+    strategy:
+      matrix:
+          hps-version: ['v1.2.0', 'v1.3.45']
+      fail-fast: false
+    uses: ./.github/workflows/tests.yml
+    secrets: inherit
+    with:
+      python-version: '3.10'
+      toxenv: 'py310'
+      runner: 'ubuntu-latest'
+      hps-version: ${{ matrix.hps-version }}
+      hps-feature: 'main'
+      upload-coverage: false
+
   docs:
     name: Documentation
     runs-on: ubuntu-latest
     needs: [style]
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - name: Set up Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
           python-version: ${{ env.MAIN_PYTHON_VERSION }}
           
@@ -134,19 +150,30 @@ jobs:
           password: ${{ secrets.PYANSYS_CI_BOT_PACKAGE_TOKEN }}
 
       - name: Build wheelhouse and perform smoke test
-        uses: ansys/actions/build-wheelhouse@v9
+        uses: ansys/actions/build-wheelhouse@v10
         with:
           library-name: ${{ env.PACKAGE_NAME }}
           operating-system: ${{ matrix.os }}
           python-version: ${{ matrix.python-version }}
 
+  check-vulnerabilities:
+    name: "Check library vulnerabilities"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: ansys/actions/check-vulnerabilities@v10
+        with:
+          python-version: ${{ env.MAIN_PYTHON_VERSION }}
+          token: ${{ secrets.PYANSYS_CI_BOT_TOKEN }}
+          python-package-name: 'ansys-hps-client'
+          dev-mode: ${{ github.ref != 'refs/heads/main' }}
+
   package:
     name: Package library
-    needs: [tests, docs, smoke-tests]
+    needs: [tests, docs, smoke-tests, check-vulnerabilities]
     runs-on: ubuntu-latest
     steps:
       - name: Build library source and wheel artifacts
-        uses: ansys/actions/build-library@v9
+        uses: ansys/actions/build-library@v10
         with:
           library-name: ${{ env.PACKAGE_NAME }}
           python-version: ${{ env.MAIN_PYTHON_VERSION }}
@@ -158,7 +185,7 @@ jobs:
       library_version: ${{ steps.version.outputs.library_version }}
     steps:
       - name: "Install Git and clone project"
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         
       - uses: extractions/netrc@v2
         with:
@@ -198,7 +225,7 @@ jobs:
     needs: [package, library-version]
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v5
         with:
           name: ansys-hps-client-artifacts
           path: /tmp/artifacts
@@ -223,7 +250,7 @@ jobs:
     needs: [package]
     steps:
       - name: Deploy the latest documentation
-        uses: ansys/actions/doc-deploy-dev@v9
+        uses: ansys/actions/doc-deploy-dev@v10
         with:
           doc-artifact-name: 'documentation-html'
           cname: ${{ env.DOCUMENTATION_CNAME }}
@@ -240,14 +267,14 @@ jobs:
       contents: write
     steps:
       - name: Release to the public PyPI repository
-        uses: ansys/actions/release-pypi-public@v9
+        uses: ansys/actions/release-pypi-public@v10
         with:
           library-name: ${{ env.PACKAGE_NAME }}
           twine-username: "__token__"
           twine-token: ${{ secrets.PYPI_TOKEN }}
 
       - name: Release to GitHub
-        uses: ansys/actions/release-github@v9
+        uses: ansys/actions/release-github@v10
         with:
           library-name: ${{ env.PACKAGE_NAME }}
           token: ${{ secrets.GITHUB_TOKEN }}
@@ -259,7 +286,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: [release]
     steps:
-      - uses: ansys/actions/doc-deploy-stable@v9
+      - uses: ansys/actions/doc-deploy-stable@v10
         with:
           doc-artifact-name: 'documentation-html'
           cname: ${{ env.DOCUMENTATION_CNAME }}

@@ -26,6 +26,10 @@ on:
       docker-compose-profiles:
         description: Docker compose profiles to use
         type: string
+      upload-coverage:
+        description: Whether to upload coverage results
+        type: boolean
+        default: true
 
 jobs:
 
@@ -33,9 +37,9 @@ jobs:
     name: Tests and coverage
     runs-on: ${{ inputs.runner }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - name: Set up Python ${{ inputs.python-version }}
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
           python-version: ${{ inputs.python-version }}
         
@@ -70,7 +74,7 @@ jobs:
 
       - name: Upload coverage results
         uses: actions/upload-artifact@v4
-        if: ${{ inputs.python-version == '3.10' }}
+        if: ${{ inputs.python-version == '3.10' && inputs.upload-coverage }}
         with:
           name: coverage-html
           path: .cov/html
@@ -78,7 +82,7 @@ jobs:
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v5
-        if: ${{ inputs.python-version == '3.10' }}
+        if: ${{ inputs.python-version == '3.10' && inputs.upload-coverage }}
         env:
           CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
         with:
