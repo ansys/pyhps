@@ -26,11 +26,10 @@
 
 from __future__ import annotations
 
-from datetime import datetime
 from enum import Enum
 from typing import Any, Literal
 
-from pydantic import Field
+from pydantic import AwareDatetime, Field
 
 from ansys.hps.client.common import DictModel
 
@@ -162,7 +161,7 @@ class ShutdownStatus(Enum):
 class EvaluatorRegistration(DictModel):
     id: str | None = Field(None, description="Unique ID for the worker.", title="Id")
     name: str | None = Field(None, description="User-defined name for the worker.", title="Name")
-    last_modified: datetime | None = Field(
+    last_modified: AwareDatetime | None = Field(
         None,
         description="Date and time when the registration was last modified.",
         title="Last Modified",
@@ -204,7 +203,7 @@ class EvaluatorRegistration(DictModel):
         description="ID of the compute resource set that the evaluator belongs to.",
         title="Compute Resource Set Id",
     )
-    change_requested: datetime | None = Field(
+    change_requested: AwareDatetime | None = Field(
         None,
         description="Date and time of the configuration's last modification request.",
         title="Change Requested",
@@ -602,7 +601,7 @@ class ScalerApplicationInfo(DictModel):
 class ScalerRegistration(DictModel):
     id: str | None = Field(None, description="Unique ID for the worker.", title="Id")
     name: str | None = Field(None, description="User-defined name for the worker.", title="Name")
-    last_modified: datetime | None = Field(
+    last_modified: AwareDatetime | None = Field(
         None,
         description="Date and time when the registration was last modified.",
         title="Last Modified",
@@ -639,7 +638,7 @@ class ScalerRegistration(DictModel):
     is_admin: bool | None = Field(
         False, description="Worker has admin privileges", title="Is Admin"
     )
-    config_modified: datetime | None = Field(
+    config_modified: AwareDatetime | None = Field(
         None,
         description="Date and time of the configuration's last modification.",
         title="Config Modified",
@@ -847,7 +846,7 @@ class ComputeResourceSet(DictModel):
         description="Temporary. To be removed after transitioning to client_id.",
         title="Scaler Id",
     )
-    last_modified: datetime | None = Field(
+    last_modified: AwareDatetime | None = Field(
         None, description="Last modified time.", title="Last Modified"
     )
     backend: (
@@ -922,7 +921,7 @@ class EvaluatorConfiguration(DictModel):
         description="ID of the parent evaluator (read-only).",
         title="Evaluator Id",
     )
-    last_modified: datetime | None = Field(
+    last_modified: AwareDatetime | None = Field(
         None, description="Last modified time.", title="Last Modified"
     )
     working_directory: str | None = Field(None, title="Working Directory")
@@ -978,7 +977,7 @@ class EvaluatorConfigurationUpdate(DictModel):
         description="ID of the parent evaluator (read-only).",
         title="Evaluator Id",
     )
-    last_modified: datetime | None = Field(
+    last_modified: AwareDatetime | None = Field(
         None, description="Last modified time.", title="Last Modified"
     )
     working_directory: str | None = Field(None, title="Working Directory")
