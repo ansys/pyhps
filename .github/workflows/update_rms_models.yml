@@ -40,7 +40,7 @@ jobs:
           python .ci/generate_rms_models.py
 
       - name: "Create PR if changes detected"
-        if: startsWith(github.ref, 'refs/heads/main')
+        # if: startsWith(github.ref, 'refs/heads/main')
         uses: peter-evans/create-pull-request@v7
         with:
           title: "[Auto] Update RMS models"
