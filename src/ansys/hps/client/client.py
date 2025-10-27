@@ -188,6 +188,7 @@ class Client:
         if access_token:
             log.debug("Authenticate with access token")
             self.access_token = access_token
+            self.refresh_token = refresh_token
         else:
             if username and password:
                 self.grant_type = "password"
