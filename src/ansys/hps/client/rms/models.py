@@ -295,6 +295,11 @@ class KubernetesKedaBackend(DictModel):
         description="Kubernetes resource kind that the scaler should target. Options are ``deployment``, ``job``, and ``statefulset``.",
         title="Target Resource Kind",
     )
+    use_keda_scaling: bool | None = Field(
+        True,
+        description="Whether to use Keda ScaledJobs and ScaledObjects, otherwise will use plain K8s Jobs and Deployments.",
+        title="Use Keda Scaling",
+    )
     service_name: str | None = Field(
         "ansys/rep/scaling",
         description="Service name to be used in prometheus query when fetching metric data.",
@@ -304,6 +309,11 @@ class KubernetesKedaBackend(DictModel):
 
 class KubernetesResourceScaling(DictModel):
     plugin_name: Literal["kubernetes_resource_scaling"] = Field(..., title="Plugin Name")
+    scaling_factor: int | None = Field(
+        1,
+        description="Number of tasks needed to launch each additional evaluator.",
+        title="Scaling Factor",
+    )
     target_resource_kind: str | None = Field(
         "job",
         description="Kubernetes resource kind that the scaler should target. Options are ``deployment``, ``job``, and ``statefulset``.",
@@ -341,6 +351,11 @@ class Machine(DictModel):
 
 class MaxAvailableResourceScaling(DictModel):
     plugin_name: Literal["max_available_resource_scaling"] = Field(..., title="Plugin Name")
+    scaling_factor: int | None = Field(
+        1,
+        description="Number of tasks needed to launch each additional evaluator.",
+        title="Scaling Factor",
+    )
     match_all_requirements: bool | None = Field(
         False,
         description="Whether scaling should work with available resource properties specified in the compute resource set (default) or require a match of all requirements of the task definition.",
@@ -591,6 +606,11 @@ class ScalerApplicationInfo(DictModel):
         60,
         description="Period to wait before scaling down the resource to 0 instances.",
         title="Cool Down Period",
+    )
+    scaling_factor: int | None = Field(
+        None,
+        description="Number of tasks needed to launch each additional evaluator.",
+        title="Scaling Factor",
     )
     debug: bool | None = Field(
         None,
@@ -866,6 +886,7 @@ class ComputeResourceSet(DictModel):
     scaling_strategy: MaxAvailableResourceScaling | KubernetesResourceScaling | None = Field(
         {
             "plugin_name": "max_available_resource_scaling",
+            "scaling_factor": 1,
             "match_all_requirements": False,
         },
         description="Scaling strategy to use in the compute resource set.",
