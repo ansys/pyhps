@@ -270,6 +270,11 @@ class KubernetesKedaBackend(DictModel):
     working_dir: str | None = Field(
         None, description="Working directory to use. (Deprecated)", title="Working Dir"
     )
+    queue_info_path: str | None = Field(
+        None,
+        description="Path of Queue JSON file with addtl. info",
+        title="Queue Info Path",
+    )
     job_script_template_path: str | None = Field(
         None,
         description="Path to the job script template to use in the backend.",
@@ -339,6 +344,11 @@ class LocalBackend(DictModel):
     working_dir: str | None = Field(
         None, description="Working directory to use. (Deprecated)", title="Working Dir"
     )
+    queue_info_path: str | None = Field(
+        None,
+        description="Path of Queue JSON file with addtl. info",
+        title="Queue Info Path",
+    )
     evaluator_exe: str | None = Field(
         None, description="Path to evaluator executable.", title="Evaluator Exe"
     )
@@ -381,6 +391,11 @@ class MockupBackend(DictModel):
     working_dir: str | None = Field(
         None, description="Working directory to use. (Deprecated)", title="Working Dir"
     )
+    queue_info_path: str | None = Field(
+        None,
+        description="Path of Queue JSON file with addtl. info",
+        title="Queue Info Path",
+    )
 
 
 class Node(DictModel):
@@ -415,6 +430,11 @@ class OCMBackend(DictModel):
     )
     working_dir: str | None = Field(
         None, description="Working directory to use. (Deprecated)", title="Working Dir"
+    )
+    queue_info_path: str | None = Field(
+        None,
+        description="Path of Queue JSON file with addtl. info",
+        title="Queue Info Path",
     )
     ocm_url: str | None = Field(
         None, description="URL to use for OCM API authentication.", title="Ocm Url"
@@ -764,6 +784,11 @@ class OrchestrationInterfacesBackend(DictModel):
     working_dir: str | None = Field(
         None, description="Working directory to use. (Deprecated)", title="Working Dir"
     )
+    queue_info_path: str | None = Field(
+        None,
+        description="Path of Queue JSON file with addtl. info",
+        title="Queue Info Path",
+    )
     scheduler_type: str | None = Field(
         "slurm",
         description="Job scheduler type, such as ``slurm``, ``pbs``, ``uge``, or ``lsf``, to use in the backend.",
@@ -778,11 +803,6 @@ class OrchestrationInterfacesBackend(DictModel):
         "http://localhost:5050", description="REST API URL.", title="Base Url"
     )
     api_ver: str | None = Field("v0.0.39", description="REST API version.", title="Api Ver")
-    queue_info_path: str | None = Field(
-        None,
-        description="Path of Queue JSON file with addtl. info",
-        title="Queue Info Path",
-    )
     scheduler_queue_default: str | None = Field(
         None,
         description="Job scheduler queue to use for submission.",
