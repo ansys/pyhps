@@ -1,0 +1,28 @@
+﻿User
+====
+
+.. currentmodule:: ansys.hps.client.auth
+
+.. autoclass:: User
+
+   
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+      :toctree:
+   
+      
+      
+      User.declared_fields
+      
+      
+      User.get
+      
+   
+   
+
+   
+   
+   

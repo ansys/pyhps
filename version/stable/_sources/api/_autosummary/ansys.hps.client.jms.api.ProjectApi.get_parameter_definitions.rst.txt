@@ -1,0 +1,6 @@
+get\_parameter\_definitions
+===========================
+
+.. currentmodule:: ansys.hps.client.jms.api
+
+.. automethod:: ProjectApi.get_parameter_definitions
