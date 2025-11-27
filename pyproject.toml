@@ -33,7 +33,7 @@ dependencies = [
     "pydantic>=1.10.0",
     "PyJWT>=2.8.0",
     "packaging",
-    "ansys-hps-data-transfer-client@git+https://github.com/ansys/pyhps-data-transfer.git"
+    "ansys-hps-data-transfer-client@git+https://github.com/ansys/pyhps-data-transfer.git@sacross/devnull"
 ]
 
 [project.optional-dependencies]
@@ -41,7 +41,6 @@ tests = [
     "pytest==9.0.1",
     "coverage==7.12.0",
     "python-keycloak>=3.9.1,<4.0.0",
-]
 
 doc = [
     "ansys-sphinx-theme==1.6.3",
