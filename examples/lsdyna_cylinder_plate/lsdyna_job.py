@@ -191,7 +191,6 @@ def submit_job(
     file_ids = {f.name: f.id for f in files}
 
     log.info("=== Simulation workflow")
-    job_def = JobDefinition(name="JobDefinition.1", active=True)
 
     # Define process steps (task definitions)
     ls_dyna_command = "%executable% i=%file:inp% ncpu=%resource:num_cores% memory=300m"
