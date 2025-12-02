@@ -1,0 +1,6 @@
+get\_compute\_resource\_set
+===========================
+
+.. currentmodule:: ansys.hps.client.rms.api
+
+.. automethod:: RmsApi.get_compute_resource_set
