@@ -108,14 +108,14 @@ jobs:
         run: tox -e doc-html-${{ runner.os == 'Linux' && 'linux' || 'windows' }},doc-pdf-${{ runner.os == 'Linux' && 'linux' || 'windows' }}
 
       - name: Upload HTML Documentation
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v6
         with:
           name: documentation-html
           path: doc/_build/html
           retention-days: 7
 
       - name: Upload PDF Documentation
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v6
         with:
           name: documentation-pdf
           path: doc/_build/latex/*.pdf
