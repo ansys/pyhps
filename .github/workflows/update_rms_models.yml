@@ -41,7 +41,7 @@ jobs:
 
       - name: "Create PR if changes detected"
         if: startsWith(github.ref, 'refs/heads/main')
-        uses: peter-evans/create-pull-request@v7
+        uses: peter-evans/create-pull-request@v8
         with:
           title: "[Auto] Update RMS models"
           body: An update of auto-generated RMS models has been triggered either manually or by a scheduled workflow.
