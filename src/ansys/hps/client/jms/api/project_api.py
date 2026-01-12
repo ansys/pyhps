@@ -949,7 +949,7 @@ def _download_file(
     if getattr(file, "hash", None) is None:
         log.warning(f"No hash found for file {file.name}.")
 
-    file_name = file_name or file.name
+    file_name = file_name or file.evaluation_path
     download_path = os.path.join(target_path, file_name)
     base_dir = project_api.project_id
 
