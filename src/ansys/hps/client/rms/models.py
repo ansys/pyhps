@@ -942,6 +942,11 @@ class ComputeResourceSet(DictModel):
         description="Number of seconds between each iteration of the evaluator's main loop.",
         title="Evaluator Loop Interval",
     )
+    evaluator_optimized_move: bool | None = Field(
+        False,
+        description="Whether to use optimized move operations when moving files within the same filesystem.",
+        title="Evaluator Optimized Move",
+    )
 
 
 class ComputeResourceSetsRequest(DictModel):
