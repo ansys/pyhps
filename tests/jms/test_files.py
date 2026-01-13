@@ -149,6 +149,27 @@ def test_download_file_in_subdir(client, inactive_temporary_project):
             assert "This is my file" == sf.read()
 
 
+def test_download_file_with_correct_name(client, inactive_temporary_project):
+    project_api = ProjectApi(client, inactive_temporary_project.id)
+
+    files = [
+        File(
+            name="file",
+            evaluation_path="test.txt",
+            type="text/plain",
+            src=io.BytesIO(b"This is my file"),
+        )
+    ]
+
+    file = project_api.create_files(files)[0]
+
+    with tempfile.TemporaryDirectory() as tpath:
+        fpath = project_api.download_file(file, tpath, file_name="downloaded.txt")
+        assert os.path.basename(fpath) == "downloaded.txt"
+        with open(fpath) as sf:
+            assert "This is my file" == sf.read()
+
+
 def _write_file(file_path, size_in_mb):
     log.info(f"Generating file {file_path} with size {size_in_mb} MB")
     one_mb = 1024 * 1024  # 1MB
