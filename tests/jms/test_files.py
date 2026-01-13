@@ -148,6 +148,7 @@ def test_download_file_in_subdir(client, inactive_temporary_project):
         with open(fpath) as sf:
             assert "This is my file" == sf.read()
 
+
 def test_download_file_with_correct_name(client, inactive_temporary_project):
     project_api = ProjectApi(client, inactive_temporary_project.id)
 
