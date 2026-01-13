@@ -62,7 +62,7 @@ doc = [
 ]
 
 build = [
-    "build==1.2.2.post1",
+    "build==1.4.0",
     "twine==6.2.0",
     "wheel",
     "datamodel-code-generator==0.52.2",
