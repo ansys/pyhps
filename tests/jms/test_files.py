@@ -164,7 +164,7 @@ def test_download_file_with_correct_name(client, inactive_temporary_project):
 
     with tempfile.TemporaryDirectory() as tpath:
         fpath = project_api.download_file(file, tpath, file_name="downloaded.txt")
-        assert os.path.exists(fpath)
+        assert os.path.basename(fpath) == "downloaded.txt"
         with open(fpath) as sf:
             assert "This is my file" == sf.read()
 
