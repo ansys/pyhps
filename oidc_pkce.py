@@ -1,5 +1,4 @@
-"""
-Script to demonstrate how to authenticate with an OIDC provider
+"""Script to demonstrate how to authenticate with an OIDC provider
 using the Authorization Code Flow with PKCE.
 
 Mostly inspired by:
@@ -10,13 +9,13 @@ Mostly inspired by:
 import argparse
 import base64
 import hashlib
-from http.server import BaseHTTPRequestHandler, HTTPServer
 import os
 import re
 import socket
+import webbrowser
+from http.server import BaseHTTPRequestHandler, HTTPServer
 from typing import Any
 from urllib import parse
-import webbrowser
 
 import requests
 from requests import Request
@@ -30,7 +29,6 @@ class OAuthHttpServer(HTTPServer):
 
 class OAuthHttpHandler(BaseHTTPRequestHandler):
     def do_GET(self):
-
         parsed = parse.urlparse(self.path)
         qs = parse.parse_qs(parsed.query)
         self.server.authorization_code = qs["code"][0]
@@ -38,7 +36,7 @@ class OAuthHttpHandler(BaseHTTPRequestHandler):
         self.send_response(200)
         self.send_header("Content-Type", "text/html")
         self.end_headers()
-        html_body = """
+        html_body = b"""
             <html>
                 <head>
                     <script type="text/javascript">
@@ -49,9 +47,7 @@ class OAuthHttpHandler(BaseHTTPRequestHandler):
                     <p>Operation successful. You can safely close this window.</p>
                 </body>
             </html>
-        """.encode(
-            "UTF-8"
-        )
+        """
         self.wfile.write(html_body)
 
     def log_message(self, format, *args):
@@ -101,10 +97,8 @@ def find_free_port():
 
 
 def login(config: dict[str, Any]) -> str:
-
     port = find_free_port()
     with OAuthHttpServer(("", port), OAuthHttpHandler) as httpd:
-
         # print(f"Local HTTP server available at http://localhost:{httpd.server_port}")
 
         code_verifier, code_challenge = generate_code()
@@ -164,9 +158,9 @@ def get_config(hps_url):
     )
 
     response = requests.get(url=config["disco_endpoint"], verify=True)
-    assert (
-        response.status_code == 200
-    ), f"Failed to get discovery from {config['disco_endpoint']}: {response.text}"
+    assert response.status_code == 200, (
+        f"Failed to get discovery from {config['disco_endpoint']}: {response.text}"
+    )
     raw_disco = response.json()
     # Fill specific endpoints from discovery
     config["auth_url"] = raw_disco["authorization_endpoint"]
