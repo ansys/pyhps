@@ -1,4 +1,4 @@
-# Copyright (C) 2022 - 2025 ANSYS, Inc. and/or its affiliates.
+# Copyright (C) 2022 - 2026 ANSYS, Inc. and/or its affiliates.
 # SPDX-License-Identifier: MIT
 #
 #
@@ -37,7 +37,7 @@ import jwt
 from marshmallow.utils import missing
 
 from ansys.hps.client import Client, HPSError
-from ansys.hps.client.jms import JmsApi, Project, ProjectApi
+from ansys.hps.client.jms import File, JmsApi, Project, ProjectApi
 from ansys.hps.client.jms.resource.project import ProjectSchema
 from ansys.hps.client.rms import RmsApi
 from ansys.rep.common.auth.self_signed_token_provider import SelfSignedTokenProvider
@@ -57,7 +57,7 @@ def filter_dict(input_dict, desired_keys=None):
     dict: A new dictionary containing only the desired keys.
     """
     if desired_keys is None:
-        desired_keys = ["evaluated", "pending", "failed", "running"]
+        desired_keys = ["evaluated", "pending", "failed", "running", "timeout"]
     return {key: input_dict[key] for key in desired_keys if key in input_dict}
 
 
@@ -115,7 +115,10 @@ def monitor_projects(
         filtered_projects = [
             proj
             for proj in projects
-            if proj.name.lower().find(filter.lower()) >= 0 or proj.id == filter
+            if (
+                proj.name.lower().find(filter.lower()) >= 0
+                or proj.id.lower().find(filter.lower()) >= 0
+            )
         ]
 
     if limited_monitoring:
@@ -127,11 +130,13 @@ def monitor_projects(
         ]
 
     log.debug(f"=== Projects ({len(filtered_projects)})")
+    project_count = 0
     for project in filtered_projects:
+        project_count += 1
         modified_age = (datetime.now(timezone.utc) - project.modification_time).total_seconds()
         if remove is None:
-            if len(filtered_projects) > 10 and modified_age > 72 * 60 * 60:
-                continue  # Skip projects older than 2 days
+            if project_count > 4 and modified_age > 72 * 60 * 60:
+                continue  # Skip projects older than 3 days
 
         created_age = (datetime.now(timezone.utc) - project.creation_time).total_seconds()
         age_hours = int(created_age / 3600)
@@ -178,71 +183,86 @@ def monitor_projects(
                         )
                         jms_api.delete_project(project)
                         continue
+
             tasks = proj_api.get_tasks()
             if len(tasks) > 0:
                 log.debug(f"    === Tasks {filter_dict(project.statistics['eval_status'])}")
             else:
                 log.debug("    === No Tasks")
-            for task in tasks:
-                resources = task.task_definition_snapshot.resource_requirements
-                log.debug(
-                    f"{' ' * 8}{task.task_definition_snapshot.name}:{task.job_id}->"
-                    + f"{task.eval_status}  {task.task_definition_snapshot.software_requirements}"
-                    + f" {resources.num_cores}Cores"
-                )
-                if task.eval_status == "running":
-                    log.debug(f"{' ' * 10}Running on evaluator: {task.host_id}")
-                if resources not in [None, missing]:
-                    queue = (
-                        resources.hpc_resources.queue
-                        if resources.hpc_resources not in [None, missing]
-                        else "NotSet"
-                    )
+            if verbose:
+                for task in tasks:
+                    tds = task.task_definition_snapshot
+                    resources = tds.resource_requirements
                     log.debug(
-                        f"{' ' * 10}Task Def: {task.task_definition_id}"
-                        + f" CRS: {resources.compute_resource_set_id} -> {queue}"
+                        f"{' ' * 8}{tds.name}:{task.job_id}->"
+                        + f"{task.eval_status}  {tds.software_requirements}"
+                        + f" {resources.num_cores}Cores"
                     )
+                    if task.eval_status == "running":
+                        log.debug(f"{' ' * 10}Running on evaluator: {task.host_id}")
+                    if resources not in [None, missing]:
+                        queue = (
+                            resources.hpc_resources.queue
+                            if resources.hpc_resources not in [None, missing]
+                            else "NotSet"
+                        )
+                        log.debug(
+                            f"{' ' * 10}Task Def: {task.task_definition_id}"
+                            + f" CRS: {resources.compute_resource_set_id} -> {queue}"
+                        )
 
-                log.debug(f"{' ' * 10}Files:")
-                files = []
-                file_ids = task.output_file_ids
-                batch_size = 210
-                for i in range(0, len(file_ids), batch_size):
-                    batch_ids = file_ids[i : i + batch_size]
-                    files.extend(proj_api.get_files(id=batch_ids))
-                file_counts = {}
-                for f in files:
-                    if f.name in file_counts:
-                        file_counts[f.name] += 1
-                    else:
-                        file_counts[f.name] = 1
+                    log.debug(f"{' ' * 10}Files:")
+                    files = []
+                    file_ids = task.output_file_ids
+                    files = proj_api.client.session.post(
+                        proj_api.url + "/files:query", json={"id": file_ids}
+                    ).json()
 
-                incomplete = False
-                for file_name, count in file_counts.items():
-                    file = next(f for f in files if f.name == file_name)
-                    # and f.storage_id in [None, missing])
-                    # print(file)
-                    if count > 3:
-                        log.debug(f"{' ' * 12}{file_name}:{file.format} -> {count} times")
-                    line = f"{' ' * 12}---"
-                    counter = 0
-                    for f in [f for f in files if f.name == file_name]:
-                        counter += 1
-                        line += f" {f.evaluation_path[:30].rjust(30)}"
-                        line += f" -{f.size}b-{f.type.split('/')[0][:6].ljust(6)} "
-                        incomplete = True
-                        if counter % 4 == 0:
-                            log.debug(line)
-                            line = f"{' ' * 12}---"
-                            incomplete = False
-                if incomplete:
-                    log.debug(line)
+                    # batch_size = 210
+                    # for i in range(0, len(file_ids), batch_size):
+                    #    batch_ids = file_ids[i : i + batch_size]
+                    #    files.extend(proj_api.get_files(id=batch_ids))
+                    # Write the json to a file
+                    json_data = json.dumps(files, indent=4)
+                    with open("files_data.json", "w") as json_file:
+                        json_file.write(json_data)
+
+                    file_counts = {}
+                    schema = File.Meta.schema(many=True)
+                    files: list[File] = schema.load(files["files"])
+                    for f in files:
+                        if f.name in file_counts:
+                            file_counts[f.name] += 1
+                        else:
+                            file_counts[f.name] = 1
+
+                    incomplete = False
+                    for file_name, count in file_counts.items():
+                        file = next(f for f in files if f.name == file_name)
+                        # and f.storage_id in [None, missing])
+                        # print(file)
+                        if count > 3:
+                            log.debug(f"{' ' * 12}{file_name}:{file.format} -> {count} times")
+                        line = f"{' ' * 12}---"
+                        counter = 0
+                        for f in [f for f in files if f.name == file_name]:
+                            counter += 1
+                            line += f" {f.evaluation_path[:30].rjust(30)}"
+                            line += f" -{f.size}b-{f.type.split('/')[0][:6].ljust(6)} "
+                            incomplete = True
+                            if counter % 4 == 0:
+                                log.debug(line)
+                                line = f"{' ' * 12}---"
+                                incomplete = False
+                    if incomplete:
+                        log.debug(line)
 
         except HPSError as e:
             log.debug(e)
             continue
 
 
+# write
 def show_rms_data(client: Client, verbose: bool, filter: str) -> Project:
     rms_api = RmsApi(client)
     try:
@@ -287,6 +307,28 @@ def show_rms_data(client: Client, verbose: bool, filter: str) -> Project:
                 if verbose:
                     for prop in queue.additional_props:
                         log.debug(f"            {prop}: {queue.additional_props[prop]}")
+                    for i, group in enumerate(queue.node_groups):
+                        log.debug(f"\t\t=== Node Group {i}:")
+                        log.debug(f"\t\t\t\tCores per node: {group.cores_per_node}")
+                        log.debug(
+                            f"\t\t\t\tMem per node: {int(group.memory_per_node_mb / 1024)} GB"
+                        )
+                        log.debug(f"\t\t\t\tNum nodes: {len(group.node_names)}")
+            if verbose:
+                eval_registrations = []
+                for i in range(0, 67, 67):
+                    reg = rms_api.get_evaluators(
+                        query_params={"compute_resource_set_id": crs.id, "offset": i, "limit": 67}
+                    )
+                    for registration in reg:
+                        if "c9b6" in registration.host_id:
+                            log.debug(
+                                f"\t\t\tEvaluator ID: {registration.host_id}"
+                                + f", Owner: {registration.user_id}"
+                            )
+                    eval_registrations.extend(reg)
+
+                log.debug(f"        === Evaluators ({len(eval_registrations)})")
     except HPSError as e:
         log.error(str(e))
         log.error(e.response.content)
@@ -294,11 +336,11 @@ def show_rms_data(client: Client, verbose: bool, filter: str) -> Project:
     log.debug("")
     log.debug("")
     log.debug("=== Projects")
-    jms_api = JmsApi(client)
-    projects = jms_api.get_projects()
+    # jms_api = JmsApi(client)
+    # projects = jms_api.get_projects()
 
-    for project in projects:
-        log.debug(f"    {project.name}: {project.id}")
+    # for project in projects:
+    #    log.debug(f"    {project.name}: {project.id}")
 
     schema = ProjectSchema()
     project = Project(name="testing", priority=1, active=False)

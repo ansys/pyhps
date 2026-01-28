@@ -1,4 +1,4 @@
-# Copyright (C) 2022 - 2025 ANSYS, Inc. and/or its affiliates.
+# Copyright (C) 2022 - 2026 ANSYS, Inc. and/or its affiliates.
 # SPDX-License-Identifier: MIT
 #
 #
@@ -265,7 +265,7 @@ class JmsApi:
 def get_projects(client, api_url, as_objects=True, **query_params) -> list[Project]:
     """Get a list of projects."""
     url = f"{api_url}/projects"
-    r = client.session.get(url, params=query_params)
+    r = client.session.get(url, params=query_params, timeout=10)
 
     data = r.json()["projects"]
     if not as_objects:

@@ -1,4 +1,4 @@
-# Copyright (C) 2022 - 2025 ANSYS, Inc. and/or its affiliates.
+# Copyright (C) 2022 - 2026 ANSYS, Inc. and/or its affiliates.
 # SPDX-License-Identifier: MIT
 #
 #
@@ -86,12 +86,16 @@ def create_project(
             type="text/plain",
             src=os.path.join(cwd, "2d_tire_geometry.iges"),
         ),
+        File(
+            name="test",
+            evaluation_path="test.zip",
+            type="text/plain",
+            src=os.path.join(cwd, "test.zip"),
+        ),
         File(name="results", evaluation_path="tire_performance_results.txt", type="text/plain"),
         File(name="img", evaluation_path="**.png", type="image/png", collect=True),
         File(name="out", evaluation_path="file.out", type="text/plain", collect=True, monitor=True),
-        File(
-            name="mntr", evaluation_path="file.mntr", type="text/plain", collect=True, monitor=True
-        ),
+        File(name="mntr", evaluation_path="*/**", type="text/plain", collect=True, monitor=True),
         File(
             name="cnd",
             evaluation_path="file.cnd",
@@ -107,6 +111,13 @@ def create_project(
             collect=True,
             monitor=True,
             # collect_interval=30,
+        ),
+        File(
+            name="ex_out",
+            evaluation_path="file*.out",
+            type="text/plain",
+            collect=True,
+            monitor=True,
         ),
         File(
             name="err", evaluation_path="file*.err", type="text/plain", collect=True, monitor=True
@@ -220,10 +231,10 @@ def create_project(
         software_requirements=[Software(name="Ansys Mechanical APDL", version=version)],
         execution_command="%executable% -b -i %file:inp% -o file.out -np %resource:num_cores%",
         resource_requirements=ResourceRequirements(
-            num_cores=120,
+            num_cores=20,
             memory=16000 * 1024 * 1024,
             disk_space=5000 * 1024 * 1024,
-            distributed=True,
+            distributed=False,
             # compute_resource_set_id="02yZVjGPt7oxL4HH2uQdNG"
         ),
         max_execution_time=1800.0,

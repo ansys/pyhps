@@ -1,4 +1,4 @@
-# Copyright (C) 2022 - 2025 ANSYS, Inc. and/or its affiliates.
+# Copyright (C) 2022 - 2026 ANSYS, Inc. and/or its affiliates.
 # SPDX-License-Identifier: MIT
 #
 #
@@ -30,11 +30,14 @@ import logging
 import os
 import random
 
+import jwt
+
 from ansys.hps.client import Client, HPSError, __ansys_apps_version__
 from ansys.hps.client.jms import (
     File,
     FitnessDefinition,
     FloatParameterDefinition,
+    HpcResources,
     JmsApi,
     Job,
     JobDefinition,
@@ -48,12 +51,19 @@ from ansys.hps.client.jms import (
     SuccessCriteria,
     TaskDefinition,
 )
+from ansys.rep.common.auth.self_signed_token_provider import SelfSignedTokenProvider
 
 log = logging.getLogger(__name__)
 
 
 def create_project(
-    client, name, version=__ansys_apps_version__, num_jobs=20, use_exec_script=False, active=True
+    client,
+    name,
+    version=__ansys_apps_version__,
+    num_jobs=20,
+    use_exec_script=False,
+    active=True,
+    one_to_one=False,
 ) -> Project:
     """Create an HPS project consisting of an ANSYS APDL beam model of a motorbike frame.
 
@@ -79,8 +89,10 @@ def create_project(
     files.append(
         File(
             name="inp",
+            # evaluation_path="headlamp_short_fiber.dat",
             evaluation_path="motorbike_frame.mac",
             type="text/plain",
+            # src=os.path.join(cwd, "headlamp_short_fiber.dat"),
             src=os.path.join(cwd, "motorbike_frame.mac"),
         )
     )
@@ -118,7 +130,12 @@ def create_project(
     file_ids = {f.name: f.id for f in files}
 
     log.debug("=== JobDefinition with simulation workflow and parameters")
-    job_def = JobDefinition(name="JobDefinition.1", active=True)
+    job_defs = []
+    if one_to_one:
+        for i in range(num_jobs):
+            job_defs.append(JobDefinition(name=f"JobDefinition.{i + 1}", active=True))
+    else:
+        job_defs.append(JobDefinition(name="JobDefinition.1", active=True))
 
     # Parameter definitions
     params = []
@@ -264,7 +281,6 @@ def create_project(
         )
     )
     param_mappings = project_api.create_parameter_mappings(param_mappings)
-
     # Task definition
     task_def = TaskDefinition(
         name="MAPDL_run",
@@ -273,21 +289,22 @@ def create_project(
         ],
         execution_command="%executable% -b -i %file:inp% -o file.out -np %resource:num_cores%",
         resource_requirements=ResourceRequirements(
-            num_cores=1.0,
-            memory=250 * 1024 * 1024,  # 250 MB
-            disk_space=5 * 1024 * 1024,  # 5 MB
+            num_cores=4.0,
+            # memory=250 * 1024 * 1024,  # 250 MB
+            # disk_space=5 * 1024 * 1024,  # 5 MB
+            hpc_resources=HpcResources(queue="amd-96c-384g-hpc"),
         ),
         execution_level=0,
-        max_execution_time=50.0,
+        # max_execution_time=600.0,
         num_trials=1,
         input_file_ids=[f.id for f in files[:1]],
         output_file_ids=[f.id for f in files[1:]],
         success_criteria=SuccessCriteria(
             return_code=0,
-            expressions=["values['tube1_radius']>=4.0", "values['tube1_thickness']>=0.5"],
-            required_output_file_ids=[file_ids["results"]],
-            require_all_output_files=False,
-            require_all_output_parameters=True,
+            # expressions=["values['tube1_radius']>=4.0", "values['tube1_thickness']>=0.5"],
+            # required_output_file_ids=[file_ids["results"]],
+            # require_all_output_files=False,
+            # require_all_output_parameters=True,
         ),
         licensing=Licensing(enable_shared_licensing=False),  # Shared licensing disabled by default
     )
@@ -297,6 +314,9 @@ def create_project(
         task_def.execution_script_id = file_ids["exec_mapdl"]
 
     task_defs = [task_def]
+    if one_to_one:
+        task_defs = task_defs * num_jobs
+
     task_defs = project_api.create_task_definitions(task_defs)
 
     # Fitness definition
@@ -319,14 +339,20 @@ def create_project(
         weighting_factor=1.0,
         expression="map_limit_constraint( values['max_stress'], 451.0, 50.0 )",
     )
-    job_def.fitness_definition = fd
-
-    job_def.parameter_definition_ids = [pd.id for pd in params]
-    job_def.parameter_mapping_ids = [pm.id for pm in param_mappings]
-    job_def.task_definition_ids = [td.id for td in task_defs]
+    if one_to_one:
+        for idx, jd in enumerate(job_defs):
+            # jd.fitness_definition = fd
+            # jd.parameter_definition_ids = [pd.id for pd in params]
+            # jd.parameter_mapping_ids = [pm.id for pm in param_mappings]
+            jd.task_definition_ids = [task_defs[idx].id]
+    else:
+        # job_defs[0].fitness_definition = fd
+        # job_defs[0].parameter_definition_ids = [pd.id for pd in params]
+        # job_defs[0].parameter_mapping_ids = [pm.id for pm in param_mappings]
+        job_defs[0].task_definition_ids = [td.id for td in task_defs]
 
     # Create job_definition in project
-    job_def = project_api.create_job_definitions([job_def])[0]
+    job_defs = project_api.create_job_definitions(job_defs)
 
     log.debug(f"=== Create {num_jobs} jobs")
     jobs = []
@@ -339,8 +365,17 @@ def create_project(
             for p in input_float_params
         }
         values.update({p.name: random.choice(p.value_list) for p in input_str_params})
+        job_def_idx = 0
+        if one_to_one:
+            job_def_idx = i
+
         jobs.append(
-            Job(name=f"Job.{i}", values=values, eval_status="pending", job_definition_id=job_def.id)
+            Job(
+                name=f"Job.{i}",
+                values=values,
+                eval_status="pending",
+                job_definition_id=job_defs[job_def_idx].id,
+            )
         )
     jobs = project_api.create_jobs(jobs)
 
@@ -358,14 +393,38 @@ if __name__ == "__main__":
     parser.add_argument("-u", "--username", default="repuser")
     parser.add_argument("-p", "--password", default="repuser")
     parser.add_argument("-v", "--ansys-version", default=__ansys_apps_version__)
+    parser.add_argument("-t", "--token", default=None)
+    parser.add_argument("-a", "--account", default="onprem_account")
+    parser.add_argument("-s", "--signing_key", default="")
+    parser.add_argument(
+        "-o", "--one-to-one", action="store_true", help="Use one-to-one task definition mapping"
+    )
     args = parser.parse_args()
 
     logger = logging.getLogger()
     logging.basicConfig(format="%(message)s", level=logging.DEBUG)
 
-    try:
-        log.info("Connect to HPC Platform Services")
+    if args.token:
+        if args.signing_key:
+            payload = jwt.decode(
+                args.token, algorithms=["RS256"], options={"verify_signature": False}
+            )
+            user_id = payload["sub"]
+            log.debug(f"Found user_id from token: {payload['sub']}")
+            provider = SelfSignedTokenProvider({"hps-default": args.signing_key})
+            extra = {"preferred_username": user_id}
+            # extra = {"account_admin": True, "oid": user_id}
+            token = provider.generate_signed_token(user_id, user_id, args.account, 6000, extra)
+            log.debug(f"Token: {token}")
+        else:
+            token = args.token
+
+        client = Client(url=args.url, access_token=token)
+        client.session.headers.update({"accountid": args.account})
+    else:
         client = Client(url=args.url, username=args.username, password=args.password)
+
+    try:
         log.info(f"HPS URL: {client.url}")
         proj = create_project(
             client=client,
@@ -373,6 +432,7 @@ if __name__ == "__main__":
             version=args.ansys_version,
             num_jobs=args.num_jobs,
             use_exec_script=args.use_exec_script,
+            one_to_one=args.one_to_one,
         )
 
     except HPSError as e:
