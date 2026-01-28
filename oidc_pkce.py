@@ -1,5 +1,4 @@
-"""Script to demonstrate how to authenticate with an OIDC provider
-using the Authorization Code Flow with PKCE.
+"""Script to demonstrate OIDC authentication with Authorization Code Flow using PKCE.
 
 Mostly inspired by:
     - https://www.camiloterevinto.com/post/oauth-pkce-flow-from-python-desktop
@@ -22,13 +21,25 @@ from requests import Request
 
 
 class OAuthHttpServer(HTTPServer):
+    """HTTP server for OAuth authentication with authorization code storage."""
+
     def __init__(self, *args, **kwargs):
+        """Initialize the OAuth HTTP server.
+
+        Args:
+            *args: Variable length argument list passed to HTTPServer.
+            **kwargs: Arbitrary keyword arguments passed to HTTPServer.
+
+        """
         HTTPServer.__init__(self, *args, **kwargs)
         self.authorization_code = ""
 
 
 class OAuthHttpHandler(BaseHTTPRequestHandler):
+    """HTTP request handler for OAuth authentication callbacks."""
+
     def do_GET(self):
+        """Handle GET requests to capture OAuth authorization code."""
         parsed = parse.urlparse(self.path)
         qs = parse.parse_qs(parsed.query)
         self.server.authorization_code = qs["code"][0]
@@ -51,10 +62,17 @@ class OAuthHttpHandler(BaseHTTPRequestHandler):
         self.wfile.write(html_body)
 
     def log_message(self, format, *args):
+        """Suppress log messages from the HTTP server."""
         return
 
 
 def generate_code() -> tuple[str, str]:
+    """Generate PKCE code verifier and code challenge for OAuth authentication.
+
+    Returns:
+        tuple[str, str]: A tuple containing (code_verifier, code_challenge).
+
+    """
     code_verifier = base64.urlsafe_b64encode(os.urandom(40)).decode("utf-8")
     code_verifier = re.sub("[^a-zA-Z0-9]+", "", code_verifier)
 
@@ -68,6 +86,19 @@ def generate_code() -> tuple[str, str]:
 def prepare_auth_url(
     auth_url, redirect_uri, code_challenge, client_id="rep-cli", scope="openid"
 ) -> str:
+    """Prepare OAuth authorization URL with PKCE parameters.
+
+    Args:
+        auth_url: OAuth authorization endpoint URL.
+        redirect_uri: Redirect URI for OAuth callback.
+        code_challenge: PKCE code challenge string.
+        client_id: OAuth client ID. Defaults to "rep-cli".
+        scope: OAuth scope. Defaults to "openid".
+
+    Returns:
+        str: Complete authorization URL with query parameters.
+
+    """
     return (
         Request(
             method="GET",
@@ -88,6 +119,12 @@ def prepare_auth_url(
 
 
 def find_free_port():
+    """Find an available port for the local HTTP server.
+
+    Returns:
+        int: An available port number.
+
+    """
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     s.bind(("", 0))
     s.listen(1)
@@ -97,6 +134,16 @@ def find_free_port():
 
 
 def login(config: dict[str, Any]) -> str:
+    """Perform OAuth login with PKCE flow.
+
+    Args:
+        config: Configuration dictionary containing OAuth parameters including
+                auth_url, client_id, scope, and token_url.
+
+    Returns:
+        tuple[str, str, str]: A tuple containing (access_token, refresh_token, id_token).
+
+    """
     port = find_free_port()
     with OAuthHttpServer(("", port), OAuthHttpHandler) as httpd:
         # print(f"Local HTTP server available at http://localhost:{httpd.server_port}")
@@ -143,6 +190,15 @@ def login(config: dict[str, Any]) -> str:
 
 
 def get_config(hps_url):
+    """Retrieve OAuth configuration from HPS server.
+
+    Args:
+        hps_url: Base URL of the HPS server.
+
+    Returns:
+        dict: Configuration dictionary containing OAuth endpoints and settings.
+
+    """
     jms_url = hps_url.rstrip("/") + "/jms/api/v1"
     response = requests.get(url=jms_url, verify=True)
     assert response.status_code == 200, f"Failed to get config from JMS: {response.text}"
