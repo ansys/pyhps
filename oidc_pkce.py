@@ -84,7 +84,11 @@ def generate_code() -> tuple[str, str]:
 
 
 def prepare_auth_url(
-    auth_url, redirect_uri, code_challenge, client_id="rep-cli", scope="openid"
+    auth_url: str,
+    redirect_uri: str,
+    code_challenge: str,
+    client_id: str = "rep-cli",
+    scope: str = "openid",
 ) -> str:
     """Prepare OAuth authorization URL with PKCE parameters.
 
@@ -118,7 +122,7 @@ def prepare_auth_url(
     )
 
 
-def find_free_port():
+def find_free_port() -> int:
     """Find an available port for the local HTTP server.
 
     Returns:
@@ -133,7 +137,7 @@ def find_free_port():
     return port
 
 
-def login(config: dict[str, Any]) -> str:
+def login(config: dict[str, Any]) -> tuple[str, str, str]:
     """Perform OAuth login with PKCE flow.
 
     Args:
@@ -189,7 +193,7 @@ def login(config: dict[str, Any]) -> str:
         return access_token, refresh_token, id_token
 
 
-def get_config(hps_url):
+def get_config(hps_url: str) -> dict[str, Any]:
     """Retrieve OAuth configuration from HPS server.
 
     Args:
