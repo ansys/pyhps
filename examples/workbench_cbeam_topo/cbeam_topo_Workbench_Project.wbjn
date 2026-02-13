@@ -1,0 +1,83 @@
+# -*- coding: utf-8 -*-
+###
+### HPC Platform Services Design-Point/Project Update Script
+###
+
+import System
+import logging
+
+cwd = System.IO.Directory.GetCurrentDirectory()
+isProjectUpdate = Project.GetDiagnostic(Namespace="HPS", Name="EvaluatingProjectUpdate")
+
+### files common to whole project
+archive_file = r"cbeam_topo.wbpz"
+if isProjectUpdate :
+    output_differential = "cbeam_topo_differential.wbpz"
+    output_singledp_archive = "cbeam_topo_singledp.wbpz"
+else :
+    input_parameters_file = "cbeam_topo_input_param.wbjn"
+    output_parameters_file = "cbeam_topo_output_param.txt"
+
+### files specific to this step
+step_diff_output_file = "cbeam_topo_Workbench_Project.wppz"
+
+### accessing outputs of other steps
+step_diff_outputs = {}
+
+### Configure log file
+
+# output all Python logging to the Framework log
+import clr
+clr.AddReference('Ans.Utilities')
+import Ansys.Utilities
+class WBLogHandler(logging.Handler):
+  def emit(self, record):
+    wbLevels = {
+      logging.CRITICAL: Ansys.Utilities.LogLevel.FATAL,
+      logging.ERROR:    Ansys.Utilities.LogLevel.ERROR,
+      logging.WARNING:  Ansys.Utilities.LogLevel.WARN,
+      logging.INFO:     Ansys.Utilities.LogLevel.INFO,
+      logging.DEBUG:    Ansys.Utilities.LogLevel.DEBUG,
+    }
+    
+    Ansys.Utilities.LogService.Log(wbLevels[record.levelno], self.format(record))
+
+logging.getLogger().addHandler(WBLogHandler())
+
+# set the Python log level to debug. The final logging will be
+# controlled by the level set on the Framework logger.
+logging.getLogger().setLevel(logging.DEBUG)
+
+log=logging.getLogger(__name__)
+log.info('=== START HPC Platform Services UPDATE ===')
+log.info('Working directory: %s' % cwd)
+log.info('Workbench project: %s' % archive_file)
+
+### setup parameters
+if not isProjectUpdate:
+    execfile(input_parameters_file)
+
+### number_of_cores setting here will be edited by HPC Platform Services server if necessary
+number_of_cores = 0  # default value 0 indicates no overwriting of the setting stored in the project
+
+### execute step
+log.info('ProjectStepEvaluate')
+
+if isProjectUpdate :
+    ProjectStepEvaluate(StepName="Workbench_Project", StepGraph={"Workbench_Project": []}, Components=["Engineering Data", "Geometry", "Model", "Setup", "Solution", "Results", "Setup 1", "Solution 1", "Results 1"], OriginalProjectZip=archive_file, UpstreamStepOutputs=step_diff_outputs, OutputPath=step_diff_output_file, WorkingDirectory=cwd, OutputProjectDifferentialZip=output_differential, OutputSingleDpProjectArchive=output_singledp_archive, OverwriteNumberOfCores=number_of_cores)
+else :
+    output_parameters = ProjectStepEvaluate(StepName="Workbench_Project", StepGraph={"Workbench_Project": []}, Components=["Model", "Engineering Data", "Geometry", "Results 1", "Solution 1", "Setup 1", "Solution", "Setup"], OriginalProjectZip=archive_file, UpstreamStepOutputs=step_diff_outputs, InputParameterValues=input_parameters, OutputPath=step_diff_output_file, WorkingDirectory=cwd, ParameterUnits=parameter_units, OverwriteNumberOfCores=number_of_cores)
+
+
+### Output Parameters
+if not isProjectUpdate :
+    if output_parameters is None :
+        log.info('Not all output parameters are up to date. Skip saving output parameter values')
+    else :
+        log.info('Save output parameters to %s' % output_parameters_file)
+        f = open(output_parameters_file,'w')
+        for key, value in output_parameters.items():
+            f.write("%s = %s\n" % (key, value))
+        f.close()
+
+log.info('=== END HPC Platform Services UPDATE ===')
