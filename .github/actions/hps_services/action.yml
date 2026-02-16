@@ -83,15 +83,19 @@ runs:
         tar -xvzf docker-compose-customer.tar.gz
         mv docker-compose-customer docker-compose
         cd docker-compose
-        # Workaround: use legacy bitnami images
         if [ -f docker-compose.yaml ]; then
+
+          # Workaround: use legacy bitnami images
           echo "Applying bitnami -> bitnamilegacy image replacement"
           sed -i 's|image: bitnami/|image: bitnamilegacy/|g' docker-compose.yaml
-        fi
-        # Workaround: bump traefik version because not compatible with latest docker api
-        if [ -f docker-compose.yaml ]; then
+          
+          # Workaround: bump traefik version because not compatible with latest docker api
           echo "Applying traefik version bump"
           sed -i 's/image: traefik:v3\.3/image: traefik:v3.6.7/' docker-compose.yaml
+
+          # Workaround: avoid building two containers using the same image name
+          echo "Applying monitor image name change"
+          sed -i '0,/image: monitor:build/s//image: monitor-query:build/' docker-compose.yaml
         fi
         docker-compose build
         docker-compose up -d
