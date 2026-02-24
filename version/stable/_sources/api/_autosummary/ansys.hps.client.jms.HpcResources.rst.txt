@@ -1,0 +1,28 @@
+﻿HpcResources
+============
+
+.. currentmodule:: ansys.hps.client.jms
+
+.. autoclass:: HpcResources
+
+   
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+      :toctree:
+   
+      
+      
+      HpcResources.declared_fields
+      
+      
+      HpcResources.get
+      
+   
+   
+
+   
+   
+   

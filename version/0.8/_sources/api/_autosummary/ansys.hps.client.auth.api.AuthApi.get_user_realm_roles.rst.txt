@@ -1,0 +1,6 @@
+get\_user\_realm\_roles
+=======================
+
+.. currentmodule:: ansys.hps.client.auth.api
+
+.. automethod:: AuthApi.get_user_realm_roles

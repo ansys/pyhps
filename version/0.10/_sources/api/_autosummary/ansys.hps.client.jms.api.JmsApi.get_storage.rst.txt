@@ -1,0 +1,6 @@
+get\_storage
+============
+
+.. currentmodule:: ansys.hps.client.jms.api
+
+.. automethod:: JmsApi.get_storage

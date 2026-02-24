@@ -1,0 +1,87 @@
+﻿JmsApi
+======
+
+.. currentmodule:: ansys.hps.client.jms.api
+
+.. autoclass:: JmsApi
+
+   
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+      :toctree:
+   
+      
+      
+      JmsApi.copy_task_definition_templates
+      
+      
+      JmsApi.create_project
+      
+      
+      JmsApi.create_task_definition_templates
+      
+      
+      JmsApi.delete_project
+      
+      
+      JmsApi.delete_task_definition_templates
+      
+      
+      JmsApi.get_api_info
+      
+      
+      JmsApi.get_operation
+      
+      
+      JmsApi.get_operations
+      
+      
+      JmsApi.get_project
+      
+      
+      JmsApi.get_project_by_name
+      
+      
+      JmsApi.get_projects
+      
+      
+      JmsApi.get_storage
+      
+      
+      JmsApi.get_task_definition_template_permissions
+      
+      
+      JmsApi.get_task_definition_templates
+      
+      
+      JmsApi.monitor_operation
+      
+      
+      JmsApi.restore_project
+      
+      
+      JmsApi.update_project
+      
+      
+      JmsApi.update_task_definition_template_permissions
+      
+      
+      JmsApi.update_task_definition_templates
+      
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+      :toctree:
+   
+      JmsApi.url
+      JmsApi.version
+   
+   

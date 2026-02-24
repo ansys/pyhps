@@ -1,0 +1,6 @@
+fs\_url
+=======
+
+.. currentmodule:: ansys.hps.client.jms.api
+
+.. autoproperty:: ProjectApi.fs_url

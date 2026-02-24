@@ -1,0 +1,6 @@
+declared\_fields
+================
+
+.. currentmodule:: ansys.hps.client.jms
+
+.. automethod:: TemplateProperty.declared_fields

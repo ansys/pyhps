@@ -1,0 +1,25 @@
+﻿File
+====
+
+.. currentmodule:: ansys.hps.client.jms
+
+.. autoclass:: File
+
+   
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+      :toctree:
+   
+      
+      
+      File.declared_fields
+      
+   
+   
+
+   
+   
+   

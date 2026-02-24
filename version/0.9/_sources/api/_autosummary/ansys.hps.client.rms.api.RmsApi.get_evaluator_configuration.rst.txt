@@ -1,0 +1,6 @@
+get\_evaluator\_configuration
+=============================
+
+.. currentmodule:: ansys.hps.client.rms.api
+
+.. automethod:: RmsApi.get_evaluator_configuration

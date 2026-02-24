@@ -1,0 +1,6 @@
+update\_parameter\_mappings
+===========================
+
+.. currentmodule:: ansys.hps.client.jms.api
+
+.. automethod:: ProjectApi.update_parameter_mappings

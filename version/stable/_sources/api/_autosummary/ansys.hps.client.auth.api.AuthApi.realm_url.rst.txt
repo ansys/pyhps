@@ -1,0 +1,6 @@
+realm\_url
+==========
+
+.. currentmodule:: ansys.hps.client.auth.api
+
+.. autoproperty:: AuthApi.realm_url

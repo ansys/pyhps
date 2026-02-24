@@ -1,0 +1,6 @@
+copy\_task\_definition\_templates
+=================================
+
+.. currentmodule:: ansys.hps.client.jms.api
+
+.. automethod:: JmsApi.copy_task_definition_templates

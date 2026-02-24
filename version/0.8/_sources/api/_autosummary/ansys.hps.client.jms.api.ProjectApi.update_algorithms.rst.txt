@@ -1,0 +1,6 @@
+update\_algorithms
+==================
+
+.. currentmodule:: ansys.hps.client.jms.api
+
+.. automethod:: ProjectApi.update_algorithms

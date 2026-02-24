@@ -1,0 +1,6 @@
+create\_parameter\_definitions
+==============================
+
+.. currentmodule:: ansys.hps.client.jms.api
+
+.. automethod:: ProjectApi.create_parameter_definitions

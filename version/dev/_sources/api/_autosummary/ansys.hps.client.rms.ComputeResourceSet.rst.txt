@@ -1,0 +1,6 @@
+﻿ComputeResourceSet
+==================
+
+.. currentmodule:: ansys.hps.client.rms
+
+.. autopydantic_model:: ComputeResourceSet

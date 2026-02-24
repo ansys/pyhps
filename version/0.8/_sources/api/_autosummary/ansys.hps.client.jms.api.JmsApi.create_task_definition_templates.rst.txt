@@ -1,0 +1,6 @@
+create\_task\_definition\_templates
+===================================
+
+.. currentmodule:: ansys.hps.client.jms.api
+
+.. automethod:: JmsApi.create_task_definition_templates

@@ -1,0 +1,6 @@
+keycloak\_admin\_client
+=======================
+
+.. currentmodule:: ansys.hps.client.auth.api
+
+.. autoproperty:: AuthApi.keycloak_admin_client
