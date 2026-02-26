@@ -23,8 +23,8 @@
 
 from .api import RcsApi
 from .models import (
-    DeregisterInstanceRequest,
-    DeregisterResponse,
-    RedisRequest,
     RegisterInstance,
+    RegisterInstanceResponse,
+    UnRegisterInstance,
+    UnRegisterInstanceResponse,
 )

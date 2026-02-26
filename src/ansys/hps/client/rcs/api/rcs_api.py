@@ -24,6 +24,14 @@
 import logging
 
 from ansys.hps.client.client import Client
+from ansys.hps.client.rcs.models import (
+    RegisterInstance,
+    RegisterInstanceResponse,
+    UnRegisterInstance,
+    UnRegisterInstanceResponse,
+)
+
+from .base import create_objects, delete_objects
 
 log = logging.getLogger(__name__)
 
@@ -59,3 +67,23 @@ class RcsApi:
     def health(self) -> bool:
         """Health status of the RCS API."""
         return self.health_check().get("status") == "alive"
+
+    ################################################################
+    # register instance
+    def register_instance(self, data: RegisterInstance) -> RegisterInstanceResponse:
+        """Register an instance to RCS."""
+        return create_objects(
+            self.client.session,
+            self.url,
+            data,
+            as_objects=True,
+        )
+
+    # unregister instance
+    def unregister_instance(self, data: UnRegisterInstance) -> UnRegisterInstanceResponse:
+        """Unregister an instance from RCS."""
+        return delete_objects(
+            self.client.session,
+            self.url,
+            data,
+        )

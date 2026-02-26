@@ -77,7 +77,7 @@ class RegisterInstance(DictModel):
     )
 
 
-class DeregisterInstanceRequest(DictModel):
+class UnRegisterInstance(DictModel):
     """Unregister an instance route."""
 
     resource_name: str = Field(
@@ -87,14 +87,14 @@ class DeregisterInstanceRequest(DictModel):
     )
 
 
-class DeregisterResponse(DictModel):
+class UnRegisterInstanceResponse(DictModel):
     """Response after unregistering an instance route."""
 
     message: str = Field(..., title="Message")
     resource_name: str = Field(..., title="Resource Name")
 
 
-class RedisRequest(DictModel):
+class RegisterInstanceResponse(DictModel):
     """Redis instance route information."""
 
     instance_url: str = Field(..., title="Instance Url")
