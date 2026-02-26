@@ -84,7 +84,7 @@ def create_objects(session: Session, url: str, object: BaseModel, as_objects=Tru
     return _json_to_object(data, obj_type)
 
 
-def delete_objects(session: Session, url: str, object: BaseModel):
+def delete_objects(session: Session, url: str, object: BaseModel, as_objects=True):
     """Delete a list of objects."""
     if not object:
         return
@@ -94,4 +94,11 @@ def delete_objects(session: Session, url: str, object: BaseModel):
 
     url = f"{url}/{rest_name}"
 
-    _ = session.delete(url, data=object_to_json(object))
+    r = session.delete(url, data=object_to_json(object))
+
+    data = r.json()
+
+    if not as_objects:
+        return data
+    obj_type = OBJECT_TYPE_TO_RESPONSE_MODEL[obj_type]
+    return _json_to_object(data, obj_type)

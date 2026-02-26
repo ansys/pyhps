@@ -86,4 +86,5 @@ class RcsApi:
             self.client.session,
             self.url,
             data,
+            as_objects=True,
         )
