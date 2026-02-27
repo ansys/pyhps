@@ -46,7 +46,7 @@ OBJECT_TYPE_TO_RESPONSE_MODEL = {
 log = logging.getLogger(__name__)
 
 
-def object_to_json(
+def _object_to_json(
     object: BaseModel,
     exclude_unset: bool = True,
     exclude_defaults: bool = False,
@@ -75,7 +75,7 @@ def create_objects(session: Session, url: str, object: BaseModel, as_objects=Tru
     rest_name = OBJECT_TYPE_TO_ENDPOINT[obj_type]
 
     url = f"{url}/{rest_name}"
-    r = session.post(f"{url}", data=object_to_json(object))
+    r = session.post(f"{url}", data=_object_to_json(object))
 
     data = r.json()
     if not as_objects:
@@ -94,7 +94,7 @@ def delete_objects(session: Session, url: str, object: BaseModel, as_objects=Tru
 
     url = f"{url}/{rest_name}"
 
-    r = session.delete(url, data=object_to_json(object))
+    r = session.delete(url, data=_object_to_json(object))
 
     data = r.json()
 
