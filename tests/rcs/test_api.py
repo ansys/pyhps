@@ -24,6 +24,7 @@ from unittest.mock import MagicMock
 
 import pytest
 
+from ansys.hps.client.rcs.api.base import create_objects
 from ansys.hps.client.rcs.api.rcs_api import RcsApi
 from ansys.hps.client.rcs.models import (
     RegisterInstance,
@@ -117,3 +118,53 @@ def test_unregister_instance_and_response(rcs_api, mock_client):
 
     # Assert UnRegisterInstance
     assert unregister_instance.resource_name == resource_name
+
+
+def test_create_objects_as_objects_false(mock_client):
+    # Mock session and response
+    mock_response = MagicMock()
+    mock_response.json.return_value = {
+        "url": "http://example.com/hps/rcs",
+        "api_url": "http://example.com/hps/rcs/api",
+        "service_name": "service-123",
+        "jms_project_id": "1234",
+        "jms_job_id": "5678",
+        "jms_task_id": "1011",
+        "routing": "query",
+    }
+    mock_client.post.return_value = mock_response
+
+    # Create a RegisterInstance object
+    obj = RegisterInstance(
+        url="http://example.com/hps/rcs",
+        api_url="http://example.com/hps/rcs/api",
+        service_name="service-123",
+        jms_project_id="1234",
+        jms_job_id="5678",
+        jms_task_id="1011",
+        routing="query",
+    )
+
+    # Call create_objects with as_objects=False
+    result = create_objects(
+        session=mock_client,
+        url="http://example.com/hps/rcs",
+        object=obj,
+        as_objects=False,
+    )
+
+    # Assertions
+    assert isinstance(result, dict)
+    assert result["url"] == "http://example.com/hps/rcs"
+    assert result["api_url"] == "http://example.com/hps/rcs/api"
+    assert result["service_name"] == "service-123"
+    assert result["jms_project_id"] == "1234"
+    assert result["jms_job_id"] == "5678"
+    assert result["jms_task_id"] == "1011"
+    assert result["routing"] == "query"
+
+    # Verify the session.post call
+    mock_client.post.assert_called_once_with(
+        "http://example.com/hps/rcs/register_instance",
+        data=obj.json(exclude_unset=True, exclude_defaults=False),
+    )
