@@ -24,7 +24,7 @@ from unittest.mock import MagicMock
 
 import pytest
 
-from ansys.hps.client.rcs.api.base import create_objects
+from ansys.hps.client.rcs.api.base import create_object
 from ansys.hps.client.rcs.api.rcs_api import RcsApi
 from ansys.hps.client.rcs.models import (
     RegisterInstance,
@@ -146,11 +146,11 @@ def test_create_objects_as_objects_false(mock_client):
     )
 
     # Call create_objects with as_objects=False
-    result = create_objects(
+    result = create_object(
         session=mock_client,
         url="http://example.com/hps/rcs",
         object=obj,
-        as_objects=False,
+        as_object=False,
     )
 
     # Assertions

@@ -19,7 +19,7 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
-"""Module wrapping around RMS root endpoints."""
+"""Module wrapping around RCS root endpoints."""
 
 import logging
 
@@ -31,7 +31,7 @@ from ansys.hps.client.rcs.models import (
     UnRegisterInstanceResponse,
 )
 
-from .base import create_objects, delete_objects
+from .base import create_object, delete_object
 
 log = logging.getLogger(__name__)
 
@@ -72,19 +72,19 @@ class RcsApi:
     # register instance
     def register_instance(self, data: RegisterInstance) -> RegisterInstanceResponse:
         """Register an instance to RCS."""
-        return create_objects(
+        return create_object(
             self.client.session,
             self.url,
             data,
-            as_objects=True,
+            as_object=True,
         )
 
     # unregister instance
     def unregister_instance(self, data: UnRegisterInstance) -> UnRegisterInstanceResponse:
         """Unregister an instance from RCS."""
-        return delete_objects(
+        return delete_object(
             self.client.session,
             self.url,
             data,
-            as_objects=True,
+            as_object=True,
         )

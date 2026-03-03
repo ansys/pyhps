@@ -24,8 +24,9 @@
 import logging
 
 from pydantic import BaseModel
-from pydantic import __version__ as pydantic_version
 from requests import Session
+
+from ansys.hps.client.common.utils import _json_to_object, _object_to_json
 
 from ..models import (
     RegisterInstance,
@@ -46,28 +47,8 @@ OBJECT_TYPE_TO_RESPONSE_MODEL = {
 log = logging.getLogger(__name__)
 
 
-def _object_to_json(
-    object: BaseModel,
-    exclude_unset: bool = True,
-    exclude_defaults: bool = False,
-) -> str:
-    """Convert a Pydantic object to a JSON string."""
-    if pydantic_version.startswith("1."):
-        return object.json(exclude_unset=exclude_unset, exclude_defaults=exclude_defaults)
-    elif pydantic_version.startswith("2."):
-        return object.model_dump_json(
-            exclude_unset=exclude_unset, exclude_defaults=exclude_defaults
-        )
-    else:
-        raise RuntimeError(f"Unsupported Pydantic version {pydantic_version}")
-
-
-def _json_to_object(data, obj_type):
-    return obj_type(**data)
-
-
-def create_objects(session: Session, url: str, object: BaseModel, as_objects=True):
-    """Create a list of objects."""
+def create_object(session: Session, url: str, object: BaseModel, as_object=True):
+    """Create an object and return the response as an object or a dictionary."""
     if not object:
         return []
 
@@ -78,14 +59,14 @@ def create_objects(session: Session, url: str, object: BaseModel, as_objects=Tru
     r = session.post(f"{url}", data=_object_to_json(object))
 
     data = r.json()
-    if not as_objects:
+    if not as_object:
         return data
     obj_type = OBJECT_TYPE_TO_RESPONSE_MODEL[obj_type]
     return _json_to_object(data, obj_type)
 
 
-def delete_objects(session: Session, url: str, object: BaseModel, as_objects=True):
-    """Delete a list of objects."""
+def delete_object(session: Session, url: str, object: BaseModel, as_object=True):
+    """Delete an object and return the response as an object or a dictionary."""
     if not object:
         return
 
@@ -98,7 +79,7 @@ def delete_objects(session: Session, url: str, object: BaseModel, as_objects=Tru
 
     data = r.json()
 
-    if not as_objects:
+    if not as_object:
         return data
     obj_type = OBJECT_TYPE_TO_RESPONSE_MODEL[obj_type]
     return _json_to_object(data, obj_type)
