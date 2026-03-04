@@ -20,12 +20,14 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from unittest.mock import MagicMock
+import re
+import threading
+from http.server import BaseHTTPRequestHandler, HTTPServer
 
 import pytest
+import requests
 
 from ansys.hps.client.rcs.api.base import create_object
-from ansys.hps.client.rcs.api.rcs_api import RcsApi
 from ansys.hps.client.rcs.models import (
     RegisterInstance,
     RegisterInstanceResponse,
@@ -34,38 +36,56 @@ from ansys.hps.client.rcs.models import (
 )
 
 
-@pytest.fixture
-def mock_client():
-    """Fixture to create a mock client."""
-    client = MagicMock()
-    client.url = "http://mockserver"
-    client.session = MagicMock()
-    return client
+class HelloWorldHandler(BaseHTTPRequestHandler):
+    def do_GET(self):
+        """Handle GET requests."""
+        if self.path == "/":
+            # Respond with "Hello, World!"
+            self.send_response(200)
+            self.send_header("Content-type", "text/plain")
+            self.end_headers()
+            self.wfile.write(b"Hello, World!")
+        else:
+            # Respond with 404 for other paths
+            self.send_response(404)
+            self.end_headers()
 
 
-@pytest.fixture
-def rcs_api(mock_client):
-    """Fixture to create an RcsApi instance."""
-    return RcsApi(mock_client)
+@pytest.fixture(scope="module")
+def http_server():
+    server = HTTPServer(("localhost", 8000), HelloWorldHandler)
+    thread = threading.Thread(target=server.serve_forever)
+    thread.daemon = True
+    thread.start()
+    yield server
+    server.shutdown()
+    thread.join()
 
 
-def test_health_check(rcs_api, mock_client):
+def test_hello_world(http_server):
+    response = requests.get("http://localhost:8000/")
+    assert response.status_code == 200
+    assert response.text == "Hello, World!"
+
+
+@pytest.fixture(scope="module")
+def resource_name():
+    """Fixture to store and share the resource name."""
+    return {"value": None}
+
+
+def test_health_check(rcs_api):
     """Test the health_check method."""
-    # Mock the response from the API
-    mock_client.session.get.return_value.json.return_value = {"status": "healthy"}
-
-    # Act
     response = rcs_api.health_check()
-
     # Assert
-    assert response["status"] == "healthy"
+    assert response["status"] == "alive"
 
 
-def test_register_instance_and_response(rcs_api, mock_client):
+def test_register_instance_and_response(rcs_api, http_server, resource_name):
     """Test the register_instance method and RegisterInstanceResponse model."""
     # Arrange
     mock_data = RegisterInstance(
-        url="http://example.com",
+        url="http://localhost:8000/",
         service_name="test_service",
         jms_project_id="1234",
         jms_job_id="5678",
@@ -73,22 +93,27 @@ def test_register_instance_and_response(rcs_api, mock_client):
         routing="path_prefix",
     )
 
-    mock_response_data = {
-        "instance_url": "http://example.com/instance",
-        "resource_name": "test_resource",
-    }
-    mock_client.session.post.return_value.json.return_value = mock_response_data
-
     # Act
     response = rcs_api.register_instance(mock_data)
 
     # Assert RegisterInstanceResponse
     assert isinstance(response, RegisterInstanceResponse)
-    assert response.instance_url == mock_response_data["instance_url"]
-    assert response.resource_name == mock_response_data["resource_name"]
+    uid = (response.resource_name).split("-")[-1]
+    expected_url_pattern = rf".*/ans_instance_id/{uid}"
+    assert re.match(expected_url_pattern, response.instance_url), (
+        f"URL '{response.instance_url}' does not match the expected pattern "
+        f"'{expected_url_pattern}'"
+    )
+    assert response.resource_name == f"test_service-{uid}"
+
+    # Save the resource name in the fixture
+    resource_name["value"] = response.resource_name
+
+    # Assert the instance is accessible at the registered URL
+    test_hello_world(http_server)
 
     # Assert RegisterInstance
-    assert mock_data.url == "http://example.com"
+    assert mock_data.url == "http://localhost:8000/"
     assert mock_data.service_name == "test_service"
     assert mock_data.jms_project_id == "1234"
     assert mock_data.jms_job_id == "5678"
@@ -96,19 +121,18 @@ def test_register_instance_and_response(rcs_api, mock_client):
     assert mock_data.routing == "path_prefix"
 
 
-def test_unregister_instance_and_response(rcs_api, mock_client):
+def test_unregister_instance_and_response(rcs_api, resource_name):
     """Test the unregister_instance method and UnRegisterInstanceResponse model."""
     # Arrange
-    resource_name = "test_resource"
+    unregister_resource_name = resource_name["value"]  # Access the resource name from the fixture
 
     mock_response_data = {
-        "message": "Instance successfully unregistered",
-        "resource_name": resource_name,
+        "message": f"Successfully unregistered {unregister_resource_name} "
+        "from Redis. Deleted 4 keys.",
+        "resource_name": unregister_resource_name,
     }
-    mock_client.session.delete.return_value.json.return_value = mock_response_data
-
     # Act
-    unregister_instance = UnRegisterInstance(resource_name=resource_name)
+    unregister_instance = UnRegisterInstance(resource_name=unregister_resource_name)
     response = rcs_api.unregister_instance(unregister_instance)
 
     # Assert UnRegisterInstanceResponse
@@ -117,54 +141,37 @@ def test_unregister_instance_and_response(rcs_api, mock_client):
     assert response.resource_name == mock_response_data["resource_name"]
 
     # Assert UnRegisterInstance
-    assert unregister_instance.resource_name == resource_name
+    assert unregister_instance.resource_name == unregister_resource_name
 
 
-def test_create_objects_as_objects_false(mock_client):
-    # Mock session and response
-    mock_response = MagicMock()
-    mock_response.json.return_value = {
-        "url": "http://example.com/hps/rcs",
-        "api_url": "http://example.com/hps/rcs/api",
-        "service_name": "service-123",
-        "jms_project_id": "1234",
-        "jms_job_id": "5678",
-        "jms_task_id": "1011",
-        "routing": "query",
-    }
-    mock_client.post.return_value = mock_response
-
-    # Create a RegisterInstance object
+def test_create_objects_as_objects_false(client, url, http_server):
+    """Test the create_object function with as_object=False."""
+    # Arrange
     obj = RegisterInstance(
-        url="http://example.com/hps/rcs",
-        api_url="http://example.com/hps/rcs/api",
+        url="http://localhost:8000/",
+        api_url="http://localhost:8000/api",
         service_name="service-123",
         jms_project_id="1234",
         jms_job_id="5678",
         jms_task_id="1011",
-        routing="query",
+        routing="path_prefix",
     )
 
-    # Call create_objects with as_objects=False
+    # Act
     result = create_object(
-        session=mock_client,
-        url="http://example.com/hps/rcs",
+        session=client.session,
+        url=url + "/rcs",
         object=obj,
         as_object=False,
     )
 
-    # Assertions
-    assert isinstance(result, dict)
-    assert result["url"] == "http://example.com/hps/rcs"
-    assert result["api_url"] == "http://example.com/hps/rcs/api"
-    assert result["service_name"] == "service-123"
-    assert result["jms_project_id"] == "1234"
-    assert result["jms_job_id"] == "5678"
-    assert result["jms_task_id"] == "1011"
-    assert result["routing"] == "query"
+    print(result)
 
-    # Verify the session.post call
-    mock_client.post.assert_called_once_with(
-        "http://example.com/hps/rcs/register_instance",
-        data=obj.json(exclude_unset=True, exclude_defaults=False),
+    assert isinstance(result, dict)
+    uid = (result["resource_name"]).split("-")[-1]
+    expected_url_pattern = rf".*/ans_instance_id/{uid}"
+    url = result["instance_url"]
+    assert re.match(expected_url_pattern, url), (
+        f"URL '{url}' does not match the expected pattern '{expected_url_pattern}'"
     )
+    assert result["resource_name"] == f"service-123-{uid}"

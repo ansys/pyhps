@@ -26,7 +26,7 @@ import os
 import pytest
 from keycloak import KeycloakAdmin
 
-from ansys.hps.client import AuthApi, Client, JmsApi, VersionCompatibilityError
+from ansys.hps.client import AuthApi, Client, JmsApi, RcsApi, VersionCompatibilityError
 from ansys.hps.client.check_version import (
     JMS_VERSIONS,
     HpsRelease,
@@ -69,6 +69,12 @@ def client(url, username, password):
 @pytest.fixture
 def jms_api(client):
     return JmsApi(client)
+
+
+@pytest.fixture
+def rcs_api(client):
+    """Fixture to create an RcsApi instance."""
+    return RcsApi(client)
 
 
 @pytest.fixture
