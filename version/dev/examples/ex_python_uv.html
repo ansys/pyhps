@@ -1,0 +1,1092 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Run arbitrary Python scripts on HPS &#8212; PyHPS</title>
+  
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/ansys-sphinx-theme.css?v=a23b20f3" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../_static/autodoc_pydantic.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/ansys-sphinx-theme.css?v=a23b20f3" />
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.23/css/jquery.dataTables.min.css" />
+    <link rel="stylesheet" type="text/css" href="https://www.nerdfonts.com/assets/css/webfont.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+  
+  <!-- So that users can add custom icons -->
+  <script src="../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+
+
+  <!-- Include desired assets -->
+  <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+  
+
+  
+    <link href="../_static/css/breadcrumbs.css" rel="stylesheet" />
+  
+    <script src="../_static/documentation_options.js?v=c8cc90c5"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../_static/copybutton.js?v=f281be69"></script>
+    <script src="https://cdn.datatables.net/1.10.23/js/jquery.dataTables.min.js"></script>
+    <script src="../_static/design-tabs.js?v=f930bc37"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'examples/ex_python_uv';</script>
+    <script>
+        DOCUMENTATION_OPTIONS.theme_version = '0.16.1';
+        DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://hps.docs.pyansys.com/versions.json';
+        DOCUMENTATION_OPTIONS.theme_switcher_version_match = 'dev';
+        DOCUMENTATION_OPTIONS.show_version_warning_banner =
+            false;
+        </script>
+    <link rel="icon" href="../_static/ansys-favicon.png"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="PyAnsys workflow: Cantilever" href="ex_python_pyansys_cantilever.html" />
+    <link rel="prev" title="Two-bar truss" href="ex_python_two_bar.html" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="0.11.dev0" />
+  <meta property="og:site_name" content="PyAnsys" />
+  <meta name="physics" content="Platform" />
+  <link rel="canonical" href="https://hps.docs.pyansys.com/version/stable/examples/ex_python_uv.html" />
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../_static/pyansys_logo_transparent_black.png" class="logo__image only-light" alt="PyHPS - Home"/>
+    <img src="../_static/pyansys_logo_transparent_white.png" class="logo__image only-dark pst-js-only" alt="PyHPS - Home"/>
+  
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../index.html" title="PyHPS home">Home</a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../getting_started/index.html">
+    Getting started
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../user_guide/index.html">
+    User guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../api/index.html">
+    API reference
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="index.html">
+    Examples
+  </a>
+</li>
+
+            <li class="nav-item dropdown">
+                <button class="btn dropdown-toggle nav-item" type="button"
+                data-bs-toggle="dropdown" aria-expanded="false"
+                aria-controls="pst-nav-more-links">
+                    More
+                </button>
+                <ul id="pst-nav-more-links" class="dropdown-menu">
+                    
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../contribute.html">
+    Contribute
+  </a>
+</li>
+
+                </ul>
+            </li>
+            
+  </ul>
+</nav>
+</div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+      
+        <div class="navbar-item">
+<div class="search-bar pst-js-only" id="search-bar">
+  <form class="bd-search d-flex align-items-center" action="../search.html" method="get">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <input type="search" class="form-control" name="q" placeholder="Search the docs ..."
+      aria-label="Search the docs ..." autocomplete="off" autocorrect="off"
+      autocapitalize="off" spellcheck="false" />
+    <span class="search-button__kbd-shortcut">
+      <kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd>
+    </span>
+  </form>
+  
+  <div id="static-search-results" class="static-search-results" style="display:none;" tabindex="0"></div>
+  
+</div></div>
+      
+        <div class="navbar-item">
+<div class="version-switcher__container dropdown pst-js-only">
+  <button id="pst-version-switcher-button-2"
+    type="button"
+    class="version-switcher__button btn btn-sm dropdown-toggle"
+    data-bs-toggle="dropdown"
+    aria-haspopup="listbox"
+    aria-controls="pst-version-switcher-list-2"
+    aria-label="Version switcher list"
+  >
+    Choose version  <!-- this text may get changed later by javascript -->
+    <span class="caret"></span>
+  </button>
+  <div id="pst-version-switcher-list-2"
+    class="version-switcher__menu dropdown-menu list-group-flush py-0"
+    role="listbox" aria-labelledby="pst-version-switcher-button-2">
+    <!-- dropdown will be populated by javascript on page load -->
+  </div>
+</div></div>
+      
+        <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/ansys/pyhps" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+
+  
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+  
+    
+<!--
+  Announcement Version Loader
+  Dynamically loads the announcement.html content into the announcement_msg div.
+-->
+<div id="announcement_msg" aria-live="polite"></div>
+<script>
+  // Fetch and inject the announcement HTML content
+  fetch("announcement.html")
+    .then((response) => {
+      if (!response.ok) {
+        throw new Error(`HTTP error: ${response.status} Announcement.html file not found, Please ignore this, if you are in dev/stable documentation`);
+      }
+      return response.text();
+    })
+    .then((text) => {
+      var msgDiv = document.getElementById("announcement_msg");
+      if (msgDiv) {
+        msgDiv.innerHTML = text;
+      }
+    })
+    .catch((error) => {
+      // Log only unexpected fetch errors
+      if (!(error.message && error.message.startsWith("HTTP error: 404"))) {
+        console.error(`Fetch problem: ${error.message} Announcement.html could not be loaded.`);
+      }
+    });
+</script>
+  
+
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../index.html" title="PyHPS home">Home</a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../getting_started/index.html">
+    Getting started
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../user_guide/index.html">
+    User guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../api/index.html">
+    API reference
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="index.html">
+    Examples
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../contribute.html">
+    Contribute
+  </a>
+</li>
+
+  </ul>
+</nav>
+</div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+<div class="search-bar pst-js-only" id="search-bar">
+  <form class="bd-search d-flex align-items-center" action="../search.html" method="get">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <input type="search" class="form-control" name="q" placeholder="Search the docs ..."
+      aria-label="Search the docs ..." autocomplete="off" autocorrect="off"
+      autocapitalize="off" spellcheck="false" />
+    <span class="search-button__kbd-shortcut">
+      <kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd>
+    </span>
+  </form>
+  
+  <div id="static-search-results" class="static-search-results" style="display:none;" tabindex="0"></div>
+  
+</div></div>
+        
+          <div class="navbar-item">
+<div class="version-switcher__container dropdown pst-js-only">
+  <button id="pst-version-switcher-button-3"
+    type="button"
+    class="version-switcher__button btn btn-sm dropdown-toggle"
+    data-bs-toggle="dropdown"
+    aria-haspopup="listbox"
+    aria-controls="pst-version-switcher-list-3"
+    aria-label="Version switcher list"
+  >
+    Choose version  <!-- this text may get changed later by javascript -->
+    <span class="caret"></span>
+  </button>
+  <div id="pst-version-switcher-list-3"
+    class="version-switcher__menu dropdown-menu list-group-flush py-0"
+    role="listbox" aria-labelledby="pst-version-switcher-button-3">
+    <!-- dropdown will be populated by javascript on page load -->
+  </div>
+</div></div>
+        
+          <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/ansys/pyhps" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="ex_motorbike_frame.html">MAPDL motorbike frame: Project creation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ex_motorbike_frame_query.html">MAPDL motorbike frame: Project query</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ex_mapdl_tire_performance.html">MAPDL tire performance</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ex_mapdl_linked_analyses.html">MAPDL linked analyses</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ex_lsdyna_job.html">LS-DYNA job submission</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ex_fluent_2d_heat_exchanger.html">Fluent 2D heat exchanger</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ex_fluent_nozzle.html">Fluent nozzle</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ex_cfx_static_mixer.html">CFX static mixer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ex_python_two_bar.html">Two-bar truss</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Run arbitrary Python scripts on HPS</a></li>
+
+
+<li class="toctree-l1"><a class="reference internal" href="ex_python_pyansys_cantilever.html">PyAnsys workflow: Cantilever</a></li>
+
+
+
+
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+<nav aria-label="Breadcrumb">
+  <ul class="bd-breadcrumbs">
+         
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="https://docs.pyansys.com/" class="nav-link">PyAnsys</a>
+    </li>
+     
+    <li class="breadcrumb-item">
+      <a
+        href="../index.html"
+        class="nav-link"
+        aria-label="Home"
+      >
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+     
+    <li class="breadcrumb-item">
+      <a href="index.html" class="nav-link">Examples</a>
+    </li>
+      
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Run arbitrary Python scripts on HPS</span></li>
+    
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <div class="admonition note" id="example-python-uv">
+<p class="admonition-title">Note</p>
+<p>Go to the <a class="reference internal" href="#bottom-of-this-page">bottom of this page</a> to download the ZIP file for the uv example.</p>
+</div>
+<section id="run-arbitrary-python-scripts-on-hps">
+<h1>Run arbitrary Python scripts on HPS<a class="headerlink" href="#run-arbitrary-python-scripts-on-hps" title="Link to this heading">#</a></h1>
+<p>This example shows how to run arbitrary Python scripts. It uses
+the <a class="reference external" href="https://docs.astral.sh/uv/">uv</a> package to generate the required
+environments on the fly.</p>
+<p>The example sets up a project that plots <code class="docutils literal notranslate"><span class="pre">sin(x)</span></code> using NumPy and
+Matplotlib and then saves the figure to a file.</p>
+<p>The metadata header present in the <code class="docutils literal notranslate"><span class="pre">eval.py</span></code> script, which defines the
+dependencies, enables uv to take care of the environment setup:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># /// script</span>
+<span class="c1"># requires-python = &quot;==3.12&quot;</span>
+<span class="c1"># dependencies = [</span>
+<span class="c1">#     &quot;numpy&quot;,</span>
+<span class="c1">#     &quot;matplotlib&quot;</span>
+<span class="c1"># ]</span>
+<span class="c1"># ///</span>
+</pre></div>
+</div>
+<p>For more information, see <a class="reference external" href="https://packaging.python.org/en/latest/specifications/inline-script-metadata/#inline-script-metadata">Inline script metadata</a>
+in the <em>Python Packaging User Guide</em> and <a class="reference external" href="https://docs.astral.sh/uv/guides/scripts/#running-a-script-with-dependencies">Running a script with dependencies</a>
+in the uv documentation.</p>
+</section>
+<section id="prerequisites">
+<h1>Prerequisites<a class="headerlink" href="#prerequisites" title="Link to this heading">#</a></h1>
+<p>For the example to run, uv must be installed and registered
+on the scaler/evaluator. For installation instructions, see
+<a class="reference external" href="https://docs.astral.sh/uv/getting-started/installation/">Installing uv</a>
+in the uv documentation.</p>
+<p>Once uv is installed, the package must be registered in the
+scaler/evaluator with the following properties:</p>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Property</p></th>
+<th class="head"><p>Value</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Name</p></td>
+<td><p>uv</p></td>
+</tr>
+<tr class="row-odd"><td><p>Version</p></td>
+<td><p>0.7.19</p></td>
+</tr>
+<tr class="row-even"><td><p>Installation Path</p></td>
+<td><p>/path/to/uv</p></td>
+</tr>
+<tr class="row-odd"><td><p>Executable</p></td>
+<td><p>/path/to/uv/bin/uv</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>Be sure to adjust the version to the one you have installed.</p>
+<section id="define-a-custom-cache-directory">
+<h2>Define a custom cache directory<a class="headerlink" href="#define-a-custom-cache-directory" title="Link to this heading">#</a></h2>
+<p>The preceding steps set up uv with the cache located in its default location
+in the user home directory (~/.cache/uv). Depending on your
+situation, you might prefer a different cache location, such as a shared
+directory accessible to all evaluators. To define a custom uv
+cache directory, add the following environment variable to the
+uv package registration in the scaler/evaluator:</p>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Environment Variable</p></th>
+<th class="head"><p>Value</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>UV_CACHE_DIR</p></td>
+<td><p>/path/to/custom/uv/cache/dir</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="create-offline-air-gapped-setups">
+<h2>Create offline air-gapped setups<a class="headerlink" href="#create-offline-air-gapped-setups" title="Link to this heading">#</a></h2>
+<p>If internet is not available, you can create offline air-gapped setups for uv
+using one of these options:</p>
+<ul class="simple">
+<li><p>Pre-populate the uv cache with all desired dependencies.</p></li>
+<li><p>Provide a local Python package index and set uv to use it. For
+more information, see
+<a class="reference external" href="https://docs.astral.sh/uv/configuration/indexes/">Package indexes</a>
+in the uv documentation. This index can then sit in a shared location,
+with node-local caching applied.</p></li>
+<li><p>Use pre-generated virtual environments. For more information, see
+<a class="reference external" href="https://docs.astral.sh/uv/reference/cli/#uv-venv">uv venv</a> in the
+uv documentation.</p></li>
+</ul>
+<p>To turn off network access, you can either set the
+<code class="docutils literal notranslate"><span class="pre">UV_OFFLINE</span></code> environment variable or use the <code class="docutils literal notranslate"><span class="pre">--offline</span></code> flag with
+many uv commands.</p>
+</section>
+</section>
+<section id="run-the-example">
+<h1>Run the example<a class="headerlink" href="#run-the-example" title="Link to this heading">#</a></h1>
+<p>To run the example, execute the <code class="docutils literal notranslate"><span class="pre">project_setup.py</span></code> script:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">uv</span> <span class="n">run</span> <span class="n">project_setup</span><span class="o">.</span><span class="n">py</span>
+</pre></div>
+</div>
+<p>This command sets up a project with a number
+of jobs. Each job generates a <code class="docutils literal notranslate"><span class="pre">plot.png</span></code> file.</p>
+<section id="options">
+<h2>Options<a class="headerlink" href="#options" title="Link to this heading">#</a></h2>
+<p>The example supports the following command line arguments:</p>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Flag</p></th>
+<th class="head"><p>Example</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">-U</span></code>, <code class="docutils literal notranslate"><span class="pre">--url</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">--url=https://localhost:8443/hps</span></code></p></td>
+<td><p>URL of the target HPS instance</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">-u</span></code>, <code class="docutils literal notranslate"><span class="pre">--username</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">--username=repuser</span></code></p></td>
+<td><p>Username to log into HPS</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">-p</span></code>, <code class="docutils literal notranslate"><span class="pre">--password</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">--password=topSecret</span></code></p></td>
+<td><p>Password to log into HPS</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">-j</span></code>, <code class="docutils literal notranslate"><span class="pre">--num-jobs</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">--num-jobs=10</span></code></p></td>
+<td><p>Number of jobs to generate</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="files">
+<h2>Files<a class="headerlink" href="#files" title="Link to this heading">#</a></h2>
+<p>Descriptions follow of the relevant example files.</p>
+<p>The project creation script, <code class="docutils literal notranslate"><span class="pre">project_setup.py</span></code>, handles all communication with the
+HPS instance, defines the project, and generates the jobs.</p>
+<div class="literal-block-wrapper docutils container" id="id1">
+<div class="code-block-caption"><span class="caption-text">project_setup.py</span><a class="headerlink" href="#id1" title="Link to this code">#</a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># /// script</span>
+<span class="c1"># requires-python = &quot;==3.10&quot;</span>
+<span class="c1"># dependencies = [</span>
+<span class="c1">#     &quot;ansys-hps-client&quot;,</span>
+<span class="c1">#     &quot;packaging&quot;</span>
+<span class="c1"># ]</span>
+<span class="c1"># ///</span>
+
+<span class="sd">&quot;&quot;&quot;Python with uv example.&quot;&quot;&quot;</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">argparse</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">ansys.hps.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">Client</span><span class="p">,</span> <span class="n">HPSError</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">ansys.hps.client.jms</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">File</span><span class="p">,</span>
+    <span class="n">JmsApi</span><span class="p">,</span>
+    <span class="n">Job</span><span class="p">,</span>
+    <span class="n">JobDefinition</span><span class="p">,</span>
+    <span class="n">Project</span><span class="p">,</span>
+    <span class="n">ProjectApi</span><span class="p">,</span>
+    <span class="n">ResourceRequirements</span><span class="p">,</span>
+    <span class="n">Software</span><span class="p">,</span>
+    <span class="n">SuccessCriteria</span><span class="p">,</span>
+    <span class="n">TaskDefinition</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="n">log</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">create_project</span><span class="p">(</span><span class="n">client</span><span class="p">,</span> <span class="n">num_jobs</span><span class="p">):</span>
+    <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;=== Create Project&quot;</span><span class="p">)</span>
+    <span class="n">jms_api</span> <span class="o">=</span> <span class="n">JmsApi</span><span class="p">(</span><span class="n">client</span><span class="p">)</span>
+    <span class="n">proj</span> <span class="o">=</span> <span class="n">jms_api</span><span class="o">.</span><span class="n">create_project</span><span class="p">(</span>
+        <span class="n">Project</span><span class="p">(</span>
+            <span class="n">name</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;Python UV example - </span><span class="si">{</span><span class="n">num_jobs</span><span class="si">}</span><span class="s2"> jobs&quot;</span><span class="p">,</span>
+            <span class="n">priority</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+            <span class="n">active</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="p">),</span>
+        <span class="n">replace</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">project_api</span> <span class="o">=</span> <span class="n">ProjectApi</span><span class="p">(</span><span class="n">client</span><span class="p">,</span> <span class="n">proj</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+
+    <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;=== Define Files&quot;</span><span class="p">)</span>
+    <span class="n">cwd</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)</span>
+    <span class="c1"># Input Files</span>
+    <span class="n">files</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">File</span><span class="p">(</span>
+            <span class="n">name</span><span class="o">=</span><span class="s2">&quot;eval&quot;</span><span class="p">,</span>
+            <span class="n">evaluation_path</span><span class="o">=</span><span class="s2">&quot;eval.py&quot;</span><span class="p">,</span>
+            <span class="nb">type</span><span class="o">=</span><span class="s2">&quot;text/plain&quot;</span><span class="p">,</span>
+            <span class="n">src</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">cwd</span><span class="p">,</span> <span class="s2">&quot;eval.py&quot;</span><span class="p">),</span>
+        <span class="p">),</span>
+        <span class="n">File</span><span class="p">(</span>
+            <span class="n">name</span><span class="o">=</span><span class="s2">&quot;exec_script&quot;</span><span class="p">,</span>
+            <span class="n">evaluation_path</span><span class="o">=</span><span class="s2">&quot;exec_script.py&quot;</span><span class="p">,</span>
+            <span class="nb">type</span><span class="o">=</span><span class="s2">&quot;text/plain&quot;</span><span class="p">,</span>
+            <span class="n">src</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">cwd</span><span class="p">,</span> <span class="s2">&quot;exec_script.py&quot;</span><span class="p">),</span>
+        <span class="p">),</span>
+        <span class="n">File</span><span class="p">(</span>
+            <span class="n">name</span><span class="o">=</span><span class="s2">&quot;plot&quot;</span><span class="p">,</span>
+            <span class="n">evaluation_path</span><span class="o">=</span><span class="s2">&quot;plot.png&quot;</span><span class="p">,</span>
+            <span class="nb">type</span><span class="o">=</span><span class="s2">&quot;image/png&quot;</span><span class="p">,</span>
+            <span class="n">collect</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="p">),</span>
+    <span class="p">]</span>
+    <span class="n">files</span> <span class="o">=</span> <span class="n">project_api</span><span class="o">.</span><span class="n">create_files</span><span class="p">(</span><span class="n">files</span><span class="p">)</span>
+    <span class="n">file_ids</span> <span class="o">=</span> <span class="p">{</span><span class="n">f</span><span class="o">.</span><span class="n">name</span><span class="p">:</span> <span class="n">f</span><span class="o">.</span><span class="n">id</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">files</span><span class="p">}</span>
+
+    <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;=== Define Task&quot;</span><span class="p">)</span>
+    <span class="n">task_def</span> <span class="o">=</span> <span class="n">TaskDefinition</span><span class="p">(</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;plotting&quot;</span><span class="p">,</span>
+        <span class="n">software_requirements</span><span class="o">=</span><span class="p">[</span><span class="n">Software</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;uv&quot;</span><span class="p">)],</span>
+        <span class="n">resource_requirements</span><span class="o">=</span><span class="n">ResourceRequirements</span><span class="p">(</span>
+            <span class="n">num_cores</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span>
+            <span class="n">memory</span><span class="o">=</span><span class="mi">100</span> <span class="o">*</span> <span class="mi">1024</span> <span class="o">*</span> <span class="mi">1024</span><span class="p">,</span>  <span class="c1"># 100 MB</span>
+            <span class="n">disk_space</span><span class="o">=</span><span class="mi">10</span> <span class="o">*</span> <span class="mi">1024</span> <span class="o">*</span> <span class="mi">1024</span><span class="p">,</span>  <span class="c1"># 10 MB</span>
+        <span class="p">),</span>
+        <span class="n">execution_level</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+        <span class="n">max_execution_time</span><span class="o">=</span><span class="mf">500.0</span><span class="p">,</span>
+        <span class="n">use_execution_script</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">execution_script_id</span><span class="o">=</span><span class="n">file_ids</span><span class="p">[</span><span class="s2">&quot;exec_script&quot;</span><span class="p">],</span>
+        <span class="n">execution_command</span><span class="o">=</span><span class="s2">&quot;</span><span class="si">%e</span><span class="s2">xecutable</span><span class="si">% r</span><span class="s2">un </span><span class="si">%f</span><span class="s2">ile:eval%&quot;</span><span class="p">,</span>
+        <span class="n">input_file_ids</span><span class="o">=</span><span class="p">[</span><span class="n">file_ids</span><span class="p">[</span><span class="s2">&quot;eval&quot;</span><span class="p">]],</span>
+        <span class="n">output_file_ids</span><span class="o">=</span><span class="p">[</span><span class="n">file_ids</span><span class="p">[</span><span class="s2">&quot;plot&quot;</span><span class="p">]],</span>
+        <span class="n">success_criteria</span><span class="o">=</span><span class="n">SuccessCriteria</span><span class="p">(</span>
+            <span class="n">return_code</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+            <span class="n">require_all_output_files</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="p">),</span>
+    <span class="p">)</span>
+    <span class="n">task_defs</span> <span class="o">=</span> <span class="n">project_api</span><span class="o">.</span><span class="n">create_task_definitions</span><span class="p">([</span><span class="n">task_def</span><span class="p">])</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;== Define Job&quot;</span><span class="p">)</span>
+    <span class="n">job_def</span> <span class="o">=</span> <span class="n">JobDefinition</span><span class="p">(</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;JobDefinition.1&quot;</span><span class="p">,</span> <span class="n">active</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">task_definition_ids</span><span class="o">=</span><span class="p">[</span><span class="n">task_defs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">id</span><span class="p">]</span>
+    <span class="p">)</span>
+    <span class="n">job_def</span> <span class="o">=</span> <span class="n">project_api</span><span class="o">.</span><span class="n">create_job_definitions</span><span class="p">([</span><span class="n">job_def</span><span class="p">])[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;== Create </span><span class="si">{</span><span class="n">num_jobs</span><span class="si">}</span><span class="s2"> Jobs&quot;</span><span class="p">)</span>
+    <span class="n">jobs</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_jobs</span><span class="p">):</span>
+        <span class="n">jobs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Job</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;Job.</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">eval_status</span><span class="o">=</span><span class="s2">&quot;pending&quot;</span><span class="p">,</span> <span class="n">job_definition_id</span><span class="o">=</span><span class="n">job_def</span><span class="o">.</span><span class="n">id</span><span class="p">))</span>
+    <span class="n">project_api</span><span class="o">.</span><span class="n">create_jobs</span><span class="p">(</span><span class="n">jobs</span><span class="p">)</span>
+    <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Created project &#39;</span><span class="si">{</span><span class="n">proj</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&#39;, ID=&#39;</span><span class="si">{</span><span class="n">proj</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">&#39;&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">proj</span>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="n">parser</span> <span class="o">=</span> <span class="n">argparse</span><span class="o">.</span><span class="n">ArgumentParser</span><span class="p">()</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;-j&quot;</span><span class="p">,</span> <span class="s2">&quot;--num-jobs&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;-U&quot;</span><span class="p">,</span> <span class="s2">&quot;--url&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s2">&quot;https://localhost:8443/hps&quot;</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;-u&quot;</span><span class="p">,</span> <span class="s2">&quot;--username&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s2">&quot;repuser&quot;</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;-p&quot;</span><span class="p">,</span> <span class="s2">&quot;--password&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s2">&quot;repuser&quot;</span><span class="p">)</span>
+    <span class="n">args</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">parse_args</span><span class="p">()</span>
+
+    <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">()</span>
+    <span class="n">logging</span><span class="o">.</span><span class="n">basicConfig</span><span class="p">(</span><span class="nb">format</span><span class="o">=</span><span class="s2">&quot;</span><span class="si">%(message)s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">level</span><span class="o">=</span><span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">)</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Connect to HPC Platform Services&quot;</span><span class="p">)</span>
+        <span class="n">client</span> <span class="o">=</span> <span class="n">Client</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">url</span><span class="p">,</span> <span class="n">username</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">username</span><span class="p">,</span> <span class="n">password</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">password</span><span class="p">)</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;HPS URL: </span><span class="si">{</span><span class="n">client</span><span class="o">.</span><span class="n">url</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">proj</span> <span class="o">=</span> <span class="n">create_project</span><span class="p">(</span>
+            <span class="n">client</span><span class="o">=</span><span class="n">client</span><span class="p">,</span>
+            <span class="n">num_jobs</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">num_jobs</span><span class="p">,</span>
+        <span class="p">)</span>
+
+    <span class="k">except</span> <span class="n">HPSError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+<p>The script <code class="docutils literal notranslate"><span class="pre">eval.py</span></code>, which is evaluated on HPS, contains the code to plot a sine and then save
+the figure.</p>
+<div class="literal-block-wrapper docutils container" id="id2">
+<div class="code-block-caption"><span class="caption-text">eval.py</span><a class="headerlink" href="#id2" title="Link to this code">#</a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># /// script</span>
+<span class="c1"># requires-python = &quot;==3.12&quot;</span>
+<span class="c1"># dependencies = [</span>
+<span class="c1">#     &quot;numpy&quot;,</span>
+<span class="c1">#     &quot;matplotlib&quot;</span>
+<span class="c1"># ]</span>
+<span class="c1"># ///</span>
+
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="c1"># Generate plot</span>
+    <span class="n">ts</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">10.0</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span>
+    <span class="n">ys</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">ts</span><span class="p">)</span>
+
+    <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">()</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">ts</span><span class="p">,</span> <span class="n">ys</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;Time [s]&quot;</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;Displacement [cm]&quot;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="s2">&quot;plot.png&quot;</span><span class="p">,</span> <span class="n">dpi</span><span class="o">=</span><span class="mi">200</span><span class="p">)</span>
+
+    <span class="c1"># Uncomment to enable venv cleanup in exec script, see execution script for details</span>
+    <span class="c1"># import json</span>
+    <span class="c1"># import sys</span>
+    <span class="c1"># with open(&quot;output_parameters.json&quot;, &quot;w&quot;) as out_file:</span>
+    <span class="c1">#    json.dump({&quot;exe&quot;: sys.executable}, out_file, indent=4)</span>
+</pre></div>
+</div>
+</div>
+<p>The execution script, <code class="docutils literal notranslate"><span class="pre">exec_script.py</span></code>, uses uv to run the evaluation script.</p>
+<div class="literal-block-wrapper docutils container" id="id3">
+<div class="code-block-caption"><span class="caption-text">exec_script.py</span><a class="headerlink" href="#id3" title="Link to this code">#</a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="sd">&quot;&quot;&quot;Simple execution script for Python with uv.</span>
+
+<span class="sd">Command formed: uv run &lt;script_file&gt;</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">json</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">shutil</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">ansys.rep.common.logging</span><span class="w"> </span><span class="kn">import</span> <span class="n">log</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">ansys.rep.evaluator.task_manager</span><span class="w"> </span><span class="kn">import</span> <span class="n">ApplicationExecution</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">PythonExecution</span><span class="p">(</span><span class="n">ApplicationExecution</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">execute</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Start uv execution script&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Identify files</span>
+        <span class="n">script_file</span> <span class="o">=</span> <span class="nb">next</span><span class="p">((</span><span class="n">f</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">context</span><span class="o">.</span><span class="n">input_files</span> <span class="k">if</span> <span class="n">f</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;eval&quot;</span><span class="p">),</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="n">script_file</span><span class="p">,</span> <span class="s2">&quot;Python script file missing&quot;</span>
+        <span class="n">output_filename</span> <span class="o">=</span> <span class="s2">&quot;output_parameters.json&quot;</span>
+
+        <span class="c1"># Identify applications</span>
+        <span class="n">app_uv</span> <span class="o">=</span> <span class="nb">next</span><span class="p">((</span><span class="n">a</span> <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">context</span><span class="o">.</span><span class="n">software</span> <span class="k">if</span> <span class="n">a</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;uv&quot;</span><span class="p">),</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="n">app_uv</span><span class="p">,</span> <span class="s2">&quot;Cannot find app uv&quot;</span>
+
+        <span class="c1"># Add &quot; around exe if needed for Windows</span>
+        <span class="n">exes</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;uv&quot;</span><span class="p">:</span> <span class="n">app_uv</span><span class="p">[</span><span class="s2">&quot;executable&quot;</span><span class="p">]}</span>
+        <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">exes</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="s2">&quot; &quot;</span> <span class="ow">in</span> <span class="n">v</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">v</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;&quot;&#39;</span><span class="p">):</span>
+                <span class="n">exes</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;&quot;</span><span class="si">{</span><span class="n">v</span><span class="si">}</span><span class="s1">&quot;&#39;</span>  <span class="c1"># noqa</span>
+
+        <span class="c1"># Pass env vars correctly</span>
+        <span class="n">env</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">)</span>
+        <span class="n">env</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">context</span><span class="o">.</span><span class="n">environment</span><span class="p">)</span>
+
+        <span class="c1">## Run evaluation script</span>
+        <span class="n">cmd</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">exes</span><span class="p">[</span><span class="s1">&#39;uv&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2"> run </span><span class="si">{</span><span class="n">script_file</span><span class="p">[</span><span class="s1">&#39;path&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">run_and_capture_output</span><span class="p">(</span><span class="n">cmd</span><span class="p">,</span> <span class="n">shell</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">env</span><span class="o">=</span><span class="n">env</span><span class="p">)</span>
+
+        <span class="c1"># Read eval.py output parameters</span>
+        <span class="n">output_parameters</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Loading output parameters from </span><span class="si">{</span><span class="n">output_filename</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">output_filename</span><span class="p">)</span> <span class="k">as</span> <span class="n">out_file</span><span class="p">:</span>
+                <span class="n">output_parameters</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">out_file</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">context</span><span class="o">.</span><span class="n">parameter_values</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">output_parameters</span><span class="p">)</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Loaded output parameters: </span><span class="si">{</span><span class="n">output_parameters</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">ex</span><span class="p">:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;No output parameters found.&quot;</span><span class="p">)</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Failed to read output_parameters from file: </span><span class="si">{</span><span class="n">ex</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="c1"># If exe path is in out params, delete the venv folder to avoid runaway uv venv cache</span>
+        <span class="c1"># See https://github.com/astral-sh/uv/issues/13431</span>
+        <span class="k">if</span> <span class="s2">&quot;exe&quot;</span> <span class="ow">in</span> <span class="n">output_parameters</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">venv_cache</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">output_parameters</span><span class="p">[</span><span class="s2">&quot;exe&quot;</span><span class="p">],</span> <span class="s2">&quot;..&quot;</span><span class="p">,</span> <span class="s2">&quot;..&quot;</span><span class="p">))</span>
+                <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">venv_cache</span><span class="p">):</span>
+                    <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Cleaning venv cache at </span><span class="si">{</span><span class="n">venv_cache</span><span class="si">}</span><span class="s2">...&quot;</span><span class="p">)</span>
+                    <span class="n">shutil</span><span class="o">.</span><span class="n">rmtree</span><span class="p">(</span><span class="n">venv_cache</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Venv cache path </span><span class="si">{</span><span class="n">venv_cache</span><span class="si">}</span><span class="s2"> does not exist.&quot;</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">ex</span><span class="p">:</span>
+                <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Couldn&#39;t clean venv cache at </span><span class="si">{</span><span class="n">venv_cache</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">ex</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;End Python execution script&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<p>Download the ZIP file for the uv example and use
+a tool such as 7-Zip to extract the files.</p>
+<p id="bottom-of-this-page"><span class="sd-d-grid"><a class="sd-sphinx-override sd-btn sd-text-wrap sd-btn-black reference external" href="../_downloads/python_uv.zip"><span>Download ZIP file</span></a></span></p>
+</section>
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#">Run arbitrary Python scripts on HPS</a></li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#prerequisites">Prerequisites</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#define-a-custom-cache-directory">Define a custom cache directory</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#create-offline-air-gapped-setups">Create offline air-gapped setups</a></li>
+</ul>
+</li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#run-the-example">Run the example</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#options">Options</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#files">Files</a></li>
+</ul>
+</li>
+</ul>
+
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+
+
+  <!-- Include desired assets -->
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.7/require.min.js"></script>
+
+<script>
+// Passing the search options to the search.js file
+const SEARCH_OPTIONS = JSON.parse('{"keys": ["title", "text", "objectID"], "limit": 10, "threshold": 0.2}');
+const SEARCH_FILE = "../_static/search.json";
+const ADVANCE_SEARCH_PATH = "../search.html";
+const EXTRA_SOURCES = JSON.parse('""');
+</script>
+
+
+<script src="../_static/js/search.js"></script>
+
+  
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright (c) 2026 ANSYS, Inc. All rights reserved.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.1.3.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<!--
+  Theme Version Footer
+  Displays the Sphinx theme version and the last updated date.
+  Accessibility and semantic improvements included.
+-->
+<footer class="theme-version" aria-label="Theme version and last update">
+  <span>
+    
+      Built with the
+      <a href="https://sphinxdocs.ansys.com/version/stable/index.html" target="_blank" rel="noopener noreferrer">
+        Ansys Sphinx Theme
+      </a>
+      1.7.0.
+    
+  </span>
+  <br />
+  <span>Last updated on <time id="ast_build_date"></time></span>
+</footer>
+<script>
+  // Set the last updated date in a readable format
+  (function() {
+    var options = { day: "numeric", month: "long", year: "numeric" };
+    var ast_lastModifiedDate = new Date(document.lastModified);
+    var ast_build_date = ast_lastModifiedDate.toLocaleDateString("en-US", options);
+    var dateElem = document.getElementById("ast_build_date");
+    if (dateElem) {
+      dateElem.textContent = ast_build_date;
+    }
+  })();
+</script></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>
