@@ -74,15 +74,22 @@ def resource_name():
     return {"value": None}
 
 
-def test_health_check(rcs_api):
+def test_health_check(rcs_api, has_hps_version_le_1_3_45):
     """Test the health_check method."""
+    if has_hps_version_le_1_3_45:
+        pytest.skip("RCS was introduced after HPS v1.3.45.")
     response = rcs_api.health_check()
     # Assert
     assert response["status"] == "alive"
 
 
-def test_register_instance_and_response(rcs_api, http_server, resource_name):
+def test_register_instance_and_response(
+    rcs_api, http_server, resource_name, has_hps_version_le_1_3_45
+):
     """Test the register_instance method and RegisterInstanceResponse model."""
+
+    if has_hps_version_le_1_3_45:
+        pytest.skip("RCS was introduced after HPS v1.3.45.")
     # Arrange
     mock_data = RegisterInstance(
         url="http://localhost:8000/",
@@ -121,8 +128,10 @@ def test_register_instance_and_response(rcs_api, http_server, resource_name):
     assert mock_data.routing == "path_prefix"
 
 
-def test_unregister_instance_and_response(rcs_api, resource_name):
+def test_unregister_instance_and_response(rcs_api, resource_name, has_hps_version_le_1_3_45):
     """Test the unregister_instance method and UnRegisterInstanceResponse model."""
+    if has_hps_version_le_1_3_45:
+        pytest.skip("RCS was introduced after HPS v1.3.45.")
     # Arrange
     unregister_resource_name = resource_name["value"]  # Access the resource name from the fixture
 
@@ -144,8 +153,10 @@ def test_unregister_instance_and_response(rcs_api, resource_name):
     assert unregister_instance.resource_name == unregister_resource_name
 
 
-def test_create_objects_as_objects_false(client, url, http_server):
+def test_create_objects_as_objects_false(client, url, http_server, has_hps_version_le_1_3_45):
     """Test the create_object function with as_object=False."""
+    if has_hps_version_le_1_3_45:
+        pytest.skip("RCS was introduced after HPS v1.3.45.")
     # Arrange
     obj = RegisterInstance(
         url="http://localhost:8000/",
