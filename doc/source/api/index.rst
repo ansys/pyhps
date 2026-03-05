@@ -14,3 +14,4 @@ so that you can understand how to interact with them programmatically.
   jms
   rms
   exceptions
+  rcs

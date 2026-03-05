@@ -19,14 +19,12 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
-"""PyHPS is a Python client for Ansys HPC Platform Services (HPS)."""
+"""PyHPS RCS subpackage."""
 
-from .__version__ import __ansys_apps_version__, __version__
-from .auth import AuthApi
-from .authenticate import authenticate, determine_auth_url
-from .client import Client
-from .exceptions import APIError, ClientError, HPSError, VersionCompatibilityError
-from .jms import JmsApi, ProjectApi
-from .rcs import RcsApi
-from .rms import RmsApi
-from .warnings import UnverifiedHTTPSRequestsWarning
+from .api import RcsApi
+from .models import (
+    RegisterInstance,
+    RegisterInstanceResponse,
+    UnRegisterInstance,
+    UnRegisterInstanceResponse,
+)
