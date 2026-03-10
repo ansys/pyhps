@@ -1,0 +1,45 @@
+[
+  "c:\\AnsysDev\\rep-evaluator\\test_run\\upload_fail_test\\test_upload_fail\\eval_aapqttqyh0qxrsg-upload_fail_test-test_upload_fail\\work_dir\\tasks\\032fccjmlE2Cu82zqMkq2U\\task_032fccyePv7FNqUlMBuNnn",
+  [
+    {
+      "access_mode": "transfer",
+      "collect": true,
+      "collect_interval": null,
+      "created_by": "8f9758f7-8167-46f9-b099-7c5acc152fe2",
+      "creation_time": "2026-03-10T16:57:53.457110+00:00",
+      "evaluation_path": "ps0_out.txt",
+      "expiry_time": null,
+      "format": null,
+      "hash": null,
+      "id": "032fcdS9aoB7T0DOiswbaJ",
+      "modification_time": "2026-03-10T16:57:53.457110+00:00",
+      "modified_by": "8f9758f7-8167-46f9-b099-7c5acc152fe2",
+      "monitor": true,
+      "name": "ps0_out",
+      "reference_id": "032fccwqivoTA49fsQyBDN",
+      "size": null,
+      "storage_id": "032fcdS9aoB7T0DOiswbaJ_ps0_out",
+      "type": "text/plain"
+    },
+    {
+      "access_mode": "transfer",
+      "collect": true,
+      "collect_interval": null,
+      "created_by": "8f9758f7-8167-46f9-b099-7c5acc152fe2",
+      "creation_time": "2026-03-10T16:57:53.457111+00:00",
+      "evaluation_path": "console_output.txt",
+      "expiry_time": null,
+      "format": null,
+      "hash": null,
+      "id": "032fcdS9cAQEUnhOZzZgLo",
+      "modification_time": "2026-03-10T16:57:53.457111+00:00",
+      "modified_by": "8f9758f7-8167-46f9-b099-7c5acc152fe2",
+      "monitor": true,
+      "name": "console_output",
+      "reference_id": "032fccxEkRQ6v2Q4Idkb5L",
+      "size": null,
+      "storage_id": "032fcdS9cAQEUnhOZzZgLo_console_output",
+      "type": "text/plain"
+    }
+  ]
+]
