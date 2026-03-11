@@ -820,8 +820,8 @@ def _upload_files_from_file(project_api: ProjectApi, filepath: str):
     with open(filepath, encoding="utf-8") as f:
         data = json.load(f)
 
-    adapter = TypeAdapter(tuple[str, list[dict]])
-    task_directory, file_dicts = adapter.validate_python(data)
+    adapter = TypeAdapter(tuple[str, str, list[dict]])
+    project_id, task_directory, file_dicts = adapter.validate_python(data)
 
     files = [File(**d) for d in file_dicts]
 
