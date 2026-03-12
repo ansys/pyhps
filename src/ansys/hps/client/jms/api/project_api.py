@@ -32,7 +32,6 @@ from collections.abc import Callable
 
 from ansys.hps.data_transfer.client.api.handler import WaitHandler
 from ansys.hps.data_transfer.client.models import Operation, OperationState, SrcDst, StoragePath
-from pydantic import TypeAdapter
 
 from ansys.hps.client.check_version import (
     JMS_VERSIONS,
@@ -187,10 +186,6 @@ class ProjectApi:
     def update_files(self, files: list[File], as_objects=True):
         """Update files."""
         return update_files(self, files, as_objects=as_objects)
-
-    def re_upload_files(self, file_path: str, as_objects=True) -> list[File]:
-        """Re-upload files for failed upload."""
-        return re_upload_files(self, file_path, as_objects=as_objects)
 
     def delete_files(self, files: list[File]):
         """Delete files."""
@@ -815,23 +810,6 @@ def get_files(project_api: ProjectApi, as_objects=True, content=False, **query_p
     return files
 
 
-def _upload_files_from_file(project_api: ProjectApi, filepath: str):
-    """Upload files directly using the data transfer worker."""
-    with open(filepath, encoding="utf-8") as f:
-        data = json.load(f)
-
-    adapter = TypeAdapter(tuple[str, str, list[dict]])
-    project_id, task_directory, file_dicts = adapter.validate_python(data)
-
-    files = [File(**d) for d in file_dicts]
-
-    for f in files:
-        f.src = os.path.join(task_directory, f.evaluation_path)
-
-    _upload_files(project_api, files)
-    return files
-
-
 def _upload_files(project_api: ProjectApi, files):
     """Upload files directly using the data transfer worker."""
     min_v = JMS_VERSIONS[HpsRelease.v1_2_0]
@@ -934,15 +912,6 @@ def update_files(project_api: ProjectApi, files: list[File], as_objects=True) ->
     """Update a list of files."""
     # Upload files first if there are any src parameters
     _upload_files(project_api, files)
-    # Update file resources in JMS
-    return update_objects(
-        project_api.client.session, project_api.url, files, File, as_objects=as_objects
-    )
-
-
-def re_upload_files(project_api: ProjectApi, file_path: str, as_objects=True) -> list[File]:
-    """Upload files from a failed Evaluator upload."""
-    files = _upload_files_from_file(project_api, file_path)
     # Update file resources in JMS
     return update_objects(
         project_api.client.session, project_api.url, files, File, as_objects=as_objects

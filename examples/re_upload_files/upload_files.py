@@ -23,31 +23,52 @@
 """Example to retry upload of failed Evaluator upload."""
 
 import argparse
+import json
 import logging
 import os
 
 from ansys.hps.client import Client, HPSError
-from ansys.hps.client.jms import JmsApi, ProjectApi
+from ansys.hps.client.jms import File, JmsApi, ProjectApi, Task
 
 log = logging.getLogger(__name__)
 
 
-def upload_files(client, project_id, upload_file):
+def upload_files(client, file_path):
     """Upload files example."""
 
+    if not os.path.isabs(file_path):
+        file_path = os.path.join(os.getcwd(), file_path)
+        file_path = os.path.abspath(file_path)
+
+    with open(file_path, encoding="utf-8") as f:
+        data = json.load(f)
+
+    files = [File(**d) for d in data["files"]]
+    for f in files:
+        f.src = os.path.join(data["task_directory"], f.evaluation_path)
+
     jms_api = JmsApi(client)
-    project = jms_api.get_project(id=project_id)
+    project = jms_api.get_project(id=data["project_id"])
 
     log.info(f"Project id: {project.id}")
     project_api = ProjectApi(client, project.id)
 
-    log.info("=== Example: Uploading output files using ProjectApi.re_upload_files()")
-    project_api.re_upload_files(upload_file)
+    log.info("=== Example: Uploading output files using ProjectApi.update_files()")
+    project_api.update_files(files)
+
+    task_updates: list[Task] = []
+    task_updates.append(Task(id=data["task_id"], eval_status="evaluated"))
+
+    tasks = project_api.update_tasks(task_updates)
+
+    if tasks[0].eval_status == "evaluated":
+        log.info(f"Files uploaded and Task eval status updated to {tasks[0].eval_status}")
+    else:
+        log.info("Files uploaded but Task eval status NOT updated")
 
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("-id", "--id", type=str, default="")
     parser.add_argument("-f", "--file", type=str, default="")
     parser.add_argument("-U", "--url", default="https://127.0.0.1:8443/hps")
     parser.add_argument("-u", "--username", default="repadmin")
@@ -69,12 +90,7 @@ if __name__ == "__main__":
             client = Client(url=args.url, username=args.username, password=args.password)
         log.info(f"HPS URL: {client.url}")
 
-        file_path = args.file
-        if not os.path.isabs(file_path):
-            file_path = os.path.join(os.getcwd(), file_path)
-            file_path = os.path.abspath(file_path)
-
-        upload_files(client=client, project_id=args.id, upload_file=file_path)
+        upload_files(client=client, file_path=args.file)
 
     except HPSError as e:
         log.error(str(e))
