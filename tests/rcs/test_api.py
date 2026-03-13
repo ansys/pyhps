@@ -55,8 +55,8 @@ class HelloWorldHandler(BaseHTTPRequestHandler):
 @pytest.fixture(scope="module")
 def http_server():
     port = portend.find_available_local_port()
-    server = HTTPServer(("localhost", port), HelloWorldHandler)
-    url = f"http://localhost:{port}"
+    server = HTTPServer(("0.0.0.0", port), HelloWorldHandler)
+    url = f"http://host.docker.internal:{port}"
     thread = threading.Thread(target=server.serve_forever)
     thread.daemon = True
     thread.start()
@@ -67,7 +67,9 @@ def http_server():
 
 def test_hello_world(http_server):
     server, url = http_server
-    response = requests.get(url)
+    port = url.split(":")[-1]
+    localhost_url = f"http://localhost:{port}"
+    response = requests.get(localhost_url)
     assert response.status_code == 200
     assert response.text == "Hello, World!"
 
@@ -88,6 +90,7 @@ def test_register_instance_and_response(rcs_api, http_server, has_hps_version_le
         pytest.skip("RCS was introduced after HPS v1.3.45.")
 
     server, url = http_server
+    print(f"url is {url}")
     # Arrange
     instance_data = RegisterInstance(
         url=url,
@@ -114,6 +117,9 @@ def test_register_instance_and_response(rcs_api, http_server, has_hps_version_le
     url = f"https://{response.instance_url}"
     res = requests.get(url, verify=False)
     # Assert the instance is accessible at the registered URL
+    print(f"url is {url}")
+    # import time
+    # time.sleep(1000)
     assert res.status_code == 200
     assert res.text == "Hello, World!"
 
