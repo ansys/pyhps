@@ -19,14 +19,35 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
-"""PyHPS is a Python client for Ansys HPC Platform Services (HPS)."""
 
-from .__version__ import __ansys_apps_version__, __version__
-from .auth import AuthApi
-from .authenticate import authenticate, determine_auth_url
-from .client import Client
-from .exceptions import APIError, ClientError, HPSError, VersionCompatibilityError
-from .jms import JmsApi, ProjectApi
-from .rcs import RcsApi
-from .rms import RmsApi
-from .warnings import UnverifiedHTTPSRequestsWarning
+"""A shared utility module."""
+
+from pydantic import BaseModel
+from pydantic import __version__ as pydantic_version
+
+
+def _object_to_json(
+    object: BaseModel,
+    exclude_unset: bool = True,
+    exclude_defaults: bool = False,
+) -> str:
+    """Convert a Pydantic object to a JSON string."""
+    if pydantic_version.startswith("1."):
+        return object.json(exclude_unset=exclude_unset, exclude_defaults=exclude_defaults)
+    elif pydantic_version.startswith("2."):
+        return object.model_dump_json(
+            exclude_unset=exclude_unset, exclude_defaults=exclude_defaults
+        )
+    else:
+        raise RuntimeError(f"Unsupported Pydantic version {pydantic_version}")
+
+
+def _json_to_object(data, obj_type):
+    return obj_type(**data)
+
+
+def _json_to_objects(data, obj_type):
+    obj_list = []
+    for obj in data:
+        obj_list.append(obj_type(**obj))
+    return obj_list
