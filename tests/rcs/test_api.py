@@ -28,7 +28,7 @@ import portend
 import pytest
 import requests
 
-from ansys.hps.client.rcs.api.base import create_object
+from ansys.hps.client.rcs.api.base import create_object, delete_object
 from ansys.hps.client.rcs.models import (
     RegisterInstance,
     RegisterInstanceResponse,
@@ -112,8 +112,8 @@ def test_register_instance_and_response(rcs_api, http_server, has_hps_version_le
     assert response.resource_name == f"test_service-{uid}"
 
     url = f"https://{response.instance_url}"
-    # Assert the instance is accessible at the registered URL
     res = requests.get(url, verify=False)
+    # Assert the instance is accessible at the registered URL
     assert res.status_code == 200
     assert res.text == "Hello, World!"
 
@@ -131,19 +131,16 @@ def test_register_instance_and_response(rcs_api, http_server, has_hps_version_le
     assert response.message == expected_response_data["message"]
     assert response.resource_name == expected_response_data["resource_name"]
 
-    # Assert UnRegisterInstance
-    assert unregister_instance.resource_name == response.resource_name
-
 
 def test_create_objects_as_objects_false(client, url, http_server, has_hps_version_le_1_3_45):
     """Test the create_object function with as_object=False."""
     if has_hps_version_le_1_3_45:
         pytest.skip("RCS was introduced after HPS v1.3.45.")
 
-    server, url = http_server
+    server, instance_url = http_server
     # Arrange
     obj = RegisterInstance(
-        url=url,
+        url=instance_url,
         service_name="service-123",
         routing="path_prefix",
     )
@@ -159,8 +156,23 @@ def test_create_objects_as_objects_false(client, url, http_server, has_hps_versi
     assert isinstance(result, dict)
     uid = (result["resource_name"]).split("-")[-1]
     expected_url_pattern = rf".*/ans_instance_id/{uid}"
-    url = result["instance_url"]
-    assert re.match(expected_url_pattern, url), (
-        f"URL '{url}' does not match the expected pattern '{expected_url_pattern}'"
+    res_url = result["instance_url"]
+    assert re.match(expected_url_pattern, res_url), (
+        f"URL '{res_url}' does not match the expected pattern '{expected_url_pattern}'"
     )
     assert result["resource_name"] == f"service-123-{uid}"
+
+    unreg_obj = UnRegisterInstance(resource_name=result["resource_name"])
+    delete_result = delete_object(
+        session=client.session,
+        url=url + "/rcs",
+        object=unreg_obj,
+        as_object=False,
+    )
+    assert isinstance(delete_result, dict)
+    expected_delete_response = {
+        "message": f"Successfully unregistered {result['resource_name']} "
+        "from Redis. Deleted 4 keys.",
+        "resource_name": result["resource_name"],
+    }
+    assert delete_result == expected_delete_response
