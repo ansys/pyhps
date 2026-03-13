@@ -33,6 +33,7 @@ log = logging.getLogger(__name__)
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("-U", "--url", default="https://localhost:8443/hps")
+    parser.add_argument("-i", "--instance_url", default="https://localhost:8000")
     parser.add_argument("-u", "--username", default="repuser")
     parser.add_argument("-p", "--password", default="repuser")
     args = parser.parse_args()
@@ -48,20 +49,15 @@ if __name__ == "__main__":
         log.error(str(e))
 
     rcs_api = RcsApi(client)
-    request_data = {
-        "url": f"{args.url}/rcs",
-        "service_name": "solver",
-        "jms_project_id": "1234",
-        "jms_job_id": "5678",
-        "jms_task_id": "91011",
-        "routing": "path_prefix",
-    }
+    request_data = RegisterInstance(
+        url=f"{args.instance_url}", service_name="solver", routing="path_prefix"
+    )
     resp = rcs_api.health_check()
     log.info(f"RCS API health check: {resp}")
-    log.info("Register instance")
-    register_instance = rcs_api.register_instance(RegisterInstance(**request_data))
+    log.info(f"Register instance with URL: {args.instance_url}")
+    register_instance = rcs_api.register_instance(request_data)
     log.info(f"Register instance response: {register_instance}")
     log.info("Unregister instance")
-    unregister = {"resource_name": register_instance.resource_name}
-    unregister_instance = rcs_api.unregister_instance(UnRegisterInstance(**unregister))
+    unregister = UnRegisterInstance(resource_name=register_instance.resource_name)
+    unregister_instance = rcs_api.unregister_instance(unregister)
     log.info(f"Unregister instance response: {unregister_instance}")

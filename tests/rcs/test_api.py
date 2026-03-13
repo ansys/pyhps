@@ -24,6 +24,7 @@ import re
 import threading
 from http.server import BaseHTTPRequestHandler, HTTPServer
 
+import portend
 import pytest
 import requests
 
@@ -53,25 +54,22 @@ class HelloWorldHandler(BaseHTTPRequestHandler):
 
 @pytest.fixture(scope="module")
 def http_server():
-    server = HTTPServer(("localhost", 8000), HelloWorldHandler)
+    port = portend.find_available_local_port()
+    server = HTTPServer(("localhost", port), HelloWorldHandler)
+    url = f"http://localhost:{port}"
     thread = threading.Thread(target=server.serve_forever)
     thread.daemon = True
     thread.start()
-    yield server
+    yield server, url
     server.shutdown()
     thread.join()
 
 
 def test_hello_world(http_server):
-    response = requests.get("http://localhost:8000/")
+    server, url = http_server
+    response = requests.get(url)
     assert response.status_code == 200
     assert response.text == "Hello, World!"
-
-
-@pytest.fixture(scope="module")
-def resource_name():
-    """Fixture to store and share the resource name."""
-    return {"value": None}
 
 
 def test_health_check(rcs_api, has_hps_version_le_1_3_45):
@@ -83,16 +81,16 @@ def test_health_check(rcs_api, has_hps_version_le_1_3_45):
     assert response["status"] == "alive"
 
 
-def test_register_instance_and_response(
-    rcs_api, http_server, resource_name, has_hps_version_le_1_3_45
-):
+def test_register_instance_and_response(rcs_api, http_server, has_hps_version_le_1_3_45):
     """Test the register_instance method and RegisterInstanceResponse model."""
 
     if has_hps_version_le_1_3_45:
         pytest.skip("RCS was introduced after HPS v1.3.45.")
+
+    server, url = http_server
     # Arrange
-    mock_data = RegisterInstance(
-        url="http://localhost:8000/",
+    instance_data = RegisterInstance(
+        url=url,
         service_name="test_service",
         jms_project_id="1234",
         jms_job_id="5678",
@@ -101,7 +99,7 @@ def test_register_instance_and_response(
     )
 
     # Act
-    response = rcs_api.register_instance(mock_data)
+    response = rcs_api.register_instance(instance_data)
 
     # Assert RegisterInstanceResponse
     assert isinstance(response, RegisterInstanceResponse)
@@ -113,58 +111,40 @@ def test_register_instance_and_response(
     )
     assert response.resource_name == f"test_service-{uid}"
 
-    # Save the resource name in the fixture
-    resource_name["value"] = response.resource_name
-
+    url = f"https://{response.instance_url}"
     # Assert the instance is accessible at the registered URL
-    test_hello_world(http_server)
+    res = requests.get(url, verify=False)
+    assert res.status_code == 200
+    assert res.text == "Hello, World!"
 
-    # Assert RegisterInstance
-    assert mock_data.url == "http://localhost:8000/"
-    assert mock_data.service_name == "test_service"
-    assert mock_data.jms_project_id == "1234"
-    assert mock_data.jms_job_id == "5678"
-    assert mock_data.jms_task_id == "91011"
-    assert mock_data.routing == "path_prefix"
-
-
-def test_unregister_instance_and_response(rcs_api, resource_name, has_hps_version_le_1_3_45):
-    """Test the unregister_instance method and UnRegisterInstanceResponse model."""
-    if has_hps_version_le_1_3_45:
-        pytest.skip("RCS was introduced after HPS v1.3.45.")
-    # Arrange
-    unregister_resource_name = resource_name["value"]  # Access the resource name from the fixture
-
-    mock_response_data = {
-        "message": f"Successfully unregistered {unregister_resource_name} "
+    expected_response_data = {
+        "message": f"Successfully unregistered {response.resource_name} "
         "from Redis. Deleted 4 keys.",
-        "resource_name": unregister_resource_name,
+        "resource_name": response.resource_name,
     }
     # Act
-    unregister_instance = UnRegisterInstance(resource_name=unregister_resource_name)
+    unregister_instance = UnRegisterInstance(resource_name=response.resource_name)
     response = rcs_api.unregister_instance(unregister_instance)
 
     # Assert UnRegisterInstanceResponse
     assert isinstance(response, UnRegisterInstanceResponse)
-    assert response.message == mock_response_data["message"]
-    assert response.resource_name == mock_response_data["resource_name"]
+    assert response.message == expected_response_data["message"]
+    assert response.resource_name == expected_response_data["resource_name"]
 
     # Assert UnRegisterInstance
-    assert unregister_instance.resource_name == unregister_resource_name
+    assert unregister_instance.resource_name == response.resource_name
 
 
 def test_create_objects_as_objects_false(client, url, http_server, has_hps_version_le_1_3_45):
     """Test the create_object function with as_object=False."""
     if has_hps_version_le_1_3_45:
         pytest.skip("RCS was introduced after HPS v1.3.45.")
+
+    server, url = http_server
     # Arrange
     obj = RegisterInstance(
-        url="http://localhost:8000/",
-        api_url="http://localhost:8000/api",
+        url=url,
         service_name="service-123",
-        jms_project_id="1234",
-        jms_job_id="5678",
-        jms_task_id="1011",
         routing="path_prefix",
     )
 
@@ -175,8 +155,6 @@ def test_create_objects_as_objects_false(client, url, http_server, has_hps_versi
         object=obj,
         as_object=False,
     )
-
-    print(result)
 
     assert isinstance(result, dict)
     uid = (result["resource_name"]).split("-")[-1]
