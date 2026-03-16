@@ -84,13 +84,12 @@ def test_health_check(rcs_api, has_hps_version_le_1_3_45):
 
 
 def test_register_instance_and_response(rcs_api, http_server, has_hps_version_le_1_3_45):
-    """Test the register_instance method and RegisterInstanceResponse model."""
+    """Test the register_instance and unregister_instance methods and their responses."""
 
     if has_hps_version_le_1_3_45:
         pytest.skip("RCS was introduced after HPS v1.3.45.")
 
     server, url = http_server
-    print(f"url is {url}")
     # Arrange
     instance_data = RegisterInstance(
         url=url,
@@ -117,9 +116,9 @@ def test_register_instance_and_response(rcs_api, http_server, has_hps_version_le
     url = f"https://{response.instance_url}"
     res = requests.get(url, verify=False)
     # Assert the instance is accessible at the registered URL
-    print(f"url is {url}")
-    # import time
-    # time.sleep(1000)
+    import time
+
+    time.sleep(2)
     assert res.status_code == 200
     assert res.text == "Hello, World!"
 
