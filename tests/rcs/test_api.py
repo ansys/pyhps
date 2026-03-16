@@ -118,9 +118,6 @@ def test_register_instance_and_response(rcs_api, http_server, has_hps_version_le
     print(url)
     res = requests.get(url, verify=False)
     # Assert the instance is accessible at the registered URL
-    import time
-
-    time.sleep(200000)
     assert res.status_code == 200
     assert res.text == "Hello, World!"
 
