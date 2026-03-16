@@ -21,6 +21,7 @@
 # SOFTWARE.
 
 import re
+import socket
 import threading
 from http.server import BaseHTTPRequestHandler, HTTPServer
 
@@ -56,7 +57,9 @@ class HelloWorldHandler(BaseHTTPRequestHandler):
 def http_server():
     port = portend.find_available_local_port()
     server = HTTPServer(("0.0.0.0", port), HelloWorldHandler)
-    url = f"http://host.docker.internal:{port}"
+    hostname = socket.gethostname()
+    url = f"http://{hostname}:{port}"
+    print(url)
     thread = threading.Thread(target=server.serve_forever)
     thread.daemon = True
     thread.start()
@@ -67,9 +70,7 @@ def http_server():
 
 def test_hello_world(http_server):
     server, url = http_server
-    port = url.split(":")[-1]
-    localhost_url = f"http://localhost:{port}"
-    response = requests.get(localhost_url)
+    response = requests.get(url)
     assert response.status_code == 200
     assert response.text == "Hello, World!"
 
@@ -114,11 +115,12 @@ def test_register_instance_and_response(rcs_api, http_server, has_hps_version_le
     assert response.resource_name == f"test_service-{uid}"
 
     url = f"https://{response.instance_url}"
+    print(url)
     res = requests.get(url, verify=False)
     # Assert the instance is accessible at the registered URL
     import time
 
-    time.sleep(2)
+    time.sleep(200000)
     assert res.status_code == 200
     assert res.text == "Hello, World!"
 
