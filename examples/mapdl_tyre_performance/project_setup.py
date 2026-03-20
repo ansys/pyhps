@@ -30,9 +30,9 @@ import argparse
 import logging
 import os
 import random
-import time
 
 import jwt
+from ansys.rep.common.auth.self_signed_token_provider import SelfSignedTokenProvider
 
 from ansys.hps.client import Client, HPSError, __ansys_apps_version__
 from ansys.hps.client.jms import (
@@ -49,7 +49,6 @@ from ansys.hps.client.jms import (
     Software,
     TaskDefinition,
 )
-from ansys.rep.common.auth.self_signed_token_provider import SelfSignedTokenProvider
 
 log = logging.getLogger(__name__)
 
@@ -248,19 +247,7 @@ def create_project(
         task_def.resource_requirements.hpc_resources.queue = queue
 
     if use_exec_script:
-        retry = 0
-        while retry < 50:
-            try:
-                exec_script_file = project_api.copy_default_execution_script(
-                    f"mapdl-v{version[2:4]}{version[6]}-exec_mapdl.py"
-                    # f"fluent-v{version[2:4]}{version[6]}-exec_fluent.py"
-                )
-                time.sleep(1)
-                break
-            except HPSError as e:
-                log.error(f"Failed to copy execution script: {str(e)}")
-                exec_script_file = None
-                retry += 1
+        exec_script_file = project_api.copy_default_execution_script("mapdl-exec_mapdl.py")
 
         task_def.use_execution_script = True
         task_def.execution_script_id = exec_script_file.id

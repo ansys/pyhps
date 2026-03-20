@@ -20,11 +20,8 @@ for /f "delims=" %%a in ('python oidc_pkce.py -u %BASE_PROD_URL%') do @set TOKEN
 echo %TOKEN_PROD%
 REM ping 127.0.0.1 -n 10
 
-REM python examples/generic_api/project_setup.py --urls "%BASE_URL%"  --accounts "%ACCOUNT%" --token=%TOKEN%
-python examples/mapdl_tyre_performance/project_setup.py --name "Burst Account tests" -v "2025 R1" --use-exec-script True --url "%BASE_PROD_URL%" --num-jobs=1 --account="%ACCOUNT_PROD%" --token=%TOKEN_PROD%
-REM python examples/mapdl_tyre_performance/project_setup.py --name "Burst Account tests jon" -v "2025 R1" --use-exec-script True --url "%BASE_URL%" --num-jobs=1 --account="%ACCOUNT_BURST%" --token=%TOKEN%
-REM python examples/generic_api/project_setup.py --urls "%BASE_URL%"  --accounts "%ACCOUNT%" --token=%TOKEN%
-REM python project_setup.py --urls "%BASE_URL%" --accounts "onprem_account" --token=%TOKEN% REM --verbose=True
-REM python project_setup.py --urls "%BASE_URL%"  --accounts "30b226d7-aa1b-4001-b763-f88525abde4d" "0fea8f1b-0f0f-4998-938a-37a62db59481" --token=%TOKEN%
+REM python examples/mapdl_tyre_performance/project_setup.py --name "Burst Account tests" -v "2025 R2" --use-exec-script True --url "%BASE_PROD_URL%" --num-jobs=1 --account="%ACCOUNT_PROD%" --token=%TOKEN_PROD%
+python examples/mapdl_motorbike_frame/project_setup.py --name "Burst account test" -v "2025 R2" --use-exec-script --url "%BASE_PROD_URL%" --num-jobs=2 --account="%ACCOUNT_PROD%" --token=%TOKEN_PROD%
+
 
 pause

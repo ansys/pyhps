@@ -10,6 +10,7 @@ on:
           - 'v1.0.2'
           - 'v1.1.1'
           - 'v1.2.0'
+          - 'v1.3.45'
           - 'latest-dev'
       hps-feature:
         description: HPS feature to test against
@@ -59,15 +60,30 @@ jobs:
       hps-version: ${{ inputs.hps-version || 'latest-dev' }}
       hps-feature: ${{ inputs.hps-feature || 'main' }}
 
+  backward-compatibility-tests:
+    strategy:
+      matrix:
+          hps-version: ['v1.2.0', 'v1.3.45']
+      fail-fast: false
+    uses: ./.github/workflows/tests.yml
+    secrets: inherit
+    with:
+      python-version: '3.10'
+      toxenv: 'py310'
+      runner: 'ubuntu-latest'
+      hps-version: ${{ matrix.hps-version }}
+      hps-feature: 'main'
+      upload-coverage: false
+
   docs:
     name: Documentation
     runs-on: ubuntu-latest
     needs: [style]
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - name: Set up Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
           python-version: ${{ env.MAIN_PYTHON_VERSION }}
           
@@ -91,14 +107,14 @@ jobs:
         run: tox -e doc-html-${{ runner.os == 'Linux' && 'linux' || 'windows' }},doc-pdf-${{ runner.os == 'Linux' && 'linux' || 'windows' }}
 
       - name: Upload HTML Documentation
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: documentation-html
           path: doc/_build/html
           retention-days: 7
 
       - name: Upload PDF Documentation
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: documentation-pdf
           path: doc/_build/latex/*.pdf
@@ -169,7 +185,7 @@ jobs:
       library_version: ${{ steps.version.outputs.library_version }}
     steps:
       - name: "Install Git and clone project"
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         
       - uses: extractions/netrc@v2
         with:
@@ -209,7 +225,7 @@ jobs:
     needs: [package, library-version]
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v7
         with:
           name: ansys-hps-client-artifacts
           path: /tmp/artifacts

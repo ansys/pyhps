@@ -29,7 +29,8 @@ with tempfile.TemporaryDirectory() as tmpdirname:
         "--output src/ansys/hps/client/rms/models.py "
         "--output-model-type pydantic_v2.BaseModel "
         "--base-class ansys.hps.client.common.DictModel "
-        "--custom-file-header-path rms_models.header"
+        "--custom-file-header-path rms_models.header "
+        "--output-datetime-class datetime"  # to avoid AwareDatetime
     )
     print(f"* Generate models with the following command:\n {cmd}")
     subprocess.run(cmd, check=True, shell=True)

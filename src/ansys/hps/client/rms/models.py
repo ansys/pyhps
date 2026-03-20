@@ -1,4 +1,4 @@
-# Copyright (C) 2022 - 2025 ANSYS, Inc. and/or its affiliates.
+# Copyright (C) 2022 - 2026 ANSYS, Inc. and/or its affiliates.
 # SPDX-License-Identifier: MIT
 #
 #
@@ -270,6 +270,11 @@ class KubernetesKedaBackend(DictModel):
     working_dir: str | None = Field(
         None, description="Working directory to use. (Deprecated)", title="Working Dir"
     )
+    queue_info_path: str | None = Field(
+        None,
+        description="Path of Queue JSON file with addtl. info",
+        title="Queue Info Path",
+    )
     job_script_template_path: str | None = Field(
         None,
         description="Path to the job script template to use in the backend.",
@@ -295,6 +300,11 @@ class KubernetesKedaBackend(DictModel):
         description="Kubernetes resource kind that the scaler should target. Options are ``deployment``, ``job``, and ``statefulset``.",
         title="Target Resource Kind",
     )
+    use_keda_scaling: bool | None = Field(
+        True,
+        description="Whether to use Keda ScaledJobs and ScaledObjects, otherwise will use plain K8s Jobs and Deployments.",
+        title="Use Keda Scaling",
+    )
     service_name: str | None = Field(
         "ansys/rep/scaling",
         description="Service name to be used in prometheus query when fetching metric data.",
@@ -304,6 +314,11 @@ class KubernetesKedaBackend(DictModel):
 
 class KubernetesResourceScaling(DictModel):
     plugin_name: Literal["kubernetes_resource_scaling"] = Field(..., title="Plugin Name")
+    scaling_factor: int | None = Field(
+        1,
+        description="Number of tasks needed to launch each additional evaluator.",
+        title="Scaling Factor",
+    )
     target_resource_kind: str | None = Field(
         "job",
         description="Kubernetes resource kind that the scaler should target. Options are ``deployment``, ``job``, and ``statefulset``.",
@@ -329,6 +344,11 @@ class LocalBackend(DictModel):
     working_dir: str | None = Field(
         None, description="Working directory to use. (Deprecated)", title="Working Dir"
     )
+    queue_info_path: str | None = Field(
+        None,
+        description="Path of Queue JSON file with addtl. info",
+        title="Queue Info Path",
+    )
     evaluator_exe: str | None = Field(
         None, description="Path to evaluator executable.", title="Evaluator Exe"
     )
@@ -341,6 +361,11 @@ class Machine(DictModel):
 
 class MaxAvailableResourceScaling(DictModel):
     plugin_name: Literal["max_available_resource_scaling"] = Field(..., title="Plugin Name")
+    scaling_factor: int | None = Field(
+        1,
+        description="Number of tasks needed to launch each additional evaluator.",
+        title="Scaling Factor",
+    )
     match_all_requirements: bool | None = Field(
         False,
         description="Whether scaling should work with available resource properties specified in the compute resource set (default) or require a match of all requirements of the task definition.",
@@ -365,6 +390,11 @@ class MockupBackend(DictModel):
     )
     working_dir: str | None = Field(
         None, description="Working directory to use. (Deprecated)", title="Working Dir"
+    )
+    queue_info_path: str | None = Field(
+        None,
+        description="Path of Queue JSON file with addtl. info",
+        title="Queue Info Path",
     )
 
 
@@ -400,6 +430,11 @@ class OCMBackend(DictModel):
     )
     working_dir: str | None = Field(
         None, description="Working directory to use. (Deprecated)", title="Working Dir"
+    )
+    queue_info_path: str | None = Field(
+        None,
+        description="Path of Queue JSON file with addtl. info",
+        title="Queue Info Path",
     )
     ocm_url: str | None = Field(
         None, description="URL to use for OCM API authentication.", title="Ocm Url"
@@ -592,6 +627,11 @@ class ScalerApplicationInfo(DictModel):
         description="Period to wait before scaling down the resource to 0 instances.",
         title="Cool Down Period",
     )
+    scaling_factor: int | None = Field(
+        None,
+        description="Number of tasks needed to launch each additional evaluator.",
+        title="Scaling Factor",
+    )
     debug: bool | None = Field(
         None,
         description="Whether to enable additional debug logging and keep job working directories.",
@@ -689,8 +729,8 @@ class ClusterInfo(DictModel):
     id: str | None = Field(None, description="Unique ID for the database.", title="Id")
     crs_id: str | None = Field(None, description="Compute resource set ID.", title="Crs Id")
     name: str | None = Field(None, description="Cluster name.", title="Name")
-    queues: list[Queue] | None = Field([], title="Queues")
-    nodes: list[Node] | None = Field([], title="Nodes")
+    queues: list[Queue] | None = Field(default_factory=list, title="Queues")
+    nodes: list[Node] | None = Field(default_factory=list, title="Nodes")
     additional_props: dict[str, dict[str, Any]] | None = Field({}, title="Additional Props")
 
 
@@ -744,6 +784,11 @@ class OrchestrationInterfacesBackend(DictModel):
     working_dir: str | None = Field(
         None, description="Working directory to use. (Deprecated)", title="Working Dir"
     )
+    queue_info_path: str | None = Field(
+        None,
+        description="Path of Queue JSON file with addtl. info",
+        title="Queue Info Path",
+    )
     scheduler_type: str | None = Field(
         "slurm",
         description="Job scheduler type, such as ``slurm``, ``pbs``, ``uge``, or ``lsf``, to use in the backend.",
@@ -758,11 +803,6 @@ class OrchestrationInterfacesBackend(DictModel):
         "http://localhost:5050", description="REST API URL.", title="Base Url"
     )
     api_ver: str | None = Field("v0.0.39", description="REST API version.", title="Api Ver")
-    queue_info_path: str | None = Field(
-        None,
-        description="Path of Queue JSON file with addtl. info",
-        title="Queue Info Path",
-    )
     scheduler_queue_default: str | None = Field(
         None,
         description="Job scheduler queue to use for submission.",
@@ -809,7 +849,9 @@ class OrchestrationInterfacesBackend(DictModel):
     process_runner: (
         ServiceUserProcessRunner | ProcessLauncherProcessRunner | RestLauncherProcessRunner | None
     ) = Field(
-        {"plugin_name": "service_user_module"},
+        default_factory=lambda: ServiceUserProcessRunner.model_validate(
+            {"plugin_name": "service_user_module"}
+        ),
         description="Process runner to execute commands.",
         discriminator="plugin_name",
         title="Process Runner",
@@ -858,16 +900,21 @@ class ComputeResourceSet(DictModel):
         | MockupBackend
         | None
     ) = Field(
-        {"plugin_name": "local", "debug": False},
+        default_factory=lambda: KubernetesKedaBackend.model_validate(
+            {"plugin_name": "local", "debug": False}
+        ),
         description="Backend to use in the compute resource set.",
         discriminator="plugin_name",
         title="Backend",
     )
     scaling_strategy: MaxAvailableResourceScaling | KubernetesResourceScaling | None = Field(
-        {
-            "plugin_name": "max_available_resource_scaling",
-            "match_all_requirements": False,
-        },
+        default_factory=lambda: MaxAvailableResourceScaling.model_validate(
+            {
+                "plugin_name": "max_available_resource_scaling",
+                "scaling_factor": 1,
+                "match_all_requirements": False,
+            }
+        ),
         description="Scaling strategy to use in the compute resource set.",
         discriminator="plugin_name",
         title="Scaling Strategy",
@@ -877,7 +924,7 @@ class ComputeResourceSet(DictModel):
         description="Available resources in the compute resource set.",
     )
     available_applications: list[ScalerApplicationInfo] | None = Field(
-        [],
+        default_factory=list,
         description="List of available applications.",
         title="Available Applications",
     )
@@ -900,6 +947,11 @@ class ComputeResourceSet(DictModel):
         5,
         description="Number of seconds between each iteration of the evaluator's main loop.",
         title="Evaluator Loop Interval",
+    )
+    evaluator_optimized_move: bool | None = Field(
+        False,
+        description="Whether to use optimized move operations when moving files within the same filesystem.",
+        title="Evaluator Optimized Move",
     )
 
 
@@ -935,7 +987,9 @@ class EvaluatorConfiguration(DictModel):
     task_directory_cleanup: TaskDirectoryCleanup | None = Field(
         None, title="Task Directory Cleanup"
     )
-    resources: EvaluatorResources | None = {"custom": {}}
+    resources: EvaluatorResources | None = Field(
+        default_factory=lambda: EvaluatorResources.model_validate({"custom": {}})
+    )
     task_manager_type: str | None = Field(None, title="Task Manager Type")
     loop_interval: float | None = Field(
         5.0,
@@ -948,7 +1002,9 @@ class EvaluatorConfiguration(DictModel):
         title="Local File Cache",
     )
     applications: list[ApplicationInfo] | None = Field(
-        [], description="List of available applications.", title="Applications"
+        default_factory=list,
+        description="List of available applications.",
+        title="Applications",
     )
     project_server_select: bool | None = Field(
         True,
@@ -966,7 +1022,7 @@ class EvaluatorConfiguration(DictModel):
         title="Project Assignment Mode",
     )
     context: Context | None = Field(
-        {"custom": {}, "use_local_scratch": False},
+        default_factory=lambda: Context.model_validate({"custom": {}, "use_local_scratch": False}),
         description="Runtime properties to pass to executed tasks.",
     )
 
@@ -991,7 +1047,9 @@ class EvaluatorConfigurationUpdate(DictModel):
     task_directory_cleanup: TaskDirectoryCleanup | None = Field(
         None, title="Task Directory Cleanup"
     )
-    resources: EvaluatorResources | None = {"custom": {}}
+    resources: EvaluatorResources | None = Field(
+        default_factory=lambda: EvaluatorResources.model_validate({"custom": {}})
+    )
     name: str | None = Field(
         None,
         description="Update the name of the evaluator, which updates the registration.",
@@ -1021,7 +1079,8 @@ class EvaluatorConfigurationUpdate(DictModel):
         title="Project Assignment Mode",
     )
     context: ContextUpdate | None = Field(
-        {"custom": {}}, description="Runtime properties to pass to executed tasks."
+        default_factory=lambda: ContextUpdate.model_validate({"custom": {}}),
+        description="Runtime properties to pass to executed tasks.",
     )
 
 

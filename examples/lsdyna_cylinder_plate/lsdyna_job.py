@@ -1,4 +1,4 @@
-# Copyright (C) 2022 - 2025 ANSYS, Inc. and/or its affiliates.
+# Copyright (C) 2022 - 2026 ANSYS, Inc. and/or its affiliates.
 # SPDX-License-Identifier: MIT
 #
 #
@@ -191,7 +191,6 @@ def submit_job(
     file_ids = {f.name: f.id for f in files}
 
     log.info("=== Simulation workflow")
-    job_def = JobDefinition(name="JobDefinition.1", active=True)
 
     # Define process steps (task definitions)
     ls_dyna_command = "%executable% i=%file:inp% ncpu=%resource:num_cores% memory=300m"
@@ -223,9 +222,14 @@ def submit_job(
     )
 
     if use_exec_script:
-        exec_script_file = project_api.copy_default_execution_script(
-            f"lsdyna-v{version[2:4]}{version[6]}-exec_lsdyna.py"
-        )
+        if version >= "2025 R2":
+            exec_script_file = project_api.copy_default_execution_script(
+                "lsdyna-lsdynawrapper-exec_lsdyna.py"
+            )
+        else:
+            exec_script_file = project_api.copy_default_execution_script(
+                "lsdyna-pre-lsdynawrapper-exec_lsdyna.py"
+            )
 
         task_def1.use_execution_script = True
         task_def1.execution_script_id = exec_script_file.id

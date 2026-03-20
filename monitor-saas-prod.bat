@@ -16,8 +16,9 @@ for /f "delims=" %%a in ('python oidc_pkce.py -u %BASE_PROD_URL%') do @set TOKEN
 REM When connecting to SaaS
 
 python examples/generic_api/project_setup.py --urls "%BASE_PROD_URL%" --token=%TOKEN_PROD%  --verbose=true --account "%ACCOUNT_PROD%" --signing_key="D:/ansysDev/signing_prod.key"
-python examples/generic_api/project_setup.py --urls "%BASE_PROD_URL%" --token=%TOKEN_PROD% --monitor True  --account "%ACCOUNT_PROD%" --signing_key="D:/ansysDev/signing_prod.key"
+python examples/generic_api/project_setup.py --urls "%BASE_PROD_URL%" --token=%TOKEN_PROD% --verbose=true --filter=0329T2WwqyIDPElTFt3Lm1 --account "0df8171a-6b58-4ff3-a7e6-10c89cd6aaae" --monitor True --signing_key="D:/ansysDev/signing_prod.key"
 
+REM --filter=031d0ajgf5ql9f1kcpkn1h
 REM 
 REM --remove=old
 

@@ -31,13 +31,13 @@ import os
 import random
 
 import jwt
+from ansys.rep.common.auth.self_signed_token_provider import SelfSignedTokenProvider
 
 from ansys.hps.client import Client, HPSError, __ansys_apps_version__
 from ansys.hps.client.jms import (
     File,
     FitnessDefinition,
     FloatParameterDefinition,
-    HpcResources,
     JmsApi,
     Job,
     JobDefinition,
@@ -51,7 +51,6 @@ from ansys.hps.client.jms import (
     SuccessCriteria,
     TaskDefinition,
 )
-from ansys.rep.common.auth.self_signed_token_provider import SelfSignedTokenProvider
 
 log = logging.getLogger(__name__)
 
@@ -86,6 +85,25 @@ def create_project(
     log.debug("=== Files")
     cwd = os.path.dirname(__file__)
     files = []
+    # search the workdir for all the files in the  workdir and append them all to the
+    # files list with the correct type and evaluation path
+    count = 0
+    if os.path.exists(os.path.join(cwd, "files")):
+        for file in os.listdir(os.path.join(cwd, "files")):
+            if count > 2000:
+                break
+            if "__" in file:
+                continue
+            files.append(
+                File(
+                    name=file,
+                    evaluation_path=file,
+                    type="text/plain" if file.endswith(".mac") else "binary/octet-stream",
+                    src=os.path.join(cwd, "files", file),
+                )
+            )
+            count += 1
+
     files.append(
         File(
             name="inp",
@@ -101,8 +119,11 @@ def create_project(
             name="results",
             evaluation_path="motorbike_frame_results.txt",
             type="text/plain",
-            src=os.path.join(cwd, "motorbike_frame_results.txt"),
+            collect=True,
         )
+    )
+    files.append(
+        File(name="bin", evaluation_path="**.bin", type="binary/octet-stream", collect=True)
     )
     files.append(
         File(name="out", evaluation_path="file.out", type="text/plain", collect=True, monitor=True)
@@ -118,11 +139,17 @@ def create_project(
     if use_exec_script:
         # Define and upload an exemplary exec script to run MAPDL
         files.append(
+            # File(
+            #     name="exec_mapdl",
+            #     evaluation_path="exec_mapdl.py",
+            #     type="application/x-python-code",
+            #     src=os.path.join(cwd, "exec_mapdl.py"),
+            # )
             File(
                 name="exec_mapdl",
                 evaluation_path="exec_mapdl.py",
                 type="application/x-python-code",
-                src=os.path.join(cwd, "exec_mapdl.py"),
+                src=os.path.join(cwd, "exec_file_generate.py"),
             )
         )
 
@@ -292,7 +319,7 @@ def create_project(
             num_cores=4.0,
             # memory=250 * 1024 * 1024,  # 250 MB
             # disk_space=5 * 1024 * 1024,  # 5 MB
-            hpc_resources=HpcResources(queue="amd-96c-384g-hpc"),
+            # hpc_resources=HpcResources(queue="amd-96c-384g-hpc"),
         ),
         execution_level=0,
         # max_execution_time=600.0,
@@ -307,6 +334,11 @@ def create_project(
             # require_all_output_parameters=True,
         ),
         licensing=Licensing(enable_shared_licensing=False),  # Shared licensing disabled by default
+    )
+
+    _ = project_api.copy_default_execution_script(
+        "fluent-v252-exec_fluent.py"
+        # f"fluent-v{version[2:4]}{version[6]}-exec_fluent.py"
     )
 
     if use_exec_script:

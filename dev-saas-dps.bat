@@ -20,7 +20,8 @@ REM for /f "delims=" %%a in ('python oidc_pkce.py -u %BASE_PROD_URL%') do @set T
 echo %TOKEN%
 
 REM python examples/generic_api/project_setup.py --urls "%BASE_URL%"  --accounts "%ACCOUNT%" --token=%TOKEN%
-python examples/mapdl_motorbike_frame/project_setup.py --name "DP TESTING JON 50" -v "2025 R2" --use-exec-script --url "%BASE_URL%" --num-jobs=50 --one-to-one --account="%ACCOUNT_BURST%" --token=%TOKEN%
+REM python examples/mapdl_motorbike_frame/project_setup.py --name "DP TESTING JON 50" -v "2025 R2" --use-exec-script --url "%BASE_URL%" --num-jobs=50 --one-to-one --account="%ACCOUNT_BURST%" --token=%TOKEN%
+python examples/mapdl_motorbike_frame/project_setup.py --name "2000 FILE TESTING JON" -v "2025 R2" --use-exec-script --url "%BASE_URL%" --account="%ACCOUNT_BURST%" --num-jobs=1 --token=%TOKEN%
 REM python examples/generic_api/project_setup.py --urls "%BASE_URL%"  --accounts "%ACCOUNT%" --token=%TOKEN%
 REM python project_setup.py --urls "%BASE_URL%" --accounts "onprem_account" --token=%TOKEN% REM --verbose=True
 REM python project_setup.py --urls "%BASE_URL%"  --accounts "30b226d7-aa1b-4001-b763-f88525abde4d" "0fea8f1b-0f0f-4998-938a-37a62db59481" --token=%TOKEN%

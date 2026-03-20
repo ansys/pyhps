@@ -1,4 +1,4 @@
-# Copyright (C) 2022 - 2025 ANSYS, Inc. and/or its affiliates.
+# Copyright (C) 2022 - 2026 ANSYS, Inc. and/or its affiliates.
 # SPDX-License-Identifier: MIT
 #
 #
@@ -264,4 +264,12 @@ class TaskDefinitionSchema(ObjectSchemaWithModificationInfo):
     debug = fields.Bool(
         allow_none=True,
         metadata={"description": "Enable debug logging and retain Task working directory."},
+    )
+
+    working_directory = fields.String(
+        allow_none=True,
+        metadata={
+            "description": "Optional root working directory to be used by the evaluator"
+            " for task execution"
+        },
     )

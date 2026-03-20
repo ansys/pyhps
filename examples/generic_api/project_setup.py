@@ -34,13 +34,13 @@ import time
 from datetime import datetime, timezone
 
 import jwt
+from ansys.rep.common.auth.self_signed_token_provider import SelfSignedTokenProvider
 from marshmallow.utils import missing
 
 from ansys.hps.client import Client, HPSError
 from ansys.hps.client.jms import File, JmsApi, Project, ProjectApi
 from ansys.hps.client.jms.resource.project import ProjectSchema
 from ansys.hps.client.rms import RmsApi
-from ansys.rep.common.auth.self_signed_token_provider import SelfSignedTokenProvider
 
 log = logging.getLogger(__name__)
 
@@ -236,30 +236,34 @@ def monitor_projects(
                         else:
                             file_counts[f.name] = 1
 
-                    incomplete = False
-                    for file_name, count in file_counts.items():
-                        file = next(f for f in files if f.name == file_name)
-                        # and f.storage_id in [None, missing])
-                        # print(file)
-                        if count > 3:
-                            log.debug(f"{' ' * 12}{file_name}:{file.format} -> {count} times")
-                        line = f"{' ' * 12}---"
-                        counter = 0
-                        for f in [f for f in files if f.name == file_name]:
-                            counter += 1
-                            line += f" {f.evaluation_path[:30].rjust(30)}"
-                            line += f" -{f.size}b-{f.type.split('/')[0][:6].ljust(6)} "
-                            incomplete = True
-                            if counter % 4 == 0:
-                                log.debug(line)
-                                line = f"{' ' * 12}---"
-                                incomplete = False
-                    if incomplete:
-                        log.debug(line)
+                    display_file_info(files, file_counts)
 
         except HPSError as e:
             log.debug(e)
             continue
+
+
+def display_file_info(files, file_counts):
+    incomplete = False
+    for file_name, count in file_counts.items():
+        file = next(f for f in files if f.name == file_name)
+        # and f.storage_id in [None, missing])
+        # print(file)
+        if count > 3:
+            log.debug(f"{' ' * 12}{file_name}:{file.format} -> {count} times")
+        line = f"{' ' * 12}---"
+        counter = 0
+        for f in [f for f in files if f.name == file_name]:
+            counter += 1
+            line += f" {f.evaluation_path[:30].rjust(30)}"
+            line += f" -{f.size}b-{f.type.split('/')[0][:6].ljust(6)} "
+            incomplete = True
+            if counter % 4 == 0:
+                log.debug(line)
+                line = f"{' ' * 12}---"
+                incomplete = False
+    if incomplete:
+        log.debug(line)
 
 
 # write
