@@ -11,6 +11,7 @@ on:
           - 'v1.1.1'
           - 'v1.2.0'
           - 'v1.3.45'
+          - 'v1.4.10'
           - 'latest-dev'
       hps-feature:
         description: HPS feature to test against
@@ -63,7 +64,7 @@ jobs:
   backward-compatibility-tests:
     strategy:
       matrix:
-          hps-version: ['v1.2.0', 'v1.3.45']
+          hps-version: ['v1.2.0', 'v1.3.45', 'v1.4.10']
       fail-fast: false
     uses: ./.github/workflows/tests.yml
     secrets: inherit
