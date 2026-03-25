@@ -142,21 +142,3 @@ def version_required(min_version=None, max_version=None):
         return wrapper
 
     return decorator
-
-
-def status_required():
-    """Provide a Decorator to ensure the RCS API is alive."""
-
-    def decorator(func):
-        @wraps(func)
-        def wrapper(self, *args, **kwargs):
-            # Check the health status
-            if not self.health:
-                raise RuntimeError(
-                    f"{func.__name__} cannot be executed because the RCS API is not alive."
-                )
-            return func(self, *args, **kwargs)
-
-        return wrapper
-
-    return decorator
