@@ -29,6 +29,7 @@ import portend
 import pytest
 import requests
 
+from ansys.hps.client.rcs.api import RcsApi
 from ansys.hps.client.rcs.api.base import create_object, delete_object
 from ansys.hps.client.rcs.models import (
     RegisterInstance,
@@ -74,21 +75,23 @@ def test_hello_world(http_server):
     assert response.text == "Hello, World!"
 
 
-def test_health_check(rcs_api, has_hps_version_le_1_3_45):
+def test_health_check(client, has_hps_version_le_1_3_45):
     """Test the health_check method."""
     if has_hps_version_le_1_3_45:
         pytest.skip("RCS was introduced after HPS v1.3.45.")
+    rcs_api = RcsApi(client)
     response = rcs_api.health_check()
     # Assert
     assert response["status"] == "alive"
 
 
-def test_register_instance_and_response(rcs_api, http_server, has_hps_version_le_1_3_45):
+def test_register_instance_and_response(client, http_server, has_hps_version_le_1_3_45):
     """Test the register_instance and unregister_instance methods and their responses."""
 
     if has_hps_version_le_1_3_45:
         pytest.skip("RCS was introduced after HPS v1.3.45.")
 
+    rcs_api = RcsApi(client)
     server, url = http_server
     # Arrange
     instance_data = RegisterInstance(
