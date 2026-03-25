@@ -21,8 +21,10 @@
 # SOFTWARE.
 """Module wrapping around RCS root endpoints."""
 
+import inspect
 import logging
 
+from ansys.hps.client.check_version import status_required
 from ansys.hps.client.client import Client
 from ansys.hps.client.rcs.models import (
     RegisterInstance,
@@ -36,6 +38,18 @@ from .base import create_object, delete_object
 log = logging.getLogger(__name__)
 
 
+def apply_status_check(cls):
+    """Apply the status_required decorator to all methods in the class."""
+    excluded_methods = {"health", "health_check"}  # Methods to exclude from decoration
+    for name, method in inspect.getmembers(cls, predicate=inspect.isfunction):
+        # Skip special methods and excluded methods
+        if not name.startswith("__") and name not in excluded_methods:
+            # Apply the status_required decorator dynamically
+            setattr(cls, name, status_required()(method))
+    return cls
+
+
+@apply_status_check
 class RcsApi:
     """Wraps around the RCS root endpoints.
 

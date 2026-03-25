@@ -59,7 +59,6 @@ def http_server():
     server = HTTPServer(("0.0.0.0", port), HelloWorldHandler)
     hostname = socket.gethostname()
     url = f"http://{hostname}:{port}"
-    print(url)
     thread = threading.Thread(target=server.serve_forever)
     thread.daemon = True
     thread.start()
@@ -115,7 +114,6 @@ def test_register_instance_and_response(rcs_api, http_server, has_hps_version_le
     assert response.resource_name == f"test_service-{uid}"
 
     url = f"https://{response.instance_url}"
-    print(url)
     res = requests.get(url, verify=False)
     # Assert the instance is accessible at the registered URL
     assert res.status_code == 200
