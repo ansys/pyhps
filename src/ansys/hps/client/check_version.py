@@ -63,6 +63,11 @@ RMS_VERSIONS: dict[HpsRelease, str] = {
     HpsRelease.v1_4_10: "1.2.88",
 }
 
+"""HPS to RCS version mapping."""
+RCS_VERSIONS: dict[HpsRelease, str] = {
+    HpsRelease.v1_4_10: "0.1.149",
+}
+
 
 class ApiProtocol(Protocol):
     """Protocol for API classes."""
