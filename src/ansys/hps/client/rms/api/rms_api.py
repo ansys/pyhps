@@ -24,6 +24,7 @@
 import logging
 
 from ansys.hps.client.client import Client
+from ansys.hps.client.common.utils import _object_to_json
 from ansys.hps.client.exceptions import ClientError
 from ansys.hps.client.rms.models import (
     AnalyzeRequirements,
@@ -36,7 +37,7 @@ from ansys.hps.client.rms.models import (
     ScalerRegistration,
 )
 
-from .base import create_objects, get_object, get_objects, get_objects_count, object_to_json
+from .base import create_objects, get_object, get_objects, get_objects_count
 
 log = logging.getLogger(__name__)
 
@@ -197,7 +198,7 @@ class RmsApi:
 
         r = self.client.session.post(
             f"{self.url}/analyze",
-            data=object_to_json(requirements),
+            data=_object_to_json(requirements),
             params={"analytics": analytics},
         )
 

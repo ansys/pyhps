@@ -19,14 +19,24 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
-"""PyHPS is a Python client for Ansys HPC Platform Services (HPS)."""
 
-from .__version__ import __ansys_apps_version__, __version__
-from .auth import AuthApi
-from .authenticate import authenticate, determine_auth_url
-from .client import Client
-from .exceptions import APIError, ClientError, HPSError, VersionCompatibilityError
-from .jms import JmsApi, ProjectApi
-from .rcs import RcsApi
-from .rms import RmsApi
-from .warnings import UnverifiedHTTPSRequestsWarning
+
+def test_dict_model_functionality():
+    from ansys.hps.client.rcs.models import RegisterInstance
+
+    obj = RegisterInstance(
+        url="http://example.com/hps/rcs",
+        api_url="http://example.com/hps/rcs/api",
+        service_name="service-123",
+        jms_project_id="1234",
+        jms_job_id="5678",
+        jms_task_id="1011",
+        routing="query",
+    )
+
+    assert obj["url"] == "http://example.com/hps/rcs"
+    assert obj["service_name"] == "service-123"
+    assert obj["jms_project_id"] == "1234"
+    assert obj["jms_job_id"] == "5678"
+    assert obj["jms_task_id"] == "1011"
+    assert obj["routing"] == "query"
