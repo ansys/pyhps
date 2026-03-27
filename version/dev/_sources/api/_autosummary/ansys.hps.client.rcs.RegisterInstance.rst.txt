@@ -1,0 +1,6 @@
+﻿RegisterInstance
+================
+
+.. currentmodule:: ansys.hps.client.rcs
+
+.. autopydantic_model:: RegisterInstance
