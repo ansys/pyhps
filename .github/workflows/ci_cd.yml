@@ -226,7 +226,7 @@ jobs:
     needs: [package, library-version]
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/download-artifact@v7
+      - uses: actions/download-artifact@v8
         with:
           name: ansys-hps-client-artifacts
           path: /tmp/artifacts
