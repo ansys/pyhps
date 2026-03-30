@@ -11,6 +11,7 @@ on:
           - 'v1.1.1'
           - 'v1.2.0'
           - 'v1.3.45'
+          - 'v1.4.10'
           - 'latest-dev'
 
   schedule:
@@ -64,7 +65,7 @@ jobs:
           - should-release: false 
             os: macos-latest
     steps:
-      - uses: extractions/netrc@v2
+      - uses: extractions/netrc@v3
         with:
           machine: github.com
           username: pyansys-ci-bot
@@ -89,7 +90,7 @@ jobs:
         with:
           python-version: ${{ env.MAIN_PYTHON_VERSION }}
 
-      - uses: extractions/netrc@v2
+      - uses: extractions/netrc@v3
         with:
           machine: github.com
           username: pyansys-ci-bot
@@ -108,14 +109,14 @@ jobs:
         run: tox -e doc-html-${{ runner.os == 'Linux' && 'linux' || 'windows' }},doc-pdf-${{ runner.os == 'Linux' && 'linux' || 'windows' }}
 
       - name: Upload HTML Documentation
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v7
         with:
           name: documentation-html
           path: doc/_build/html
           retention-days: 7
 
       - name: Upload PDF Documentation
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v7
         with:
           name: documentation-pdf
           path: doc/_build/latex/*.pdf

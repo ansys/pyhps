@@ -11,6 +11,7 @@ on:
           - 'v1.1.1'
           - 'v1.2.0'
           - 'v1.3.45'
+          - 'v1.4.10'
           - 'latest-dev'
       hps-feature:
         description: HPS feature to test against
@@ -20,7 +21,7 @@ on:
   pull_request:
   push:
     tags:
-      - "*"
+      - "v*.*.*"
     branches:
       - main
 
@@ -63,7 +64,7 @@ jobs:
   backward-compatibility-tests:
     strategy:
       matrix:
-          hps-version: ['v1.2.0', 'v1.3.45']
+          hps-version: ['v1.2.0', 'v1.3.45', 'v1.4.10']
       fail-fast: false
     uses: ./.github/workflows/tests.yml
     secrets: inherit
@@ -87,7 +88,7 @@ jobs:
         with:
           python-version: ${{ env.MAIN_PYTHON_VERSION }}
           
-      - uses: extractions/netrc@v2
+      - uses: extractions/netrc@v3
         with:
           machine: github.com
           username: pyansys-ci-bot
@@ -107,14 +108,14 @@ jobs:
         run: tox -e doc-html-${{ runner.os == 'Linux' && 'linux' || 'windows' }},doc-pdf-${{ runner.os == 'Linux' && 'linux' || 'windows' }}
 
       - name: Upload HTML Documentation
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v7
         with:
           name: documentation-html
           path: doc/_build/html
           retention-days: 7
 
       - name: Upload PDF Documentation
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v7
         with:
           name: documentation-pdf
           path: doc/_build/latex/*.pdf
@@ -143,7 +144,7 @@ jobs:
             python-version: '3.13'
 
     steps:
-      - uses: extractions/netrc@v2
+      - uses: extractions/netrc@v3
         with:
           machine: github.com
           username: pyansys-ci-bot
@@ -187,7 +188,7 @@ jobs:
       - name: "Install Git and clone project"
         uses: actions/checkout@v6
         
-      - uses: extractions/netrc@v2
+      - uses: extractions/netrc@v3
         with:
           machine: github.com
           username: pyansys-ci-bot
@@ -225,7 +226,7 @@ jobs:
     needs: [package, library-version]
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/download-artifact@v6
+      - uses: actions/download-artifact@v8
         with:
           name: ansys-hps-client-artifacts
           path: /tmp/artifacts

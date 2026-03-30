@@ -1,4 +1,4 @@
-# Copyright (C) 2022 - 2025 ANSYS, Inc. and/or its affiliates.
+# Copyright (C) 2022 - 2026 ANSYS, Inc. and/or its affiliates.
 # SPDX-License-Identifier: MIT
 #
 #
@@ -41,6 +41,7 @@ class HpsRelease(Enum):
     v1_1_1 = "1.1.1"
     v1_2_0 = "1.2.0"
     v1_3_45 = "1.3.45"
+    v1_4_10 = "1.4.10"
 
 
 """HPS to JMS version mapping."""
@@ -49,6 +50,7 @@ JMS_VERSIONS: dict[HpsRelease, str] = {
     HpsRelease.v1_1_1: "1.0.20",
     HpsRelease.v1_2_0: "1.1.4",
     HpsRelease.v1_3_45: "1.1.60",
+    HpsRelease.v1_4_10: "1.1.180",
 }
 
 
@@ -58,6 +60,12 @@ RMS_VERSIONS: dict[HpsRelease, str] = {
     HpsRelease.v1_1_1: "1.1.5",
     HpsRelease.v1_2_0: "1.1.10",
     HpsRelease.v1_3_45: "1.1.71",
+    HpsRelease.v1_4_10: "1.2.88",
+}
+
+"""HPS to RCS version mapping."""
+RCS_VERSIONS: dict[HpsRelease, str] = {
+    HpsRelease.v1_4_10: "0.1.149",
 }
 
 

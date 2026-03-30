@@ -1,4 +1,4 @@
-# Copyright (C) 2022 - 2025 ANSYS, Inc. and/or its affiliates.
+# Copyright (C) 2022 - 2026 ANSYS, Inc. and/or its affiliates.
 # SPDX-License-Identifier: MIT
 #
 #
@@ -25,9 +25,9 @@ import json
 import logging
 
 from pydantic import BaseModel, create_model
-from pydantic import __version__ as pydantic_version
 from requests import Session
 
+from ansys.hps.client.common.utils import _json_to_objects, _object_to_json
 from ansys.hps.client.exceptions import ClientError
 
 from ..models import (
@@ -54,22 +54,6 @@ def _create_dynamic_list_model(name, field_name, field_type) -> BaseModel:
     return create_model(name, **fields)
 
 
-def object_to_json(
-    object: BaseModel,
-    exclude_unset: bool = True,
-    exclude_defaults: bool = False,
-) -> str:
-    """Convert a Pydantic object to a JSON string."""
-    if pydantic_version.startswith("1."):
-        return object.json(exclude_unset=exclude_unset, exclude_defaults=exclude_defaults)
-    elif pydantic_version.startswith("2."):
-        return object.model_dump_json(
-            exclude_unset=exclude_unset, exclude_defaults=exclude_defaults
-        )
-    else:
-        raise RuntimeError(f"Unsupported Pydantic version {pydantic_version}")
-
-
 def objects_to_json(
     objects: list[BaseModel],
     rest_name: str,
@@ -86,14 +70,7 @@ def objects_to_json(
     args = {f"{rest_name}": objects}
     objects_list = ListOfObjects(**args)
 
-    return object_to_json(objects_list, exclude_unset, exclude_defaults)
-
-
-def _json_to_objects(data, obj_type):
-    obj_list = []
-    for obj in data:
-        obj_list.append(obj_type(**obj))
-    return obj_list
+    return _object_to_json(objects_list, exclude_unset, exclude_defaults)
 
 
 def get_objects(

@@ -1,4 +1,4 @@
-# Copyright (C) 2022 - 2025 ANSYS, Inc. and/or its affiliates.
+# Copyright (C) 2022 - 2026 ANSYS, Inc. and/or its affiliates.
 # SPDX-License-Identifier: MIT
 #
 #
@@ -145,6 +145,27 @@ def test_download_file_in_subdir(client, inactive_temporary_project):
 
     with tempfile.TemporaryDirectory() as tpath:
         fpath = project_api.download_file(file, tpath)
+        with open(fpath) as sf:
+            assert "This is my file" == sf.read()
+
+
+def test_download_file_with_correct_name(client, inactive_temporary_project):
+    project_api = ProjectApi(client, inactive_temporary_project.id)
+
+    files = [
+        File(
+            name="file",
+            evaluation_path="test.txt",
+            type="text/plain",
+            src=io.BytesIO(b"This is my file"),
+        )
+    ]
+
+    file = project_api.create_files(files)[0]
+
+    with tempfile.TemporaryDirectory() as tpath:
+        fpath = project_api.download_file(file, tpath, file_name="downloaded.txt")
+        assert os.path.basename(fpath) == "downloaded.txt"
         with open(fpath) as sf:
             assert "This is my file" == sf.read()
 
