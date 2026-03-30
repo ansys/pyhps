@@ -43,7 +43,7 @@ jobs:
         with:
           python-version: ${{ inputs.python-version }}
         
-      - uses: extractions/netrc@v2
+      - uses: extractions/netrc@v3
         with:
           machine: github.com
           username: pyansys-ci-bot

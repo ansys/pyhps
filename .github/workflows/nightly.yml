@@ -65,7 +65,7 @@ jobs:
           - should-release: false 
             os: macos-latest
     steps:
-      - uses: extractions/netrc@v2
+      - uses: extractions/netrc@v3
         with:
           machine: github.com
           username: pyansys-ci-bot
@@ -90,7 +90,7 @@ jobs:
         with:
           python-version: ${{ env.MAIN_PYTHON_VERSION }}
 
-      - uses: extractions/netrc@v2
+      - uses: extractions/netrc@v3
         with:
           machine: github.com
           username: pyansys-ci-bot
