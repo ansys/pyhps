@@ -1,7 +1,14 @@
-# Contributing
+# Contribute
 
-Please, refer to the [PyAnsys Developer's Guide] for contributing to this project.
+Overall guidance on contributing to a PyAnsys library appears in the
+[Contributing] topic in the *PyAnsys developer's guide*. Ensure that you
+are thoroughly familiar with this guide before attempting to contribute to
+PyHPS.
 
-[PyAnsys Developer's Guide]: https://dev.docs.pyansys.com/index.html
+[Contributing]: https://dev.docs.pyansys.com/how-to/contributing.html
 
-<!-- Additional information for your project goes below this line -->
+<!-- Begin content specific to your library here. -->
+
+Additional information can be found in the
+[PyHPS Contributing](https://hps.docs.pyansys.com/version/dev/contribute.html)
+documentation.
