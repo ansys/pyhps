@@ -5,12 +5,10 @@ Overall guidance on contributing to a PyAnsys library appears in the
 are thoroughly familiar with this guide before attempting to contribute to
 PyHPS.
 
-The following contribution information is specific to PyHPS.
-
 [Contributing]: https://dev.docs.pyansys.com/how-to/contributing.html
 
 <!-- Begin content specific to your library here. -->
 
-* [Contributing to PyHPS]
-
-[Contributing to PyHPS]: https://hps.docs.pyansys.com/version/dev/contribute.html
+Additional information can be found in the
+[PyHPS Contributing](https://hps.docs.pyansys.com/version/dev/contribute.html)
+documentation.
