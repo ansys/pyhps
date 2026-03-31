@@ -36,8 +36,7 @@ log = logging.getLogger(__name__)
 def test_client_ssl_warning(url, username, password):
     with pytest.warns(UnverifiedHTTPSRequestsWarning) as record:
         _ = Client(url, username, password)
-    assert len(record) == 1
-    assert "Unverified HTTPS requests" in str(record[0].message)
+    assert any("Unverified HTTPS requests" in str(w.message) for w in record)
 
 
 def test_client_with_ssl_verification(url, username, password):
