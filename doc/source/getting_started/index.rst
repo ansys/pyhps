@@ -68,7 +68,7 @@ The following table summarizes the compatibility between PyHPS versions and HPS 
 
 .. list-table::
    :header-rows: 1
-   :widths: 40 15 15 15 15
+   :widths: 40 15 15 15 15 15
 
    * - PyHPS version / HPS release
      - ``1.0.2``
@@ -109,7 +109,7 @@ The following table summarizes the compatibility between PyHPS versions and HPS 
    * - ``0.12.X``
      - :octicon:`x`
      - :octicon:`x`
-     - :octicon:`check-circle-fill` `[2] <#note-2>`__
+     - :octicon:`check-circle-fill` `[2] <#note-2>`__ `[3] <#note-3>`__
      - :octicon:`check-circle-fill` `[3] <#note-3>`__
      - :octicon:`check-circle-fill`
 
@@ -129,8 +129,8 @@ See the HPS 1.3.45 release notes for more information on the changes introduced 
 
 .. _note-2:
 
-**[2]** In PyHPS 0.11.X, functionalities related to task definition templates are only compatible with HPS 1.3.45 and later.
+**[2]** In PyHPS 0.11.X or higher, functionalities related to task definition templates are only compatible with HPS 1.3.45 and later.
 
-.._note-3:
+.. _note-3:
 
 **[3]** In PyHPS 0.12.X, functionalities related to Route Creation Service (RCS) are only compatible with HPS 1.4.10 and later.
