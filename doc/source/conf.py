@@ -226,9 +226,18 @@ todo_include_todos = True
 
 html_theme = "ansys_sphinx_theme"
 
+html_context = {
+    "github_user": "ansys",
+    "github_repo": "ansys-sphinx-theme",
+    "github_version": "main",
+    "doc_path": "doc/source",
+    "pyansys_tags": ["Platform"],
+}
+
 # only for  sphinx_rtd_theme
 html_theme_options = {
     "github_url": "https://github.com/ansys/pyhps",
+    "use_edit_page_button": True,
     "show_prev_next": False,
     "show_breadcrumbs": True,
     "additional_breadcrumbs": [
@@ -258,9 +267,6 @@ html_favicon = ansys_favicon
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
 html_static_path = ["_static"]
-
-# If true, links to the reST sources are added to the pages.
-html_show_sourcelink = False
 
 # If true, an OpenSearch description file will be output, and all pages will
 # contain a <link> tag referring to it.  The value of this option must be the
@@ -442,7 +448,3 @@ def setup(app: sphinx.application.Sphinx) -> None:
 
     """
     app.connect("builder-inited", archive_examples)
-
-
-# PyAnsys tags configuration
-html_context = {"pyansys_tags": ["Platform"]}
