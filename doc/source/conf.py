@@ -231,6 +231,7 @@ html_theme_options = {
     "github_url": "https://github.com/ansys/pyhps",
     "show_prev_next": False,
     "show_breadcrumbs": True,
+    "logo": "ansys",
     "additional_breadcrumbs": [
         ("PyAnsys", "https://docs.pyansys.com/"),
     ],
