@@ -30,7 +30,7 @@ from datetime import datetime
 from enum import Enum
 from typing import Any, Literal
 
-from pydantic import Field
+from pydantic import Field, TypeAdapter
 
 from ansys.hps.client.common import DictModel
 
@@ -849,9 +849,9 @@ class OrchestrationInterfacesBackend(DictModel):
     process_runner: (
         ServiceUserProcessRunner | ProcessLauncherProcessRunner | RestLauncherProcessRunner | None
     ) = Field(
-        default_factory=lambda: ServiceUserProcessRunner.model_validate(
-            {"plugin_name": "service_user_module"}
-        ),
+        default_factory=lambda: TypeAdapter(
+            ServiceUserProcessRunner | ProcessLauncherProcessRunner | RestLauncherProcessRunner
+        ).validate_python({"plugin_name": "service_user_module"}),
         description="Process runner to execute commands.",
         discriminator="plugin_name",
         title="Process Runner",
@@ -900,15 +900,21 @@ class ComputeResourceSet(DictModel):
         | MockupBackend
         | None
     ) = Field(
-        default_factory=lambda: KubernetesKedaBackend.model_validate(
-            {"plugin_name": "local", "debug": False}
-        ),
+        default_factory=lambda: TypeAdapter(
+            KubernetesKedaBackend
+            | OrchestrationInterfacesBackend
+            | OCMBackend
+            | LocalBackend
+            | MockupBackend
+        ).validate_python({"plugin_name": "local", "debug": False}),
         description="Backend to use in the compute resource set.",
         discriminator="plugin_name",
         title="Backend",
     )
     scaling_strategy: MaxAvailableResourceScaling | KubernetesResourceScaling | None = Field(
-        default_factory=lambda: MaxAvailableResourceScaling.model_validate(
+        default_factory=lambda: TypeAdapter(
+            MaxAvailableResourceScaling | KubernetesResourceScaling
+        ).validate_python(
             {
                 "plugin_name": "max_available_resource_scaling",
                 "scaling_factor": 1,
@@ -1066,7 +1072,9 @@ class EvaluatorConfigurationUpdate(DictModel):
         title="Local File Cache",
     )
     applications: list[ApplicationInfo] | None = Field(
-        [], description="List of available applications.", title="Applications"
+        default_factory=lambda: TypeAdapter(list[ApplicationInfo]).validate_python([]),
+        description="List of available applications.",
+        title="Applications",
     )
     project_list: list[str] | None = Field(
         None,
