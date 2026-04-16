@@ -27,6 +27,7 @@ import pytest
 
 from ansys.hps.client import Client
 from ansys.hps.client.jms import JmsApi
+from ansys.hps.client.rcs import RcsApi
 from ansys.hps.client.rms import RmsApi
 
 log = logging.getLogger(__name__)
@@ -60,7 +61,14 @@ def test_services(client: Client, build_info_path: str):
     assert "build" in rms_info
     assert "version" in rms_info["build"]
 
-    info = {"jms": jms_info, "dt": dt_info, "rms": rms_info}
+    # check rcs api
+    rcs_api = RcsApi(client)
+    rcs_info = rcs_api.get_api_info()
+    log.info(f"RCS api info\n{json.dumps(rcs_info, indent=2)}")
+    assert "build" in rcs_info
+    assert "version" in rcs_info["build"]
+
+    info = {"jms": jms_info, "dt": dt_info, "rms": rms_info, "rcs": rcs_info}
     with open(build_info_path, "w") as f:
         f.write(json.dumps(info, indent=2))
 
