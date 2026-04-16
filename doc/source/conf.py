@@ -240,6 +240,7 @@ html_theme_options = {
     "use_edit_page_button": True,
     "show_prev_next": False,
     "show_breadcrumbs": True,
+    "logo": "ansys",
     "additional_breadcrumbs": [
         ("PyAnsys", "https://docs.pyansys.com/"),
     ],

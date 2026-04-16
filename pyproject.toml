@@ -5,7 +5,7 @@ build-backend = "flit_core.buildapi"
 [project]
 # Check https://flit.readthedocs.io/en/latest/pyproject_toml.html for all available sections
 name = "ansys-hps-client"
-version = "0.11.dev0"
+version = "0.13.dev0"
 description = "A python client for Ansys HPC Platform Services"
 readme = "README.rst"
 requires-python = ">=3.10,<4.0"
@@ -39,7 +39,7 @@ dependencies = [
 [project.optional-dependencies]
 tests = [
     "pytest==9.0.2",
-    "coverage==7.13.4",
+    "coverage==7.13.5",
     "python-keycloak>=3.9.1,<4.0.0",
 ]
 
@@ -62,7 +62,7 @@ doc = [
 ]
 
 build = [
-    "build==1.4.0",
+    "build==1.4.2",
     "twine==6.2.0",
     "wheel",
     "datamodel-code-generator==0.55.0",
