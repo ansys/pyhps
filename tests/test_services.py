@@ -61,7 +61,7 @@ def test_services(client: Client, build_info_path: str, has_hps_version_gt_1_4_1
     assert "build" in rms_info
     assert "version" in rms_info["build"]
 
-    if not has_hps_version_gt_1_4_10:
+    if has_hps_version_gt_1_4_10:
         # check rcs api
         rcs_api = RcsApi(client)
         rcs_info = rcs_api.get_api_info()
