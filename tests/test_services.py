@@ -27,13 +27,14 @@ import pytest
 
 from ansys.hps.client import Client
 from ansys.hps.client.jms import JmsApi
+from ansys.hps.client.rcs import RcsApi
 from ansys.hps.client.rms import RmsApi
 
 log = logging.getLogger(__name__)
 
 
 @pytest.mark.order(1)
-def test_services(client: Client, build_info_path: str):
+def test_services(client: Client, build_info_path: str, has_hps_version_gt_1_4_10):
     # make sure services are up and running, print info
 
     # check jms api
@@ -60,7 +61,17 @@ def test_services(client: Client, build_info_path: str):
     assert "build" in rms_info
     assert "version" in rms_info["build"]
 
-    info = {"jms": jms_info, "dt": dt_info, "rms": rms_info}
+    if has_hps_version_gt_1_4_10:
+        # check rcs api
+        rcs_api = RcsApi(client)
+        rcs_info = rcs_api.get_api_info()
+        log.info(f"RCS api info\n{json.dumps(rcs_info, indent=2)}")
+        assert "build" in rcs_info
+        assert "version" in rcs_info["build"]
+
+        info = {"jms": jms_info, "dt": dt_info, "rms": rms_info, "rcs": rcs_info}
+    else:
+        info = {"jms": jms_info, "dt": dt_info, "rms": rms_info}
     with open(build_info_path, "w") as f:
         f.write(json.dumps(info, indent=2))
 

@@ -51,6 +51,7 @@ class RcsApi:
         """Initialize the ``RmsApi`` object."""
         self.client = client
         self._health_check = None
+        self._api_info = None
         # Perform the health check during initialization
         if not self.health:
             raise ClientError("The RCS API is not alive. Cannot initialize RcsApi.")
@@ -71,6 +72,21 @@ class RcsApi:
     def health(self) -> bool:
         """Health status of the RCS API."""
         return self.health_check().get("status") == "alive"
+
+    def get_api_info(self):
+        """Get information on the RMS API the client is connected to.
+
+        The information includes the version and build date.
+        """
+        if self._api_info is None:
+            r = self.client.session.get(f"{self.url}/api/v1")
+            self._api_info = r.json()
+        return self._api_info
+
+    @property
+    def version(self) -> str:
+        """API version."""
+        return self.get_api_info()["build"]["version"]
 
     ################################################################
     # register instance

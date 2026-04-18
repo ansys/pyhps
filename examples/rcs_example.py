@@ -54,6 +54,8 @@ if __name__ == "__main__":
     )
     resp = rcs_api.health_check()
     log.info(f"RCS API health check: {resp}")
+    resp = rcs_api.get_api_info()
+    log.info(f"RCS API info: {resp}")
     log.info(f"Register instance with URL: {args.instance_url}")
     register_instance = rcs_api.register_instance(request_data)
     log.info(f"Register instance response: {register_instance}")
