@@ -1,0 +1,25 @@
+﻿BoolParameterDefinition
+=======================
+
+.. currentmodule:: ansys.hps.client.jms
+
+.. autoclass:: BoolParameterDefinition
+
+   
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+      :toctree:
+   
+      
+      
+      BoolParameterDefinition.declared_fields
+      
+   
+   
+
+   
+   
+   
