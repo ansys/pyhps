@@ -729,8 +729,8 @@ class ClusterInfo(DictModel):
     id: str | None = Field(None, description="Unique ID for the database.", title="Id")
     crs_id: str | None = Field(None, description="Compute resource set ID.", title="Crs Id")
     name: str | None = Field(None, description="Cluster name.", title="Name")
-    queues: list[Queue] | None = Field(default_factory=list, title="Queues")
-    nodes: list[Node] | None = Field(default_factory=list, title="Nodes")
+    queues: list[Queue] | None = Field([], title="Queues", validate_default=True)
+    nodes: list[Node] | None = Field([], title="Nodes", validate_default=True)
     additional_props: dict[str, dict[str, Any]] | None = Field({}, title="Additional Props")
 
 
@@ -849,12 +849,11 @@ class OrchestrationInterfacesBackend(DictModel):
     process_runner: (
         ServiceUserProcessRunner | ProcessLauncherProcessRunner | RestLauncherProcessRunner | None
     ) = Field(
-        default_factory=lambda: ServiceUserProcessRunner.model_validate(
-            {"plugin_name": "service_user_module"}
-        ),
+        {"plugin_name": "service_user_module"},
         description="Process runner to execute commands.",
         discriminator="plugin_name",
         title="Process Runner",
+        validate_default=True,
     )
     create_workdir: bool | None = Field(
         True,
@@ -900,33 +899,33 @@ class ComputeResourceSet(DictModel):
         | MockupBackend
         | None
     ) = Field(
-        default_factory=lambda: KubernetesKedaBackend.model_validate(
-            {"plugin_name": "local", "debug": False}
-        ),
+        {"plugin_name": "local", "debug": False},
         description="Backend to use in the compute resource set.",
         discriminator="plugin_name",
         title="Backend",
+        validate_default=True,
     )
     scaling_strategy: MaxAvailableResourceScaling | KubernetesResourceScaling | None = Field(
-        default_factory=lambda: MaxAvailableResourceScaling.model_validate(
-            {
-                "plugin_name": "max_available_resource_scaling",
-                "scaling_factor": 1,
-                "match_all_requirements": False,
-            }
-        ),
+        {
+            "plugin_name": "max_available_resource_scaling",
+            "scaling_factor": 1,
+            "match_all_requirements": False,
+        },
         description="Scaling strategy to use in the compute resource set.",
         discriminator="plugin_name",
         title="Scaling Strategy",
+        validate_default=True,
     )
     available_resources: Resources | None = Field(
-        default_factory=lambda: Resources.model_validate({"custom": {}}),
+        {"custom": {}},
         description="Available resources in the compute resource set.",
+        validate_default=True,
     )
     available_applications: list[ScalerApplicationInfo] | None = Field(
-        default_factory=list,
+        [],
         description="List of available applications.",
         title="Available Applications",
+        validate_default=True,
     )
     evaluator_requirements_matching: bool | None = Field(
         False,
@@ -987,9 +986,7 @@ class EvaluatorConfiguration(DictModel):
     task_directory_cleanup: TaskDirectoryCleanup | None = Field(
         None, title="Task Directory Cleanup"
     )
-    resources: EvaluatorResources | None = Field(
-        default_factory=lambda: EvaluatorResources.model_validate({"custom": {}})
-    )
+    resources: EvaluatorResources | None = Field({"custom": {}}, validate_default=True)
     task_manager_type: str | None = Field(None, title="Task Manager Type")
     loop_interval: float | None = Field(
         5.0,
@@ -1002,9 +999,10 @@ class EvaluatorConfiguration(DictModel):
         title="Local File Cache",
     )
     applications: list[ApplicationInfo] | None = Field(
-        default_factory=list,
+        [],
         description="List of available applications.",
         title="Applications",
+        validate_default=True,
     )
     project_server_select: bool | None = Field(
         True,
@@ -1022,8 +1020,9 @@ class EvaluatorConfiguration(DictModel):
         title="Project Assignment Mode",
     )
     context: Context | None = Field(
-        default_factory=lambda: Context.model_validate({"custom": {}, "use_local_scratch": False}),
+        {"custom": {}, "use_local_scratch": False},
         description="Runtime properties to pass to executed tasks.",
+        validate_default=True,
     )
 
 
@@ -1047,9 +1046,7 @@ class EvaluatorConfigurationUpdate(DictModel):
     task_directory_cleanup: TaskDirectoryCleanup | None = Field(
         None, title="Task Directory Cleanup"
     )
-    resources: EvaluatorResources | None = Field(
-        default_factory=lambda: EvaluatorResources.model_validate({"custom": {}})
-    )
+    resources: EvaluatorResources | None = Field({"custom": {}}, validate_default=True)
     name: str | None = Field(
         None,
         description="Update the name of the evaluator, which updates the registration.",
@@ -1066,7 +1063,10 @@ class EvaluatorConfigurationUpdate(DictModel):
         title="Local File Cache",
     )
     applications: list[ApplicationInfo] | None = Field(
-        [], description="List of available applications.", title="Applications"
+        [],
+        description="List of available applications.",
+        title="Applications",
+        validate_default=True,
     )
     project_list: list[str] | None = Field(
         None,
@@ -1079,8 +1079,9 @@ class EvaluatorConfigurationUpdate(DictModel):
         title="Project Assignment Mode",
     )
     context: ContextUpdate | None = Field(
-        default_factory=lambda: ContextUpdate.model_validate({"custom": {}}),
+        {"custom": {}},
         description="Runtime properties to pass to executed tasks.",
+        validate_default=True,
     )
 
 
