@@ -85,6 +85,22 @@ def test_health_check(client, has_hps_version_le_1_3_45):
     assert response["status"] == "alive"
 
 
+def test_rcs_api_info(client, has_hps_version_gt_1_4_10):
+    """Test the get_api_info method and the version property."""
+    if not has_hps_version_gt_1_4_10:
+        pytest.skip("RCS api info was introduced after HPS v1.4.10.")
+    rcs_api = RcsApi(client)
+
+    assert rcs_api._api_info is None
+
+    info = rcs_api.get_api_info()
+    assert "time" in info
+    assert "build" in info
+
+    assert rcs_api._api_info is not None
+    assert rcs_api.version is not None
+
+
 def test_register_instance_and_response(client, http_server, has_hps_version_le_1_3_45):
     """Test the register_instance and unregister_instance methods and their responses."""
 
