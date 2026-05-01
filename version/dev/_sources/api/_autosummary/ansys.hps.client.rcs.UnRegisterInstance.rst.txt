@@ -1,0 +1,6 @@
+﻿UnRegisterInstance
+==================
+
+.. currentmodule:: ansys.hps.client.rcs
+
+.. autopydantic_model:: UnRegisterInstance
