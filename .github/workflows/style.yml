@@ -27,6 +27,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: PyAnsys documentation style checks
-        uses: ansys/actions/doc-style@v10
+        uses: ansys/actions/doc-style@v10.2.12
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
