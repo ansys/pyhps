@@ -33,8 +33,6 @@ import logging
 import time
 from datetime import datetime, timezone
 
-import jwt
-from ansys.rep.common.auth.self_signed_token_provider import SelfSignedTokenProvider
 from marshmallow.utils import missing
 
 from ansys.hps.client import Client, HPSError
@@ -200,6 +198,8 @@ def monitor_projects(
                     )
                     if task.eval_status == "running":
                         log.debug(f"{' ' * 10}Running on evaluator: {task.host_id}")
+                    elif task.eval_status in ["evaluated", "failed"]:
+                        log.debug(f"{' ' * 10} {task.eval_status} on evaluator: {task.host_id}")
                     if resources not in [None, missing]:
                         queue = (
                             resources.hpc_resources.queue
@@ -361,26 +361,8 @@ def _main(log, monitor_latest_project, show_rms_data, args):
         if not any(args.accounts):
             accounts = [None]
         for account in accounts:
-            if args.token or args.signing_key:
-                if args.signing_key:
-                    user_id = "client_service"
-                    if args.user_id:
-                        user_id = args.user_id
-                    elif args.token:
-                        payload = jwt.decode(
-                            args.token, algorithms=["RS256"], options={"verify_signature": False}
-                        )
-                        user_id = payload["sub"]
-                        # log.debug(f"Found user_id from token: {payload['sub']}")
-                    provider = SelfSignedTokenProvider({"hps-default": args.signing_key})
-                    if account:
-                        extra = {"account_admin": True, "oid": user_id}
-                    else:
-                        extra = {"service_admin": True, "oid": user_id}
-                    token = provider.generate_signed_token(user_id, user_id, account, 6000, extra)
-                    log.debug(f"Token: {token}")
-                else:
-                    token = args.token
+            if args.token:
+                token = args.token
                 client = Client(
                     url=url, access_token=token, verify=False if args.skip_verify else True
                 )
@@ -445,7 +427,6 @@ if __name__ == "__main__":
     parser.add_argument("-v", "--verbose", default=False)
     parser.add_argument("-m", "--monitor", default=False)
     parser.add_argument("-l", "--limited_monitor", default=False)
-    parser.add_argument("-s", "--signing_key", default="")
     parser.add_argument("-i", "--user_id", default="")
     parser.add_argument("-f", "--filter", default=None)
     parser.add_argument("-r", "--remove", default=None)

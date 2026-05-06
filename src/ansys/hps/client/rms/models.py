@@ -403,6 +403,12 @@ class Node(DictModel):
     total_memory_mb: int | None = Field(..., description="Total memory.", title="Total Memory Mb")
     total_cores: int | None = Field(..., description="Number of cores.", title="Total Cores")
     additional_props: dict[str, Any] | None = Field({}, title="Additional Props")
+    reserved_cores: int | None = Field(
+        0, description="Number of reserved cores.", title="Reserved Cores"
+    )
+    used_memory_mb: int | None = Field(
+        0, description="Amount of used memory in MB.", title="Used Memory Mb"
+    )
 
 
 class NodeGroup(DictModel):

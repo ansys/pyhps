@@ -30,9 +30,6 @@ import logging
 import os
 import random
 
-import jwt
-from ansys.rep.common.auth.self_signed_token_provider import SelfSignedTokenProvider
-
 from ansys.hps.client import Client, HPSError, __ansys_apps_version__
 from ansys.hps.client.jms import (
     File,
@@ -90,7 +87,7 @@ def create_project(
     count = 0
     if os.path.exists(os.path.join(cwd, "files")):
         for file in os.listdir(os.path.join(cwd, "files")):
-            if count > 2000:
+            if count > 200:
                 break
             if "__" in file:
                 continue
@@ -427,7 +424,7 @@ if __name__ == "__main__":
     parser.add_argument("-v", "--ansys-version", default=__ansys_apps_version__)
     parser.add_argument("-t", "--token", default=None)
     parser.add_argument("-a", "--account", default="onprem_account")
-    parser.add_argument("-s", "--signing_key", default="")
+
     parser.add_argument(
         "-o", "--one-to-one", action="store_true", help="Use one-to-one task definition mapping"
     )
@@ -437,24 +434,11 @@ if __name__ == "__main__":
     logging.basicConfig(format="%(message)s", level=logging.DEBUG)
 
     if args.token:
-        if args.signing_key:
-            payload = jwt.decode(
-                args.token, algorithms=["RS256"], options={"verify_signature": False}
-            )
-            user_id = payload["sub"]
-            log.debug(f"Found user_id from token: {payload['sub']}")
-            provider = SelfSignedTokenProvider({"hps-default": args.signing_key})
-            extra = {"preferred_username": user_id}
-            # extra = {"account_admin": True, "oid": user_id}
-            token = provider.generate_signed_token(user_id, user_id, args.account, 6000, extra)
-            log.debug(f"Token: {token}")
-        else:
-            token = args.token
-
-        client = Client(url=args.url, access_token=token)
+        token = args.token
+        client = Client(url=args.url, access_token=token, timeout=90)
         client.session.headers.update({"accountid": args.account})
     else:
-        client = Client(url=args.url, username=args.username, password=args.password)
+        client = Client(url=args.url, username=args.username, password=args.password, timeout=90)
 
     try:
         log.info(f"HPS URL: {client.url}")

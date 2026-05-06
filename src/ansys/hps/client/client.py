@@ -283,7 +283,9 @@ class Client:
             try:
                 log.info("Starting Data Transfer client.")
                 # start Data transfer client
-                self._dt_client = DataTransferClient(download_dir=self._get_download_dir())
+                self._dt_client = DataTransferClient(
+                    download_dir=self._get_download_dir(), timeout=90
+                )
 
                 self._dt_client.binary_config.update(
                     verbosity=3,

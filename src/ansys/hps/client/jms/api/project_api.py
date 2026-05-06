@@ -652,16 +652,40 @@ class ProjectApi:
         log.info(f"Copying execution script {filename}")
         op = self.client.data_transfer_api.copy([SrcDst(src=src, dst=dst)])
         op = self.client.data_transfer_api.wait_for(op.id)[0]
+        child_errors = []
         if op.state != OperationState.Succeeded:
+            if op.children_detail is not None:
+                for child in op.children_detail:
+                    if child.state != OperationState.Succeeded:
+                        child_errors.append(
+                            f"{child.id} - Error:{child.error} Detail:{child.error_detail}"
+                            f"Messages:{child.messages}"
+                        )
+            child_errors_str = "\n".join(child_errors)
             raise HPSError(
-                f"Copying of execution script {filename} from {src.path} to {dst.path}failed."
+                f"Copying of execution script {filename} from {src.path} to {dst.path} failed.\n"
+                f"Error:{op.error} Detail:{op.error_detail} Messages:{op.messages}\n"
+                f"Child operation errors:\n{child_errors_str}"
             )
 
+        child_errors = []
         # get checksum of copied file
         op = self.client.data_transfer_api.get_metadata([dst])
         op = self.client.data_transfer_api.wait_for(op.id)[0]
         if op.state != OperationState.Succeeded:
-            raise HPSError(f"Retrieval of meta data of copied execution script {filename} failed")
+            if op.children_detail is not None:
+                for child in op.children_detail:
+                    if child.state != OperationState.Succeeded:
+                        child_errors.append(
+                            f"{child.id} - Error:{child.error} Detail:{child.error_detail}"
+                            f"Messages:{child.messages}"
+                        )
+            child_errors_str = "\n".join(child_errors)
+            raise HPSError(
+                f"Retrieval of meta data of copied execution script {filename} failed.\n"
+                f"Error:{op.error} Detail:{op.error_detail} Messages:{op.messages}\n"
+                f"Child operation errors:\n{child_errors_str}"
+            )
         checksum = op.result[dst.path]["checksum"]
 
         # update file resource
@@ -853,6 +877,19 @@ def _upload_files(project_api: ProjectApi, files):
             _fetch_file_metadata(project_api, files, dsts)
         else:
             log.error("Upload of files failed")
+            for child in op[0].children_detail:
+                count = 0
+                if child.state == OperationState.Failed and count <= 5:
+                    count += 1
+                    log.warning(
+                        f"Child operation {child.id} - State:{child.state} Error:{child.error}"
+                        + f" Detail:{child.error_detail} Messages:{child.messages}"
+                    )
+                    if count == 5:
+                        log.warning(
+                            "More child operation errors may exist but are not logged"
+                            + " to avoid excessive logging."
+                        )
             raise HPSError("Upload of files failed")
 
     else:
@@ -866,6 +903,10 @@ def _fetch_file_metadata(
     op = project_api.client.data_transfer_api.get_metadata(storage_paths)
     op = project_api.client.data_transfer_api.wait_for(op.id)[0]
     if op.state == OperationState.Succeeded:
+        log.info(
+            f"Successfully fetched metadata of uploaded files\nError:{op.error}"
+            + f" Detail:{op.error_detail} Messages:{op.messages}"
+        )
         base_dir = project_api.project_id
         for f in files:
             if getattr(f, "src", None) is None:

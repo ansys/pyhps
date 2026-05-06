@@ -11,10 +11,14 @@ set ACCOUNT_TOASTER=0fea8f1b-0f0f-4998-938a-37a62db59481
 
 
 for /f "delims=" %%a in ('python oidc_pkce.py -u %BASE_URL%') do @set TOKEN=%%a
+echo =================ANSYSID_TOKEN==============
+echo %TOKEN%
+python create_self_signed_token.py --signing_key="D:/ansysDev/signing.key" --token=%TOKEN%
+for /f "delims=" %%b in ('python create_self_signed_token.py --signing_key="D:/ansysDev/signing.key" --token=%TOKEN%') do @set SELF_TOKEN=%%b
 
 REM When connecting to SaaS
-python examples/generic_api/project_setup.py --urls "%BASE_URL%"  --token=%TOKEN% --signing_key="D:/ansysDev/signing.key"
-python examples/generic_api/project_setup.py --urls "%BASE_URL%"  --token=%TOKEN% --filter="2000 FILE TESTING JON" --verbose true --monitor True --signing_key="D:/ansysDev/signing.key"
+python examples/generic_api/project_setup.py --urls "%BASE_URL%"  --token=%SELF_TOKEN% 
+python examples/generic_api/project_setup.py --urls "%BASE_URL%"  --token=%TOKEN% --filter="2003 FILE TESTING JON" --verbose true --monitor True --signing_key="D:/ansysDev/signing.key"
 REM --limited_monitor True
 REM --accounts "%ACCOUNT_BURST%"
 

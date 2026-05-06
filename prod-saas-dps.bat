@@ -22,6 +22,6 @@ REM ping 127.0.0.1 -n 10
 
 REM python examples/mapdl_tyre_performance/project_setup.py --name "Burst Account tests" -v "2025 R2" --use-exec-script True --url "%BASE_PROD_URL%" --num-jobs=1 --account="%ACCOUNT_PROD%" --token=%TOKEN_PROD%
 REM python examples/mapdl_motorbike_frame/project_setup.py --name "Burst account test" -v "2025 R2" --use-exec-script --url "%BASE_PROD_URL%" --num-jobs=2 --account="%ACCOUNT_PROD%" --token=%TOKEN_PROD%
-python examples/mapdl_motorbike_frame/project_setup.py --name "DP TESTING JON 5" -v "2025 R2" --use-exec-script --url "%BASE_PROD_URL%" --account="%ACCOUNT_PROD%" --num-jobs=5 --token=%TOKEN_PROD%
+python examples/mapdl_motorbike_frame/project_setup.py --name "1k file jobs x 3" -v "2025 R2" --use-exec-script --url "%BASE_PROD_URL%" --account="%ACCOUNT_PROD%" --num-jobs=3 --token=%TOKEN_PROD%
 
 pause

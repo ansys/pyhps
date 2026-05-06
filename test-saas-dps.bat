@@ -22,7 +22,7 @@ REM for /f "delims=" %%a in ('python oidc_pkce.py -u %BASE_PROD_URL%') do @set T
 echo %TOKEN%
 
 REM python examples/generic_api/project_setup.py --urls "%BASE_URL%"  --accounts "%ACCOUNT%" --token=%TOKEN%
-python examples/mapdl_motorbike_frame/project_setup.py --name "2k files testing" -v "2025 R2" --use-exec-script --url "%BASE_URL%" --account="%ACCOUNT_BURST%" --num-jobs=1 --token=%TOKEN%
+python examples/mapdl_motorbike_frame/project_setup.py --name "1k files x 8 jobs testing" -v "2025 R2" --use-exec-script --url "%BASE_URL%" --account="%ACCOUNT_BURST%" --num-jobs=8 --token=%TOKEN%
 REM 
 REM python examples/generic_api/project_setup.py --urls "%BASE_URL%"  --accounts "%ACCOUNT%" --token=%TOKEN%
 REM python project_setup.py --urls "%BASE_URL%" --accounts "onprem_account" --token=%TOKEN% REM --verbose=True
