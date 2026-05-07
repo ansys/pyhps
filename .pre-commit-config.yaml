@@ -24,7 +24,7 @@ repos:
     args: [-I, .codespellignore]
 
 - repo: https://github.com/ansys/pre-commit-hooks
-  rev: v0.7.1
+  rev: v0.7.2
   hooks:
   - id: add-license-headers
     files: '(ansys|examples|tests)/.*\.(py)|generate_resources.py|archive_examples.py'
