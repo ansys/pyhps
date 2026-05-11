@@ -131,6 +131,7 @@ def test_project_replace(client):
     assert p.name == "Replaced Project"
 
 
+@pytest.mark.skip("not in mk2 at the moment")
 def test_project_copy(client):
     jms_api = JmsApi(client)
     proj_name = "test_jms_ProjectCopyTest"
@@ -227,8 +228,9 @@ def test_project_delete_job_definition(client):
 
     jms_api.delete_project(proj)
 
-
+@pytest.mark.skip("not in mk2 at the moment")
 def test_project_archive_restore(client):
+
     num_jobs = 2
     jms_api = JmsApi(client)
     proj_name = "test_jms_project_archive_restore"
