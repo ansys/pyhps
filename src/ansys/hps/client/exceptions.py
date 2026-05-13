@@ -22,7 +22,9 @@
 """Module providing the base class for all client and server HPS-related errors."""
 
 from requests.exceptions import RequestException
+import logging
 
+log = logging.getLogger(__name__)
 
 class HPSError(RequestException):
     """Provides the base class for all HPS-related errors.
@@ -76,42 +78,47 @@ class VersionCompatibilityError(ClientError):
         super().__init__(*args, **kwargs)
 
 
+description_fields = ["description", "error_description", "detail"]
+
+def _build_error_message(category, response):
+    """Builds an error message from a response object."""
+    r_content = {}
+    try:
+        r_content = response.json()
+    except ValueError:
+        pass
+
+    reason = r_content.get("title", None)  # jms api
+    if not reason:
+        reason = r_content.get("error", None)  # auth api
+    if not reason:
+        reason = response.reason
+
+    description = None
+    for field in description_fields:
+        description = r_content.get(field, None)
+        if description:
+            break
+    
+    msg = (
+        f"{response.status_code} {category}: {reason} for:"
+        f" {response.request.method} {response.url}"
+    )
+    if description:
+        msg += f"\n{description}"
+
+    return reason, description, msg
+
+
 def raise_for_status(response, *args, **kwargs):
     """Automatically checks HTTP errors.
 
     This method mimics the requests.Response.raise_for_status() method.
     """
-    if 400 <= response.status_code < 600:
-        r_content = {}
-        try:
-            r_content = response.json()
-        except ValueError:
-            pass
-
-        reason = r_content.get("title", None)  # jms api
-        if not reason:
-            reason = r_content.get("error", None)  # auth api
-        if not reason:
-            reason = response.reason
-
-        description = r_content.get("description", None)  # jms api
-        if not description:
-            description = r_content.get("error_description", None)  # auth api
-
-        if 400 <= response.status_code < 500:
-            error_msg = (
-                f"{response.status_code} Client Error: {reason} for:"
-                f" {response.request.method} {response.url}"
-            )
-            if description:
-                error_msg += f"\n{description}"
-            raise ClientError(error_msg, reason=reason, description=description, response=response)
-        elif 500 <= response.status_code < 600:
-            error_msg = (
-                f"{response.status_code} Server Error: {reason} for:"
-                f" {response.request.method} {response.url}"
-            )
-            if description:
-                error_msg += f"\n{description}"
-            raise APIError(error_msg, reason=reason, description=description, response=response)
+    if 400 <= response.status_code < 500:
+        reason, description, message = _build_error_message("Client Error", response)
+        raise ClientError(message, reason=reason, description=description, response=response)
+    elif 500 <= response.status_code < 600:
+        reason, description, message = _build_error_message("Server Error", response)
+        raise APIError(message, reason=reason, description=description, response=response)
     return response
