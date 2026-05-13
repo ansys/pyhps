@@ -21,10 +21,12 @@
 # SOFTWARE.
 """Module providing the base class for all client and server HPS-related errors."""
 
-from requests.exceptions import RequestException
 import logging
 
+from requests.exceptions import RequestException
+
 log = logging.getLogger(__name__)
+
 
 class HPSError(RequestException):
     """Provides the base class for all HPS-related errors.
@@ -80,6 +82,7 @@ class VersionCompatibilityError(ClientError):
 
 description_fields = ["description", "error_description", "detail"]
 
+
 def _build_error_message(category, response):
     """Builds an error message from a response object."""
     r_content = {}
@@ -99,10 +102,9 @@ def _build_error_message(category, response):
         description = r_content.get(field, None)
         if description:
             break
-    
+
     msg = (
-        f"{response.status_code} {category}: {reason} for:"
-        f" {response.request.method} {response.url}"
+        f"{response.status_code} {category}: {reason} for: {response.request.method} {response.url}"
     )
     if description:
         msg += f"\n{description}"

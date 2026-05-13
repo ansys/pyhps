@@ -63,6 +63,7 @@ def remove_permissions(project_api: ProjectApi, user):
     permissions = project_api.update_permissions(permissions)
     log.info(f"Permissions after: {permissions}")
 
+
 @pytest.mark.skip("not available in mk2 at the moment")
 def test_get_project_permissions(client):
     jms_api = JmsApi(client)

@@ -228,6 +228,7 @@ def test_project_delete_job_definition(client):
 
     jms_api.delete_project(proj)
 
+
 @pytest.mark.skip("not in mk2 at the moment")
 def test_project_archive_restore(client):
 

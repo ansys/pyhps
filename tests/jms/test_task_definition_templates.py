@@ -24,8 +24,8 @@ import json
 import logging
 import uuid
 
-from marshmallow.utils import missing
 import pytest
+from marshmallow.utils import missing
 
 from ansys.hps.client import HPSError
 from ansys.hps.client.auth import AuthApi
@@ -297,6 +297,7 @@ def test_template_permissions(client, keycloak_client, is_admin, request):
 
     # Delete user
     delete_user(keycloak_client, user1)
+
 
 @pytest.mark.skip("not in mk2 at the moment")
 def test_template_permissions_update(jms_api, request):
