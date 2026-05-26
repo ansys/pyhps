@@ -89,7 +89,7 @@ jobs:
           files: '**/test*.xml'
 
       - name: Publish Test Report
-        uses: mikepenz/action-junit-report@v6
+        uses: mikepenz/action-junit-report@v6.4.0
         if: always()
         with:
           report_paths: '**/test*.xml'
