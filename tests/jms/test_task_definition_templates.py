@@ -186,6 +186,11 @@ def test_template_integration(jms_api, request):
     # Copy template
     templates = jms_api.get_task_definition_templates(limit=1)
     assert len(templates) == 1
+    # Adding logs to get insight into the templates being copied and retrieved
+    log.info(
+        f"Original template: "
+        f"{json.dumps(TaskDefinitionTemplateSchema().dump(templates[0]), indent=4)}"
+    )
     original_template = templates[0]
     new_template_id = jms_api.copy_task_definition_templates(templates)
     new_template = jms_api.get_task_definition_templates(id=new_template_id)[0]
