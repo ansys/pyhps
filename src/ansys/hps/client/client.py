@@ -27,8 +27,12 @@ import logging
 import os
 import platform
 import tempfile
+import threading
+import time
 import warnings
 
+import arrow
+import humanfriendly
 import jwt
 import requests
 from ansys.hps.data_transfer.client import Client as DataTransferClient
@@ -162,6 +166,7 @@ class Client:
         self.client_secret = client_secret
         self.verify = verify
         self.data_transfer_url = url + "/dt/api/v1"
+        self._token_refresh_thread = None
 
         self._dt_client: DataTransferClient | None = None
         self._dt_api: DataTransferApi | None = None
@@ -214,6 +219,44 @@ class Client:
             # client credentials flow does not return a refresh token
             self.refresh_token = tokens.get("refresh_token", None)
 
+            expires_in = []
+            access_expires_in = tokens.get("expires_in", None)
+            if access_expires_in is not None:
+                # TODO: switch to trace level logging for token details
+                log.info(
+                    f"Access token expires in {humanfriendly.format_timespan(access_expires_in)}"
+                )
+                expires_in.append(access_expires_in)
+            refresh_expires_in = tokens.get("refresh_expires_in", None)
+            if refresh_expires_in is not None:
+                info = (
+                    "offline"
+                    if refresh_expires_in == 0 and "offline_access" in scope
+                    else f"expires in {humanfriendly.format_timespan(refresh_expires_in)}"
+                )
+                # TODO: switch to trace level logging for token details
+                log.info(f"Refresh token {info}")
+                if refresh_expires_in > 0:
+                    expires_in.append(refresh_expires_in)
+            self.token_expires_in = min(expires_in) if expires_in else None
+            if self.token_expires_in is not None:
+                # TODO: switch to trace level logging for token details
+                log.info(
+                    "Setting token expiry to "
+                    f"{humanfriendly.format_timespan(self.token_expires_in)}"
+                )
+            self.token_acquired_date = arrow.now() if self.token_expires_in is not None else None
+
+            # Set token_refresh_factor to 95%?
+            self.token_refresh_factor = 0.95
+            offset = max(1, int(self.token_expires_in * self.token_refresh_factor))
+            self.token_refresh_date = self.token_acquired_date.shift(seconds=offset)
+            # TODO: switch to trace level logging for token details
+            log.info(
+                "Refresh token set, auto refresh in "
+                f"{humanfriendly.format_timespan(offset)} ({self.token_refresh_date})"
+            )
+
         parsed_username = None
         token = {}
         try:
@@ -244,6 +287,8 @@ class Client:
         self.session.hooks["response"] = [self._auto_refresh_token, raise_for_status]
         self._unauthorized_num_retry = 0
         self._unauthorized_max_retry = 1
+        if self.token_refresh_date is not None:
+            self._start_token_refresh_thread(self.token_refresh_date)
 
         def exit_handler():
             if self._dt_client is not None:
@@ -344,6 +389,41 @@ class Client:
             log.error("auth_api not valid for non-keycloak implementation")
             return None
 
+    def _start_token_refresh_thread(self, refresh_date):
+        """Start a background thread to refresh the access token."""
+        if self._token_refresh_thread is not None and self._token_refresh_thread.is_alive():
+            return
+
+        self._token_refresh_thread = threading.Thread(
+            target=self._periodically_refresh_token,
+            args=(refresh_date,),
+            name="periodic_token_refresh",
+        )
+        self._token_refresh_thread.daemon = True
+        self._token_refresh_thread.start()
+
+    def _periodically_refresh_token(self, refresh_date):
+        self.loop_interval = 60  # Check every 60 seconds
+
+        while True:
+            if refresh_date is None:
+                time.sleep(self.loop_interval)
+                continue
+
+            now = arrow.now()
+            if now > refresh_date:
+                log.debug("Attempting preemptive authentication token refresh")
+                self.refresh_access_token()
+            else:
+                diff = refresh_date - now
+                sleep_time = min(self.loop_interval, diff.total_seconds() * 0.25)
+                sleep_time = max(0.1, sleep_time)
+                if sleep_time >= 1.0:
+                    # TODO: switch to trace level logging for token details
+                    log.info(f"Token refresh in {humanfriendly.format_timespan(diff)}")
+                time.sleep(sleep_time)
+        log.debug("Token refresh thread stopped")
+
     def _auto_refresh_token(self, response, *args, **kwargs):
         """Provide a callback for refreshing an expired token.
 
@@ -396,6 +476,7 @@ class Client:
         self.access_token = tokens["access_token"]
         self.refresh_token = tokens.get("refresh_token", None)
         self.session.headers.update({"Authorization": f"Bearer {tokens['access_token']}"})
+        # TODO: set self.token_refresh_date again!
 
     @property
     def data_transfer_client(self) -> DataTransferClient:
