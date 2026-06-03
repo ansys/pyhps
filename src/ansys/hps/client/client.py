@@ -97,6 +97,8 @@ class Client:
     disable_security_warnings : bool, optional
         Whether to disable urllib3 warnings about insecure HTTPS requests. The default is ``True``.
         For more information, see urllib3 documentation about TLS warnings.
+    auto_refresh_token : bool, optional
+        Whether to automatically refresh access token before it expires. The default is ``True``.
 
     Examples
     --------
