@@ -173,6 +173,9 @@ class Client:
         # Set token_refresh_factor to 95%
         self.token_refresh_factor = 0.95
         self.loop_interval = 60  # Check every 60 seconds
+        self.token_expires_in = None
+        self.token_acquired_date = None
+        self.token_refresh_date = None
 
         self._dt_client: DataTransferClient | None = None
         self._dt_api: DataTransferApi | None = None

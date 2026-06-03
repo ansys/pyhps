@@ -129,8 +129,10 @@ def test_dt_client(url, username, password):
     assert client.data_transfer_api == client._dt_api
 
 
-def test_update_token_expiry_sets_refresh_date(url, username, password):
+def test_update_token_expiry_sets_refresh_date(url, username, password, has_hps_version_gt_1_4_10):
     """After authentication, expiry-related fields must be populated."""
+    if not has_hps_version_gt_1_4_10:
+        pytest.skip("Preemptive token refresh requires HPS > 1.4.10.")
     client = Client(url, username, password)
 
     assert client.token_expires_in is not None
@@ -142,8 +144,12 @@ def test_update_token_expiry_sets_refresh_date(url, username, password):
     assert 0 < diff <= client.token_expires_in
 
 
-def test_update_token_expiry_updates_after_refresh(url, username, password):
+def test_update_token_expiry_updates_after_refresh(
+    url, username, password, has_hps_version_gt_1_4_10
+):
     """Calling refresh_access_token must move token_refresh_date forward."""
+    if not has_hps_version_gt_1_4_10:
+        pytest.skip("Preemptive token refresh requires HPS > 1.4.10.")
     client = Client(url, username, password)
     first_refresh_date = client.token_refresh_date
 
@@ -153,8 +159,12 @@ def test_update_token_expiry_updates_after_refresh(url, username, password):
     assert client.token_refresh_date > first_refresh_date
 
 
-def test_periodically_refresh_token_refreshes_preemptively(url, username, password):
+def test_periodically_refresh_token_refreshes_preemptively(
+    url, username, password, has_hps_version_gt_1_4_10
+):
     """The background thread must refresh the access token before it expires."""
+    if not has_hps_version_gt_1_4_10:
+        pytest.skip("Preemptive token refresh requires HPS > 1.4.10.")
     client = Client(url, username, password)
     initial_access_token = client.access_token
 
