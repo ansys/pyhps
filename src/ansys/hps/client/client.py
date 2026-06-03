@@ -28,7 +28,6 @@ import os
 import platform
 import tempfile
 import threading
-import time
 import warnings
 
 import arrow
@@ -167,6 +166,7 @@ class Client:
         self.verify = verify
         self.data_transfer_url = url + "/dt/api/v1"
         self._token_refresh_thread = None
+        self._stop_event = threading.Event()
         # Set token_refresh_factor to 95%?
         self.token_refresh_factor = 0.95
         self.loop_interval = 60  # Check every 60 seconds
@@ -258,6 +258,9 @@ class Client:
             self._start_token_refresh_thread()
 
         def exit_handler():
+            self._stop_event.set()
+            if self._token_refresh_thread is not None:
+                self._token_refresh_thread.join(timeout=5)
             if self._dt_client is not None:
                 log.info("Stopping the data transfer client gracefully.")
                 self._dt_client.stop()
@@ -408,23 +411,25 @@ class Client:
 
     def _periodically_refresh_token(self):
         """Periodically check if the token needs to be refreshed and refresh it."""
-        while True:
+        while not self._stop_event.is_set():
             if self.token_refresh_date is None:
-                time.sleep(self.loop_interval)
+                if self._stop_event.wait(self.loop_interval):
+                    break
                 continue
 
             now = arrow.now()
             if now > self.token_refresh_date:
                 log.debug("Attempting preemptive authentication token refresh")
                 self.refresh_access_token()
-            else:
-                diff = self.token_refresh_date - now
-                sleep_time = min(self.loop_interval, diff.total_seconds() * 0.25)
-                sleep_time = max(0.1, sleep_time)
-                if sleep_time >= 1.0:
-                    # TODO: switch to trace level logging for token details
-                    log.info(f"Token refresh in {humanfriendly.format_timespan(diff)}")
-                time.sleep(sleep_time)
+                continue
+
+            diff = self.token_refresh_date - now
+            sleep_time = max(0.1, min(self.loop_interval, diff.total_seconds() * 0.25))
+            if sleep_time >= 1.0:
+                # TODO: switch to trace level logging for token details
+                log.info(f"Token refresh in {humanfriendly.format_timespan(diff)}")
+            if self._stop_event.wait(sleep_time):
+                break
         log.debug("Token refresh thread stopped")
 
     def _auto_refresh_token(self, response, *args, **kwargs):
