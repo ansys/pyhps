@@ -219,43 +219,7 @@ class Client:
             # client credentials flow does not return a refresh token
             self.refresh_token = tokens.get("refresh_token", None)
 
-            expires_in = []
-            access_expires_in = tokens.get("expires_in", None)
-            if access_expires_in is not None:
-                # TODO: switch to trace level logging for token details
-                log.info(
-                    f"Access token expires in {humanfriendly.format_timespan(access_expires_in)}"
-                )
-                expires_in.append(access_expires_in)
-            refresh_expires_in = tokens.get("refresh_expires_in", None)
-            if refresh_expires_in is not None:
-                info = (
-                    "offline"
-                    if refresh_expires_in == 0 and "offline_access" in scope
-                    else f"expires in {humanfriendly.format_timespan(refresh_expires_in)}"
-                )
-                # TODO: switch to trace level logging for token details
-                log.info(f"Refresh token {info}")
-                if refresh_expires_in > 0:
-                    expires_in.append(refresh_expires_in)
-            self.token_expires_in = min(expires_in) if expires_in else None
-            if self.token_expires_in is not None:
-                # TODO: switch to trace level logging for token details
-                log.info(
-                    "Setting token expiry to "
-                    f"{humanfriendly.format_timespan(self.token_expires_in)}"
-                )
-            self.token_acquired_date = arrow.now() if self.token_expires_in is not None else None
-
-            # Set token_refresh_factor to 95%?
-            self.token_refresh_factor = 0.95
-            offset = max(1, int(self.token_expires_in * self.token_refresh_factor))
-            self.token_refresh_date = self.token_acquired_date.shift(seconds=offset)
-            # TODO: switch to trace level logging for token details
-            log.info(
-                "Refresh token set, auto refresh in "
-                f"{humanfriendly.format_timespan(offset)} ({self.token_refresh_date})"
-            )
+            self._update_token_expiry(tokens)
 
         parsed_username = None
         token = {}
@@ -402,6 +366,46 @@ class Client:
         self._token_refresh_thread.daemon = True
         self._token_refresh_thread.start()
 
+    def _update_token_expiry(self, tokens):
+        """Update expiry-related fields from a token response."""
+        expires_in = []
+        access_expires_in = tokens.get("expires_in", None)
+        if access_expires_in is not None:
+            # TODO: switch to trace level logging for token details
+            log.info(f"Access token expires in {humanfriendly.format_timespan(access_expires_in)}")
+            expires_in.append(access_expires_in)
+        refresh_expires_in = tokens.get("refresh_expires_in", None)
+        if refresh_expires_in is not None:
+            info = (
+                "offline"
+                if refresh_expires_in == 0 and "offline_access" in self.scope
+                else f"expires in {humanfriendly.format_timespan(refresh_expires_in)}"
+            )
+            # TODO: switch to trace level logging for token details
+            log.info(f"Refresh token {info}")
+            if refresh_expires_in > 0:
+                expires_in.append(refresh_expires_in)
+        self.token_expires_in = min(expires_in) if expires_in else None
+        if self.token_expires_in is not None:
+            # TODO: switch to trace level logging for token details
+            log.info(
+                f"Setting token expiry to {humanfriendly.format_timespan(self.token_expires_in)}"
+            )
+        self.token_acquired_date = arrow.now() if self.token_expires_in is not None else None
+
+        # Set token_refresh_factor to 95%?
+        self.token_refresh_factor = 0.95
+        if self.token_expires_in is not None:
+            offset = max(1, int(self.token_expires_in * self.token_refresh_factor))
+            self.token_refresh_date = self.token_acquired_date.shift(seconds=offset)
+            # TODO: switch to trace level logging for token details
+            log.info(
+                "Refresh token set, auto refresh in "
+                f"{humanfriendly.format_timespan(offset)} ({self.token_refresh_date})"
+            )
+        else:
+            self.token_refresh_date = None
+
     def _periodically_refresh_token(self, refresh_date):
         self.loop_interval = 60  # Check every 60 seconds
 
@@ -476,7 +480,7 @@ class Client:
         self.access_token = tokens["access_token"]
         self.refresh_token = tokens.get("refresh_token", None)
         self.session.headers.update({"Authorization": f"Bearer {tokens['access_token']}"})
-        # TODO: set self.token_refresh_date again!
+        self._update_token_expiry(tokens)
 
     @property
     def data_transfer_client(self) -> DataTransferClient:
