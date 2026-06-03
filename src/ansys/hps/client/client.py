@@ -167,6 +167,9 @@ class Client:
         self.verify = verify
         self.data_transfer_url = url + "/dt/api/v1"
         self._token_refresh_thread = None
+        # Set token_refresh_factor to 95%?
+        self.token_refresh_factor = 0.95
+        self.loop_interval = 60  # Check every 60 seconds
 
         self._dt_client: DataTransferClient | None = None
         self._dt_api: DataTransferApi | None = None
@@ -393,8 +396,6 @@ class Client:
             )
         self.token_acquired_date = arrow.now() if self.token_expires_in is not None else None
 
-        # Set token_refresh_factor to 95%?
-        self.token_refresh_factor = 0.95
         if self.token_expires_in is not None:
             offset = max(1, int(self.token_expires_in * self.token_refresh_factor))
             self.token_refresh_date = self.token_acquired_date.shift(seconds=offset)
@@ -407,8 +408,7 @@ class Client:
             self.token_refresh_date = None
 
     def _periodically_refresh_token(self, refresh_date):
-        self.loop_interval = 60  # Check every 60 seconds
-
+        """Periodically check if the token needs to be refreshed and refresh it."""
         while True:
             if refresh_date is None:
                 time.sleep(self.loop_interval)
