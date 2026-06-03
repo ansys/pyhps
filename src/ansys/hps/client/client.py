@@ -255,7 +255,7 @@ class Client:
         self._unauthorized_num_retry = 0
         self._unauthorized_max_retry = 1
         if self.token_refresh_date is not None:
-            self._start_token_refresh_thread(self.token_refresh_date)
+            self._start_token_refresh_thread()
 
         def exit_handler():
             if self._dt_client is not None:
@@ -356,14 +356,13 @@ class Client:
             log.error("auth_api not valid for non-keycloak implementation")
             return None
 
-    def _start_token_refresh_thread(self, refresh_date):
+    def _start_token_refresh_thread(self):
         """Start a background thread to refresh the access token."""
         if self._token_refresh_thread is not None and self._token_refresh_thread.is_alive():
             return
 
         self._token_refresh_thread = threading.Thread(
             target=self._periodically_refresh_token,
-            args=(refresh_date,),
             name="periodic_token_refresh",
         )
         self._token_refresh_thread.daemon = True
@@ -407,19 +406,19 @@ class Client:
         else:
             self.token_refresh_date = None
 
-    def _periodically_refresh_token(self, refresh_date):
+    def _periodically_refresh_token(self):
         """Periodically check if the token needs to be refreshed and refresh it."""
         while True:
-            if refresh_date is None:
+            if self.token_refresh_date is None:
                 time.sleep(self.loop_interval)
                 continue
 
             now = arrow.now()
-            if now > refresh_date:
+            if now > self.token_refresh_date:
                 log.debug("Attempting preemptive authentication token refresh")
                 self.refresh_access_token()
             else:
-                diff = refresh_date - now
+                diff = self.token_refresh_date - now
                 sleep_time = min(self.loop_interval, diff.total_seconds() * 0.25)
                 sleep_time = max(0.1, sleep_time)
                 if sleep_time >= 1.0:
