@@ -39,7 +39,7 @@ dependencies = [
 [project.optional-dependencies]
 tests = [
     "pytest==9.0.3",
-    "coverage==7.13.5",
+    "coverage==7.14.0",
     "python-keycloak>=3.9.1,<4.0.0"
 ]
 
@@ -62,10 +62,10 @@ doc = [
 ]
 
 build = [
-    "build==1.4.4",
+    "build==1.5.0",
     "twine==6.2.0",
     "wheel",
-    "datamodel-code-generator==0.56.1"
+    "datamodel-code-generator==0.57.0"
 ]
 
 [project.urls]
