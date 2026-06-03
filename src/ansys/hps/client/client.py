@@ -135,6 +135,7 @@ class Client:
         all_fields=True,
         verify: bool | str = None,
         disable_security_warnings: bool = True,
+        auto_refresh_token: bool = True,
         **kwargs,
     ):
         """Initialize the Client object."""
@@ -167,7 +168,7 @@ class Client:
         self.data_transfer_url = url + "/dt/api/v1"
         self._token_refresh_thread = None
         self._stop_event = threading.Event()
-        # Set token_refresh_factor to 95%?
+        # Set token_refresh_factor to 95%
         self.token_refresh_factor = 0.95
         self.loop_interval = 60  # Check every 60 seconds
 
@@ -254,7 +255,7 @@ class Client:
         self.session.hooks["response"] = [self._auto_refresh_token, raise_for_status]
         self._unauthorized_num_retry = 0
         self._unauthorized_max_retry = 1
-        if self.token_refresh_date is not None:
+        if auto_refresh_token and self.token_refresh_date is not None:
             self._start_token_refresh_thread()
 
         def exit_handler():
