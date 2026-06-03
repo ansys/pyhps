@@ -376,8 +376,7 @@ class Client:
         expires_in = []
         access_expires_in = tokens.get("expires_in", None)
         if access_expires_in is not None:
-            # TODO: switch to trace level logging for token details
-            log.info(f"Access token expires in {humanfriendly.format_timespan(access_expires_in)}")
+            log.debug(f"Access token expires in {humanfriendly.format_timespan(access_expires_in)}")
             expires_in.append(access_expires_in)
         refresh_expires_in = tokens.get("refresh_expires_in", None)
         if refresh_expires_in is not None:
@@ -386,14 +385,12 @@ class Client:
                 if refresh_expires_in == 0 and "offline_access" in self.scope
                 else f"expires in {humanfriendly.format_timespan(refresh_expires_in)}"
             )
-            # TODO: switch to trace level logging for token details
-            log.info(f"Refresh token {info}")
+            log.debug(f"Refresh token {info}")
             if refresh_expires_in > 0:
                 expires_in.append(refresh_expires_in)
         self.token_expires_in = min(expires_in) if expires_in else None
         if self.token_expires_in is not None:
-            # TODO: switch to trace level logging for token details
-            log.info(
+            log.debug(
                 f"Setting token expiry to {humanfriendly.format_timespan(self.token_expires_in)}"
             )
         self.token_acquired_date = arrow.now() if self.token_expires_in is not None else None
@@ -401,8 +398,7 @@ class Client:
         if self.token_expires_in is not None:
             offset = max(1, int(self.token_expires_in * self.token_refresh_factor))
             self.token_refresh_date = self.token_acquired_date.shift(seconds=offset)
-            # TODO: switch to trace level logging for token details
-            log.info(
+            log.debug(
                 "Refresh token set, auto refresh in "
                 f"{humanfriendly.format_timespan(offset)} ({self.token_refresh_date})"
             )
@@ -425,9 +421,6 @@ class Client:
 
             diff = self.token_refresh_date - now
             sleep_time = max(0.1, min(self.loop_interval, diff.total_seconds() * 0.25))
-            if sleep_time >= 1.0:
-                # TODO: switch to trace level logging for token details
-                log.info(f"Token refresh in {humanfriendly.format_timespan(diff)}")
             if self._stop_event.wait(sleep_time):
                 break
         log.debug("Token refresh thread stopped")
