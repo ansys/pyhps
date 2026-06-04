@@ -44,6 +44,16 @@ jobs:
     uses: ./.github/workflows/style.yml
     secrets: inherit
 
+  check-actions-security:
+    name: Check actions security
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: ansys/actions/check-actions-security@v10.3.2
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
   tests:
     strategy:
       matrix:
