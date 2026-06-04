@@ -99,6 +99,16 @@ class Client:
         For more information, see urllib3 documentation about TLS warnings.
     auto_refresh_token : bool, optional
         Whether to automatically refresh access token before it expires. The default is ``True``.
+    token_refresh_factor : float, optional
+        Fraction of the token lifetime at which the first preemptive refresh is
+        scheduled. Must be in the open interval ``(0, 1)``. The default is ``0.70``.
+    token_refresh_retry_factors : sequence of float, optional
+        Strictly increasing fractions in ``(token_refresh_factor, 1)`` used to
+        reschedule the refresh after a failed attempt. The default is
+        ``(0.80, 0.90, 0.95, 0.98)``.
+    token_refresh_loop_interval : float, optional
+        Maximum interval, in seconds, between checks of the background token refresh
+        loop. The default is ``300``.
 
     Examples
     --------
@@ -138,6 +148,9 @@ class Client:
         verify: bool | str = None,
         disable_security_warnings: bool = True,
         auto_refresh_token: bool = True,
+        token_refresh_factor: float = 0.70,
+        token_refresh_retry_factors: tuple[float, ...] = (0.80, 0.90, 0.95, 0.98),
+        token_refresh_loop_interval: float = 300,
         **kwargs,
     ):
         """Initialize the Client object."""
@@ -170,9 +183,23 @@ class Client:
         self.data_transfer_url = url + "/dt/api/v1"
         self._token_refresh_thread = None
         self._stop_event = threading.Event()
-        # Set token_refresh_factor to 95%
-        self.token_refresh_factor = 0.95
-        self.loop_interval = 60  # Check every 60 seconds
+        if not 0 < token_refresh_factor < 1:
+            raise ValueError("token_refresh_factor must be in the open interval (0, 1).")
+        if token_refresh_loop_interval <= 0:
+            raise ValueError("token_refresh_loop_interval must be positive.")
+        retry_factors = tuple(token_refresh_retry_factors)
+        prev = token_refresh_factor
+        for f in retry_factors:
+            if not prev < f < 1:
+                raise ValueError(
+                    "token_refresh_retry_factors must be strictly increasing and "
+                    "in (token_refresh_factor, 1)."
+                )
+            prev = f
+        self.token_refresh_factor = token_refresh_factor
+        self.token_refresh_retry_factors = retry_factors
+        self.loop_interval = token_refresh_loop_interval
+        self._refresh_attempt = 0
         self.token_expires_in = None
         self.token_acquired_date = None
         self.token_refresh_date = None
@@ -401,6 +428,7 @@ class Client:
             )
         self.token_acquired_date = arrow.now() if self.token_expires_in is not None else None
 
+        self._refresh_attempt = 0
         if self.token_expires_in is not None:
             offset = max(1, int(self.token_expires_in * self.token_refresh_factor))
             self.token_refresh_date = self.token_acquired_date.shift(seconds=offset)
@@ -422,14 +450,44 @@ class Client:
             now = arrow.now()
             if now > self.token_refresh_date:
                 log.debug("Attempting preemptive authentication token refresh")
-                self.refresh_access_token()
+                try:
+                    self.refresh_access_token()
+                except Exception as ex:
+                    self._reschedule_after_failed_refresh(ex)
                 continue
 
             diff = self.token_refresh_date - now
-            sleep_time = max(0.1, min(self.loop_interval, diff.total_seconds() * 0.25))
+            sleep_time = max(0.1, min(self.loop_interval, diff.total_seconds()))
             if self._stop_event.wait(sleep_time):
                 break
         log.debug("Token refresh thread stopped")
+
+    def _reschedule_after_failed_refresh(self, ex):
+        """Schedule the next refresh attempt after a failure, if any retries remain."""
+        self._refresh_attempt += 1
+        if (
+            self._refresh_attempt > len(self.token_refresh_retry_factors)
+            or self.token_acquired_date is None
+            or self.token_expires_in is None
+        ):
+            log.error(
+                "Preemptive token refresh failed and no retries remain: %s. "
+                "Falling back to on-demand refresh on the next 401 response.",
+                ex,
+            )
+            self.token_refresh_date = None
+            return
+
+        factor = self.token_refresh_retry_factors[self._refresh_attempt - 1]
+        offset = max(1, int(self.token_expires_in * factor))
+        self.token_refresh_date = self.token_acquired_date.shift(seconds=offset)
+        log.warning(
+            "Preemptive token refresh failed (%s); next attempt scheduled at %.0f%% "
+            "of token lifetime (%s).",
+            ex,
+            factor * 100,
+            self.token_refresh_date,
+        )
 
     def _auto_refresh_token(self, response, *args, **kwargs):
         """Provide a callback for refreshing an expired token.

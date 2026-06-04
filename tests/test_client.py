@@ -159,6 +159,36 @@ def test_update_token_expiry_updates_after_refresh(
     assert client.token_refresh_date > first_refresh_date
 
 
+def test_reschedule_after_failed_refresh(url, username, password, has_hps_version_gt_1_4_10):
+    """Failed refreshes must escalate through retry factors, then give up."""
+    if not has_hps_version_gt_1_4_10:
+        pytest.skip("Preemptive token refresh requires HPS > 1.4.10.")
+    client = Client(url, username, password)
+
+    # Stop the background thread so it doesn't race with our manipulations.
+    client._stop_event.set()
+    client._token_refresh_thread.join(timeout=5)
+
+    acquired = client.token_acquired_date
+    expires_in = client.token_expires_in
+    retry_factors = client.token_refresh_retry_factors
+    assert len(retry_factors) > 0
+
+    err = RuntimeError("simulated refresh failure")
+
+    # Each failure should reschedule at the next retry factor.
+    for i, factor in enumerate(retry_factors, start=1):
+        client._reschedule_after_failed_refresh(err)
+        assert client._refresh_attempt == i
+        expected_offset = max(1, int(expires_in * factor))
+        expected_date = acquired.shift(seconds=expected_offset)
+        assert client.token_refresh_date == expected_date
+
+    # One more failure exhausts the retries and disables preemptive refresh.
+    client._reschedule_after_failed_refresh(err)
+    assert client.token_refresh_date is None
+
+
 def test_periodically_refresh_token_refreshes_preemptively(
     url, username, password, has_hps_version_gt_1_4_10
 ):
