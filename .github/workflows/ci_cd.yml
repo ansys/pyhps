@@ -268,7 +268,7 @@ jobs:
       id-token: write
       contents: write
     steps:
-      - name: "Download the library artifacts from build-library step"
+      - name: "Download the library artifacts from package step"
         uses: actions/download-artifact@v8
         with:
           name: ${{ env.PACKAGE_NAME }}-artifacts
