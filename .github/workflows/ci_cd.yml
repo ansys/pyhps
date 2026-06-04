@@ -265,14 +265,22 @@ jobs:
     needs: [package]
     runs-on: ubuntu-latest
     permissions:
+      id-token: write
       contents: write
     steps:
-      - name: Release to the public PyPI repository
-        uses: ansys/actions/release-pypi-public@v10.3.1
+      - name: "Download the library artifacts from build-library step"
+        uses: actions/download-artifact@v8
         with:
-          library-name: ${{ env.PACKAGE_NAME }}
-          twine-username: "__token__"
-          twine-token: ${{ secrets.PYPI_TOKEN }}
+          name: ${{ env.PACKAGE_NAME }}-artifacts
+          path: ${{ env.PACKAGE_NAME }}-artifacts
+
+      - name: "Upload artifacts to PyPI using trusted publisher"
+        uses: pypa/gh-action-pypi-publish@v1.14.0
+        with:
+          repository-url: "https://upload.pypi.org/legacy/"
+          print-hash: true
+          packages-dir: ${{ env.PACKAGE_NAME }}-artifacts
+          skip-existing: false
 
       - name: Release to GitHub
         uses: ansys/actions/release-github@v10.3.1
