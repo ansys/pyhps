@@ -30,14 +30,29 @@ on:
         description: Whether to upload coverage results
         type: boolean
         default: true
+    secrets:
+      PYANSYS_CI_BOT_PACKAGE_TOKEN:
+        required: true
+      PYANSYS_CI_BOT_TOKEN:
+        required: true
+      PYANSYS_CI_BOT_USERNAME:
+        required: true
+      CODECOV_TOKEN:
+        required: true
+
+permissions: {}
 
 jobs:
 
   tests:
     name: Tests and coverage
     runs-on: ${{ inputs.runner }}
+    permissions:
+      contents: read
     steps:
       - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6
+        with:
+          persist-credentials: false
       - name: Set up Python ${{ inputs.python-version }}
         uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6
         with:

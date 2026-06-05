@@ -5,13 +5,19 @@ on:
 env:
   MAIN_PYTHON_VERSION: '3.12'
 
+permissions: {}
+
 jobs:
 
   style:
     name: Code style
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     steps:
       - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6
+        with:
+          persist-credentials: false
       - name: Set up Python
         uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6
         with:
@@ -25,6 +31,8 @@ jobs:
   doc-style:
     name: Documentation Style Check
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     steps:
       - name: PyAnsys documentation style checks
         uses: ansys/actions/doc-style@v10.3.1

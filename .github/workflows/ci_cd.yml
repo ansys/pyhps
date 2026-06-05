@@ -41,7 +41,6 @@ jobs:
 
   style:
     uses: ./.github/workflows/style.yml
-    secrets: inherit
 
   check-actions-security:
     name: Check actions security
@@ -62,7 +61,11 @@ jobs:
             ]
       fail-fast: false
     uses: ./.github/workflows/tests.yml
-    secrets: inherit
+    secrets:
+      PYANSYS_CI_BOT_PACKAGE_TOKEN: ${{ secrets.PYANSYS_CI_BOT_PACKAGE_TOKEN }}
+      PYANSYS_CI_BOT_TOKEN: ${{ secrets.PYANSYS_CI_BOT_TOKEN }}
+      PYANSYS_CI_BOT_USERNAME: ${{ secrets.PYANSYS_CI_BOT_USERNAME }}
+      CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
     with:
       python-version: ${{ matrix.cfg.python-version }}   
       toxenv: ${{ matrix.cfg.toxenv }}
@@ -76,7 +79,11 @@ jobs:
           hps-version: ['v1.2.0', 'v1.3.45', 'v1.4.10']
       fail-fast: false
     uses: ./.github/workflows/tests.yml
-    secrets: inherit
+    secrets:
+      PYANSYS_CI_BOT_PACKAGE_TOKEN: ${{ secrets.PYANSYS_CI_BOT_PACKAGE_TOKEN }}
+      PYANSYS_CI_BOT_TOKEN: ${{ secrets.PYANSYS_CI_BOT_TOKEN }}
+      PYANSYS_CI_BOT_USERNAME: ${{ secrets.PYANSYS_CI_BOT_USERNAME }}
+      CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
     with:
       python-version: '3.10'
       toxenv: 'py310'
@@ -91,6 +98,8 @@ jobs:
     needs: [style]
     steps:
       - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6
+        with:
+          persist-credentials: false
 
       - name: Set up Python
         uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6
@@ -114,7 +123,9 @@ jobs:
           sudo apt install latexmk texlive-latex-extra
 
       - name: Generate the documentation with tox
-        run: tox -e doc-html-${{ runner.os == 'Linux' && 'linux' || 'windows' }},doc-pdf-${{ runner.os == 'Linux' && 'linux' || 'windows' }}
+        env:
+          DOC_PLATFORM: ${{ runner.os == 'Linux' && 'linux' || 'windows' }}
+        run: tox -e "doc-html-${DOC_PLATFORM},doc-pdf-${DOC_PLATFORM}"
 
       - name: Upload HTML Documentation
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
@@ -196,6 +207,8 @@ jobs:
     steps:
       - name: "Install Git and clone project"
         uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6
+        with:
+          persist-credentials: false
         
       - uses: extractions/netrc@c3879108aae6b4ed5c4eb60854ae04f06d2f2f68 # v3
         with:
@@ -218,7 +231,7 @@ jobs:
         id: version
         shell: bash
         run: |
-          library_name=${{ env.PACKAGE_NAME }}
+          library_name="$PACKAGE_NAME"
           library_version=$(python -c "import importlib.metadata as importlib_metadata; print(importlib_metadata.version('$library_name'))")
 
           if [ -z "$library_version" ]; then
@@ -235,7 +248,7 @@ jobs:
     needs: [package, library-version]
     runs-on: ubuntu-latest
     permissions:
-      contents: write
+      contents: write  # Required to publish a GitHub release for the latest-dev pre-release
     steps:
       - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8
         with:
@@ -261,7 +274,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: [package]
     permissions:
-      contents: write
+      contents: write  # Required to push generated docs to the gh-pages branch
     steps:
       - name: Deploy the latest documentation
         uses: ansys/actions/doc-deploy-dev@v10.3.1
@@ -278,7 +291,7 @@ jobs:
     needs: [package]
     runs-on: ubuntu-latest
     permissions:
-      contents: write
+      contents: write  # Required to publish the GitHub release for the tagged version
     steps:
       - name: Release to the public PyPI repository
         uses: ansys/actions/release-pypi-public@v10.3.1
@@ -300,7 +313,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: [release]
     permissions:
-      contents: write
+      contents: write  # Required to push the stable docs to the gh-pages branch
     steps:
       - uses: ansys/actions/doc-deploy-stable@v10.3.1
         with:
