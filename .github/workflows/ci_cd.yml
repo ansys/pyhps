@@ -293,17 +293,17 @@ jobs:
     needs: [package]
     runs-on: ubuntu-latest
     permissions:
-      id-token: write
-      contents: write  # # Required to publish the GitHub release for the tagged version
+      id-token: write  # Required for PyPI trusted publishing (OIDC)
+      contents: write  # Required to publish the GitHub release for the tagged version
     steps:
       - name: "Download the library artifacts from package step"
-        uses: actions/download-artifact@v8
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8
         with:
           name: ${{ env.PACKAGE_NAME }}-artifacts
           path: ${{ env.PACKAGE_NAME }}-artifacts
 
       - name: "Upload artifacts to PyPI using trusted publisher"
-        uses: pypa/gh-action-pypi-publish@v1.14.0
+        uses: pypa/gh-action-pypi-publish@cef221092ed1bacb1cc03d23a2d87d1d172e277b # v1.14.0
         with:
           repository-url: "https://upload.pypi.org/legacy/"
           print-hash: true
