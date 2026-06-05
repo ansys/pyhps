@@ -7,6 +7,10 @@ on:
 env:
   MAIN_PYTHON_VERSION: '3.12'
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
 
   update-models:
