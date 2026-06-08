@@ -23,8 +23,8 @@
 import logging
 import threading
 import time
+from datetime import datetime, timedelta, timezone
 
-import arrow
 import pytest
 import requests
 
@@ -129,10 +129,8 @@ def test_dt_client(url, username, password):
     assert client.data_transfer_api == client._dt_api
 
 
-def test_update_token_expiry_sets_refresh_date(url, username, password, has_hps_version_gt_1_4_10):
+def test_update_token_expiry_sets_refresh_date(url, username, password):
     """After authentication, expiry-related fields must be populated."""
-    if not has_hps_version_gt_1_4_10:
-        pytest.skip("Preemptive token refresh requires HPS > 1.4.10.")
     client = Client(url, username, password)
 
     assert client.token_expires_in is not None
@@ -144,12 +142,8 @@ def test_update_token_expiry_sets_refresh_date(url, username, password, has_hps_
     assert 0 < diff <= client.token_expires_in
 
 
-def test_update_token_expiry_updates_after_refresh(
-    url, username, password, has_hps_version_gt_1_4_10
-):
+def test_update_token_expiry_updates_after_refresh(url, username, password):
     """Calling refresh_access_token must move token_refresh_date forward."""
-    if not has_hps_version_gt_1_4_10:
-        pytest.skip("Preemptive token refresh requires HPS > 1.4.10.")
     client = Client(url, username, password)
     first_refresh_date = client.token_refresh_date
 
@@ -159,10 +153,8 @@ def test_update_token_expiry_updates_after_refresh(
     assert client.token_refresh_date > first_refresh_date
 
 
-def test_reschedule_after_failed_refresh(url, username, password, has_hps_version_gt_1_4_10):
+def test_reschedule_after_failed_refresh(url, username, password):
     """Failed refreshes must escalate through retry factors, then give up."""
-    if not has_hps_version_gt_1_4_10:
-        pytest.skip("Preemptive token refresh requires HPS > 1.4.10.")
     client = Client(url, username, password)
 
     # Stop the background thread so it doesn't race with our manipulations.
@@ -181,7 +173,7 @@ def test_reschedule_after_failed_refresh(url, username, password, has_hps_versio
         client._reschedule_after_failed_refresh(err)
         assert client._refresh_attempt == i
         expected_offset = max(1, int(expires_in * factor))
-        expected_date = acquired.shift(seconds=expected_offset)
+        expected_date = acquired + timedelta(seconds=expected_offset)
         assert client.token_refresh_date == expected_date
 
     # One more failure exhausts the retries and disables preemptive refresh.
@@ -189,12 +181,8 @@ def test_reschedule_after_failed_refresh(url, username, password, has_hps_versio
     assert client.token_refresh_date is None
 
 
-def test_periodically_refresh_token_refreshes_preemptively(
-    url, username, password, has_hps_version_gt_1_4_10
-):
+def test_periodically_refresh_token_refreshes_preemptively(url, username, password):
     """The background thread must refresh the access token before it expires."""
-    if not has_hps_version_gt_1_4_10:
-        pytest.skip("Preemptive token refresh requires HPS > 1.4.10.")
     client = Client(url, username, password)
     initial_access_token = client.access_token
 
@@ -206,7 +194,7 @@ def test_periodically_refresh_token_refreshes_preemptively(
     client._stop_event = threading.Event()
     client._token_refresh_thread = None
     client.loop_interval = 0.1
-    client.token_refresh_date = arrow.now().shift(seconds=-1)
+    client.token_refresh_date = datetime.now(timezone.utc) - timedelta(seconds=1)
     client._start_token_refresh_thread()
 
     # Wait for the background thread to perform the refresh
@@ -215,4 +203,4 @@ def test_periodically_refresh_token_refreshes_preemptively(
         time.sleep(0.1)
 
     assert client.access_token != initial_access_token
-    assert client.token_refresh_date > arrow.now()
+    assert client.token_refresh_date > datetime.now(timezone.utc)

@@ -29,9 +29,8 @@ import platform
 import tempfile
 import threading
 import warnings
+from datetime import datetime, timedelta, timezone
 
-import arrow
-import humanfriendly
 import jwt
 import requests
 from ansys.hps.data_transfer.client import Client as DataTransferClient
@@ -409,32 +408,32 @@ class Client:
         expires_in = []
         access_expires_in = tokens.get("expires_in", None)
         if access_expires_in is not None:
-            log.debug(f"Access token expires in {humanfriendly.format_timespan(access_expires_in)}")
+            log.debug(f"Access token expires in {timedelta(seconds=int(access_expires_in))}")
             expires_in.append(access_expires_in)
         refresh_expires_in = tokens.get("refresh_expires_in", None)
         if refresh_expires_in is not None:
             info = (
                 "offline"
                 if refresh_expires_in == 0 and "offline_access" in self.scope
-                else f"expires in {humanfriendly.format_timespan(refresh_expires_in)}"
+                else f"expires in {timedelta(seconds=int(refresh_expires_in))}"
             )
             log.debug(f"Refresh token {info}")
             if refresh_expires_in > 0:
                 expires_in.append(refresh_expires_in)
         self.token_expires_in = min(expires_in) if expires_in else None
         if self.token_expires_in is not None:
-            log.debug(
-                f"Setting token expiry to {humanfriendly.format_timespan(self.token_expires_in)}"
-            )
-        self.token_acquired_date = arrow.now() if self.token_expires_in is not None else None
+            log.debug(f"Setting token expiry to {timedelta(seconds=int(self.token_expires_in))}")
+        self.token_acquired_date = (
+            datetime.now(timezone.utc) if self.token_expires_in is not None else None
+        )
 
         self._refresh_attempt = 0
         if self.token_expires_in is not None:
             offset = max(1, int(self.token_expires_in * self.token_refresh_factor))
-            self.token_refresh_date = self.token_acquired_date.shift(seconds=offset)
+            self.token_refresh_date = self.token_acquired_date + timedelta(seconds=offset)
             log.debug(
                 "Refresh token set, auto refresh in "
-                f"{humanfriendly.format_timespan(offset)} ({self.token_refresh_date})"
+                f"{timedelta(seconds=offset)} ({self.token_refresh_date})"
             )
         else:
             self.token_refresh_date = None
@@ -447,7 +446,7 @@ class Client:
                     break
                 continue
 
-            now = arrow.now()
+            now = datetime.now(timezone.utc)
             if now > self.token_refresh_date:
                 log.debug("Attempting preemptive authentication token refresh")
                 try:
@@ -480,7 +479,7 @@ class Client:
 
         factor = self.token_refresh_retry_factors[self._refresh_attempt - 1]
         offset = max(1, int(self.token_expires_in * factor))
-        self.token_refresh_date = self.token_acquired_date.shift(seconds=offset)
+        self.token_refresh_date = self.token_acquired_date + timedelta(seconds=offset)
         log.warning(
             "Preemptive token refresh failed (%s); next attempt scheduled at %.0f%% "
             "of token lifetime (%s).",
