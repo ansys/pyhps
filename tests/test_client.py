@@ -21,7 +21,9 @@
 # SOFTWARE.get_projects
 
 import logging
+import threading
 import time
+from datetime import datetime, timedelta, timezone
 
 import pytest
 import requests
@@ -125,3 +127,80 @@ def test_dt_client(url, username, password):
 
     assert client.data_transfer_client == client._dt_client
     assert client.data_transfer_api == client._dt_api
+
+
+def test_update_token_expiry_sets_refresh_date(url, username, password):
+    """After authentication, expiry-related fields must be populated."""
+    client = Client(url, username, password)
+
+    assert client.token_expires_in is not None
+    assert client.token_acquired_date is not None
+    assert client.token_refresh_date is not None
+    # refresh date should be in the future and within token lifetime
+    assert client.token_refresh_date > client.token_acquired_date
+    diff = (client.token_refresh_date - client.token_acquired_date).total_seconds()
+    assert 0 < diff <= client.token_expires_in
+
+
+def test_update_token_expiry_updates_after_refresh(url, username, password):
+    """Calling refresh_access_token must move token_refresh_date forward."""
+    client = Client(url, username, password)
+    first_refresh_date = client.token_refresh_date
+
+    time.sleep(0.5)
+    client.refresh_access_token()
+
+    assert client.token_refresh_date > first_refresh_date
+
+
+def test_reschedule_after_failed_refresh(url, username, password):
+    """Failed refreshes must escalate through retry factors, then give up."""
+    client = Client(url, username, password)
+
+    # Stop the background thread so it doesn't race with our manipulations.
+    client._stop_event.set()
+    client._token_refresh_thread.join(timeout=5)
+
+    acquired = client.token_acquired_date
+    expires_in = client.token_expires_in
+    retry_factors = client.token_refresh_retry_factors
+    assert len(retry_factors) > 0
+
+    err = RuntimeError("simulated refresh failure")
+
+    # Each failure should reschedule at the next retry factor.
+    for i, factor in enumerate(retry_factors, start=1):
+        client._reschedule_after_failed_refresh(err)
+        assert client._refresh_attempt == i
+        expected_offset = max(1, int(expires_in * factor))
+        expected_date = acquired + timedelta(seconds=expected_offset)
+        assert client.token_refresh_date == expected_date
+
+    # One more failure exhausts the retries and disables preemptive refresh.
+    client._reschedule_after_failed_refresh(err)
+    assert client.token_refresh_date is None
+
+
+def test_periodically_refresh_token_refreshes_preemptively(url, username, password):
+    """The background thread must refresh the access token before it expires."""
+    client = Client(url, username, password)
+    initial_access_token = client.access_token
+
+    # The background thread is already sleeping with the default loop_interval
+    # against a fresh token_refresh_date. Stop it, retune the schedule so a
+    # refresh is due immediately, then restart so the new values take effect.
+    client._stop_event.set()
+    client._token_refresh_thread.join(timeout=5)
+    client._stop_event = threading.Event()
+    client._token_refresh_thread = None
+    client.loop_interval = 0.1
+    client.token_refresh_date = datetime.now(timezone.utc) - timedelta(seconds=1)
+    client._start_token_refresh_thread()
+
+    # Wait for the background thread to perform the refresh
+    deadline = time.time() + 5
+    while time.time() < deadline and client.access_token == initial_access_token:
+        time.sleep(0.1)
+
+    assert client.access_token != initial_access_token
+    assert client.token_refresh_date > datetime.now(timezone.utc)
