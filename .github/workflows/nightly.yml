@@ -30,6 +30,8 @@ permissions: {}
 jobs:
 
   style:
+    permissions:
+      contents: read
     uses: ./.github/workflows/style.yml
 
   tests:
