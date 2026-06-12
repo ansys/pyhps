@@ -1,0 +1,812 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>User guide &#8212; PyHPS</title>
+
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=5b4479735964841361fd" rel="stylesheet" />
+<link href="../_static/styles/bootstrap.css?digest=5b4479735964841361fd" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=5b4479735964841361fd" rel="stylesheet" />
+
+  
+  <link href="../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=5b4479735964841361fd" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../_static/autodoc_pydantic.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/tabs.css?v=a5c4661c" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/ansys_sphinx_theme.css?v=f64ca0e9" />
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.23/css/jquery.dataTables.min.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=5b4479735964841361fd" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=5b4479735964841361fd" />
+  <script src="../_static/vendor/fontawesome/6.1.2/js/all.min.js?digest=5b4479735964841361fd"></script>
+ 
+<link href="../_static/css/breadcrumbs.css" rel="stylesheet" />
+
+    <script src="../_static/documentation_options.js?v=1027fec7"></script>
+    <script src="../_static/doctools.js?v=888ff710"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../_static/copybutton.js?v=f281be69"></script>
+    <script src="../_static/js/table.js?v=b64f5182"></script>
+    <script src="https://cdn.datatables.net/1.10.23/js/jquery.dataTables.min.js"></script>
+    <script src="../_static/design-tabs.js?v=36754332"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'user_guide/index';</script>
+    <script>
+        DOCUMENTATION_OPTIONS.theme_version = '0.14.4';
+        DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://hps.docs.pyansys.com/versions.json';
+        DOCUMENTATION_OPTIONS.theme_switcher_version_match = '0.7';
+        DOCUMENTATION_OPTIONS.show_version_warning_banner = false;
+        </script>
+    <link rel="icon" href="../_static/ansys-favicon.png"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Query parameters" href="query_parameters.html" />
+    <link rel="prev" title="Getting started" href="../getting_started/index.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <link rel="canonical" href="https://hps.docs.pyansys.com/version/stable/user_guide/index.html" />
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>
+    Back to top
+  </button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__primary"
+          id="__primary"/>
+  <label class="overlay overlay-primary" for="__primary"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__secondary"
+          id="__secondary"/>
+  <label class="overlay overlay-secondary" for="__secondary"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container"><!-- Debugging: html_theme_options =  -->
+
+<!-- If there is no MiliSearch enabled, use the PyData search -->
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+   
+    <nav class="bd-header navbar navbar-expand-lg bd-navbar">
+<div class="bd-header__inner bd-page-width">
+  <label class="sidebar-toggle primary-toggle" for="__primary">
+    <span class="fa-solid fa-bars"></span>
+  </label>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../_static/pyansys-logo-black-cropped.png" class="logo__image only-light" alt="PyHPS - Home"/>
+    <script>document.write(`<img src="../_static/pyansys-logo-black-cropped.png" class="logo__image only-dark" alt="PyHPS - Home"/>`);</script>
+  
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav class="navbar-nav">
+  <p class="sidebar-header-items__title"
+     role="heading"
+     aria-level="1"
+     aria-label="Site Navigation">
+    Site Navigation
+  </p>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../getting_started/index.html">
+                        Getting started
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item current active">
+                      <a class="nav-link nav-internal" href="#">
+                        User guide
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../examples/index.html">
+                        Examples
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../api/index.html">
+                        API reference
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../contribute.html">
+                        Contribute
+                      </a>
+                    </li>
+                
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+ <script>
+ document.write(`
+   <button class="btn navbar-btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script>
+        </div>
+      
+      
+        <div class="navbar-item">
+<script>
+document.write(`
+  <div class="version-switcher__container dropdown">
+    <button id="pst-version-switcher-button-2"
+      type="button"
+      class="version-switcher__button btn btn-sm navbar-btn dropdown-toggle"
+      data-bs-toggle="dropdown"
+      aria-haspopup="listbox"
+      aria-controls="pst-version-switcher-list-2"
+      aria-label="Version switcher list"
+    >
+      Choose version  <!-- this text may get changed later by javascript -->
+      <span class="caret"></span>
+    </button>
+    <div id="pst-version-switcher-list-2"
+      class="version-switcher__menu dropdown-menu list-group-flush py-0"
+      role="listbox" aria-labelledby="pst-version-switcher-button-2">
+      <!-- dropdown will be populated by javascript on page load -->
+    </div>
+  </div>
+`);
+</script></div>
+      
+        <div class="navbar-item">
+
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="theme-switch nav-link" data-mode="light"><i class="fa-solid fa-sun fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="dark"><i class="fa-solid fa-moon fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg"></i></span>
+  </button>
+`);
+</script></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links navbar-nav"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/ansys/pyhps" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i></span>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+ <script>
+ document.write(`
+   <button class="btn navbar-btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script>
+    </div>
+  
+
+  
+    <label class="sidebar-toggle secondary-toggle" for="__secondary" tabindex="0">
+      <span class="fa-solid fa-outdent"></span>
+    </label>
+  
+</div>
+
+    </nav>
+    <div id="announcement_msg"></div>
+<script>
+  fetch("announcement.html")
+    .then((response) => {
+      if (!response.ok) {
+        throw new Error(`HTTP error: ${response.status}`);
+      }
+      return response.text();
+    })
+    .then(
+      (text) => (document.getElementById("announcement_msg").innerHTML = text),
+    )
+    .catch((error) => console.error(`Fetch problem: ${error.message}`));
+</script>  
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          <div class="navbar-item">
+<nav class="navbar-nav">
+  <p class="sidebar-header-items__title"
+     role="heading"
+     aria-level="1"
+     aria-label="Site Navigation">
+    Site Navigation
+  </p>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../getting_started/index.html">
+                        Getting started
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item current active">
+                      <a class="nav-link nav-internal" href="#">
+                        User guide
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../examples/index.html">
+                        Examples
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../api/index.html">
+                        API reference
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../contribute.html">
+                        Contribute
+                      </a>
+                    </li>
+                
+  </ul>
+</nav></div>
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+<script>
+document.write(`
+  <div class="version-switcher__container dropdown">
+    <button id="pst-version-switcher-button-3"
+      type="button"
+      class="version-switcher__button btn btn-sm navbar-btn dropdown-toggle"
+      data-bs-toggle="dropdown"
+      aria-haspopup="listbox"
+      aria-controls="pst-version-switcher-list-3"
+      aria-label="Version switcher list"
+    >
+      Choose version  <!-- this text may get changed later by javascript -->
+      <span class="caret"></span>
+    </button>
+    <div id="pst-version-switcher-list-3"
+      class="version-switcher__menu dropdown-menu list-group-flush py-0"
+      role="listbox" aria-labelledby="pst-version-switcher-button-3">
+      <!-- dropdown will be populated by javascript on page load -->
+    </div>
+  </div>
+`);
+</script></div>
+        
+          <div class="navbar-item">
+
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="theme-switch nav-link" data-mode="light"><i class="fa-solid fa-sun fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="dark"><i class="fa-solid fa-moon fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg"></i></span>
+  </button>
+`);
+</script></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links navbar-nav"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/ansys/pyhps" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i></span>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="query_parameters.html">Query parameters</a></li>
+<li class="toctree-l1"><a class="reference internal" href="exceptions.html">Exception handling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dcs_migration.html">Migration of DCS Python client scripts</a></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+<nav aria-label="Breadcrumb">
+  <ul class="bd-breadcrumbs">
+         
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="https://docs.pyansys.com/" class="nav-link">PyAnsys</a>
+    </li>
+     
+    <li class="breadcrumb-item">
+      <a
+        href="../index.html"
+        class="nav-link"
+        aria-label="Home"
+      >
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+      
+    <li class="breadcrumb-item active" aria-current="page">User guide</li>
+    
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article" role="main">
+                  
+  <section id="user-guide">
+<span id="id1"></span><h1>User guide<a class="headerlink" href="#user-guide" title="Link to this heading">#</a></h1>
+<p>This section walks you through the basics of how to interact with HPS.
+For more elaborate examples, see <a class="reference internal" href="../examples/index.html#examples"><span class="std std-ref">Examples</span></a>. For descriptions
+of PyHPS endpoints, see <a class="reference internal" href="../api/index.html#api-reference"><span class="std std-ref">API reference</span></a>.</p>
+<p>To reproduce the code samples provided in this section, you must have these
+prerequisites:</p>
+<ul class="simple">
+<li><p>A running Ansys HPS installation. For more information, see the
+<a class="reference external" href="https://ansyshelp.ansys.com/account/secured?returnurl=/Views/Secured/prod_page.html?pn=Ansys%20HPC%20Platform%20Services&amp;pid=HpcPlatformServices&amp;lang=en">Ansys HPC Platform Services Guide</a>
+in the Ansys Help.</p></li>
+<li><p>A Python shell with PyHPS installed. For more information, see <a class="reference internal" href="../getting_started/index.html#getting-started"><span class="std std-ref">Getting started</span></a>.</p></li>
+</ul>
+<div class="toctree-wrapper compound">
+</div>
+<section id="connect-to-an-hps-deployment">
+<h2>Connect to an HPS deployment<a class="headerlink" href="#connect-to-an-hps-deployment" title="Link to this heading">#</a></h2>
+<p>You start by connecting to an HPS deployment running on the localhost with the default username and password:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">ansys.hps.client</span> <span class="kn">import</span> <span class="n">Client</span>
+<span class="kn">from</span> <span class="nn">ansys.hps.client.jms</span> <span class="kn">import</span> <span class="n">JmsApi</span><span class="p">,</span> <span class="n">ProjectApi</span>
+
+<span class="n">client</span> <span class="o">=</span> <span class="n">Client</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="s2">&quot;https://localhost:8443/hps&quot;</span><span class="p">,</span> <span class="n">username</span><span class="o">=</span><span class="s2">&quot;repuser&quot;</span><span class="p">,</span> <span class="n">password</span><span class="o">=</span><span class="s2">&quot;repuser&quot;</span><span class="p">)</span>
+
+<span class="c1"># check which JMS version the server is running</span>
+<span class="n">jms_api</span> <span class="o">=</span> <span class="n">JmsApi</span><span class="p">(</span><span class="n">client</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">jms_api</span><span class="o">.</span><span class="n">get_api_info</span><span class="p">()[</span><span class="s1">&#39;build&#39;</span><span class="p">][</span><span class="s1">&#39;version&#39;</span><span class="p">])</span>
+
+<span class="c1"># get all projects</span>
+<span class="n">projects</span> <span class="o">=</span> <span class="n">jms_api</span><span class="o">.</span><span class="n">get_projects</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Once connected, you can query project statistics to find out how many jobs are currently running:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">projects</span> <span class="o">=</span> <span class="n">jms_api</span><span class="o">.</span><span class="n">get_projects</span><span class="p">(</span><span class="n">statistics</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">num_running_jobs</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">statistics</span><span class="p">[</span><span class="s2">&quot;eval_status&quot;</span><span class="p">][</span><span class="s2">&quot;running&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">projects</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="create-a-project">
+<h2>Create a project<a class="headerlink" href="#create-a-project" title="Link to this heading">#</a></h2>
+<p>The MAPDL motorbike frame example consists of an Ansys Mechanical APDL beam model of a
+tubular steel trellis motorbike frame. This example is more fully described in the <a class="reference internal" href="../examples/ex_motorbike_frame.html#example-mapdl-motorbike-frame"><span class="std std-ref">MAPDL motorbike frame: Project creation</span></a>
+example.</p>
+<ol class="arabic">
+<li><p>Download the <a class="reference download internal" download="" href="../_downloads/8ed38b7d3730aadc96dfe01d14ab6278/mapdl_motorbike_frame.zip"><code class="xref download docutils literal notranslate"><span class="pre">ZIP</span> <span class="pre">file</span></code></a> for the MAPDL motorbike frame example.</p>
+<p>This file contains the project setup script for creating the project and the project’s data files.</p>
+</li>
+<li><p>Use a tool like 7-Zip to extract the files.</p></li>
+<li><p>To create the project, run the <code class="docutils literal notranslate"><span class="pre">project_setup.py</span></code> script:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ python path_to_download_folder\mapdl_motorbike_frame\project_setup.py
+</pre></div>
+</div>
+</li>
+</ol>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>By default, the script tries to connect to the HPS server running on the localhost with the default
+username and password. If your HPS server is hosted at a different URL or you want to specify different
+credentials, adjust the script before running it.</p>
+</div>
+</section>
+<section id="objects-versus-dictionaries">
+<h2>Objects versus dictionaries<a class="headerlink" href="#objects-versus-dictionaries" title="Link to this heading">#</a></h2>
+<p>By setting <code class="docutils literal notranslate"><span class="pre">as_objects=False</span></code>, most <code class="docutils literal notranslate"><span class="pre">get</span></code>, <code class="docutils literal notranslate"><span class="pre">create</span></code>, and <code class="docutils literal notranslate"><span class="pre">update</span></code> functions can return
+dictionaries rather than class objects. This is especially useful when the returned data needs
+to be further manipulated by popular packages such as <a class="reference external" href="https://numpy.org/">NumPy</a> and
+<a class="reference external" href="https://pandas.pydata.org/">pandas</a>.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">pandas</span>
+
+<span class="n">project</span> <span class="o">=</span> <span class="n">jms_api</span><span class="o">.</span><span class="n">get_project_by_name</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;Mapdl Motorbike Frame&quot;</span><span class="p">)</span>
+
+<span class="c1"># Get parameter values for all evaluated jobs</span>
+<span class="n">jobs</span> <span class="o">=</span> <span class="n">project_api</span><span class="o">.</span><span class="n">get_jobs</span><span class="p">(</span><span class="n">fields</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;id&quot;</span><span class="p">,</span> <span class="s2">&quot;values&quot;</span><span class="p">],</span> <span class="n">eval_status</span><span class="o">=</span><span class="s2">&quot;evaluated&quot;</span><span class="p">,</span> <span class="n">as_objects</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+<span class="c1"># Import jobs data into a flat dataframe</span>
+<span class="n">df</span> <span class="o">=</span> <span class="n">pandas</span><span class="o">.</span><span class="n">json_normalize</span><span class="p">(</span><span class="n">jobs</span><span class="p">)</span>
+
+<span class="c1"># Output</span>
+<span class="c1">#                         id  values.mapdl_cp_time  values.mapdl_elapsed_time  values.mapdl_elapsed_time_obtain_license  values.max_stress  ...  values.tube6 values.tube7 values.tube8 values.tube9 values.weight</span>
+<span class="c1"># 0   02qoqedl8QCjkuLcqCi10Q                 0.500                       24.0                                      21.9        1010.256091  ...             3            1            1            2      3.027799</span>
+<span class="c1"># 1   02qoqedlDMO1LrSGoHQqnT                 0.406                       23.0                                      21.5         227.249112  ...             2            3            3            2     11.257201</span>
+<span class="c1"># 2   02qoqedlApzJZd7fQSQIJg                 0.438                       24.0                                      21.2         553.839050  ...             3            2            1            2      6.358393</span>
+<span class="c1"># 3   02qoqedlGMYZi7YBive78D                 0.469                       25.0                                      22.9         162.944726  ...             1            1            1            3      9.919099</span>
+<span class="c1"># 4   02qoqedlKBzRz939iDCCex                 0.391                       25.0                                      22.6         218.976121  ...             3            2            2            2      6.884490</span>
+<span class="c1"># 5   02qoqedlLfvwuA4uaf5GKR                 0.406                       24.0                                      22.4         455.888101  ...             1            3            1            2      7.346944</span>
+<span class="c1"># 6   02qoqedlLvoSgPoLxla8F9                 0.391                       27.0                                      25.2         292.885562  ...             1            1            1            3      6.759635</span>
+<span class="c1"># 7   02qoqedlOKg8Vg5AlTrji6                 0.484                       28.0                                      26.2         377.721100  ...             1            1            3            2      5.952097</span>
+<span class="c1"># 8   02qoqedlRtDwuw2uTQ99Vq                 0.469                       28.0                                      25.9         332.336753  ...             1            3            2            2      7.463696</span>
+<span class="c1"># 9   02qoqedlPYyGRTivqB5vxf                 0.453                       27.0                                      25.5         340.147675  ...             3            2            2            3      6.631538</span>
+<span class="c1"># 10  02qoqedlN1ebRV77zuUVYd                 0.453                       28.0                                      25.5         270.691391  ...             2            2            1            3      8.077236</span>
+</pre></div>
+</div>
+</section>
+<section id="set-failed-jobs-to-pending">
+<h2>Set failed jobs to pending<a class="headerlink" href="#set-failed-jobs-to-pending" title="Link to this heading">#</a></h2>
+<p>Query a specific project and set its failed jobs (if any) to pending:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">project</span> <span class="o">=</span> <span class="n">jms_api</span><span class="o">.</span><span class="n">get_project_by_name</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;Mapdl Motorbike Frame&quot;</span><span class="p">)</span>
+<span class="n">jobs</span> <span class="o">=</span> <span class="n">project_api</span><span class="o">.</span><span class="n">get_jobs</span><span class="p">()</span>
+
+<span class="n">failed_jobs</span> <span class="o">=</span> <span class="p">[</span><span class="n">job</span> <span class="k">for</span> <span class="n">job</span> <span class="ow">in</span> <span class="n">jobs</span> <span class="k">if</span> <span class="n">job</span><span class="o">.</span><span class="n">eval_status</span> <span class="o">==</span> <span class="s2">&quot;failed&quot;</span><span class="p">]</span>
+
+<span class="k">for</span> <span class="n">job</span> <span class="ow">in</span> <span class="n">failed_jobs</span><span class="p">:</span>
+    <span class="n">job</span><span class="o">.</span><span class="n">eval_status</span> <span class="o">=</span> <span class="s2">&quot;pending&quot;</span>
+<span class="n">failed_jobs</span> <span class="o">=</span> <span class="n">project_api</span><span class="o">.</span><span class="n">update_jobs</span><span class="p">(</span><span class="n">failed_jobs</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="modify-a-job-definition">
+<h2>Modify a job definition<a class="headerlink" href="#modify-a-job-definition" title="Link to this heading">#</a></h2>
+<p>Query an existing job definition, modify it, and send it back to the server:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">project</span> <span class="o">=</span> <span class="n">jms_api</span><span class="o">.</span><span class="n">get_project_by_name</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;Mapdl Motorbike Frame&quot;</span><span class="p">)</span>
+
+<span class="c1"># get currently active job_definition</span>
+<span class="n">job_def</span> <span class="o">=</span> <span class="n">project_api</span><span class="o">.</span><span class="n">get_job_definitions</span><span class="p">(</span><span class="n">active</span><span class="o">=</span><span class="kc">True</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+
+<span class="c1"># Update the lower limit of a parameter</span>
+<span class="n">parameter_id</span> <span class="o">=</span> <span class="n">job_def</span><span class="o">.</span><span class="n">parameter_definition_ids</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+<span class="n">parameter_def</span> <span class="o">=</span> <span class="n">project_api</span><span class="o">.</span><span class="n">get_parameter_definitions</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="n">parameter_id</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">parameter_def</span><span class="p">)</span>
+<span class="c1"># {</span>
+<span class="c1">#   &quot;id&quot;: &quot;02qoqeciKZxk3Ua4QjPwue&quot;,</span>
+<span class="c1">#   &quot;name&quot;: &quot;tube1_radius&quot;,</span>
+<span class="c1">#   &quot;mode&quot;: &quot;input&quot;,</span>
+<span class="c1">#   &quot;type&quot;: &quot;float&quot;,</span>
+<span class="c1">#   &quot;default&quot;: 12.0,</span>
+<span class="c1">#   &quot;lower_limit&quot;: 4.0,</span>
+<span class="c1">#   &quot;upper_limit&quot;: 20.0,</span>
+<span class="c1">#   &quot;cyclic&quot;: false</span>
+<span class="c1"># }</span>
+<span class="n">parameter_def</span><span class="o">.</span><span class="n">lower_limit</span> <span class="o">=</span> <span class="mf">2.5</span>
+
+<span class="c1"># send the updated job_definition to the server</span>
+<span class="n">project_api</span><span class="o">.</span><span class="n">update_parameter_definitions</span><span class="p">([</span><span class="n">parameter_def</span><span class="p">])</span>
+</pre></div>
+</div>
+</section>
+<section id="delete-some-jobs">
+<h2>Delete some jobs<a class="headerlink" href="#delete-some-jobs" title="Link to this heading">#</a></h2>
+<p>Query for all jobs that have timed out and then delete them.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">project</span> <span class="o">=</span> <span class="n">jms_api</span><span class="o">.</span><span class="n">get_project_by_name</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;Mapdl Motorbike Frame&quot;</span><span class="p">)</span>
+
+<span class="n">jobs</span> <span class="o">=</span> <span class="n">project_api</span><span class="o">.</span><span class="n">get_jobs</span><span class="p">(</span><span class="n">fields</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">],</span> <span class="n">eval_status</span><span class="o">=</span><span class="s2">&quot;timeout&quot;</span><span class="p">)</span>
+<span class="n">project_api</span><span class="o">.</span><span class="n">delete_jobs</span><span class="p">(</span><span class="n">jobs</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="query-the-number-of-evaluators">
+<h2>Query the number of evaluators<a class="headerlink" href="#query-the-number-of-evaluators" title="Link to this heading">#</a></h2>
+<p>Query for the number of Windows and Linux evaluators connected to the HPS server:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">rms_api</span> <span class="o">=</span> <span class="n">RmsApi</span><span class="p">(</span><span class="n">client</span><span class="p">)</span>
+<span class="n">evaluators</span> <span class="o">=</span> <span class="n">rms_api</span><span class="o">.</span><span class="n">get_evaluators</span><span class="p">()</span>
+
+<span class="c1"># print number of Windows and Linux evaluators connected to the HPS server</span>
+<span class="nb">print</span><span class="p">(</span> <span class="nb">len</span><span class="p">([</span><span class="n">e</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">evaluators</span> <span class="k">if</span> <span class="n">e</span><span class="o">.</span><span class="n">platform</span> <span class="o">==</span> <span class="s2">&quot;windows&quot;</span> <span class="p">])</span> <span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span> <span class="nb">len</span><span class="p">([</span><span class="n">e</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">evaluators</span> <span class="k">if</span> <span class="n">e</span><span class="o">.</span><span class="n">platform</span> <span class="o">==</span> <span class="s2">&quot;linux&quot;</span> <span class="p">])</span> <span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="replace-a-file-in-a-project">
+<h2>Replace a file in a project<a class="headerlink" href="#replace-a-file-in-a-project" title="Link to this heading">#</a></h2>
+<p>Get file definitions from an existing project’s job definition and replace the first file:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">job_def</span> <span class="o">=</span> <span class="n">project_api</span><span class="o">.</span><span class="n">get_job_definitions</span><span class="p">(</span><span class="n">active</span><span class="o">=</span><span class="kc">True</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+<span class="n">files</span> <span class="o">=</span> <span class="n">project_api</span><span class="o">.</span><span class="n">get_files</span><span class="p">()</span>
+<span class="n">file</span> <span class="o">=</span> <span class="n">files</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+<span class="n">file</span><span class="o">.</span><span class="n">src</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;D:\local_folder\my_project\input_file.xyz&quot;</span>
+<span class="n">project</span><span class="o">.</span><span class="n">update_files</span><span class="p">([</span><span class="n">file</span><span class="p">])</span>
+</pre></div>
+</div>
+</section>
+<section id="modify-and-create-users">
+<h2>Modify and create users<a class="headerlink" href="#modify-and-create-users" title="Link to this heading">#</a></h2>
+<p>Administrative users with the Keycloak “manage-users” role can create users as well as modify or delete users:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">ansys.hps.client</span> <span class="kn">import</span> <span class="n">Client</span>
+<span class="kn">from</span> <span class="nn">ansys.hps.client.auth</span> <span class="kn">import</span> <span class="n">AuthApi</span><span class="p">,</span> <span class="n">User</span>
+
+<span class="n">client</span> <span class="o">=</span> <span class="n">Client</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="s2">&quot;https://localhost:8443/hps/&quot;</span><span class="p">,</span> <span class="n">username</span><span class="o">=</span><span class="s2">&quot;repadmin&quot;</span><span class="p">,</span> <span class="n">password</span><span class="o">=</span><span class="s2">&quot;repadmin&quot;</span><span class="p">)</span>
+<span class="n">auth_api</span> <span class="o">=</span> <span class="n">AuthApi</span><span class="p">(</span><span class="n">client</span><span class="p">)</span>
+
+<span class="c1"># modify the default password of the repadmin user</span>
+<span class="n">default_user</span> <span class="o">=</span> <span class="n">auth_api</span><span class="o">.</span><span class="n">get_users</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
+<span class="n">default_user</span><span class="o">.</span><span class="n">password</span> <span class="o">=</span> <span class="s1">&#39;new_password&#39;</span>
+<span class="n">auth_api</span><span class="o">.</span><span class="n">update_user</span><span class="p">(</span><span class="n">default_user</span><span class="p">)</span>
+
+<span class="c1"># create a new non-admin user</span>
+<span class="n">new_user</span> <span class="o">=</span> <span class="n">User</span><span class="p">(</span><span class="n">username</span><span class="o">=</span><span class="s1">&#39;test_user&#39;</span><span class="p">,</span> <span class="n">password</span><span class="o">=</span><span class="s1">&#39;dummy&#39;</span><span class="p">,</span>
+                <span class="n">email</span><span class="o">=</span><span class="s1">&#39;test_user@test.com&#39;</span><span class="p">,</span> <span class="n">fullname</span><span class="o">=</span><span class="s1">&#39;Test User&#39;</span><span class="p">)</span>
+<span class="n">new_user</span> <span class="o">=</span> <span class="n">auth_api</span><span class="o">.</span><span class="n">create_user</span><span class="p">(</span><span class="n">new_user</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">new_user</span><span class="p">)</span>
+<span class="c1"># {</span>
+<span class="c1">#   &quot;id&quot;: &quot;f9e068d7-4962-45dc-92a4-2273246039da&quot;,</span>
+<span class="c1">#   &quot;username&quot;: &quot;test_user&quot;,</span>
+<span class="c1">#   &quot;email&quot;: &quot;test_user@test.com&quot;</span>
+<span class="c1"># }</span>
+
+<span class="n">new_user</span><span class="o">.</span><span class="n">password</span> <span class="o">=</span> <span class="s2">&quot;new_password&quot;</span>
+<span class="n">auth_api</span><span class="o">.</span><span class="n">update_user</span><span class="p">(</span><span class="n">new_user</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+  <div class="sidebar-secondary-item">
+
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#connect-to-an-hps-deployment">Connect to an HPS deployment</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#create-a-project">Create a project</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#objects-versus-dictionaries">Objects versus dictionaries</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#set-failed-jobs-to-pending">Set failed jobs to pending</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#modify-a-job-definition">Modify a job definition</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#delete-some-jobs">Delete some jobs</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#query-the-number-of-evaluators">Query the number of evaluators</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#replace-a-file-in-a-project">Replace a file in a project</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#modify-and-create-users">Modify and create users</a></li>
+</ul>
+  </nav></div>
+
+  <div class="sidebar-secondary-item">
+<!-- If there is no fix edit button function, use the PyData edit-this-button-->
+</div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../_static/scripts/bootstrap.js?digest=5b4479735964841361fd"></script>
+<script src="../_static/scripts/pydata-sphinx-theme.js?digest=5b4479735964841361fd"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright (c) 2024 ANSYS, Inc. All rights reserved.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.2.6.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item"><p class="theme-version">
+  Built with the
+  <a href="https://sphinxdocs.ansys.com/version/stable/index.html"
+    >Ansys Sphinx Theme</a
+  >
+  0.14.0. <br />Last updated on
+  <span id="date"></span>
+</p>
+<script>
+  var options = { day: "numeric", month: "long", year: "numeric" };
+  var lastModifiedDate = new Date(document.lastModified);
+  var date = lastModifiedDate.toLocaleDateString("en-US", options);
+  document.getElementById("date").innerHTML = date;
+</script></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

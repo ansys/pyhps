@@ -1,0 +1,25 @@
+﻿Task
+====
+
+.. currentmodule:: ansys.hps.client.jms
+
+.. autoclass:: Task
+
+   
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+      :toctree:
+   
+      
+      
+      Task.declared_fields
+      
+   
+   
+
+   
+   
+   

@@ -1,0 +1,6 @@
+update\_project
+===============
+
+.. currentmodule:: ansys.hps.client.jms.api
+
+.. automethod:: JmsApi.update_project

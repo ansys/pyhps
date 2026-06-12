@@ -1,0 +1,31 @@
+﻿FitnessDefinition
+=================
+
+.. currentmodule:: ansys.hps.client.jms
+
+.. autoclass:: FitnessDefinition
+
+   
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+      :toctree:
+   
+      
+      
+      FitnessDefinition.add_fitness_term
+      
+      
+      FitnessDefinition.declared_fields
+      
+      
+      FitnessDefinition.get
+      
+   
+   
+
+   
+   
+   
