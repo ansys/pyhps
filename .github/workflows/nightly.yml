@@ -30,6 +30,8 @@ permissions: {}
 jobs:
 
   style:
+    permissions:
+      contents: read
     uses: ./.github/workflows/style.yml
 
   tests:
@@ -44,6 +46,8 @@ jobs:
               { python-version: '3.14', toxenv: 'py314' },
             ]
       fail-fast: false
+    permissions:
+      contents: read
     uses: ./.github/workflows/tests.yml
     secrets:
       PYANSYS_CI_BOT_PACKAGE_TOKEN: ${{ secrets.PYANSYS_CI_BOT_PACKAGE_TOKEN }}
