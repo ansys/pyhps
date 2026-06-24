@@ -209,85 +209,89 @@ def test_build_filter_templates_returns_expected_structure():
 # ---------------------------------------------------------------------------
 
 
-def _make_urlopen_mock(monkeypatch, payload):
-    """Patch urllib.request.urlopen to return *payload* as JSON."""
+def _make_ws_mock(monkeypatch, response_payload):
+    """Patch websocket.create_connection to return *response_payload* as a single message."""
 
-    def fake_urlopen(req, timeout):
-        return _ResponseMock(payload)
+    class _WebSocketMock:
+        def __init__(self):
+            self.sent = []
+            self._messages = [json.dumps(response_payload)]
+            self.closed = False
 
-    monkeypatch.setattr("urllib.request.urlopen", fake_urlopen)
+        def send(self, payload):
+            self.sent.append(json.loads(payload))
 
+        def recv(self):
+            return self._messages.pop(0) if self._messages else ""
 
-def test_list_topics_with_nested_tags_dict(monkeypatch):
-    """Response is a list of entries each with a nested 'tags' dict."""
-    entries = [
-        {"message": "a", "tags": {"task_id": "task-1", "status": "RUNNING"}},
-        {"message": "b", "tags": {"task_id": "task-2", "status": "COMPLETED"}},
-        {"message": "c", "tags": {"task_id": "task-1", "status": "COMPLETED"}},
-    ]
-    _make_urlopen_mock(monkeypatch, entries)
+        def close(self):
+            self.closed = True
 
-    client = MonitorClient("http://localhost:1089", token="t")
-    topics = client.list_topics()
-
-    assert topics["task_id"] == {"task-1", "task-2"}
-    assert topics["status"] == {"RUNNING", "COMPLETED"}
-
-
-def test_list_topics_with_flat_tag_prefix_keys(monkeypatch):
-    """Response is a list of entries with flat 'tag:<key>' top-level fields."""
-    entries = [
-        {"tag:job_id": "job-A", "tag:host": "host-1"},
-        {"tag:job_id": "job-B", "tag:host": "host-2"},
-        {"tag:job_id": "job-A", "tag:host": "host-1"},
-    ]
-    _make_urlopen_mock(monkeypatch, entries)
-
-    client = MonitorClient("http://localhost:1089", token="t")
-    topics = client.list_topics()
-
-    assert topics["job_id"] == {"job-A", "job-B"}
-    assert topics["host"] == {"host-1", "host-2"}
+    ws = _WebSocketMock()
+    monkeypatch.setitem(
+        sys.modules,
+        "websocket",
+        SimpleNamespace(create_connection=lambda url, timeout: ws),
+    )
+    return ws
 
 
-def test_list_topics_with_dict_envelope(monkeypatch):
-    """Response is a dict with entries nested under a known key (e.g. 'logs')."""
-    payload = {
-        "logs": [
-            {"tags": {"task_id": "task-X"}},
-            {"tags": {"task_id": "task-Y"}},
-        ]
-    }
-    _make_urlopen_mock(monkeypatch, payload)
+def test_list_topics_sends_list_tags_command(monkeypatch):
+    """list_topics sends action=list_tags with the requested limit."""
+    server_response = {"tags": {"task_id": ["t1", "t2"], "status": ["RUNNING", "COMPLETED"]}}
+    ws = _make_ws_mock(monkeypatch, server_response)
+
+    client = MonitorClient("http://localhost:1089", token="jwt")
+    topics = client.list_topics("ws://localhost:1089/dcs/monitor/ws/topics", limit=50)
+
+    sent = ws.sent[0]
+    assert sent["type"] == "command"
+    assert sent["action"] == "list_tags"
+    assert sent["limit"] == 50
+    assert sent["token"] == "jwt"
+    assert topics == {"task_id": ["t1", "t2"], "status": ["RUNNING", "COMPLETED"]}
+
+
+def test_list_topics_empty_tags_response(monkeypatch):
+    """Server returns empty tags dict."""
+    _make_ws_mock(monkeypatch, {"tags": {}})
 
     client = MonitorClient("http://localhost:1089", token="t")
-    topics = client.list_topics()
-
-    assert topics["task_id"] == {"task-X", "task-Y"}
-
-
-def test_list_topics_empty_response(monkeypatch):
-    """Empty log response returns empty topics dict."""
-    _make_urlopen_mock(monkeypatch, [])
-
-    client = MonitorClient("http://localhost:1089", token="t")
-    topics = client.list_topics()
+    topics = client.list_topics("ws://localhost:1089/dcs/monitor/ws/topics")
 
     assert topics == {}
 
 
-def test_list_topics_passes_limit_to_query(monkeypatch):
-    """list_topics forwards the limit parameter to query_logs."""
-    captured = {}
+def test_list_topics_no_response_from_server(monkeypatch):
+    """Server sends nothing — list_topics returns empty dict."""
 
-    def fake_urlopen(req, timeout):
-        captured["url"] = req.full_url
-        return _ResponseMock([])
+    class _EmptyWsMock:
+        def send(self, payload):
+            pass
 
-    monkeypatch.setattr("urllib.request.urlopen", fake_urlopen)
+        def recv(self):
+            return ""
+
+        def close(self):
+            pass
+
+    monkeypatch.setitem(
+        sys.modules,
+        "websocket",
+        SimpleNamespace(create_connection=lambda url, timeout: _EmptyWsMock()),
+    )
 
     client = MonitorClient("http://localhost:1089", token="t")
-    client.list_topics(limit=42)
+    topics = client.list_topics("ws://localhost:1089/dcs/monitor/ws/topics")
 
-    parsed = urlsplit(captured["url"])
-    assert parse_qs(parsed.query).get("limit") == ["42"]
+    assert topics == {}
+
+
+def test_list_topics_missing_tags_key_in_response(monkeypatch):
+    """Server response has no 'tags' key — list_topics returns empty dict."""
+    _make_ws_mock(monkeypatch, {"type": "response", "status": "ok"})
+
+    client = MonitorClient("http://localhost:1089", token="t")
+    topics = client.list_topics("ws://localhost:1089/dcs/monitor/ws/topics")
+
+    assert topics == {}
