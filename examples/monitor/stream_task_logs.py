@@ -1,6 +1,16 @@
-"""Annotated example: stream task log lines with MonitorClient.stream_task_logs.
+"""Stream evaluator file-tail logs for a task with ``MonitorClient.stream_task_logs``.
 
-Usage (local dev with self-signed cert):
+This example shows the standard monitoring pattern for task output:
+
+1. Authenticate once with ``Client``.
+2. Reuse the same token/session in ``MonitorClient``.
+3. Subscribe to task log messages by ``task_id``.
+4. Optionally narrow output to a specific ``file_path``.
+
+By default, messages are streamed continuously until you stop the program
+(``Ctrl+C``).  You can set ``--max-messages`` for a bounded run.
+
+Typical usage (local/self-signed endpoint):
 
     python examples/monitor/stream_task_logs.py \
         --base-url https://localhost:8443/hps \
@@ -9,7 +19,15 @@ Usage (local dev with self-signed cert):
         --task-id <TASK_ID> \
         --insecure
 
-Press Ctrl+C to stop.
+Filter to one file only:
+
+    python examples/monitor/stream_task_logs.py \
+        --base-url https://localhost:8443/hps \
+        --username repadmin \
+        --password repadmin \
+        --task-id <TASK_ID> \
+        --file-path console_output.txt \
+        --insecure
 """
 
 from __future__ import annotations
