@@ -196,21 +196,41 @@ class MonitorClient:
         with urllib.request.urlopen(req, timeout=self.timeout_seconds) as resp:
             return json.loads(resp.read().decode("utf-8"))
 
-    def list_topics(self, ws_url: str | None = None, limit: int = 1000) -> dict[str, list[str]]:
+    #: Tag keys that carry a unique value per message and are excluded from
+    #: :meth:`list_topics` results by default (``exclude_noisy=True``).
+    _NOISY_TAG_KEYS: frozenset[str] = frozenset({"timestamp", "time"})
+
+    #: Tag keys whose value count exceeds this threshold are also treated as
+    #: noisy and excluded when ``exclude_noisy=True``.
+    _NOISY_MAX_VALUES: int = 100
+
+    def list_topics(
+        self,
+        ws_url: str | None = None,
+        limit: int = 1000,
+        exclude_noisy: bool = True,
+    ) -> dict[str, list[str]]:
         """List all known tag keys and their values via the WebSocket ``list_tags`` action.
 
         Sends a ``list_tags`` command to the monitor WebSocket endpoint and returns
         the authoritative tag catalogue reported by the server.
+
+        High-cardinality tag keys (such as ``timestamp``) that carry a unique value
+        per message are suppressed by default because they are rarely useful for
+        subscription discovery.  Pass ``exclude_noisy=False`` to include them.
 
         Args:
             ws_url: Optional full WebSocket URL override, e.g.
                 ``wss://localhost:8443/hps/monitor/ws/topics``.
                 If omitted, this method uses the URL derived from ``base_url``.
             limit: Maximum number of tag values to request per key.
+            exclude_noisy: When ``True`` (default), remove tag keys listed in
+                :attr:`_NOISY_TAG_KEYS` and any key whose value count exceeds
+                :attr:`_NOISY_MAX_VALUES`.
 
         Returns:
             Dictionary mapping each tag key to a list of known values as returned
-            by the server.
+            by the server (noisy keys removed unless ``exclude_noisy=False``).
         """
         command = {
             "type": "command",
@@ -221,8 +241,16 @@ class MonitorClient:
         responses = self.send_ws_command(url, command, max_messages=1)
         if not responses:
             return {}
-        # Expected response shape: {"tags": {"task_id": [...], "status": [...], ...}}
-        return responses[0].get("tags", {})
+        # Server returns {"tag_list": {...}} (not "tags").
+        resp = responses[0]
+        tags: dict[str, list[str]] = resp.get("tag_list", resp.get("tags", {}))
+        if exclude_noisy:
+            tags = {
+                k: v
+                for k, v in tags.items()
+                if k not in self._NOISY_TAG_KEYS and len(v) <= self._NOISY_MAX_VALUES
+            }
+        return tags
 
     def send_ws_command(
         self, ws_url: str, command: dict[str, Any], max_messages: int | None = 1
