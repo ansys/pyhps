@@ -286,7 +286,7 @@ class MonitorClient:
         *,
         ws_url: str | None = None,
         backlog: int = 100,
-        max_messages: int | None = 500,
+        max_messages: int | None = None,
     ) -> Generator[dict[str, Any], None, None]:
         """Stream log messages for a named HPS service.
 
@@ -305,8 +305,8 @@ class MonitorClient:
                 ``base_url``.
             backlog: Number of historical messages to request on connect.
             max_messages: Maximum total messages to yield before closing the
-                connection. If ``None``, stream until interrupted or the
-                server closes the connection.
+                connection. Defaults to ``None`` — stream indefinitely until
+                interrupted or the server closes the connection.
 
         Yields:
             Parsed JSON message dicts from the server.
@@ -325,7 +325,7 @@ class MonitorClient:
         file_path: str | None = None,
         ws_url: str | None = None,
         backlog: int = 100,
-        max_messages: int | None = 500,
+        max_messages: int | None = None,
     ) -> Generator[dict[str, Any], None, None]:
         """Stream log file messages for a specific task.
 
@@ -341,8 +341,8 @@ class MonitorClient:
                 ``base_url``.
             backlog: Number of historical messages to request on connect.
             max_messages: Maximum total messages to yield before closing the
-                connection. If ``None``, stream until interrupted or the
-                server closes the connection.
+                connection. Defaults to ``None`` — stream indefinitely until
+                interrupted or the server closes the connection.
 
         Yields:
             Parsed JSON message dicts from the server.
