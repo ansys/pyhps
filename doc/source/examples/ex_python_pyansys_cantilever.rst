@@ -50,7 +50,7 @@ Once installed, the package must be registered in the scaler/evaluator as follow
    * - **Property**
      - **Value**
    * - Name
-     - Ansys Geometry Service
+     - Ansys GeometryService
    * - Version
      - 2025 R2
    * - Installation Path
