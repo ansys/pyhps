@@ -24,7 +24,7 @@
 # requires-python = "==3.10"
 # dependencies = [
 #     "ansys-geometry-core[all]",
-#     "ansys-meshing-prime[all]==0.7",
+#     "ansys-meshing-prime[all]",
 #     "ansys.mapdl.core",
 #     "matplotlib"
 # ]
@@ -92,6 +92,8 @@ def geometry(params):
 
     # Create a modeler, extrude sketches, union bodies
     try:
+        # If an explicit geometry backend is required, start it via e.g.
+        # modeler = launch_modeler_with_discovery(port=port)
         modeler = launch_modeler(port=port)
         print(modeler)
 
