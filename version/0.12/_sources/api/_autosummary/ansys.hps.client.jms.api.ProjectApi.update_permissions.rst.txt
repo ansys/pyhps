@@ -1,0 +1,6 @@
+update\_permissions
+===================
+
+.. currentmodule:: ansys.hps.client.jms.api
+
+.. automethod:: ProjectApi.update_permissions

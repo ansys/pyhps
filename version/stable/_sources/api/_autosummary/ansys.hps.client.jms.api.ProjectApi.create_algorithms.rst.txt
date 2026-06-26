@@ -1,0 +1,6 @@
+create\_algorithms
+==================
+
+.. currentmodule:: ansys.hps.client.jms.api
+
+.. automethod:: ProjectApi.create_algorithms

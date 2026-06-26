@@ -1,0 +1,6 @@
+update\_user
+============
+
+.. currentmodule:: ansys.hps.client.auth.api
+
+.. automethod:: AuthApi.update_user

@@ -1,0 +1,28 @@
+﻿IntParameterDefinition
+======================
+
+.. currentmodule:: ansys.hps.client.jms
+
+.. autoclass:: IntParameterDefinition
+
+   
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+      :toctree:
+   
+      
+      
+      IntParameterDefinition.declared_fields
+      
+      
+      IntParameterDefinition.get
+      
+   
+   
+
+   
+   
+   

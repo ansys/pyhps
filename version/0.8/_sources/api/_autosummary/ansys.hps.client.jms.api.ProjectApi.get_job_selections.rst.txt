@@ -1,0 +1,6 @@
+get\_job\_selections
+====================
+
+.. currentmodule:: ansys.hps.client.jms.api
+
+.. automethod:: ProjectApi.get_job_selections

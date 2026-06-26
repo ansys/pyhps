@@ -1,0 +1,6 @@
+health
+======
+
+.. currentmodule:: ansys.hps.client.rcs.api
+
+.. autoproperty:: RcsApi.health

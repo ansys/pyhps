@@ -1,0 +1,6 @@
+copy\_jobs
+==========
+
+.. currentmodule:: ansys.hps.client.jms.api
+
+.. automethod:: ProjectApi.copy_jobs
