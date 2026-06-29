@@ -41,6 +41,7 @@ one :download:`ZIP file <../../../build/pyhps_examples.zip>`.
   ex_monitor_stream_task_logs
   ex_monitor_stream_task_host_resources
   ex_monitor_stream_task_process_tree
+  ex_rcs_route_creation
 
 .. list-table::
    :header-rows: 1
@@ -77,6 +78,8 @@ one :download:`ZIP file <../../../build/pyhps_examples.zip>`.
      - Stream host CPU and memory utilisation metrics for a running task using ``MonitorClient.stream_task_host_resources``.
    * - :ref:`example_monitor_stream_task_process_tree`
      - Stream process-tree snapshots for a running task using ``MonitorClient.stream_task_process_tree``.
+   * - :ref:`example_rcs_route_creation`
+     - Register and unregister an external service instance with the HPS reverse proxy using the Route Creation Service API.
 
 A link to download the required resources is available on each example page. If desired, 
 you can download the required resources for all examples using the following link.

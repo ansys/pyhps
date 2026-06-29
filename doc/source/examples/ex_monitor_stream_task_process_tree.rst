@@ -6,7 +6,7 @@ Stream task process tree
 This example shows how to stream process-tree snapshots for a running task using
 :func:`MonitorClient.stream_task_process_tree`.  Each snapshot contains every
 process in the task's process group — the task wrapper, the solver, any
-co-processes (for example a Cortex post-processor or licence manager), and their
+co-processes (for example a graphics process or licence manager client), and their
 parent-child relationships.  This gives a fine-grained view of which processes
 are active and how CPU and memory are distributed across them during a solve.
 
