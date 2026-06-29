@@ -37,6 +37,10 @@ one :download:`ZIP file <../../../build/pyhps_examples.zip>`.
   ex_python_two_bar
   ex_python_uv
   ex_python_pyansys_cantilever
+  ex_monitor_list_topics
+  ex_monitor_stream_task_logs
+  ex_monitor_stream_task_host_resources
+  ex_monitor_stream_task_process_tree
 
 .. list-table::
    :header-rows: 1
@@ -48,11 +52,11 @@ one :download:`ZIP file <../../../build/pyhps_examples.zip>`.
    * - :ref:`example_mapdl_motorbike_frame_query`
      - Query an existing project and download output files.
    * - :ref:`example_mapdl_tire_performance`
-     - Submit an MAPDL analysis as a single job. Solution convergence and contact tracking files are periodically collected. 
+     - Submit an MAPDL analysis as a single job. Solution convergence and contact tracking files are periodically collected.
    * - :ref:`example_mapdl_linked_analyses`
      - Submit an MAPDL linked analysis workflow as a multi-task job to the HPS server.
    * - :ref:`example_lsdyna_job`
-     - Submit, monitor, and download results of an LS-DYNA job. 
+     - Submit, monitor, and download results of an LS-DYNA job.
    * - :ref:`example_fluent_2d_heat_exchanger`
      - Submit a Fluent solve job to the HPS server.
    * - :ref:`example_fluent_nozzle`
@@ -65,6 +69,14 @@ one :download:`ZIP file <../../../build/pyhps_examples.zip>`.
      - Run arbitrary Python scripts on HPS using uv.
    * - :ref:`example_python_pyansys_cantilever`
      - Run PyAnsys scripts on HPS. This example parametrizes a cantilever and submits a number of design points.
+   * - :ref:`example_monitor_list_topics`
+     - Discover available monitor topic tags and their active values using ``MonitorClient.list_topics``.
+   * - :ref:`example_monitor_stream_task_logs`
+     - Stream evaluator file-tail log output for a running task using ``MonitorClient.stream_task_logs``.
+   * - :ref:`example_monitor_stream_task_host_resources`
+     - Stream host CPU and memory utilisation metrics for a running task using ``MonitorClient.stream_task_host_resources``.
+   * - :ref:`example_monitor_stream_task_process_tree`
+     - Stream process-tree snapshots for a running task using ``MonitorClient.stream_task_process_tree``.
 
 A link to download the required resources is available on each example page. If desired, 
 you can download the required resources for all examples using the following link.
