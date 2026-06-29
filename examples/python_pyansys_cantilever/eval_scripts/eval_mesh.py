@@ -23,7 +23,7 @@
 # /// script
 # requires-python = "==3.10"
 # dependencies = [
-#     "ansys-meshing-prime[all]",
+#     "ansys-meshing-prime[all]==0.10.4",
 # ]
 # ///
 

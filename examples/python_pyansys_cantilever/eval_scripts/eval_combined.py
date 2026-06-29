@@ -24,7 +24,7 @@
 # requires-python = "==3.10"
 # dependencies = [
 #     "ansys-geometry-core[all]",
-#     "ansys-meshing-prime[all]",
+#     "ansys-meshing-prime[all]==0.10.4",
 #     "ansys.mapdl.core",
 #     "matplotlib"
 # ]
