@@ -87,8 +87,6 @@ def main(params):
 
     # Create a modeler, extrude sketches, union bodies
     try:
-        # If an explicit geometry backend is required, start it via e.g.
-        # modeler = launch_modeler_with_discovery(port=port)
         modeler = launch_modeler(mode="core_service", port=port, transport_mode="insecure")
         print(modeler)
 
