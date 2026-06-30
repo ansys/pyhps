@@ -274,7 +274,7 @@ def main(client, num_jobs, num_modes, target_frequency, split_tasks):
             name="mapdl",
             software_requirements=[
                 Software(name="uv"),
-                Software(name="Ansys Mechanical APDL"),
+                Software(name="Ansys Mechanical APDL", version="2026 R1"),
             ],
             resource_requirements=ResourceRequirements(
                 num_cores=2.0,
@@ -303,7 +303,7 @@ def main(client, num_jobs, num_modes, target_frequency, split_tasks):
                 Software(name="uv"),
                 Software(name="Ansys GeometryService"),
                 Software(name="Ansys Prime Server"),
-                Software(name="Ansys Mechanical APDL"),
+                Software(name="Ansys Mechanical APDL", version="2026 R1"),
             ],
             resource_requirements=ResourceRequirements(
                 num_cores=2.0,
