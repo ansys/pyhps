@@ -88,7 +88,9 @@ def main(params):
     # Create a modeler, extrude sketches, union bodies
     try:
         transport_mode = "wnua" if sys.platform == "win32" else "uds"
-        modeler = launch_modeler(mode="core_service", port=port, uds_id=port, transport_mode=transport_mode)
+        modeler = launch_modeler(
+            mode="core_service", port=port, uds_id=port, transport_mode=transport_mode
+        )
         print(modeler)
 
         design = modeler.create_design("cantilever")
