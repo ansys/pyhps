@@ -231,7 +231,10 @@ def main(client, num_jobs, num_modes, target_frequency, split_tasks):
     if split_tasks:
         task_def_geometry = TaskDefinition(
             name="geometry",
-            software_requirements=[Software(name="uv"), Software(name="Ansys GeometryService", version="2026 R1")],
+            software_requirements=[
+                Software(name="uv"),
+                Software(name="Ansys GeometryService", version="2026 R1"),
+            ],
             resource_requirements=ResourceRequirements(
                 num_cores=1.0,
                 memory=2 * 1024 * 1024 * 1024,  # 2 GB
@@ -251,7 +254,10 @@ def main(client, num_jobs, num_modes, target_frequency, split_tasks):
         )
         task_def_mesh = TaskDefinition(
             name="mesh",
-            software_requirements=[Software(name="uv"), Software(name="Ansys Prime Server", version="2026 R1")],
+            software_requirements=[
+                Software(name="uv"),
+                Software(name="Ansys Prime Server", version="2026 R1"),
+            ],
             resource_requirements=ResourceRequirements(
                 num_cores=1.0,
                 memory=8 * 1024 * 1024 * 1024,  # 8 GB
