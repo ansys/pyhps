@@ -1,7 +1,7 @@
-"""OIDC browser login for HPS using Authorization Code + PKCE.
+"""OIDC browser login using Authorization Code + PKCE.
 
 Starts a temporary localhost HTTP server, opens your browser at the
-Keycloak login page, and exchanges the authorization code for tokens.
+login page, and exchanges the authorization code for tokens.
 No password is ever entered in the terminal.
 
 Usage
@@ -238,13 +238,15 @@ def _is_token_expired(tokens: dict, buffer_seconds: int = 60) -> bool:
     return elapsed > (expires_in - buffer_seconds)
 
 
-def refresh_tokens(hps_url: str | None = None) -> dict | None:
+def refresh_tokens(hps_url: str | None = None, issuer: str | None = None) -> dict | None:
     """Refresh saved tokens using refresh_token.
 
     Parameters
     ----------
     hps_url:
         HPS server URL. If not provided, will be loaded from saved tokens.
+    issuer:
+        OIDC issuer URL. If not provided, defaults to standard OIDC discovery path.
 
     Returns
     -------
@@ -271,10 +273,13 @@ def refresh_tokens(hps_url: str | None = None) -> dict | None:
         return None
 
     try:
-        # Determine auth URL from HPS server
-        auth_url = determine_auth_url(hps_url, verify_ssl=False, fallback_realm=REALM)
-        if not auth_url:
-            auth_url = f"{hps_url.rstrip('/')}/auth/realms/{REALM}"
+        # Determine auth URL from HPS server or use provided issuer
+        if issuer:
+            auth_url = f"{issuer.rstrip('/')}/protocol/openid-connect/token"
+        else:
+            auth_url = determine_auth_url(hps_url, verify_ssl=False, fallback_realm=REALM)
+            if not auth_url:
+                auth_url = f"{hps_url.rstrip('/')}/auth/realms/{REALM}"
 
         # Use authenticate with refresh_token grant
         new_tokens = authenticate(
@@ -460,7 +465,7 @@ def save_tokens(tokens: dict, hps_url: str, storage: str = "disk") -> Path | Non
     Parameters
     ----------
     tokens:
-        Token response dict returned by Keycloak.
+        Token response dict returned by OIDC provider.
     hps_url:
         HPS server URL to record alongside the tokens.
     storage:
@@ -525,11 +530,19 @@ def save_tokens(tokens: dict, hps_url: str, storage: str = "disk") -> Path | Non
 
 def main():
     """CLI entry point."""
-    parser = argparse.ArgumentParser(description="HPS OIDC browser login (Authorization Code + PKCE)")
+    parser = argparse.ArgumentParser(description="OIDC browser login (Authorization Code + PKCE)")
     parser.add_argument(
         "--url",
         default="https://localhost:8443/hps",
-        help="HPS server URL (default: https://localhost:8443/hps)",
+        help="Server URL (default: https://localhost:8443/hps)",
+    )
+    parser.add_argument(
+        "--issuer",
+        help="OIDC issuer URL. If not provided, defaults to HPS Keycloak issuer path",
+    )
+    parser.add_argument(
+        "--client-id",
+        help="OIDC client ID (default: rep-cli for HPS)",
     )
     parser.add_argument(
         "--refresh-only",
@@ -563,7 +576,10 @@ def main():
     # Handle token refresh
     if args.refresh_only:
         print("Refreshing saved tokens...")
-        new_tokens = refresh_tokens(args.url if args.url != "https://localhost:8443/hps" else None)
+        new_tokens = refresh_tokens(
+            args.url if args.url != "https://localhost:8443/hps" else None,
+            issuer=args.issuer
+        )
         if new_tokens:
             # Determine storage method for refreshed tokens
             storage = "keyring" if args.use_keyring else "memory" if args.keep_in_memory else "disk"
@@ -582,7 +598,7 @@ def main():
     # Normal login flow
     print(f"Connecting to: {args.url}")
     try:
-        tokens = browser_login(args.url, open_browser=not args.no_browser)
+        tokens = browser_login(args.url, open_browser=not args.no_browser, issuer=args.issuer)
     except RuntimeError as e:
         print(f"\nError: {e}", file=sys.stderr)
         sys.exit(1)
