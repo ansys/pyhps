@@ -108,6 +108,9 @@ class Client:
     token_refresh_loop_interval : float, optional
         Maximum interval, in seconds, between checks of the background token refresh
         loop. The default is ``300``.
+    token_storage : str, optional
+        Storage location for refreshed tokens. Supported values are ``"memory"``
+        (default), ``"disk"``, and ``"keyring"``.
 
     Examples
     --------
@@ -150,6 +153,7 @@ class Client:
         token_refresh_factor: float = 0.70,
         token_refresh_retry_factors: tuple[float, ...] = (0.80, 0.90, 0.95, 0.98),
         token_refresh_loop_interval: float = 300,
+        token_storage: str = "memory",
         **kwargs,
     ):
         """Initialize the Client object."""
@@ -202,6 +206,9 @@ class Client:
         self.token_expires_in = None
         self.token_acquired_date = None
         self.token_refresh_date = None
+        if token_storage not in ("memory", "disk", "keyring"):
+            raise ValueError("token_storage must be one of: 'memory', 'disk', 'keyring'.")
+        self.token_storage = token_storage
 
         self._dt_client: DataTransferClient | None = None
         self._dt_api: DataTransferApi | None = None
@@ -275,6 +282,11 @@ class Client:
                 )
             self.username = parsed_username
 
+        # For externally supplied access tokens, seed expiry metadata from JWT
+        # claims so preemptive refresh can be scheduled consistently.
+        if access_token:
+            self._initialize_external_token_expiry(token)
+
         self.session = create_session(
             self.access_token,
             verify=self.verify,
@@ -315,6 +327,45 @@ class Client:
             else:
                 raise HPSError("Authentication token had no username.")
         return parsed_username
+
+    def _initialize_external_token_expiry(self, decoded_token):
+        """Initialize refresh scheduling from externally provided token claims.
+
+        This allows preemptive refresh to behave consistently when a client is
+        created with existing access and refresh tokens (for example from OIDC login).
+        """
+        if self.refresh_token is None:
+            return
+
+        exp = decoded_token.get("exp", None)
+        if exp is None:
+            return
+
+        now = datetime.now(timezone.utc)
+        iat = decoded_token.get("iat", None)
+        if iat is not None and exp > iat:
+            token_lifetime = int(exp - iat)
+            token_acquired_date = datetime.fromtimestamp(iat, timezone.utc)
+        else:
+            # Fall back to remaining lifetime when iat is unavailable.
+            token_lifetime = int(exp - now.timestamp())
+            token_acquired_date = now
+
+        if token_lifetime <= 0:
+            return
+
+        self.token_expires_in = token_lifetime
+        self.token_acquired_date = token_acquired_date
+        self._refresh_attempt = 0
+
+        offset = max(1, int(self.token_expires_in * self.token_refresh_factor))
+        refresh_date = self.token_acquired_date + timedelta(seconds=offset)
+        self.token_refresh_date = max(now, refresh_date)
+
+        log.debug(
+            "Initialized refresh schedule from external token, next refresh at %s",
+            self.token_refresh_date,
+        )
 
     @property
     def rep_url(self) -> str:
@@ -541,6 +592,19 @@ class Client:
         self.refresh_token = tokens.get("refresh_token", None)
         self.session.headers.update({"Authorization": f"Bearer {tokens['access_token']}"})
         self._update_token_expiry(tokens)
+        self._persist_refreshed_tokens(tokens)
+
+    def _persist_refreshed_tokens(self, tokens):
+        """Persist refreshed tokens based on configured token storage mode."""
+        if self.token_storage == "memory":
+            return
+
+        try:
+            from .auth.api.oidc_login import save_tokens
+
+            save_tokens(tokens, self.url, storage=self.token_storage)
+        except Exception as ex:
+            log.warning("Unable to persist refreshed tokens to %s: %s", self.token_storage, ex)
 
     @property
     def data_transfer_client(self) -> DataTransferClient:

@@ -24,6 +24,7 @@ import logging
 import threading
 import time
 from datetime import datetime, timedelta, timezone
+from unittest.mock import patch
 
 import pytest
 import requests
@@ -151,6 +152,48 @@ def test_update_token_expiry_updates_after_refresh(url, username, password):
     client.refresh_access_token()
 
     assert client.token_refresh_date > first_refresh_date
+
+
+def test_external_tokens_seed_refresh_schedule(url, username, password):
+    """Externally supplied access+refresh tokens should schedule preemptive refresh."""
+    source_client = Client(url, username, password)
+
+    client = Client(
+        url,
+        access_token=source_client.access_token,
+        refresh_token=source_client.refresh_token,
+        auto_refresh_token=False,
+    )
+
+    assert client.token_expires_in is not None
+    assert client.token_acquired_date is not None
+    assert client.token_refresh_date is not None
+
+
+def test_refresh_access_token_persists_to_disk(url, username, password):
+    """Refreshed tokens should be persisted when token_storage is disk."""
+    client = Client(url, username, password, token_storage="disk")
+
+    with patch("ansys.hps.client.auth.api.oidc_login.save_tokens") as mock_save_tokens:
+        client.refresh_access_token()
+
+    mock_save_tokens.assert_called_once()
+    _, called_url = mock_save_tokens.call_args[0]
+    assert called_url == url
+    assert mock_save_tokens.call_args.kwargs["storage"] == "disk"
+
+
+def test_refresh_access_token_persists_to_keyring(url, username, password):
+    """Refreshed tokens should be persisted when token_storage is keyring."""
+    client = Client(url, username, password, token_storage="keyring")
+
+    with patch("ansys.hps.client.auth.api.oidc_login.save_tokens") as mock_save_tokens:
+        client.refresh_access_token()
+
+    mock_save_tokens.assert_called_once()
+    _, called_url = mock_save_tokens.call_args[0]
+    assert called_url == url
+    assert mock_save_tokens.call_args.kwargs["storage"] == "keyring"
 
 
 def test_reschedule_after_failed_refresh(url, username, password):
