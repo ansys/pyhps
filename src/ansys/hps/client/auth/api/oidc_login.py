@@ -8,18 +8,17 @@ Usage
 -----
     uv run python oidc_login.py --url https://localhost:8443/hps
 
-The resulting tokens are saved to ``~/.ansys/hps_tokens.json`` and can be
-consumed by any script that reads them.
-
 Token Storage Security:
   - keyring (preferred): System credential manager
     - Windows: Credential Manager
     - macOS: Keychain
     - Linux: Secret Service (via python-keyring)
-  - disk (default):
+  - disk (default): Saved to ``~/.ansys/hps_tokens.json``
     - Windows: Tokens encrypted with DPAPI (user-scoped)
     - Unix/Linux: Tokens file with restricted permissions (0o600)
   - memory: Tokens kept in memory only, not persisted
+
+Tokens can be consumed by any script that reads them.
 
 Public Functions
 ----------------
