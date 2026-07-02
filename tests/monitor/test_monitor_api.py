@@ -717,3 +717,448 @@ def test_stream_scheduler_job_status_uses_derived_ws_url(monkeypatch):
     list(client.stream_scheduler_job_status("taskdef-abc"))
 
     assert captured["url"] == "wss://localhost:8443/hps/monitor/ws/topics"
+
+
+# ---------------------------------------------------------------------------
+# stream_task_logs tests
+# ---------------------------------------------------------------------------
+
+
+def test_stream_task_logs_sends_correct_topic(monkeypatch):
+    """stream_task_logs subscribes with the correct topic tags."""
+    ws = _make_multi_ws_mock(monkeypatch, [{"message": "log line 1"}])
+
+    client = MonitorClient("http://localhost:1089", token="jwt")
+    list(client.stream_task_logs("task-abc"))
+
+    sent = ws.sent[0]
+    assert sent["type"] == "command"
+    assert sent["action"] == "subscribe"
+    assert sent["token"] == "jwt"
+    topic = sent["topics"][0]
+    assert topic["task_id"] == "task-abc"
+    assert topic["client_type"] == "ansys.rep.evaluator.file_tail"
+
+
+def test_stream_task_logs_includes_file_path_when_provided(monkeypatch):
+    """stream_task_logs includes file_path in topic when specified."""
+    ws = _make_multi_ws_mock(monkeypatch, [])
+
+    client = MonitorClient("http://localhost:1089", token="t")
+    list(client.stream_task_logs("task-abc", file_path="console_output.txt"))
+
+    topic = ws.sent[0]["topics"][0]
+    assert topic["file_path"] == "console_output.txt"
+
+
+def test_stream_task_logs_omits_file_path_when_not_provided(monkeypatch):
+    """stream_task_logs does not include file_path when not specified."""
+    ws = _make_multi_ws_mock(monkeypatch, [])
+
+    client = MonitorClient("http://localhost:1089", token="t")
+    list(client.stream_task_logs("task-abc"))
+
+    topic = ws.sent[0]["topics"][0]
+    assert "file_path" not in topic
+
+
+def test_stream_task_logs_yields_messages(monkeypatch):
+    """stream_task_logs yields each log message as it arrives."""
+    messages = [
+        {"message": "line 1", "timestamp": "2026-06-29T10:00:00Z"},
+        {"message": "line 2", "timestamp": "2026-06-29T10:00:01Z"},
+        {"message": "line 3", "timestamp": "2026-06-29T10:00:02Z"},
+    ]
+    _make_multi_ws_mock(monkeypatch, messages)
+
+    client = MonitorClient("http://localhost:1089", token="t")
+    results = list(client.stream_task_logs("task-abc"))
+
+    assert results == messages
+
+
+def test_stream_task_logs_respects_backlog(monkeypatch):
+    """backlog parameter is forwarded in the subscribe command."""
+    ws = _make_multi_ws_mock(monkeypatch, [])
+
+    client = MonitorClient("http://localhost:1089", token="t")
+    list(client.stream_task_logs("task-abc", backlog=500))
+
+    assert ws.sent[0]["backlog"] == {"limit": 500}
+
+
+def test_stream_task_logs_respects_max_messages(monkeypatch):
+    """max_messages caps the number of yielded log lines."""
+    messages = [{"message": f"line {i}"} for i in range(10)]
+    _make_multi_ws_mock(monkeypatch, messages)
+
+    client = MonitorClient("http://localhost:1089", token="t")
+    results = list(client.stream_task_logs("task-abc", max_messages=5))
+
+    assert len(results) == 5
+
+
+def test_stream_task_logs_uses_derived_ws_url(monkeypatch):
+    """ws_url is derived from base_url when not explicitly provided."""
+    captured = {}
+
+    class _WsMock:
+        def __init__(self, url):
+            captured["url"] = url
+
+        def send(self, payload):
+            pass
+
+        def recv(self):
+            return ""
+
+        def close(self):
+            pass
+
+    monkeypatch.setitem(
+        sys.modules,
+        "websocket",
+        SimpleNamespace(create_connection=lambda url, **kwargs: _WsMock(url)),
+    )
+
+    client = MonitorClient("https://localhost:8443/hps", token="t")
+    list(client.stream_task_logs("task-abc"))
+
+    assert captured["url"] == "wss://localhost:8443/hps/monitor/ws/topics"
+
+
+# ---------------------------------------------------------------------------
+# stream_task_process_tree tests
+# ---------------------------------------------------------------------------
+
+
+def test_stream_task_process_tree_sends_correct_topic(monkeypatch):
+    """stream_task_process_tree subscribes with the correct topic tags."""
+    ws = _make_multi_ws_mock(monkeypatch, [{"processes": [{"pid": 1234}]}])
+
+    client = MonitorClient("http://localhost:1089", token="jwt")
+    list(client.stream_task_process_tree("task-abc"))
+
+    sent = ws.sent[0]
+    assert sent["type"] == "command"
+    assert sent["action"] == "subscribe"
+    assert sent["token"] == "jwt"
+    topic = sent["topics"][0]
+    assert topic["task_id"] == "task-abc"
+    assert topic["client_type"] == "ansys.rep.evaluator"
+    assert topic["type"] == "metric"
+    assert topic["statistic"] == "process_tree"
+
+
+def test_stream_task_process_tree_yields_messages(monkeypatch):
+    """stream_task_process_tree yields each process tree snapshot as it arrives."""
+    snapshots = [
+        {"processes": [{"pid": 1234, "name": "solver", "cpu_percent": 42.0}]},
+        {"processes": [{"pid": 1234, "name": "solver", "cpu_percent": 45.5}]},
+        {"processes": [{"pid": 1234, "name": "solver", "cpu_percent": 40.1}]},
+    ]
+    _make_multi_ws_mock(monkeypatch, snapshots)
+
+    client = MonitorClient("http://localhost:1089", token="t")
+    results = list(client.stream_task_process_tree("task-abc", max_messages=10))
+
+    assert results == snapshots
+
+
+def test_stream_task_process_tree_respects_backlog(monkeypatch):
+    """backlog parameter is forwarded in the subscribe command."""
+    ws = _make_multi_ws_mock(monkeypatch, [])
+
+    client = MonitorClient("http://localhost:1089", token="t")
+    list(client.stream_task_process_tree("task-abc", backlog=75))
+
+    assert ws.sent[0]["backlog"] == {"limit": 75}
+
+
+def test_stream_task_process_tree_respects_max_messages(monkeypatch):
+    """max_messages caps the number of yielded snapshots."""
+    snapshots = [{"processes": []} for _ in range(10)]
+    _make_multi_ws_mock(monkeypatch, snapshots)
+
+    client = MonitorClient("http://localhost:1089", token="t")
+    results = list(client.stream_task_process_tree("task-abc", max_messages=6))
+
+    assert len(results) == 6
+
+
+def test_stream_task_process_tree_uses_derived_ws_url(monkeypatch):
+    """ws_url is derived from base_url when not explicitly provided."""
+    captured = {}
+
+    class _WsMock:
+        def __init__(self, url):
+            captured["url"] = url
+
+        def send(self, payload):
+            pass
+
+        def recv(self):
+            return ""
+
+        def close(self):
+            pass
+
+    monkeypatch.setitem(
+        sys.modules,
+        "websocket",
+        SimpleNamespace(create_connection=lambda url, **kwargs: _WsMock(url)),
+    )
+
+    client = MonitorClient("https://localhost:8443/hps", token="t")
+    list(client.stream_task_process_tree("task-abc"))
+
+    assert captured["url"] == "wss://localhost:8443/hps/monitor/ws/topics"
+
+
+def test_stream_task_process_tree_stops_cleanly_on_websocket_timeout(monkeypatch):
+    """A WebSocketTimeoutException stops iteration cleanly with no messages."""
+    class WebSocketTimeoutException(Exception):
+        pass
+
+    class _TimeoutWsMock:
+        def __init__(self):
+            self.sent = []
+
+        def send(self, payload):
+            self.sent.append(json.loads(payload))
+
+        def recv(self):
+            raise WebSocketTimeoutException("Connection timed out")
+
+        def close(self):
+            return None
+
+    monkeypatch.setitem(
+        sys.modules,
+        "websocket",
+        SimpleNamespace(create_connection=lambda url, **kwargs: _TimeoutWsMock()),
+    )
+
+    client = MonitorClient("http://localhost:1089", token="t")
+    results = list(client.stream_task_process_tree("task-abc", max_messages=10))
+
+    assert results == []
+
+
+# ---------------------------------------------------------------------------
+# get_task_process_tree tests
+# ---------------------------------------------------------------------------
+
+
+def test_get_task_process_tree_returns_list_of_snapshots(monkeypatch):
+    """get_task_process_tree collects and returns all snapshots as a list."""
+    snapshots = [
+        {"processes": [{"pid": 1234, "cpu_percent": 40.0}]},
+        {"processes": [{"pid": 1234, "cpu_percent": 42.5}]},
+        {"processes": [{"pid": 1234, "cpu_percent": 41.0}]},
+    ]
+    _make_multi_ws_mock(monkeypatch, snapshots)
+
+    client = MonitorClient("http://localhost:1089", token="t")
+    results = client.get_task_process_tree("task-abc")
+
+    assert isinstance(results, list)
+    assert results == snapshots
+
+
+def test_get_task_process_tree_respects_max_messages_default(monkeypatch):
+    """get_task_process_tree uses max_messages=200 by default."""
+    # Create 300 messages to verify that only 200 are collected
+    snapshots = [{"processes": [{"pid": i}]} for i in range(300)]
+    _make_multi_ws_mock(monkeypatch, snapshots)
+
+    client = MonitorClient("http://localhost:1089", token="t")
+    results = client.get_task_process_tree("task-abc")
+
+    assert len(results) == 200
+
+
+def test_get_task_process_tree_respects_custom_max_messages(monkeypatch):
+    """get_task_process_tree respects custom max_messages parameter."""
+    snapshots = [{"processes": []} for _ in range(50)]
+    _make_multi_ws_mock(monkeypatch, snapshots)
+
+    client = MonitorClient("http://localhost:1089", token="t")
+    results = client.get_task_process_tree("task-abc", max_messages=30)
+
+    assert len(results) == 30
+
+
+def test_get_task_process_tree_respects_backlog(monkeypatch):
+    """backlog parameter is forwarded to stream_task_process_tree."""
+    ws = _make_multi_ws_mock(monkeypatch, [])
+
+    client = MonitorClient("http://localhost:1089", token="t")
+    client.get_task_process_tree("task-abc", backlog=150)
+
+    assert ws.sent[0]["backlog"] == {"limit": 150}
+
+
+def test_get_task_process_tree_uses_derived_ws_url(monkeypatch):
+    """ws_url is derived from base_url when not explicitly provided."""
+    captured = {}
+
+    class _WsMock:
+        def __init__(self, url):
+            captured["url"] = url
+
+        def send(self, payload):
+            pass
+
+        def recv(self):
+            return ""
+
+        def close(self):
+            pass
+
+    monkeypatch.setitem(
+        sys.modules,
+        "websocket",
+        SimpleNamespace(create_connection=lambda url, **kwargs: _WsMock(url)),
+    )
+
+    client = MonitorClient("https://localhost:8443/hps", token="t")
+    client.get_task_process_tree("task-abc")
+
+    assert captured["url"] == "wss://localhost:8443/hps/monitor/ws/topics"
+
+
+def test_get_task_process_tree_empty_result(monkeypatch):
+    """get_task_process_tree returns empty list when server sends no messages."""
+    _make_multi_ws_mock(monkeypatch, [])
+
+    client = MonitorClient("http://localhost:1089", token="t")
+    results = client.get_task_process_tree("task-abc")
+
+    assert results == []
+
+
+# ---------------------------------------------------------------------------
+# stream_service_logs tests
+# ---------------------------------------------------------------------------
+
+
+def test_stream_service_logs_sends_correct_topic(monkeypatch):
+    """stream_service_logs subscribes with the correct client_type tag."""
+    ws = _make_multi_ws_mock(monkeypatch, [{"message": "service log entry"}])
+
+    client = MonitorClient("http://localhost:1089", token="jwt")
+    list(client.stream_service_logs("ansys.rep.jms"))
+
+    sent = ws.sent[0]
+    assert sent["type"] == "command"
+    assert sent["action"] == "subscribe"
+    assert sent["token"] == "jwt"
+    topic = sent["topics"][0]
+    assert topic["client_type"] == "ansys.rep.jms"
+
+
+def test_stream_service_logs_yields_messages(monkeypatch):
+    """stream_service_logs yields each service log message as it arrives."""
+    messages = [
+        {"message": "Job submitted", "timestamp": "2026-06-29T10:00:00Z"},
+        {"message": "Job started", "timestamp": "2026-06-29T10:00:05Z"},
+        {"message": "Job completed", "timestamp": "2026-06-29T10:00:30Z"},
+    ]
+    _make_multi_ws_mock(monkeypatch, messages)
+
+    client = MonitorClient("http://localhost:1089", token="t")
+    results = list(client.stream_service_logs("ansys.rep.jms"))
+
+    assert results == messages
+
+
+def test_stream_service_logs_respects_backlog(monkeypatch):
+    """backlog parameter is forwarded in the subscribe command."""
+    ws = _make_multi_ws_mock(monkeypatch, [])
+
+    client = MonitorClient("http://localhost:1089", token="t")
+    list(client.stream_service_logs("ansys.rep.jms", backlog=250))
+
+    assert ws.sent[0]["backlog"] == {"limit": 250}
+
+
+def test_stream_service_logs_respects_max_messages(monkeypatch):
+    """max_messages caps the number of yielded messages."""
+    messages = [{"message": f"entry {i}"} for i in range(20)]
+    _make_multi_ws_mock(monkeypatch, messages)
+
+    client = MonitorClient("http://localhost:1089", token="t")
+    results = list(client.stream_service_logs("ansys.rep.jms", max_messages=7))
+
+    assert len(results) == 7
+
+
+def test_stream_service_logs_with_different_client_types(monkeypatch):
+    """stream_service_logs works with different service client_type values."""
+    ws = _make_multi_ws_mock(monkeypatch, [{"message": "scaling event"}])
+
+    client = MonitorClient("http://localhost:1089", token="t")
+    list(client.stream_service_logs("ansys.rep.scaling"))
+
+    topic = ws.sent[0]["topics"][0]
+    assert topic["client_type"] == "ansys.rep.scaling"
+
+
+def test_stream_service_logs_uses_derived_ws_url(monkeypatch):
+    """ws_url is derived from base_url when not explicitly provided."""
+    captured = {}
+
+    class _WsMock:
+        def __init__(self, url):
+            captured["url"] = url
+
+        def send(self, payload):
+            pass
+
+        def recv(self):
+            return ""
+
+        def close(self):
+            pass
+
+    monkeypatch.setitem(
+        sys.modules,
+        "websocket",
+        SimpleNamespace(create_connection=lambda url, **kwargs: _WsMock(url)),
+    )
+
+    client = MonitorClient("https://localhost:8443/hps", token="t")
+    list(client.stream_service_logs("ansys.rep.jms"))
+
+    assert captured["url"] == "wss://localhost:8443/hps/monitor/ws/topics"
+
+
+def test_stream_service_logs_stops_cleanly_on_websocket_timeout(monkeypatch):
+    """A WebSocketTimeoutException stops iteration cleanly with no messages."""
+    class WebSocketTimeoutException(Exception):
+        pass
+
+    class _TimeoutWsMock:
+        def __init__(self):
+            self.sent = []
+
+        def send(self, payload):
+            self.sent.append(json.loads(payload))
+
+        def recv(self):
+            raise WebSocketTimeoutException("Connection timed out")
+
+        def close(self):
+            return None
+
+    monkeypatch.setitem(
+        sys.modules,
+        "websocket",
+        SimpleNamespace(create_connection=lambda url, **kwargs: _TimeoutWsMock()),
+    )
+
+    client = MonitorClient("http://localhost:1089", token="t")
+    results = list(client.stream_service_logs("ansys.rep.jms", max_messages=10))
+
+    assert results == []

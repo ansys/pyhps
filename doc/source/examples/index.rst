@@ -42,6 +42,7 @@ one :download:`ZIP file <../../../build/pyhps_examples.zip>`.
   ex_monitor_stream_task_host_resources
   ex_monitor_stream_task_process_tree
   ex_monitor_stream_scheduler_job_status
+  ex_monitor_stream_service_logs
   ex_rcs_route_creation
 
 .. list-table::
@@ -81,6 +82,8 @@ one :download:`ZIP file <../../../build/pyhps_examples.zip>`.
      - Stream process-tree snapshots for a running task using ``MonitorClient.stream_task_process_tree``.
    * - :ref:`example_monitor_stream_scheduler_job_status`
      - Stream scheduler job status metrics (Slurm/LSF instance counts) for a task definition using ``MonitorClient.stream_scheduler_job_status``.
+   * - :ref:`example_monitor_stream_service_logs`
+     - Stream log messages from HPS backend services (JMS, scaling, housekeeper) using ``MonitorClient.stream_service_logs``.
    * - :ref:`example_rcs_route_creation`
      - Register and unregister an external service instance with the HPS reverse proxy using the Route Creation Service API.
 
