@@ -79,37 +79,31 @@ def _encrypt_with_dpapi(data: bytes) -> bytes:
     return dpapi_encrypt(data)
 
 
-def _decrypt_with_dpapi(ciphertext: bytes) -> bytes:
-    """Decrypt data using Windows DPAPI."""
-    import ctypes
-    import ctypes.wintypes as wintypes
+def _save_to_keyring(tokens: dict, hps_url: str) -> bool:
+    """Save tokens to system keyring using keyring library.
 
-    LocalFree = ctypes.windll.kernel32.LocalFree
-    CryptUnprotectData = ctypes.windll.Crypt32.CryptUnprotectData
+    Returns True if successful, False if keyring is not available.
+    """
+    try:
+        import keyring
+    except ImportError:
+        return False
 
-    class DataBlob(ctypes.Structure):
-        _fields_ = [("cbData", wintypes.DWORD), ("pbData", ctypes.POINTER(wintypes.BYTE))]
-
-    def dpapi_decrypt(ciphertext: bytes) -> bytes:
-        ciphertext_blob = DataBlob(len(ciphertext), ctypes.c_char_p(ciphertext))
-        plaintext_blob = DataBlob()
-        flags = 0x1
-        result = CryptUnprotectData(
-            ctypes.byref(ciphertext_blob),
-            None,
-            None,
-            None,
-            None,
-            flags,
-            ctypes.byref(plaintext_blob),
-        )
-        if not result:
-            raise RuntimeError("Failed to decrypt data with DPAPI")
-        plaintext = bytes(plaintext_blob.pbData[: plaintext_blob.cbData])
-        LocalFree(plaintext_blob.pbData)
-        return plaintext
-
-    return dpapi_decrypt(ciphertext)
+    service_name = "ansys-hps"
+    try:
+        keyring.set_password(service_name, "hps_url", hps_url)
+        keyring.set_password(service_name, "access_token", tokens["access_token"])
+        if tokens.get("refresh_token"):
+            keyring.set_password(service_name, "refresh_token", tokens["refresh_token"])
+        if tokens.get("expires_in"):
+            keyring.set_password(service_name, "expires_in", str(tokens["expires_in"]))
+        if tokens.get("refresh_expires_in"):
+            keyring.set_password(service_name, "refresh_expires_in", str(tokens["refresh_expires_in"]))
+        keyring.set_password(service_name, "saved_at", str(time.time()))
+        return True
+    except Exception as e:
+        print(f"Warning: Failed to save tokens to keyring: {e}", file=sys.stderr)
+        return False
 
 
 def _oidc_endpoints(hps_url: str) -> dict:
@@ -259,11 +253,13 @@ def browser_login(hps_url: str, open_browser: bool = True) -> dict:
     return token_resp.json()
 
 
-def save_tokens(tokens: dict, hps_url: str, persist: bool = True) -> Path | None:
-    """Persist tokens to ``~/.ansys/hps_tokens.json`` or keep in memory.
+def save_tokens(tokens: dict, hps_url: str, persist: bool = True, use_keyring: bool = False) -> Path | None:
+    """Persist tokens to system keyring, disk file, or keep in memory.
 
-    On Windows, tokens are encrypted with DPAPI (user-scoped).
-    On Unix/Linux, tokens file has restrictive permissions (0o600).
+    On Windows (disk), tokens are encrypted with DPAPI (user-scoped).
+    On Unix/Linux (disk), tokens file has restrictive permissions (0o600).
+    With keyring, tokens are stored in system credential manager (Windows Credential Manager,
+    macOS Keychain, Linux Secret Service, etc.).
 
     Parameters
     ----------
@@ -272,29 +268,36 @@ def save_tokens(tokens: dict, hps_url: str, persist: bool = True) -> Path | None
     hps_url:
         HPS server URL to record alongside the tokens.
     persist:
-        If True, save tokens to disk at ``~/.ansys/hps_tokens.json``.
+        If True, save tokens to disk/keyring.
         If False, tokens are kept in memory only.
+    use_keyring:
+        If True, attempt to save to system keyring. Falls back to disk if keyring unavailable.
+        If False, save to disk file.
 
     Returns
     -------
     Path | None
-        Path of the written file if persist=True, otherwise None.
+        Path of the disk file if persist=True and keyring not used, otherwise None.
 
     """
-    payload = {
+    if not persist:
+        return None
+
+    # Try keyring if requested
+    if use_keyring:
+        if _save_to_keyring(tokens, hps_url):
+            return None  # Saved to keyring, no file path
+
+    # Fall back to disk storage
+    TOKEN_FILE.parent.mkdir(parents=True, exist_ok=True)
+    json_data = json.dumps({
         "hps_url": hps_url,
         "access_token": tokens["access_token"],
         "refresh_token": tokens.get("refresh_token"),
         "expires_in": tokens.get("expires_in"),
         "refresh_expires_in": tokens.get("refresh_expires_in"),
         "saved_at": time.time(),
-    }
-
-    if not persist:
-        return None
-
-    TOKEN_FILE.parent.mkdir(parents=True, exist_ok=True)
-    json_data = json.dumps(payload, indent=2).encode("utf-8")
+    }, indent=2).encode("utf-8")
 
     # Platform-specific security
     if platform.system() == "Windows":
@@ -304,7 +307,14 @@ def save_tokens(tokens: dict, hps_url: str, persist: bool = True) -> Path | None
         TOKEN_FILE.write_bytes(b"DPAPI:" + base64.b64encode(encrypted))
     else:
         # Unix/Linux: use restrictive file permissions
-        TOKEN_FILE.write_text(json.dumps(payload, indent=2), encoding="utf-8")
+        TOKEN_FILE.write_text(json.dumps({
+            "hps_url": hps_url,
+            "access_token": tokens["access_token"],
+            "refresh_token": tokens.get("refresh_token"),
+            "expires_in": tokens.get("expires_in"),
+            "refresh_expires_in": tokens.get("refresh_expires_in"),
+            "saved_at": time.time(),
+        }, indent=2), encoding="utf-8")
         TOKEN_FILE.chmod(0o600)
         # Verify permissions were set correctly
         mode = TOKEN_FILE.stat().st_mode & 0o777
@@ -333,6 +343,12 @@ def main():
         help="Keep tokens in memory only; do not persist to disk",
     )
     parser.add_argument(
+        "--use-keyring",
+        action="store_true",
+        help="Save tokens to system keyring (Credential Manager/Keychain/Secret Service). "
+        "Falls back to disk if keyring unavailable. Requires 'keyring' package.",
+    )
+    parser.add_argument(
         "--print-token",
         action="store_true",
         help="Print the access token to stdout after login (useful for scripting)",
@@ -346,12 +362,14 @@ def main():
         print(f"\nError: {e}", file=sys.stderr)
         sys.exit(1)
 
-    path = save_tokens(tokens, args.url, persist=not args.keep_in_memory)
+    path = save_tokens(tokens, args.url, persist=not args.keep_in_memory, use_keyring=args.use_keyring)
     if path:
         if platform.system() == "Windows":
             print(f"Tokens encrypted and saved to {path} (DPAPI)")
         else:
             print(f"Tokens saved to {path} (mode 0o600)")
+    elif args.use_keyring:
+        print("Tokens saved to system keyring")
     else:
         print("Tokens kept in memory (not persisted to disk)")
     print(f"Access token expires in {tokens.get('expires_in', '?')}s, "
