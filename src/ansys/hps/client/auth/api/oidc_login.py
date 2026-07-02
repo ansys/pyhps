@@ -106,6 +106,145 @@ def _save_to_keyring(tokens: dict, hps_url: str) -> bool:
         return False
 
 
+def _load_from_keyring() -> dict | None:
+    """Load tokens from system keyring.
+
+    Returns token dict if available, None if keyring unavailable or no tokens saved.
+    """
+    try:
+        import keyring
+    except ImportError:
+        return None
+
+    service_name = "ansys-hps"
+    try:
+        access_token = keyring.get_password(service_name, "access_token")
+        if not access_token:
+            return None
+
+        return {
+            "hps_url": keyring.get_password(service_name, "hps_url"),
+            "access_token": access_token,
+            "refresh_token": keyring.get_password(service_name, "refresh_token"),
+            "expires_in": int(keyring.get_password(service_name, "expires_in") or 3600),
+            "refresh_expires_in": int(keyring.get_password(service_name, "refresh_expires_in") or 86400),
+            "saved_at": float(keyring.get_password(service_name, "saved_at") or time.time()),
+        }
+    except Exception:
+        return None
+
+
+def _load_from_disk() -> dict | None:
+    """Load tokens from disk file.
+
+    Returns token dict if available, None if file doesn't exist or can't be read.
+    """
+    if not TOKEN_FILE.exists():
+        return None
+
+    try:
+        content = TOKEN_FILE.read_bytes()
+        # Check if encrypted with DPAPI
+        if content.startswith(b"DPAPI:"):
+            encrypted = base64.b64decode(content[6:])
+            json_data = _decrypt_with_dpapi(encrypted)
+            return json.loads(json_data.decode("utf-8"))
+        else:
+            return json.loads(content.decode("utf-8"))
+    except Exception as e:
+        print(f"Warning: Failed to load tokens from disk: {e}", file=sys.stderr)
+        return None
+
+
+def load_tokens() -> dict | None:
+    """Load saved tokens from keyring (preferred) or disk.
+
+    Returns token dict if available, None if no tokens found or errors occur.
+    """
+    # Try keyring first
+    tokens = _load_from_keyring()
+    if tokens:
+        return tokens
+
+    # Fall back to disk
+    return _load_from_disk()
+
+
+def _is_token_expired(tokens: dict, buffer_seconds: int = 60) -> bool:
+    """Check if access token is expired or close to expiry.
+
+    Parameters
+    ----------
+    tokens:
+        Token dict with 'expires_in' and 'saved_at' fields.
+    buffer_seconds:
+        Seconds before actual expiry to consider token expired (default: 60).
+
+    Returns
+    -------
+    bool
+        True if token is expired or expiring soon, False if still valid.
+    """
+    if "expires_in" not in tokens or "saved_at" not in tokens:
+        return True  # Can't determine, assume expired
+
+    elapsed = time.time() - tokens["saved_at"]
+    expires_in = tokens["expires_in"]
+    return elapsed > (expires_in - buffer_seconds)
+
+
+def refresh_tokens(hps_url: str | None = None) -> dict | None:
+    """Refresh saved tokens using refresh_token.
+
+    Parameters
+    ----------
+    hps_url:
+        HPS server URL. If not provided, will be loaded from saved tokens.
+
+    Returns
+    -------
+    dict | None
+        Refreshed token dict if successful, None if refresh fails or no tokens available.
+    """
+    from .authenticate import authenticate, determine_auth_url
+
+    # Load saved tokens
+    tokens = load_tokens()
+    if not tokens:
+        print("No saved tokens found. Run login first.", file=sys.stderr)
+        return None
+
+    if not hps_url:
+        hps_url = tokens.get("hps_url")
+    if not hps_url:
+        print("HPS URL not found in saved tokens. Please provide --url.", file=sys.stderr)
+        return None
+
+    refresh_token = tokens.get("refresh_token")
+    if not refresh_token:
+        print("No refresh_token available. Re-login required.", file=sys.stderr)
+        return None
+
+    try:
+        # Determine auth URL from HPS server
+        auth_url = determine_auth_url(hps_url, verify_ssl=False, fallback_realm=REALM)
+        if not auth_url:
+            auth_url = f"{hps_url.rstrip('/')}/auth/realms/{REALM}"
+
+        # Use authenticate with refresh_token grant
+        new_tokens = authenticate(
+            auth_url=auth_url,
+            grant_type="refresh_token",
+            client_id=CLIENT_ID,
+            refresh_token=refresh_token,
+            verify=False,
+        )
+        return new_tokens
+    except Exception as e:
+        print(f"Token refresh failed: {e}", file=sys.stderr)
+        return None
+
+
 def _oidc_endpoints(hps_url: str) -> dict:
     """Fetch OIDC endpoint URLs from Keycloak's well-known discovery document."""
     discovery_url = (
@@ -333,6 +472,12 @@ def main():
         help="HPS server URL (default: https://localhost:8443/hps)",
     )
     parser.add_argument(
+        "--refresh-only",
+        action="store_true",
+        help="Refresh saved tokens without performing login. "
+        "Loads tokens from keyring/disk and refreshes them.",
+    )
+    parser.add_argument(
         "--no-browser",
         action="store_true",
         help="Print the URL instead of opening the browser automatically",
@@ -355,6 +500,24 @@ def main():
     )
     args = parser.parse_args()
 
+    # Handle token refresh
+    if args.refresh_only:
+        print("Refreshing saved tokens...")
+        new_tokens = refresh_tokens(args.url if args.url != "https://localhost:8443/hps" else None)
+        if new_tokens:
+            # Save refreshed tokens back
+            save_tokens(new_tokens, new_tokens.get("hps_url", args.url), persist=True, use_keyring=args.use_keyring)
+            print("Tokens refreshed successfully")
+            print(f"Access token expires in {new_tokens.get('expires_in', '?')}s, "
+                  f"refresh token expires in {new_tokens.get('refresh_expires_in', '?')}s")
+            if args.print_token:
+                print(new_tokens["access_token"])
+        else:
+            print("Token refresh failed", file=sys.stderr)
+            sys.exit(1)
+        return
+
+    # Normal login flow
     print(f"Connecting to: {args.url}")
     try:
         tokens = browser_login(args.url, open_browser=not args.no_browser)
