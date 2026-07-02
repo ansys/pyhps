@@ -45,7 +45,13 @@ REDIRECT_URI = f"http://localhost:{REDIRECT_PORT}/callback"
 
 
 def _encrypt_with_dpapi(data: bytes) -> bytes:
-    """Encrypt data using Windows DPAPI (user-scoped)."""
+    """Encrypt data using Windows DPAPI (user-scoped).
+
+    Windows-only function. Will raise RuntimeError if called on other platforms.
+    """
+    if platform.system() != "Windows":
+        raise RuntimeError("DPAPI encryption is only available on Windows")
+
     import ctypes
     import ctypes.wintypes as wintypes
 
@@ -79,7 +85,46 @@ def _encrypt_with_dpapi(data: bytes) -> bytes:
     return dpapi_encrypt(data)
 
 
-def _save_to_keyring(tokens: dict, hps_url: str) -> bool:
+def _decrypt_with_dpapi(ciphertext: bytes) -> bytes:
+    """Decrypt data using Windows DPAPI.
+
+    Windows-only function. Will raise RuntimeError if called on other platforms.
+    """
+    if platform.system() != "Windows":
+        raise RuntimeError("DPAPI decryption is only available on Windows")
+
+    import ctypes
+    import ctypes.wintypes as wintypes
+
+    LocalFree = ctypes.windll.kernel32.LocalFree
+    CryptUnprotectData = ctypes.windll.Crypt32.CryptUnprotectData
+
+    class DataBlob(ctypes.Structure):
+        _fields_ = [("cbData", wintypes.DWORD), ("pbData", ctypes.POINTER(wintypes.BYTE))]
+
+    def dpapi_decrypt(ciphertext: bytes) -> bytes:
+        ciphertext_blob = DataBlob(len(ciphertext), ctypes.c_char_p(ciphertext))
+        plaintext_blob = DataBlob()
+        flags = 0x1
+        result = CryptUnprotectData(
+            ctypes.byref(ciphertext_blob),
+            None,
+            None,
+            None,
+            None,
+            flags,
+            ctypes.byref(plaintext_blob),
+        )
+        if not result:
+            raise RuntimeError("Failed to decrypt data with DPAPI")
+        plaintext = bytes(plaintext_blob.pbData[: plaintext_blob.cbData])
+        LocalFree(plaintext_blob.pbData)
+        return plaintext
+
+    return dpapi_decrypt(ciphertext)
+
+
+
     """Save tokens to system keyring using keyring library.
 
     Returns True if successful, False if keyring is not available.
