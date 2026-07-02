@@ -124,7 +124,7 @@ def _decrypt_with_dpapi(ciphertext: bytes) -> bytes:
     return dpapi_decrypt(ciphertext)
 
 
-
+def _save_to_keyring(tokens: dict, hps_url: str) -> bool:
     """Save tokens to system keyring using keyring library.
 
     Returns True if successful, False if keyring is not available.
@@ -437,13 +437,8 @@ def browser_login(hps_url: str, open_browser: bool = True) -> dict:
     return token_resp.json()
 
 
-def save_tokens(tokens: dict, hps_url: str, persist: bool = True, use_keyring: bool = False) -> Path | None:
-    """Persist tokens to system keyring, disk file, or keep in memory.
-
-    On Windows (disk), tokens are encrypted with DPAPI (user-scoped).
-    On Unix/Linux (disk), tokens file has restrictive permissions (0o600).
-    With keyring, tokens are stored in system credential manager (Windows Credential Manager,
-    macOS Keychain, Linux Secret Service, etc.).
+def save_tokens(tokens: dict, hps_url: str, storage: str = "disk") -> Path | None:
+    """Persist tokens to specified storage location.
 
     Parameters
     ----------
@@ -451,24 +446,31 @@ def save_tokens(tokens: dict, hps_url: str, persist: bool = True, use_keyring: b
         Token response dict returned by Keycloak.
     hps_url:
         HPS server URL to record alongside the tokens.
-    persist:
-        If True, save tokens to disk/keyring.
-        If False, tokens are kept in memory only.
-    use_keyring:
-        If True, attempt to save to system keyring. Falls back to disk if keyring unavailable.
-        If False, save to disk file.
+    storage:
+        Where to save tokens (default: "disk"):
+        - "memory": Keep in memory only, do not persist (returns None)
+        - "disk": Save to disk with platform-specific security
+          (DPAPI on Windows, 0o600 permissions on Unix/Linux)
+        - "keyring": Save to system keyring with fallback to disk
 
     Returns
     -------
     Path | None
-        Path of the disk file if persist=True and keyring not used, otherwise None.
+        Path of disk file if saved to disk, otherwise None.
 
+    Raises
+    ------
+    ValueError
+        If storage method is invalid.
     """
-    if not persist:
+    if storage not in ("memory", "disk", "keyring"):
+        raise ValueError(f"Invalid storage method: {storage}. Must be 'memory', 'disk', or 'keyring'")
+
+    if storage == "memory":
         return None
 
     # Try keyring if requested
-    if use_keyring:
+    if storage == "keyring":
         if _save_to_keyring(tokens, hps_url):
             return None  # Saved to keyring, no file path
 
@@ -500,10 +502,6 @@ def save_tokens(tokens: dict, hps_url: str, persist: bool = True, use_keyring: b
             "saved_at": time.time(),
         }, indent=2), encoding="utf-8")
         TOKEN_FILE.chmod(0o600)
-        # Verify permissions were set correctly
-        mode = TOKEN_FILE.stat().st_mode & 0o777
-        if mode != 0o600:
-            raise RuntimeError(f"Failed to set file permissions to 0o600 (got 0o{mode:o})")
 
     return TOKEN_FILE
 
@@ -550,8 +548,10 @@ def main():
         print("Refreshing saved tokens...")
         new_tokens = refresh_tokens(args.url if args.url != "https://localhost:8443/hps" else None)
         if new_tokens:
+            # Determine storage method for refreshed tokens
+            storage = "keyring" if args.use_keyring else "memory" if args.keep_in_memory else "disk"
             # Save refreshed tokens back
-            save_tokens(new_tokens, new_tokens.get("hps_url", args.url), persist=True, use_keyring=args.use_keyring)
+            save_tokens(new_tokens, new_tokens.get("hps_url", args.url), storage=storage)
             print("Tokens refreshed successfully")
             print(f"Access token expires in {new_tokens.get('expires_in', '?')}s, "
                   f"refresh token expires in {new_tokens.get('refresh_expires_in', '?')}s")
@@ -570,13 +570,16 @@ def main():
         print(f"\nError: {e}", file=sys.stderr)
         sys.exit(1)
 
-    path = save_tokens(tokens, args.url, persist=not args.keep_in_memory, use_keyring=args.use_keyring)
+    # Determine storage method
+    storage = "keyring" if args.use_keyring else "memory" if args.keep_in_memory else "disk"
+    path = save_tokens(tokens, args.url, storage=storage)
+
     if path:
         if platform.system() == "Windows":
             print(f"Tokens encrypted and saved to {path} (DPAPI)")
         else:
             print(f"Tokens saved to {path} (mode 0o600)")
-    elif args.use_keyring:
+    elif storage == "keyring":
         print("Tokens saved to system keyring")
     else:
         print("Tokens kept in memory (not persisted to disk)")

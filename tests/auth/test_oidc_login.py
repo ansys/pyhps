@@ -286,13 +286,28 @@ def test_load_tokens_fallback_to_disk(sample_tokens, sample_hps_url, tmp_path, m
 
 
 def test_save_tokens_keep_in_memory(sample_tokens, sample_hps_url):
-    """save_tokens with persist=False returns None (in-memory)."""
-    result = save_tokens(sample_tokens, sample_hps_url, persist=False)
+    """save_tokens with storage="memory" returns None (in-memory)."""
+    result = save_tokens(sample_tokens, sample_hps_url, storage="memory")
     assert result is None
 
 
+def test_save_tokens_disk_storage(sample_tokens, sample_hps_url, tmp_path, monkeypatch):
+    """save_tokens with storage="disk" saves to disk."""
+    token_file = tmp_path / ".ansys" / "hps_tokens.json"
+    monkeypatch.setattr(
+        "ansys.hps.client.auth.api.oidc_login.TOKEN_FILE",
+        token_file,
+    )
+
+    with patch("ansys.hps.client.auth.api.oidc_login.platform.system", return_value="Linux"):
+        result = save_tokens(sample_tokens, sample_hps_url, storage="disk")
+
+        assert result == token_file
+        assert token_file.exists()
+
+
 def test_save_tokens_prefer_keyring(sample_tokens, sample_hps_url, tmp_path, monkeypatch):
-    """save_tokens with use_keyring=True tries keyring first."""
+    """save_tokens with storage="keyring" tries keyring first."""
     token_file = tmp_path / ".ansys" / "hps_tokens.json"
     monkeypatch.setattr(
         "ansys.hps.client.auth.api.oidc_login.TOKEN_FILE",
@@ -302,7 +317,7 @@ def test_save_tokens_prefer_keyring(sample_tokens, sample_hps_url, tmp_path, mon
     with patch("ansys.hps.client.auth.api.oidc_login._save_to_keyring") as mock_keyring:
         mock_keyring.return_value = True  # Keyring save succeeds
 
-        result = save_tokens(sample_tokens, sample_hps_url, persist=True, use_keyring=True)
+        result = save_tokens(sample_tokens, sample_hps_url, storage="keyring")
 
         mock_keyring.assert_called_once()
         assert result is None  # Keyring returns None for path
@@ -327,8 +342,14 @@ def test_save_tokens_fallback_to_disk_if_keyring_fails(
 
     with patch("ansys.hps.client.auth.api.oidc_login._save_to_keyring", mock_save_to_keyring):
         with patch("ansys.hps.client.auth.api.oidc_login.platform.system", return_value="Linux"):
-            result = save_tokens(sample_tokens, sample_hps_url, persist=True, use_keyring=True)
+            result = save_tokens(sample_tokens, sample_hps_url, storage="keyring")
 
             assert result == token_file
             assert token_file.exists()
+
+
+def test_save_tokens_invalid_storage_method(sample_tokens, sample_hps_url):
+    """save_tokens raises ValueError for invalid storage method."""
+    with pytest.raises(ValueError, match="Invalid storage method"):
+        save_tokens(sample_tokens, sample_hps_url, storage="invalid")
 
