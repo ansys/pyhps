@@ -579,9 +579,9 @@ def main():
         help="Print the URL instead of opening the browser automatically",
     )
     parser.add_argument(
-        "--keep-in-memory",
+        "--save-to-disk",
         action="store_true",
-        help="Keep tokens in memory only; do not persist to disk",
+        help="Persist tokens to disk (default: keep in memory only)",
     )
     parser.add_argument(
         "--use-keyring",
@@ -605,7 +605,7 @@ def main():
         )
         if new_tokens:
             # Determine storage method for refreshed tokens
-            storage = "keyring" if args.use_keyring else "memory" if args.keep_in_memory else "disk"
+            storage = "keyring" if args.use_keyring else "disk" if args.save_to_disk else "memory"
             # Save refreshed tokens back
             save_tokens(new_tokens, new_tokens.get("hps_url", args.url), storage=storage)
             print("Tokens refreshed successfully")
@@ -627,7 +627,7 @@ def main():
         sys.exit(1)
 
     # Determine storage method
-    storage = "keyring" if args.use_keyring else "memory" if args.keep_in_memory else "disk"
+    storage = "keyring" if args.use_keyring else "disk" if args.save_to_disk else "memory"
     path = save_tokens(tokens, args.url, storage=storage)
 
     if path:
