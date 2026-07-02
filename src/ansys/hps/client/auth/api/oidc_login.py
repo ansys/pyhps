@@ -290,11 +290,26 @@ def refresh_tokens(hps_url: str | None = None) -> dict | None:
         return None
 
 
-def _oidc_endpoints(hps_url: str) -> dict:
-    """Fetch OIDC endpoint URLs from Keycloak's well-known discovery document."""
-    discovery_url = (
-        f"{hps_url.rstrip('/')}/auth/realms/{REALM}/.well-known/openid-configuration"
-    )
+def _oidc_endpoints(hps_url: str, issuer: str | None = None) -> dict:
+    """Fetch OIDC endpoint URLs from the OIDC discovery endpoint.
+
+    Parameters
+    ----------
+    hps_url:
+        Base URL of the HPS server. Used to construct default issuer if not provided.
+    issuer:
+        OIDC issuer URL. If not provided, defaults to HPS Keycloak issuer path.
+
+    Returns
+    -------
+    dict
+        Dictionary with 'authorization_endpoint' and 'token_endpoint' keys.
+    """
+    if issuer is None:
+        # Default to HPS Keycloak issuer
+        issuer = f"{hps_url.rstrip('/')}/auth/realms/{REALM}"
+
+    discovery_url = f"{issuer.rstrip('/')}/.well-known/openid-configuration"
     r = requests.get(discovery_url, verify=False, timeout=10)
     r.raise_for_status()
     cfg = r.json()
@@ -312,11 +327,11 @@ def _pkce_pair() -> tuple[str, str]:
     return verifier, challenge
 
 
-def browser_login(hps_url: str, open_browser: bool = True) -> dict:
-    """Run the OIDC Authorization Code + PKCE flow against HPS Keycloak.
+def browser_login(hps_url: str, open_browser: bool = True, issuer: str | None = None) -> dict:
+    """Run the OIDC Authorization Code + PKCE flow.
 
     Starts a temporary localhost HTTP server on port ``REDIRECT_PORT``,
-    opens the Keycloak login page in the default browser, and exchanges
+    opens the login page in the default browser, and exchanges
     the returned authorization code for tokens.
 
     Parameters
@@ -325,6 +340,8 @@ def browser_login(hps_url: str, open_browser: bool = True) -> dict:
         Base URL of the HPS server, e.g. ``https://localhost:8443/hps``.
     open_browser:
         Whether to automatically open the authorization URL in the default browser.
+    issuer:
+        OIDC issuer URL. If not provided, defaults to HPS Keycloak issuer.
 
     Returns
     -------
@@ -333,7 +350,7 @@ def browser_login(hps_url: str, open_browser: bool = True) -> dict:
         ``expires_in``, ``refresh_expires_in``, ``token_type``, etc.
 
     """
-    endpoints = _oidc_endpoints(hps_url)
+    endpoints = _oidc_endpoints(hps_url, issuer=issuer)
     verifier, challenge = _pkce_pair()
     state = secrets.token_urlsafe(16)
 
