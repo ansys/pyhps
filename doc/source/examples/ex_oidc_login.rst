@@ -27,7 +27,7 @@ The login process:
 Code
 ~~~~
 
-.. literalinclude:: ../../examples/oidc/basic_login.py
+.. literalinclude:: ../../../examples/oidc/basic_login.py
    :language: python
 
 Usage
@@ -69,7 +69,7 @@ The system credential manager varies by platform:
 Code
 ~~~~
 
-.. literalinclude:: ../../examples/oidc/login_with_keyring.py
+.. literalinclude:: ../../../examples/oidc/login_with_keyring.py
    :language: python
 
 Prerequisites
@@ -104,8 +104,9 @@ Notes
 ~~~~~
 
 - Requires the ``keyring`` package
-- Falls back to disk storage if keyring is unavailable
-- Tokens are automatically loaded from keyring by :func:`ansys.hps.client.auth.api.oidc_login.load_tokens`
+- Tokens can be loaded from keyring with
+    :func:`ansys.hps.client.auth.api.oidc_login.load_tokens` using
+    ``storage="keyring"``
 - For automatic refresh persistence across runs in :class:`ansys.hps.client.Client`,
   initialize the client with ``token_storage=\"keyring\"``
 
@@ -123,7 +124,7 @@ Storage locations:
 Code
 ~~~~
 
-.. literalinclude:: ../../examples/oidc/login_with_disk_storage.py
+.. literalinclude:: ../../../examples/oidc/login_with_disk_storage.py
    :language: python
 
 Usage
@@ -159,7 +160,9 @@ Notes
 ~~~~~
 
 - Tokens persist across script invocations
-- Automatically loaded by :func:`ansys.hps.client.auth.api.oidc_login.load_tokens`
+- Tokens can be loaded from disk with
+    :func:`ansys.hps.client.auth.api.oidc_login.load_tokens` using
+    ``storage="disk"``
 - For automatic refresh persistence across runs in :class:`ansys.hps.client.Client`,
   initialize the client with ``token_storage=\"disk\"``
 - For higher security, use keyring storage instead
@@ -170,15 +173,13 @@ Load and Use Saved Tokens
 
 Demonstrates how to load previously saved tokens and use them in API calls.
 
-Tokens can be loaded from:
-
-1. System keyring (if available and tokens were saved there)
-2. Disk storage (if tokens were saved to disk)
+Tokens are loaded from an explicitly selected backend (for example,
+``storage="keyring"`` or ``storage="disk"``).
 
 Code
 ~~~~
 
-.. literalinclude:: ../../examples/oidc/load_saved_tokens.py
+.. literalinclude:: ../../../examples/oidc/load_saved_tokens.py
    :language: python
 
 Usage
@@ -198,7 +199,7 @@ Output::
 Features
 ~~~~~~~~
 
-- Automatically tries keyring first, then falls back to disk storage
+- Uses an explicit storage selection (keyring or disk)
 - Checks token expiration with configurable buffer (default 60 seconds)
 - Provides access token for use in API calls
 
@@ -218,13 +219,13 @@ In this case, see the token refresh example below.
 Notes
 ~~~~~
 
-- Tokens are automatically discovered from storage without configuration
+- Choose the backend explicitly via ``load_tokens(storage=...)``
 - The buffer parameter (default 60s) provides a safety margin before expiration
 - Use the ``Authorization`` header with the access token in API requests
 
 
 Refresh OIDC Tokens
-------------------
+-------------------
 
 Demonstrates how to refresh tokens using the refresh_token grant. This allows you to
 obtain a new access token without requiring user re-authentication.
@@ -235,7 +236,7 @@ is still valid.
 Code
 ~~~~
 
-.. literalinclude:: ../../examples/oidc/refresh_tokens_example.py
+.. literalinclude:: ../../../examples/oidc/refresh_tokens_example.py
    :language: python
 
 Prerequisites
@@ -261,9 +262,9 @@ Output::
 Workflow
 ~~~~~~~~
 
-1. Loads current tokens from storage (keyring or disk)
+1. Loads current tokens from the selected storage backend
 2. Uses the refresh_token to obtain new tokens without user interaction
-3. Saves the new tokens back to the same storage location
+3. Saves the new tokens back to the same selected backend
 
 This allows your application to:
 
@@ -297,10 +298,10 @@ refresh:
         save_tokens
     )
 
-    tokens = load_tokens()
+    tokens = load_tokens(storage="keyring")
     if tokens and _is_token_expired(tokens, buffer_seconds=300):
         # Refresh if expiring in next 5 minutes
-        new_tokens = refresh_tokens()
+        new_tokens = refresh_tokens(storage="keyring")
         if new_tokens:
             save_tokens(new_tokens, new_tokens.get("hps_url"), storage="keyring")
 

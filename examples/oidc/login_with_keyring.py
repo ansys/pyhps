@@ -38,8 +38,6 @@ def main():
     if result is None:
         print("Tokens saved to system keyring")
         print("Client token_storage is set to 'keyring' for persistent refresh updates")
-    else:
-        print(f"Tokens saved to disk at: {result}")
 
     print(f"Token Expires In: {tokens.get('expires_in')} seconds")
 

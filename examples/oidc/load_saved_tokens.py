@@ -1,20 +1,23 @@
 """Load and use previously saved tokens.
 
-Demonstrates how to load tokens from storage (keyring or disk)
+Demonstrates how to load tokens from an explicitly selected storage backend
 and use them in API calls.
 """
 
-from ansys.hps.client.auth.api.oidc_login import load_tokens, _is_token_expired
 import requests
+
+from ansys.hps.client.auth.api.oidc_login import _is_token_expired, load_tokens
 
 
 def main():
     """Load saved tokens and use them."""
-    # Load tokens from storage (tries keyring first, then disk)
-    tokens = load_tokens()
+    # Select which backend to load from: "keyring" or "disk"
+    storage_mode = "keyring"
+
+    tokens = load_tokens(storage=storage_mode)
 
     if not tokens:
-        print("No saved tokens found. Please run login first.")
+        print(f"No saved tokens found in {storage_mode} storage. Please run login first.")
         return
 
     print(f"Loaded tokens for: {tokens.get('hps_url')}")
@@ -31,7 +34,7 @@ def main():
     # response = requests.get(
     #     "https://localhost:8443/hps/api/v1/projects",
     #     headers={"Authorization": f"Bearer {tokens['access_token']}"},
-    #     verify=False
+    #     verify=False,
     # )
 
 
