@@ -6,7 +6,7 @@ No password is ever entered in the terminal.
 
 Usage
 -----
-    uv run python oidc_login.py --url https://cdc04hps02:8443/hps
+    uv run python oidc_login.py --url https://localhost:8443/hps
 
 The resulting tokens are saved to ``~/.ansys/hps_tokens.json`` and can be
 consumed by any script that reads them.
