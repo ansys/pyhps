@@ -13,9 +13,9 @@ Token Storage Security:
     - Windows: Credential Manager
     - macOS: Keychain
     - Linux: Secret Service (via python-keyring)
-  - disk (default): Saved to ``~/.ansys/hps_tokens.json``
-    - Windows: Tokens encrypted with DPAPI (user-scoped)
-    - Unix/Linux: Tokens file with restricted permissions (0o600)
+  - disk (default):
+    - Windows: ``%USERPROFILE%\.ansys\hps_tokens.json`` (encrypted with DPAPI)
+    - Unix/Linux: ``~/.ansys/hps_tokens.json`` (file permissions 0o600)
   - memory: Tokens kept in memory only, not persisted
 
 Tokens can be consumed by any script that reads them.
