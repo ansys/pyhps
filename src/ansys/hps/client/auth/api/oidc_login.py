@@ -186,8 +186,8 @@ def browser_login(hps_url: str, open_browser: bool = True) -> dict:
     return token_resp.json()
 
 
-def save_tokens(tokens: dict, hps_url: str) -> Path:
-    """Persist tokens to ``~/.ansys/hps_tokens.json``.
+def save_tokens(tokens: dict, hps_url: str, persist: bool = True) -> Path | None:
+    """Persist tokens to ``~/.ansys/hps_tokens.json`` or keep in memory.
 
     Parameters
     ----------
@@ -195,14 +195,16 @@ def save_tokens(tokens: dict, hps_url: str) -> Path:
         Token response dict returned by Keycloak.
     hps_url:
         HPS server URL to record alongside the tokens.
+    persist:
+        If True, save tokens to disk at ``~/.ansys/hps_tokens.json``.
+        If False, tokens are kept in memory only.
 
     Returns
     -------
-    Path
-        Path of the written file.
+    Path | None
+        Path of the written file if persist=True, otherwise None.
 
     """
-    TOKEN_FILE.parent.mkdir(parents=True, exist_ok=True)
     payload = {
         "hps_url": hps_url,
         "access_token": tokens["access_token"],
@@ -211,6 +213,11 @@ def save_tokens(tokens: dict, hps_url: str) -> Path:
         "refresh_expires_in": tokens.get("refresh_expires_in"),
         "saved_at": time.time(),
     }
+
+    if not persist:
+        return None
+
+    TOKEN_FILE.parent.mkdir(parents=True, exist_ok=True)
     TOKEN_FILE.write_text(json.dumps(payload, indent=2), encoding="utf-8")
     TOKEN_FILE.chmod(0o600)
     return TOKEN_FILE
@@ -230,6 +237,11 @@ def main():
         help="Print the URL instead of opening the browser automatically",
     )
     parser.add_argument(
+        "--keep-in-memory",
+        action="store_true",
+        help="Keep tokens in memory only; do not persist to disk",
+    )
+    parser.add_argument(
         "--print-token",
         action="store_true",
         help="Print the access token to stdout after login (useful for scripting)",
@@ -243,8 +255,11 @@ def main():
         print(f"\nError: {e}", file=sys.stderr)
         sys.exit(1)
 
-    path = save_tokens(tokens, args.url)
-    print(f"Tokens saved to {path}")
+    path = save_tokens(tokens, args.url, persist=not args.keep_in_memory)
+    if path:
+        print(f"Tokens saved to {path}")
+    else:
+        print("Tokens kept in memory (not persisted to disk)")
     print(f"Access token expires in {tokens.get('expires_in', '?')}s, "
           f"refresh token expires in {tokens.get('refresh_expires_in', '?')}s")
 
