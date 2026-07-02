@@ -2,9 +2,12 @@
 # SPDX-License-Identifier: MIT
 
 import json
+import logging
+import os
 import platform
 import sys
 import time
+from pathlib import Path
 from unittest.mock import MagicMock, patch
 
 import pytest
@@ -14,6 +17,7 @@ from ansys.hps.client.common.token_storage import (
     _load_from_disk,
     _load_from_keyring,
     _save_to_keyring,
+    _atomic_write_bytes,
     load_tokens,
     save_tokens,
 )
@@ -111,6 +115,19 @@ def test_save_to_keyring_handles_errors(sample_tokens, sample_hps_url):
         result = _save_to_keyring(sample_tokens, sample_hps_url)
         assert result is False
 
+def test_save_to_keyring_logs_redacted_error(sample_tokens, sample_hps_url, caplog):
+    """Keyring save errors are logged with redacted sensitive fragments."""
+    mock_keyring = MagicMock()
+    mock_keyring.set_password.side_effect = RuntimeError("Authorization bearer abc.def.ghi")
+
+    with patch.dict(sys.modules, {"keyring": mock_keyring}):
+        with caplog.at_level(logging.WARNING, logger="ansys.hps.client.common.token_storage"):
+            result = _save_to_keyring(sample_tokens, sample_hps_url)
+
+    assert result is False
+    assert "abc.def.ghi" not in caplog.text
+    assert "bearer ***REDACTED***" in caplog.text
+
 
 def test_load_from_keyring_success(sample_tokens, sample_hps_url):
     """Loading tokens from keyring succeeds."""
@@ -188,38 +205,38 @@ def test_load_from_keyring_invalid_numeric_fields(sample_tokens, sample_hps_url)
         assert result is None
 
 
-def test_load_tokens_prefers_keyring(sample_tokens):
-    """token_storage.load_tokens() prefers keyring over disk."""
+def test_load_tokens_keyring_mode_only_uses_keyring(sample_tokens):
+    """token_storage.load_tokens(storage='keyring') reads only from keyring."""
     with patch("ansys.hps.client.common.token_storage._load_from_keyring") as mock_keyring:
         with patch("ansys.hps.client.common.token_storage._load_from_disk") as mock_disk:
             keyring_tokens = sample_tokens.copy()
             mock_keyring.return_value = keyring_tokens
             mock_disk.return_value = None
 
-            result = load_tokens()
+            result = load_tokens(storage="keyring")
 
             assert result == keyring_tokens
             mock_keyring.assert_called_once()
             mock_disk.assert_not_called()
 
 
-def test_load_tokens_fallback_to_disk(sample_tokens):
-    """token_storage.load_tokens() falls back to disk if keyring unavailable."""
+def test_load_tokens_disk_mode_only_uses_disk(sample_tokens):
+    """token_storage.load_tokens(storage='disk') reads only from disk."""
     with patch("ansys.hps.client.common.token_storage._load_from_keyring") as mock_keyring:
         with patch("ansys.hps.client.common.token_storage._load_from_disk") as mock_disk:
             disk_tokens = sample_tokens.copy()
-            mock_keyring.return_value = None
+            mock_keyring.return_value = sample_tokens.copy()
             mock_disk.return_value = disk_tokens
 
-            result = load_tokens()
+            result = load_tokens(storage="disk")
 
             assert result == disk_tokens
-            mock_keyring.assert_called_once()
+            mock_keyring.assert_not_called()
             mock_disk.assert_called_once()
 
 
 def test_load_tokens_uses_env_service_name(monkeypatch):
-    """token_storage.load_tokens uses service name from env var."""
+    """token_storage.load_tokens keyring mode uses service name from env var."""
     monkeypatch.setenv("HPS_OIDC_KEYRING_SERVICE_NAME", "ansys-hps-env")
 
     with patch("ansys.hps.client.common.token_storage._load_from_keyring") as mock_keyring:
@@ -227,9 +244,14 @@ def test_load_tokens_uses_env_service_name(monkeypatch):
             mock_keyring.return_value = None
             mock_disk.return_value = None
 
-            _ = load_tokens()
+            _ = load_tokens(storage="keyring")
 
             mock_keyring.assert_called_once_with(service_name="ansys-hps-env")
+            mock_disk.assert_not_called()
+def test_load_tokens_invalid_storage_method():
+    """token_storage.load_tokens raises ValueError for invalid storage method."""
+    with pytest.raises(ValueError, match="Invalid storage method"):
+        _ = load_tokens(storage="invalid")
 
 
 def test_save_tokens_keep_in_memory(sample_tokens, sample_hps_url):
@@ -303,6 +325,50 @@ def test_load_from_disk_invalid_json(tmp_path, monkeypatch):
     result = _load_from_disk()
     assert result is None
 
+def test_load_from_disk_logs_redacted_error(tmp_path, monkeypatch, caplog):
+    """Disk load errors are logged with redacted sensitive fragments."""
+    token_file = tmp_path / ".ansys" / "hps_tokens.json"
+    token_file.parent.mkdir(parents=True, exist_ok=True)
+    token_file.write_text("{}", encoding="utf-8")
+
+    monkeypatch.setattr("ansys.hps.client.common.token_storage.TOKEN_FILE", token_file)
+
+    with patch(
+        "ansys.hps.client.common.token_storage.json.loads",
+        side_effect=RuntimeError("Authorization header bearer abc.def.ghi"),
+    ):
+        with caplog.at_level(logging.WARNING, logger="ansys.hps.client.common.token_storage"):
+            result = _load_from_disk()
+
+    assert result is None
+    assert "abc.def.ghi" not in caplog.text
+    assert "bearer ***REDACTED***" in caplog.text
+def test_atomic_write_bytes_fsyncs_parent_directory_on_unix(tmp_path):
+    """Atomic write fsyncs the parent directory on Unix-like platforms."""
+    target = tmp_path / "hps_tokens.json"
+    directory_fd = 424242
+    real_os_open = os.open
+    real_os_close = os.close
+
+    def open_side_effect(path, flags, *args):
+        if Path(path) == target.parent and flags == os.O_RDONLY:
+            return directory_fd
+        return real_os_open(path, flags, *args)
+
+    def close_side_effect(fd):
+        if fd == directory_fd:
+            return None
+        return real_os_close(fd)
+
+    with patch("ansys.hps.client.common.token_storage.platform.system", return_value="Linux"):
+        with patch("ansys.hps.client.common.token_storage.os.open", side_effect=open_side_effect):
+            with patch("ansys.hps.client.common.token_storage.os.close", side_effect=close_side_effect):
+                with patch("ansys.hps.client.common.token_storage.os.fsync") as mock_fsync:
+                    _atomic_write_bytes(target, b"{}", mode=0o600)
+
+    assert target.read_bytes() == b"{}"
+    assert any(call.args and call.args[0] == directory_fd for call in mock_fsync.call_args_list)
+
 
 def test_load_from_disk_invalid_schema_missing_access_token(tmp_path, monkeypatch):
     """Loading token payload without required access_token returns None."""
@@ -342,3 +408,8 @@ def test_save_tokens_keyring_raises_when_keyring_unavailable(sample_tokens, samp
     with patch("ansys.hps.client.common.token_storage._save_to_keyring", return_value=False):
         with pytest.raises(RuntimeError, match="Keyring storage requested"):
             _ = save_tokens(sample_tokens, sample_hps_url, storage="keyring")
+
+
+
+
+

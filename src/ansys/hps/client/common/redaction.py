@@ -8,19 +8,34 @@ import re
 REDACTED = "***REDACTED***"
 
 
-def redact_sensitive_values(text: str, tokens: dict | None = None) -> str:
+def _normalize_text(value: object) -> str:
+    """Normalize arbitrary values into a safe string for redaction."""
+    if value is None:
+        return ""
+    if isinstance(value, str):
+        return value
+    return str(value)
+
+
+def redact_sensitive_values(text: object, tokens: object = None) -> str:
     """Redact sensitive token-like values from logs and telemetry strings."""
-    redacted = text
+    redacted = _normalize_text(text)
+    token_map = tokens if isinstance(tokens, dict) else {}
 
     # Redact explicit token values when available.
-    if tokens:
+    if token_map:
         for key in ("access_token", "refresh_token"):
-            value = tokens.get(key)
+            value = token_map.get(key)
             if value:
-                redacted = redacted.replace(str(value), REDACTED)
+                redacted = redacted.replace(_normalize_text(value), REDACTED)
 
     # Redact bearer credentials and JWT-like payloads defensively.
-    redacted = re.sub(r"Bearer\s+[A-Za-z0-9\-._~+/]+=*", f"Bearer {REDACTED}", redacted)
+    redacted = re.sub(
+        r"\b(Bearer)\s+[A-Za-z0-9\-._~+/]+=*",
+        lambda match: f"{match.group(1)} {REDACTED}",
+        redacted,
+        flags=re.IGNORECASE,
+    )
     redacted = re.sub(
         r"\beyJ[A-Za-z0-9\-_=]+\.[A-Za-z0-9\-_=]+\.[A-Za-z0-9\-_=]*\b",
         REDACTED,

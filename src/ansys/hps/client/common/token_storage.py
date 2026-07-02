@@ -13,19 +13,23 @@ Disk token path:
 
 import base64
 import json
+import logging
 import os
 import platform
 import secrets
-import sys
 import time
 import uuid
 from pathlib import Path
 
 from pydantic import BaseModel, ConfigDict, Field, ValidationError
 
+from .redaction import redact_sensitive_values
+
 TOKEN_FILE = Path.home() / ".ansys" / "hps_tokens.json"
 DEFAULT_KEYRING_SERVICE_NAME = "ansys-hps"
 KEYRING_SERVICE_ENV_VAR = "HPS_OIDC_KEYRING_SERVICE_NAME"
+
+log = logging.getLogger(__name__)
 
 
 class _TokensForSave(BaseModel):
@@ -192,8 +196,9 @@ def _save_to_keyring(tokens: dict, hps_url: str, service_name: str | None = None
             keyring.set_password(service_name, "refresh_expires_in", str(tokens["refresh_expires_in"]))
         keyring.set_password(service_name, "saved_at", str(time.time()))
         return True
-    except Exception as e:
-        print(f"Warning: Failed to save tokens to keyring: {e}", file=sys.stderr)
+    except Exception as ex:
+        safe_error = redact_sensitive_values(str(ex), tokens)
+        log.warning("Failed to save tokens to keyring: %s", safe_error)
         return False
 
 
@@ -248,30 +253,41 @@ def _load_from_disk() -> dict | None:
             raw_tokens = json.loads(content.decode("utf-8"))
 
         return _normalize_loaded_tokens(raw_tokens)
-    except Exception as e:
-        print(f"Warning: Failed to load tokens from disk: {e}", file=sys.stderr)
+    except Exception as ex:
+        safe_error = redact_sensitive_values(str(ex))
+        log.warning("Failed to load tokens from disk: %s", safe_error)
         return None
 
 
-def load_tokens(service_name: str | None = None) -> dict | None:
-    """Load saved tokens from keyring (preferred) or disk.
+def load_tokens(storage: str = "keyring", service_name: str | None = None) -> dict | None:
+    """Load saved tokens from the explicitly selected backend.
 
-    The keyring service name can be provided directly or resolved from the
-    HPS_OIDC_KEYRING_SERVICE_NAME environment variable.
+    Parameters
+    ----------
+    storage:
+        Backend to load from. Supported values are ``"memory"``, ``"disk"``,
+        and ``"keyring"``.
+    service_name:
+        Keyring service name override. Used only when ``storage="keyring"``.
 
-    Loaded payloads are validated and normalized before being returned.
-
-    Returns token dict if available, None if no tokens found or errors occur.
+    Returns
+    -------
+    dict | None
+        Loaded token payload when present, otherwise ``None``.
     """
+    if storage not in ("memory", "disk", "keyring"):
+        raise ValueError(
+            f"Invalid storage method: {storage}. Must be 'memory', 'disk', or 'keyring'"
+        )
+
+    if storage == "memory":
+        return None
+
+    if storage == "disk":
+        return _load_from_disk()
+
     resolved_service_name = _resolve_keyring_service_name(service_name)
-
-    # Try keyring first
-    tokens = _load_from_keyring(service_name=resolved_service_name)
-    if tokens:
-        return tokens
-
-    # Fall back to disk
-    return _load_from_disk()
+    return _load_from_keyring(service_name=resolved_service_name)
 
 
 def _check_keyring_backend() -> str | None:
@@ -349,6 +365,16 @@ def _atomic_write_bytes(path: Path, data: bytes, mode: int | None = None) -> Non
 
         os.replace(temp_path, path)
 
+        if platform.system() != "Windows":
+            try:
+                dir_fd = os.open(path.parent, os.O_RDONLY)
+                try:
+                    os.fsync(dir_fd)
+                finally:
+                    os.close(dir_fd)
+            except OSError:
+                pass
+
         if mode is not None and platform.system() != "Windows":
             path.chmod(mode)
     finally:
@@ -357,6 +383,7 @@ def _atomic_write_bytes(path: Path, data: bytes, mode: int | None = None) -> Non
                 temp_path.unlink()
             except OSError:
                 pass
+
 def save_tokens(
     tokens: dict,
     hps_url: str,
@@ -406,6 +433,13 @@ def save_tokens(
         _atomic_write_bytes(TOKEN_FILE, json_bytes, mode=0o600)
 
     return TOKEN_FILE
+
+
+
+
+
+
+
 
 
 

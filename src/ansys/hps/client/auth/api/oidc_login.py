@@ -26,10 +26,10 @@ browser_login(hps_url, open_browser=True, issuer=None)
     Run OIDC Authorization Code + PKCE flow and return token dict.
     Opens browser for login unless open_browser=False.
 
-load_tokens(service_name=None)
-    Load saved tokens from keyring (preferred) or disk storage.
-    Uses ``service_name`` or ``HPS_OIDC_KEYRING_SERVICE_NAME`` to select
-    the keyring namespace.
+load_tokens(storage="keyring", service_name=None)
+    Load saved tokens from the explicitly selected storage backend.
+    For keyring loads, uses ``service_name`` or
+    ``HPS_OIDC_KEYRING_SERVICE_NAME`` to select the keyring namespace.
     Returns None if no tokens found.
 
 save_tokens(tokens, hps_url, storage="memory", service_name=None)
@@ -81,21 +81,23 @@ def _load_from_disk() -> dict | None:
     return _token_storage._load_from_disk()
 
 
-def load_tokens(service_name: str | None = None) -> dict | None:
-    """Load saved tokens from keyring (preferred) or disk.
+def load_tokens(storage: str = "keyring", service_name: str | None = None) -> dict | None:
+    """Load saved tokens from the explicitly selected backend.
 
-    The keyring service name can be provided directly or resolved from the
-    ``HPS_OIDC_KEYRING_SERVICE_NAME`` environment variable.
+    Parameters
+    ----------
+    storage:
+        Backend to load from. Supported values are ``"memory"``, ``"disk"``,
+        and ``"keyring"``.
+    service_name:
+        Keyring service name override. Used only when ``storage="keyring"``.
 
     Loaded payloads are validated and normalized before being returned.
 
     Returns token dict if available, None if no tokens found or errors occur.
     """
-    resolved_service_name = _token_storage._resolve_keyring_service_name(service_name)
-    tokens = _token_storage._load_from_keyring(service_name=resolved_service_name)
-    if tokens:
-        return tokens
-    return _load_from_disk()
+    _token_storage.TOKEN_FILE = TOKEN_FILE
+    return _token_storage.load_tokens(storage=storage, service_name=service_name)
 
 
 def _check_keyring_backend() -> str | None:
@@ -133,7 +135,12 @@ def _is_token_expired(tokens: dict, buffer_seconds: int = 60) -> bool:
     return _token_storage._is_token_expired(tokens, buffer_seconds=buffer_seconds)
 
 
-def refresh_tokens(hps_url: str | None = None, issuer: str | None = None) -> dict | None:
+def refresh_tokens(
+    hps_url: str | None = None,
+    issuer: str | None = None,
+    storage: str = "keyring",
+    service_name: str | None = None,
+) -> dict | None:
     """Refresh saved tokens using refresh_token.
 
     Parameters
@@ -150,8 +157,8 @@ def refresh_tokens(hps_url: str | None = None, issuer: str | None = None) -> dic
     """
     from ...authenticate import authenticate, determine_auth_url
 
-    # Load saved tokens
-    tokens = load_tokens()
+    # Load saved tokens from the selected backend only.
+    tokens = load_tokens(storage=storage, service_name=service_name)
     if not tokens:
         print("No saved tokens found. Run login first.", file=sys.stderr)
         return None
@@ -457,7 +464,7 @@ def main():
         "--refresh-only",
         action="store_true",
         help="Refresh saved tokens without performing login. "
-        "Loads tokens from keyring/disk and refreshes them.",
+        "Loads tokens from the selected storage backend and refreshes them.",
     )
     parser.add_argument(
         "--no-browser",
@@ -485,13 +492,13 @@ def main():
     # Handle token refresh
     if args.refresh_only:
         print("Refreshing saved tokens...")
+        storage = "keyring" if args.use_keyring else "disk" if args.save_to_disk else "keyring"
         new_tokens = refresh_tokens(
             args.url if args.url != "https://localhost:8443/hps" else None,
-            issuer=args.issuer
+            issuer=args.issuer,
+            storage=storage,
         )
         if new_tokens:
-            # Determine storage method for refreshed tokens
-            storage = "keyring" if args.use_keyring else "disk" if args.save_to_disk else "memory"
             # Save refreshed tokens back
             save_tokens(new_tokens, new_tokens.get("hps_url", args.url), storage=storage)
             print("Tokens refreshed successfully")
