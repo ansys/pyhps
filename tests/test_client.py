@@ -24,6 +24,8 @@ import logging
 import threading
 import time
 from datetime import datetime, timedelta, timezone
+from pathlib import Path
+from unittest.mock import Mock
 from unittest.mock import patch
 
 import pytest
@@ -34,6 +36,38 @@ from ansys.hps.client.exceptions import HPSError
 from ansys.hps.client.warnings import UnverifiedHTTPSRequestsWarning
 
 log = logging.getLogger(__name__)
+
+
+def _build_client_with_mocked_auth(**kwargs):
+    """Create a Client while mocking network/auth dependencies."""
+    token_response = {
+        "access_token": "mock_access_token",
+        "refresh_token": "mock_refresh_token",
+        "expires_in": 3600,
+        "refresh_expires_in": 86400,
+    }
+
+    mock_session = Mock()
+    mock_session.headers = {"Authorization": "Bearer mock_access_token"}
+    mock_session.hooks = {}
+    mock_session.params = {}
+
+    with patch("ansys.hps.client.client.determine_auth_url", return_value="https://auth.test/realm"):
+        with patch("ansys.hps.client.client.authenticate", return_value=token_response):
+            with patch(
+                "ansys.hps.client.client.jwt.decode",
+                return_value={"preferred_username": kwargs.get("username", "repadmin")},
+            ):
+                with patch("ansys.hps.client.client.create_session", return_value=mock_session):
+                    return Client(
+                        url="https://example.test/hps",
+                        username=kwargs.get("username", "repadmin"),
+                        password=kwargs.get("password", "repadmin"),
+                        verify=False,
+                        disable_security_warnings=True,
+                        auto_refresh_token=False,
+                        **{k: v for k, v in kwargs.items() if k not in {"username", "password"}},
+                    )
 
 
 def test_client_ssl_warning(url, username, password):
@@ -174,7 +208,7 @@ def test_refresh_access_token_persists_to_disk(url, username, password):
     """Refreshed tokens should be persisted when token_storage is disk."""
     client = Client(url, username, password, token_storage="disk")
 
-    with patch("ansys.hps.client.auth.api.oidc_login.save_tokens") as mock_save_tokens:
+    with patch("ansys.hps.client.common.token_storage.save_tokens") as mock_save_tokens:
         client.refresh_access_token()
 
     mock_save_tokens.assert_called_once()
@@ -187,13 +221,160 @@ def test_refresh_access_token_persists_to_keyring(url, username, password):
     """Refreshed tokens should be persisted when token_storage is keyring."""
     client = Client(url, username, password, token_storage="keyring")
 
-    with patch("ansys.hps.client.auth.api.oidc_login.save_tokens") as mock_save_tokens:
+    with patch("ansys.hps.client.common.token_storage.save_tokens") as mock_save_tokens:
         client.refresh_access_token()
 
     mock_save_tokens.assert_called_once()
     _, called_url = mock_save_tokens.call_args[0]
     assert called_url == url
     assert mock_save_tokens.call_args.kwargs["storage"] == "keyring"
+
+
+def test_refresh_access_token_rotation_is_persisted(url, username, password):
+    """Rotated refresh tokens should be persisted after refresh."""
+    client = Client(url, username, password, token_storage="keyring")
+    old_refresh_token = client.refresh_token
+    rotated_refresh_token = "rotated_refresh_token_value"
+
+    refreshed_tokens = {
+        "access_token": client.access_token,
+        "refresh_token": rotated_refresh_token,
+        "expires_in": 3600,
+        "refresh_expires_in": 86400,
+    }
+
+    with patch("ansys.hps.client.client.authenticate", return_value=refreshed_tokens):
+        with patch("ansys.hps.client.common.token_storage.save_tokens") as mock_save_tokens:
+            client.refresh_access_token()
+
+    assert client.refresh_token == rotated_refresh_token
+    assert client.refresh_token != old_refresh_token
+    saved_tokens, saved_url = mock_save_tokens.call_args[0]
+    assert saved_url == url
+    assert saved_tokens["refresh_token"] == rotated_refresh_token
+    assert mock_save_tokens.call_args.kwargs["storage"] == "keyring"
+
+
+def test_refresh_access_token_raises_when_refresh_token_missing():
+    """Refresh flow fails fast when no refresh token is available."""
+    client = _build_client_with_mocked_auth()
+    client.grant_type = "refresh_token"
+    client.refresh_token = None
+
+    with pytest.raises(HPSError, match="No refresh token available"):
+        client.refresh_access_token()
+
+
+def test_refresh_access_token_persistence_result_keyring_failure_uses_memory_only(
+    url, username, password
+):
+    """Telemetry should report memory-only behavior when keyring persistence fails."""
+    client = Client(url, username, password, token_storage="keyring")
+
+    with patch(
+        "ansys.hps.client.common.token_storage.save_tokens",
+        side_effect=RuntimeError("keyring unavailable"),
+    ):
+        client.refresh_access_token()
+
+    assert client.last_token_persistence_result is not None
+    assert client.last_token_persistence_result["requested_storage"] == "keyring"
+    assert client.last_token_persistence_result["storage_used"] == "memory"
+    assert client.last_token_persistence_result["fallback_used"] is False
+    assert client.last_token_persistence_result["persisted"] is False
+    assert client.last_token_persistence_result["error"] == "keyring unavailable"
+
+
+def test_refresh_access_token_persistence_result_failure_uses_memory_only(url, username, password):
+    """Telemetry should report persistence failures with memory-only behavior."""
+    client = Client(url, username, password, token_storage="disk")
+
+    with patch(
+        "ansys.hps.client.common.token_storage.save_tokens",
+        side_effect=RuntimeError("persistence failed"),
+    ):
+        client.refresh_access_token()
+
+    assert client.last_token_persistence_result is not None
+    assert client.last_token_persistence_result["requested_storage"] == "disk"
+    assert client.last_token_persistence_result["storage_used"] == "memory"
+    assert client.last_token_persistence_result["persisted"] is False
+    assert client.last_token_persistence_result["error"] == "persistence failed"
+
+
+def test_refresh_access_token_persistence_logs_are_redacted(url, username, password, caplog):
+    """Persistence failures must not log raw token values."""
+    client = Client(url, username, password, token_storage="disk")
+    leaked_error = (
+        f"persistence failed access={client.access_token} "
+        f"refresh={client.refresh_token} bearer=Bearer {client.access_token}"
+    )
+
+    caplog.set_level(logging.WARNING, logger="ansys.hps.client.client")
+    with patch(
+        "ansys.hps.client.common.token_storage.save_tokens",
+        side_effect=RuntimeError(leaked_error),
+    ):
+        client.refresh_access_token()
+
+    assert client.access_token not in caplog.text
+    assert client.refresh_token not in caplog.text
+    assert "Bearer " + client.access_token not in caplog.text
+    assert "***REDACTED***" in caplog.text
+
+    err = client.last_token_persistence_result["error"]
+    assert client.access_token not in err
+    assert client.refresh_token not in err
+    assert "Bearer " + client.access_token not in err
+    assert "***REDACTED***" in err
+
+
+def test_token_storage_keyring_warns_when_backend_unavailable():
+    """Keyring storage should warn when backend is unavailable in non-strict mode."""
+    with patch(
+        "ansys.hps.client.common.token_storage._check_storage_backend",
+        side_effect=lambda storage: "backend unavailable" if storage == "keyring" else None,
+    ):
+        with pytest.warns(RuntimeWarning, match="Keyring token storage requested but unavailable"):
+            client = _build_client_with_mocked_auth(token_storage="keyring")
+    assert client.token_storage == "keyring"
+
+
+def test_token_storage_keyring_strict_raises_when_backend_unavailable():
+    """Strict mode should fail fast when keyring backend is unavailable."""
+    with patch(
+        "ansys.hps.client.common.token_storage._check_storage_backend",
+        side_effect=lambda storage: "backend unavailable" if storage == "keyring" else None,
+    ):
+        with pytest.raises(RuntimeError, match="Keyring token storage requested but unavailable"):
+            _build_client_with_mocked_auth(
+                token_storage="keyring",
+                token_storage_strict=True,
+            )
+
+
+def test_token_storage_disk_warns_when_backend_unavailable():
+    """Disk storage should warn when backend is unavailable in non-strict mode."""
+    with patch(
+        "ansys.hps.client.common.token_storage._check_storage_backend",
+        side_effect=lambda storage: "disk unavailable" if storage == "disk" else None,
+    ):
+        with pytest.warns(RuntimeWarning, match="Disk token storage requested but unavailable"):
+            client = _build_client_with_mocked_auth(token_storage="disk")
+    assert client.token_storage == "disk"
+
+
+def test_token_storage_disk_strict_raises_when_backend_unavailable():
+    """Strict mode should fail fast when disk backend is unavailable."""
+    with patch(
+        "ansys.hps.client.common.token_storage._check_storage_backend",
+        side_effect=lambda storage: "disk unavailable" if storage == "disk" else None,
+    ):
+        with pytest.raises(RuntimeError, match="Disk token storage requested but unavailable"):
+            _build_client_with_mocked_auth(
+                token_storage="disk",
+                token_storage_strict=True,
+            )
 
 
 def test_reschedule_after_failed_refresh(url, username, password):

@@ -48,6 +48,9 @@ Notes
 
 - Tokens are kept in memory only and are not persisted to disk
 - The token will be lost when the script exits
+- If you pass these tokens to :class:`ansys.hps.client.Client` with default
+    ``token_storage=\"memory\"``, refreshed tokens are also in-memory only
+    and are not persisted across runs
 - For persistent storage, see the examples below
 
 
@@ -103,6 +106,8 @@ Notes
 - Requires the ``keyring`` package
 - Falls back to disk storage if keyring is unavailable
 - Tokens are automatically loaded from keyring by :func:`ansys.hps.client.auth.api.oidc_login.load_tokens`
+- For automatic refresh persistence across runs in :class:`ansys.hps.client.Client`,
+  initialize the client with ``token_storage=\"keyring\"``
 
 
 OIDC Login with Disk Storage
@@ -155,6 +160,8 @@ Notes
 
 - Tokens persist across script invocations
 - Automatically loaded by :func:`ansys.hps.client.auth.api.oidc_login.load_tokens`
+- For automatic refresh persistence across runs in :class:`ansys.hps.client.Client`,
+  initialize the client with ``token_storage=\"disk\"``
 - For higher security, use keyring storage instead
 
 

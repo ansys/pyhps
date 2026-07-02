@@ -6,21 +6,38 @@ Demonstrates how to save tokens to the system credential manager:
 - Linux: Secret Service (via python-keyring)
 
 Requires: pip install keyring
+
+This example also demonstrates creating ``Client`` with
+``token_storage=\"keyring\"`` so automatic refresh updates are persisted
+to keyring across runs.
 """
 
+from ansys.hps.client import Client
 from ansys.hps.client.auth.api.oidc_login import browser_login, save_tokens
 
 
 def main():
     """Perform OIDC login and save tokens to system keyring."""
+    hps_url = "https://localhost:8443/hps"
+    storage_mode = "keyring"
+
     # Perform login
-    tokens = browser_login(hps_url="https://localhost:8443/hps")
+    tokens = browser_login(hps_url=hps_url)
 
     # Save tokens to system keyring (preferred storage method)
-    result = save_tokens(tokens, hps_url="https://localhost:8443/hps", storage="keyring")
+    result = save_tokens(tokens, hps_url=hps_url, storage=storage_mode)
 
-    if result is None and storage == "keyring":
+    # Configure Client to persist automatic token refresh updates to keyring.
+    _ = Client(
+        url=hps_url,
+        access_token=tokens["access_token"],
+        refresh_token=tokens.get("refresh_token"),
+        token_storage=storage_mode,
+    )
+
+    if result is None:
         print("Tokens saved to system keyring")
+        print("Client token_storage is set to 'keyring' for persistent refresh updates")
     else:
         print(f"Tokens saved to disk at: {result}")
 

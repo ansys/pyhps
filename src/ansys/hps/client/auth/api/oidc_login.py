@@ -1,4 +1,4 @@
-"""OIDC browser login using Authorization Code + PKCE.
+"""OIDC Authorization Code + PKCE login and token persistence utilities.
 
 Starts a temporary localhost HTTP server, opens your browser at the
 login page, and exchanges the authorization code for tokens.
@@ -26,12 +26,15 @@ browser_login(hps_url, open_browser=True, issuer=None)
     Run OIDC Authorization Code + PKCE flow and return token dict.
     Opens browser for login unless open_browser=False.
 
-load_tokens()
+load_tokens(service_name=None)
     Load saved tokens from keyring (preferred) or disk storage.
+    Uses ``service_name`` or ``HPS_OIDC_KEYRING_SERVICE_NAME`` to select
+    the keyring namespace.
     Returns None if no tokens found.
 
-save_tokens(tokens, hps_url, storage="memory")
+save_tokens(tokens, hps_url, storage="memory", service_name=None)
     Persist tokens to specified location (memory, disk, or keyring).
+    Validates token schema before persistence.
     Returns path if saved to disk, otherwise None.
 
 refresh_tokens(hps_url=None, issuer=None)
@@ -59,183 +62,57 @@ import urllib3
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 import requests  # noqa: E402
+from ...common import token_storage as _token_storage
 
-TOKEN_FILE = Path.home() / ".ansys" / "hps_tokens.json"
+TOKEN_FILE = _token_storage.TOKEN_FILE
 CLIENT_ID = "rep-cli"
 REALM = "rep"
 REDIRECT_PORT = 19876
 REDIRECT_URI = f"http://localhost:{REDIRECT_PORT}/callback"
-
-
-def _encrypt_with_dpapi(data: bytes) -> bytes:
-    """Encrypt data using Windows DPAPI (user-scoped).
-
-    Windows-only function. Will raise RuntimeError if called on other platforms.
-    """
-    if platform.system() != "Windows":
-        raise RuntimeError("DPAPI encryption is only available on Windows")
-
-    import ctypes
-    import ctypes.wintypes as wintypes
-
-    LocalFree = ctypes.windll.kernel32.LocalFree
-    MemoryProtect = ctypes.windll.kernel32.VirtualProtect
-    CryptProtectData = ctypes.windll.Crypt32.CryptProtectData
-
-    class DataBlob(ctypes.Structure):
-        _fields_ = [("cbData", wintypes.DWORD), ("pbData", ctypes.POINTER(wintypes.BYTE))]
-
-    def dpapi_encrypt(plaintext: bytes) -> bytes:
-        plaintext_blob = DataBlob(len(plaintext), ctypes.c_char_p(plaintext))
-        ciphertext_blob = DataBlob()
-        # CRYPTPROTECT_UI_FORBIDDEN = 0x1
-        flags = 0x1
-        result = CryptProtectData(
-            ctypes.byref(plaintext_blob),
-            None,
-            None,
-            None,
-            None,
-            flags,
-            ctypes.byref(ciphertext_blob),
-        )
-        if not result:
-            raise RuntimeError("Failed to encrypt data with DPAPI")
-        ciphertext = bytes(ciphertext_blob.pbData[: ciphertext_blob.cbData])
-        LocalFree(ciphertext_blob.pbData)
-        return ciphertext
-
-    return dpapi_encrypt(data)
-
-
-def _decrypt_with_dpapi(ciphertext: bytes) -> bytes:
-    """Decrypt data using Windows DPAPI.
-
-    Windows-only function. Will raise RuntimeError if called on other platforms.
-    """
-    if platform.system() != "Windows":
-        raise RuntimeError("DPAPI decryption is only available on Windows")
-
-    import ctypes
-    import ctypes.wintypes as wintypes
-
-    LocalFree = ctypes.windll.kernel32.LocalFree
-    CryptUnprotectData = ctypes.windll.Crypt32.CryptUnprotectData
-
-    class DataBlob(ctypes.Structure):
-        _fields_ = [("cbData", wintypes.DWORD), ("pbData", ctypes.POINTER(wintypes.BYTE))]
-
-    def dpapi_decrypt(ciphertext: bytes) -> bytes:
-        ciphertext_blob = DataBlob(len(ciphertext), ctypes.c_char_p(ciphertext))
-        plaintext_blob = DataBlob()
-        flags = 0x1
-        result = CryptUnprotectData(
-            ctypes.byref(ciphertext_blob),
-            None,
-            None,
-            None,
-            None,
-            flags,
-            ctypes.byref(plaintext_blob),
-        )
-        if not result:
-            raise RuntimeError("Failed to decrypt data with DPAPI")
-        plaintext = bytes(plaintext_blob.pbData[: plaintext_blob.cbData])
-        LocalFree(plaintext_blob.pbData)
-        return plaintext
-
-    return dpapi_decrypt(ciphertext)
-
-
-def _save_to_keyring(tokens: dict, hps_url: str) -> bool:
-    """Save tokens to system keyring using keyring library.
-
-    Returns True if successful, False if keyring is not available.
-    """
-    try:
-        import keyring
-    except ImportError:
-        return False
-
-    service_name = "ansys-hps"
-    try:
-        keyring.set_password(service_name, "hps_url", hps_url)
-        keyring.set_password(service_name, "access_token", tokens["access_token"])
-        if tokens.get("refresh_token"):
-            keyring.set_password(service_name, "refresh_token", tokens["refresh_token"])
-        if tokens.get("expires_in"):
-            keyring.set_password(service_name, "expires_in", str(tokens["expires_in"]))
-        if tokens.get("refresh_expires_in"):
-            keyring.set_password(service_name, "refresh_expires_in", str(tokens["refresh_expires_in"]))
-        keyring.set_password(service_name, "saved_at", str(time.time()))
-        return True
-    except Exception as e:
-        print(f"Warning: Failed to save tokens to keyring: {e}", file=sys.stderr)
-        return False
-
-
-def _load_from_keyring() -> dict | None:
-    """Load tokens from system keyring.
-
-    Returns token dict if available, None if keyring unavailable or no tokens saved.
-    """
-    try:
-        import keyring
-    except ImportError:
-        return None
-
-    service_name = "ansys-hps"
-    try:
-        access_token = keyring.get_password(service_name, "access_token")
-        if not access_token:
-            return None
-
-        return {
-            "hps_url": keyring.get_password(service_name, "hps_url"),
-            "access_token": access_token,
-            "refresh_token": keyring.get_password(service_name, "refresh_token"),
-            "expires_in": int(keyring.get_password(service_name, "expires_in") or 3600),
-            "refresh_expires_in": int(keyring.get_password(service_name, "refresh_expires_in") or 86400),
-            "saved_at": float(keyring.get_password(service_name, "saved_at") or time.time()),
-        }
-    except Exception:
-        return None
-
+DEFAULT_KEYRING_SERVICE_NAME = _token_storage.DEFAULT_KEYRING_SERVICE_NAME
+KEYRING_SERVICE_ENV_VAR = _token_storage.KEYRING_SERVICE_ENV_VAR
 
 def _load_from_disk() -> dict | None:
     """Load tokens from disk file.
 
     Returns token dict if available, None if file doesn't exist or can't be read.
     """
-    if not TOKEN_FILE.exists():
-        return None
-
-    try:
-        content = TOKEN_FILE.read_bytes()
-        # Check if encrypted with DPAPI
-        if content.startswith(b"DPAPI:"):
-            encrypted = base64.b64decode(content[6:])
-            json_data = _decrypt_with_dpapi(encrypted)
-            return json.loads(json_data.decode("utf-8"))
-        else:
-            return json.loads(content.decode("utf-8"))
-    except Exception as e:
-        print(f"Warning: Failed to load tokens from disk: {e}", file=sys.stderr)
-        return None
+    _token_storage.TOKEN_FILE = TOKEN_FILE
+    return _token_storage._load_from_disk()
 
 
-def load_tokens() -> dict | None:
+def load_tokens(service_name: str | None = None) -> dict | None:
     """Load saved tokens from keyring (preferred) or disk.
+
+    The keyring service name can be provided directly or resolved from the
+    ``HPS_OIDC_KEYRING_SERVICE_NAME`` environment variable.
+
+    Loaded payloads are validated and normalized before being returned.
 
     Returns token dict if available, None if no tokens found or errors occur.
     """
-    # Try keyring first
-    tokens = _load_from_keyring()
+    resolved_service_name = _token_storage._resolve_keyring_service_name(service_name)
+    tokens = _token_storage._load_from_keyring(service_name=resolved_service_name)
     if tokens:
         return tokens
-
-    # Fall back to disk
     return _load_from_disk()
+
+
+def _check_keyring_backend() -> str | None:
+    """Return error details if keyring backend is unavailable, else None."""
+    return _token_storage._check_keyring_backend()
+
+
+def _check_disk_storage_backend() -> str | None:
+    """Return error details if disk storage backend is unavailable, else None."""
+    _token_storage.TOKEN_FILE = TOKEN_FILE
+    return _token_storage._check_disk_storage_backend()
+
+
+def _check_storage_backend(storage: str) -> str | None:
+    """Return error details if storage backend is unavailable, else None."""
+    _token_storage.TOKEN_FILE = TOKEN_FILE
+    return _token_storage._check_storage_backend(storage)
 
 
 def _is_token_expired(tokens: dict, buffer_seconds: int = 60) -> bool:
@@ -253,12 +130,7 @@ def _is_token_expired(tokens: dict, buffer_seconds: int = 60) -> bool:
     bool
         True if token is expired or expiring soon, False if still valid.
     """
-    if "expires_in" not in tokens or "saved_at" not in tokens:
-        return True  # Can't determine, assume expired
-
-    elapsed = time.time() - tokens["saved_at"]
-    expires_in = tokens["expires_in"]
-    return elapsed > (expires_in - buffer_seconds)
+    return _token_storage._is_token_expired(tokens, buffer_seconds=buffer_seconds)
 
 
 def refresh_tokens(hps_url: str | None = None, issuer: str | None = None) -> dict | None:
@@ -276,7 +148,7 @@ def refresh_tokens(hps_url: str | None = None, issuer: str | None = None) -> dic
     dict | None
         Refreshed token dict if successful, None if refresh fails or no tokens available.
     """
-    from .authenticate import authenticate, determine_auth_url
+    from ...authenticate import authenticate, determine_auth_url
 
     # Load saved tokens
     tokens = load_tokens()
@@ -482,7 +354,12 @@ def browser_login(hps_url: str, open_browser: bool = True, issuer: str | None = 
     return token_resp.json()
 
 
-def save_tokens(tokens: dict, hps_url: str, storage: str = "memory") -> Path | None:
+def save_tokens(
+    tokens: dict,
+    hps_url: str,
+    storage: str = "memory",
+    service_name: str | None = None,
+) -> Path | None:
     """Persist tokens to specified storage location.
 
     Parameters
@@ -496,7 +373,11 @@ def save_tokens(tokens: dict, hps_url: str, storage: str = "memory") -> Path | N
         - "memory": Keep in memory only, do not persist (returns None)
         - "disk": Save to disk with platform-specific security
           (DPAPI on Windows, 0o600 permissions on Unix/Linux)
-        - "keyring": Save to system keyring with fallback to disk
+                - "keyring": Save to system keyring only
+        service_name:
+                Optional keyring service name used when ``storage="keyring"``.
+                If omitted, the value of ``HPS_OIDC_KEYRING_SERVICE_NAME`` is used.
+                If the env var is not set, defaults to ``"ansys-hps"``.
 
     Returns
     -------
@@ -506,17 +387,24 @@ def save_tokens(tokens: dict, hps_url: str, storage: str = "memory") -> Path | N
     Raises
     ------
     ValueError
-        If storage method is invalid.
+        If storage method, hps_url, or token payload schema is invalid.
     """
     if storage not in ("memory", "disk", "keyring"):
         raise ValueError(f"Invalid storage method: {storage}. Must be 'memory', 'disk', or 'keyring'")
+
+    if not isinstance(hps_url, str) or not hps_url.strip():
+        raise ValueError("'hps_url' must be a non-empty string.")
+
+    tokens = _token_storage._normalize_tokens_for_save(tokens)
+
+    resolved_service_name = _token_storage._resolve_keyring_service_name(service_name)
 
     if storage == "memory":
         return None
 
     # Try keyring if requested
     if storage == "keyring":
-        if _save_to_keyring(tokens, hps_url):
+        if _token_storage._save_to_keyring(tokens, hps_url, service_name=resolved_service_name):
             return None  # Saved to keyring, no file path
 
     # Fall back to disk storage
@@ -532,12 +420,9 @@ def save_tokens(tokens: dict, hps_url: str, storage: str = "memory") -> Path | N
 
     # Platform-specific security
     if platform.system() == "Windows":
-        # Windows: use DPAPI encryption (user-scoped)
-        encrypted = _encrypt_with_dpapi(json_data)
-        # Write as base64-encoded encrypted data
+        encrypted = _token_storage._encrypt_with_dpapi(json_data)
         TOKEN_FILE.write_bytes(b"DPAPI:" + base64.b64encode(encrypted))
     else:
-        # Unix/Linux: use restrictive file permissions
         TOKEN_FILE.write_text(json.dumps({
             "hps_url": hps_url,
             "access_token": tokens["access_token"],
@@ -548,6 +433,7 @@ def save_tokens(tokens: dict, hps_url: str, storage: str = "memory") -> Path | N
         }, indent=2), encoding="utf-8")
         TOKEN_FILE.chmod(0o600)
 
+    _token_storage.TOKEN_FILE = TOKEN_FILE
     return TOKEN_FILE
 
 
@@ -587,7 +473,7 @@ def main():
         "--use-keyring",
         action="store_true",
         help="Save tokens to system keyring (Credential Manager/Keychain/Secret Service). "
-        "Falls back to disk if keyring unavailable. Requires 'keyring' package.",
+        "Requires 'keyring' package.",
     )
     parser.add_argument(
         "--print-token",
