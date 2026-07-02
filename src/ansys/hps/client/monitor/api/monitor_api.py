@@ -88,6 +88,8 @@ class MonitorClient:
             snapshots for a specific task as they are pushed by the server.
         stream_task_host_resources: Subscribe to and stream CPU and memory metric
             updates for the host running a specific task.
+        stream_scheduler_job_status: Subscribe to and stream scheduler job status
+            metrics (e.g. Slurm or LSF instance counts) for a task definition.
         send_ws_command: Low-level helper — send any command payload to the
             WebSocket topics endpoint and collect responses.
 
@@ -469,6 +471,49 @@ class MonitorClient:
                 "client_type": ClientType.EVALUATOR,
                 "type": "metric",
                 "statistic": "host_resources",
+            }],
+            backlog=backlog,
+        )
+        yield from self._stream_ws(url, command, max_messages)
+
+    def stream_scheduler_job_status(
+        self,
+        task_definition_id: str,
+        *,
+        ws_url: str | None = None,
+        backlog: int = 100,
+        max_messages: int | None = None,
+    ) -> Generator[dict[str, Any], None, None]:
+        """Stream scheduler job status metrics for a task definition.
+
+        Subscribes to ``scaler_instances`` metric messages emitted by the HPS
+        autoscaling service (``ansys.rep.scaling``) for a specific task definition.
+        Each message represents a status update from the underlying job scheduler
+        (e.g. Slurm or LSF) and contains instance-count information for the
+        registered scaler::
+
+            for status in client.stream_scheduler_job_status("taskdef-abc"):
+                print(status)
+
+        Args:
+            task_definition_id: The task definition identifier to monitor.
+            ws_url: WebSocket URL override.  Defaults to the URL derived from
+                ``base_url``.
+            backlog: Number of historical metric messages to request on connect.
+            max_messages: Maximum total messages to yield before closing the
+                connection. Defaults to ``None`` — stream indefinitely until
+                interrupted or the server closes the connection.
+
+        Yields:
+            Parsed JSON scheduler job status metric dicts from the server.
+        """
+        url = ws_url or self._ws_url()
+        command = self._subscribe_command(
+            topics=[{
+                "client_type": ClientType.SCALING,
+                "type": "metric",
+                "task_definition_id": task_definition_id,
+                "metric_type": "scaler_instances",
             }],
             backlog=backlog,
         )

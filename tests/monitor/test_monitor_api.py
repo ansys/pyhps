@@ -585,3 +585,135 @@ def test_stream_task_logs_unlimited_when_max_messages_none(monkeypatch):
     results = list(client.stream_task_logs("task-abc", max_messages=None))
 
     assert results == updates
+
+
+# ---------------------------------------------------------------------------
+# stream_scheduler_job_status tests
+# ---------------------------------------------------------------------------
+
+
+def test_stream_scheduler_job_status_sends_correct_topic(monkeypatch):
+    """stream_scheduler_job_status subscribes with the correct topic tags."""
+    ws = _make_multi_ws_mock(monkeypatch, [{"message": '{"running": 2, "pending": 1}'}])
+
+    client = MonitorClient("http://localhost:1089", token="jwt")
+    list(client.stream_scheduler_job_status("taskdef-abc"))
+
+    sent = ws.sent[0]
+    assert sent["type"] == "command"
+    assert sent["action"] == "subscribe"
+    assert sent["token"] == "jwt"
+    topic = sent["topics"][0]
+    assert topic["client_type"] == "ansys.rep.scaling"
+    assert topic["type"] == "metric"
+    assert topic["task_definition_id"] == "taskdef-abc"
+    assert topic["metric_type"] == "scaler_instances"
+
+
+def test_stream_scheduler_job_status_yields_messages(monkeypatch):
+    """stream_scheduler_job_status yields each status update as it arrives."""
+    updates = [
+        {"message": '{"running": 2, "pending": 1, "total": 3}'},
+        {"message": '{"running": 3, "pending": 0, "total": 3}'},
+        {"message": '{"running": 1, "pending": 2, "total": 3}'},
+    ]
+    _make_multi_ws_mock(monkeypatch, updates)
+
+    client = MonitorClient("http://localhost:1089", token="t")
+    results = list(client.stream_scheduler_job_status("taskdef-abc", max_messages=10))
+
+    assert results == updates
+
+
+def test_stream_scheduler_job_status_unwraps_messages_envelope(monkeypatch):
+    """Messages nested in an envelope dict are unwrapped correctly."""
+    envelopes = [{"messages": [
+        {"message": '{"running": 2}'},
+        {"message": '{"running": 3}'},
+    ]}]
+    _make_multi_ws_mock(monkeypatch, envelopes)
+
+    client = MonitorClient("http://localhost:1089", token="t")
+    results = list(client.stream_scheduler_job_status("taskdef-abc", max_messages=10))
+
+    assert results == [{"message": '{"running": 2}'}, {"message": '{"running": 3}'}]
+
+
+def test_stream_scheduler_job_status_stops_cleanly_on_websocket_timeout(monkeypatch):
+    """A WebSocketTimeoutException stops iteration cleanly with no messages."""
+    class WebSocketTimeoutException(Exception):
+        pass
+
+    class _TimeoutWsMock:
+        def __init__(self):
+            self.sent = []
+
+        def send(self, payload):
+            self.sent.append(json.loads(payload))
+
+        def recv(self):
+            raise WebSocketTimeoutException("Connection timed out")
+
+        def close(self):
+            return None
+
+    monkeypatch.setitem(
+        sys.modules,
+        "websocket",
+        SimpleNamespace(create_connection=lambda url, **kwargs: _TimeoutWsMock()),
+    )
+
+    client = MonitorClient("http://localhost:1089", token="t")
+    results = list(client.stream_scheduler_job_status("taskdef-abc", max_messages=10))
+
+    assert results == []
+
+
+def test_stream_scheduler_job_status_respects_backlog(monkeypatch):
+    """backlog parameter is forwarded in the subscribe command."""
+    ws = _make_multi_ws_mock(monkeypatch, [])
+
+    client = MonitorClient("http://localhost:1089", token="t")
+    list(client.stream_scheduler_job_status("taskdef-abc", backlog=50))
+
+    assert ws.sent[0]["backlog"] == {"limit": 50}
+
+
+def test_stream_scheduler_job_status_respects_max_messages(monkeypatch):
+    """max_messages caps the number of yielded updates."""
+    updates = [{"message": f'{{"running": {i}}}'} for i in range(10)]
+    _make_multi_ws_mock(monkeypatch, updates)
+
+    client = MonitorClient("http://localhost:1089", token="t")
+    results = list(client.stream_scheduler_job_status("taskdef-abc", max_messages=4))
+
+    assert len(results) == 4
+
+
+def test_stream_scheduler_job_status_uses_derived_ws_url(monkeypatch):
+    """ws_url is derived from base_url when not explicitly provided."""
+    captured = {}
+
+    class _WsMock:
+        def __init__(self, url):
+            captured["url"] = url
+
+        def send(self, payload):
+            pass
+
+        def recv(self):
+            return ""
+
+        def close(self):
+            pass
+
+    monkeypatch.setitem(
+        sys.modules,
+        "websocket",
+        SimpleNamespace(create_connection=lambda url, **kwargs: _WsMock(url)),
+    )
+
+    client = MonitorClient("https://localhost:8443/hps", token="t")
+    list(client.stream_scheduler_job_status("taskdef-abc"))
+
+    assert captured["url"] == "wss://localhost:8443/hps/monitor/ws/topics"
