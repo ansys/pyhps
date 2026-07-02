@@ -14,6 +14,24 @@ consumed by any script that reads them.
 Token Storage Security:
   - Windows: Tokens are encrypted with DPAPI (user-scoped encryption)
   - Unix/Linux: Tokens file has restricted permissions (0o600)
+
+Public Functions
+----------------
+browser_login(hps_url, open_browser=True, issuer=None)
+    Run OIDC Authorization Code + PKCE flow and return token dict.
+    Opens browser for login unless open_browser=False.
+
+load_tokens()
+    Load saved tokens from keyring (preferred) or disk storage.
+    Returns None if no tokens found.
+
+save_tokens(tokens, hps_url, storage="disk")
+    Persist tokens to specified location (memory, disk, or keyring).
+    Returns path if saved to disk, otherwise None.
+
+refresh_tokens(hps_url=None, issuer=None)
+    Refresh saved tokens using refresh_token grant.
+    Returns updated token dict or None if refresh fails.
 """
 
 import argparse
