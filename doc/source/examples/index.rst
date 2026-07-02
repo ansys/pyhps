@@ -26,6 +26,11 @@ one :download:`ZIP file <../../../build/pyhps_examples.zip>`.
   :hidden:
   :maxdepth: 3
 
+  ex_oidc_basic_login
+  ex_oidc_login_with_keyring
+  ex_oidc_login_with_disk_storage
+  ex_oidc_load_saved_tokens
+  ex_oidc_refresh_tokens
   ex_motorbike_frame
   ex_motorbike_frame_query
   ex_mapdl_tire_performance
@@ -43,16 +48,26 @@ one :download:`ZIP file <../../../build/pyhps_examples.zip>`.
 
    * - Name
      - Description
+   * - :ref:`example_oidc_basic_login`
+     - Perform OIDC login with Authorization Code + PKCE flow. Tokens are kept in memory only.
+   * - :ref:`example_oidc_login_with_keyring`
+     - Save OIDC tokens to system credential manager (Credential Manager, Keychain, or Secret Service).
+   * - :ref:`example_oidc_login_with_disk_storage`
+     - Save OIDC tokens to disk with platform-specific security (DPAPI on Windows, 0o600 on Unix/Linux).
+   * - :ref:`example_oidc_load_saved_tokens`
+     - Load previously saved tokens from keyring or disk storage and use them in API calls.
+   * - :ref:`example_oidc_refresh_tokens`
+     - Refresh saved tokens using the refresh_token grant without requiring re-authentication.
    * - :ref:`example_mapdl_motorbike_frame`
      - Create from scratch an HPS project consisting of an Ansys APDL beam model of a tubular steel trellis motorbike frame. This example shows how to create a parameter study and submit design points.
    * - :ref:`example_mapdl_motorbike_frame_query`
      - Query an existing project and download output files.
    * - :ref:`example_mapdl_tire_performance`
-     - Submit an MAPDL analysis as a single job. Solution convergence and contact tracking files are periodically collected. 
+     - Submit an MAPDL analysis as a single job. Solution convergence and contact tracking files are periodically collected.
    * - :ref:`example_mapdl_linked_analyses`
      - Submit an MAPDL linked analysis workflow as a multi-task job to the HPS server.
    * - :ref:`example_lsdyna_job`
-     - Submit, monitor, and download results of an LS-DYNA job. 
+     - Submit, monitor, and download results of an LS-DYNA job.
    * - :ref:`example_fluent_2d_heat_exchanger`
      - Submit a Fluent solve job to the HPS server.
    * - :ref:`example_fluent_nozzle`
