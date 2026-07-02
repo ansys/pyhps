@@ -13,10 +13,10 @@ Token Storage Security:
     - Windows: Credential Manager
     - macOS: Keychain
     - Linux: Secret Service (via python-keyring)
-  - disk (default):
-    - Windows: ``%USERPROFILE%\.ansys\hps_tokens.json`` (encrypted with DPAPI)
+  - disk:
+    - Windows: ``%USERPROFILE%\\.ansys\\hps_tokens.json`` (encrypted with DPAPI)
     - Unix/Linux: ``~/.ansys/hps_tokens.json`` (file permissions 0o600)
-  - memory: Tokens kept in memory only, not persisted
+  - memory (default): Tokens kept in memory only, not persisted
 
 Tokens can be consumed by any script that reads them.
 
@@ -30,7 +30,7 @@ load_tokens()
     Load saved tokens from keyring (preferred) or disk storage.
     Returns None if no tokens found.
 
-save_tokens(tokens, hps_url, storage="disk")
+save_tokens(tokens, hps_url, storage="memory")
     Persist tokens to specified location (memory, disk, or keyring).
     Returns path if saved to disk, otherwise None.
 
@@ -482,7 +482,7 @@ def browser_login(hps_url: str, open_browser: bool = True, issuer: str | None = 
     return token_resp.json()
 
 
-def save_tokens(tokens: dict, hps_url: str, storage: str = "disk") -> Path | None:
+def save_tokens(tokens: dict, hps_url: str, storage: str = "memory") -> Path | None:
     """Persist tokens to specified storage location.
 
     Parameters
@@ -492,7 +492,7 @@ def save_tokens(tokens: dict, hps_url: str, storage: str = "disk") -> Path | Non
     hps_url:
         HPS server URL to record alongside the tokens.
     storage:
-        Where to save tokens (default: "disk"):
+        Where to save tokens (default: "memory"):
         - "memory": Keep in memory only, do not persist (returns None)
         - "disk": Save to disk with platform-specific security
           (DPAPI on Windows, 0o600 permissions on Unix/Linux)
