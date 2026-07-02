@@ -9,7 +9,7 @@ Usage
     uv run python oidc_login.py --url https://cdc04hps02:8443/hps
 
 The resulting tokens are saved to ``~/.ansys/hps_tokens.json`` and can be
-consumed by the ``reconnect`` MCP tool or any script that reads them.
+consumed by any script that reads them.
 
 Token Storage Security:
   - Windows: Tokens are encrypted with DPAPI (user-scoped encryption)
