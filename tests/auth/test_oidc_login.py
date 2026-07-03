@@ -3,8 +3,10 @@
 
 import os
 import platform
+import sys
 import time
-from unittest.mock import patch
+import types
+from unittest.mock import MagicMock, patch
 
 import pytest
 
@@ -125,19 +127,60 @@ def test_save_tokens_keyring_raises_if_keyring_fails(
     sample_tokens, sample_hps_url, tmp_path, monkeypatch
 ):
     """save_tokens in keyring mode raises if keyring save fails."""
-    if platform.system() == "Windows":
-        pytest.skip("Test requires mocking platform.system() on non-Windows")
-
     token_file = tmp_path / ".ansys" / "hps_tokens.json"
     monkeypatch.setattr("ansys.hps.client.auth.api.oidc_login.TOKEN_FILE", token_file)
 
-    def mock_save_to_keyring(tokens, hps_url, service_name=None):
+    def mock_save_to_keyring(tokens, hps_url, service_name=None, error_on_failure=False):
         return False
 
     with patch("ansys.hps.client.auth.api.oidc_login._token_storage._save_to_keyring", mock_save_to_keyring):
-        with patch("ansys.hps.client.auth.api.oidc_login.platform.system", return_value="Linux"):
-            with pytest.raises(RuntimeError, match="Keyring storage requested"):
+        with pytest.raises(RuntimeError, match="Failed to save tokens to keyring"):
+            _ = save_tokens(sample_tokens, sample_hps_url, storage="keyring")
+
+
+def test_save_tokens_keyring_surfaces_credwrite_details(sample_tokens, sample_hps_url, tmp_path, monkeypatch):
+    """save_tokens surfaces actionable Windows CredWrite diagnostics when keyring write fails."""
+    token_file = tmp_path / ".ansys" / "hps_tokens.json"
+    monkeypatch.setattr("ansys.hps.client.auth.api.oidc_login.TOKEN_FILE", token_file)
+
+    with patch(
+        "ansys.hps.client.auth.api.oidc_login._token_storage.platform.system",
+        return_value="Windows",
+    ):
+        with patch(
+            "ansys.hps.client.auth.api.oidc_login._token_storage._save_to_keyring",
+            side_effect=RuntimeError(
+                "Windows Credential Manager rejected the token payload "
+                "(CredWrite error 1783: The stub received bad data). Login succeeded "
+                "but keyring persistence failed. This often indicates backend size/format "
+                "limits. Use storage='disk' on Windows for DPAPI-protected persistence."
+            ),
+        ):
+            with pytest.raises(RuntimeError, match="CredWrite error 1783"):
                 _ = save_tokens(sample_tokens, sample_hps_url, storage="keyring")
+
+
+def test_save_tokens_keyring_windows_preflight_rejects_oversized_token(
+    sample_tokens, sample_hps_url, tmp_path, monkeypatch
+):
+    """save_tokens rejects oversized Windows keyring payloads before keyring write calls."""
+    token_file = tmp_path / ".ansys" / "hps_tokens.json"
+    monkeypatch.setattr("ansys.hps.client.auth.api.oidc_login.TOKEN_FILE", token_file)
+
+    oversized_tokens = sample_tokens.copy()
+    oversized_tokens["access_token"] = "a" * 600
+
+    fake_keyring = types.SimpleNamespace(set_password=MagicMock())
+
+    with patch(
+        "ansys.hps.client.auth.api.oidc_login._token_storage.platform.system",
+        return_value="Windows",
+    ):
+        with patch.dict(sys.modules, {"keyring": fake_keyring}):
+            with pytest.raises(RuntimeError, match="preflight: access_token is 600 bytes"):
+                _ = save_tokens(oversized_tokens, sample_hps_url, storage="keyring")
+
+    fake_keyring.set_password.assert_not_called()
 
 
 @pytest.mark.skipif(

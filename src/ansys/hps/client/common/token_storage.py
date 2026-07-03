@@ -28,6 +28,7 @@ from .redaction import redact_sensitive_values
 TOKEN_FILE = Path.home() / ".ansys" / "hps_tokens.json"
 DEFAULT_KEYRING_SERVICE_NAME = "ansys-hps"
 KEYRING_SERVICE_ENV_VAR = "HPS_OIDC_KEYRING_SERVICE_NAME"
+WINDOWS_KEYRING_MAX_SECRET_BYTES = 512
 
 log = logging.getLogger(__name__)
 
@@ -171,20 +172,77 @@ def _decrypt_with_dpapi(ciphertext: bytes) -> bytes:
     return dpapi_decrypt(ciphertext)
 
 
-def _save_to_keyring(tokens: dict, hps_url: str, service_name: str | None = None) -> bool:
+
+def _format_keyring_save_error(ex: Exception, tokens: dict | None = None) -> str:
+    """Build a user-actionable keyring persistence error message."""
+    safe_error = redact_sensitive_values(str(ex), tokens or {})
+
+    if platform.system() == "Windows":
+        code = ex.args[0] if ex.args and isinstance(ex.args[0], int) else None
+        api = ex.args[1] if len(ex.args) > 1 else "CredWrite"
+        detail = ex.args[2] if len(ex.args) > 2 else safe_error
+
+        if code == 1783 or ("CredWrite" in safe_error and "1783" in safe_error):
+            return (
+                "Windows Credential Manager rejected the token payload "
+                f"({api} error {code}: {detail}). Login succeeded but keyring persistence failed. "
+                "This often indicates backend size/format limits. "
+                "Use storage='disk' on Windows for DPAPI-protected persistence."
+            )
+
+    return f"Failed to save tokens to keyring: {safe_error}"
+
+def _get_windows_keyring_preflight_error(tokens: dict) -> str | None:
+    """Return actionable preflight error when Windows keyring payload is too large."""
+    if platform.system() != "Windows":
+        return None
+
+    for field_name in ("access_token", "refresh_token"):
+        token_value = tokens.get(field_name)
+        if not token_value:
+            continue
+
+        token_size_bytes = len(str(token_value).encode("utf-8"))
+        if token_size_bytes > WINDOWS_KEYRING_MAX_SECRET_BYTES:
+            return (
+                "Windows Credential Manager rejected the token payload "
+                f"(preflight: {field_name} is {token_size_bytes} bytes; "
+                f"practical CredWrite secret limit is about {WINDOWS_KEYRING_MAX_SECRET_BYTES} bytes). "
+                "Login succeeded but keyring persistence failed. "
+                "Use storage='disk' on Windows for DPAPI-protected persistence."
+            )
+
+    return None
+def _save_to_keyring(
+    tokens: dict,
+    hps_url: str,
+    service_name: str | None = None,
+    error_on_failure: bool = False,
+) -> bool:
     """Save tokens to system keyring using keyring library.
 
     The keyring namespace is selected by service_name or
     HPS_OIDC_KEYRING_SERVICE_NAME (falling back to ansys-hps).
 
-    Returns True if successful, False if keyring is not available.
+    Returns True if successful, False if keyring is not available unless
+    ``error_on_failure`` is True.
     """
     try:
         import keyring
     except ImportError:
+        if error_on_failure:
+            raise RuntimeError("Keyring storage requested but python package 'keyring' is not installed.")
         return False
 
     service_name = _resolve_keyring_service_name(service_name)
+
+    preflight_error = _get_windows_keyring_preflight_error(tokens)
+    if preflight_error:
+        if error_on_failure:
+            raise RuntimeError(preflight_error)
+        log.warning(preflight_error)
+        return False
+
     try:
         keyring.set_password(service_name, "hps_url", hps_url)
         keyring.set_password(service_name, "access_token", tokens["access_token"])
@@ -197,8 +255,10 @@ def _save_to_keyring(tokens: dict, hps_url: str, service_name: str | None = None
         keyring.set_password(service_name, "saved_at", str(time.time()))
         return True
     except Exception as ex:
-        safe_error = redact_sensitive_values(str(ex), tokens)
-        log.warning("Failed to save tokens to keyring: %s", safe_error)
+        message = _format_keyring_save_error(ex, tokens)
+        if error_on_failure:
+            raise RuntimeError(message) from ex
+        log.warning(message)
         return False
 
 
@@ -408,9 +468,15 @@ def save_tokens(
         return None
     elif storage == "keyring":
         resolved_service_name = _resolve_keyring_service_name(service_name)
-        if _save_to_keyring(tokens, hps_url, service_name=resolved_service_name):
-            return None
-        raise RuntimeError("Keyring storage requested but unavailable or failed to save.")
+        saved = _save_to_keyring(
+            tokens,
+            hps_url,
+            service_name=resolved_service_name,
+            error_on_failure=True,
+        )
+        if not saved:
+            raise RuntimeError("Failed to save tokens to keyring.")
+        return None
 
     # storage == "disk"
     # Persist tokens to disk only when explicit disk mode is requested.
@@ -433,6 +499,11 @@ def save_tokens(
         _atomic_write_bytes(TOKEN_FILE, json_bytes, mode=0o600)
 
     return TOKEN_FILE
+
+
+
+
+
 
 
 

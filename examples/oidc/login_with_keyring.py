@@ -25,7 +25,11 @@ def main():
     tokens = browser_login(hps_url=hps_url)
 
     # Save tokens to system keyring (preferred storage method)
-    result = save_tokens(tokens, hps_url=hps_url, storage=storage_mode)
+    try:
+        result = save_tokens(tokens, hps_url=hps_url, storage=storage_mode)
+    except RuntimeError as ex:
+        print(str(ex))
+        return None
 
     # Configure Client to persist automatic token refresh updates to keyring.
     _ = Client(

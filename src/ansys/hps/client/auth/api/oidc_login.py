@@ -380,11 +380,11 @@ def save_tokens(
         - "memory": Keep in memory only, do not persist (returns None)
         - "disk": Save to disk with platform-specific security
           (DPAPI on Windows, 0o600 permissions on Unix/Linux)
-                - "keyring": Save to system keyring only
-        service_name:
-                Optional keyring service name used when ``storage="keyring"``.
-                If omitted, the value of ``HPS_OIDC_KEYRING_SERVICE_NAME`` is used.
-                If the env var is not set, defaults to ``"ansys-hps"``.
+        - "keyring": Save to system keyring only
+    service_name:
+        Optional keyring service name used when ``storage="keyring"``.
+        If omitted, the value of ``HPS_OIDC_KEYRING_SERVICE_NAME`` is used.
+        If the env var is not set, defaults to ``"ansys-hps"``.
 
     Returns
     -------
@@ -395,53 +395,16 @@ def save_tokens(
     ------
     ValueError
         If storage method, hps_url, or token payload schema is invalid.
+    RuntimeError
+        If ``storage="keyring"`` is requested and keyring persistence fails.
     """
-    if storage not in ("memory", "disk", "keyring"):
-        raise ValueError(f"Invalid storage method: {storage}. Must be 'memory', 'disk', or 'keyring'")
-
-    if not isinstance(hps_url, str) or not hps_url.strip():
-        raise ValueError("'hps_url' must be a non-empty string.")
-
-    tokens = _token_storage._normalize_tokens_for_save(tokens)
-
-    resolved_service_name = _token_storage._resolve_keyring_service_name(service_name)
-
-    if storage == "memory":
-        return None
-
-    # Try keyring if requested
-    if storage == "keyring":
-        if _token_storage._save_to_keyring(tokens, hps_url, service_name=resolved_service_name):
-            return None  # Saved to keyring, no file path
-
-    # Fall back to disk storage
-    TOKEN_FILE.parent.mkdir(parents=True, exist_ok=True)
-    json_data = json.dumps({
-        "hps_url": hps_url,
-        "access_token": tokens["access_token"],
-        "refresh_token": tokens.get("refresh_token"),
-        "expires_in": tokens.get("expires_in"),
-        "refresh_expires_in": tokens.get("refresh_expires_in"),
-        "saved_at": time.time(),
-    }, indent=2).encode("utf-8")
-
-    # Platform-specific security
-    if platform.system() == "Windows":
-        encrypted = _token_storage._encrypt_with_dpapi(json_data)
-        TOKEN_FILE.write_bytes(b"DPAPI:" + base64.b64encode(encrypted))
-    else:
-        TOKEN_FILE.write_text(json.dumps({
-            "hps_url": hps_url,
-            "access_token": tokens["access_token"],
-            "refresh_token": tokens.get("refresh_token"),
-            "expires_in": tokens.get("expires_in"),
-            "refresh_expires_in": tokens.get("refresh_expires_in"),
-            "saved_at": time.time(),
-        }, indent=2), encoding="utf-8")
-        TOKEN_FILE.chmod(0o600)
-
     _token_storage.TOKEN_FILE = TOKEN_FILE
-    return TOKEN_FILE
+    return _token_storage.save_tokens(
+        tokens=tokens,
+        hps_url=hps_url,
+        storage=storage,
+        service_name=service_name,
+    )
 
 
 def main():
