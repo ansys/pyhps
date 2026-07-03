@@ -37,12 +37,7 @@ one :download:`ZIP file <../../../build/pyhps_examples.zip>`.
   ex_python_two_bar
   ex_python_uv
   ex_python_pyansys_cantilever
-  ex_monitor_list_topics
-  ex_monitor_stream_task_logs
-  ex_monitor_stream_task_host_resources
-  ex_monitor_stream_task_process_tree
-  ex_monitor_stream_scheduler_job_status
-  ex_monitor_stream_service_logs
+  ex_monitor_topics
   ex_rcs_route_creation
 
 .. list-table::
@@ -72,18 +67,8 @@ one :download:`ZIP file <../../../build/pyhps_examples.zip>`.
      - Run arbitrary Python scripts on HPS using uv.
    * - :ref:`example_python_pyansys_cantilever`
      - Run PyAnsys scripts on HPS. This example parametrizes a cantilever and submits a number of design points.
-   * - :ref:`example_monitor_list_topics`
-     - Discover available monitor topic tags and their active values using ``MonitorClient.list_topics``.
-   * - :ref:`example_monitor_stream_task_logs`
-     - Stream evaluator file-tail log output for a running task using ``MonitorClient.stream_task_logs``.
-   * - :ref:`example_monitor_stream_task_host_resources`
-     - Stream host CPU and memory utilisation metrics for a running task using ``MonitorClient.stream_task_host_resources``.
-   * - :ref:`example_monitor_stream_task_process_tree`
-     - Stream process-tree snapshots for a running task using ``MonitorClient.stream_task_process_tree``.
-   * - :ref:`example_monitor_stream_scheduler_job_status`
-     - Stream scheduler job status metrics (Slurm/LSF instance counts) for a task definition using ``MonitorClient.stream_scheduler_job_status``.
-   * - :ref:`example_monitor_stream_service_logs`
-     - Stream log messages from HPS backend services (JMS, scaling, housekeeper) using ``MonitorClient.stream_service_logs``.
+   * - :ref:`example_monitor_topics`
+     - Discover monitor topics and stream task logs, host resources, process trees, scheduler job status, and service logs from one consolidated example page.
    * - :ref:`example_rcs_route_creation`
      - Register and unregister an external service instance with the HPS reverse proxy using the Route Creation Service API.
 
