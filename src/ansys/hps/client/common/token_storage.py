@@ -1,5 +1,6 @@
-# Copyright (C) 2026 ANSYS, Inc. and/or its affiliates.
+# Copyright (C) 2022 - 2026 ANSYS, Inc. and/or its affiliates.
 # SPDX-License-Identifier: MIT
+#
 
 """Shared token persistence helpers for auth workflows.
 
@@ -78,7 +79,9 @@ def _normalize_loaded_tokens(tokens: dict) -> dict:
 
 def _resolve_keyring_service_name(service_name: str | None = None) -> str:
     """Resolve keyring service name from argument, env var, or default."""
-    resolved = service_name or os.environ.get(KEYRING_SERVICE_ENV_VAR) or DEFAULT_KEYRING_SERVICE_NAME
+    resolved = (
+        service_name or os.environ.get(KEYRING_SERVICE_ENV_VAR) or DEFAULT_KEYRING_SERVICE_NAME
+    )
     resolved = str(resolved).strip()
     if not resolved:
         raise ValueError("Keyring service name cannot be empty.")
@@ -172,7 +175,6 @@ def _decrypt_with_dpapi(ciphertext: bytes) -> bytes:
     return dpapi_decrypt(ciphertext)
 
 
-
 def _format_keyring_save_error(ex: Exception, tokens: dict | None = None) -> str:
     """Build a user-actionable keyring persistence error message."""
     safe_error = redact_sensitive_values(str(ex), tokens or {})
@@ -191,6 +193,7 @@ def _format_keyring_save_error(ex: Exception, tokens: dict | None = None) -> str
             )
 
     return f"Failed to save tokens to keyring: {safe_error}"
+
 
 def _get_windows_keyring_preflight_error(tokens: dict) -> str | None:
     """Return actionable preflight error when Windows keyring payload is too large."""
@@ -213,6 +216,8 @@ def _get_windows_keyring_preflight_error(tokens: dict) -> str | None:
             )
 
     return None
+
+
 def _save_to_keyring(
     tokens: dict,
     hps_url: str,
@@ -231,7 +236,9 @@ def _save_to_keyring(
         import keyring
     except ImportError:
         if error_on_failure:
-            raise RuntimeError("Keyring storage requested but python package 'keyring' is not installed.")
+            raise RuntimeError(
+                "Keyring storage requested but python package 'keyring' is not installed."
+            )
         return False
 
     service_name = _resolve_keyring_service_name(service_name)
@@ -251,7 +258,9 @@ def _save_to_keyring(
         if tokens.get("expires_in") is not None:
             keyring.set_password(service_name, "expires_in", str(tokens["expires_in"]))
         if tokens.get("refresh_expires_in") is not None:
-            keyring.set_password(service_name, "refresh_expires_in", str(tokens["refresh_expires_in"]))
+            keyring.set_password(
+                service_name, "refresh_expires_in", str(tokens["refresh_expires_in"])
+            )
         keyring.set_password(service_name, "saved_at", str(time.time()))
         return True
     except Exception as ex:
@@ -334,6 +343,7 @@ def load_tokens(storage: str = "keyring", service_name: str | None = None) -> di
     -------
     dict | None
         Loaded token payload when present, otherwise ``None``.
+
     """
     if storage not in ("memory", "disk", "keyring"):
         raise ValueError(
@@ -401,7 +411,6 @@ def _is_token_expired(tokens: dict, buffer_seconds: int = 60) -> bool:
     return elapsed > (expires_in - buffer_seconds)
 
 
-
 def _atomic_write_bytes(path: Path, data: bytes, mode: int | None = None) -> None:
     """Write bytes to disk atomically using a same-directory temporary file."""
     temp_path = path.with_name(f".{path.name}.{uuid.uuid4().hex}.tmp")
@@ -444,6 +453,7 @@ def _atomic_write_bytes(path: Path, data: bytes, mode: int | None = None) -> Non
             except OSError:
                 pass
 
+
 def save_tokens(
     tokens: dict,
     hps_url: str,
@@ -457,7 +467,9 @@ def save_tokens(
     - Unix/Linux: `~/.ansys/hps_tokens.json` (permissions set to 0o600)
     """
     if storage not in ("memory", "disk", "keyring"):
-        raise ValueError(f"Invalid storage method: {storage}. Must be 'memory', 'disk', or 'keyring'")
+        raise ValueError(
+            f"Invalid storage method: {storage}. Must be 'memory', 'disk', or 'keyring'"
+        )
 
     if not isinstance(hps_url, str) or not hps_url.strip():
         raise ValueError("'hps_url' must be a non-empty string.")
@@ -499,20 +511,3 @@ def save_tokens(
         _atomic_write_bytes(TOKEN_FILE, json_bytes, mode=0o600)
 
     return TOKEN_FILE
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

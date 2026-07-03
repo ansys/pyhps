@@ -1,3 +1,25 @@
+# Copyright (C) 2022 - 2026 ANSYS, Inc. and/or its affiliates.
+# SPDX-License-Identifier: MIT
+#
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
+
 """OIDC Authorization Code + PKCE login and token persistence utilities.
 
 Starts a temporary localhost HTTP server, opens your browser at the
@@ -46,13 +68,11 @@ import argparse
 import base64
 import hashlib
 import http.server
-import json
 import os
 import platform
 import secrets
 import sys
 import threading
-import time
 import urllib.parse
 import webbrowser
 from pathlib import Path
@@ -62,6 +82,7 @@ import urllib3
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 import requests  # noqa: E402
+
 from ...common import token_storage as _token_storage
 
 TOKEN_FILE = _token_storage.TOKEN_FILE
@@ -71,6 +92,7 @@ REDIRECT_PORT = 19876
 REDIRECT_URI = f"http://localhost:{REDIRECT_PORT}/callback"
 DEFAULT_KEYRING_SERVICE_NAME = _token_storage.DEFAULT_KEYRING_SERVICE_NAME
 KEYRING_SERVICE_ENV_VAR = _token_storage.KEYRING_SERVICE_ENV_VAR
+
 
 def _load_from_disk() -> dict | None:
     """Load tokens from disk file.
@@ -95,6 +117,7 @@ def load_tokens(storage: str = "keyring", service_name: str | None = None) -> di
     Loaded payloads are validated and normalized before being returned.
 
     Returns token dict if available, None if no tokens found or errors occur.
+
     """
     _token_storage.TOKEN_FILE = TOKEN_FILE
     return _token_storage.load_tokens(storage=storage, service_name=service_name)
@@ -131,6 +154,7 @@ def _is_token_expired(tokens: dict, buffer_seconds: int = 60) -> bool:
     -------
     bool
         True if token is expired or expiring soon, False if still valid.
+
     """
     return _token_storage._is_token_expired(tokens, buffer_seconds=buffer_seconds)
 
@@ -154,6 +178,7 @@ def refresh_tokens(
     -------
     dict | None
         Refreshed token dict if successful, None if refresh fails or no tokens available.
+
     """
     from ...authenticate import authenticate, determine_auth_url
 
@@ -211,6 +236,7 @@ def _oidc_endpoints(hps_url: str, issuer: str | None = None) -> dict:
     -------
     dict
         Dictionary with 'authorization_endpoint' and 'token_endpoint' keys.
+
     """
     if issuer is None:
         # Default to HPS Keycloak issuer
@@ -397,6 +423,7 @@ def save_tokens(
         If storage method, hps_url, or token payload schema is invalid.
     RuntimeError
         If ``storage="keyring"`` is requested and keyring persistence fails.
+
     """
     _token_storage.TOKEN_FILE = TOKEN_FILE
     return _token_storage.save_tokens(
@@ -465,8 +492,10 @@ def main():
             # Save refreshed tokens back
             save_tokens(new_tokens, new_tokens.get("hps_url", args.url), storage=storage)
             print("Tokens refreshed successfully")
-            print(f"Access token expires in {new_tokens.get('expires_in', '?')}s, "
-                  f"refresh token expires in {new_tokens.get('refresh_expires_in', '?')}s")
+            print(
+                f"Access token expires in {new_tokens.get('expires_in', '?')}s, "
+                f"refresh token expires in {new_tokens.get('refresh_expires_in', '?')}s"
+            )
             if args.print_token:
                 print(new_tokens["access_token"])
         else:
@@ -495,8 +524,10 @@ def main():
         print("Tokens saved to system keyring")
     else:
         print("Tokens kept in memory (not persisted to disk)")
-    print(f"Access token expires in {tokens.get('expires_in', '?')}s, "
-          f"refresh token expires in {tokens.get('refresh_expires_in', '?')}s")
+    print(
+        f"Access token expires in {tokens.get('expires_in', '?')}s, "
+        f"refresh token expires in {tokens.get('refresh_expires_in', '?')}s"
+    )
 
     if args.print_token:
         print(tokens["access_token"])

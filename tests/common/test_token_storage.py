@@ -1,5 +1,6 @@
-# Copyright (C) 2026 ANSYS, Inc. and/or its affiliates.
+# Copyright (C) 2022 - 2026 ANSYS, Inc. and/or its affiliates.
 # SPDX-License-Identifier: MIT
+#
 
 import json
 import logging
@@ -13,11 +14,11 @@ from unittest.mock import MagicMock, patch
 import pytest
 
 from ansys.hps.client.common.token_storage import (
+    _atomic_write_bytes,
     _is_token_expired,
     _load_from_disk,
     _load_from_keyring,
     _save_to_keyring,
-    _atomic_write_bytes,
     load_tokens,
     save_tokens,
 )
@@ -114,6 +115,7 @@ def test_save_to_keyring_handles_errors(sample_tokens, sample_hps_url):
     with patch.dict(sys.modules, {"keyring": mock_keyring}):
         result = _save_to_keyring(sample_tokens, sample_hps_url)
         assert result is False
+
 
 def test_save_to_keyring_logs_redacted_error(sample_tokens, sample_hps_url, caplog):
     """Keyring save errors are logged with redacted sensitive fragments."""
@@ -248,6 +250,8 @@ def test_load_tokens_uses_env_service_name(monkeypatch):
 
             mock_keyring.assert_called_once_with(service_name="ansys-hps-env")
             mock_disk.assert_not_called()
+
+
 def test_load_tokens_invalid_storage_method():
     """token_storage.load_tokens raises ValueError for invalid storage method."""
     with pytest.raises(ValueError, match="Invalid storage method"):
@@ -325,6 +329,7 @@ def test_load_from_disk_invalid_json(tmp_path, monkeypatch):
     result = _load_from_disk()
     assert result is None
 
+
 def test_load_from_disk_logs_redacted_error(tmp_path, monkeypatch, caplog):
     """Disk load errors are logged with redacted sensitive fragments."""
     token_file = tmp_path / ".ansys" / "hps_tokens.json"
@@ -343,6 +348,8 @@ def test_load_from_disk_logs_redacted_error(tmp_path, monkeypatch, caplog):
     assert result is None
     assert "abc.def.ghi" not in caplog.text
     assert "bearer ***REDACTED***" in caplog.text
+
+
 def test_atomic_write_bytes_fsyncs_parent_directory_on_unix(tmp_path):
     """Atomic write fsyncs the parent directory on Unix-like platforms."""
     target = tmp_path / "hps_tokens.json"
@@ -362,7 +369,9 @@ def test_atomic_write_bytes_fsyncs_parent_directory_on_unix(tmp_path):
 
     with patch("ansys.hps.client.common.token_storage.platform.system", return_value="Linux"):
         with patch("ansys.hps.client.common.token_storage.os.open", side_effect=open_side_effect):
-            with patch("ansys.hps.client.common.token_storage.os.close", side_effect=close_side_effect):
+            with patch(
+                "ansys.hps.client.common.token_storage.os.close", side_effect=close_side_effect
+            ):
                 with patch("ansys.hps.client.common.token_storage.os.fsync") as mock_fsync:
                     _atomic_write_bytes(target, b"{}", mode=0o600)
 
@@ -408,8 +417,3 @@ def test_save_tokens_keyring_raises_when_keyring_unavailable(sample_tokens, samp
     with patch("ansys.hps.client.common.token_storage._save_to_keyring", return_value=False):
         with pytest.raises(RuntimeError, match="Keyring storage requested"):
             _ = save_tokens(sample_tokens, sample_hps_url, storage="keyring")
-
-
-
-
-

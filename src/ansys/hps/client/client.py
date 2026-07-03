@@ -683,7 +683,9 @@ class Client:
                 result["path"] = str(path)
         except Exception as ex:
             safe_error = redact_sensitive_values(str(ex), tokens)
-            log.warning("Unable to persist refreshed tokens to %s: %s", self.token_storage, safe_error)
+            log.warning(
+                "Unable to persist refreshed tokens to %s: %s", self.token_storage, safe_error
+            )
             result["persisted"] = False
             result["storage_used"] = "memory"
             result["error"] = safe_error
