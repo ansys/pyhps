@@ -401,7 +401,6 @@ def test_save_tokens_missing_required_access_token(sample_hps_url):
         save_tokens({"refresh_token": "abc"}, sample_hps_url, storage="memory")
 
 
-
 def test_save_tokens_disk_requires_refresh_token(sample_tokens, sample_hps_url):
     """save_tokens with disk storage requires refresh_token for persistence."""
     no_refresh = sample_tokens.copy()
@@ -418,6 +417,8 @@ def test_save_tokens_keyring_requires_refresh_token(sample_tokens, sample_hps_ur
 
     with pytest.raises(ValueError, match="requires a refresh_token"):
         save_tokens(no_refresh, sample_hps_url, storage="keyring")
+
+
 def test_save_tokens_invalid_numeric_field(sample_tokens, sample_hps_url):
     """save_tokens raises ValueError when numeric fields are malformed."""
     bad_tokens = sample_tokens.copy()
