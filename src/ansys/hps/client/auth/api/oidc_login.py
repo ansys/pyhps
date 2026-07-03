@@ -36,8 +36,8 @@ Token Storage Security:
     - macOS: Keychain
     - Linux: Secret Service (via python-keyring)
   - disk:
-    - Windows: ``%USERPROFILE%\\.ansys\\hps_tokens.json`` (encrypted with DPAPI)
-    - Unix/Linux: ``~/.ansys/hps_tokens.json`` (file permissions 0o600)
+    - Windows: ``%USERPROFILE%\\.ansys\\hps\\hps_tokens.json`` (encrypted with DPAPI)
+    - Unix/Linux: ``~/.ansys/hps/hps_tokens.json`` (file permissions 0o600)
   - memory (default): Tokens kept in memory only, not persisted
 
 When ``storage`` is ``"disk"`` or ``"keyring"``, persisted payloads contain

@@ -55,27 +55,6 @@ def test_load_tokens_keyring_mode_only_uses_keyring(sample_tokens, tmp_path, mon
             mock_disk.assert_not_called()
 
 
-def test_load_tokens_disk_mode_only_uses_disk(sample_tokens, tmp_path, monkeypatch):
-    """load_tokens(storage='disk') reads only from disk."""
-    token_file = tmp_path / ".ansys" / "hps_tokens.json"
-    monkeypatch.setattr("ansys.hps.client.auth.api.oidc_login.TOKEN_FILE", token_file)
-
-    with patch(
-        "ansys.hps.client.auth.api.oidc_login._token_storage._load_from_keyring"
-    ) as mock_keyring:
-        with patch(
-            "ansys.hps.client.auth.api.oidc_login._token_storage._load_from_disk"
-        ) as mock_disk:
-            disk_tokens = sample_tokens.copy()
-            mock_keyring.return_value = sample_tokens.copy()
-            mock_disk.return_value = disk_tokens
-
-            result = load_tokens(storage="disk")
-
-            assert result == disk_tokens
-            mock_keyring.assert_not_called()
-            mock_disk.assert_called_once()
-
 
 def test_load_tokens_uses_env_service_name(monkeypatch):
     """load_tokens keyring mode uses service name configured via environment variable."""

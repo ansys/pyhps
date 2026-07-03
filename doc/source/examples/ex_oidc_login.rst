@@ -119,7 +119,7 @@ Demonstrates how to save OIDC tokens to disk with platform-specific security.
 Storage locations:
 
 - **Windows**: ``%USERPROFILE%\.ansys\hps_tokens.json`` (encrypted with DPAPI)
-- **Unix/Linux**: ``~/.ansys/hps_tokens.json`` (file permissions 0o600)
+- **Unix/Linux**: ``~/.ansys/hps/hps_tokens.json`` (file permissions 0o600)
 
 Code
 ~~~~

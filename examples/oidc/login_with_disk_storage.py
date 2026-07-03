@@ -24,7 +24,7 @@
 
 Demonstrates how to save tokens to disk with platform-specific security:
 - Windows: Encrypted with DPAPI (user-scoped) at %USERPROFILE%\\.ansys\\hps_tokens.json
-- Unix/Linux: Plaintext with restrictive permissions (0o600) at ~/.ansys/hps_tokens.json
+- Unix/Linux: Plaintext with restrictive permissions (0o600) at ~/.ansys/hps/hps_tokens.json
 
 This example also demonstrates creating ``Client`` with
 ``token_storage=\"disk\"`` so automatic refresh updates are persisted

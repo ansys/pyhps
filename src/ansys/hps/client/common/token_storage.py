@@ -8,8 +8,8 @@ These utilities are storage-backend oriented and can be used by OIDC or
 other authentication flows that need token load/save behavior.
 
 Disk token path (refresh-token persistence):
-- Windows: `%USERPROFILE%\\.ansys\\hps_tokens.json`
-- Unix/Linux: `~/.ansys/hps_tokens.json`
+- Windows: `%USERPROFILE%\\.ansys\hps\hps_tokens.json`
+- Unix/Linux: `~/.ansys/hps/hps_tokens.json`
 """
 
 import base64
@@ -28,7 +28,7 @@ from pydantic import BaseModel, ConfigDict, Field, ValidationError
 
 from .redaction import redact_sensitive_values
 
-TOKEN_FILE = Path.home() / ".ansys" / "hps_tokens.json"
+TOKEN_FILE = Path.home() / ".ansys" / "hps" / "hps_tokens.json"
 DEFAULT_KEYRING_SERVICE_NAME = "ansys-hps"
 KEYRING_SERVICE_ENV_VAR = "HPS_OIDC_KEYRING_SERVICE_NAME"
 WINDOWS_KEYRING_MAX_SECRET_BYTES = 2560
@@ -465,8 +465,8 @@ def save_tokens(
     r"""Persist tokens to specified storage location.
 
     For `storage="disk"`, refresh-token payloads are written to:
-    - Windows: `%USERPROFILE%\\.ansys\\hps_tokens.json` (DPAPI encrypted)
-    - Unix/Linux: `~/.ansys/hps_tokens.json` (permissions set to 0o600)
+    - Windows: `%USERPROFILE%\\.ansys\hps\hps_tokens.json` (DPAPI encrypted)
+    - Unix/Linux: `~/.ansys/hps/hps_tokens.json` (permissions set to 0o600)
     """
     if storage not in ("memory", "disk", "keyring"):
         raise ValueError(
