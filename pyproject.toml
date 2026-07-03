@@ -141,3 +141,6 @@ filterwarnings = [
     "ignore::DeprecationWarning:pkg_resources.*",
     "ignore::ansys.hps.client.UnverifiedHTTPSRequestsWarning"
 ]
+
+[tool.bandit]
+targets = ["src"]
