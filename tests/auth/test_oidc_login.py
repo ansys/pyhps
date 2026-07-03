@@ -168,7 +168,7 @@ def test_save_tokens_keyring_windows_preflight_rejects_oversized_token(
     monkeypatch.setattr("ansys.hps.client.auth.api.oidc_login.TOKEN_FILE", token_file)
 
     oversized_tokens = sample_tokens.copy()
-    oversized_tokens["access_token"] = "a" * 600
+    oversized_tokens["access_token"] = "a" * 3000
 
     fake_keyring = types.SimpleNamespace(set_password=MagicMock())
 
@@ -177,7 +177,7 @@ def test_save_tokens_keyring_windows_preflight_rejects_oversized_token(
         return_value="Windows",
     ):
         with patch.dict(sys.modules, {"keyring": fake_keyring}):
-            with pytest.raises(RuntimeError, match="preflight: access_token is 600 bytes"):
+            with pytest.raises(RuntimeError, match="preflight: access_token is 3000 bytes"):
                 _ = save_tokens(oversized_tokens, sample_hps_url, storage="keyring")
 
     fake_keyring.set_password.assert_not_called()

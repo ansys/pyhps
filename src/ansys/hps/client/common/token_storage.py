@@ -28,7 +28,7 @@ from .redaction import redact_sensitive_values
 TOKEN_FILE = Path.home() / ".ansys" / "hps_tokens.json"
 DEFAULT_KEYRING_SERVICE_NAME = "ansys-hps"
 KEYRING_SERVICE_ENV_VAR = "HPS_OIDC_KEYRING_SERVICE_NAME"
-WINDOWS_KEYRING_MAX_SECRET_BYTES = 512
+WINDOWS_KEYRING_MAX_SECRET_BYTES = 2560
 
 log = logging.getLogger(__name__)
 
@@ -499,6 +499,7 @@ def save_tokens(
         _atomic_write_bytes(TOKEN_FILE, json_bytes, mode=0o600)
 
     return TOKEN_FILE
+
 
 
 
