@@ -1,3 +1,25 @@
+# Copyright (C) 2022 - 2026 ANSYS, Inc. and/or its affiliates.
+# SPDX-License-Identifier: MIT
+#
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
+
 """Annotated example: stream host CPU/memory metrics with MonitorClient.stream_task_host_resources.
 
 ``stream_task_host_resources`` resolves the evaluator assigned to a task (via
@@ -46,8 +68,12 @@ def _build_parser() -> argparse.ArgumentParser:
         help="Optional project ID. If omitted, inferred from task logs.",
     )
     parser.add_argument("--task-id", required=True)
-    parser.add_argument("--backlog", type=int, default=20,
-                        help="Historical metric snapshots to request on connect (default: 20).")
+    parser.add_argument(
+        "--backlog",
+        type=int,
+        default=20,
+        help="Historical metric snapshots to request on connect (default: 20).",
+    )
     parser.add_argument(
         "--interval",
         type=int,
@@ -123,15 +149,11 @@ def _print_summary(
     mem_vals: list[float],
 ) -> None:
     """Print a one-line rolling window summary."""
+
     def _fmt(vals: list[float]) -> str:
         if not vals:
             return "  n/a    n/a    n/a    n/a"
-        return (
-            f"{vals[-1]:6.1f}  "
-            f"{min(vals):6.1f}  "
-            f"{max(vals):6.1f}  "
-            f"{statistics.mean(vals):6.1f}"
-        )
+        return f"{vals[-1]:6.1f}  {min(vals):6.1f}  {max(vals):6.1f}  {statistics.mean(vals):6.1f}"
 
     n = max(len(cpu_vals), len(mem_vals))
     print(f"{window_end}   {n:>5}   cpu {_fmt(cpu_vals)}   mem {_fmt(mem_vals)}")
