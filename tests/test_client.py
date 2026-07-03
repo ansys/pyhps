@@ -24,9 +24,7 @@ import logging
 import threading
 import time
 from datetime import datetime, timedelta, timezone
-from pathlib import Path
-from unittest.mock import Mock
-from unittest.mock import patch
+from unittest.mock import Mock, patch
 
 import pytest
 import requests
@@ -52,7 +50,9 @@ def _build_client_with_mocked_auth(**kwargs):
     mock_session.hooks = {}
     mock_session.params = {}
 
-    with patch("ansys.hps.client.client.determine_auth_url", return_value="https://auth.test/realm"):
+    with patch(
+        "ansys.hps.client.client.determine_auth_url", return_value="https://auth.test/realm"
+    ):
         with patch("ansys.hps.client.client.authenticate", return_value=token_response):
             with patch(
                 "ansys.hps.client.client.jwt.decode",

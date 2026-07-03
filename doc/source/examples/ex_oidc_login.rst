@@ -97,7 +97,7 @@ Security Benefits
 
 - Tokens are encrypted at rest in the system credential manager
 - Credentials are managed by the operating system
-- No plaintext files on disk
+- No plain-text files on disk
 - Automatic cleanup when user logs out (on some systems)
 
 Notes
@@ -220,7 +220,7 @@ Notes
 ~~~~~
 
 - Choose the backend explicitly via ``load_tokens(storage=...)``
-- The buffer parameter (default 60s) provides a safety margin before expiration
+- The buffer parameter (default 60 seconds) provides a safety margin before expiration
 - Use the ``Authorization`` header with the access token in API requests
 
 
@@ -279,7 +279,7 @@ If no saved tokens are found::
 
     No saved tokens found. Please run login first.
 
-If refresh fails (e.g., refresh token expired)::
+If refresh fails (for example, refresh token expired)::
 
     Token refresh failed. You may need to login again.
 

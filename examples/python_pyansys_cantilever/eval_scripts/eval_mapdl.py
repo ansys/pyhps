@@ -108,7 +108,8 @@ def main(params):
         # Set keyopt properties
         mapdl.allsel()
         mapdl.etlist()
-        element_type_id = int(mapdl.get("ETYPE", "ELEM", "1", "ATTR", "TYPE"))
+        first_elem = int(mapdl.get("ENUM", "ELEM", "0", "NUM", "MIN"))
+        element_type_id = int(mapdl.get("ETYPE", "ELEM", str(first_elem), "ATTR", "TYPE"))
         mapdl.keyopt(f"{element_type_id}", "2", "3", verbose=True)
 
         # Solve modal
@@ -134,7 +135,7 @@ def main(params):
     except Exception as e:
         print(f"Exception in mapdl: {e}")
     finally:
-        mapdl.exit()
+        mapdl.exit(force=True)
 
 
 if __name__ == "__main__":

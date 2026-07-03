@@ -1,4 +1,26 @@
-"""OIDC Authorization Code + PKCE login and token persistence utilities.
+# Copyright (C) 2022 - 2026 ANSYS, Inc. and/or its affiliates.
+# SPDX-License-Identifier: MIT
+#
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
+
+r"""OIDC Authorization Code + PKCE login and token persistence utilities.
 
 Starts a temporary localhost HTTP server, opens your browser at the
 login page, and exchanges the authorization code for tokens.
@@ -50,22 +72,19 @@ import argparse
 import base64
 import hashlib
 import http.server
-import json
 import os
 import platform
 import secrets
 import sys
 import threading
-import time
 import urllib.parse
 import webbrowser
 from pathlib import Path
 
+import requests
 import urllib3
 
-urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
-
-import requests  # noqa: E402
+from ...authenticate import authenticate, determine_auth_url
 from ...common import token_storage as _token_storage
 
 TOKEN_FILE = _token_storage.TOKEN_FILE
@@ -75,6 +94,13 @@ REDIRECT_PORT = 19876
 REDIRECT_URI = f"http://localhost:{REDIRECT_PORT}/callback"
 DEFAULT_KEYRING_SERVICE_NAME = _token_storage.DEFAULT_KEYRING_SERVICE_NAME
 KEYRING_SERVICE_ENV_VAR = _token_storage.KEYRING_SERVICE_ENV_VAR
+
+
+def _maybe_disable_insecure_request_warning(verify_ssl: bool | str) -> None:
+    """Disable insecure request warnings only when TLS verification is disabled."""
+    if verify_ssl is False:
+        urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
+
 
 def _load_from_disk() -> dict | None:
     """Load tokens from disk file.
@@ -99,6 +125,7 @@ def load_tokens(storage: str = "keyring", service_name: str | None = None) -> di
     Loaded payloads are validated and normalized before being returned.
 
     Returns token dict if available, None if no tokens found or errors occur.
+
     """
     _token_storage.TOKEN_FILE = TOKEN_FILE
     return _token_storage.load_tokens(storage=storage, service_name=service_name)
@@ -135,6 +162,7 @@ def _is_token_expired(tokens: dict, buffer_seconds: int = 60) -> bool:
     -------
     bool
         True if token is expired or expiring soon, False if still valid.
+
     """
     return _token_storage._is_token_expired(tokens, buffer_seconds=buffer_seconds)
 
@@ -144,6 +172,7 @@ def refresh_tokens(
     issuer: str | None = None,
     storage: str = "keyring",
     service_name: str | None = None,
+    verify_ssl: bool | str = True,
 ) -> dict | None:
     """Refresh saved tokens using refresh_token.
 
@@ -153,14 +182,22 @@ def refresh_tokens(
         HPS server URL. If not provided, will be loaded from saved tokens.
     issuer:
         OIDC issuer URL. If not provided, defaults to standard OIDC discovery path.
+    storage:
+        Backend to load existing tokens from. Supported values are ``"memory"``,
+        ``"disk"``, and ``"keyring"``.
+    service_name:
+        Keyring service name override. Used only when ``storage="keyring"``.
+    verify_ssl:
+        TLS certificate verification mode. Use ``True`` (default) for normal
+        certificate validation, ``False`` for insecure local development only,
+        or a CA bundle path.
 
     Returns
     -------
     dict | None
         Refreshed token dict if successful, None if refresh fails or no tokens available.
-    """
-    from ...authenticate import authenticate, determine_auth_url
 
+    """
     # Load saved tokens from the selected backend only.
     tokens = load_tokens(storage=storage, service_name=service_name)
     if not tokens:
@@ -179,11 +216,13 @@ def refresh_tokens(
         return None
 
     try:
+        _maybe_disable_insecure_request_warning(verify_ssl)
+
         # Determine auth URL from HPS server or use provided issuer
         if issuer:
             auth_url = f"{issuer.rstrip('/')}/protocol/openid-connect/token"
         else:
-            auth_url = determine_auth_url(hps_url, verify_ssl=False, fallback_realm=REALM)
+            auth_url = determine_auth_url(hps_url, verify_ssl=verify_ssl, fallback_realm=REALM)
             if not auth_url:
                 auth_url = f"{hps_url.rstrip('/')}/auth/realms/{REALM}"
 
@@ -193,7 +232,7 @@ def refresh_tokens(
             grant_type="refresh_token",
             client_id=CLIENT_ID,
             refresh_token=refresh_token,
-            verify=False,
+            verify=verify_ssl,
         )
         return new_tokens
     except Exception as e:
@@ -201,7 +240,9 @@ def refresh_tokens(
         return None
 
 
-def _oidc_endpoints(hps_url: str, issuer: str | None = None) -> dict:
+def _oidc_endpoints(
+    hps_url: str, issuer: str | None = None, verify_ssl: bool | str = True
+) -> dict:
     """Fetch OIDC endpoint URLs from the OIDC discovery endpoint.
 
     Parameters
@@ -210,18 +251,23 @@ def _oidc_endpoints(hps_url: str, issuer: str | None = None) -> dict:
         Base URL of the HPS server. Used to construct default issuer if not provided.
     issuer:
         OIDC issuer URL. If not provided, defaults to HPS Keycloak issuer path.
+    verify_ssl:
+        TLS certificate verification mode. Use ``True`` (default), ``False``,
+        or a CA bundle path.
 
     Returns
     -------
     dict
         Dictionary with 'authorization_endpoint' and 'token_endpoint' keys.
+
     """
     if issuer is None:
         # Default to HPS Keycloak issuer
         issuer = f"{hps_url.rstrip('/')}/auth/realms/{REALM}"
 
     discovery_url = f"{issuer.rstrip('/')}/.well-known/openid-configuration"
-    r = requests.get(discovery_url, verify=False, timeout=10)
+    _maybe_disable_insecure_request_warning(verify_ssl)
+    r = requests.get(discovery_url, verify=verify_ssl, timeout=10)
     r.raise_for_status()
     cfg = r.json()
     return {
@@ -238,7 +284,12 @@ def _pkce_pair() -> tuple[str, str]:
     return verifier, challenge
 
 
-def browser_login(hps_url: str, open_browser: bool = True, issuer: str | None = None) -> dict:
+def browser_login(
+    hps_url: str,
+    open_browser: bool = True,
+    issuer: str | None = None,
+    verify_ssl: bool | str = True,
+) -> dict:
     """Run the OIDC Authorization Code + PKCE flow.
 
     Starts a temporary localhost HTTP server on port ``REDIRECT_PORT``,
@@ -253,6 +304,10 @@ def browser_login(hps_url: str, open_browser: bool = True, issuer: str | None = 
         Whether to automatically open the authorization URL in the default browser.
     issuer:
         OIDC issuer URL. If not provided, defaults to HPS Keycloak issuer.
+    verify_ssl:
+        TLS certificate verification mode. Use ``True`` (default) for normal
+        certificate validation, ``False`` for insecure local development only,
+        or a CA bundle path.
 
     Returns
     -------
@@ -261,7 +316,7 @@ def browser_login(hps_url: str, open_browser: bool = True, issuer: str | None = 
         ``expires_in``, ``refresh_expires_in``, ``token_type``, etc.
 
     """
-    endpoints = _oidc_endpoints(hps_url, issuer=issuer)
+    endpoints = _oidc_endpoints(hps_url, issuer=issuer, verify_ssl=verify_ssl)
     verifier, challenge = _pkce_pair()
     state = secrets.token_urlsafe(16)
 
@@ -358,7 +413,7 @@ def browser_login(hps_url: str, open_browser: bool = True, issuer: str | None = 
             "redirect_uri": REDIRECT_URI,
             "code_verifier": verifier,
         },
-        verify=False,
+        verify=verify_ssl,
         timeout=15,
     )
     token_resp.raise_for_status()
@@ -401,6 +456,7 @@ def save_tokens(
         If storage method, hps_url, or token payload schema is invalid.
     RuntimeError
         If ``storage="keyring"`` is requested and keyring persistence fails.
+
     """
     _token_storage.TOKEN_FILE = TOKEN_FILE
     return _token_storage.save_tokens(
@@ -454,7 +510,21 @@ def main():
         action="store_true",
         help="Print the access token to stdout after login (useful for scripting)",
     )
+    parser.add_argument(
+        "--insecure",
+        action="store_true",
+        help="Disable TLS certificate verification (insecure; for local testing only)",
+    )
+    parser.add_argument(
+        "--ca-bundle",
+        help="Path to a CA bundle file to use for TLS certificate verification",
+    )
     args = parser.parse_args()
+
+    if args.insecure and args.ca_bundle:
+        parser.error("--insecure and --ca-bundle are mutually exclusive")
+
+    verify_ssl: bool | str = False if args.insecure else args.ca_bundle or True
 
     # Handle token refresh
     if args.refresh_only:
@@ -464,13 +534,16 @@ def main():
             args.url if args.url != "https://localhost:8443/hps" else None,
             issuer=args.issuer,
             storage=storage,
+            verify_ssl=verify_ssl,
         )
         if new_tokens:
             # Save refreshed tokens back
             save_tokens(new_tokens, new_tokens.get("hps_url", args.url), storage=storage)
             print("Tokens refreshed successfully")
-            print(f"Access token expires in {new_tokens.get('expires_in', '?')}s, "
-                  f"refresh token expires in {new_tokens.get('refresh_expires_in', '?')}s")
+            print(
+                f"Access token expires in {new_tokens.get('expires_in', '?')}s, "
+                f"refresh token expires in {new_tokens.get('refresh_expires_in', '?')}s"
+            )
             if args.print_token:
                 print(new_tokens["access_token"])
         else:
@@ -481,7 +554,12 @@ def main():
     # Normal login flow
     print(f"Connecting to: {args.url}")
     try:
-        tokens = browser_login(args.url, open_browser=not args.no_browser, issuer=args.issuer)
+        tokens = browser_login(
+            args.url,
+            open_browser=not args.no_browser,
+            issuer=args.issuer,
+            verify_ssl=verify_ssl,
+        )
     except RuntimeError as e:
         print(f"\nError: {e}", file=sys.stderr)
         sys.exit(1)
@@ -499,8 +577,10 @@ def main():
         print("Tokens saved to system keyring")
     else:
         print("Tokens kept in memory (not persisted to disk)")
-    print(f"Access token expires in {tokens.get('expires_in', '?')}s, "
-          f"refresh token expires in {tokens.get('refresh_expires_in', '?')}s")
+    print(
+        f"Access token expires in {tokens.get('expires_in', '?')}s, "
+        f"refresh token expires in {tokens.get('refresh_expires_in', '?')}s"
+    )
 
     if args.print_token:
         print(tokens["access_token"])

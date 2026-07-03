@@ -1,7 +1,8 @@
-# Copyright (C) 2026 ANSYS, Inc. and/or its affiliates.
+# Copyright (C) 2022 - 2026 ANSYS, Inc. and/or its affiliates.
 # SPDX-License-Identifier: MIT
+#
 
-"""Shared token persistence helpers for auth workflows.
+r"""Shared token persistence helpers for auth workflows.
 
 These utilities are storage-backend oriented and can be used by OIDC or
 other authentication flows that need token load/save behavior.
@@ -12,6 +13,8 @@ Disk token path (refresh-token persistence):
 """
 
 import base64
+import ctypes
+import ctypes.wintypes as wintypes
 import json
 import logging
 import os
@@ -84,7 +87,9 @@ def _normalize_loaded_tokens(tokens: dict) -> dict:
 
 def _resolve_keyring_service_name(service_name: str | None = None) -> str:
     """Resolve keyring service name from argument, env var, or default."""
-    resolved = service_name or os.environ.get(KEYRING_SERVICE_ENV_VAR) or DEFAULT_KEYRING_SERVICE_NAME
+    resolved = (
+        service_name or os.environ.get(KEYRING_SERVICE_ENV_VAR) or DEFAULT_KEYRING_SERVICE_NAME
+    )
     resolved = str(resolved).strip()
     if not resolved:
         raise ValueError("Keyring service name cannot be empty.")
@@ -99,11 +104,8 @@ def _encrypt_with_dpapi(data: bytes) -> bytes:
     if platform.system() != "Windows":
         raise RuntimeError("DPAPI encryption is only available on Windows")
 
-    import ctypes
-    import ctypes.wintypes as wintypes
-
-    LocalFree = ctypes.windll.kernel32.LocalFree
-    CryptProtectData = ctypes.windll.Crypt32.CryptProtectData
+    local_free = ctypes.windll.kernel32.LocalFree
+    crypt_protect_data = ctypes.windll.Crypt32.CryptProtectData
 
     class DataBlob(ctypes.Structure):
         _fields_ = [("cbData", wintypes.DWORD), ("pbData", ctypes.POINTER(wintypes.BYTE))]
@@ -117,7 +119,7 @@ def _encrypt_with_dpapi(data: bytes) -> bytes:
         ciphertext_blob = DataBlob()
         # CRYPTPROTECT_UI_FORBIDDEN = 0x1
         flags = 0x1
-        result = CryptProtectData(
+        result = crypt_protect_data(
             ctypes.byref(plaintext_blob),
             None,
             None,
@@ -129,7 +131,7 @@ def _encrypt_with_dpapi(data: bytes) -> bytes:
         if not result:
             raise RuntimeError("Failed to encrypt data with DPAPI")
         ciphertext = bytes(ciphertext_blob.pbData[: ciphertext_blob.cbData])
-        LocalFree(ciphertext_blob.pbData)
+        local_free(ciphertext_blob.pbData)
         return ciphertext
 
     return dpapi_encrypt(data)
@@ -143,11 +145,8 @@ def _decrypt_with_dpapi(ciphertext: bytes) -> bytes:
     if platform.system() != "Windows":
         raise RuntimeError("DPAPI decryption is only available on Windows")
 
-    import ctypes
-    import ctypes.wintypes as wintypes
-
-    LocalFree = ctypes.windll.kernel32.LocalFree
-    CryptUnprotectData = ctypes.windll.Crypt32.CryptUnprotectData
+    local_free = ctypes.windll.kernel32.LocalFree
+    crypt_unprotect_data = ctypes.windll.Crypt32.CryptUnprotectData
 
     class DataBlob(ctypes.Structure):
         _fields_ = [("cbData", wintypes.DWORD), ("pbData", ctypes.POINTER(wintypes.BYTE))]
@@ -160,7 +159,7 @@ def _decrypt_with_dpapi(ciphertext: bytes) -> bytes:
         )
         plaintext_blob = DataBlob()
         flags = 0x1
-        result = CryptUnprotectData(
+        result = crypt_unprotect_data(
             ctypes.byref(ciphertext_blob),
             None,
             None,
@@ -172,11 +171,10 @@ def _decrypt_with_dpapi(ciphertext: bytes) -> bytes:
         if not result:
             raise RuntimeError("Failed to decrypt data with DPAPI")
         plaintext = bytes(plaintext_blob.pbData[: plaintext_blob.cbData])
-        LocalFree(plaintext_blob.pbData)
+        local_free(plaintext_blob.pbData)
         return plaintext
 
     return dpapi_decrypt(ciphertext)
-
 
 
 def _format_keyring_save_error(ex: Exception, tokens: dict | None = None) -> str:
@@ -198,26 +196,30 @@ def _format_keyring_save_error(ex: Exception, tokens: dict | None = None) -> str
 
     return f"Failed to save tokens to keyring: {safe_error}"
 
+
 def _get_windows_keyring_preflight_error(tokens: dict) -> str | None:
     """Return actionable preflight error when Windows keyring payload is too large."""
     if platform.system() != "Windows":
         return None
 
-    refresh_token = tokens.get("refresh_token")
-    if not refresh_token:
-        return None
+    for field_name in ("access_token", "refresh_token"):
+        token_value = tokens.get(field_name)
+        if not token_value:
+            continue
 
-    token_size_bytes = len(str(refresh_token).encode("utf-8"))
-    if token_size_bytes > WINDOWS_KEYRING_MAX_SECRET_BYTES:
-        return (
-            "Windows Credential Manager rejected the token payload "
-            f"(preflight: refresh_token is {token_size_bytes} bytes; "
-            f"practical CredWrite secret limit is about {WINDOWS_KEYRING_MAX_SECRET_BYTES} bytes). "
-            "Login succeeded but keyring persistence failed. "
-            "Use storage='disk' on Windows for DPAPI-protected persistence."
-        )
+        token_size_bytes = len(str(token_value).encode("utf-8"))
+        if token_size_bytes > WINDOWS_KEYRING_MAX_SECRET_BYTES:
+            return (
+                "Windows Credential Manager rejected the token payload "
+                f"(preflight: {field_name} is {token_size_bytes} bytes; "
+                "practical CredWrite secret limit is about "
+                f"{WINDOWS_KEYRING_MAX_SECRET_BYTES} bytes). "
+                "Login succeeded but keyring persistence failed. "
+                "Use storage='disk' on Windows for DPAPI-protected persistence."
+            )
 
     return None
+
 
 def _save_to_keyring(
     tokens: dict,
@@ -234,10 +236,12 @@ def _save_to_keyring(
     ``error_on_failure`` is True.
     """
     try:
-        import keyring
-    except ImportError:
+        import keyring  # noqa: PLC0415
+    except ImportError as ex:
         if error_on_failure:
-            raise RuntimeError("Keyring storage requested but python package 'keyring' is not installed.")
+            raise RuntimeError(
+                "Keyring storage requested but python package 'keyring' is not installed."
+            ) from ex
         return False
 
     service_name = _resolve_keyring_service_name(service_name)
@@ -246,14 +250,19 @@ def _save_to_keyring(
     if preflight_error:
         if error_on_failure:
             raise RuntimeError(preflight_error)
-        log.warning(preflight_error)
+        log.warning(
+            "Windows Credential Manager rejected the token payload. "
+            "Use storage='disk' on Windows for DPAPI-protected persistence."
+        )
         return False
 
     try:
         keyring.set_password(service_name, "hps_url", hps_url)
         keyring.set_password(service_name, "refresh_token", tokens["refresh_token"])
         if tokens.get("refresh_expires_in") is not None:
-            keyring.set_password(service_name, "refresh_expires_in", str(tokens["refresh_expires_in"]))
+            keyring.set_password(
+                service_name, "refresh_expires_in", str(tokens["refresh_expires_in"])
+            )
         keyring.set_password(service_name, "saved_at", str(time.time()))
         return True
     except Exception as ex:
@@ -273,7 +282,7 @@ def _load_from_keyring(service_name: str | None = None) -> dict | None:
     Returns token dict if available, None if keyring unavailable or no tokens saved.
     """
     try:
-        import keyring
+        import keyring  # noqa: PLC0415
     except ImportError:
         return None
 
@@ -333,7 +342,8 @@ def load_tokens(storage: str = "keyring", service_name: str | None = None) -> di
     Returns
     -------
     dict | None
-        Loaded payload (refresh-token data, optional metadata) when present, otherwise ``None``.
+        Loaded token payload when present, otherwise ``None``.
+
     """
     if storage not in ("memory", "disk", "keyring"):
         raise ValueError(
@@ -353,7 +363,7 @@ def load_tokens(storage: str = "keyring", service_name: str | None = None) -> di
 def _check_keyring_backend() -> str | None:
     """Return error details if keyring backend is unavailable, else None."""
     try:
-        import keyring
+        import keyring  # noqa: PLC0415
     except ImportError:
         return "python package 'keyring' is not installed"
 
@@ -403,7 +413,6 @@ def _is_token_expired(tokens: dict, buffer_seconds: int = 60) -> bool:
     return elapsed > (expires_in - buffer_seconds)
 
 
-
 def _atomic_write_bytes(path: Path, data: bytes, mode: int | None = None) -> None:
     """Write bytes to disk atomically using a same-directory temporary file."""
     temp_path = path.with_name(f".{path.name}.{uuid.uuid4().hex}.tmp")
@@ -446,20 +455,23 @@ def _atomic_write_bytes(path: Path, data: bytes, mode: int | None = None) -> Non
             except OSError:
                 pass
 
+
 def save_tokens(
     tokens: dict,
     hps_url: str,
     storage: str = "memory",
     service_name: str | None = None,
 ) -> Path | None:
-    """Persist token data to specified storage location.
+    r"""Persist tokens to specified storage location.
 
     For `storage="disk"`, refresh-token payloads are written to:
     - Windows: `%USERPROFILE%\\.ansys\\hps_tokens.json` (DPAPI encrypted)
     - Unix/Linux: `~/.ansys/hps_tokens.json` (permissions set to 0o600)
     """
     if storage not in ("memory", "disk", "keyring"):
-        raise ValueError(f"Invalid storage method: {storage}. Must be 'memory', 'disk', or 'keyring'")
+        raise ValueError(
+            f"Invalid storage method: {storage}. Must be 'memory', 'disk', or 'keyring'"
+        )
 
     if not isinstance(hps_url, str) or not hps_url.strip():
         raise ValueError("'hps_url' must be a non-empty string.")
@@ -504,24 +516,3 @@ def save_tokens(
         _atomic_write_bytes(TOKEN_FILE, json_bytes, mode=0o600)
 
     return TOKEN_FILE
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

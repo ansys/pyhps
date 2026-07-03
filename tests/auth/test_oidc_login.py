@@ -1,5 +1,6 @@
-# Copyright (C) 2026 ANSYS, Inc. and/or its affiliates.
+# Copyright (C) 2022 - 2026 ANSYS, Inc. and/or its affiliates.
 # SPDX-License-Identifier: MIT
+#
 
 import os
 import platform
@@ -37,8 +38,12 @@ def test_load_tokens_keyring_mode_only_uses_keyring(sample_tokens, tmp_path, mon
     token_file = tmp_path / ".ansys" / "hps_tokens.json"
     monkeypatch.setattr("ansys.hps.client.auth.api.oidc_login.TOKEN_FILE", token_file)
 
-    with patch("ansys.hps.client.auth.api.oidc_login._token_storage._load_from_keyring") as mock_keyring:
-        with patch("ansys.hps.client.auth.api.oidc_login._token_storage._load_from_disk") as mock_disk:
+    with patch(
+        "ansys.hps.client.auth.api.oidc_login._token_storage._load_from_keyring"
+    ) as mock_keyring:
+        with patch(
+            "ansys.hps.client.auth.api.oidc_login._token_storage._load_from_disk"
+        ) as mock_disk:
             keyring_tokens = sample_tokens.copy()
             mock_keyring.return_value = keyring_tokens
             mock_disk.return_value = None
@@ -55,8 +60,12 @@ def test_load_tokens_disk_mode_only_uses_disk(sample_tokens, tmp_path, monkeypat
     token_file = tmp_path / ".ansys" / "hps_tokens.json"
     monkeypatch.setattr("ansys.hps.client.auth.api.oidc_login.TOKEN_FILE", token_file)
 
-    with patch("ansys.hps.client.auth.api.oidc_login._token_storage._load_from_keyring") as mock_keyring:
-        with patch("ansys.hps.client.auth.api.oidc_login._token_storage._load_from_disk") as mock_disk:
+    with patch(
+        "ansys.hps.client.auth.api.oidc_login._token_storage._load_from_keyring"
+    ) as mock_keyring:
+        with patch(
+            "ansys.hps.client.auth.api.oidc_login._token_storage._load_from_disk"
+        ) as mock_disk:
             disk_tokens = sample_tokens.copy()
             mock_keyring.return_value = sample_tokens.copy()
             mock_disk.return_value = disk_tokens
@@ -72,8 +81,12 @@ def test_load_tokens_uses_env_service_name(monkeypatch):
     """load_tokens keyring mode uses service name configured via environment variable."""
     monkeypatch.setenv("HPS_OIDC_KEYRING_SERVICE_NAME", "ansys-hps-env")
 
-    with patch("ansys.hps.client.auth.api.oidc_login._token_storage._load_from_keyring") as mock_keyring:
-        with patch("ansys.hps.client.auth.api.oidc_login._token_storage._load_from_disk") as mock_disk:
+    with patch(
+        "ansys.hps.client.auth.api.oidc_login._token_storage._load_from_keyring"
+    ) as mock_keyring:
+        with patch(
+            "ansys.hps.client.auth.api.oidc_login._token_storage._load_from_disk"
+        ) as mock_disk:
             mock_keyring.return_value = None
             mock_disk.return_value = None
 
@@ -93,7 +106,9 @@ def test_save_tokens_keyring_uses_env_service_name(sample_tokens, sample_hps_url
     """save_tokens uses env-configured keyring service name when not provided."""
     monkeypatch.setenv("HPS_OIDC_KEYRING_SERVICE_NAME", "ansys-hps-env")
 
-    with patch("ansys.hps.client.auth.api.oidc_login._token_storage._save_to_keyring") as mock_keyring:
+    with patch(
+        "ansys.hps.client.auth.api.oidc_login._token_storage._save_to_keyring"
+    ) as mock_keyring:
         mock_keyring.return_value = True
 
         result = save_tokens(sample_tokens, sample_hps_url, storage="keyring")
@@ -114,7 +129,9 @@ def test_save_tokens_prefer_keyring(sample_tokens, sample_hps_url, tmp_path, mon
     token_file = tmp_path / ".ansys" / "hps_tokens.json"
     monkeypatch.setattr("ansys.hps.client.auth.api.oidc_login.TOKEN_FILE", token_file)
 
-    with patch("ansys.hps.client.auth.api.oidc_login._token_storage._save_to_keyring") as mock_keyring:
+    with patch(
+        "ansys.hps.client.auth.api.oidc_login._token_storage._save_to_keyring"
+    ) as mock_keyring:
         mock_keyring.return_value = True
 
         result = save_tokens(sample_tokens, sample_hps_url, storage="keyring")
@@ -133,12 +150,16 @@ def test_save_tokens_keyring_raises_if_keyring_fails(
     def mock_save_to_keyring(tokens, hps_url, service_name=None, error_on_failure=False):
         return False
 
-    with patch("ansys.hps.client.auth.api.oidc_login._token_storage._save_to_keyring", mock_save_to_keyring):
+    with patch(
+        "ansys.hps.client.auth.api.oidc_login._token_storage._save_to_keyring", mock_save_to_keyring
+    ):
         with pytest.raises(RuntimeError, match="Failed to save tokens to keyring"):
             _ = save_tokens(sample_tokens, sample_hps_url, storage="keyring")
 
 
-def test_save_tokens_keyring_surfaces_credwrite_details(sample_tokens, sample_hps_url, tmp_path, monkeypatch):
+def test_save_tokens_keyring_surfaces_credwrite_details(
+    sample_tokens, sample_hps_url, tmp_path, monkeypatch
+):
     """save_tokens surfaces actionable Windows CredWrite diagnostics when keyring write fails."""
     token_file = tmp_path / ".ansys" / "hps_tokens.json"
     monkeypatch.setattr("ansys.hps.client.auth.api.oidc_login.TOKEN_FILE", token_file)
@@ -187,7 +208,9 @@ def test_save_tokens_keyring_windows_preflight_rejects_oversized_token(
     platform.system() != "Windows" or os.environ.get("HPS_TEST_DPAPI_INTEGRATION") != "1",
     reason="Run on Windows with HPS_TEST_DPAPI_INTEGRATION=1 to enable DPAPI integration test.",
 )
-def test_save_and_load_tokens_real_dpapi_roundtrip(sample_tokens, sample_hps_url, tmp_path, monkeypatch):
+def test_save_and_load_tokens_real_dpapi_roundtrip(
+    sample_tokens, sample_hps_url, tmp_path, monkeypatch
+):
     """Integration test for Windows DPAPI disk encryption/decryption round-trip via oidc wrapper."""
     token_file = tmp_path / ".ansys" / "hps_tokens.json"
     monkeypatch.setattr("ansys.hps.client.auth.api.oidc_login.TOKEN_FILE", token_file)
