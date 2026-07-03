@@ -55,7 +55,6 @@ def test_load_tokens_keyring_mode_only_uses_keyring(sample_tokens, tmp_path, mon
             mock_disk.assert_not_called()
 
 
-
 def test_load_tokens_uses_env_service_name(monkeypatch):
     """load_tokens keyring mode uses service name configured via environment variable."""
     monkeypatch.setenv("HPS_OIDC_KEYRING_SERVICE_NAME", "ansys-hps-env")
