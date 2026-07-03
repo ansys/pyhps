@@ -880,9 +880,11 @@ def test_resolve_project_id_for_task_reads_from_tags(monkeypatch):
     monkeypatch.setattr(
         client,
         "stream_task_logs",
-        lambda **kwargs: iter([
-            {"message": "line", "tags": {"project_id": "proj-123", "task_id": "task-abc"}},
-        ]),
+        lambda **kwargs: iter(
+            [
+                {"message": "line", "tags": {"project_id": "proj-123", "task_id": "task-abc"}},
+            ]
+        ),
     )
 
     project_id = client.resolve_project_id_for_task("task-abc")
@@ -895,9 +897,11 @@ def test_resolve_project_id_for_task_reads_top_level_fallback(monkeypatch):
     monkeypatch.setattr(
         client,
         "stream_task_logs",
-        lambda **kwargs: iter([
-            {"message": "line", "project_id": "proj-abc"},
-        ]),
+        lambda **kwargs: iter(
+            [
+                {"message": "line", "project_id": "proj-abc"},
+            ]
+        ),
     )
 
     project_id = client.resolve_project_id_for_task("task-abc")
@@ -910,10 +914,12 @@ def test_resolve_project_id_for_task_raises_when_missing(monkeypatch):
     monkeypatch.setattr(
         client,
         "stream_task_logs",
-        lambda **kwargs: iter([
-            {"message": "line", "tags": {"task_id": "task-abc"}},
-            {"message": "line2"},
-        ]),
+        lambda **kwargs: iter(
+            [
+                {"message": "line", "tags": {"task_id": "task-abc"}},
+                {"message": "line2"},
+            ]
+        ),
     )
 
     with pytest.raises(RuntimeError, match="Could not infer project_id"):
