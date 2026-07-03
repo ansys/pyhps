@@ -4,7 +4,7 @@
 # Integration tests for OIDC login/token refresh using real Keycloak backend.
 # These tests exercise the actual OIDC token refresh flow without browser automation.
 # They require a live HPS/Keycloak backend (provided by conftest fixtures).
-# 
+#
 # These tests are designed to run in CI/CD with docker-compose services running.
 # To run locally, start HPS services first:
 #   docker-compose up -d
@@ -12,14 +12,11 @@
 
 import base64
 import hashlib
-import sys
 import time
-from pathlib import Path
 from unittest.mock import patch
 
 import pytest
 
-from ansys.hps.client.authenticate import authenticate, determine_auth_url
 from ansys.hps.client.auth.api.oidc_login import (
     CLIENT_ID,
     REALM,
@@ -35,7 +32,7 @@ from ansys.hps.client.auth.api.oidc_login import (
     refresh_tokens,
     save_tokens,
 )
-
+from ansys.hps.client.authenticate import authenticate, determine_auth_url
 
 # Mark all tests in this module as integration tests
 # These tests require a live HPS/Keycloak backend and exercise
@@ -47,21 +44,21 @@ pytestmark = pytest.mark.integration
 def temp_token_file(tmp_path, monkeypatch):
     """Provide a temporary token file path and patch TOKEN_FILE."""
     token_file = tmp_path / "hps_tokens.json"
-    
+
     # Patch both modules' TOKEN_FILE
     from ansys.hps.client.auth.api import oidc_login as oidc_module
     from ansys.hps.client.common import token_storage as storage_module
-    
+
     monkeypatch.setattr(oidc_module, "TOKEN_FILE", token_file)
     monkeypatch.setattr(storage_module, "TOKEN_FILE", token_file)
-    
+
     return token_file
 
 
 @pytest.fixture
 def initial_tokens(url, username, password, temp_token_file):
     """Get initial tokens using password grant from real Keycloak.
-    
+
     Skips test if Keycloak is not available.
     """
     try:
@@ -122,9 +119,7 @@ class TestRefreshTokensWithRealKeycloak:
         save_tokens(initial_tokens, url, storage="disk")
 
         # Test refresh with just hps_url - issuer will be auto-discovered
-        new_tokens = refresh_tokens(
-            hps_url=url, storage="disk", verify_ssl=False
-        )
+        new_tokens = refresh_tokens(hps_url=url, storage="disk", verify_ssl=False)
 
         assert new_tokens is not None
         assert "access_token" in new_tokens
@@ -150,9 +145,7 @@ class TestRefreshTokensWithRealKeycloak:
         assert initial_tokens is not None
         save_tokens(initial_tokens, url, storage="disk")
 
-        new_tokens = refresh_tokens(
-            hps_url=url, storage="disk", verify_ssl=False
-        )
+        new_tokens = refresh_tokens(hps_url=url, storage="disk", verify_ssl=False)
 
         assert new_tokens is not None
 
@@ -195,7 +188,7 @@ class TestRefreshTokensWithRealKeycloak:
 
     def test_load_tokens_after_refresh(self, url, initial_tokens):
         """Test that refreshed tokens can be persisted and the refresh token preserved.
-        
+
         Note: For disk storage, only refresh_token is persisted to disk;
         access_token remains memory-only per design.
         """
@@ -205,10 +198,10 @@ class TestRefreshTokensWithRealKeycloak:
 
         new_tokens = refresh_tokens(hps_url=url, storage="disk", verify_ssl=False)
         assert new_tokens is not None
-        
+
         # Access token should be new
         assert new_tokens["access_token"] != initial_tokens["access_token"]
-        
+
         # Refresh token should still be available for subsequent refreshes
         save_tokens(new_tokens, url, storage="disk")
         loaded = load_tokens(storage="disk")
@@ -243,7 +236,7 @@ class TestDeterminAuthUrl:
         assert auth_url is not None
         assert isinstance(auth_url, str)
         # Auth URL should be related to the HPS server
-        assert url.rstrip('/') in auth_url or "realms" in auth_url.lower()
+        assert url.rstrip("/") in auth_url or "realms" in auth_url.lower()
 
     def test_determine_auth_url_with_fallback(self, url):
         """Test that fallback realm is used if discovery fails."""
@@ -276,7 +269,7 @@ class TestTokenRefreshErrorCases:
 
     def test_refresh_tokens_with_explicit_issuer(self, url, initial_tokens, temp_token_file):
         """Test refresh with explicit issuer URL (enters issuer branch, covers lines 222-223).
-        
+
         The issuer builds a token endpoint URL that authenticate() uses for discovery.
         This exercises the if-issuer branch even if the specific endpoint format
         doesn't match Keycloak's discovery expectations (returns None gracefully).
@@ -287,28 +280,35 @@ class TestTokenRefreshErrorCases:
         issuer = f"{url.rstrip('/')}/auth/realms/{REALM}"
         # The issuer branch constructs the auth_url and calls authenticate();
         # may return None if authenticate() fails with this URL format.
-        new_tokens = refresh_tokens(
-            hps_url=url, issuer=issuer, storage="disk", verify_ssl=False
-        )
+        new_tokens = refresh_tokens(hps_url=url, issuer=issuer, storage="disk", verify_ssl=False)
         # Returns tokens on success or None on graceful failure — either is valid
         # What matters is the issuer branch was entered (covered) without raising
         assert new_tokens is None or "access_token" in new_tokens
 
-    def test_refresh_tokens_no_hps_url_in_tokens_returns_none(self, initial_tokens, temp_token_file):
+    def test_refresh_tokens_no_hps_url_in_tokens_returns_none(
+        self, initial_tokens, temp_token_file
+    ):
         """Test refresh fails when no hps_url provided and no tokens saved."""
         # Don't save any tokens - disk storage will be empty
         new_tokens = refresh_tokens(hps_url=None, storage="disk", verify_ssl=False)
         assert new_tokens is None
 
-    def test_refresh_tokens_no_refresh_token_returns_none(self, url, initial_tokens, temp_token_file):
+    def test_refresh_tokens_no_refresh_token_returns_none(
+        self, url, initial_tokens, temp_token_file
+    ):
         """Test refresh fails when saved tokens have no refresh_token field."""
         # Don't save refresh_token - just verify we get None gracefully
         # Save initial tokens first (has valid refresh_token)
         save_tokens(initial_tokens, url, storage="disk")
         # Now corrupt the saved data by testing with a bad token dict in memory
         from ansys.hps.client.common import token_storage as _ts
+
         # Set memory store to a dict without refresh_token
-        _ts._memory_tokens = {"access_token": "fake", "hps_url": url, "saved_at": __import__('time').time()}
+        _ts._memory_tokens = {
+            "access_token": "fake",
+            "hps_url": url,
+            "saved_at": __import__("time").time(),
+        }
         new_tokens = refresh_tokens(hps_url=url, storage="memory", verify_ssl=False)
         assert new_tokens is None
         # Reset memory store
@@ -417,6 +417,7 @@ class TestOidcHelperFunctions:
     def test_is_token_expired_with_old_token(self):
         """Test _is_token_expired() returns True for tokens saved long ago."""
         import time
+
         old_tokens = {"expires_in": 300, "saved_at": time.time() - 400}
         result = _is_token_expired(old_tokens)
         assert result is True
@@ -429,17 +430,28 @@ class TestMainEntryPoint:
         """Test main() --refresh-only successfully refreshes tokens from disk."""
         save_tokens(initial_tokens, url, storage="disk")
 
-        with patch("sys.argv", ["oidc_login", "--url", url,
-                                 "--refresh-only", "--save-to-disk", "--insecure"]):
+        with patch(
+            "sys.argv",
+            ["oidc_login", "--url", url, "--refresh-only", "--save-to-disk", "--insecure"],
+        ):
             main()  # Should not raise
 
     def test_main_refresh_only_print_token(self, url, initial_tokens, temp_token_file, capsys):
         """Test main() --refresh-only with --print-token writes access token to stdout."""
         save_tokens(initial_tokens, url, storage="disk")
 
-        with patch("sys.argv", ["oidc_login", "--url", url,
-                                 "--refresh-only", "--save-to-disk",
-                                 "--insecure", "--print-token"]):
+        with patch(
+            "sys.argv",
+            [
+                "oidc_login",
+                "--url",
+                url,
+                "--refresh-only",
+                "--save-to-disk",
+                "--insecure",
+                "--print-token",
+            ],
+        ):
             main()
 
         captured = capsys.readouterr()
@@ -449,8 +461,10 @@ class TestMainEntryPoint:
     def test_main_refresh_only_exits_when_no_tokens(self, url, temp_token_file):
         """Test main() --refresh-only exits with code 1 when no tokens are saved."""
         # No tokens saved — refresh should fail
-        with patch("sys.argv", ["oidc_login", "--url", url,
-                                 "--refresh-only", "--save-to-disk", "--insecure"]):
+        with patch(
+            "sys.argv",
+            ["oidc_login", "--url", url, "--refresh-only", "--save-to-disk", "--insecure"],
+        ):
             with pytest.raises(SystemExit) as exc_info:
                 main()
             assert exc_info.value.code == 1
@@ -459,6 +473,8 @@ class TestMainEntryPoint:
         """Test main() --refresh-only with explicit --url argument."""
         save_tokens(initial_tokens, url, storage="disk")
 
-        with patch("sys.argv", ["oidc_login", "--url", url,
-                                 "--refresh-only", "--save-to-disk", "--insecure"]):
+        with patch(
+            "sys.argv",
+            ["oidc_login", "--url", url, "--refresh-only", "--save-to-disk", "--insecure"],
+        ):
             main()  # Should complete without error

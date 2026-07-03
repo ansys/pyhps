@@ -4,14 +4,12 @@
 
 """Extended unit tests for token_storage.py covering uncovered code paths and edge cases."""
 
-import json
-import logging
 import os
 import platform
 import sys
 import time
 from pathlib import Path
-from unittest.mock import MagicMock, Mock, patch
+from unittest.mock import MagicMock, patch
 
 import pytest
 
@@ -244,9 +242,10 @@ class TestCheckDiskStorageBackend:
 
         # Mock mkdir to raise permission error
         original_mkdir = Path.mkdir
+
         def mock_mkdir_error(self, *args, **kwargs):
             raise PermissionError("Read-only file system")
-        
+
         with patch.object(Path, "mkdir", mock_mkdir_error):
             result = _check_disk_storage_backend()
             assert result is not None
@@ -354,7 +353,9 @@ class TestSaveTokensEdgeCases:
         with pytest.raises(ValueError, match="hps_url"):
             save_tokens(sample_tokens, None, storage="memory")
 
-    def test_save_tokens_disk_with_permission_denied(self, sample_tokens, sample_hps_url, tmp_path, monkeypatch):
+    def test_save_tokens_disk_with_permission_denied(
+        self, sample_tokens, sample_hps_url, tmp_path, monkeypatch
+    ):
         """save_tokens to disk handles permission denied errors."""
         token_file = tmp_path / ".ansys" / "hps_tokens.json"
         token_file.parent.mkdir(parents=True, exist_ok=True)
@@ -364,13 +365,17 @@ class TestSaveTokensEdgeCases:
             # Set directory to read-only
             token_file.parent.chmod(0o444)
             try:
-                with patch("ansys.hps.client.common.token_storage.platform.system", return_value="Linux"):
+                with patch(
+                    "ansys.hps.client.common.token_storage.platform.system", return_value="Linux"
+                ):
                     with pytest.raises(Exception):  # Could be PermissionError or OSError
                         save_tokens(sample_tokens, sample_hps_url, storage="disk")
             finally:
                 token_file.parent.chmod(0o755)
 
-    def test_save_tokens_disk_creates_parent_directories(self, sample_tokens, sample_hps_url, tmp_path, monkeypatch):
+    def test_save_tokens_disk_creates_parent_directories(
+        self, sample_tokens, sample_hps_url, tmp_path, monkeypatch
+    ):
         """save_tokens to disk creates parent directories if they don't exist."""
         deep_path = tmp_path / "deeply" / "nested" / "path" / ".ansys" / "hps_tokens.json"
         monkeypatch.setattr("ansys.hps.client.common.token_storage.TOKEN_FILE", deep_path)
@@ -398,7 +403,7 @@ class TestSaveTokensEdgeCases:
         tokens = sample_tokens.copy()
         tokens["extra_field"] = "value"
         tokens["another_extra"] = {"nested": "data"}
-        
+
         # Should not raise
         result = save_tokens(tokens, sample_hps_url, storage="memory")
         assert result is None
@@ -518,7 +523,7 @@ class TestAtomicWriteBytesEdgeCases:
     def test_atomic_write_empty_data(self, tmp_path):
         """atomic_write_bytes handles empty data correctly."""
         target = tmp_path / "empty_file.txt"
-        
+
         _atomic_write_bytes(target, b"")
 
         assert target.exists()
@@ -539,6 +544,7 @@ class TestAtomicWriteBytesEdgeCases:
 
         # Mock os.replace to fail
         original_replace = os.replace
+
         def mock_replace_error(*args, **kwargs):
             raise OSError("Simulated failure")
 
@@ -557,7 +563,7 @@ class TestAtomicWriteBytesEdgeCases:
         # Mock os.open for directory to fail
         original_open = os.open
         call_count = [0]
-        
+
         def mock_open(*args, **kwargs):
             call_count[0] += 1
             if call_count[0] == 2 and args and args[0] == target.parent:  # Directory open
@@ -624,7 +630,9 @@ class TestSaveAndLoadIntegration:
         assert loaded is not None
         assert loaded["hps_url"] == sample_hps_url
 
-    def test_load_tokens_multiple_calls_consistency(self, sample_tokens, sample_hps_url, tmp_path, monkeypatch):
+    def test_load_tokens_multiple_calls_consistency(
+        self, sample_tokens, sample_hps_url, tmp_path, monkeypatch
+    ):
         """Multiple load_tokens calls return consistent data."""
         if platform.system() == "Windows":
             pytest.skip("Non-DPAPI test")

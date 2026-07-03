@@ -14,13 +14,13 @@
 
 import asyncio
 import time
-from pathlib import Path
 from unittest.mock import MagicMock, patch
 
 import pytest
 
 try:
-    from playwright.async_api import async_playwright, Browser, BrowserContext, Page
+    from playwright.async_api import Browser, BrowserContext, Page, async_playwright
+
     HAS_PLAYWRIGHT = True
 except ImportError:
     HAS_PLAYWRIGHT = False
@@ -28,15 +28,12 @@ except ImportError:
 from ansys.hps.client.auth.api.oidc_login import (
     CLIENT_ID,
     REALM,
-    REDIRECT_PORT,
     REDIRECT_URI,
     browser_login,
     load_tokens,
     main,
-    refresh_tokens,
     save_tokens,
 )
-
 
 pytestmark = [
     pytest.mark.browser,
@@ -79,7 +76,7 @@ class TestBrowserLoginFlow:
     async def test_browser_login_page_loads(self, url, page):
         """Test that Keycloak login page loads and responds."""
         login_url = f"{url.rstrip('/')}/auth/realms/{REALM}/protocol/openid-connect/auth"
-        
+
         try:
             response = await page.goto(login_url, wait_until="networkidle", timeout=10000)
             assert response is not None
@@ -94,16 +91,16 @@ class TestBrowserLoginFlow:
         login_url = f"{url.rstrip('/')}/auth/realms/{REALM}/protocol/openid-connect/auth"
         login_url += f"?client_id={CLIENT_ID}&redirect_uri={REDIRECT_URI}"
         login_url += "&response_type=code&scope=openid"
-        
+
         try:
             await page.goto(login_url, wait_until="networkidle", timeout=10000)
-            
+
             # Look for username/login input field
             username_field = await page.query_selector('input[name="username"]')
             if not username_field:
                 # Try alternate selectors
                 username_field = await page.query_selector('input[autocomplete="username"]')
-            
+
             assert username_field is not None, "Username field not found on login page"
         except Exception as e:
             pytest.skip(f"Could not interact with login page: {e}")
@@ -114,16 +111,16 @@ class TestBrowserLoginFlow:
         login_url = f"{url.rstrip('/')}/auth/realms/{REALM}/protocol/openid-connect/auth"
         login_url += f"?client_id={CLIENT_ID}&redirect_uri={REDIRECT_URI}"
         login_url += "&response_type=code&scope=openid"
-        
+
         try:
             await page.goto(login_url, wait_until="networkidle", timeout=10000)
-            
+
             # Look for password input field
             password_field = await page.query_selector('input[name="password"]')
             if not password_field:
                 # Try alternate selectors
                 password_field = await page.query_selector('input[type="password"]')
-            
+
             assert password_field is not None, "Password field not found on login page"
         except Exception as e:
             pytest.skip(f"Could not interact with login page: {e}")
@@ -134,44 +131,43 @@ class TestBrowserLoginFlow:
         login_url = f"{url.rstrip('/')}/auth/realms/{REALM}/protocol/openid-connect/auth"
         login_url += f"?client_id={CLIENT_ID}&redirect_uri={REDIRECT_URI}"
         login_url += "&response_type=code&scope=openid"
-        
+
         try:
             await page.goto(login_url, wait_until="networkidle", timeout=10000)
-            
+
             # Fill username
             username_field = await page.query_selector('input[name="username"]')
             if not username_field:
                 username_field = await page.query_selector('input[autocomplete="username"]')
             assert username_field is not None
-            
+
             await username_field.fill(username)
-            
+
             # Fill password
             password_field = await page.query_selector('input[name="password"]')
             if not password_field:
                 password_field = await page.query_selector('input[type="password"]')
             assert password_field is not None
-            
+
             await password_field.fill(password)
-            
+
             # Submit login form
             submit_button = await page.query_selector('button[type="submit"]')
             if not submit_button:
                 submit_button = await page.query_selector('input[type="submit"]')
-            
+
             assert submit_button is not None, "Submit button not found"
-            
+
             # Click submit and wait for redirect
             await submit_button.click()
             await page.wait_for_url(
-                lambda url: "callback" in url or "code=" in url or "error=" in url,
-                timeout=10000
+                lambda url: "callback" in url or "code=" in url or "error=" in url, timeout=10000
             )
-            
+
             # Should have authorization code in URL or error
             page_url = page.url
             assert "localhost" in page_url or url in page_url
-            
+
         except Exception as e:
             pytest.skip(f"Browser login flow failed: {e}")
 
@@ -181,38 +177,37 @@ class TestBrowserLoginFlow:
         login_url = f"{url.rstrip('/')}/auth/realms/{REALM}/protocol/openid-connect/auth"
         login_url += f"?client_id={CLIENT_ID}&redirect_uri={REDIRECT_URI}"
         login_url += "&response_type=code&scope=openid"
-        
+
         try:
             await page.goto(login_url, wait_until="networkidle", timeout=10000)
-            
+
             # Fill invalid credentials
             username_field = await page.query_selector('input[name="username"]')
             if not username_field:
                 username_field = await page.query_selector('input[autocomplete="username"]')
-            
+
             if username_field:
                 await username_field.fill("invaliduser")
-            
+
             password_field = await page.query_selector('input[name="password"]')
             if not password_field:
                 password_field = await page.query_selector('input[type="password"]')
-            
+
             if password_field:
                 await password_field.fill("invalidpassword")
-            
+
             # Submit
             submit_button = await page.query_selector('button[type="submit"]')
             if not submit_button:
                 submit_button = await page.query_selector('input[type="submit"]')
-            
+
             if submit_button:
                 await submit_button.click()
-                
+
                 # Wait for either error message or redirect
                 try:
                     await page.wait_for_selector(
-                        '[class*="error"], [class*="alert"], [role="alert"]',
-                        timeout=5000
+                        '[class*="error"], [class*="alert"], [role="alert"]', timeout=5000
                     )
                     # Error message should appear
                     assert True
@@ -228,16 +223,18 @@ class TestBrowserLoginIntegration:
 
     def test_browser_login_returns_token_dict_on_success(self, url):
         """Test that browser_login returns tokens when successful.
-        
+
         Note: This is hard to test without actually automating the browser.
         We test the success path with mocking.
         """
         with patch("ansys.hps.client.auth.api.oidc_login.webbrowser.open"):
-            with patch("ansys.hps.client.auth.api.oidc_login.http.server.HTTPServer") as mock_server:
+            with patch(
+                "ansys.hps.client.auth.api.oidc_login.http.server.HTTPServer"
+            ) as mock_server:
                 # Mock the HTTP server to simulate callback
                 mock_server_instance = MagicMock()
                 mock_server.return_value = mock_server_instance
-                
+
                 # This would normally hang waiting for browser callback
                 # So we skip the actual invocation and just verify the mechanism
                 assert callable(browser_login)
@@ -245,18 +242,21 @@ class TestBrowserLoginIntegration:
     def test_browser_login_accepts_open_browser_parameter(self):
         """Test that browser_login accepts open_browser parameter."""
         import inspect
+
         sig = inspect.signature(browser_login)
         assert "open_browser" in sig.parameters
 
     def test_browser_login_accepts_issuer_parameter(self):
         """Test that browser_login accepts issuer parameter."""
         import inspect
+
         sig = inspect.signature(browser_login)
         assert "issuer" in sig.parameters
 
     def test_browser_login_accepts_verify_ssl_parameter(self):
         """Test that browser_login accepts verify_ssl parameter."""
         import inspect
+
         sig = inspect.signature(browser_login)
         assert "verify_ssl" in sig.parameters
 
@@ -273,7 +273,9 @@ class TestBrowserLoginEdgeCases:
         except Exception as e:
             # Timeout, connection error, or DNS resolution error expected
             error_str = str(e).lower()
-            assert any(x in error_str for x in ["timeout", "connection", "name_not_resolved", "err_"])
+            assert any(
+                x in error_str for x in ["timeout", "connection", "name_not_resolved", "err_"]
+            )
 
     @pytest.mark.asyncio
     async def test_https_with_self_signed_cert(self, url, page):
@@ -293,7 +295,7 @@ class TestTokenRefreshWithBrowser:
 
     def test_refresh_tokens_after_browser_login(self):
         """Test that refresh_tokens works with tokens from browser login.
-        
+
         This is a logical flow test: after browser login gets tokens,
         refresh_tokens should work with those tokens.
         """
@@ -305,7 +307,7 @@ class TestTokenRefreshWithBrowser:
             "token_type": "Bearer",
             "saved_at": time.time(),
         }
-        
+
         # Verify they have the required structure
         required_fields = ["access_token", "refresh_token", "token_type", "expires_in"]
         for field in required_fields:
@@ -315,17 +317,17 @@ class TestTokenRefreshWithBrowser:
         """Test the complete flow: login -> save tokens -> load tokens."""
         # This verifies the integration between browser_login, save_tokens, load_tokens
         import inspect
-        
+
         # Verify all three functions exist and are callable
         assert callable(browser_login)
         assert callable(save_tokens)
         assert callable(load_tokens)
-        
+
         # Verify parameter compatibility
         browser_login_sig = inspect.signature(browser_login)
         save_tokens_sig = inspect.signature(save_tokens)
         load_tokens_sig = inspect.signature(load_tokens)
-        
+
         assert "hps_url" in browser_login_sig.parameters
         assert "tokens" in save_tokens_sig.parameters
         assert "storage" in load_tokens_sig.parameters
@@ -456,7 +458,9 @@ class TestBrowserLoginPKCEFlow:
 class TestMainWithBrowserLogin:
     """Test main() normal login flow with Playwright browser automation."""
 
-    async def test_main_normal_login_saves_to_disk(self, url, username, password, tmp_path, monkeypatch):
+    async def test_main_normal_login_saves_to_disk(
+        self, url, username, password, tmp_path, monkeypatch
+    ):
         """Test main() full login flow: browser opens, user logs in, tokens saved to disk."""
         from ansys.hps.client.auth.api import oidc_login as oidc_module
         from ansys.hps.client.common import token_storage as storage_module
@@ -475,8 +479,9 @@ class TestMainWithBrowserLogin:
 
         def run_main():
             with patch("webbrowser.open", side_effect=capture_url):
-                with patch("sys.argv", ["oidc_login", "--url", url,
-                                        "--save-to-disk", "--insecure"]):
+                with patch(
+                    "sys.argv", ["oidc_login", "--url", url, "--save-to-disk", "--insecure"]
+                ):
                     main()
 
         async with async_playwright() as p:
@@ -503,7 +508,9 @@ class TestMainWithBrowserLogin:
         # Tokens should have been saved to disk
         assert token_file.exists(), "Token file should have been created by main()"
 
-    async def test_main_normal_login_with_print_token(self, url, username, password, tmp_path, monkeypatch, capsys):
+    async def test_main_normal_login_with_print_token(
+        self, url, username, password, tmp_path, monkeypatch, capsys
+    ):
         """Test main() --print-token flag prints the access token after login."""
         from ansys.hps.client.auth.api import oidc_login as oidc_module
         from ansys.hps.client.common import token_storage as storage_module
@@ -522,8 +529,7 @@ class TestMainWithBrowserLogin:
 
         def run_main():
             with patch("webbrowser.open", side_effect=capture_url):
-                with patch("sys.argv", ["oidc_login", "--url", url,
-                                        "--insecure", "--print-token"]):
+                with patch("sys.argv", ["oidc_login", "--url", url, "--insecure", "--print-token"]):
                     main()
 
         async with async_playwright() as p:
