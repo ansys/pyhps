@@ -18,6 +18,9 @@ Token Storage Security:
     - Unix/Linux: ``~/.ansys/hps_tokens.json`` (file permissions 0o600)
   - memory (default): Tokens kept in memory only, not persisted
 
+When ``storage`` is ``"disk"`` or ``"keyring"``, persisted payloads contain
+refresh-token data only. Access tokens remain memory-only.
+
 Tokens can be consumed by any script that reads them.
 
 Public Functions
@@ -34,6 +37,7 @@ load_tokens(storage="keyring", service_name=None)
 
 save_tokens(tokens, hps_url, storage="memory", service_name=None)
     Persist tokens to specified location (memory, disk, or keyring).
+    For disk/keyring storage, only refresh-token data is persisted.
     Validates token schema before persistence.
     Returns path if saved to disk, otherwise None.
 

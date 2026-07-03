@@ -6,7 +6,7 @@
 These utilities are storage-backend oriented and can be used by OIDC or
 other authentication flows that need token load/save behavior.
 
-Disk token path:
+Disk token path (refresh-token persistence):
 - Windows: `%USERPROFILE%\\.ansys\\hps_tokens.json`
 - Unix/Linux: `~/.ansys/hps_tokens.json`
 """
@@ -44,9 +44,15 @@ class _TokensForSave(BaseModel):
     refresh_expires_in: int | None = None
 
 
-class _LoadedTokens(_TokensForSave):
+class _LoadedTokens(BaseModel):
     """Internal schema for validating loaded token payloads."""
 
+    model_config = ConfigDict(extra="ignore", str_strip_whitespace=True)
+
+    access_token: str | None = None
+    refresh_token: str = Field(min_length=1)
+    expires_in: int | None = None
+    refresh_expires_in: int | None = None
     hps_url: str | None = None
     saved_at: float = Field(default_factory=time.time)
 
@@ -197,22 +203,22 @@ def _get_windows_keyring_preflight_error(tokens: dict) -> str | None:
     if platform.system() != "Windows":
         return None
 
-    for field_name in ("access_token", "refresh_token"):
-        token_value = tokens.get(field_name)
-        if not token_value:
-            continue
+    refresh_token = tokens.get("refresh_token")
+    if not refresh_token:
+        return None
 
-        token_size_bytes = len(str(token_value).encode("utf-8"))
-        if token_size_bytes > WINDOWS_KEYRING_MAX_SECRET_BYTES:
-            return (
-                "Windows Credential Manager rejected the token payload "
-                f"(preflight: {field_name} is {token_size_bytes} bytes; "
-                f"practical CredWrite secret limit is about {WINDOWS_KEYRING_MAX_SECRET_BYTES} bytes). "
-                "Login succeeded but keyring persistence failed. "
-                "Use storage='disk' on Windows for DPAPI-protected persistence."
-            )
+    token_size_bytes = len(str(refresh_token).encode("utf-8"))
+    if token_size_bytes > WINDOWS_KEYRING_MAX_SECRET_BYTES:
+        return (
+            "Windows Credential Manager rejected the token payload "
+            f"(preflight: refresh_token is {token_size_bytes} bytes; "
+            f"practical CredWrite secret limit is about {WINDOWS_KEYRING_MAX_SECRET_BYTES} bytes). "
+            "Login succeeded but keyring persistence failed. "
+            "Use storage='disk' on Windows for DPAPI-protected persistence."
+        )
 
     return None
+
 def _save_to_keyring(
     tokens: dict,
     hps_url: str,
@@ -245,11 +251,7 @@ def _save_to_keyring(
 
     try:
         keyring.set_password(service_name, "hps_url", hps_url)
-        keyring.set_password(service_name, "access_token", tokens["access_token"])
-        if tokens.get("refresh_token"):
-            keyring.set_password(service_name, "refresh_token", tokens["refresh_token"])
-        if tokens.get("expires_in") is not None:
-            keyring.set_password(service_name, "expires_in", str(tokens["expires_in"]))
+        keyring.set_password(service_name, "refresh_token", tokens["refresh_token"])
         if tokens.get("refresh_expires_in") is not None:
             keyring.set_password(service_name, "refresh_expires_in", str(tokens["refresh_expires_in"]))
         keyring.set_password(service_name, "saved_at", str(time.time()))
@@ -277,15 +279,13 @@ def _load_from_keyring(service_name: str | None = None) -> dict | None:
 
     service_name = _resolve_keyring_service_name(service_name)
     try:
-        access_token = keyring.get_password(service_name, "access_token")
-        if not access_token:
+        refresh_token = keyring.get_password(service_name, "refresh_token")
+        if not refresh_token:
             return None
 
         raw_tokens = {
             "hps_url": keyring.get_password(service_name, "hps_url"),
-            "access_token": access_token,
-            "refresh_token": keyring.get_password(service_name, "refresh_token"),
-            "expires_in": keyring.get_password(service_name, "expires_in"),
+            "refresh_token": refresh_token,
             "refresh_expires_in": keyring.get_password(service_name, "refresh_expires_in"),
             "saved_at": keyring.get_password(service_name, "saved_at"),
         }
@@ -320,7 +320,7 @@ def _load_from_disk() -> dict | None:
 
 
 def load_tokens(storage: str = "keyring", service_name: str | None = None) -> dict | None:
-    """Load saved tokens from the explicitly selected backend.
+    """Load saved refresh-token payload from the explicitly selected backend.
 
     Parameters
     ----------
@@ -333,7 +333,7 @@ def load_tokens(storage: str = "keyring", service_name: str | None = None) -> di
     Returns
     -------
     dict | None
-        Loaded token payload when present, otherwise ``None``.
+        Loaded payload (refresh-token data, optional metadata) when present, otherwise ``None``.
     """
     if storage not in ("memory", "disk", "keyring"):
         raise ValueError(
@@ -393,6 +393,8 @@ def _check_storage_backend(storage: str) -> str | None:
 
 def _is_token_expired(tokens: dict, buffer_seconds: int = 60) -> bool:
     """Check if access token is expired or close to expiry."""
+    if not tokens.get("access_token"):
+        return True
     if "expires_in" not in tokens or "saved_at" not in tokens:
         return True
 
@@ -450,9 +452,9 @@ def save_tokens(
     storage: str = "memory",
     service_name: str | None = None,
 ) -> Path | None:
-    """Persist tokens to specified storage location.
+    """Persist token data to specified storage location.
 
-    For `storage="disk"`, tokens are written to:
+    For `storage="disk"`, refresh-token payloads are written to:
     - Windows: `%USERPROFILE%\\.ansys\\hps_tokens.json` (DPAPI encrypted)
     - Unix/Linux: `~/.ansys/hps_tokens.json` (permissions set to 0o600)
     """
@@ -463,6 +465,11 @@ def save_tokens(
         raise ValueError("'hps_url' must be a non-empty string.")
 
     tokens = _normalize_tokens_for_save(tokens)
+
+    if storage in ("disk", "keyring") and not tokens.get("refresh_token"):
+        raise ValueError(
+            f"storage='{storage}' requires a refresh_token because access tokens are memory-only."
+        )
 
     if storage == "memory":
         return None
@@ -483,9 +490,7 @@ def save_tokens(
     TOKEN_FILE.parent.mkdir(parents=True, exist_ok=True)
     payload = {
         "hps_url": hps_url,
-        "access_token": tokens["access_token"],
-        "refresh_token": tokens.get("refresh_token"),
-        "expires_in": tokens.get("expires_in"),
+        "refresh_token": tokens["refresh_token"],
         "refresh_expires_in": tokens.get("refresh_expires_in"),
         "saved_at": time.time(),
     }
@@ -499,6 +504,10 @@ def save_tokens(
         _atomic_write_bytes(TOKEN_FILE, json_bytes, mode=0o600)
 
     return TOKEN_FILE
+
+
+
+
 
 
 

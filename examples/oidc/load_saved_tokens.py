@@ -22,6 +22,10 @@ def main():
 
     print(f"Loaded tokens for: {tokens.get('hps_url')}")
 
+    if not tokens.get("access_token"):
+        print("No access token is persisted by design. Refresh to obtain a new access token.")
+        return
+
     # Check if token is expired (with 60 second buffer)
     if _is_token_expired(tokens, buffer_seconds=60):
         print("Token is expired or expiring soon. Please refresh.")

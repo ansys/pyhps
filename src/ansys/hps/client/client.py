@@ -110,10 +110,11 @@ class Client:
         Maximum interval, in seconds, between checks of the background token refresh
         loop. The default is ``300``.
     token_storage : str, optional
-        Storage location for refreshed tokens. Supported values are ``"memory"``
+        Storage location for persisted refresh-token data. Supported values are ``"memory"``
         (default), ``"disk"``, and ``"keyring"``.
-        Use ``"disk"`` or ``"keyring"`` if refreshed tokens must persist across
-        process restarts. ``"memory"`` keeps refreshed tokens in-process only.
+        Use ``"disk"`` or ``"keyring"`` if refresh-token data must persist across
+        process restarts. Access tokens remain in-memory. ``"memory"`` keeps
+        all token state in-process only.
     token_storage_strict : bool, optional
         Whether to fail fast during client initialization if the selected
         ``token_storage`` backend is unavailable. The default is ``False``.

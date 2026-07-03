@@ -1,12 +1,12 @@
 """OIDC login with disk storage.
 
-Demonstrates how to save tokens to disk with platform-specific security:
+Demonstrates how to save refresh-token data to disk with platform-specific security:
 - Windows: Encrypted with DPAPI (user-scoped) at %USERPROFILE%\.ansys\hps_tokens.json
 - Unix/Linux: Plaintext with restrictive permissions (0o600) at ~/.ansys/hps_tokens.json
 
 This example also demonstrates creating ``Client`` with
 ``token_storage=\"disk\"`` so automatic refresh updates are persisted
-to disk across runs.
+to disk across runs. Access tokens remain memory-only.
 """
 
 from ansys.hps.client import Client

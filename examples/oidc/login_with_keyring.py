@@ -1,6 +1,6 @@
 """OIDC login with system keyring storage.
 
-Demonstrates how to save tokens to the system credential manager:
+Demonstrates how to save refresh-token data to the system credential manager:
 - Windows: Credential Manager
 - macOS: Keychain
 - Linux: Secret Service (via python-keyring)
@@ -9,7 +9,7 @@ Requires: pip install keyring
 
 This example also demonstrates creating ``Client`` with
 ``token_storage=\"keyring\"`` so automatic refresh updates are persisted
-to keyring across runs.
+to keyring across runs. Access tokens remain memory-only.
 """
 
 from ansys.hps.client import Client
