@@ -240,9 +240,7 @@ def refresh_tokens(
         return None
 
 
-def _oidc_endpoints(
-    hps_url: str, issuer: str | None = None, verify_ssl: bool | str = True
-) -> dict:
+def _oidc_endpoints(hps_url: str, issuer: str | None = None, verify_ssl: bool | str = True) -> dict:
     """Fetch OIDC endpoint URLs from the OIDC discovery endpoint.
 
     Parameters
