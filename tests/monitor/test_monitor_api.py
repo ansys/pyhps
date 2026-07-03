@@ -126,7 +126,9 @@ def test_send_ws_command_adds_token_and_collects_messages(monkeypatch):
         captured["header"] = kwargs.get("header")
         return ws
 
-    monkeypatch.setitem(sys.modules, "websocket", SimpleNamespace(create_connection=fake_create_connection))
+    monkeypatch.setitem(
+        sys.modules, "websocket", SimpleNamespace(create_connection=fake_create_connection)
+    )
 
     client = MonitorClient("http://localhost:1089", token="jwt", timeout_seconds=7.0)
     responses = client.send_ws_command(
@@ -163,7 +165,9 @@ def test_send_ws_command_preserves_existing_token(monkeypatch):
     def fake_create_connection(ws_url, **kwargs):
         return ws
 
-    monkeypatch.setitem(sys.modules, "websocket", SimpleNamespace(create_connection=fake_create_connection))
+    monkeypatch.setitem(
+        sys.modules, "websocket", SimpleNamespace(create_connection=fake_create_connection)
+    )
 
     client = MonitorClient("http://localhost:1089", token="jwt")
     client.send_ws_command(
@@ -218,7 +222,9 @@ def test_send_ws_command_without_token_sends_no_auth_header(monkeypatch):
         captured["header"] = kwargs.get("header")
         return _WebSocketMock()
 
-    monkeypatch.setitem(sys.modules, "websocket", SimpleNamespace(create_connection=fake_create_connection))
+    monkeypatch.setitem(
+        sys.modules, "websocket", SimpleNamespace(create_connection=fake_create_connection)
+    )
 
     client = MonitorClient("http://localhost:1089")
     client.send_ws_command("ws://localhost:1089/monitor/ws/topics", {"type": "command"})
@@ -245,7 +251,9 @@ def test_send_ws_command_forwards_ws_connection_options_and_merges_auth_header(m
         captured["sslopt"] = kwargs.get("sslopt")
         return _WebSocketMock()
 
-    monkeypatch.setitem(sys.modules, "websocket", SimpleNamespace(create_connection=fake_create_connection))
+    monkeypatch.setitem(
+        sys.modules, "websocket", SimpleNamespace(create_connection=fake_create_connection)
+    )
 
     client = MonitorClient(
         "http://localhost:1089",
@@ -627,10 +635,14 @@ def test_stream_scheduler_job_status_yields_messages(monkeypatch):
 
 def test_stream_scheduler_job_status_unwraps_messages_envelope(monkeypatch):
     """Messages nested in an envelope dict are unwrapped correctly."""
-    envelopes = [{"messages": [
-        {"message": '{"running": 2}'},
-        {"message": '{"running": 3}'},
-    ]}]
+    envelopes = [
+        {
+            "messages": [
+                {"message": '{"running": 2}'},
+                {"message": '{"running": 3}'},
+            ]
+        }
+    ]
     _make_multi_ws_mock(monkeypatch, envelopes)
 
     client = MonitorClient("http://localhost:1089", token="t")
@@ -641,6 +653,7 @@ def test_stream_scheduler_job_status_unwraps_messages_envelope(monkeypatch):
 
 def test_stream_scheduler_job_status_stops_cleanly_on_websocket_timeout(monkeypatch):
     """A WebSocketTimeoutException stops iteration cleanly with no messages."""
+
     class WebSocketTimeoutException(Exception):
         pass
 
@@ -917,6 +930,7 @@ def test_stream_task_process_tree_uses_derived_ws_url(monkeypatch):
 
 def test_stream_task_process_tree_stops_cleanly_on_websocket_timeout(monkeypatch):
     """A WebSocketTimeoutException stops iteration cleanly with no messages."""
+
     class WebSocketTimeoutException(Exception):
         pass
 
@@ -1136,6 +1150,7 @@ def test_stream_service_logs_uses_derived_ws_url(monkeypatch):
 
 def test_stream_service_logs_stops_cleanly_on_websocket_timeout(monkeypatch):
     """A WebSocketTimeoutException stops iteration cleanly with no messages."""
+
     class WebSocketTimeoutException(Exception):
         pass
 

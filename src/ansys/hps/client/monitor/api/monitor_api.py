@@ -44,6 +44,7 @@ class ClientType:
         JMS: Job Management Service internal logs.
         SCALING: RMS autoscaling decisions.
         HOUSEKEEPER: Cleanup and housekeeping task logs.
+
     """
 
     FILE_TAIL = "ansys.rep.evaluator.file_tail"
@@ -99,6 +100,7 @@ class MonitorClient:
         For metric messages: ``type=metric``, ``statistic`` (e.g. ``process_tree``).
 
         See :class:`ClientType` for known ``client_type`` values.
+
     """
 
     base_url: str
@@ -147,9 +149,7 @@ class MonitorClient:
                 break
 
         if not host_id:
-            raise RuntimeError(
-                f"Could not resolve host_id for task '{task_id}' from JMS."
-            )
+            raise RuntimeError(f"Could not resolve host_id for task '{task_id}' from JMS.")
 
         rms = RmsApi(client)
         evaluators = rms.get_evaluators(
@@ -157,15 +157,11 @@ class MonitorClient:
             fields=["id", "name", "host_id"],
         )
         if not evaluators:
-            raise RuntimeError(
-                f"Could not resolve evaluator for host_id '{host_id}' from RMS."
-            )
+            raise RuntimeError(f"Could not resolve evaluator for host_id '{host_id}' from RMS.")
 
         evaluator_name = evaluators[0].name
         if not evaluator_name:
-            raise RuntimeError(
-                f"Evaluator for host_id '{host_id}' does not provide a name in RMS."
-            )
+            raise RuntimeError(f"Evaluator for host_id '{host_id}' does not provide a name in RMS.")
 
         return evaluator_name
 
@@ -233,6 +229,7 @@ class MonitorClient:
         Returns:
             Dictionary mapping each tag key to a list of known values as returned
             by the server (noisy keys removed unless ``exclude_noisy=False``).
+
         """
         command = {
             "type": "command",
@@ -264,9 +261,9 @@ class MonitorClient:
         base = self.base_url.rstrip("/")
         # Replace http(s) scheme with ws(s)
         if base.startswith("https://"):
-            base = "wss://" + base[len("https://"):]
+            base = "wss://" + base[len("https://") :]
         elif base.startswith("http://"):
-            base = "ws://" + base[len("http://"):]
+            base = "ws://" + base[len("http://") :]
         return f"{base}/monitor/ws/topics"
 
     def _subscribe_command(
@@ -312,6 +309,7 @@ class MonitorClient:
 
         Yields:
             Parsed JSON message dicts from the server.
+
         """
         url = ws_url or self._ws_url()
         command = self._subscribe_command(
@@ -348,6 +346,7 @@ class MonitorClient:
 
         Yields:
             Parsed JSON message dicts from the server.
+
         """
         url = ws_url or self._ws_url()
         topic: dict[str, str] = {
@@ -383,10 +382,13 @@ class MonitorClient:
 
         Returns:
             List of process-tree message dicts as returned by the server.
+
         """
-        return list(self.stream_task_process_tree(
-            task_id, ws_url=ws_url, backlog=backlog, max_messages=max_messages
-        ))
+        return list(
+            self.stream_task_process_tree(
+                task_id, ws_url=ws_url, backlog=backlog, max_messages=max_messages
+            )
+        )
 
     def stream_task_process_tree(
         self,
@@ -418,15 +420,18 @@ class MonitorClient:
 
         Yields:
             Parsed JSON process-tree snapshot dicts from the server.
+
         """
         url = ws_url or self._ws_url()
         command = self._subscribe_command(
-            topics=[{
-                "task_id": task_id,
-                "client_type": ClientType.EVALUATOR,
-                "type": "metric",
-                "statistic": "process_tree",
-            }],
+            topics=[
+                {
+                    "task_id": task_id,
+                    "client_type": ClientType.EVALUATOR,
+                    "type": "metric",
+                    "statistic": "process_tree",
+                }
+            ],
             backlog=backlog,
         )
         yield from self._stream_ws(url, command, max_messages)
@@ -462,16 +467,19 @@ class MonitorClient:
 
         Yields:
             Parsed JSON host-resource metric dicts from the server.
+
         """
         url = ws_url or self._ws_url()
         evaluator_name = self._resolve_evaluator_name_for_task(task_id)
         command = self._subscribe_command(
-            topics=[{
-                "evaluator_name": evaluator_name,
-                "client_type": ClientType.EVALUATOR,
-                "type": "metric",
-                "statistic": "host_resources",
-            }],
+            topics=[
+                {
+                    "evaluator_name": evaluator_name,
+                    "client_type": ClientType.EVALUATOR,
+                    "type": "metric",
+                    "statistic": "host_resources",
+                }
+            ],
             backlog=backlog,
         )
         yield from self._stream_ws(url, command, max_messages)
@@ -506,15 +514,18 @@ class MonitorClient:
 
         Yields:
             Parsed JSON scheduler job status metric dicts from the server.
+
         """
         url = ws_url or self._ws_url()
         command = self._subscribe_command(
-            topics=[{
-                "client_type": ClientType.SCALING,
-                "type": "metric",
-                "task_definition_id": task_definition_id,
-                "metric_type": "scaler_instances",
-            }],
+            topics=[
+                {
+                    "client_type": ClientType.SCALING,
+                    "type": "metric",
+                    "task_definition_id": task_definition_id,
+                    "metric_type": "scaler_instances",
+                }
+            ],
             backlog=backlog,
         )
         yield from self._stream_ws(url, command, max_messages)
@@ -594,9 +605,10 @@ def build_filter_templates(fields: list[str]) -> dict[str, dict[str, Any]]:
         Dictionary with:
           - ``rest``: query path and query-parameter template using ``tag:<field>`` keys.
           - ``websocket``: topics command payload template for ``subscribe`` requests.
+
     """
     rest_filters = {f"tag:{field}": ["value"] for field in fields}
-    ws_topic = {field: "value" for field in fields}
+    ws_topic = dict.fromkeys(fields, "value")
 
     return {
         "rest": {
