@@ -244,7 +244,10 @@ def _save_to_keyring(
     if preflight_error:
         if error_on_failure:
             raise RuntimeError(preflight_error)
-        log.warning(preflight_error)
+        log.warning(
+            "Windows Credential Manager rejected the token payload. "
+            "Use storage='disk' on Windows for DPAPI-protected persistence."
+        )
         return False
 
     try:
