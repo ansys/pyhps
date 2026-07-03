@@ -241,7 +241,6 @@ class TestCheckDiskStorageBackend:
         monkeypatch.setattr("ansys.hps.client.common.token_storage.TOKEN_FILE", token_file)
 
         # Mock mkdir to raise permission error
-        original_mkdir = Path.mkdir
 
         def mock_mkdir_error(self, *args, **kwargs):
             raise PermissionError("Read-only file system")
@@ -368,7 +367,7 @@ class TestSaveTokensEdgeCases:
                 with patch(
                     "ansys.hps.client.common.token_storage.platform.system", return_value="Linux"
                 ):
-                    with pytest.raises(Exception):  # Could be PermissionError or OSError
+                    with pytest.raises(PermissionError):
                         save_tokens(sample_tokens, sample_hps_url, storage="disk")
             finally:
                 token_file.parent.chmod(0o755)
@@ -395,7 +394,7 @@ class TestSaveTokensEdgeCases:
     def test_save_tokens_missing_access_token_completely(self, sample_hps_url):
         """save_tokens raises ValueError when access_token key is missing."""
         tokens = {"refresh_token": "token"}
-        with pytest.raises(ValueError):
+        with pytest.raises(ValueError, match="Invalid token payload"):
             save_tokens(tokens, sample_hps_url, storage="memory")
 
     def test_save_tokens_extra_fields_accepted(self, sample_tokens, sample_hps_url):
@@ -543,13 +542,12 @@ class TestAtomicWriteBytesEdgeCases:
         target = tmp_path / "target.txt"
 
         # Mock os.replace to fail
-        original_replace = os.replace
 
         def mock_replace_error(*args, **kwargs):
             raise OSError("Simulated failure")
 
         with patch("os.replace", side_effect=mock_replace_error):
-            with pytest.raises(OSError):
+            with pytest.raises(OSError, match="Simulated failure"):
                 _atomic_write_bytes(target, b"data")
 
         # Check that no .tmp files are left behind

@@ -40,7 +40,7 @@ from ansys.hps.client.authenticate import authenticate, determine_auth_url
 pytestmark = pytest.mark.integration
 
 
-@pytest.fixture(scope="function")
+@pytest.fixture
 def temp_token_file(tmp_path, monkeypatch):
     """Provide a temporary token file path and patch TOKEN_FILE."""
     token_file = tmp_path / "hps_tokens.json"
@@ -175,7 +175,7 @@ class TestRefreshTokensWithRealKeycloak:
         current_tokens = initial_tokens.copy()
         current_tokens["hps_url"] = url
 
-        for cycle in range(3):
+        for _cycle in range(3):
             save_tokens(current_tokens, url, storage="disk")
             new_tokens = refresh_tokens(hps_url=url, storage="disk", verify_ssl=False)
 
@@ -193,7 +193,6 @@ class TestRefreshTokensWithRealKeycloak:
         access_token remains memory-only per design.
         """
         assert initial_tokens is not None
-        original_refresh_token = initial_tokens["refresh_token"]
         save_tokens(initial_tokens, url, storage="disk")
 
         new_tokens = refresh_tokens(hps_url=url, storage="disk", verify_ssl=False)
@@ -212,7 +211,6 @@ class TestRefreshTokensWithRealKeycloak:
     def test_refresh_preserves_refresh_token(self, url, initial_tokens):
         """Test that the refresh_token itself can be used for subsequent refreshes."""
         assert initial_tokens is not None
-        original_refresh_token = initial_tokens["refresh_token"]
         save_tokens(initial_tokens, url, storage="disk")
 
         first_refresh = refresh_tokens(hps_url=url, storage="disk", verify_ssl=False)
@@ -359,8 +357,10 @@ class TestOidcHelperFunctions:
         """Test _pkce_pair() generates a valid PKCE verifier/challenge (S256)."""
         verifier, challenge = _pkce_pair()
 
-        assert isinstance(verifier, str) and len(verifier) > 0
-        assert isinstance(challenge, str) and len(challenge) > 0
+        assert isinstance(verifier, str)
+        assert len(verifier) > 0
+        assert isinstance(challenge, str)
+        assert len(challenge) > 0
 
         # Verify challenge is the S256 hash of the verifier
         digest = hashlib.sha256(verifier.encode()).digest()

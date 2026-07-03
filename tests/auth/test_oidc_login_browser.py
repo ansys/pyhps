@@ -19,7 +19,7 @@ from unittest.mock import MagicMock, patch
 import pytest
 
 try:
-    from playwright.async_api import Browser, BrowserContext, Page, async_playwright
+    from playwright.async_api import async_playwright
 
     HAS_PLAYWRIGHT = True
 except ImportError:
@@ -211,7 +211,7 @@ class TestBrowserLoginFlow:
                     )
                     # Error message should appear
                     assert True
-                except:
+                except Exception:
                     # No error message but page still loaded
                     assert True
         except Exception as e:

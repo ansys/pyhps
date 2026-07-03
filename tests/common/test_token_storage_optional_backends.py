@@ -122,7 +122,7 @@ class TestDPAPIEncryption:
         invalid_data = b"not_valid_encrypted_data\x00\xff"
 
         # Decryption should raise an error
-        with pytest.raises(Exception):  # Could be ValueError, PermissionError, etc.
+        with pytest.raises(RuntimeError, match="Failed to decrypt"):
             self._decrypt_with_dpapi(invalid_data)
 
     def test_dpapi_decrypt_truncated_ciphertext(self):
@@ -134,7 +134,7 @@ class TestDPAPIEncryption:
         truncated = encrypted[: len(encrypted) // 2]
 
         # Should raise an error when decrypting
-        with pytest.raises(Exception):
+        with pytest.raises(RuntimeError, match="Failed to decrypt"):
             self._decrypt_with_dpapi(truncated)
 
     def test_dpapi_empty_data(self):
@@ -216,7 +216,7 @@ class TestDPAPIPerformance:
             encrypted_items.append(_encrypt_with_dpapi(item))
 
         # Decrypt all and verify
-        for orig, encrypted in zip(test_items, encrypted_items):
+        for orig, encrypted in zip(test_items, encrypted_items, strict=False):
             decrypted = _decrypt_with_dpapi(encrypted)
             assert decrypted == orig
 
@@ -353,7 +353,7 @@ class TestKeyringBackend:
         }
 
         # Should handle the exception gracefully or raise
-        with pytest.raises(Exception):
+        with pytest.raises(RuntimeError):
             save_tokens(
                 tokens=tokens,
                 hps_url="https://localhost:8443/hps",
