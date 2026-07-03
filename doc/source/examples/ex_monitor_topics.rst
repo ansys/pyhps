@@ -71,8 +71,10 @@ The script follows the standard three-step setup shared by all monitor examples:
 1. **Authenticate** with the top-level :class:`Client`. This performs the
    Keycloak OAuth exchange and stores the access token.
 2. **Create a** :class:`MonitorClient`. Pass ``client=hps`` so that the
-   monitor client can reuse the same HTTP session for any JMS or RMS look-ups it
-   needs internally, and pass ``ws_connection_options`` to disable TLS
+  monitor client can reuse the same HTTP session for monitor calls and for any
+  JMS/RMS lookups required by methods such as
+  :func:`MonitorClient.stream_task_host_resources`, and pass
+  ``ws_connection_options`` to disable TLS
    certificate verification when connecting to a local server with a self-signed
    certificate.
 3. **Call** :func:`MonitorClient.list_topics`. The call is synchronous: it
@@ -239,8 +241,8 @@ Stream task host resources
 
 This example shows how to stream host CPU and memory utilisation metrics for a
 running task using :func:`MonitorClient.stream_task_host_resources`. Unlike
-:func:`~MonitorClient.stream_task_logs`, this method requires only a task ID.
-It automatically resolves the evaluator assigned to the task through JMS and
+:func:`~MonitorClient.stream_task_logs`, this method requires both a project ID
+and task ID. It automatically resolves the evaluator assigned to the task through JMS and
 RMS and subscribes to that evaluator's ``host_resources`` metric stream.
 
 Background
@@ -280,9 +282,16 @@ Evaluator resolution
 :func:`MonitorClient.stream_task_host_resources` looks up the task via the JMS
 API, finds the evaluator name from the task's execution context, then queries
 the RMS API to resolve the evaluator's host identifier. This is why passing
-``client=hps`` when constructing :class:`MonitorClient` is important: it allows
-the monitor client to reuse the already-authenticated session for those internal
-API calls instead of creating a second login.
+``client=hps`` when constructing :class:`MonitorClient` is required: the method
+uses that pre-authenticated client for JMS/RMS API calls.
+
+Because JMS tasks are scoped by project,
+:func:`MonitorClient.stream_task_host_resources` needs both ``task_id`` and
+``project_id``.
+
+If you know ``task_id`` but not ``project_id``, use
+:func:`MonitorClient.resolve_project_id_for_task` before calling
+:func:`MonitorClient.stream_task_host_resources`.
 
 Display modes
 ^^^^^^^^^^^^^
@@ -312,6 +321,9 @@ Command-line options
      - HPS password.
    * - ``--task-id``
      - ID of the task to stream host metrics for (required).
+   * - ``--project-id``
+     - Optional ID of the project that owns ``--task-id``. If omitted, the
+       script infers it from task logs.
    * - ``--backlog``
      - Number of historical metric snapshots to replay on connect (default: 20).
    * - ``--interval SECONDS``
@@ -328,7 +340,7 @@ Expected output
 
 Per-message mode::
 
-    Streaming host resources for task 033VubFI0m4PYEREddzbN1
+    Streaming host resources for project 03P7JeAj5L0vjX7B8u4JQ2, task 033VubFI0m4PYEREddzbN1
     (resolving evaluator via JMS/RMS...)
     Press Ctrl+C to stop
     time                    cpu        mem

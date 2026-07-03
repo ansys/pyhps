@@ -201,6 +201,13 @@ def test_integration_client_uses_provided_client_without_token():
     assert resolved is provided
 
 
+def test_integration_client_raises_without_provided_client():
+    client = MonitorClient("http://localhost:1089", token="jwt")
+
+    with pytest.raises(RuntimeError, match="pre-authenticated client is required"):
+        client._integration_client()
+
+
 def test_send_ws_command_without_token_sends_no_auth_header(monkeypatch):
     captured = {"header": "not-set"}
 
@@ -438,8 +445,12 @@ def test_stream_task_host_resources_sends_correct_topic(monkeypatch):
     ws = _make_multi_ws_mock(monkeypatch, [{"cpu_percent": 42.0, "memory_percent": 55.1}])
 
     client = MonitorClient("http://localhost:1089", token="jwt")
-    monkeypatch.setattr(client, "_resolve_evaluator_name_for_task", lambda task_id: "eval-1")
-    results = list(client.stream_task_host_resources("task-abc"))
+    monkeypatch.setattr(
+        client,
+        "_resolve_evaluator_name_for_task",
+        lambda task_id, project_id: "eval-1",
+    )
+    results = list(client.stream_task_host_resources("task-abc", "proj-123"))
 
     sent = ws.sent[0]
     assert sent["type"] == "command"
@@ -462,8 +473,12 @@ def test_stream_task_host_resources_yields_messages(monkeypatch):
     _make_multi_ws_mock(monkeypatch, updates)
 
     client = MonitorClient("http://localhost:1089", token="t")
-    monkeypatch.setattr(client, "_resolve_evaluator_name_for_task", lambda task_id: "eval-1")
-    results = list(client.stream_task_host_resources("task-abc", max_messages=10))
+    monkeypatch.setattr(
+        client,
+        "_resolve_evaluator_name_for_task",
+        lambda task_id, project_id: "eval-1",
+    )
+    results = list(client.stream_task_host_resources("task-abc", "proj-123", max_messages=10))
 
     assert results == updates
 
@@ -473,8 +488,12 @@ def test_stream_task_host_resources_unwraps_messages_envelope(monkeypatch):
     _make_multi_ws_mock(monkeypatch, envelopes)
 
     client = MonitorClient("http://localhost:1089", token="t")
-    monkeypatch.setattr(client, "_resolve_evaluator_name_for_task", lambda task_id: "eval-1")
-    results = list(client.stream_task_host_resources("task-abc", max_messages=10))
+    monkeypatch.setattr(
+        client,
+        "_resolve_evaluator_name_for_task",
+        lambda task_id, project_id: "eval-1",
+    )
+    results = list(client.stream_task_host_resources("task-abc", "proj-123", max_messages=10))
 
     assert results == [{"cpu_percent": 10.0}, {"cpu_percent": 20.0}]
 
@@ -503,8 +522,12 @@ def test_stream_task_host_resources_stops_cleanly_on_websocket_timeout(monkeypat
     )
 
     client = MonitorClient("http://localhost:1089", token="t")
-    monkeypatch.setattr(client, "_resolve_evaluator_name_for_task", lambda task_id: "eval-1")
-    results = list(client.stream_task_host_resources("task-abc", max_messages=10))
+    monkeypatch.setattr(
+        client,
+        "_resolve_evaluator_name_for_task",
+        lambda task_id, project_id: "eval-1",
+    )
+    results = list(client.stream_task_host_resources("task-abc", "proj-123", max_messages=10))
 
     assert results == []
 
@@ -514,8 +537,12 @@ def test_stream_task_host_resources_respects_backlog(monkeypatch):
     ws = _make_multi_ws_mock(monkeypatch, [])
 
     client = MonitorClient("http://localhost:1089", token="t")
-    monkeypatch.setattr(client, "_resolve_evaluator_name_for_task", lambda task_id: "eval-1")
-    list(client.stream_task_host_resources("task-abc", backlog=42))
+    monkeypatch.setattr(
+        client,
+        "_resolve_evaluator_name_for_task",
+        lambda task_id, project_id: "eval-1",
+    )
+    list(client.stream_task_host_resources("task-abc", "proj-123", backlog=42))
 
     assert ws.sent[0]["backlog"] == {"limit": 42}
 
@@ -526,8 +553,12 @@ def test_stream_task_host_resources_respects_max_messages(monkeypatch):
     _make_multi_ws_mock(monkeypatch, updates)
 
     client = MonitorClient("http://localhost:1089", token="t")
-    monkeypatch.setattr(client, "_resolve_evaluator_name_for_task", lambda task_id: "eval-1")
-    results = list(client.stream_task_host_resources("task-abc", max_messages=3))
+    monkeypatch.setattr(
+        client,
+        "_resolve_evaluator_name_for_task",
+        lambda task_id, project_id: "eval-1",
+    )
+    results = list(client.stream_task_host_resources("task-abc", "proj-123", max_messages=3))
 
     assert len(results) == 3
 
@@ -556,8 +587,12 @@ def test_stream_task_host_resources_uses_derived_ws_url(monkeypatch):
     )
 
     client = MonitorClient("https://localhost:8443/hps", token="t")
-    monkeypatch.setattr(client, "_resolve_evaluator_name_for_task", lambda task_id: "eval-1")
-    list(client.stream_task_host_resources("task-abc"))
+    monkeypatch.setattr(
+        client,
+        "_resolve_evaluator_name_for_task",
+        lambda task_id, project_id: "eval-1",
+    )
+    list(client.stream_task_host_resources("task-abc", "proj-123"))
 
     assert captured["url"] == "wss://localhost:8443/hps/monitor/ws/topics"
 
@@ -569,11 +604,11 @@ def test_stream_task_host_resources_raises_when_evaluator_resolution_fails(monke
     monkeypatch.setattr(
         client,
         "_resolve_evaluator_name_for_task",
-        lambda task_id: (_ for _ in ()).throw(RuntimeError("not found")),
+        lambda task_id, project_id: (_ for _ in ()).throw(RuntimeError("not found")),
     )
 
     with pytest.raises(RuntimeError, match="not found"):
-        list(client.stream_task_host_resources("task-abc"))
+        list(client.stream_task_host_resources("task-abc", "proj-123"))
 
 
 def test_stream_task_logs_unlimited_when_max_messages_none(monkeypatch):
@@ -825,6 +860,51 @@ def test_stream_task_logs_uses_derived_ws_url(monkeypatch):
     list(client.stream_task_logs("task-abc"))
 
     assert captured["url"] == "wss://localhost:8443/hps/monitor/ws/topics"
+
+
+def test_resolve_project_id_for_task_reads_from_tags(monkeypatch):
+    client = MonitorClient("http://localhost:1089", token="t")
+    monkeypatch.setattr(
+        client,
+        "stream_task_logs",
+        lambda **kwargs: iter([
+            {"message": "line", "tags": {"project_id": "proj-123", "task_id": "task-abc"}},
+        ]),
+    )
+
+    project_id = client.resolve_project_id_for_task("task-abc")
+
+    assert project_id == "proj-123"
+
+
+def test_resolve_project_id_for_task_reads_top_level_fallback(monkeypatch):
+    client = MonitorClient("http://localhost:1089", token="t")
+    monkeypatch.setattr(
+        client,
+        "stream_task_logs",
+        lambda **kwargs: iter([
+            {"message": "line", "project_id": "proj-abc"},
+        ]),
+    )
+
+    project_id = client.resolve_project_id_for_task("task-abc")
+
+    assert project_id == "proj-abc"
+
+
+def test_resolve_project_id_for_task_raises_when_missing(monkeypatch):
+    client = MonitorClient("http://localhost:1089", token="t")
+    monkeypatch.setattr(
+        client,
+        "stream_task_logs",
+        lambda **kwargs: iter([
+            {"message": "line", "tags": {"task_id": "task-abc"}},
+            {"message": "line2"},
+        ]),
+    )
+
+    with pytest.raises(RuntimeError, match="Could not infer project_id"):
+        client.resolve_project_id_for_task("task-abc")
 
 
 # ---------------------------------------------------------------------------
