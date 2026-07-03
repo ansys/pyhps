@@ -393,7 +393,10 @@ class TestBrowserLoginPKCEFlow:
                 # Fill credentials on the Keycloak login page
                 await pg.fill('input[name="username"]', username)
                 await pg.fill('input[name="password"]', password)
-                await pg.click('button[type="submit"]')
+                # Use combined selector for Keycloak button variants across versions
+                await pg.locator(
+                    'button[type="submit"], input[type="submit"], #kc-login'
+                ).first.click(timeout=15000)
 
                 # browser_login() receives the real callback code and exchanges it
                 tokens = await asyncio.wait_for(future, timeout=30)
@@ -441,7 +444,9 @@ class TestBrowserLoginPKCEFlow:
                 await pg.goto(captured_auth_url[0], wait_until="networkidle", timeout=15000)
                 await pg.fill('input[name="username"]', username)
                 await pg.fill('input[name="password"]', password)
-                await pg.click('button[type="submit"]')
+                await pg.locator(
+                    'button[type="submit"], input[type="submit"], #kc-login'
+                ).first.click(timeout=15000)
 
                 tokens = await asyncio.wait_for(future, timeout=30)
             except Exception as e:
@@ -496,7 +501,9 @@ class TestMainWithBrowserLogin:
                 await pg.goto(captured_auth_url[0], wait_until="networkidle", timeout=15000)
                 await pg.fill('input[name="username"]', username)
                 await pg.fill('input[name="password"]', password)
-                await pg.click('button[type="submit"]')
+                await pg.locator(
+                    'button[type="submit"], input[type="submit"], #kc-login'
+                ).first.click(timeout=15000)
 
                 await asyncio.wait_for(future, timeout=30)
             except Exception as e:
@@ -544,7 +551,9 @@ class TestMainWithBrowserLogin:
                 await pg.goto(captured_auth_url[0], wait_until="networkidle", timeout=15000)
                 await pg.fill('input[name="username"]', username)
                 await pg.fill('input[name="password"]', password)
-                await pg.click('button[type="submit"]')
+                await pg.locator(
+                    'button[type="submit"], input[type="submit"], #kc-login'
+                ).first.click(timeout=15000)
 
                 await asyncio.wait_for(future, timeout=30)
             except Exception as e:
