@@ -20,7 +20,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-"""OIDC Authorization Code + PKCE login and token persistence utilities.
+r"""OIDC Authorization Code + PKCE login and token persistence utilities.
 
 Starts a temporary localhost HTTP server, opens your browser at the
 login page, and exchanges the authorization code for tokens.
@@ -77,13 +77,13 @@ import urllib.parse
 import webbrowser
 from pathlib import Path
 
+import requests
 import urllib3
 
-urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
-
-import requests  # noqa: E402
-
+from ...authenticate import authenticate, determine_auth_url
 from ...common import token_storage as _token_storage
+
+urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 TOKEN_FILE = _token_storage.TOKEN_FILE
 CLIENT_ID = "rep-cli"
@@ -173,6 +173,11 @@ def refresh_tokens(
         HPS server URL. If not provided, will be loaded from saved tokens.
     issuer:
         OIDC issuer URL. If not provided, defaults to standard OIDC discovery path.
+    storage:
+        Backend to load existing tokens from. Supported values are ``"memory"``,
+        ``"disk"``, and ``"keyring"``.
+    service_name:
+        Keyring service name override. Used only when ``storage="keyring"``.
 
     Returns
     -------
@@ -180,8 +185,6 @@ def refresh_tokens(
         Refreshed token dict if successful, None if refresh fails or no tokens available.
 
     """
-    from ...authenticate import authenticate, determine_auth_url
-
     # Load saved tokens from the selected backend only.
     tokens = load_tokens(storage=storage, service_name=service_name)
     if not tokens:

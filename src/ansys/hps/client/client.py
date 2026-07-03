@@ -37,6 +37,7 @@ from ansys.hps.data_transfer.client import Client as DataTransferClient
 from ansys.hps.data_transfer.client import DataTransferApi
 
 from .authenticate import authenticate, determine_auth_url
+from .common import token_storage as _token_storage
 from .common.redaction import redact_sensitive_values
 from .connection import create_session
 from .exceptions import HPSError, raise_for_status
@@ -397,13 +398,11 @@ class Client:
 
     def _validate_token_storage_backend(self, strict: bool):
         """Validate requested token storage backend availability."""
-        from .common.token_storage import _check_storage_backend
-
         if self.token_storage == "memory":
             return
 
         if self.token_storage == "disk":
-            error = _check_storage_backend("disk")
+            error = _token_storage._check_storage_backend("disk")
             if error is None:
                 return
 
@@ -418,7 +417,7 @@ class Client:
             return
 
         if self.token_storage == "keyring":
-            error = _check_storage_backend("keyring")
+            error = _token_storage._check_storage_backend("keyring")
             if error is None:
                 return
 
@@ -676,9 +675,7 @@ class Client:
             return result
 
         try:
-            from .common.token_storage import save_tokens
-
-            path = save_tokens(tokens, self.url, storage=self.token_storage)
+            path = _token_storage.save_tokens(tokens, self.url, storage=self.token_storage)
             if path is not None:
                 result["path"] = str(path)
         except Exception as ex:
