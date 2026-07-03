@@ -168,7 +168,7 @@ def test_save_tokens_keyring_windows_preflight_rejects_oversized_token(
     monkeypatch.setattr("ansys.hps.client.auth.api.oidc_login.TOKEN_FILE", token_file)
 
     oversized_tokens = sample_tokens.copy()
-    oversized_tokens["access_token"] = "a" * 3000
+    oversized_tokens["refresh_token"] = "a" * 3000
 
     fake_keyring = types.SimpleNamespace(set_password=MagicMock())
 
@@ -177,7 +177,7 @@ def test_save_tokens_keyring_windows_preflight_rejects_oversized_token(
         return_value="Windows",
     ):
         with patch.dict(sys.modules, {"keyring": fake_keyring}):
-            with pytest.raises(RuntimeError, match="preflight: access_token is 3000 bytes"):
+            with pytest.raises(RuntimeError, match="preflight: refresh_token is 3000 bytes"):
                 _ = save_tokens(oversized_tokens, sample_hps_url, storage="keyring")
 
     fake_keyring.set_password.assert_not_called()
@@ -202,9 +202,9 @@ def test_save_and_load_tokens_real_dpapi_roundtrip(sample_tokens, sample_hps_url
     loaded = _load_from_disk()
     assert loaded is not None
     assert loaded["hps_url"] == sample_hps_url
-    assert loaded["access_token"] == sample_tokens["access_token"]
+    assert loaded.get("access_token") is None
     assert loaded["refresh_token"] == sample_tokens["refresh_token"]
-    assert loaded["expires_in"] == sample_tokens["expires_in"]
+    assert loaded["expires_in"] == 3600
     assert loaded["refresh_expires_in"] == sample_tokens["refresh_expires_in"]
 
 
@@ -219,9 +219,7 @@ def test_save_and_load_tokens_real_keyring(sample_tokens, sample_hps_url):
     service_name = "ansys-hps"
     fields = (
         "hps_url",
-        "access_token",
         "refresh_token",
-        "expires_in",
         "refresh_expires_in",
         "saved_at",
     )
@@ -237,7 +235,7 @@ def test_save_and_load_tokens_real_keyring(sample_tokens, sample_hps_url):
         loaded = load_tokens(storage="keyring")
         assert loaded is not None
         assert loaded["hps_url"] == sample_hps_url
-        assert loaded["access_token"] == sample_tokens["access_token"]
+        assert loaded.get("access_token") is None
         assert loaded["refresh_token"] == sample_tokens["refresh_token"]
     except Exception as ex:
         pytest.skip(f"Real keyring backend unavailable: {ex}")

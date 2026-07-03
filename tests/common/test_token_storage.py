@@ -80,7 +80,7 @@ def test_save_to_keyring_success(sample_tokens, sample_hps_url):
         result = _save_to_keyring(sample_tokens, sample_hps_url)
 
         assert result is True
-        assert mock_keyring.set_password.call_count >= 6
+        assert mock_keyring.set_password.call_count >= 4
         calls = [call[0] for call in mock_keyring.set_password.call_args_list]
         service_names = [call[0] for call in calls]
         assert all(s == "ansys-hps" for s in service_names)
@@ -145,7 +145,7 @@ def test_load_from_keyring_success(sample_tokens, sample_hps_url):
         result = _load_from_keyring()
 
         assert result is not None
-        assert result["access_token"] == sample_tokens["access_token"]
+        assert result.get("access_token") is None
         assert result["hps_url"] == sample_hps_url
 
 
@@ -166,7 +166,7 @@ def test_load_from_keyring_with_custom_service_name(sample_tokens, sample_hps_ur
         result = _load_from_keyring(service_name=custom_service_name)
 
         assert result is not None
-        assert result["access_token"] == sample_tokens["access_token"]
+        assert result.get("access_token") is None
         get_calls = [call[0] for call in mock_keyring.get_password.call_args_list]
         service_names = [call[0] for call in get_calls]
         assert all(s == custom_service_name for s in service_names)
@@ -193,10 +193,8 @@ def test_load_from_keyring_invalid_numeric_fields(sample_tokens, sample_hps_url)
     mock_keyring = MagicMock()
     mock_keyring.get_password.side_effect = lambda service, key: {
         "hps_url": sample_hps_url,
-        "access_token": sample_tokens["access_token"],
         "refresh_token": sample_tokens["refresh_token"],
-        "expires_in": "not-an-int",
-        "refresh_expires_in": str(sample_tokens["refresh_expires_in"]),
+        "refresh_expires_in": "not-an-int",
         "saved_at": str(sample_tokens["saved_at"]),
     }.get(key)
 
@@ -302,7 +300,7 @@ def test_save_to_disk_and_load(sample_tokens, sample_hps_url, tmp_path, monkeypa
         loaded = _load_from_disk()
 
     assert loaded is not None
-    assert loaded["access_token"] == sample_tokens["access_token"]
+    assert loaded.get("access_token") is None
     assert loaded["hps_url"] == sample_hps_url
 
 
@@ -370,8 +368,8 @@ def test_atomic_write_bytes_fsyncs_parent_directory_on_unix(tmp_path):
     assert any(call.args and call.args[0] == directory_fd for call in mock_fsync.call_args_list)
 
 
-def test_load_from_disk_invalid_schema_missing_access_token(tmp_path, monkeypatch):
-    """Loading token payload without required access_token returns None."""
+def test_load_from_disk_invalid_schema_missing_refresh_token(tmp_path, monkeypatch):
+    """Loading token payload without required refresh_token returns None."""
     token_file = tmp_path / ".ansys" / "hps_tokens.json"
     token_file.parent.mkdir(parents=True, exist_ok=True)
     token_file.write_text(json.dumps({"hps_url": "https://example.com:8443/hps"}), encoding="utf-8")
@@ -394,6 +392,23 @@ def test_save_tokens_missing_required_access_token(sample_hps_url):
         save_tokens({"refresh_token": "abc"}, sample_hps_url, storage="memory")
 
 
+
+def test_save_tokens_disk_requires_refresh_token(sample_tokens, sample_hps_url):
+    """save_tokens with disk storage requires refresh_token for persistence."""
+    no_refresh = sample_tokens.copy()
+    no_refresh["refresh_token"] = None
+
+    with pytest.raises(ValueError, match="requires a refresh_token"):
+        save_tokens(no_refresh, sample_hps_url, storage="disk")
+
+
+def test_save_tokens_keyring_requires_refresh_token(sample_tokens, sample_hps_url):
+    """save_tokens with keyring storage requires refresh_token for persistence."""
+    no_refresh = sample_tokens.copy()
+    no_refresh["refresh_token"] = None
+
+    with pytest.raises(ValueError, match="requires a refresh_token"):
+        save_tokens(no_refresh, sample_hps_url, storage="keyring")
 def test_save_tokens_invalid_numeric_field(sample_tokens, sample_hps_url):
     """save_tokens raises ValueError when numeric fields are malformed."""
     bad_tokens = sample_tokens.copy()
@@ -406,8 +421,10 @@ def test_save_tokens_invalid_numeric_field(sample_tokens, sample_hps_url):
 def test_save_tokens_keyring_raises_when_keyring_unavailable(sample_tokens, sample_hps_url):
     """save_tokens in keyring mode raises when keyring persistence fails."""
     with patch("ansys.hps.client.common.token_storage._save_to_keyring", return_value=False):
-        with pytest.raises(RuntimeError, match="Keyring storage requested"):
+        with pytest.raises(RuntimeError, match="Failed to save tokens to keyring"):
             _ = save_tokens(sample_tokens, sample_hps_url, storage="keyring")
+
+
 
 
 
