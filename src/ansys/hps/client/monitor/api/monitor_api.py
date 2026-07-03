@@ -374,6 +374,7 @@ class MonitorClient:
 
         Raises:
             RuntimeError: If no inspected message provides a project ID.
+
         """
         for msg in self.stream_task_logs(
             task_id=task_id,
