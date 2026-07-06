@@ -22,10 +22,11 @@
 
 """Annotated example: stream host CPU/memory metrics with MonitorClient.stream_task_host_resources.
 
-``stream_task_host_resources`` automatically resolves the evaluator assigned to
-a task (via JMS and RMS) and subscribes to ``host_resources`` metric messages
-for that evaluator.  Each message contains a snapshot of the host's CPU and
-memory utilisation.
+``stream_task_host_resources`` resolves the evaluator assigned to a task (via
+JMS and RMS) and subscribes to ``host_resources`` metric messages for that
+evaluator. A pre-authenticated HPS client must be passed as ``client=...`` when
+constructing ``MonitorClient`` so these JMS/RMS lookups can run. If
+``--project-id`` is omitted, this example infers it from ``stream_task_logs``.
 
 Usage (local dev with self-signed cert):
 
@@ -61,6 +62,11 @@ def _build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--base-url", default="https://localhost:8443/hps")
     parser.add_argument("--username", required=True)
     parser.add_argument("--password", required=True)
+    parser.add_argument(
+        "--project-id",
+        default=None,
+        help="Optional project ID. If omitted, inferred from task logs.",
+    )
     parser.add_argument("--task-id", required=True)
     parser.add_argument(
         "--backlog",
@@ -170,8 +176,8 @@ def main() -> None:
         ws_options = {"sslopt": {"cert_reqs": ssl.CERT_NONE}}
 
     # 3) Build a MonitorClient that reuses the authenticated client and token.
-    #    Passing client=hps allows stream_task_host_resources to resolve the
-    #    evaluator via JMS/RMS without creating a second login.
+    #    Passing client=hps is required because stream_task_host_resources uses
+    #    JMS/RMS APIs to resolve the evaluator for the task.
     monitor = MonitorClient(
         base_url=args.base_url,
         token=hps.access_token,
@@ -180,7 +186,12 @@ def main() -> None:
         timeout_seconds=30.0,
     )
 
-    print(f"Streaming host resources for task {args.task_id}")
+    project_id = args.project_id
+    if not project_id:
+        project_id = monitor.resolve_project_id_for_task(task_id=args.task_id)
+        print(f"Resolved project_id={project_id} from task logs")
+
+    print(f"Streaming host resources for project {project_id}, task {args.task_id}")
     print("(resolving evaluator via JMS/RMS...)")
 
     use_summary = args.interval > 0
@@ -208,6 +219,7 @@ def main() -> None:
         #    metric snapshot pushed by the server.
         for msg in monitor.stream_task_host_resources(
             task_id=args.task_id,
+            project_id=project_id,
             backlog=args.backlog,
             max_messages=args.max_messages,
         ):

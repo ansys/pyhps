@@ -20,6 +20,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+import importlib
 import json
 import sys
 from types import SimpleNamespace
@@ -27,6 +28,7 @@ from urllib.parse import parse_qs, urlsplit
 
 import pytest
 
+import ansys.hps.client.monitor.api.monitor_api as monitor_api_module
 from ansys.hps.client.monitor import MonitorClient, build_filter_templates
 
 
@@ -42,6 +44,13 @@ class _ResponseMock:
 
     def read(self):
         return json.dumps(self._payload).encode("utf-8")
+
+
+def test_monitor_api_module_reload_executes_definitions():
+    reloaded = importlib.reload(monitor_api_module)
+
+    assert reloaded.ClientType.FILE_TAIL == "ansys.rep.evaluator.file_tail"
+    assert hasattr(reloaded, "MonitorClient")
 
 
 def test_get_build_info_uses_expected_endpoint_and_auth_header(monkeypatch):
@@ -203,6 +212,114 @@ def test_integration_client_uses_provided_client_without_token():
     resolved = client._integration_client()
 
     assert resolved is provided
+
+
+def test_integration_client_raises_without_provided_client():
+    client = MonitorClient("http://localhost:1089", token="jwt")
+
+    with pytest.raises(RuntimeError, match="pre-authenticated client is required"):
+        client._integration_client()
+
+
+def test_auth_headers_without_token_returns_empty_dict():
+    client = MonitorClient("http://localhost:1089")
+
+    assert client._auth_headers() == {}
+
+
+def test_resolve_evaluator_name_for_task_success(monkeypatch):
+    provided = SimpleNamespace(name="provided-client")
+    captured = {"project_id": None, "task_id": None, "host_id": None}
+
+    class _ProjectApiMock:
+        def __init__(self, client, project_id):
+            captured["project_id"] = project_id
+
+        def get_tasks(self, id, fields):
+            captured["task_id"] = id
+            assert fields == ["id", "host_id"]
+            return [SimpleNamespace(host_id="host-1")]
+
+    class _RmsApiMock:
+        def __init__(self, client):
+            pass
+
+        def get_evaluators(self, host_id, fields):
+            captured["host_id"] = host_id
+            assert fields == ["id", "name", "host_id"]
+            return [SimpleNamespace(name="eval-1")]
+
+    monkeypatch.setattr("ansys.hps.client.jms.ProjectApi", _ProjectApiMock)
+    monkeypatch.setattr("ansys.hps.client.rms.RmsApi", _RmsApiMock)
+
+    client = MonitorClient("http://localhost:1089", client=provided)
+    evaluator_name = client._resolve_evaluator_name_for_task("task-abc", "proj-123")
+
+    assert evaluator_name == "eval-1"
+    assert captured["project_id"] == "proj-123"
+    assert captured["task_id"] == "task-abc"
+    assert captured["host_id"] == "host-1"
+
+
+def test_resolve_evaluator_name_for_task_raises_when_task_not_found(monkeypatch):
+    class _ProjectApiMock:
+        def __init__(self, client, project_id):
+            pass
+
+        def get_tasks(self, id, fields):
+            return []
+
+    monkeypatch.setattr("ansys.hps.client.jms.ProjectApi", _ProjectApiMock)
+
+    client = MonitorClient("http://localhost:1089", client=SimpleNamespace())
+    with pytest.raises(RuntimeError, match="Could not resolve host_id"):
+        client._resolve_evaluator_name_for_task("task-abc", "proj-123")
+
+
+def test_resolve_evaluator_name_for_task_raises_when_no_evaluator(monkeypatch):
+    class _ProjectApiMock:
+        def __init__(self, client, project_id):
+            pass
+
+        def get_tasks(self, id, fields):
+            return [SimpleNamespace(host_id="host-1")]
+
+    class _RmsApiMock:
+        def __init__(self, client):
+            pass
+
+        def get_evaluators(self, host_id, fields):
+            return []
+
+    monkeypatch.setattr("ansys.hps.client.jms.ProjectApi", _ProjectApiMock)
+    monkeypatch.setattr("ansys.hps.client.rms.RmsApi", _RmsApiMock)
+
+    client = MonitorClient("http://localhost:1089", client=SimpleNamespace())
+    with pytest.raises(RuntimeError, match="Could not resolve evaluator"):
+        client._resolve_evaluator_name_for_task("task-abc", "proj-123")
+
+
+def test_resolve_evaluator_name_for_task_raises_when_evaluator_name_missing(monkeypatch):
+    class _ProjectApiMock:
+        def __init__(self, client, project_id):
+            pass
+
+        def get_tasks(self, id, fields):
+            return [SimpleNamespace(host_id="host-1")]
+
+    class _RmsApiMock:
+        def __init__(self, client):
+            pass
+
+        def get_evaluators(self, host_id, fields):
+            return [SimpleNamespace(name="")]
+
+    monkeypatch.setattr("ansys.hps.client.jms.ProjectApi", _ProjectApiMock)
+    monkeypatch.setattr("ansys.hps.client.rms.RmsApi", _RmsApiMock)
+
+    client = MonitorClient("http://localhost:1089", client=SimpleNamespace())
+    with pytest.raises(RuntimeError, match="does not provide a name"):
+        client._resolve_evaluator_name_for_task("task-abc", "proj-123")
 
 
 def test_send_ws_command_without_token_sends_no_auth_header(monkeypatch):
@@ -379,6 +496,19 @@ def test_list_topics_missing_tags_key_in_response(monkeypatch):
     assert topics == {}
 
 
+def test_list_topics_can_keep_noisy_keys_when_requested(monkeypatch):
+    _make_ws_mock(
+        monkeypatch,
+        {"tag_list": {"timestamp": ["t1", "t2"], "level": ["info"]}},
+    )
+
+    client = MonitorClient("http://localhost:1089", token="t")
+    topics = client.list_topics("ws://localhost:1089/monitor/ws/topics", exclude_noisy=False)
+
+    assert "timestamp" in topics
+    assert topics["level"] == ["info"]
+
+
 def test_list_topics_uses_derived_ws_url_when_omitted(monkeypatch):
     """list_topics derives ws_url from base_url when ws_url is not provided."""
     captured = {}
@@ -446,8 +576,12 @@ def test_stream_task_host_resources_sends_correct_topic(monkeypatch):
     ws = _make_multi_ws_mock(monkeypatch, [{"cpu_percent": 42.0, "memory_percent": 55.1}])
 
     client = MonitorClient("http://localhost:1089", token="jwt")
-    monkeypatch.setattr(client, "_resolve_evaluator_name_for_task", lambda task_id: "eval-1")
-    results = list(client.stream_task_host_resources("task-abc"))
+    monkeypatch.setattr(
+        client,
+        "_resolve_evaluator_name_for_task",
+        lambda task_id, project_id: "eval-1",
+    )
+    results = list(client.stream_task_host_resources("task-abc", "proj-123"))
 
     sent = ws.sent[0]
     assert sent["type"] == "command"
@@ -470,8 +604,12 @@ def test_stream_task_host_resources_yields_messages(monkeypatch):
     _make_multi_ws_mock(monkeypatch, updates)
 
     client = MonitorClient("http://localhost:1089", token="t")
-    monkeypatch.setattr(client, "_resolve_evaluator_name_for_task", lambda task_id: "eval-1")
-    results = list(client.stream_task_host_resources("task-abc", max_messages=10))
+    monkeypatch.setattr(
+        client,
+        "_resolve_evaluator_name_for_task",
+        lambda task_id, project_id: "eval-1",
+    )
+    results = list(client.stream_task_host_resources("task-abc", "proj-123", max_messages=10))
 
     assert results == updates
 
@@ -481,8 +619,12 @@ def test_stream_task_host_resources_unwraps_messages_envelope(monkeypatch):
     _make_multi_ws_mock(monkeypatch, envelopes)
 
     client = MonitorClient("http://localhost:1089", token="t")
-    monkeypatch.setattr(client, "_resolve_evaluator_name_for_task", lambda task_id: "eval-1")
-    results = list(client.stream_task_host_resources("task-abc", max_messages=10))
+    monkeypatch.setattr(
+        client,
+        "_resolve_evaluator_name_for_task",
+        lambda task_id, project_id: "eval-1",
+    )
+    results = list(client.stream_task_host_resources("task-abc", "proj-123", max_messages=10))
 
     assert results == [{"cpu_percent": 10.0}, {"cpu_percent": 20.0}]
 
@@ -511,8 +653,12 @@ def test_stream_task_host_resources_stops_cleanly_on_websocket_timeout(monkeypat
     )
 
     client = MonitorClient("http://localhost:1089", token="t")
-    monkeypatch.setattr(client, "_resolve_evaluator_name_for_task", lambda task_id: "eval-1")
-    results = list(client.stream_task_host_resources("task-abc", max_messages=10))
+    monkeypatch.setattr(
+        client,
+        "_resolve_evaluator_name_for_task",
+        lambda task_id, project_id: "eval-1",
+    )
+    results = list(client.stream_task_host_resources("task-abc", "proj-123", max_messages=10))
 
     assert results == []
 
@@ -522,8 +668,12 @@ def test_stream_task_host_resources_respects_backlog(monkeypatch):
     ws = _make_multi_ws_mock(monkeypatch, [])
 
     client = MonitorClient("http://localhost:1089", token="t")
-    monkeypatch.setattr(client, "_resolve_evaluator_name_for_task", lambda task_id: "eval-1")
-    list(client.stream_task_host_resources("task-abc", backlog=42))
+    monkeypatch.setattr(
+        client,
+        "_resolve_evaluator_name_for_task",
+        lambda task_id, project_id: "eval-1",
+    )
+    list(client.stream_task_host_resources("task-abc", "proj-123", backlog=42))
 
     assert ws.sent[0]["backlog"] == {"limit": 42}
 
@@ -534,8 +684,12 @@ def test_stream_task_host_resources_respects_max_messages(monkeypatch):
     _make_multi_ws_mock(monkeypatch, updates)
 
     client = MonitorClient("http://localhost:1089", token="t")
-    monkeypatch.setattr(client, "_resolve_evaluator_name_for_task", lambda task_id: "eval-1")
-    results = list(client.stream_task_host_resources("task-abc", max_messages=3))
+    monkeypatch.setattr(
+        client,
+        "_resolve_evaluator_name_for_task",
+        lambda task_id, project_id: "eval-1",
+    )
+    results = list(client.stream_task_host_resources("task-abc", "proj-123", max_messages=3))
 
     assert len(results) == 3
 
@@ -564,8 +718,12 @@ def test_stream_task_host_resources_uses_derived_ws_url(monkeypatch):
     )
 
     client = MonitorClient("https://localhost:8443/hps", token="t")
-    monkeypatch.setattr(client, "_resolve_evaluator_name_for_task", lambda task_id: "eval-1")
-    list(client.stream_task_host_resources("task-abc"))
+    monkeypatch.setattr(
+        client,
+        "_resolve_evaluator_name_for_task",
+        lambda task_id, project_id: "eval-1",
+    )
+    list(client.stream_task_host_resources("task-abc", "proj-123"))
 
     assert captured["url"] == "wss://localhost:8443/hps/monitor/ws/topics"
 
@@ -577,11 +735,11 @@ def test_stream_task_host_resources_raises_when_evaluator_resolution_fails(monke
     monkeypatch.setattr(
         client,
         "_resolve_evaluator_name_for_task",
-        lambda task_id: (_ for _ in ()).throw(RuntimeError("not found")),
+        lambda task_id, project_id: (_ for _ in ()).throw(RuntimeError("not found")),
     )
 
     with pytest.raises(RuntimeError, match="not found"):
-        list(client.stream_task_host_resources("task-abc"))
+        list(client.stream_task_host_resources("task-abc", "proj-123"))
 
 
 def test_stream_task_logs_unlimited_when_max_messages_none(monkeypatch):
@@ -838,6 +996,127 @@ def test_stream_task_logs_uses_derived_ws_url(monkeypatch):
     list(client.stream_task_logs("task-abc"))
 
     assert captured["url"] == "wss://localhost:8443/hps/monitor/ws/topics"
+
+
+def test_resolve_project_id_for_task_reads_from_tags(monkeypatch):
+    client = MonitorClient("http://localhost:1089", token="t")
+    monkeypatch.setattr(
+        client,
+        "stream_task_logs",
+        lambda **kwargs: iter(
+            [
+                {"message": "line", "tags": {"project_id": "proj-123", "task_id": "task-abc"}},
+            ]
+        ),
+    )
+
+    project_id = client.resolve_project_id_for_task("task-abc")
+
+    assert project_id == "proj-123"
+
+
+def test_resolve_project_id_for_task_reads_top_level_fallback(monkeypatch):
+    client = MonitorClient("http://localhost:1089", token="t")
+    monkeypatch.setattr(
+        client,
+        "stream_task_logs",
+        lambda **kwargs: iter(
+            [
+                {"message": "line", "project_id": "proj-abc"},
+            ]
+        ),
+    )
+
+    project_id = client.resolve_project_id_for_task("task-abc")
+
+    assert project_id == "proj-abc"
+
+
+def test_resolve_project_id_for_task_raises_when_missing(monkeypatch):
+    client = MonitorClient("http://localhost:1089", token="t")
+    monkeypatch.setattr(
+        client,
+        "stream_task_logs",
+        lambda **kwargs: iter(
+            [
+                {"message": "line", "tags": {"task_id": "task-abc"}},
+                {"message": "line2"},
+            ]
+        ),
+    )
+
+    with pytest.raises(RuntimeError, match="Could not infer project_id"):
+        client.resolve_project_id_for_task("task-abc")
+
+
+def test_resolve_project_id_for_task_skips_non_dict_messages(monkeypatch):
+    client = MonitorClient("http://localhost:1089", token="t")
+    monkeypatch.setattr(
+        client,
+        "stream_task_logs",
+        lambda **kwargs: iter(
+            [
+                "plain-text",
+                {"tags": {"project_id": "proj-xyz"}},
+            ]
+        ),
+    )
+
+    project_id = client.resolve_project_id_for_task("task-abc")
+
+    assert project_id == "proj-xyz"
+
+
+def test_send_ws_command_handles_list_payload_and_skips_non_dict_entries(monkeypatch):
+    class _WebSocketMock:
+        def __init__(self):
+            self.sent = []
+            self._recv_messages = [json.dumps([{"id": 1}, "skip", {"id": 2}]), ""]
+
+        def send(self, payload):
+            self.sent.append(payload)
+
+        def recv(self):
+            return self._recv_messages.pop(0)
+
+        def close(self):
+            return None
+
+    ws = _WebSocketMock()
+    monkeypatch.setitem(
+        sys.modules, "websocket", SimpleNamespace(create_connection=lambda url, **kwargs: ws)
+    )
+
+    client = MonitorClient("http://localhost:1089", token="t")
+    results = client.send_ws_command(
+        "ws://localhost:1089/monitor/ws/topics",
+        {"type": "command"},
+        max_messages=10,
+    )
+
+    assert results == [{"id": 1}, {"id": 2}]
+
+
+def test_send_ws_command_reraises_non_timeout_websocket_error(monkeypatch):
+    class _WebSocketMock:
+        def send(self, payload):
+            pass
+
+        def recv(self):
+            raise RuntimeError("boom")
+
+        def close(self):
+            return None
+
+    monkeypatch.setitem(
+        sys.modules,
+        "websocket",
+        SimpleNamespace(create_connection=lambda url, **kwargs: _WebSocketMock()),
+    )
+
+    client = MonitorClient("http://localhost:1089", token="t")
+    with pytest.raises(RuntimeError, match="boom"):
+        client.send_ws_command("ws://localhost:1089/monitor/ws/topics", {"type": "command"})
 
 
 # ---------------------------------------------------------------------------

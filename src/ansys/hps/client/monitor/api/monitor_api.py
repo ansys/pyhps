@@ -63,7 +63,8 @@ class MonitorClient:
             The WebSocket URL is derived automatically from this value.
         token: Optional JWT token used for authenticated REST and WebSocket requests.
         client: Optional pre-authenticated HPS client used for JMS/RMS lookups.
-            If provided, evaluator assignment resolution reuses this client/session.
+            This is required for evaluator assignment resolution in
+            :meth:`stream_task_host_resources`.
         ws_connection_options: Optional keyword arguments forwarded to
             ``websocket.create_connection`` for WebSocket calls. This is useful
             for local/self-signed environments (for example,
@@ -83,6 +84,8 @@ class MonitorClient:
         stream_task_logs: Subscribe to and stream log messages (stdout, stderr,
             tailed log files) for a specific task, filtered by ``task_id`` and
             optionally ``client_type``.
+        resolve_project_id_for_task: Infer ``project_id`` for a task by reading
+            one or more task-log messages and extracting ``tags.project_id``.
         get_task_process_tree: Collect process-tree metric snapshots for a specific
             task and return them as a list.
         stream_task_process_tree: Subscribe to and stream process-tree metric
@@ -110,43 +113,30 @@ class MonitorClient:
     timeout_seconds: float = 10.0
 
     def _integration_client(self):
-        """Create an internal authenticated HPS client for JMS/RMS lookups."""
+        """Return caller-provided authenticated HPS client for JMS/RMS lookups."""
         if self.client is not None:
             return self.client
 
-        if not self.token:
-            raise RuntimeError(
-                "A token or pre-authenticated client is required to resolve evaluator "
-                "assignment via JMS/RMS."
-            )
-
-        from ansys.hps.client import Client
-
-        return Client(
-            url=self.base_url,
-            access_token=self.token,
-            auto_refresh_token=False,
-            verify=False,
+        raise RuntimeError(
+            "A pre-authenticated client is required to resolve evaluator "
+            "assignment via JMS/RMS. Pass client=Client(...) to MonitorClient."
         )
 
-    def _resolve_evaluator_name_for_task(self, task_id: str) -> str:
+    def _resolve_evaluator_name_for_task(self, task_id: str, project_id: str) -> str:
         """Resolve evaluator name for a task using JMS task host_id and RMS evaluator data."""
-        from ansys.hps.client.jms import JmsApi, ProjectApi
+        from ansys.hps.client.jms import ProjectApi
         from ansys.hps.client.rms import RmsApi
 
         client = self._integration_client()
 
-        jms = JmsApi(client)
         host_id: str | None = None
 
-        for project in jms.get_projects(fields=["id"]):
-            tasks = ProjectApi(client, project.id).get_tasks(
-                id=task_id,
-                fields=["id", "host_id"],
-            )
-            if tasks:
-                host_id = tasks[0].host_id
-                break
+        tasks = ProjectApi(client, project_id).get_tasks(
+            id=task_id,
+            fields=["id", "host_id"],
+        )
+        if tasks:
+            host_id = tasks[0].host_id
 
         if not host_id:
             raise RuntimeError(f"Could not resolve host_id for task '{task_id}' from JMS.")
@@ -358,6 +348,58 @@ class MonitorClient:
         command = self._subscribe_command(topics=[topic], backlog=backlog)
         yield from self._stream_ws(url, command, max_messages)
 
+    def resolve_project_id_for_task(
+        self,
+        task_id: str,
+        *,
+        ws_url: str | None = None,
+        backlog: int = 1,
+        max_messages: int = 5,
+    ) -> str:
+        """Infer project ID for a task from task-log message tags.
+
+        This helper reads a small number of task-log messages and extracts
+        ``project_id`` from either ``message["tags"]["project_id"]`` (preferred)
+        or the top-level ``message["project_id"]`` field when present.
+
+        Args:
+            task_id: Task identifier to inspect.
+            ws_url: WebSocket URL override. Defaults to the URL derived from
+                ``base_url``.
+            backlog: Number of historical log messages to request.
+            max_messages: Maximum messages to inspect before failing.
+
+        Returns:
+            Project identifier associated with ``task_id``.
+
+        Raises:
+            RuntimeError: If no inspected message provides a project ID.
+
+        """
+        for msg in self.stream_task_logs(
+            task_id=task_id,
+            ws_url=ws_url,
+            backlog=backlog,
+            max_messages=max_messages,
+        ):
+            if not isinstance(msg, dict):
+                continue
+
+            tags = msg.get("tags")
+            if isinstance(tags, dict):
+                project_id = tags.get("project_id")
+                if isinstance(project_id, str) and project_id:
+                    return project_id
+
+            project_id = msg.get("project_id")
+            if isinstance(project_id, str) and project_id:
+                return project_id
+
+        raise RuntimeError(
+            f"Could not infer project_id for task '{task_id}' from task logs. "
+            "Provide project_id explicitly."
+        )
+
     def get_task_process_tree(
         self,
         task_id: str,
@@ -439,6 +481,7 @@ class MonitorClient:
     def stream_task_host_resources(
         self,
         task_id: str,
+        project_id: str,
         *,
         ws_url: str | None = None,
         backlog: int = 100,
@@ -450,13 +493,14 @@ class MonitorClient:
         to ``host_resources`` metric messages for that evaluator.
         Yields each update as it arrives::
 
-            for update in client.stream_task_host_resources("task-123"):
+            for update in client.stream_task_host_resources("task-123", "project-abc"):
                 cpu = update.get("cpu_percent")
                 mem = update.get("memory_percent")
                 print(f"CPU: {cpu}%  Memory: {mem}%")
 
         Args:
             task_id: The task identifier to monitor.
+            project_id: The JMS project identifier that owns ``task_id``.
             ws_url: WebSocket URL override.  Defaults to the URL derived from
                 ``base_url``.
             backlog: Number of historical metric messages to request on connect.
@@ -470,7 +514,7 @@ class MonitorClient:
 
         """
         url = ws_url or self._ws_url()
-        evaluator_name = self._resolve_evaluator_name_for_task(task_id)
+        evaluator_name = self._resolve_evaluator_name_for_task(task_id, project_id)
         command = self._subscribe_command(
             topics=[
                 {

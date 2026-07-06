@@ -119,8 +119,8 @@ def main() -> None:
     ws_options = {"sslopt": {"cert_reqs": ssl.CERT_NONE}} if args.insecure else None
 
     # 3) Build a MonitorClient that reuses the authenticated client and token.
-    #    The client= kwarg allows the monitor client to reuse the same session
-    #    for any follow-up JMS/RMS lookups it may need internally.
+    #    Supplying client=hps keeps one shared authenticated session for this
+    #    script and for monitor methods that also need JMS/RMS lookups.
     monitor = MonitorClient(
         base_url=args.base_url,
         token=hps.access_token,
