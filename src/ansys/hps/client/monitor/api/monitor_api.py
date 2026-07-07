@@ -59,6 +59,86 @@ class ClientType:
     HOUSEKEEPER = "ansys.rep.housekeeper"
 
 
+@dataclass(frozen=True)
+class ListTagsCommand:
+    """Typed model for the monitor WebSocket ``list_tags`` command."""
+
+    limit: int = 1000
+
+    def to_payload(self) -> dict[str, Any]:
+        return {
+            "type": "command",
+            "action": "list_tags",
+            "limit": self.limit,
+        }
+
+
+@dataclass(frozen=True)
+class SubscribeCommand:
+    """Typed model for the monitor WebSocket ``subscribe`` command."""
+
+    topics: list[dict[str, str]]
+    backlog_limit: int = 100
+
+    def to_payload(self) -> dict[str, Any]:
+        return {
+            "type": "command",
+            "action": "subscribe",
+            "topics": self.topics,
+            "backlog": {"limit": self.backlog_limit},
+        }
+
+
+@dataclass(frozen=True)
+class ListTagsResponse:
+    """Typed model for the monitor ``list_tags`` response payload."""
+
+    tag_list: dict[str, list[str]]
+
+    @classmethod
+    def from_payload(cls, payload: dict[str, Any]) -> ListTagsResponse:
+        # Server returns {"tag_list": {...}} but older variants may use {"tags": {...}}.
+        raw_tags = payload.get("tag_list", payload.get("tags", {}))
+        if not isinstance(raw_tags, dict):
+            return cls(tag_list={})
+
+        normalized: dict[str, list[str]] = {}
+        for key, values in raw_tags.items():
+            if not isinstance(key, str):
+                continue
+            if not isinstance(values, list):
+                continue
+            normalized[key] = [str(value) for value in values]
+
+        return cls(tag_list=normalized)
+
+
+@dataclass(frozen=True)
+class MessageEnvelope:
+    """Typed model for normalizing monitor WebSocket message payloads."""
+
+    messages: list[dict[str, Any]]
+
+    @classmethod
+    def from_payload(cls, payload: Any) -> MessageEnvelope:
+        """Normalize payload into a list of message dictionaries.
+
+        Monitor WebSocket responses may be one of:
+        - ``{"messages": [...]}``
+        - ``[...]``
+        - ``{...}``
+        """
+        if isinstance(payload, dict) and isinstance(payload.get("messages"), list):
+            raw_messages = payload["messages"]
+        elif isinstance(payload, list):
+            raw_messages = payload
+        else:
+            raw_messages = [payload]
+
+        normalized = [msg for msg in raw_messages if isinstance(msg, dict)]
+        return cls(messages=normalized)
+
+
 @dataclass
 class MonitorClient:
     """Client for the HPS monitor REST and WebSocket interfaces.
@@ -239,18 +319,12 @@ class MonitorClient:
             by the server (noisy keys removed unless ``exclude_noisy=False``).
 
         """
-        command = {
-            "type": "command",
-            "action": "list_tags",
-            "limit": limit,
-        }
+        command = ListTagsCommand(limit=limit).to_payload()
         url = ws_url or self._ws_url()
         responses = self.send_ws_command(url, command, max_messages=1)
         if not responses:
             return {}
-        # Server returns {"tag_list": {...}} (not "tags").
-        resp = responses[0]
-        tags: dict[str, list[str]] = resp.get("tag_list", resp.get("tags", {}))
+        tags = ListTagsResponse.from_payload(responses[0]).tag_list
         if exclude_noisy:
             tags = {
                 k: v
@@ -281,12 +355,7 @@ class MonitorClient:
         backlog: int = 100,
     ) -> dict[str, Any]:
         """Build a WebSocket ``subscribe`` command payload."""
-        return {
-            "type": "command",
-            "action": "subscribe",
-            "topics": topics,
-            "backlog": {"limit": backlog},
-        }
+        return SubscribeCommand(topics=topics, backlog_limit=backlog).to_payload()
 
     def stream_service_logs(
         self,
@@ -640,16 +709,9 @@ class MonitorClient:
                     break
 
                 payload = json.loads(raw)
-                if isinstance(payload, dict) and isinstance(payload.get("messages"), list):
-                    messages = payload["messages"]
-                elif isinstance(payload, list):
-                    messages = payload
-                else:
-                    messages = [payload]
+                messages = MessageEnvelope.from_payload(payload).messages
 
                 for message in messages:
-                    if not isinstance(message, dict):
-                        continue
                     yield message
                     yielded += 1
                     if max_messages is not None and yielded >= max_messages:
