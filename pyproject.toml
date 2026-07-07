@@ -42,7 +42,9 @@ dependencies = [
 tests = [
     "pytest==9.1.1",
     "coverage==7.14.2",
-    "python-keycloak>=3.9.1,<4.0.0"
+    "python-keycloak>=3.9.1,<4.0.0",
+    "pytest-playwright>=0.4.0",
+    "pytest-asyncio>=0.23.0"
 ]
 
 doc = [
@@ -137,6 +139,11 @@ log_cli_level = "INFO"
 log_cli_format = "%(asctime)s [%(levelname)8s] %(message)s (%(filename)s:%(lineno)s)"
 log_cli_date_format = "%Y-%m-%d %H:%M:%S"
 addopts = "-ra -vv"
+asyncio_mode = "auto"
+markers = [
+    "integration: marks tests as integration tests (require live HPS/Keycloak backend)",
+    "browser: marks tests as browser automation tests (require Playwright and live backend)",
+]
 filterwarnings = [
     "ignore::urllib3.exceptions.InsecureRequestWarning",
     "ignore::DeprecationWarning:pkg_resources.*",

@@ -37,6 +37,8 @@ from ansys.hps.data_transfer.client import Client as DataTransferClient
 from ansys.hps.data_transfer.client import DataTransferApi
 
 from .authenticate import authenticate, determine_auth_url
+from .common import token_storage as _token_storage
+from .common.redaction import redact_sensitive_values
 from .connection import create_session
 from .exceptions import HPSError, raise_for_status
 from .warnings import UnverifiedHTTPSRequestsWarning
@@ -108,6 +110,25 @@ class Client:
     token_refresh_loop_interval : float, optional
         Maximum interval, in seconds, between checks of the background token refresh
         loop. The default is ``300``.
+    token_storage : str, optional
+        Storage location for persisted refresh-token data. Supported values are ``"memory"``
+        (default), ``"disk"``, and ``"keyring"``.
+        Use ``"disk"`` or ``"keyring"`` if refresh-token data must persist across
+        process restarts. Access tokens remain in-memory. ``"memory"`` keeps
+        all token state in-process only.
+    token_storage_strict : bool, optional
+        Whether to fail fast during client initialization if the selected
+        ``token_storage`` backend is unavailable. The default is ``False``.
+        When ``False``, keyring backend issues are surfaced as warnings and
+        token persistence remains in-memory if persistence fails.
+
+    Attributes
+    ----------
+    last_token_persistence_result : dict | None
+        Diagnostic information for the most recent refresh-token persistence
+        attempt. The dict contains ``requested_storage``, ``storage_used``,
+        ``fallback_used``, ``persisted``, ``path``, and ``error`` fields.
+        The value is ``None`` before the first refresh attempt.
 
     Examples
     --------
@@ -127,6 +148,15 @@ class Client:
     ...     username="repuser",
     ...     refresh_token="eyJhbGciOiJIUzI1NiIsInR5cC..."
     >>> )
+
+    Create a client object with OIDC tokens and persist refreshed tokens in keyring.
+
+    >>> cl = Client(
+    ...     url="https://localhost:8443/hps",
+    ...     access_token="eyJhbGciOiJIUzI1NiIsInR5cC...",
+    ...     refresh_token="eyJhbGciOiJIUzI1NiIsInR5cC...",
+    ...     token_storage="keyring",
+    ... )
 
     """
 
@@ -150,6 +180,8 @@ class Client:
         token_refresh_factor: float = 0.70,
         token_refresh_retry_factors: tuple[float, ...] = (0.80, 0.90, 0.95, 0.98),
         token_refresh_loop_interval: float = 300,
+        token_storage: str = "memory",
+        token_storage_strict: bool = False,
         **kwargs,
     ):
         """Initialize the Client object."""
@@ -202,6 +234,11 @@ class Client:
         self.token_expires_in = None
         self.token_acquired_date = None
         self.token_refresh_date = None
+        self.last_token_persistence_result: dict | None = None
+        if token_storage not in ("memory", "disk", "keyring"):
+            raise ValueError("token_storage must be one of: 'memory', 'disk', 'keyring'.")
+        self.token_storage = token_storage
+        self._validate_token_storage_backend(token_storage_strict)
 
         self._dt_client: DataTransferClient | None = None
         self._dt_api: DataTransferApi | None = None
@@ -275,6 +312,11 @@ class Client:
                 )
             self.username = parsed_username
 
+        # For externally supplied access tokens, seed expiry metadata from JWT
+        # claims so preemptive refresh can be scheduled consistently.
+        if access_token:
+            self._initialize_external_token_expiry(token)
+
         self.session = create_session(
             self.access_token,
             verify=self.verify,
@@ -315,6 +357,80 @@ class Client:
             else:
                 raise HPSError("Authentication token had no username.")
         return parsed_username
+
+    def _initialize_external_token_expiry(self, decoded_token):
+        """Initialize refresh scheduling from externally provided token claims.
+
+        This allows preemptive refresh to behave consistently when a client is
+        created with existing access and refresh tokens (for example from OIDC login).
+        """
+        if self.refresh_token is None:
+            return
+
+        exp = decoded_token.get("exp", None)
+        if exp is None:
+            return
+
+        now = datetime.now(timezone.utc)
+        iat = decoded_token.get("iat", None)
+        if iat is not None and exp > iat:
+            token_lifetime = int(exp - iat)
+            token_acquired_date = datetime.fromtimestamp(iat, timezone.utc)
+        else:
+            # Fall back to remaining lifetime when iat is unavailable.
+            token_lifetime = int(exp - now.timestamp())
+            token_acquired_date = now
+
+        if token_lifetime <= 0:
+            return
+
+        self.token_expires_in = token_lifetime
+        self.token_acquired_date = token_acquired_date
+        self._refresh_attempt = 0
+
+        offset = max(1, int(self.token_expires_in * self.token_refresh_factor))
+        refresh_date = self.token_acquired_date + timedelta(seconds=offset)
+        self.token_refresh_date = max(now, refresh_date)
+
+        log.debug(
+            "Initialized refresh schedule from external token, next refresh at %s",
+            self.token_refresh_date,
+        )
+
+    def _validate_token_storage_backend(self, strict: bool):
+        """Validate requested token storage backend availability."""
+        if self.token_storage == "memory":  # nosec B105
+            return
+
+        if self.token_storage == "disk":  # nosec B105
+            error = _token_storage._check_storage_backend("disk")
+            if error is None:
+                return
+
+            msg = (
+                "Disk token storage requested but unavailable: "
+                f"{error}. Set token_storage_strict=True to fail fast."
+            )
+            if strict:
+                raise RuntimeError(msg)
+            warnings.warn(msg, RuntimeWarning, stacklevel=2)
+            log.warning(msg)
+            return
+
+        if self.token_storage == "keyring":  # nosec B105
+            error = _token_storage._check_storage_backend("keyring")
+            if error is None:
+                return
+
+            msg = (
+                "Keyring token storage requested but unavailable: "
+                f"{error}. "
+                "Set token_storage_strict=True to fail fast."
+            )
+            if strict:
+                raise RuntimeError(msg)
+            warnings.warn(msg, RuntimeWarning, stacklevel=2)
+            log.warning(msg)
 
     @property
     def rep_url(self) -> str:
@@ -527,6 +643,8 @@ class Client:
             )
         else:
             # Other workflows for authentication generally support refresh_tokens
+            if not self.refresh_token:
+                raise HPSError("No refresh token available. Re-authentication is required.")
             tokens = authenticate(
                 auth_url=self.auth_url,
                 grant_type="refresh_token",
@@ -541,6 +659,36 @@ class Client:
         self.refresh_token = tokens.get("refresh_token", None)
         self.session.headers.update({"Authorization": f"Bearer {tokens['access_token']}"})
         self._update_token_expiry(tokens)
+        self.last_token_persistence_result = self._persist_refreshed_tokens(tokens)
+
+    def _persist_refreshed_tokens(self, tokens):
+        """Persist refreshed tokens and return structured persistence telemetry."""
+        result = {
+            "requested_storage": self.token_storage,
+            "storage_used": self.token_storage,
+            "fallback_used": False,
+            "persisted": True,
+            "path": None,
+            "error": None,
+        }
+
+        if self.token_storage == "memory":  # nosec B105
+            return result
+
+        try:
+            path = _token_storage.save_tokens(tokens, self.url, storage=self.token_storage)
+            if path is not None:
+                result["path"] = str(path)
+        except Exception as ex:
+            safe_error = redact_sensitive_values(str(ex), tokens)
+            log.warning(
+                "Unable to persist refreshed tokens to %s: %s", self.token_storage, safe_error
+            )
+            result["persisted"] = False
+            result["storage_used"] = "memory"
+            result["error"] = safe_error
+
+        return result
 
     @property
     def data_transfer_client(self) -> DataTransferClient:
