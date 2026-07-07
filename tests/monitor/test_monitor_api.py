@@ -1070,10 +1070,12 @@ def test_resolve_project_id_for_task_skips_non_dict_messages(monkeypatch):
     monkeypatch.setattr(
         client,
         "stream_task_logs",
-        lambda **kwargs: iter([
-            "plain-text",
-            {"tags": {"project_id": "proj-xyz"}},
-        ]),
+        lambda **kwargs: iter(
+            [
+                "plain-text",
+                {"tags": {"project_id": "proj-xyz"}},
+            ]
+        ),
     )
 
     project_id = client.resolve_project_id_for_task("task-abc")
