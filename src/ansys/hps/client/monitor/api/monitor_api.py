@@ -188,7 +188,9 @@ class MonitorClient:
             url = f"{url}?{query}"
 
         safe_url = self._validated_http_url(url)
-        response = requests.get(safe_url, headers=self._auth_headers(), timeout=self.timeout_seconds)
+        response = requests.get(
+            safe_url, headers=self._auth_headers(), timeout=self.timeout_seconds
+        )
         response.raise_for_status()
         return response.json()
 
