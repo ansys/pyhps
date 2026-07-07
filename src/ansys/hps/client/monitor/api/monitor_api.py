@@ -236,9 +236,7 @@ class MonitorClient:
 
         evaluator_name = evaluators[0].name
         if not evaluator_name:
-            raise ClientError(
-                f"Evaluator for host_id '{host_id}' does not provide a name in RMS."
-            )
+            raise ClientError(f"Evaluator for host_id '{host_id}' does not provide a name in RMS.")
 
         return evaluator_name
 
