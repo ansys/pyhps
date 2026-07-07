@@ -24,10 +24,11 @@ from __future__ import annotations
 
 import json
 import urllib.parse
-import urllib.request
 from collections.abc import Generator
 from dataclasses import dataclass
 from typing import Any
+
+import requests
 
 
 class ClientType:
@@ -160,11 +161,17 @@ class MonitorClient:
             return {}
         return {"Authorization": "Bearer " + self.token}
 
+    def _validated_http_url(self, url: str) -> str:
+        parsed = urllib.parse.urlsplit(url)
+        if parsed.scheme not in {"http", "https"}:
+            raise ValueError("Only HTTP(S) URLs are allowed for monitor REST requests.")
+        return url
+
     def get_build_info(self) -> dict[str, Any]:
-        url = f"{self.base_url.rstrip('/')}/dcs/monitor/api/"
-        req = urllib.request.Request(url, headers=self._auth_headers(), method="GET")
-        with urllib.request.urlopen(req, timeout=self.timeout_seconds) as resp:
-            return json.loads(resp.read().decode("utf-8"))
+        url = self._validated_http_url(f"{self.base_url.rstrip('/')}/dcs/monitor/api/")
+        response = requests.get(url, headers=self._auth_headers(), timeout=self.timeout_seconds)
+        response.raise_for_status()
+        return response.json()
 
     def query_logs(self, filters: dict[str, Any] | None = None) -> dict[str, Any]:
         filters = filters or {}
@@ -180,9 +187,10 @@ class MonitorClient:
         if query:
             url = f"{url}?{query}"
 
-        req = urllib.request.Request(url, headers=self._auth_headers(), method="GET")
-        with urllib.request.urlopen(req, timeout=self.timeout_seconds) as resp:
-            return json.loads(resp.read().decode("utf-8"))
+        safe_url = self._validated_http_url(url)
+        response = requests.get(safe_url, headers=self._auth_headers(), timeout=self.timeout_seconds)
+        response.raise_for_status()
+        return response.json()
 
     #: Tag keys that carry a unique value per message and are excluded from
     #: :meth:`list_topics` results by default (``exclude_noisy=True``).

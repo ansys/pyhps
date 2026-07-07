@@ -56,21 +56,29 @@ def test_monitor_api_module_reload_executes_definitions():
 def test_get_build_info_uses_expected_endpoint_and_auth_header(monkeypatch):
     captured = {}
 
-    def fake_urlopen(req, timeout):
-        captured["url"] = req.full_url
-        captured["method"] = req.get_method()
-        captured["headers"] = dict(req.header_items())
-        captured["timeout"] = timeout
-        return _ResponseMock({"build": {"version": "1.2.3"}})
+    class _RequestsResponseMock:
+        def __init__(self, payload):
+            self._payload = payload
 
-    monkeypatch.setattr("urllib.request.urlopen", fake_urlopen)
+        def raise_for_status(self):
+            return None
+
+        def json(self):
+            return self._payload
+
+    def fake_get(url, headers, timeout):
+        captured["url"] = url
+        captured["headers"] = headers
+        captured["timeout"] = timeout
+        return _RequestsResponseMock({"build": {"version": "1.2.3"}})
+
+    monkeypatch.setattr("requests.get", fake_get)
 
     client = MonitorClient("http://localhost:1089/", token="jwt-token", timeout_seconds=3.5)
     response = client.get_build_info()
 
     assert response["build"]["version"] == "1.2.3"
     assert captured["url"] == "http://localhost:1089/dcs/monitor/api/"
-    assert captured["method"] == "GET"
     assert captured["headers"]["Authorization"] == "Bearer jwt-token"
     assert captured["timeout"] == 3.5
 
@@ -78,14 +86,23 @@ def test_get_build_info_uses_expected_endpoint_and_auth_header(monkeypatch):
 def test_query_logs_serializes_filters(monkeypatch):
     captured = {}
 
-    def fake_urlopen(req, timeout):
-        captured["url"] = req.full_url
-        captured["method"] = req.get_method()
-        captured["headers"] = dict(req.header_items())
-        captured["timeout"] = timeout
-        return _ResponseMock({"messages": []})
+    class _RequestsResponseMock:
+        def __init__(self, payload):
+            self._payload = payload
 
-    monkeypatch.setattr("urllib.request.urlopen", fake_urlopen)
+        def raise_for_status(self):
+            return None
+
+        def json(self):
+            return self._payload
+
+    def fake_get(url, headers, timeout):
+        captured["url"] = url
+        captured["headers"] = headers
+        captured["timeout"] = timeout
+        return _RequestsResponseMock({"messages": []})
+
+    monkeypatch.setattr("requests.get", fake_get)
 
     client = MonitorClient("http://localhost:1089", token="abc", timeout_seconds=5.0)
     response = client.query_logs(
@@ -104,7 +121,6 @@ def test_query_logs_serializes_filters(monkeypatch):
     assert query_params["tag:host"] == ["h1,h2"]
     assert query_params["severity"] == ["info"]
     assert query_params["limit"] == ["5"]
-    assert captured["method"] == "GET"
     assert captured["headers"]["Authorization"] == "Bearer abc"
     assert captured["timeout"] == 5.0
 
