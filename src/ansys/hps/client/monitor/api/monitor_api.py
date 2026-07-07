@@ -20,8 +20,6 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-"""HPS Monitor client API for querying logs, topics, and streaming metrics via WebSocket."""
-
 from __future__ import annotations
 
 import json
@@ -127,8 +125,8 @@ class MonitorClient:
 
     def _resolve_evaluator_name_for_task(self, task_id: str, project_id: str) -> str:
         """Resolve evaluator name for a task using JMS task host_id and RMS evaluator data."""
-        from ansys.hps.client.jms import ProjectApi  # noqa: PLC0415
-        from ansys.hps.client.rms import RmsApi  # noqa: PLC0415
+        from ansys.hps.client.jms import ProjectApi
+        from ansys.hps.client.rms import RmsApi
 
         client = self._integration_client()
 
@@ -170,14 +168,12 @@ class MonitorClient:
         return url
 
     def get_build_info(self) -> dict[str, Any]:
-        """Return the build information from the monitor REST API."""
         url = self._validated_http_url(f"{self.base_url.rstrip('/')}/dcs/monitor/api/")
         response = requests.get(url, headers=self._auth_headers(), timeout=self.timeout_seconds)
         response.raise_for_status()
         return response.json()
 
     def query_logs(self, filters: dict[str, Any] | None = None) -> dict[str, Any]:
-        """Query monitor logs, optionally filtering by the provided key/value pairs."""
         filters = filters or {}
         params: dict[str, str] = {}
         for key, value in filters.items():
@@ -192,9 +188,7 @@ class MonitorClient:
             url = f"{url}?{query}"
 
         safe_url = self._validated_http_url(url)
-        response = requests.get(
-            safe_url, headers=self._auth_headers(), timeout=self.timeout_seconds
-        )
+        response = requests.get(safe_url, headers=self._auth_headers(), timeout=self.timeout_seconds)
         response.raise_for_status()
         return response.json()
 
@@ -258,7 +252,6 @@ class MonitorClient:
     def send_ws_command(
         self, ws_url: str, command: dict[str, Any], max_messages: int | None = 1
     ) -> list[dict[str, Any]]:
-        """Send *command* over WebSocket and collect up to *max_messages* responses."""
         return list(self._stream_ws(ws_url, command, max_messages))
 
     def _ws_url(self) -> str:
@@ -595,9 +588,9 @@ class MonitorClient:
         command: dict[str, Any],
         max_messages: int | None,
     ) -> Generator[dict[str, Any], None, None]:
-        """Connect, send *command*, and yield up to *max_messages* responses."""
+        """Internal generator: connect, send *command*, yield up to *max_messages*."""
         try:
-            from websocket import create_connection  # noqa: PLC0415
+            from websocket import create_connection
         except ImportError as exc:  # pragma: no cover
             raise RuntimeError(
                 "websocket-client is required for websocket commands. "
