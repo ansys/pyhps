@@ -597,7 +597,7 @@ def test_stream_task_host_resources_sends_correct_topic(monkeypatch):
         "_resolve_evaluator_name_for_task",
         lambda task_id, project_id: "eval-1",
     )
-    results = list(client.stream_task_host_resources("task-abc", "proj-123"))
+    list(client.stream_task_host_resources("task-abc", "proj-123"))
 
     sent = ws.sent[0]
     assert sent["type"] == "command"
@@ -646,7 +646,7 @@ def test_stream_task_host_resources_unwraps_messages_envelope(monkeypatch):
 
 
 def test_stream_task_host_resources_stops_cleanly_on_websocket_timeout(monkeypatch):
-    class WebSocketTimeoutException(Exception):
+    class WebSocketTimeoutException(Exception):  # noqa: N818
         pass
 
     class _TimeoutWsMock:
@@ -828,7 +828,7 @@ def test_stream_scheduler_job_status_unwraps_messages_envelope(monkeypatch):
 def test_stream_scheduler_job_status_stops_cleanly_on_websocket_timeout(monkeypatch):
     """A WebSocketTimeoutException stops iteration cleanly with no messages."""
 
-    class WebSocketTimeoutException(Exception):
+    class WebSocketTimeoutException(Exception):  # noqa: N818
         pass
 
     class _TimeoutWsMock:
@@ -1226,7 +1226,7 @@ def test_stream_task_process_tree_uses_derived_ws_url(monkeypatch):
 def test_stream_task_process_tree_stops_cleanly_on_websocket_timeout(monkeypatch):
     """A WebSocketTimeoutException stops iteration cleanly with no messages."""
 
-    class WebSocketTimeoutException(Exception):
+    class WebSocketTimeoutException(Exception):  # noqa: N818
         pass
 
     class _TimeoutWsMock:
@@ -1446,7 +1446,7 @@ def test_stream_service_logs_uses_derived_ws_url(monkeypatch):
 def test_stream_service_logs_stops_cleanly_on_websocket_timeout(monkeypatch):
     """A WebSocketTimeoutException stops iteration cleanly with no messages."""
 
-    class WebSocketTimeoutException(Exception):
+    class WebSocketTimeoutException(Exception):  # noqa: N818
         pass
 
     class _TimeoutWsMock:
