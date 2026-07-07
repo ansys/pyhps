@@ -26,12 +26,22 @@ from __future__ import annotations
 
 import json
 import urllib.parse
-from collections.abc import Generator
+from collections.abc import Generator, Mapping
 from dataclasses import dataclass
 from typing import Any
 
 from ansys.hps.client.client import Client
 from ansys.hps.client.exceptions import ClientError
+
+from ..models import (
+    BuildInfoResponse,
+    ListTagsCommand,
+    ListTagsResponse,
+    LogQueryResponse,
+    MessageEnvelope,
+    MonitorMessage,
+    SubscribeCommand,
+)
 
 
 class ClientType:
@@ -56,89 +66,6 @@ class ClientType:
     JMS = "ansys.rep.jms"
     SCALING = "ansys.rep.scaling"
     HOUSEKEEPER = "ansys.rep.housekeeper"
-
-
-@dataclass(frozen=True)
-class ListTagsCommand:
-    """Typed model for the monitor WebSocket ``list_tags`` command."""
-
-    limit: int = 1000
-
-    def to_payload(self) -> dict[str, Any]:
-        """Serialize the command to a WebSocket payload dict."""
-        return {
-            "type": "command",
-            "action": "list_tags",
-            "limit": self.limit,
-        }
-
-
-@dataclass(frozen=True)
-class SubscribeCommand:
-    """Typed model for the monitor WebSocket ``subscribe`` command."""
-
-    topics: list[dict[str, str]]
-    backlog_limit: int = 100
-
-    def to_payload(self) -> dict[str, Any]:
-        """Serialize the command to a WebSocket payload dict."""
-        return {
-            "type": "command",
-            "action": "subscribe",
-            "topics": self.topics,
-            "backlog": {"limit": self.backlog_limit},
-        }
-
-
-@dataclass(frozen=True)
-class ListTagsResponse:
-    """Typed model for the monitor ``list_tags`` response payload."""
-
-    tag_list: dict[str, list[str]]
-
-    @classmethod
-    def from_payload(cls, payload: dict[str, Any]) -> ListTagsResponse:
-        """Construct a ``ListTagsResponse`` from a raw WebSocket payload dict."""
-        # Server returns {"tag_list": {...}} but older variants may use {"tags": {...}}.
-        raw_tags = payload.get("tag_list", payload.get("tags", {}))
-        if not isinstance(raw_tags, dict):
-            return cls(tag_list={})
-
-        normalized: dict[str, list[str]] = {}
-        for key, values in raw_tags.items():
-            if not isinstance(key, str):
-                continue
-            if not isinstance(values, list):
-                continue
-            normalized[key] = [str(value) for value in values]
-
-        return cls(tag_list=normalized)
-
-
-@dataclass(frozen=True)
-class MessageEnvelope:
-    """Typed model for normalizing monitor WebSocket message payloads."""
-
-    messages: list[dict[str, Any]]
-
-    @classmethod
-    def from_payload(cls, payload: Any) -> MessageEnvelope:
-        """Normalize payload into a list of message dictionaries.
-
-        Monitor WebSocket responses may be one of:
-        - ``{"messages": [...]}``
-        - ``[...]``
-        - ``{...}``
-        """
-        if isinstance(payload, dict) and isinstance(payload.get("messages"), list):
-            raw_messages = payload["messages"]
-        elif isinstance(payload, list):
-            raw_messages = payload
-        else:
-            raw_messages = [payload]
-
-        normalized = [msg for msg in raw_messages if isinstance(msg, dict)]
-        return cls(messages=normalized)
 
 
 @dataclass
@@ -251,14 +178,17 @@ class MonitorClient:
             raise ValueError("Only HTTP(S) URLs are allowed for monitor REST requests.")
         return url
 
-    def get_build_info(self) -> dict[str, Any]:
+    def get_build_info(self) -> BuildInfoResponse:
         """Fetch monitor service build metadata from the REST API."""
         url = self._validated_http_url(f"{self.base_url.rstrip('/')}/dcs/monitor/api/")
         response = self.client.session.get(url, timeout=self.timeout_seconds)
         response.raise_for_status()
-        return response.json()
+        payload = response.json()
+        if not isinstance(payload, dict):
+            raise ClientError("Monitor build-info response must be a JSON object.")
+        return BuildInfoResponse(payload=payload)
 
-    def query_logs(self, filters: dict[str, Any] | None = None) -> dict[str, Any]:
+    def query_logs(self, filters: dict[str, Any] | None = None) -> LogQueryResponse:
         """Query monitor log messages using optional filter parameters."""
         filters = filters or {}
         params: dict[str, str] = {}
@@ -276,7 +206,10 @@ class MonitorClient:
         safe_url = self._validated_http_url(url)
         response = self.client.session.get(safe_url, timeout=self.timeout_seconds)
         response.raise_for_status()
-        return response.json()
+        payload = response.json()
+        if not isinstance(payload, dict):
+            raise ClientError("Monitor log query response must be a JSON object.")
+        return LogQueryResponse.from_payload(payload)
 
     #: Tag keys that carry a unique value per message and are excluded from
     #: :meth:`list_topics` results by default (``exclude_noisy=True``).
@@ -320,7 +253,7 @@ class MonitorClient:
         responses = self.send_ws_command(url, command, max_messages=1)
         if not responses:
             return {}
-        tags = ListTagsResponse.from_payload(responses[0]).tag_list
+        tags = ListTagsResponse.from_payload(responses[0].payload).tag_list
         if exclude_noisy:
             tags = {
                 k: v
@@ -331,7 +264,7 @@ class MonitorClient:
 
     def send_ws_command(
         self, ws_url: str, command: dict[str, Any], max_messages: int | None = 1
-    ) -> list[dict[str, Any]]:
+    ) -> list[MonitorMessage]:
         """Send a command to the monitor WebSocket endpoint and collect messages."""
         return list(self._stream_ws(ws_url, command, max_messages))
 
@@ -360,7 +293,7 @@ class MonitorClient:
         ws_url: str | None = None,
         backlog: int = 100,
         max_messages: int | None = None,
-    ) -> Generator[dict[str, Any], None, None]:
+    ) -> Generator[MonitorMessage, None, None]:
         """Stream log messages for a named HPS service.
 
         Subscribes to messages filtered by the ``client_type`` tag and yields
@@ -400,7 +333,7 @@ class MonitorClient:
         ws_url: str | None = None,
         backlog: int = 100,
         max_messages: int | None = None,
-    ) -> Generator[dict[str, Any], None, None]:
+    ) -> Generator[MonitorMessage, None, None]:
         """Stream log file messages for a specific task.
 
         Subscribes to messages tagged with ``task_id=<task_id>`` and
@@ -466,7 +399,7 @@ class MonitorClient:
             backlog=backlog,
             max_messages=max_messages,
         ):
-            if not isinstance(msg, dict):
+            if not isinstance(msg, Mapping):
                 continue
 
             tags = msg.get("tags")
@@ -491,7 +424,7 @@ class MonitorClient:
         ws_url: str | None = None,
         backlog: int = 100,
         max_messages: int | None = 200,
-    ) -> list[dict[str, Any]]:
+    ) -> list[MonitorMessage]:
         """Return process tree metric messages for a specific task.
 
         Collects up to ``max_messages`` process-tree snapshots and returns them
@@ -523,7 +456,7 @@ class MonitorClient:
         ws_url: str | None = None,
         backlog: int = 100,
         max_messages: int | None = None,
-    ) -> Generator[dict[str, Any], None, None]:
+    ) -> Generator[MonitorMessage, None, None]:
         """Stream process tree metric updates for a specific task.
 
         Subscribes to process-tree metric messages and yields each snapshot as
@@ -570,7 +503,7 @@ class MonitorClient:
         ws_url: str | None = None,
         backlog: int = 100,
         max_messages: int | None = None,
-    ) -> Generator[dict[str, Any], None, None]:
+    ) -> Generator[MonitorMessage, None, None]:
         """Stream CPU and memory metric updates for the host running a specific task.
 
         Resolves the task's assigned evaluator (via JMS and RMS) and subscribes
@@ -619,7 +552,7 @@ class MonitorClient:
         ws_url: str | None = None,
         backlog: int = 100,
         max_messages: int | None = None,
-    ) -> Generator[dict[str, Any], None, None]:
+    ) -> Generator[MonitorMessage, None, None]:
         """Stream scheduler job status metrics for a task definition.
 
         Subscribes to ``scaler_instances`` metric messages emitted by the HPS
@@ -663,7 +596,7 @@ class MonitorClient:
         ws_url: str,
         command: dict[str, Any],
         max_messages: int | None,
-    ) -> Generator[dict[str, Any], None, None]:
+    ) -> Generator[MonitorMessage, None, None]:
         """Connect, send *command*, and yield up to *max_messages* messages."""
         try:
             from websocket import create_connection  # noqa: PLC0415
