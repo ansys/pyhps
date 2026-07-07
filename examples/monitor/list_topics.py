@@ -36,6 +36,8 @@ Typical tag keys include:
 
 Usage (local dev with self-signed cert):
 
+    pip install -e .
+
     python examples/monitor/list_topics.py \\
         --base-url https://localhost:8443/hps \\
         --username repadmin \\
