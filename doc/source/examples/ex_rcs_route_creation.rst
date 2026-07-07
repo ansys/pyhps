@@ -52,11 +52,11 @@ How the example works
 4. **Register** the instance by calling :func:`RcsApi.register_instance` with a
    :class:`~ansys.hps.client.rcs.RegisterInstance` payload that specifies:
 
-   - ``url`` — the base URL of the instance to expose (for example
+   - ``url``: the base URL of the instance to expose (for example
      ``https://localhost:8000``).
-   - ``service_name`` — an identifier for the type of service (for example
+   - ``service_name``: an identifier for the type of service (for example
      ``"solver"``).
-   - ``routing`` — the routing strategy; ``"path_prefix"`` routes all requests
+   - ``routing``: the routing strategy; ``"path_prefix"`` routes all requests
      whose path begins with the allocated prefix to this instance.
 
 5. **Unregister** the instance by calling :func:`RcsApi.unregister_instance`

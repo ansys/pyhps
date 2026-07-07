@@ -71,12 +71,11 @@ The script follows the standard three-step setup shared by all monitor examples:
 1. **Authenticate** with the top-level :class:`Client`. This performs the
    Keycloak OAuth exchange and stores the access token.
 2. **Create a** :class:`MonitorClient`. Pass ``client=hps`` so that the
-  monitor client can reuse the same HTTP session for monitor calls and for any
-  JMS/RMS lookups required by methods such as
-  :func:`MonitorClient.stream_task_host_resources`, and pass
-  ``ws_connection_options`` to disable TLS
-   certificate verification when connecting to a local server with a self-signed
-   certificate.
+   monitor client can reuse the same HTTP session for monitor calls and for any
+   JMS/RMS lookups required by methods such as
+   :func:`MonitorClient.stream_task_host_resources`, and pass
+   ``ws_connection_options`` to disable TLS certificate verification when
+   connecting to a local server with a self-signed certificate.
 3. **Call** :func:`MonitorClient.list_topics`. The call is synchronous: it
    opens a short-lived WebSocket connection, sends the ``list_tags`` command,
    waits for the response, and returns the result as a plain Python dictionary.
@@ -204,7 +203,7 @@ Command-line options
    * - ``--task-id``
      - ID of the task to stream logs for (required).
    * - ``--file-path``
-     - Optional log file name to filter, for example ``console_output.txt``.
+     - Optional log filename to filter, for example ``console_output.txt``.
        Omit to receive all files.
    * - ``--backlog``
      - Number of historical log lines to replay on connect (default: 200).
