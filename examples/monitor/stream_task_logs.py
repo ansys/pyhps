@@ -109,11 +109,9 @@ def main() -> None:
     if args.insecure:
         ws_options = {"sslopt": {"cert_reqs": ssl.CERT_NONE}}
 
-    # 3) Reuse the same authenticated client and token in MonitorClient.
+    # 3) Reuse the same authenticated client in MonitorClient.
     monitor = MonitorClient(
-        base_url=args.base_url,
-        token=hps.access_token,
-        client=hps,
+        hps,
         ws_connection_options=ws_options,
         timeout_seconds=30.0,
     )

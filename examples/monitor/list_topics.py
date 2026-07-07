@@ -118,13 +118,9 @@ def main() -> None:
     # 2) Configure WebSocket options only when running in insecure local mode.
     ws_options = {"sslopt": {"cert_reqs": ssl.CERT_NONE}} if args.insecure else None
 
-    # 3) Build a MonitorClient that reuses the authenticated client and token.
-    #    Supplying client=hps keeps one shared authenticated session for this
-    #    script and for monitor methods that also need JMS/RMS lookups.
+    # 3) Build a MonitorClient that reuses the authenticated HPS client.
     monitor = MonitorClient(
-        base_url=args.base_url,
-        token=hps.access_token,
-        client=hps,
+        hps,
         ws_connection_options=ws_options,
         timeout_seconds=30.0,
     )

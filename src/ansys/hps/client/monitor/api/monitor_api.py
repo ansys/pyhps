@@ -30,8 +30,7 @@ from collections.abc import Generator
 from dataclasses import dataclass
 from typing import Any
 
-import requests
-
+from ansys.hps.client.client import Client
 from ansys.hps.client.exceptions import ClientError
 
 
@@ -147,12 +146,8 @@ class MonitorClient:
     """Client for the HPS monitor REST and WebSocket interfaces.
 
     Attributes:
-        base_url: Base URL for REST endpoints, e.g. ``https://localhost:8443/hps``.
-            The WebSocket URL is derived automatically from this value.
-        token: Optional JWT token used for authenticated REST and WebSocket requests.
-        client: Optional pre-authenticated HPS client used for JMS/RMS lookups.
-            This is required for evaluator assignment resolution in
-            :meth:`stream_task_host_resources`.
+        client: Pre-authenticated HPS client. REST requests are routed through
+            ``client.session`` and monitor URLs are derived from ``client.url``.
         ws_connection_options: Optional keyword arguments forwarded to
             ``websocket.create_connection`` for WebSocket calls. This is useful
             for local/self-signed environments (for example,
@@ -194,21 +189,23 @@ class MonitorClient:
 
     """
 
-    base_url: str
-    token: str | None = None
-    client: Any | None = None
+    client: Client
     ws_connection_options: dict[str, Any] | None = None
     timeout_seconds: float = 10.0
 
-    def _integration_client(self):
-        """Return caller-provided authenticated HPS client for JMS/RMS lookups."""
-        if self.client is not None:
-            return self.client
+    @property
+    def base_url(self) -> str:
+        """Base URL for monitor endpoints derived from the authenticated client."""
+        return self.client.url
 
-        raise ClientError(
-            "A pre-authenticated client is required to resolve evaluator "
-            "assignment via JMS/RMS. Pass client=Client(...) to MonitorClient."
-        )
+    @property
+    def token(self) -> str | None:
+        """JWT token sourced from the authenticated client when available."""
+        return self.client.access_token
+
+    def _integration_client(self):
+        """Return authenticated HPS client for JMS/RMS lookups."""
+        return self.client
 
     def _resolve_evaluator_name_for_task(self, task_id: str, project_id: str) -> str:
         """Resolve evaluator name for a task using JMS task host_id and RMS evaluator data."""
@@ -257,7 +254,7 @@ class MonitorClient:
     def get_build_info(self) -> dict[str, Any]:
         """Fetch monitor service build metadata from the REST API."""
         url = self._validated_http_url(f"{self.base_url.rstrip('/')}/dcs/monitor/api/")
-        response = requests.get(url, headers=self._auth_headers(), timeout=self.timeout_seconds)
+        response = self.client.session.get(url, timeout=self.timeout_seconds)
         response.raise_for_status()
         return response.json()
 
@@ -277,9 +274,7 @@ class MonitorClient:
             url = f"{url}?{query}"
 
         safe_url = self._validated_http_url(url)
-        response = requests.get(
-            safe_url, headers=self._auth_headers(), timeout=self.timeout_seconds
-        )
+        response = self.client.session.get(safe_url, timeout=self.timeout_seconds)
         response.raise_for_status()
         return response.json()
 
