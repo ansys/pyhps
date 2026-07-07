@@ -66,6 +66,7 @@ class ListTagsCommand:
     limit: int = 1000
 
     def to_payload(self) -> dict[str, Any]:
+        """Serialize the command to a WebSocket payload dict."""
         return {
             "type": "command",
             "action": "list_tags",
@@ -81,6 +82,7 @@ class SubscribeCommand:
     backlog_limit: int = 100
 
     def to_payload(self) -> dict[str, Any]:
+        """Serialize the command to a WebSocket payload dict."""
         return {
             "type": "command",
             "action": "subscribe",
@@ -97,6 +99,7 @@ class ListTagsResponse:
 
     @classmethod
     def from_payload(cls, payload: dict[str, Any]) -> ListTagsResponse:
+        """Construct a ``ListTagsResponse`` from a raw WebSocket payload dict."""
         # Server returns {"tag_list": {...}} but older variants may use {"tags": {...}}.
         raw_tags = payload.get("tag_list", payload.get("tags", {}))
         if not isinstance(raw_tags, dict):
