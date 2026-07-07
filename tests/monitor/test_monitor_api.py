@@ -29,6 +29,7 @@ from urllib.parse import parse_qs, urlsplit
 import pytest
 
 import ansys.hps.client.monitor.api.monitor_api as monitor_api_module
+from ansys.hps.client import ClientError
 from ansys.hps.client.monitor import MonitorClient, build_filter_templates
 
 
@@ -217,7 +218,7 @@ def test_send_ws_command_raises_helpful_error_without_websocket_client(monkeypat
     monkeypatch.setattr("builtins.__import__", fake_import)
 
     client = MonitorClient("http://localhost:1089")
-    with pytest.raises(RuntimeError, match="websocket-client is required"):
+    with pytest.raises(ClientError, match="websocket-client is required"):
         client.send_ws_command("ws://localhost:1089/monitor/ws/topics", {"type": "command"})
 
 
@@ -233,7 +234,7 @@ def test_integration_client_uses_provided_client_without_token():
 def test_integration_client_raises_without_provided_client():
     client = MonitorClient("http://localhost:1089", token="jwt")
 
-    with pytest.raises(RuntimeError, match="pre-authenticated client is required"):
+    with pytest.raises(ClientError, match="pre-authenticated client is required"):
         client._integration_client()
 
 
@@ -288,7 +289,7 @@ def test_resolve_evaluator_name_for_task_raises_when_task_not_found(monkeypatch)
     monkeypatch.setattr("ansys.hps.client.jms.ProjectApi", _ProjectApiMock)
 
     client = MonitorClient("http://localhost:1089", client=SimpleNamespace())
-    with pytest.raises(RuntimeError, match="Could not resolve host_id"):
+    with pytest.raises(ClientError, match="Could not resolve host_id"):
         client._resolve_evaluator_name_for_task("task-abc", "proj-123")
 
 
@@ -311,7 +312,7 @@ def test_resolve_evaluator_name_for_task_raises_when_no_evaluator(monkeypatch):
     monkeypatch.setattr("ansys.hps.client.rms.RmsApi", _RmsApiMock)
 
     client = MonitorClient("http://localhost:1089", client=SimpleNamespace())
-    with pytest.raises(RuntimeError, match="Could not resolve evaluator"):
+    with pytest.raises(ClientError, match="Could not resolve evaluator"):
         client._resolve_evaluator_name_for_task("task-abc", "proj-123")
 
 
@@ -334,7 +335,7 @@ def test_resolve_evaluator_name_for_task_raises_when_evaluator_name_missing(monk
     monkeypatch.setattr("ansys.hps.client.rms.RmsApi", _RmsApiMock)
 
     client = MonitorClient("http://localhost:1089", client=SimpleNamespace())
-    with pytest.raises(RuntimeError, match="does not provide a name"):
+    with pytest.raises(ClientError, match="does not provide a name"):
         client._resolve_evaluator_name_for_task("task-abc", "proj-123")
 
 
@@ -751,10 +752,10 @@ def test_stream_task_host_resources_raises_when_evaluator_resolution_fails(monke
     monkeypatch.setattr(
         client,
         "_resolve_evaluator_name_for_task",
-        lambda task_id, project_id: (_ for _ in ()).throw(RuntimeError("not found")),
+        lambda task_id, project_id: (_ for _ in ()).throw(ClientError("not found")),
     )
 
-    with pytest.raises(RuntimeError, match="not found"):
+    with pytest.raises(ClientError, match="not found"):
         list(client.stream_task_host_resources("task-abc", "proj-123"))
 
 
@@ -1061,7 +1062,7 @@ def test_resolve_project_id_for_task_raises_when_missing(monkeypatch):
         ),
     )
 
-    with pytest.raises(RuntimeError, match="Could not infer project_id"):
+    with pytest.raises(ClientError, match="Could not infer project_id"):
         client.resolve_project_id_for_task("task-abc")
 
 

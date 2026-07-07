@@ -51,7 +51,7 @@ import time
 from datetime import datetime, timezone
 from typing import Any
 
-from ansys.hps.client import Client
+from ansys.hps.client import Client, ClientError
 from ansys.hps.client.monitor.api.monitor_api import MonitorClient
 
 
@@ -186,34 +186,34 @@ def main() -> None:
         timeout_seconds=30.0,
     )
 
-    project_id = args.project_id
-    if not project_id:
-        project_id = monitor.resolve_project_id_for_task(task_id=args.task_id)
-        print(f"Resolved project_id={project_id} from task logs")
-
-    print(f"Streaming host resources for project {project_id}, task {args.task_id}")
-    print("(resolving evaluator via JMS/RMS...)")
-
     use_summary = args.interval > 0
-
-    if use_summary:
-        print(f"Reporting every {args.interval}s")
-        print(
-            f"{'time_utc':<19}   {'n':>5}   "
-            f"{'cpu_last':>8}  {'cpu_min':>7}  {'cpu_max':>7}  {'cpu_avg':>7}   "
-            f"{'mem_last':>8}  {'mem_min':>7}  {'mem_max':>7}  {'mem_avg':>7}"
-        )
-    else:
-        print("Press Ctrl+C to stop")
-        print(f"{'time':<19}   {'cpu':>9}   {'mem':>9}")
-
-    print("-" * 88)
-
     cpu_vals: list[float] = []
     mem_vals: list[float] = []
-    window_start = time.monotonic()
 
     try:
+        project_id = args.project_id
+        if not project_id:
+            project_id = monitor.resolve_project_id_for_task(task_id=args.task_id)
+            print(f"Resolved project_id={project_id} from task logs")
+
+        print(f"Streaming host resources for project {project_id}, task {args.task_id}")
+        print("(resolving evaluator via JMS/RMS...)")
+
+        if use_summary:
+            print(f"Reporting every {args.interval}s")
+            print(
+                f"{'time_utc':<19}   {'n':>5}   "
+                f"{'cpu_last':>8}  {'cpu_min':>7}  {'cpu_max':>7}  {'cpu_avg':>7}   "
+                f"{'mem_last':>8}  {'mem_min':>7}  {'mem_max':>7}  {'mem_avg':>7}"
+            )
+        else:
+            print("Press Ctrl+C to stop")
+            print(f"{'time':<19}   {'cpu':>9}   {'mem':>9}")
+
+        print("-" * 88)
+
+        window_start = time.monotonic()
+
         # 4) stream_task_host_resources resolves the evaluator and subscribes to
         #    the host_resources metric statistic for it.  Each yielded dict is one
         #    metric snapshot pushed by the server.
@@ -242,6 +242,8 @@ def main() -> None:
             else:
                 _print_raw(msg)
 
+    except ClientError as exc:
+        raise SystemExit(f"Monitor request failed: {exc}") from exc
     except KeyboardInterrupt:
         print("\nInterrupted by user.")
         if use_summary and (cpu_vals or mem_vals):

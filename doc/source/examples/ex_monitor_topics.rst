@@ -291,6 +291,8 @@ Because JMS tasks are scoped by project,
 If you know ``task_id`` but not ``project_id``, use
 :func:`MonitorClient.resolve_project_id_for_task` before calling
 :func:`MonitorClient.stream_task_host_resources`.
+Both helpers raise :exc:`ansys.hps.client.ClientError` when the required
+monitor/JMS/RMS metadata cannot be resolved.
 
 Display modes
 ^^^^^^^^^^^^^

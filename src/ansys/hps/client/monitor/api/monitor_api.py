@@ -30,6 +30,8 @@ from typing import Any
 
 import requests
 
+from ansys.hps.client.exceptions import ClientError
+
 
 class ClientType:
     """Known ``client_type`` tag values used by the HPS monitor.
@@ -118,7 +120,7 @@ class MonitorClient:
         if self.client is not None:
             return self.client
 
-        raise RuntimeError(
+        raise ClientError(
             "A pre-authenticated client is required to resolve evaluator "
             "assignment via JMS/RMS. Pass client=Client(...) to MonitorClient."
         )
@@ -140,7 +142,7 @@ class MonitorClient:
             host_id = tasks[0].host_id
 
         if not host_id:
-            raise RuntimeError(f"Could not resolve host_id for task '{task_id}' from JMS.")
+            raise ClientError(f"Could not resolve host_id for task '{task_id}' from JMS.")
 
         rms = RmsApi(client)
         evaluators = rms.get_evaluators(
@@ -148,11 +150,13 @@ class MonitorClient:
             fields=["id", "name", "host_id"],
         )
         if not evaluators:
-            raise RuntimeError(f"Could not resolve evaluator for host_id '{host_id}' from RMS.")
+            raise ClientError(f"Could not resolve evaluator for host_id '{host_id}' from RMS.")
 
         evaluator_name = evaluators[0].name
         if not evaluator_name:
-            raise RuntimeError(f"Evaluator for host_id '{host_id}' does not provide a name in RMS.")
+            raise ClientError(
+                f"Evaluator for host_id '{host_id}' does not provide a name in RMS."
+            )
 
         return evaluator_name
 
@@ -381,7 +385,7 @@ class MonitorClient:
             Project identifier associated with ``task_id``.
 
         Raises:
-            RuntimeError: If no inspected message provides a project ID.
+            ClientError: If no inspected message provides a project ID.
 
         """
         for msg in self.stream_task_logs(
@@ -403,7 +407,7 @@ class MonitorClient:
             if isinstance(project_id, str) and project_id:
                 return project_id
 
-        raise RuntimeError(
+        raise ClientError(
             f"Could not infer project_id for task '{task_id}' from task logs. "
             "Provide project_id explicitly."
         )
@@ -592,7 +596,7 @@ class MonitorClient:
         try:
             from websocket import create_connection
         except ImportError as exc:  # pragma: no cover
-            raise RuntimeError(
+            raise ClientError(
                 "websocket-client is required for websocket commands. "
                 "Install dependencies from requirements.txt."
             ) from exc
