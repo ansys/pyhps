@@ -25,10 +25,13 @@
 from __future__ import annotations
 
 import json
+import threading
 import urllib.parse
 from collections.abc import Generator, Mapping
 from dataclasses import dataclass
 from typing import Any
+
+_TERMINAL_STATUSES: frozenset[str] = frozenset({"evaluated", "failed", "aborted"})
 
 from ansys.hps.client.client import Client
 from ansys.hps.client.exceptions import ClientError
@@ -333,6 +336,10 @@ class MonitorClient:
         ws_url: str | None = None,
         backlog: int = 100,
         max_messages: int | None = None,
+        tail_only: bool = False,
+        since: str | None = None,
+        job_id: str | None = None,
+        project_id: str | None = None,
     ) -> Generator[MonitorMessage, None, None]:
         """Stream log file messages for a specific task.
 
@@ -350,11 +357,43 @@ class MonitorClient:
             max_messages: Maximum total messages to yield before closing the
                 connection. Defaults to ``None`` — stream indefinitely until
                 interrupted or the server closes the connection.
+            tail_only: When ``True``, request zero historical messages so only
+                new messages produced after connecting are returned.  Equivalent
+                to ``backlog=0`` and useful for long-running jobs where
+                replaying the full log history on reconnect is unwanted.
+            since: Optional ISO 8601 timestamp string.  Messages whose ``time``
+                or ``timestamp`` field is lexicographically ``<=`` *since* are
+                silently dropped.  Pass the last timestamp seen in a previous
+                call to resume without replaying old messages.  Messages that
+                carry no timestamp are always yielded.
+            job_id: When provided, the stream exits automatically once the job
+                reaches a terminal status (``evaluated``, ``failed``, or
+                ``aborted``).  A background daemon thread polls JMS every 5 s
+                and signals the generator to exit cleanly — no manual polling
+                thread required::
+
+                    for msg in monitor.stream_task_logs(
+                        task_id=task_id, job_id=job_id, tail_only=True
+                    ):
+                        process(msg)   # loop ends when job finishes
+
+            project_id: JMS project identifier used for done-detection polling
+                when ``job_id`` is provided.  Inferred automatically from task
+                log messages when omitted.
 
         Yields:
             Parsed JSON message dicts from the server.
 
         """
+        terminate_event: threading.Event | None = None
+        if job_id is not None:
+            resolved_project_id = project_id or self.resolve_project_id_for_task(
+                task_id=task_id, ws_url=ws_url
+            )
+            terminate_event = threading.Event()
+            self._start_done_poller(job_id, resolved_project_id, terminate_event)
+
+        effective_backlog = 0 if tail_only else backlog
         url = ws_url or self._ws_url()
         topic: dict[str, str] = {
             "task_id": task_id,
@@ -362,8 +401,8 @@ class MonitorClient:
         }
         if file_path is not None:
             topic["file_path"] = file_path
-        command = self._subscribe_command(topics=[topic], backlog=backlog)
-        yield from self._stream_ws(url, command, max_messages)
+        command = self._subscribe_command(topics=[topic], backlog=effective_backlog)
+        yield from self._stream_ws(url, command, max_messages, since, terminate_event)
 
     def resolve_project_id_for_task(
         self,
@@ -456,6 +495,10 @@ class MonitorClient:
         ws_url: str | None = None,
         backlog: int = 100,
         max_messages: int | None = None,
+        tail_only: bool = False,
+        since: str | None = None,
+        job_id: str | None = None,
+        project_id: str | None = None,
     ) -> Generator[MonitorMessage, None, None]:
         """Stream process tree metric updates for a specific task.
 
@@ -476,11 +519,31 @@ class MonitorClient:
             max_messages: Maximum total snapshots to yield before closing the
                 connection. Defaults to ``None`` — stream indefinitely until
                 interrupted or the server closes the connection.
+            tail_only: When ``True``, request zero historical snapshots so only
+                new snapshots produced after connecting are returned.
+            since: Optional ISO 8601 timestamp string.  Snapshots whose ``time``
+                or ``timestamp`` field is lexicographically ``<=`` *since* are
+                silently dropped.  Messages that carry no timestamp are always
+                yielded.
+            job_id: When provided, the stream exits automatically once the job
+                reaches a terminal status.  See :meth:`stream_task_logs` for
+                full documentation of this parameter.
+            project_id: JMS project identifier for done-detection polling.
+                Inferred automatically when omitted.
 
         Yields:
             Parsed JSON process-tree snapshot dicts from the server.
 
         """
+        terminate_event: threading.Event | None = None
+        if job_id is not None:
+            resolved_project_id = project_id or self.resolve_project_id_for_task(
+                task_id=task_id, ws_url=ws_url
+            )
+            terminate_event = threading.Event()
+            self._start_done_poller(job_id, resolved_project_id, terminate_event)
+
+        effective_backlog = 0 if tail_only else backlog
         url = ws_url or self._ws_url()
         command = self._subscribe_command(
             topics=[
@@ -491,18 +554,21 @@ class MonitorClient:
                     "statistic": "process_tree",
                 }
             ],
-            backlog=backlog,
+            backlog=effective_backlog,
         )
-        yield from self._stream_ws(url, command, max_messages)
+        yield from self._stream_ws(url, command, max_messages, since, terminate_event)
 
     def stream_task_host_resources(
         self,
         task_id: str,
-        project_id: str,
+        project_id: str | None = None,
         *,
         ws_url: str | None = None,
         backlog: int = 100,
         max_messages: int | None = None,
+        tail_only: bool = False,
+        since: str | None = None,
+        job_id: str | None = None,
     ) -> Generator[MonitorMessage, None, None]:
         """Stream CPU and memory metric updates for the host running a specific task.
 
@@ -510,14 +576,18 @@ class MonitorClient:
         to ``host_resources`` metric messages for that evaluator.
         Yields each update as it arrives::
 
-            for update in client.stream_task_host_resources("task-123", "project-abc"):
+            for update in client.stream_task_host_resources("task-123"):
                 cpu = update.get("cpu_percent")
                 mem = update.get("memory_percent")
                 print(f"CPU: {cpu}%  Memory: {mem}%")
 
         Args:
             task_id: The task identifier to monitor.
-            project_id: The JMS project identifier that owns ``task_id``.
+            project_id: The JMS project identifier that owns ``task_id``.  When
+                omitted, the project ID is inferred automatically from a small
+                number of task-log messages via
+                :meth:`resolve_project_id_for_task`.  Pass it explicitly when
+                you already have it to avoid the extra round-trip.
             ws_url: WebSocket URL override.  Defaults to the URL derived from
                 ``base_url``.
             backlog: Number of historical metric messages to request on connect.
@@ -525,12 +595,30 @@ class MonitorClient:
                 connection. Defaults to ``None`` — stream indefinitely until
                 interrupted or the server closes the connection, which is
                 the typical usage pattern for host resource monitoring.
+            tail_only: When ``True``, request zero historical messages so only
+                new metrics produced after connecting are returned.
+            since: Optional ISO 8601 timestamp string.  Messages whose ``time``
+                or ``timestamp`` field is lexicographically ``<=`` *since* are
+                silently dropped.  Messages that carry no timestamp are always
+                yielded.
+            job_id: When provided, the stream exits automatically once the job
+                reaches a terminal status.  See :meth:`stream_task_logs` for
+                full documentation of this parameter.
 
         Yields:
             Parsed JSON host-resource metric dicts from the server.
 
         """
+        effective_backlog = 0 if tail_only else backlog
         url = ws_url or self._ws_url()
+        if project_id is None:
+            project_id = self.resolve_project_id_for_task(task_id=task_id, ws_url=ws_url)
+
+        terminate_event: threading.Event | None = None
+        if job_id is not None:
+            terminate_event = threading.Event()
+            self._start_done_poller(job_id, project_id, terminate_event)
+
         evaluator_name = self._resolve_evaluator_name_for_task(task_id, project_id)
         command = self._subscribe_command(
             topics=[
@@ -541,9 +629,156 @@ class MonitorClient:
                     "statistic": "host_resources",
                 }
             ],
-            backlog=backlog,
+            backlog=effective_backlog,
         )
-        yield from self._stream_ws(url, command, max_messages)
+        yield from self._stream_ws(url, command, max_messages, since, terminate_event)
+
+    def stream_task_all(
+        self,
+        task_id: str,
+        project_id: str | None = None,
+        *,
+        ws_url: str | None = None,
+        backlog: int = 100,
+        tail_only: bool = False,
+        since: str | None = None,
+        job_id: str | None = None,
+        logs: bool = True,
+        process_tree: bool = True,
+        host_resources: bool = True,
+    ) -> Generator[dict[str, Any], None, None]:
+        """Stream log, process-tree, and host-resource events for a task in one loop.
+
+        Opens up to three WebSocket subscriptions on background daemon threads
+        and multiplexes their output into a single generator.  Each yielded item
+        is a dict with a ``kind`` key and a ``msg`` key::
+
+            for event in monitor.stream_task_all(task_id=task_id, job_id=job_id):
+                kind = event["kind"]   # "log" | "process_tree" | "host_resources"
+                msg  = event["msg"]    # MonitorMessage
+
+                if kind == "log":
+                    file = msg.get("file_path", "")
+                    text = msg.get("message", "")
+                    if file == "console_output.txt":
+                        parse_residual(text)
+                elif kind == "process_tree":
+                    handle_proc_snapshot(msg.parsed_message)
+                elif kind == "host_resources":
+                    cpu, mem = extract_host_metrics(msg)
+
+        The log subscription has no ``file_path`` filter — all files written by
+        the task are streamed.  Each log message carries the originating filename
+        in ``msg.get("file_path")``, so callers can dispatch by file in Python.
+
+        Args:
+            task_id: The task identifier to monitor.
+            project_id: JMS project identifier.  Required when ``host_resources``
+                or ``job_id`` is used; inferred automatically when omitted.
+            ws_url: WebSocket URL override.
+            backlog: Historical messages requested on connect for each stream.
+            tail_only: When ``True``, set ``backlog=0`` on all streams.
+            since: ISO 8601 timestamp filter applied to all streams.
+            job_id: When provided, all streams exit automatically once the job
+                reaches a terminal status.  Strongly recommended — without it
+                the streams run until the caller breaks out of the loop.
+            logs: Include log messages from all files tailed for the task.
+            process_tree: Include process-tree snapshots.
+            host_resources: Include host CPU/memory snapshots.
+
+        Yields:
+            ``{"kind": str, "msg": MonitorMessage}`` dicts.
+
+        """
+        import queue as _queue
+
+        effective_backlog = 0 if tail_only else backlog
+        url = ws_url or self._ws_url()
+
+        resolved_pid = project_id
+        if resolved_pid is None and (host_resources or job_id is not None):
+            resolved_pid = self.resolve_project_id_for_task(task_id=task_id, ws_url=ws_url)
+
+        shutdown = threading.Event()
+        if job_id is not None and resolved_pid is not None:
+            self._start_done_poller(job_id, resolved_pid, shutdown)
+
+        q: _queue.Queue[dict[str, Any]] = _queue.Queue()
+
+        def _worker(gen: Generator[MonitorMessage, None, None], kind: str) -> None:
+            try:
+                for msg in gen:
+                    q.put({"kind": kind, "msg": msg})
+            except Exception:
+                pass
+            finally:
+                q.put({"kind": "_done", "stream": kind})
+
+        active = 0
+
+        if logs:
+            active += 1
+            cmd = self._subscribe_command(
+                topics=[{"task_id": task_id, "client_type": ClientType.FILE_TAIL}],
+                backlog=effective_backlog,
+            )
+            threading.Thread(
+                target=_worker,
+                args=(self._stream_ws(url, cmd, None, since, shutdown), "log"),
+                daemon=True,
+            ).start()
+
+        if process_tree:
+            active += 1
+            cmd = self._subscribe_command(
+                topics=[
+                    {
+                        "task_id": task_id,
+                        "client_type": ClientType.EVALUATOR,
+                        "type": "metric",
+                        "statistic": "process_tree",
+                    }
+                ],
+                backlog=effective_backlog,
+            )
+            threading.Thread(
+                target=_worker,
+                args=(self._stream_ws(url, cmd, None, since, shutdown), "process_tree"),
+                daemon=True,
+            ).start()
+
+        if host_resources and resolved_pid is not None:
+            active += 1
+            evaluator_name = self._resolve_evaluator_name_for_task(task_id, resolved_pid)
+            cmd = self._subscribe_command(
+                topics=[
+                    {
+                        "evaluator_name": evaluator_name,
+                        "client_type": ClientType.EVALUATOR,
+                        "type": "metric",
+                        "statistic": "host_resources",
+                    }
+                ],
+                backlog=effective_backlog,
+            )
+            threading.Thread(
+                target=_worker,
+                args=(self._stream_ws(url, cmd, None, since, shutdown), "host_resources"),
+                daemon=True,
+            ).start()
+
+        try:
+            while active > 0:
+                try:
+                    event = q.get(timeout=1.0)
+                except _queue.Empty:
+                    continue
+                if event["kind"] == "_done":
+                    active -= 1
+                else:
+                    yield event
+        finally:
+            shutdown.set()
 
     def stream_scheduler_job_status(
         self,
@@ -591,13 +826,55 @@ class MonitorClient:
         )
         yield from self._stream_ws(url, command, max_messages)
 
+    def _start_done_poller(
+        self,
+        job_id: str,
+        project_id: str,
+        event: threading.Event,
+        interval: float = 5.0,
+    ) -> threading.Thread:
+        """Start a daemon thread that sets *event* when *job_id* reaches a terminal status.
+
+        Polls JMS every *interval* seconds.  The thread stops automatically once
+        *event* is set (either by itself or by an external caller).
+        """
+        from ansys.hps.client.jms import ProjectApi  # noqa: PLC0415
+
+        client = self._integration_client()
+
+        def _poll() -> None:
+            while not event.is_set():
+                try:
+                    jobs = ProjectApi(client, project_id).get_jobs(id=job_id)
+                    if jobs and jobs[0].eval_status in _TERMINAL_STATUSES:
+                        event.set()
+                        return
+                except Exception:
+                    pass
+                event.wait(timeout=interval)
+
+        t = threading.Thread(target=_poll, daemon=True)
+        t.start()
+        return t
+
     def _stream_ws(
         self,
         ws_url: str,
         command: dict[str, Any],
         max_messages: int | None,
+        since: str | None = None,
+        terminate_event: threading.Event | None = None,
     ) -> Generator[MonitorMessage, None, None]:
-        """Connect, send *command*, and yield up to *max_messages* messages."""
+        """Connect, send *command*, and yield up to *max_messages* messages.
+
+        If *since* is provided, messages whose ``time`` or ``timestamp`` field
+        is lexicographically ``<=`` *since* are silently skipped.  Skipped
+        messages do not count toward *max_messages*.
+
+        If *terminate_event* is provided the generator exits cleanly when the
+        event is set.  The WebSocket recv timeout is capped at 5 s so that done
+        detection latency is bounded regardless of ``timeout_seconds``.
+        """
         try:
             from websocket import create_connection  # noqa: PLC0415
         except ImportError as exc:  # pragma: no cover
@@ -612,6 +889,10 @@ class MonitorClient:
         connection_options: dict[str, Any] = {"timeout": self.timeout_seconds}
         if self.ws_connection_options:
             connection_options.update(self.ws_connection_options)
+        if terminate_event is not None:
+            connection_options["timeout"] = min(
+                connection_options.get("timeout", self.timeout_seconds), 5.0
+            )
 
         if self.token:
             existing_headers = connection_options.get("header")
@@ -628,11 +909,15 @@ class MonitorClient:
             ws.send(json.dumps(command))
             yielded = 0
             while max_messages is None or yielded < max_messages:
+                if terminate_event is not None and terminate_event.is_set():
+                    break
                 try:
                     raw = ws.recv()
                 except Exception as exc:
                     if exc.__class__.__name__ == "WebSocketTimeoutException":
-                        break
+                        if terminate_event is None or terminate_event.is_set():
+                            break
+                        continue
                     raise
                 if not raw:
                     break
@@ -641,6 +926,10 @@ class MonitorClient:
                 messages = MessageEnvelope.from_payload(payload).messages
 
                 for message in messages:
+                    if since is not None:
+                        ts = message.get("time") or message.get("timestamp")
+                        if ts is not None and str(ts) <= since:
+                            continue
                     yield message
                     yielded += 1
                     if max_messages is not None and yielded >= max_messages:

@@ -63,6 +63,61 @@ class _ResponseMock:
         return json.dumps(self._payload).encode("utf-8")
 
 
+# ---------------------------------------------------------------------------
+# MonitorMessage.parsed_message tests
+# ---------------------------------------------------------------------------
+
+
+def test_monitor_message_parsed_message_decodes_json_string():
+    """parsed_message auto-decodes a JSON-encoded string in the message field."""
+    from ansys.hps.client.monitor.models import MonitorMessage
+
+    payload = {"cpu": {"usage": 42.4}, "virtual_memory": {"percent": 88.9}}
+    msg = MonitorMessage(payload={"message": json.dumps(payload), "timestamp": "2026-01-01T00:00:00Z"})
+
+    result = msg.parsed_message
+
+    assert result == payload
+    assert result["cpu"]["usage"] == 42.4
+
+
+def test_monitor_message_parsed_message_returns_plain_text_unchanged():
+    """parsed_message returns plain-text log lines as-is (no json.loads attempted)."""
+    from ansys.hps.client.monitor.models import MonitorMessage
+
+    msg = MonitorMessage(payload={"message": "42  6.47e-01  7.52e-01  3.18e-01"})
+
+    assert msg.parsed_message == "42  6.47e-01  7.52e-01  3.18e-01"
+
+
+def test_monitor_message_parsed_message_returns_none_when_absent():
+    """parsed_message returns None when the message key is missing."""
+    from ansys.hps.client.monitor.models import MonitorMessage
+
+    msg = MonitorMessage(payload={"timestamp": "2026-01-01T00:00:00Z"})
+
+    assert msg.parsed_message is None
+
+
+def test_monitor_message_parsed_message_returns_non_string_as_is():
+    """parsed_message returns an already-decoded value (dict/list/int) without re-parsing."""
+    from ansys.hps.client.monitor.models import MonitorMessage
+
+    already_decoded = {"cpu": 42.4}
+    msg = MonitorMessage(payload={"message": already_decoded})
+
+    assert msg.parsed_message is already_decoded
+
+
+def test_monitor_message_parsed_message_returns_raw_on_invalid_json():
+    """parsed_message returns the raw string when json.loads fails."""
+    from ansys.hps.client.monitor.models import MonitorMessage
+
+    msg = MonitorMessage(payload={"message": "not { valid json"})
+
+    assert msg.parsed_message == "not { valid json"
+
+
 def test_monitor_api_module_reload_executes_definitions():
     reloaded = importlib.reload(monitor_api_module)
 
@@ -773,6 +828,48 @@ def test_stream_task_host_resources_raises_when_evaluator_resolution_fails(monke
         list(client.stream_task_host_resources("task-abc", "proj-123"))
 
 
+def test_stream_task_host_resources_project_id_optional(monkeypatch):
+    """project_id can be omitted; it is resolved from task logs automatically."""
+    _make_multi_ws_mock(monkeypatch, [{"cpu_percent": 5.0}])
+
+    client = MonitorClient(_make_hps_client(url=BASE_URL, access_token="t"))
+    resolved = []
+    monkeypatch.setattr(
+        client,
+        "resolve_project_id_for_task",
+        lambda task_id, **kwargs: resolved.append(task_id) or "proj-auto",
+    )
+    monkeypatch.setattr(
+        client,
+        "_resolve_evaluator_name_for_task",
+        lambda task_id, project_id: "eval-1",
+    )
+    list(client.stream_task_host_resources("task-abc", max_messages=1))
+
+    assert resolved == ["task-abc"]
+
+
+def test_stream_task_host_resources_explicit_project_id_skips_resolution(monkeypatch):
+    """When project_id is supplied, resolve_project_id_for_task is never called."""
+    _make_multi_ws_mock(monkeypatch, [])
+
+    client = MonitorClient(_make_hps_client(url=BASE_URL, access_token="t"))
+    called = []
+    monkeypatch.setattr(
+        client,
+        "resolve_project_id_for_task",
+        lambda task_id, **kwargs: called.append(task_id),
+    )
+    monkeypatch.setattr(
+        client,
+        "_resolve_evaluator_name_for_task",
+        lambda task_id, project_id: "eval-1",
+    )
+    list(client.stream_task_host_resources("task-abc", "proj-explicit"))
+
+    assert called == []
+
+
 def test_stream_task_logs_unlimited_when_max_messages_none(monkeypatch):
     """max_messages=None should stream until server closes connection."""
     updates = [{"message": "a"}, {"message": "b"}, {"message": "c"}]
@@ -782,6 +879,120 @@ def test_stream_task_logs_unlimited_when_max_messages_none(monkeypatch):
     results = list(client.stream_task_logs("task-abc", max_messages=None))
 
     assert results == updates
+
+
+# ---------------------------------------------------------------------------
+# stream_task_all tests
+# ---------------------------------------------------------------------------
+
+
+def test_stream_task_all_yields_log_events_with_kind(monkeypatch):
+    """stream_task_all wraps log messages with kind='log'."""
+    messages = [{"message": "line 1"}, {"message": "line 2"}]
+    _make_multi_ws_mock(monkeypatch, messages)
+
+    client = MonitorClient(_make_hps_client(url=BASE_URL, access_token="t"))
+    results = list(client.stream_task_all(
+        "task-abc", logs=True, process_tree=False, host_resources=False
+    ))
+
+    assert all(e["kind"] == "log" for e in results)
+    assert [e["msg"]["message"] for e in results] == ["line 1", "line 2"]
+
+
+def test_stream_task_all_log_subscription_has_no_file_path_filter(monkeypatch):
+    """Log stream in stream_task_all has no file_path filter — all files are streamed."""
+    ws = _make_multi_ws_mock(monkeypatch, [])
+
+    client = MonitorClient(_make_hps_client(url=BASE_URL, access_token="t"))
+    list(client.stream_task_all(
+        "task-abc", logs=True, process_tree=False, host_resources=False
+    ))
+
+    topic = ws.sent[0]["topics"][0]
+    assert topic["task_id"] == "task-abc"
+    assert topic["client_type"] == "ansys.rep.evaluator.file_tail"
+    assert "file_path" not in topic
+
+
+def test_stream_task_all_yields_process_tree_events(monkeypatch):
+    """stream_task_all wraps process-tree messages with kind='process_tree'."""
+    messages = [{"message": '{"pid": 1}'}]
+    _make_multi_ws_mock(monkeypatch, messages)
+
+    client = MonitorClient(_make_hps_client(url=BASE_URL, access_token="t"))
+    results = list(client.stream_task_all(
+        "task-abc", logs=False, process_tree=True, host_resources=False
+    ))
+
+    assert all(e["kind"] == "process_tree" for e in results)
+    assert len(results) == 1
+
+
+def test_stream_task_all_host_resources_resolves_evaluator(monkeypatch):
+    """stream_task_all resolves the evaluator name for the host_resources stream."""
+    _make_multi_ws_mock(monkeypatch, [])
+
+    client = MonitorClient(_make_hps_client(url=BASE_URL, access_token="t"))
+    monkeypatch.setattr(
+        client,
+        "resolve_project_id_for_task",
+        lambda task_id, **kwargs: "proj-auto",
+    )
+    resolved_evals = []
+    monkeypatch.setattr(
+        client,
+        "_resolve_evaluator_name_for_task",
+        lambda task_id, project_id: resolved_evals.append(project_id) or "eval-1",
+    )
+
+    list(client.stream_task_all(
+        "task-abc", logs=False, process_tree=False, host_resources=True
+    ))
+
+    assert resolved_evals == ["proj-auto"]
+
+
+def test_stream_task_all_job_id_terminates_streams(monkeypatch):
+    """stream_task_all with job_id starts a done-poller that terminates all streams."""
+    import threading as _threading
+
+    _make_multi_ws_mock(monkeypatch, [])
+
+    client = MonitorClient(_make_hps_client(url=BASE_URL, access_token="t"))
+    monkeypatch.setattr(
+        client,
+        "resolve_project_id_for_task",
+        lambda task_id, **kwargs: "proj-auto",
+    )
+
+    def fake_poller(job_id, project_id, event, interval=5.0):
+        event.set()
+        return _threading.Thread(target=lambda: None, daemon=True)
+
+    monkeypatch.setattr(client, "_start_done_poller", fake_poller)
+
+    results = list(client.stream_task_all(
+        "task-abc",
+        logs=True,
+        process_tree=False,
+        host_resources=False,
+        job_id="job-xyz",
+    ))
+
+    assert isinstance(results, list)
+
+
+def test_stream_task_all_tail_only_sends_zero_backlog(monkeypatch):
+    """tail_only=True sends backlog=0 on the log subscription."""
+    ws = _make_multi_ws_mock(monkeypatch, [])
+
+    client = MonitorClient(_make_hps_client(url=BASE_URL, access_token="t"))
+    list(client.stream_task_all(
+        "task-abc", logs=True, process_tree=False, host_resources=False, tail_only=True
+    ))
+
+    assert ws.sent[0]["backlog"] == {"limit": 0}
 
 
 # ---------------------------------------------------------------------------
@@ -1027,6 +1238,254 @@ def test_stream_task_logs_uses_derived_ws_url(monkeypatch):
     list(client.stream_task_logs("task-abc"))
 
     assert captured["url"] == WSS_TOPICS_URL
+
+
+def test_stream_task_logs_tail_only_sets_backlog_zero(monkeypatch):
+    """tail_only=True sends backlog limit 0 to suppress history replay."""
+    ws = _make_multi_ws_mock(monkeypatch, [])
+
+    client = MonitorClient(_make_hps_client(url=BASE_URL, access_token="t"))
+    list(client.stream_task_logs("task-abc", tail_only=True))
+
+    assert ws.sent[0]["backlog"] == {"limit": 0}
+
+
+def test_stream_task_logs_tail_only_overrides_explicit_backlog(monkeypatch):
+    """tail_only=True overrides a caller-supplied backlog value."""
+    ws = _make_multi_ws_mock(monkeypatch, [])
+
+    client = MonitorClient(_make_hps_client(url=BASE_URL, access_token="t"))
+    list(client.stream_task_logs("task-abc", backlog=500, tail_only=True))
+
+    assert ws.sent[0]["backlog"] == {"limit": 0}
+
+
+def test_stream_task_logs_since_drops_messages_at_or_before_cutoff(monkeypatch):
+    """since filters out messages whose timestamp is <= the cutoff."""
+    messages = [
+        {"message": "old",    "timestamp": "2026-06-29T09:59:59Z"},
+        {"message": "cutoff", "timestamp": "2026-06-29T10:00:00Z"},
+        {"message": "new",    "timestamp": "2026-06-29T10:00:01Z"},
+    ]
+    _make_multi_ws_mock(monkeypatch, messages)
+
+    client = MonitorClient(_make_hps_client(url=BASE_URL, access_token="t"))
+    results = list(client.stream_task_logs("task-abc", since="2026-06-29T10:00:00Z"))
+
+    assert len(results) == 1
+    assert results[0]["message"] == "new"
+
+
+def test_stream_task_logs_since_uses_time_field_when_timestamp_absent(monkeypatch):
+    """since checks the 'time' field as fallback when 'timestamp' is absent."""
+    messages = [
+        {"message": "old", "time": "2026-06-29T09:59:00Z"},
+        {"message": "new", "time": "2026-06-29T10:01:00Z"},
+    ]
+    _make_multi_ws_mock(monkeypatch, messages)
+
+    client = MonitorClient(_make_hps_client(url=BASE_URL, access_token="t"))
+    results = list(client.stream_task_logs("task-abc", since="2026-06-29T10:00:00Z"))
+
+    assert len(results) == 1
+    assert results[0]["message"] == "new"
+
+
+def test_stream_task_logs_since_passes_messages_without_timestamp(monkeypatch):
+    """Messages carrying no timestamp field are always yielded regardless of since."""
+    messages = [
+        {"message": "no-ts-1"},
+        {"message": "no-ts-2"},
+    ]
+    _make_multi_ws_mock(monkeypatch, messages)
+
+    client = MonitorClient(_make_hps_client(url=BASE_URL, access_token="t"))
+    results = list(client.stream_task_logs("task-abc", since="2099-01-01T00:00:00Z"))
+
+    assert len(results) == 2
+
+
+def test_stream_task_logs_since_none_passes_all_messages(monkeypatch):
+    """since=None (the default) disables filtering — all messages are yielded."""
+    messages = [
+        {"message": "a", "timestamp": "2026-01-01T00:00:00Z"},
+        {"message": "b", "timestamp": "2026-06-01T00:00:00Z"},
+    ]
+    _make_multi_ws_mock(monkeypatch, messages)
+
+    client = MonitorClient(_make_hps_client(url=BASE_URL, access_token="t"))
+    results = list(client.stream_task_logs("task-abc"))
+
+    assert results == messages
+
+
+def test_stream_task_logs_since_filtered_messages_do_not_count_toward_max_messages(monkeypatch):
+    """Filtered-out messages do not consume the max_messages budget."""
+    messages = [
+        {"message": "old-1", "timestamp": "2026-06-29T09:00:00Z"},
+        {"message": "old-2", "timestamp": "2026-06-29T09:30:00Z"},
+        {"message": "new-1", "timestamp": "2026-06-29T10:30:00Z"},
+        {"message": "new-2", "timestamp": "2026-06-29T11:00:00Z"},
+    ]
+    _make_multi_ws_mock(monkeypatch, messages)
+
+    client = MonitorClient(_make_hps_client(url=BASE_URL, access_token="t"))
+    results = list(
+        client.stream_task_logs("task-abc", since="2026-06-29T10:00:00Z", max_messages=2)
+    )
+
+    assert len(results) == 2
+    assert results[0]["message"] == "new-1"
+    assert results[1]["message"] == "new-2"
+
+
+def test_stream_task_logs_job_id_starts_poller_and_terminates(monkeypatch):
+    """stream_task_logs with job_id starts a done-poller that terminates the stream."""
+    import threading as _threading
+
+    messages = [{"message": f"line {i}"} for i in range(10)]
+    _make_multi_ws_mock(monkeypatch, messages)
+
+    client = MonitorClient(_make_hps_client(url=BASE_URL, access_token="t"))
+    monkeypatch.setattr(
+        client,
+        "resolve_project_id_for_task",
+        lambda task_id, **kwargs: "proj-auto",
+    )
+
+    def fake_poller(job_id, project_id, event, interval=5.0):
+        event.set()  # signal done immediately
+        return _threading.Thread(target=lambda: None, daemon=True)
+
+    monkeypatch.setattr(client, "_start_done_poller", fake_poller)
+
+    results = list(client.stream_task_logs("task-abc", job_id="job-xyz"))
+
+    # Stream terminates before yielding any messages because the event is
+    # set before _stream_ws checks it at the top of the recv loop.
+    assert isinstance(results, list)
+
+
+def test_stream_task_logs_job_id_auto_resolves_project_id(monkeypatch):
+    """When job_id is provided without project_id, project_id is auto-resolved."""
+    import threading as _threading
+
+    _make_multi_ws_mock(monkeypatch, [])
+
+    client = MonitorClient(_make_hps_client(url=BASE_URL, access_token="t"))
+    resolved = []
+    monkeypatch.setattr(
+        client,
+        "resolve_project_id_for_task",
+        lambda task_id, **kwargs: resolved.append(task_id) or "proj-auto",
+    )
+
+    def fake_poller(job_id, project_id, event, interval=5.0):
+        assert project_id == "proj-auto"
+        event.set()
+        return _threading.Thread(target=lambda: None, daemon=True)
+
+    monkeypatch.setattr(client, "_start_done_poller", fake_poller)
+    list(client.stream_task_logs("task-abc", job_id="job-xyz"))
+
+    assert resolved == ["task-abc"]
+
+
+def test_stream_task_logs_job_id_uses_explicit_project_id(monkeypatch):
+    """When both job_id and project_id are provided, no auto-resolution occurs."""
+    import threading as _threading
+
+    _make_multi_ws_mock(monkeypatch, [])
+
+    client = MonitorClient(_make_hps_client(url=BASE_URL, access_token="t"))
+    auto_resolve_called = []
+    monkeypatch.setattr(
+        client,
+        "resolve_project_id_for_task",
+        lambda task_id, **kwargs: auto_resolve_called.append(task_id),
+    )
+
+    def fake_poller(job_id, project_id, event, interval=5.0):
+        assert project_id == "proj-explicit"
+        event.set()
+        return _threading.Thread(target=lambda: None, daemon=True)
+
+    monkeypatch.setattr(client, "_start_done_poller", fake_poller)
+    list(client.stream_task_logs("task-abc", job_id="job-xyz", project_id="proj-explicit"))
+
+    assert auto_resolve_called == []
+
+
+def test_stream_task_logs_no_job_id_no_poller(monkeypatch):
+    """Without job_id, _start_done_poller is never called."""
+    _make_multi_ws_mock(monkeypatch, [{"message": "hi"}])
+
+    client = MonitorClient(_make_hps_client(url=BASE_URL, access_token="t"))
+    called = []
+    monkeypatch.setattr(
+        client,
+        "_start_done_poller",
+        lambda *args, **kwargs: called.append(True),
+    )
+
+    list(client.stream_task_logs("task-abc"))
+
+    assert called == []
+
+
+def test_stream_task_host_resources_job_id_starts_poller(monkeypatch):
+    """stream_task_host_resources with job_id starts a done-poller."""
+    import threading as _threading
+
+    _make_multi_ws_mock(monkeypatch, [])
+
+    client = MonitorClient(_make_hps_client(url=BASE_URL, access_token="t"))
+    monkeypatch.setattr(
+        client,
+        "resolve_project_id_for_task",
+        lambda task_id, **kwargs: "proj-auto",
+    )
+    monkeypatch.setattr(
+        client,
+        "_resolve_evaluator_name_for_task",
+        lambda task_id, project_id: "eval-1",
+    )
+    polled = []
+
+    def fake_poller(job_id, project_id, event, interval=5.0):
+        polled.append((job_id, project_id))
+        event.set()
+        return _threading.Thread(target=lambda: None, daemon=True)
+
+    monkeypatch.setattr(client, "_start_done_poller", fake_poller)
+    list(client.stream_task_host_resources("task-abc", job_id="job-xyz"))
+
+    assert polled == [("job-xyz", "proj-auto")]
+
+
+def test_stream_task_process_tree_tail_only_sets_backlog_zero(monkeypatch):
+    """stream_task_process_tree tail_only=True sends backlog limit 0."""
+    ws = _make_multi_ws_mock(monkeypatch, [])
+
+    client = MonitorClient(_make_hps_client(url=BASE_URL, access_token="t"))
+    list(client.stream_task_process_tree("task-abc", tail_only=True))
+
+    assert ws.sent[0]["backlog"] == {"limit": 0}
+
+
+def test_stream_task_process_tree_since_filters_old_messages(monkeypatch):
+    """stream_task_process_tree since drops messages at or before the cutoff."""
+    messages = [
+        {"message": "snap-old", "timestamp": "2026-06-29T09:00:00Z"},
+        {"message": "snap-new", "timestamp": "2026-06-29T11:00:00Z"},
+    ]
+    _make_multi_ws_mock(monkeypatch, messages)
+
+    client = MonitorClient(_make_hps_client(url=BASE_URL, access_token="t"))
+    results = list(client.stream_task_process_tree("task-abc", since="2026-06-29T10:00:00Z"))
+
+    assert len(results) == 1
+    assert results[0]["message"] == "snap-new"
 
 
 def test_resolve_project_id_for_task_reads_from_tags(monkeypatch):

@@ -24,6 +24,7 @@
 
 from __future__ import annotations
 
+import json
 from collections.abc import Iterable, Iterator, Mapping
 from dataclasses import dataclass
 from typing import Any
@@ -129,6 +130,30 @@ class MonitorMessage(_PayloadMappingMixin, Mapping[str, Any]):
     def to_dict(self) -> dict[str, Any]:
         """Return a shallow copy of the underlying payload."""
         return dict(self.payload)
+
+    @property
+    def parsed_message(self) -> Any:
+        """Return the ``message`` field, auto-decoding it when it is a JSON string.
+
+        Metric messages (``process_tree``, ``host_resources``) carry their data
+        as a JSON-encoded string in ``msg["message"]``.  This property decodes
+        that string transparently so callers never need to call
+        ``json.loads(msg["message"])`` manually::
+
+            cpu_data = msg.parsed_message.get("cpu", {})
+            cpu_pct  = cpu_data.get("usage")
+
+        For plain-text log messages the raw string is returned unchanged.
+        Returns ``None`` when the ``message`` key is absent.  Returns any
+        non-string value (e.g. an already-decoded dict) as-is.
+        """
+        raw = self.payload.get("message")
+        if not isinstance(raw, str):
+            return raw
+        try:
+            return json.loads(raw)
+        except (ValueError, TypeError):
+            return raw
 
 
 @dataclass(frozen=True)

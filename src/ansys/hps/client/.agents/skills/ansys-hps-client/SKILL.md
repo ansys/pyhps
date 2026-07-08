@@ -542,29 +542,37 @@ for msg in monitor.stream_task_logs(task_id="<task-id>", file_path="file.out"):
 
 ### Stream task process tree
 
+`msg["message"]` is a **JSON string** encoding a root process node with nested `children`. Use `msg.parsed_message` to decode it automatically — never access `msg.get("processes", [])` (that key does not exist).
+
 ```python
+# Stream live as snapshots arrive
+for snap in monitor.stream_task_process_tree(task_id="<task-id>"):
+    root = snap.parsed_message   # decoded dict with "pid", "name", "children", etc.
+    if root and "pid" in root:
+        print(root["pid"], root.get("name"), root.get("cpu_percentage"))
+
 # Collect snapshots (returns a list)
 snapshots = monitor.get_task_process_tree(task_id="<task-id>", max_messages=200)
 for snap in snapshots:
-    pids = [p["pid"] for p in snap.get("processes", [])]
-    print(pids)
-
-# Stream live as snapshots arrive
-for snap in monitor.stream_task_process_tree(task_id="<task-id>"):
-    print(snap)
+    root = snap.parsed_message
+    if root:
+        print(root.get("pid"), root.get("name"))
 ```
 
 ### Stream host CPU/memory for a running task
 
-Requires both `task_id` and `project_id` — the client resolves the evaluator via JMS + RMS automatically.
+`project_id` is required unless omitted — the client then auto-resolves it from task-log messages. `msg["message"]` is a JSON string; use `msg.parsed_message` to decode it.
 
 ```python
 for update in monitor.stream_task_host_resources(
     task_id="<task-id>",
-    project_id="<project-id>",
+    project_id="<project-id>",   # optional — omit to auto-resolve
     max_messages=100,
 ):
-    print(update.get("cpu_percent"), update.get("memory_percent"))
+    payload = update.parsed_message or {}
+    cpu = payload.get("cpu", {}).get("usage")          # float string, e.g. "12.5"
+    mem = payload.get("virtual_memory", {}).get("percent")
+    print(float(cpu) if cpu is not None else None, float(mem) if mem is not None else None)
 ```
 
 ### Stream scheduler job status (Slurm / LSF)
