@@ -198,7 +198,11 @@ class TaskDefinitionSchema(ObjectSchemaWithModificationInfo):
         metadata={"description": "Script to execute. A command or execution script is required."},
     )
 
-    execution_level = fields.Int(metadata={"description": "Execution level for the task."})
+    execution_level = fields.Int(
+        dump_default=0,
+        load_default=0,
+        metadata={"description": "Execution level for the task."},
+    )
     execution_context = fields.Dict(
         allow_none=True,
         metadata={"description": "Additional arguments to pass to the executing command."},

@@ -25,6 +25,7 @@
 
 """Module providing the task definition template resource."""
 
+from collections.abc import Callable
 from datetime import datetime
 from typing import Any
 
@@ -338,6 +339,78 @@ class TaskDefinitionTemplate(Object):
         self.output_files = output_files
 
         self.obj_type = self.__class__.__name__
+
+    def get_default_execution_context(self) -> dict[str, Any]:
+        """Return a plain dict of default execution-context values.
+
+        Keys whose :attr:`TemplateProperty.default` is ``marshmallow.utils.missing``
+        are silently omitted.
+
+        Returns
+        -------
+        dict[str, Any]
+            A dictionary suitable for passing directly as
+            ``TaskDefinition.execution_context``.
+
+        Example
+        -------
+            >>> ctx = template.get_default_execution_context()
+            >>> task_def = TaskDefinition(execution_context=ctx)
+
+        """
+        if self.execution_context is missing or self.execution_context is None:
+            return {}
+        return {
+            k: v.default
+            for k, v in self.execution_context.items()
+            if v.default is not missing
+        }
+
+    def to_software_requirements(
+        self,
+        version_selector: Callable[[list[str]], str | None] | None = None,
+    ) -> list:
+        """Convert template software requirements to :class:`.Software` objects.
+
+        Parameters
+        ----------
+        version_selector : Callable[[list[str]], str | None], optional
+            Function that receives the list of available versions for a software
+            entry and returns the desired version string (or ``None`` to omit
+            the version). The default picks the last element of the list, which
+            typically corresponds to the most recent version.
+
+        Returns
+        -------
+        list[Software]
+            List ready to assign to ``TaskDefinition.software_requirements``.
+
+        Example
+        -------
+            >>> sw = template.to_software_requirements()
+            >>> task_def = TaskDefinition(software_requirements=sw)
+
+            # Pin to a specific version:
+            >>> sw = template.to_software_requirements(
+            ...     version_selector=lambda versions: "2024 R2"
+            ... )
+
+        """
+        from .task_definition import Software  # noqa: PLC0415
+
+        if self.software_requirements is missing or not self.software_requirements:
+            return []
+
+        if version_selector is None:
+
+            def version_selector(versions):
+                return versions[-1] if versions else None
+
+        result = []
+        for ts in self.software_requirements:
+            versions = ts.versions if ts.versions is not missing and ts.versions else []
+            result.append(Software(name=ts.name, version=version_selector(versions)))
+        return result
 
 
 TaskDefinitionTemplateSchema.Meta.object_class = TaskDefinitionTemplate

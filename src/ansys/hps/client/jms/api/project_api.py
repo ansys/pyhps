@@ -29,6 +29,9 @@ import os
 import tempfile
 import warnings
 from collections.abc import Callable
+from typing import Any
+
+from marshmallow.utils import missing
 
 from ansys.hps.data_transfer.client.api.handler import WaitHandler
 from ansys.hps.data_transfer.client.models import Operation, OperationState, SrcDst, StoragePath
@@ -53,6 +56,7 @@ from ansys.hps.client.jms.resource import (
     ParameterMapping,
     Permission,
     Project,
+    ResourceRequirements,
     Task,
     TaskCommand,
     TaskCommandDefinition,
@@ -179,8 +183,16 @@ class ProjectApi:
 
         return get_files(self, as_objects=as_objects, content=content, **query_params)
 
-    def create_files(self, files: list[File], as_objects=True) -> list[File]:
-        """Create a list of files."""
+    def create_files(self, files: list, as_objects=True) -> list[File]:
+        """Create a list of files.
+
+        Parameters
+        ----------
+        files : list
+            List of :class:`File`, :class:`TemplateOutputFile`, or
+            :class:`TemplateInputFile` objects. Template file objects are
+            automatically converted to :class:`File` objects.
+        """
         return create_files(self, files, as_objects=as_objects)
 
     def update_files(self, files: list[File], as_objects=True):
@@ -735,6 +747,139 @@ class ProjectApi:
             storage_bucket=storage_bucket, storage_id=filename, filename=filename
         )
 
+    @version_required(min_version=JMS_VERSIONS[HpsRelease.v1_2_0])
+    def create_job_from_template(
+        self,
+        template: TaskDefinitionTemplate,
+        *,
+        job_name: str | None = None,
+        execution_context: dict[str, Any] | None = None,
+        version_selector: Callable[[list[str]], str | None] | None = None,
+        map_output_files: bool = True,
+        job_definition_name: str | None = None,
+        task_definition_name: str | None = None,
+        extra_task_definition_kwargs: dict[str, Any] | None = None,
+    ) -> Job:
+        """Create and submit a job from a task definition template using default settings.
+
+        This helper performs the following steps in order:
+
+        1. Copy the execution script from the template into this project.
+        2. Optionally register output files defined in the template.
+        3. Build a :class:`TaskDefinition` pre-populated with the template's
+           default execution context, software requirements, and resource
+           requirements.
+        4. Create a :class:`JobDefinition` that references the task definition.
+        5. Create and return a :class:`Job` with ``eval_status='pending'``.
+
+        Parameters
+        ----------
+        template : TaskDefinitionTemplate
+            A fully-populated template object (as returned by
+            :meth:`.JmsApi.get_task_definition_templates`).
+        job_name : str, optional
+            Name for the created job. Defaults to ``template.name``.
+        execution_context : dict, optional
+            Execution-context overrides merged on top of the template defaults.
+        version_selector : Callable, optional
+            Forwarded to :meth:`.TaskDefinitionTemplate.to_software_requirements`.
+            Receives the list of available versions and returns the desired one.
+            Defaults to picking the last (most recent) version.
+        map_output_files : bool, optional
+            When ``True`` (default), output files from the template are
+            registered as :class:`File` resources and linked to the task
+            definition.
+        job_definition_name : str, optional
+            Name for the job definition. Defaults to ``template.name``.
+        task_definition_name : str, optional
+            Name for the task definition. Defaults to ``template.name``.
+        extra_task_definition_kwargs : dict, optional
+            Additional keyword arguments passed directly to the
+            :class:`TaskDefinition` constructor, taking precedence over
+            template-derived values.
+
+        Returns
+        -------
+        Job
+            The newly created (and submitted) job object.
+
+        Example
+        -------
+            >>> templates = jms_api.get_task_definition_templates()
+            >>> template = next(t for t in templates if t.name == "Ansys Fluent >= 2025 R2")
+            >>> job = project_api.create_job_from_template(
+            ...     template,
+            ...     job_name="my-fluent-run",
+            ...     execution_context={"num_cores": 4},
+            ... )
+            >>> print(job.eval_status)
+            pending
+
+        """
+        from typing import Any as _Any  # noqa: PLC0415 — already imported at module level
+
+        # Step 1: copy execution script into project
+        exec_file = self.copy_execution_script(template)
+
+        # Step 2: optionally register output files
+        output_file_ids = []
+        if (
+            map_output_files
+            and template.output_files is not missing
+            and template.output_files
+        ):
+            created_output_files = self.create_files(template.output_files)
+            output_file_ids = [f.id for f in created_output_files]
+
+        # Step 3: build execution context from template defaults + caller overrides
+        ctx = template.get_default_execution_context()
+        if execution_context:
+            ctx.update(execution_context)
+
+        # Step 4: software requirements
+        sw = template.to_software_requirements(version_selector=version_selector)
+
+        # Step 5: resource requirements — extract defaults from template
+        rr = _resource_requirements_from_template(template.resource_requirements)
+
+        td_kwargs: dict[str, Any] = dict(
+            name=task_definition_name or template.name,
+            use_execution_script=True,
+            execution_script_id=exec_file.id,
+            execution_context=ctx if ctx else missing,
+            software_requirements=sw if sw else missing,
+            resource_requirements=rr,
+            output_file_ids=output_file_ids if output_file_ids else missing,
+            store_output=True,
+            num_trials=1,
+        )
+        if extra_task_definition_kwargs:
+            td_kwargs.update(extra_task_definition_kwargs)
+
+        task_def = self.create_task_definitions([TaskDefinition(**td_kwargs)])[0]
+
+        # Step 6: job definition
+        job_def = self.create_job_definitions(
+            [
+                JobDefinition(
+                    name=job_definition_name or template.name,
+                    active=True,
+                    task_definition_ids=[task_def.id],
+                )
+            ]
+        )[0]
+
+        # Step 7: job
+        return self.create_jobs(
+            [
+                Job(
+                    name=job_name or template.name,
+                    job_definition_id=job_def.id,
+                    eval_status="pending",
+                )
+            ]
+        )[0]
+
     ################################################################
     def _get_objects(self, obj_type: Object, as_objects=True, **query_params):
         """Get objects."""
@@ -859,6 +1004,27 @@ def _upload_files(project_api: ProjectApi, files):
         log.info("No files to upload")
 
 
+def _resource_requirements_from_template(template_rr) -> ResourceRequirements:
+    """Extract default values from a TemplateResourceRequirements object."""
+    if template_rr is missing or template_rr is None:
+        return missing
+
+    def _default(prop):
+        if prop is missing or prop is None:
+            return missing
+        return prop.default if prop.default is not missing else missing
+
+    return ResourceRequirements(
+        platform=_default(template_rr.platform),
+        memory=_default(template_rr.memory),
+        num_cores=_default(template_rr.num_cores),
+        disk_space=_default(template_rr.disk_space),
+        distributed=_default(template_rr.distributed),
+        compute_resource_set_id=_default(template_rr.compute_resource_set_id),
+        evaluator_id=_default(template_rr.evaluator_id),
+    )
+
+
 def _fetch_file_metadata(
     project_api: ProjectApi, files: list[File], storage_paths: list[StoragePath]
 ):
@@ -878,8 +1044,47 @@ def _fetch_file_metadata(
         raise HPSError("Failed to fetch metadata of uploaded files")
 
 
+def _coerce_template_files(files) -> list[File]:
+    """Convert TemplateInputFile / TemplateOutputFile objects to File objects."""
+    from ansys.hps.client.jms.resource.task_definition_template import (  # noqa: PLC0415
+        TemplateInputFile,
+        TemplateOutputFile,
+    )
+
+    coerced = []
+    for f in files:
+        if isinstance(f, (TemplateOutputFile, TemplateInputFile)):
+            coerced.append(
+                File(
+                    name=f.name,
+                    type=f.type,
+                    evaluation_path=f.evaluation_path,
+                    monitor=getattr(f, "monitor", missing),
+                    collect=getattr(f, "collect", missing),
+                )
+            )
+        else:
+            coerced.append(f)
+    return coerced
+
+
 def create_files(project_api: ProjectApi, files, as_objects=True) -> list[File]:
-    """Create a list of files."""
+    """Create a list of files.
+
+    Parameters
+    ----------
+    files : list
+        List of :class:`File`, :class:`TemplateOutputFile`, or
+        :class:`TemplateInputFile` objects. Template file objects are
+        automatically converted to :class:`File` objects before submission.
+    as_objects : bool, optional
+        Whether to return objects or dicts.
+
+    Returns
+    -------
+    list[File]
+    """
+    files = _coerce_template_files(files)
     # (1) Create file resources in JMS
     created_files = create_objects(
         project_api.client.session, project_api.url, files, File, as_objects=as_objects
