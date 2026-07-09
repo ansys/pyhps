@@ -122,6 +122,7 @@ class MonitorApi:
         timeout_seconds: float = 10.0,
         ws_url: str | None = None,
     ) -> None:
+        """Initialize the MonitorApi client."""
         self.client = client
         self.ws_connection_options = ws_connection_options
         self.timeout_seconds = timeout_seconds

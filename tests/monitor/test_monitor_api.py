@@ -287,7 +287,7 @@ def test_send_ws_command_reraises_non_timeout_websocket_error(monkeypatch):
 
 
 def test_send_ws_command_stops_on_websocket_timeout(monkeypatch):
-    class WebSocketTimeoutException(Exception):
+    class WebSocketTimeoutError(Exception):
         pass
 
     class _WsMock:
@@ -295,7 +295,7 @@ def test_send_ws_command_stops_on_websocket_timeout(monkeypatch):
             pass
 
         def recv(self):
-            raise WebSocketTimeoutException()
+            raise WebSocketTimeoutError()
 
         def close(self):
             pass
