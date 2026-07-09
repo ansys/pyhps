@@ -325,9 +325,7 @@ def test_resolve_evaluator_name_for_task_success(monkeypatch):
     client = MonitorApi(_make_hps_client())
     monkeypatch.setattr(
         "ansys.hps.client.jms.ProjectApi",
-        lambda c, pid: SimpleNamespace(
-            get_tasks=lambda **kw: [SimpleNamespace(host_id="host-1")]
-        ),
+        lambda c, pid: SimpleNamespace(get_tasks=lambda **kw: [SimpleNamespace(host_id="host-1")]),
     )
     monkeypatch.setattr(
         "ansys.hps.client.rms.RmsApi",
@@ -352,9 +350,7 @@ def test_resolve_evaluator_name_for_task_raises_when_no_evaluator(monkeypatch):
     client = MonitorApi(_make_hps_client())
     monkeypatch.setattr(
         "ansys.hps.client.jms.ProjectApi",
-        lambda c, pid: SimpleNamespace(
-            get_tasks=lambda **kw: [SimpleNamespace(host_id="host-1")]
-        ),
+        lambda c, pid: SimpleNamespace(get_tasks=lambda **kw: [SimpleNamespace(host_id="host-1")]),
     )
     monkeypatch.setattr(
         "ansys.hps.client.rms.RmsApi",
@@ -368,9 +364,7 @@ def test_resolve_evaluator_name_for_task_raises_when_evaluator_name_missing(monk
     client = MonitorApi(_make_hps_client())
     monkeypatch.setattr(
         "ansys.hps.client.jms.ProjectApi",
-        lambda c, pid: SimpleNamespace(
-            get_tasks=lambda **kw: [SimpleNamespace(host_id="host-1")]
-        ),
+        lambda c, pid: SimpleNamespace(get_tasks=lambda **kw: [SimpleNamespace(host_id="host-1")]),
     )
     monkeypatch.setattr(
         "ansys.hps.client.rms.RmsApi",
