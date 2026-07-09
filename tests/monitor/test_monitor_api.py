@@ -31,7 +31,7 @@ import pytest
 
 import ansys.hps.client.monitor.api.monitor_api as monitor_api_module
 from ansys.hps.client import ClientError
-from ansys.hps.client.monitor import MonitorClient, build_filter_templates
+from ansys.hps.client.monitor import MonitorApi, build_filter_templates
 
 BASE_URL = "http://localhost:1089"
 BASE_URL_HTTPS = "https://localhost:8443/hps"
@@ -67,7 +67,7 @@ def test_monitor_api_module_reload_executes_definitions():
     reloaded = importlib.reload(monitor_api_module)
 
     assert reloaded.ClientType.FILE_TAIL == "ansys.rep.evaluator.file_tail"
-    assert hasattr(reloaded, "MonitorClient")
+    assert hasattr(reloaded, "MonitorApi")
 
 
 def test_get_build_info_uses_expected_endpoint_and_auth_header(monkeypatch):
@@ -95,7 +95,7 @@ def test_get_build_info_uses_expected_endpoint_and_auth_header(monkeypatch):
         session=_SessionMock(),
     )
 
-    client = MonitorClient(hps_client, timeout_seconds=3.5)
+    client = MonitorApi(hps_client, timeout_seconds=3.5)
     response = client.get_build_info()
 
     assert response["build"]["version"] == "1.2.3"
@@ -128,7 +128,7 @@ def test_query_logs_serializes_filters(monkeypatch):
         session=_SessionMock(),
     )
 
-    client = MonitorClient(hps_client, timeout_seconds=5.0)
+    client = MonitorApi(hps_client, timeout_seconds=5.0)
     response = client.query_logs(
         {
             "tag:host": ["h1", "h2"],
@@ -178,9 +178,8 @@ def test_send_ws_command_adds_token_and_collects_messages(monkeypatch):
         sys.modules, "websocket", SimpleNamespace(create_connection=fake_create_connection)
     )
 
-    client = MonitorClient(_make_hps_client(access_token="jwt"), timeout_seconds=7.0)
+    client = MonitorApi(_make_hps_client(access_token="jwt"), timeout_seconds=7.0)
     responses = client.send_ws_command(
-        WS_TOPICS_URL,
         {"type": "command", "action": "subscribe"},
         max_messages=5,
     )
@@ -217,9 +216,8 @@ def test_send_ws_command_preserves_existing_token(monkeypatch):
         sys.modules, "websocket", SimpleNamespace(create_connection=fake_create_connection)
     )
 
-    client = MonitorClient(_make_hps_client(url=BASE_URL, access_token="jwt"))
+    client = MonitorApi(_make_hps_client(url=BASE_URL, access_token="jwt"))
     client.send_ws_command(
-        WS_TOPICS_URL,
         {"type": "command", "token": "already-present"},
     )
 
@@ -239,14 +237,14 @@ def test_send_ws_command_raises_helpful_error_without_websocket_client(monkeypat
 
     monkeypatch.setattr("builtins.__import__", fake_import)
 
-    client = MonitorClient(_make_hps_client(url=BASE_URL))
+    client = MonitorApi(_make_hps_client(url=BASE_URL))
     with pytest.raises(ClientError, match="websocket-client is required"):
-        client.send_ws_command(WS_TOPICS_URL, {"type": "command"})
+        client.send_ws_command({"type": "command"})
 
 
 def test_integration_client_uses_provided_client_without_token():
     provided = SimpleNamespace(name="provided-client")
-    client = MonitorClient(provided)
+    client = MonitorApi(provided)
 
     resolved = client._integration_client()
 
@@ -254,7 +252,7 @@ def test_integration_client_uses_provided_client_without_token():
 
 
 def test_auth_headers_without_token_returns_empty_dict():
-    client = MonitorClient(_make_hps_client(url=BASE_URL))
+    client = MonitorApi(_make_hps_client(url=BASE_URL))
 
     assert client._auth_headers() == {}
 
@@ -284,7 +282,7 @@ def test_resolve_evaluator_name_for_task_success(monkeypatch):
     monkeypatch.setattr("ansys.hps.client.jms.ProjectApi", _ProjectApiMock)
     monkeypatch.setattr("ansys.hps.client.rms.RmsApi", _RmsApiMock)
 
-    client = MonitorClient(provided)
+    client = MonitorApi(provided)
     evaluator_name = client._resolve_evaluator_name_for_task("task-abc", "proj-123")
 
     assert evaluator_name == "eval-1"
@@ -303,7 +301,7 @@ def test_resolve_evaluator_name_for_task_raises_when_task_not_found(monkeypatch)
 
     monkeypatch.setattr("ansys.hps.client.jms.ProjectApi", _ProjectApiMock)
 
-    client = MonitorClient(_make_hps_client(url=BASE_URL))
+    client = MonitorApi(_make_hps_client(url=BASE_URL))
     with pytest.raises(ClientError, match="Could not resolve host_id"):
         client._resolve_evaluator_name_for_task("task-abc", "proj-123")
 
@@ -326,7 +324,7 @@ def test_resolve_evaluator_name_for_task_raises_when_no_evaluator(monkeypatch):
     monkeypatch.setattr("ansys.hps.client.jms.ProjectApi", _ProjectApiMock)
     monkeypatch.setattr("ansys.hps.client.rms.RmsApi", _RmsApiMock)
 
-    client = MonitorClient(_make_hps_client(url=BASE_URL))
+    client = MonitorApi(_make_hps_client(url=BASE_URL))
     with pytest.raises(ClientError, match="Could not resolve evaluator"):
         client._resolve_evaluator_name_for_task("task-abc", "proj-123")
 
@@ -349,7 +347,7 @@ def test_resolve_evaluator_name_for_task_raises_when_evaluator_name_missing(monk
     monkeypatch.setattr("ansys.hps.client.jms.ProjectApi", _ProjectApiMock)
     monkeypatch.setattr("ansys.hps.client.rms.RmsApi", _RmsApiMock)
 
-    client = MonitorClient(_make_hps_client(url=BASE_URL))
+    client = MonitorApi(_make_hps_client(url=BASE_URL))
     with pytest.raises(ClientError, match="does not provide a name"):
         client._resolve_evaluator_name_for_task("task-abc", "proj-123")
 
@@ -375,8 +373,8 @@ def test_send_ws_command_without_token_sends_no_auth_header(monkeypatch):
         sys.modules, "websocket", SimpleNamespace(create_connection=fake_create_connection)
     )
 
-    client = MonitorClient(_make_hps_client(url=BASE_URL))
-    client.send_ws_command(WS_TOPICS_URL, {"type": "command"})
+    client = MonitorApi(_make_hps_client(url=BASE_URL))
+    client.send_ws_command({"type": "command"})
 
     assert captured["header"] is None
 
@@ -404,7 +402,7 @@ def test_send_ws_command_forwards_ws_connection_options_and_merges_auth_header(m
         sys.modules, "websocket", SimpleNamespace(create_connection=fake_create_connection)
     )
 
-    client = MonitorClient(
+    client = MonitorApi(
         _make_hps_client(url=BASE_URL, access_token="jwt"),
         timeout_seconds=7.5,
         ws_connection_options={
@@ -412,7 +410,7 @@ def test_send_ws_command_forwards_ws_connection_options_and_merges_auth_header(m
             "header": {"X-Test": "ok"},
         },
     )
-    client.send_ws_command(WS_TOPICS_URL, {"type": "command"})
+    client.send_ws_command({"type": "command"})
 
     assert captured["timeout"] == 7.5
     assert captured["sslopt"] == {"cert_reqs": 0}
@@ -471,8 +469,8 @@ def test_list_topics_sends_list_tags_command(monkeypatch):
     server_response = {"tags": {"task_id": ["t1", "t2"], "status": ["RUNNING", "COMPLETED"]}}
     ws = _make_ws_mock(monkeypatch, server_response)
 
-    client = MonitorClient(_make_hps_client(url=BASE_URL, access_token="jwt"))
-    topics = client.list_topics(WS_TOPICS_URL, limit=50)
+    client = MonitorApi(_make_hps_client(url=BASE_URL, access_token="jwt"))
+    topics = client.list_topics(limit=50)
 
     sent = ws.sent[0]
     assert sent["type"] == "command"
@@ -486,7 +484,7 @@ def test_list_topics_empty_tags_response(monkeypatch):
     """Server returns empty tags dict."""
     _make_ws_mock(monkeypatch, {"tags": {}})
 
-    client = MonitorClient(_make_hps_client(url=BASE_URL, access_token="t"))
+    client = MonitorApi(_make_hps_client(url=BASE_URL, access_token="t"))
     topics = client.list_topics(WS_TOPICS_URL)
 
     assert topics == {}
@@ -511,7 +509,7 @@ def test_list_topics_no_response_from_server(monkeypatch):
         SimpleNamespace(create_connection=lambda url, **kwargs: _EmptyWsMock()),
     )
 
-    client = MonitorClient(_make_hps_client(url=BASE_URL, access_token="t"))
+    client = MonitorApi(_make_hps_client(url=BASE_URL, access_token="t"))
     topics = client.list_topics(WS_TOPICS_URL)
 
     assert topics == {}
@@ -521,7 +519,7 @@ def test_list_topics_missing_tags_key_in_response(monkeypatch):
     """Server response has no 'tags' key — list_topics returns empty dict."""
     _make_ws_mock(monkeypatch, {"type": "response", "status": "ok"})
 
-    client = MonitorClient(_make_hps_client(url=BASE_URL, access_token="t"))
+    client = MonitorApi(_make_hps_client(url=BASE_URL, access_token="t"))
     topics = client.list_topics(WS_TOPICS_URL)
 
     assert topics == {}
@@ -533,7 +531,7 @@ def test_list_topics_can_keep_noisy_keys_when_requested(monkeypatch):
         {"tag_list": {"timestamp": ["t1", "t2"], "level": ["info"]}},
     )
 
-    client = MonitorClient(_make_hps_client(url=BASE_URL, access_token="t"))
+    client = MonitorApi(_make_hps_client(url=BASE_URL, access_token="t"))
     topics = client.list_topics(WS_TOPICS_URL, exclude_noisy=False)
 
     assert "timestamp" in topics
@@ -563,7 +561,7 @@ def test_list_topics_uses_derived_ws_url_when_omitted(monkeypatch):
         SimpleNamespace(create_connection=lambda url, **kwargs: _WsMock(url)),
     )
 
-    client = MonitorClient(_make_hps_client(url=BASE_URL_HTTPS, access_token="t"))
+    client = MonitorApi(_make_hps_client(url=BASE_URL_HTTPS, access_token="t"))
     topics = client.list_topics(limit=25)
 
     assert topics == {}
@@ -606,7 +604,7 @@ def test_stream_task_host_resources_sends_correct_topic(monkeypatch):
     """stream_task_host_resources subscribes with the correct topic tags."""
     ws = _make_multi_ws_mock(monkeypatch, [{"cpu_percent": 42.0, "memory_percent": 55.1}])
 
-    client = MonitorClient(_make_hps_client(url=BASE_URL, access_token="jwt"))
+    client = MonitorApi(_make_hps_client(url=BASE_URL, access_token="jwt"))
     monkeypatch.setattr(
         client,
         "_resolve_evaluator_name_for_task",
@@ -634,7 +632,7 @@ def test_stream_task_host_resources_yields_messages(monkeypatch):
     ]
     _make_multi_ws_mock(monkeypatch, updates)
 
-    client = MonitorClient(_make_hps_client(url=BASE_URL, access_token="t"))
+    client = MonitorApi(_make_hps_client(url=BASE_URL, access_token="t"))
     monkeypatch.setattr(
         client,
         "_resolve_evaluator_name_for_task",
@@ -649,7 +647,7 @@ def test_stream_task_host_resources_unwraps_messages_envelope(monkeypatch):
     envelopes = [{"messages": [{"cpu_percent": 10.0}, {"cpu_percent": 20.0}]}]
     _make_multi_ws_mock(monkeypatch, envelopes)
 
-    client = MonitorClient(_make_hps_client(url=BASE_URL, access_token="t"))
+    client = MonitorApi(_make_hps_client(url=BASE_URL, access_token="t"))
     monkeypatch.setattr(
         client,
         "_resolve_evaluator_name_for_task",
@@ -683,7 +681,7 @@ def test_stream_task_host_resources_stops_cleanly_on_websocket_timeout(monkeypat
         SimpleNamespace(create_connection=lambda url, **kwargs: _TimeoutWsMock()),
     )
 
-    client = MonitorClient(_make_hps_client(url=BASE_URL, access_token="t"))
+    client = MonitorApi(_make_hps_client(url=BASE_URL, access_token="t"))
     monkeypatch.setattr(
         client,
         "_resolve_evaluator_name_for_task",
@@ -698,7 +696,7 @@ def test_stream_task_host_resources_respects_backlog(monkeypatch):
     """backlog parameter is forwarded in the subscribe command."""
     ws = _make_multi_ws_mock(monkeypatch, [])
 
-    client = MonitorClient(_make_hps_client(url=BASE_URL, access_token="t"))
+    client = MonitorApi(_make_hps_client(url=BASE_URL, access_token="t"))
     monkeypatch.setattr(
         client,
         "_resolve_evaluator_name_for_task",
@@ -714,7 +712,7 @@ def test_stream_task_host_resources_respects_max_messages(monkeypatch):
     updates = [{"cpu_percent": float(i)} for i in range(10)]
     _make_multi_ws_mock(monkeypatch, updates)
 
-    client = MonitorClient(_make_hps_client(url=BASE_URL, access_token="t"))
+    client = MonitorApi(_make_hps_client(url=BASE_URL, access_token="t"))
     monkeypatch.setattr(
         client,
         "_resolve_evaluator_name_for_task",
@@ -748,7 +746,7 @@ def test_stream_task_host_resources_uses_derived_ws_url(monkeypatch):
         SimpleNamespace(create_connection=lambda url, **kwargs: _WsMock(url)),
     )
 
-    client = MonitorClient(_make_hps_client(url=BASE_URL_HTTPS, access_token="t"))
+    client = MonitorApi(_make_hps_client(url=BASE_URL_HTTPS, access_token="t"))
     monkeypatch.setattr(
         client,
         "_resolve_evaluator_name_for_task",
@@ -762,7 +760,7 @@ def test_stream_task_host_resources_uses_derived_ws_url(monkeypatch):
 def test_stream_task_host_resources_raises_when_evaluator_resolution_fails(monkeypatch):
     _make_multi_ws_mock(monkeypatch, [])
 
-    client = MonitorClient(_make_hps_client(url=BASE_URL, access_token="t"))
+    client = MonitorApi(_make_hps_client(url=BASE_URL, access_token="t"))
     monkeypatch.setattr(
         client,
         "_resolve_evaluator_name_for_task",
@@ -778,7 +776,7 @@ def test_stream_task_logs_unlimited_when_max_messages_none(monkeypatch):
     updates = [{"message": "a"}, {"message": "b"}, {"message": "c"}]
     _make_multi_ws_mock(monkeypatch, updates)
 
-    client = MonitorClient(_make_hps_client(url=BASE_URL, access_token="t"))
+    client = MonitorApi(_make_hps_client(url=BASE_URL, access_token="t"))
     results = list(client.stream_task_logs("task-abc", max_messages=None))
 
     assert results == updates
@@ -793,7 +791,7 @@ def test_stream_scheduler_job_status_sends_correct_topic(monkeypatch):
     """stream_scheduler_job_status subscribes with the correct topic tags."""
     ws = _make_multi_ws_mock(monkeypatch, [{"message": '{"running": 2, "pending": 1}'}])
 
-    client = MonitorClient(_make_hps_client(url=BASE_URL, access_token="jwt"))
+    client = MonitorApi(_make_hps_client(url=BASE_URL, access_token="jwt"))
     list(client.stream_scheduler_job_status("taskdef-abc"))
 
     sent = ws.sent[0]
@@ -816,7 +814,7 @@ def test_stream_scheduler_job_status_yields_messages(monkeypatch):
     ]
     _make_multi_ws_mock(monkeypatch, updates)
 
-    client = MonitorClient(_make_hps_client(url=BASE_URL, access_token="t"))
+    client = MonitorApi(_make_hps_client(url=BASE_URL, access_token="t"))
     results = list(client.stream_scheduler_job_status("taskdef-abc", max_messages=10))
 
     assert results == updates
@@ -834,7 +832,7 @@ def test_stream_scheduler_job_status_unwraps_messages_envelope(monkeypatch):
     ]
     _make_multi_ws_mock(monkeypatch, envelopes)
 
-    client = MonitorClient(_make_hps_client(url=BASE_URL, access_token="t"))
+    client = MonitorApi(_make_hps_client(url=BASE_URL, access_token="t"))
     results = list(client.stream_scheduler_job_status("taskdef-abc", max_messages=10))
 
     assert results == [{"message": '{"running": 2}'}, {"message": '{"running": 3}'}]
@@ -865,7 +863,7 @@ def test_stream_scheduler_job_status_stops_cleanly_on_websocket_timeout(monkeypa
         SimpleNamespace(create_connection=lambda url, **kwargs: _TimeoutWsMock()),
     )
 
-    client = MonitorClient(_make_hps_client(url=BASE_URL, access_token="t"))
+    client = MonitorApi(_make_hps_client(url=BASE_URL, access_token="t"))
     results = list(client.stream_scheduler_job_status("taskdef-abc", max_messages=10))
 
     assert results == []
@@ -875,7 +873,7 @@ def test_stream_scheduler_job_status_respects_backlog(monkeypatch):
     """backlog parameter is forwarded in the subscribe command."""
     ws = _make_multi_ws_mock(monkeypatch, [])
 
-    client = MonitorClient(_make_hps_client(url=BASE_URL, access_token="t"))
+    client = MonitorApi(_make_hps_client(url=BASE_URL, access_token="t"))
     list(client.stream_scheduler_job_status("taskdef-abc", backlog=50))
 
     assert ws.sent[0]["backlog"] == {"limit": 50}
@@ -886,7 +884,7 @@ def test_stream_scheduler_job_status_respects_max_messages(monkeypatch):
     updates = [{"message": f'{{"running": {i}}}'} for i in range(10)]
     _make_multi_ws_mock(monkeypatch, updates)
 
-    client = MonitorClient(_make_hps_client(url=BASE_URL, access_token="t"))
+    client = MonitorApi(_make_hps_client(url=BASE_URL, access_token="t"))
     results = list(client.stream_scheduler_job_status("taskdef-abc", max_messages=4))
 
     assert len(results) == 4
@@ -915,7 +913,7 @@ def test_stream_scheduler_job_status_uses_derived_ws_url(monkeypatch):
         SimpleNamespace(create_connection=lambda url, **kwargs: _WsMock(url)),
     )
 
-    client = MonitorClient(_make_hps_client(url=BASE_URL_HTTPS, access_token="t"))
+    client = MonitorApi(_make_hps_client(url=BASE_URL_HTTPS, access_token="t"))
     list(client.stream_scheduler_job_status("taskdef-abc"))
 
     assert captured["url"] == WSS_TOPICS_URL
@@ -930,7 +928,7 @@ def test_stream_task_logs_sends_correct_topic(monkeypatch):
     """stream_task_logs subscribes with the correct topic tags."""
     ws = _make_multi_ws_mock(monkeypatch, [{"message": "log line 1"}])
 
-    client = MonitorClient(_make_hps_client(url=BASE_URL, access_token="jwt"))
+    client = MonitorApi(_make_hps_client(url=BASE_URL, access_token="jwt"))
     list(client.stream_task_logs("task-abc"))
 
     sent = ws.sent[0]
@@ -946,7 +944,7 @@ def test_stream_task_logs_includes_file_path_when_provided(monkeypatch):
     """stream_task_logs includes file_path in topic when specified."""
     ws = _make_multi_ws_mock(monkeypatch, [])
 
-    client = MonitorClient(_make_hps_client(url=BASE_URL, access_token="t"))
+    client = MonitorApi(_make_hps_client(url=BASE_URL, access_token="t"))
     list(client.stream_task_logs("task-abc", file_path="console_output.txt"))
 
     topic = ws.sent[0]["topics"][0]
@@ -957,7 +955,7 @@ def test_stream_task_logs_omits_file_path_when_not_provided(monkeypatch):
     """stream_task_logs does not include file_path when not specified."""
     ws = _make_multi_ws_mock(monkeypatch, [])
 
-    client = MonitorClient(_make_hps_client(url=BASE_URL, access_token="t"))
+    client = MonitorApi(_make_hps_client(url=BASE_URL, access_token="t"))
     list(client.stream_task_logs("task-abc"))
 
     topic = ws.sent[0]["topics"][0]
@@ -973,7 +971,7 @@ def test_stream_task_logs_yields_messages(monkeypatch):
     ]
     _make_multi_ws_mock(monkeypatch, messages)
 
-    client = MonitorClient(_make_hps_client(url=BASE_URL, access_token="t"))
+    client = MonitorApi(_make_hps_client(url=BASE_URL, access_token="t"))
     results = list(client.stream_task_logs("task-abc"))
 
     assert results == messages
@@ -983,7 +981,7 @@ def test_stream_task_logs_respects_backlog(monkeypatch):
     """backlog parameter is forwarded in the subscribe command."""
     ws = _make_multi_ws_mock(monkeypatch, [])
 
-    client = MonitorClient(_make_hps_client(url=BASE_URL, access_token="t"))
+    client = MonitorApi(_make_hps_client(url=BASE_URL, access_token="t"))
     list(client.stream_task_logs("task-abc", backlog=500))
 
     assert ws.sent[0]["backlog"] == {"limit": 500}
@@ -994,7 +992,7 @@ def test_stream_task_logs_respects_max_messages(monkeypatch):
     messages = [{"message": f"line {i}"} for i in range(10)]
     _make_multi_ws_mock(monkeypatch, messages)
 
-    client = MonitorClient(_make_hps_client(url=BASE_URL, access_token="t"))
+    client = MonitorApi(_make_hps_client(url=BASE_URL, access_token="t"))
     results = list(client.stream_task_logs("task-abc", max_messages=5))
 
     assert len(results) == 5
@@ -1023,14 +1021,14 @@ def test_stream_task_logs_uses_derived_ws_url(monkeypatch):
         SimpleNamespace(create_connection=lambda url, **kwargs: _WsMock(url)),
     )
 
-    client = MonitorClient(_make_hps_client(url=BASE_URL_HTTPS, access_token="t"))
+    client = MonitorApi(_make_hps_client(url=BASE_URL_HTTPS, access_token="t"))
     list(client.stream_task_logs("task-abc"))
 
     assert captured["url"] == WSS_TOPICS_URL
 
 
 def test_resolve_project_id_for_task_reads_from_tags(monkeypatch):
-    client = MonitorClient(_make_hps_client(url=BASE_URL, access_token="t"))
+    client = MonitorApi(_make_hps_client(url=BASE_URL, access_token="t"))
     monkeypatch.setattr(
         client,
         "stream_task_logs",
@@ -1047,7 +1045,7 @@ def test_resolve_project_id_for_task_reads_from_tags(monkeypatch):
 
 
 def test_resolve_project_id_for_task_reads_top_level_fallback(monkeypatch):
-    client = MonitorClient(_make_hps_client(url=BASE_URL, access_token="t"))
+    client = MonitorApi(_make_hps_client(url=BASE_URL, access_token="t"))
     monkeypatch.setattr(
         client,
         "stream_task_logs",
@@ -1064,7 +1062,7 @@ def test_resolve_project_id_for_task_reads_top_level_fallback(monkeypatch):
 
 
 def test_resolve_project_id_for_task_raises_when_missing(monkeypatch):
-    client = MonitorClient(_make_hps_client(url=BASE_URL, access_token="t"))
+    client = MonitorApi(_make_hps_client(url=BASE_URL, access_token="t"))
     monkeypatch.setattr(
         client,
         "stream_task_logs",
@@ -1081,7 +1079,7 @@ def test_resolve_project_id_for_task_raises_when_missing(monkeypatch):
 
 
 def test_resolve_project_id_for_task_skips_non_dict_messages(monkeypatch):
-    client = MonitorClient(_make_hps_client(url=BASE_URL, access_token="t"))
+    client = MonitorApi(_make_hps_client(url=BASE_URL, access_token="t"))
     monkeypatch.setattr(
         client,
         "stream_task_logs",
@@ -1118,9 +1116,8 @@ def test_send_ws_command_handles_list_payload_and_skips_non_dict_entries(monkeyp
         sys.modules, "websocket", SimpleNamespace(create_connection=lambda url, **kwargs: ws)
     )
 
-    client = MonitorClient(_make_hps_client(url=BASE_URL, access_token="t"))
+    client = MonitorApi(_make_hps_client(url=BASE_URL, access_token="t"))
     results = client.send_ws_command(
-        WS_TOPICS_URL,
         {"type": "command"},
         max_messages=10,
     )
@@ -1145,9 +1142,9 @@ def test_send_ws_command_reraises_non_timeout_websocket_error(monkeypatch):
         SimpleNamespace(create_connection=lambda url, **kwargs: _WebSocketMock()),
     )
 
-    client = MonitorClient(_make_hps_client(url=BASE_URL, access_token="t"))
+    client = MonitorApi(_make_hps_client(url=BASE_URL, access_token="t"))
     with pytest.raises(RuntimeError, match="boom"):
-        client.send_ws_command(WS_TOPICS_URL, {"type": "command"})
+        client.send_ws_command({"type": "command"})
 
 
 # ---------------------------------------------------------------------------
@@ -1159,7 +1156,7 @@ def test_stream_task_process_tree_sends_correct_topic(monkeypatch):
     """stream_task_process_tree subscribes with the correct topic tags."""
     ws = _make_multi_ws_mock(monkeypatch, [{"processes": [{"pid": 1234}]}])
 
-    client = MonitorClient(_make_hps_client(url=BASE_URL, access_token="jwt"))
+    client = MonitorApi(_make_hps_client(url=BASE_URL, access_token="jwt"))
     list(client.stream_task_process_tree("task-abc"))
 
     sent = ws.sent[0]
@@ -1182,7 +1179,7 @@ def test_stream_task_process_tree_yields_messages(monkeypatch):
     ]
     _make_multi_ws_mock(monkeypatch, snapshots)
 
-    client = MonitorClient(_make_hps_client(url=BASE_URL, access_token="t"))
+    client = MonitorApi(_make_hps_client(url=BASE_URL, access_token="t"))
     results = list(client.stream_task_process_tree("task-abc", max_messages=10))
 
     assert results == snapshots
@@ -1192,7 +1189,7 @@ def test_stream_task_process_tree_respects_backlog(monkeypatch):
     """backlog parameter is forwarded in the subscribe command."""
     ws = _make_multi_ws_mock(monkeypatch, [])
 
-    client = MonitorClient(_make_hps_client(url=BASE_URL, access_token="t"))
+    client = MonitorApi(_make_hps_client(url=BASE_URL, access_token="t"))
     list(client.stream_task_process_tree("task-abc", backlog=75))
 
     assert ws.sent[0]["backlog"] == {"limit": 75}
@@ -1203,7 +1200,7 @@ def test_stream_task_process_tree_respects_max_messages(monkeypatch):
     snapshots = [{"processes": []} for _ in range(10)]
     _make_multi_ws_mock(monkeypatch, snapshots)
 
-    client = MonitorClient(_make_hps_client(url=BASE_URL, access_token="t"))
+    client = MonitorApi(_make_hps_client(url=BASE_URL, access_token="t"))
     results = list(client.stream_task_process_tree("task-abc", max_messages=6))
 
     assert len(results) == 6
@@ -1232,7 +1229,7 @@ def test_stream_task_process_tree_uses_derived_ws_url(monkeypatch):
         SimpleNamespace(create_connection=lambda url, **kwargs: _WsMock(url)),
     )
 
-    client = MonitorClient(_make_hps_client(url=BASE_URL_HTTPS, access_token="t"))
+    client = MonitorApi(_make_hps_client(url=BASE_URL_HTTPS, access_token="t"))
     list(client.stream_task_process_tree("task-abc"))
 
     assert captured["url"] == WSS_TOPICS_URL
@@ -1263,7 +1260,7 @@ def test_stream_task_process_tree_stops_cleanly_on_websocket_timeout(monkeypatch
         SimpleNamespace(create_connection=lambda url, **kwargs: _TimeoutWsMock()),
     )
 
-    client = MonitorClient(_make_hps_client(url=BASE_URL, access_token="t"))
+    client = MonitorApi(_make_hps_client(url=BASE_URL, access_token="t"))
     results = list(client.stream_task_process_tree("task-abc", max_messages=10))
 
     assert results == []
@@ -1283,7 +1280,7 @@ def test_get_task_process_tree_returns_list_of_snapshots(monkeypatch):
     ]
     _make_multi_ws_mock(monkeypatch, snapshots)
 
-    client = MonitorClient(_make_hps_client(url=BASE_URL, access_token="t"))
+    client = MonitorApi(_make_hps_client(url=BASE_URL, access_token="t"))
     results = client.get_task_process_tree("task-abc")
 
     assert isinstance(results, list)
@@ -1296,7 +1293,7 @@ def test_get_task_process_tree_respects_max_messages_default(monkeypatch):
     snapshots = [{"processes": [{"pid": i}]} for i in range(300)]
     _make_multi_ws_mock(monkeypatch, snapshots)
 
-    client = MonitorClient(_make_hps_client(url=BASE_URL, access_token="t"))
+    client = MonitorApi(_make_hps_client(url=BASE_URL, access_token="t"))
     results = client.get_task_process_tree("task-abc")
 
     assert len(results) == 200
@@ -1307,7 +1304,7 @@ def test_get_task_process_tree_respects_custom_max_messages(monkeypatch):
     snapshots = [{"processes": []} for _ in range(50)]
     _make_multi_ws_mock(monkeypatch, snapshots)
 
-    client = MonitorClient(_make_hps_client(url=BASE_URL, access_token="t"))
+    client = MonitorApi(_make_hps_client(url=BASE_URL, access_token="t"))
     results = client.get_task_process_tree("task-abc", max_messages=30)
 
     assert len(results) == 30
@@ -1317,7 +1314,7 @@ def test_get_task_process_tree_respects_backlog(monkeypatch):
     """backlog parameter is forwarded to stream_task_process_tree."""
     ws = _make_multi_ws_mock(monkeypatch, [])
 
-    client = MonitorClient(_make_hps_client(url=BASE_URL, access_token="t"))
+    client = MonitorApi(_make_hps_client(url=BASE_URL, access_token="t"))
     client.get_task_process_tree("task-abc", backlog=150)
 
     assert ws.sent[0]["backlog"] == {"limit": 150}
@@ -1346,7 +1343,7 @@ def test_get_task_process_tree_uses_derived_ws_url(monkeypatch):
         SimpleNamespace(create_connection=lambda url, **kwargs: _WsMock(url)),
     )
 
-    client = MonitorClient(_make_hps_client(url=BASE_URL_HTTPS, access_token="t"))
+    client = MonitorApi(_make_hps_client(url=BASE_URL_HTTPS, access_token="t"))
     client.get_task_process_tree("task-abc")
 
     assert captured["url"] == WSS_TOPICS_URL
@@ -1356,7 +1353,7 @@ def test_get_task_process_tree_empty_result(monkeypatch):
     """get_task_process_tree returns empty list when server sends no messages."""
     _make_multi_ws_mock(monkeypatch, [])
 
-    client = MonitorClient(_make_hps_client(url=BASE_URL, access_token="t"))
+    client = MonitorApi(_make_hps_client(url=BASE_URL, access_token="t"))
     results = client.get_task_process_tree("task-abc")
 
     assert results == []
@@ -1371,7 +1368,7 @@ def test_stream_service_logs_sends_correct_topic(monkeypatch):
     """stream_service_logs subscribes with the correct client_type tag."""
     ws = _make_multi_ws_mock(monkeypatch, [{"message": "service log entry"}])
 
-    client = MonitorClient(_make_hps_client(url=BASE_URL, access_token="jwt"))
+    client = MonitorApi(_make_hps_client(url=BASE_URL, access_token="jwt"))
     list(client.stream_service_logs("ansys.rep.jms"))
 
     sent = ws.sent[0]
@@ -1391,7 +1388,7 @@ def test_stream_service_logs_yields_messages(monkeypatch):
     ]
     _make_multi_ws_mock(monkeypatch, messages)
 
-    client = MonitorClient(_make_hps_client(url=BASE_URL, access_token="t"))
+    client = MonitorApi(_make_hps_client(url=BASE_URL, access_token="t"))
     results = list(client.stream_service_logs("ansys.rep.jms"))
 
     assert results == messages
@@ -1401,7 +1398,7 @@ def test_stream_service_logs_respects_backlog(monkeypatch):
     """backlog parameter is forwarded in the subscribe command."""
     ws = _make_multi_ws_mock(monkeypatch, [])
 
-    client = MonitorClient(_make_hps_client(url=BASE_URL, access_token="t"))
+    client = MonitorApi(_make_hps_client(url=BASE_URL, access_token="t"))
     list(client.stream_service_logs("ansys.rep.jms", backlog=250))
 
     assert ws.sent[0]["backlog"] == {"limit": 250}
@@ -1412,7 +1409,7 @@ def test_stream_service_logs_respects_max_messages(monkeypatch):
     messages = [{"message": f"entry {i}"} for i in range(20)]
     _make_multi_ws_mock(monkeypatch, messages)
 
-    client = MonitorClient(_make_hps_client(url=BASE_URL, access_token="t"))
+    client = MonitorApi(_make_hps_client(url=BASE_URL, access_token="t"))
     results = list(client.stream_service_logs("ansys.rep.jms", max_messages=7))
 
     assert len(results) == 7
@@ -1422,7 +1419,7 @@ def test_stream_service_logs_with_different_client_types(monkeypatch):
     """stream_service_logs works with different service client_type values."""
     ws = _make_multi_ws_mock(monkeypatch, [{"message": "scaling event"}])
 
-    client = MonitorClient(_make_hps_client(url=BASE_URL, access_token="t"))
+    client = MonitorApi(_make_hps_client(url=BASE_URL, access_token="t"))
     list(client.stream_service_logs("ansys.rep.scaling"))
 
     topic = ws.sent[0]["topics"][0]
@@ -1452,7 +1449,7 @@ def test_stream_service_logs_uses_derived_ws_url(monkeypatch):
         SimpleNamespace(create_connection=lambda url, **kwargs: _WsMock(url)),
     )
 
-    client = MonitorClient(_make_hps_client(url=BASE_URL_HTTPS, access_token="t"))
+    client = MonitorApi(_make_hps_client(url=BASE_URL_HTTPS, access_token="t"))
     list(client.stream_service_logs("ansys.rep.jms"))
 
     assert captured["url"] == WSS_TOPICS_URL
@@ -1483,7 +1480,7 @@ def test_stream_service_logs_stops_cleanly_on_websocket_timeout(monkeypatch):
         SimpleNamespace(create_connection=lambda url, **kwargs: _TimeoutWsMock()),
     )
 
-    client = MonitorClient(_make_hps_client(url=BASE_URL, access_token="t"))
+    client = MonitorApi(_make_hps_client(url=BASE_URL, access_token="t"))
     results = list(client.stream_service_logs("ansys.rep.jms", max_messages=10))
 
     assert results == []

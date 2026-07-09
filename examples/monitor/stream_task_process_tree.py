@@ -20,7 +20,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-"""Stream process-tree metric snapshots for a task with ``MonitorClient.stream_task_process_tree``.
+"""Stream process-tree metric snapshots for a task with ``MonitorApi.stream_task_process_tree``.
 
 The evaluator pushes a new process-tree snapshot on a fixed interval while the
 task is running.  Each snapshot lists every process in the task's process group
@@ -50,7 +50,7 @@ from datetime import datetime, timezone
 from typing import Any
 
 from ansys.hps.client import Client
-from ansys.hps.client.monitor.api.monitor_api import MonitorClient
+from ansys.hps.client.monitor.api.monitor_api import MonitorApi
 
 
 def _build_parser() -> argparse.ArgumentParser:
@@ -249,8 +249,8 @@ def main() -> None:
     if args.insecure:
         ws_options = {"sslopt": {"cert_reqs": ssl.CERT_NONE}}
 
-    # 3) Build a MonitorClient that reuses the authenticated client.
-    monitor = MonitorClient(
+    # 3) Build a MonitorApi that reuses the authenticated client.
+    monitor = MonitorApi(
         hps,
         ws_connection_options=ws_options,
         timeout_seconds=30.0,

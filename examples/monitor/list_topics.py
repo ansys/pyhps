@@ -20,7 +20,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-"""Annotated example: discover available monitor topics with MonitorClient.list_topics.
+"""Annotated example: discover available monitor topics with MonitorApi.list_topics.
 
 ``list_topics`` sends a ``list_tags`` WebSocket command to the HPS monitor
 endpoint and returns a dictionary mapping every known tag key to all currently
@@ -56,7 +56,7 @@ import json
 import ssl
 
 from ansys.hps.client import Client
-from ansys.hps.client.monitor.api.monitor_api import MonitorClient
+from ansys.hps.client.monitor.api.monitor_api import MonitorApi
 
 
 def _build_parser() -> argparse.ArgumentParser:
@@ -118,8 +118,8 @@ def main() -> None:
     # 2) Configure WebSocket options only when running in insecure local mode.
     ws_options = {"sslopt": {"cert_reqs": ssl.CERT_NONE}} if args.insecure else None
 
-    # 3) Build a MonitorClient that reuses the authenticated HPS client.
-    monitor = MonitorClient(
+    # 3) Build a MonitorApi that reuses the authenticated HPS client.
+    monitor = MonitorApi(
         hps,
         ws_connection_options=ws_options,
         timeout_seconds=30.0,

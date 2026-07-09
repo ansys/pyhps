@@ -4,13 +4,13 @@ Monitor topics and streams
 ==========================
 
 This example page consolidates the HPS monitor examples into one place. It
-starts with topic discovery using :func:`MonitorClient.list_topics`, then shows
+starts with topic discovery using :func:`MonitorApi.list_topics`, then shows
 the main stream types exposed by the monitor WebSocket bus for running tasks,
 task definitions, and backend services.
 
 Use these examples in this order:
 
-1. Discover available tags and values with :func:`MonitorClient.list_topics`.
+1. Discover available tags and values with :func:`MonitorApi.list_topics`.
 2. Subscribe to task-level streams such as logs, host resources, or the process tree.
 3. Subscribe to scheduler or service-level streams when you need cluster or backend visibility.
 
@@ -21,7 +21,7 @@ All examples below use the scripts in ``examples/monitor``.
 List monitor topics
 -------------------
 
-This example shows how to use :func:`MonitorClient.list_topics` to discover all
+This example shows how to use :func:`MonitorApi.list_topics` to discover all
 tag keys and their currently active values on the HPS monitor WebSocket bus.
 Use this as a first step when building a monitoring integration because it tells
 you which tasks, evaluators, log files, and metric streams are currently visible
@@ -33,7 +33,7 @@ Background
 The HPS monitor service is a WebSocket-based pub/sub bus. Every message on the
 bus carries a set of key-value tags such as ``task_id``, ``file_path``, and
 ``evaluator_name`` that describe what the message relates to.
-:func:`MonitorClient.list_topics` sends a ``list_tags`` command over the
+:func:`MonitorApi.list_topics` sends a ``list_tags`` command over the
 WebSocket and returns a dictionary mapping every known tag key to all values
 that currently appear on the bus.
 
@@ -70,13 +70,13 @@ The script follows the standard three-step setup shared by all monitor examples:
 
 1. **Authenticate** with the top-level :class:`Client`. This performs the
    Keycloak OAuth exchange and stores the access token.
-2. **Create a** :class:`MonitorClient`. Pass ``client=hps`` so that the
+2. **Create a** :class:`MonitorApi`. Pass ``client=hps`` so that the
    monitor client can reuse the same HTTP session for monitor calls and for any
    JMS/RMS lookups required by methods such as
-   :func:`MonitorClient.stream_task_host_resources`, and pass
+   :func:`MonitorApi.stream_task_host_resources`, and pass
    ``ws_connection_options`` to disable TLS certificate verification when
    connecting to a local server with a self-signed certificate.
-3. **Call** :func:`MonitorClient.list_topics`. The call is synchronous: it
+3. **Call** :func:`MonitorApi.list_topics`. The call is synchronous: it
    opens a short-lived WebSocket connection, sends the ``list_tags`` command,
    waits for the response, and returns the result as a plain Python dictionary.
 
@@ -143,7 +143,7 @@ Stream task logs
 ----------------
 
 This example shows how to stream evaluator file-tail log output for a running
-task using :func:`MonitorClient.stream_task_logs`. Log lines are delivered over
+task using :func:`MonitorApi.stream_task_logs`. Log lines are delivered over
 a WebSocket connection as the evaluator writes them, making this the primary way
 to watch solver output in real time without polling the server.
 
@@ -152,7 +152,7 @@ Background
 
 While a task is running, the HPS evaluator tails one or more log files and
 publishes each new line as a tagged message on the monitor WebSocket bus.
-:func:`MonitorClient.stream_task_logs` subscribes to the ``task_id`` and
+:func:`MonitorApi.stream_task_logs` subscribes to the ``task_id`` and
 ``client_type=ansys.rep.evaluator.file_tail`` tags for the requested task and
 yields one dictionary per line.
 
@@ -239,8 +239,8 @@ Stream task host resources
 --------------------------
 
 This example shows how to stream host CPU and memory utilisation metrics for a
-running task using :func:`MonitorClient.stream_task_host_resources`. Unlike
-:func:`~MonitorClient.stream_task_logs`, this method requires both a project ID
+running task using :func:`MonitorApi.stream_task_host_resources`. Unlike
+:func:`~MonitorApi.stream_task_logs`, this method requires both a project ID
 and task ID. It automatically resolves the evaluator assigned to the task through JMS and
 RMS and subscribes to that evaluator's ``host_resources`` metric stream.
 
@@ -249,7 +249,7 @@ Background
 
 The HPS evaluator periodically publishes a snapshot of the host machine's CPU
 and memory state as a metric message on the monitor bus.
-:func:`MonitorClient.stream_task_host_resources` subscribes to the
+:func:`MonitorApi.stream_task_host_resources` subscribes to the
 ``client_type=ansys.rep.evaluator.host_resources`` tag for the evaluator
 running the given task and yields one dictionary per snapshot.
 
@@ -278,19 +278,19 @@ absent or unparsable.
 Evaluator resolution
 ^^^^^^^^^^^^^^^^^^^^
 
-:func:`MonitorClient.stream_task_host_resources` looks up the task via the JMS
+:func:`MonitorApi.stream_task_host_resources` looks up the task via the JMS
 API, finds the evaluator name from the task's execution context, then queries
 the RMS API to resolve the evaluator's host identifier. This is why passing
-``client=hps`` when constructing :class:`MonitorClient` is required: the method
+``client=hps`` when constructing :class:`MonitorApi` is required: the method
 uses that pre-authenticated client for JMS/RMS API calls.
 
 Because JMS tasks are scoped by project,
-:func:`MonitorClient.stream_task_host_resources` needs both ``task_id`` and
+:func:`MonitorApi.stream_task_host_resources` needs both ``task_id`` and
 ``project_id``.
 
 If you know ``task_id`` but not ``project_id``, use
-:func:`MonitorClient.resolve_project_id_for_task` before calling
-:func:`MonitorClient.stream_task_host_resources`.
+:func:`MonitorApi.resolve_project_id_for_task` before calling
+:func:`MonitorApi.stream_task_host_resources`.
 Both helpers raise :exc:`ansys.hps.client.ClientError` when the required
 monitor/JMS/RMS metadata cannot be resolved.
 
@@ -368,7 +368,7 @@ Stream task process tree
 ------------------------
 
 This example shows how to stream process-tree snapshots for a running task using
-:func:`MonitorClient.stream_task_process_tree`. Each snapshot contains every
+:func:`MonitorApi.stream_task_process_tree`. Each snapshot contains every
 process in the task's process group, including the task wrapper, the solver,
 any co-processes, and their parent-child relationships.
 
@@ -377,7 +377,7 @@ Background
 
 The HPS evaluator periodically walks the process group of the task it is running
 and publishes a snapshot as a metric message on the monitor bus.
-:func:`MonitorClient.stream_task_process_tree` subscribes to the
+:func:`MonitorApi.stream_task_process_tree` subscribes to the
 ``client_type=ansys.rep.evaluator.process_tree`` tag for the given task and
 yields one dictionary per snapshot.
 
@@ -518,8 +518,8 @@ Stream scheduler job status
 ---------------------------
 
 This example shows how to stream job scheduler status metrics for a task
-definition using :func:`MonitorClient.stream_scheduler_job_status`. Unlike
-task-level methods such as :func:`~MonitorClient.stream_task_logs`, this method
+definition using :func:`MonitorApi.stream_scheduler_job_status`. Unlike
+task-level methods such as :func:`~MonitorApi.stream_task_logs`, this method
 takes a task definition ID rather than a task ID and requires no evaluator
 resolution.
 
@@ -532,7 +532,7 @@ autoscaling service (``ansys.rep.scaling``) periodically publishes a
 how many scheduler jobs are currently running, pending, and queued for a given
 task definition.
 
-:func:`MonitorClient.stream_scheduler_job_status` subscribes to messages with
+:func:`MonitorApi.stream_scheduler_job_status` subscribes to messages with
 the following tags:
 
 .. list-table::
@@ -570,11 +570,11 @@ The script follows three steps:
 
 1. **Authenticate**: call :class:`~ansys.hps.client.Client` with your username
    and password to obtain an access token.
-2. **Create a** :class:`MonitorClient`: pass ``base_url`` and the token. No
+2. **Create a** :class:`MonitorApi`: pass ``base_url`` and the token. No
    ``client=`` argument is needed because scheduler job status does not require
    JMS or RMS evaluator resolution.
 3. **Stream**: iterate over
-   :func:`~MonitorClient.stream_scheduler_job_status`, printing each status
+   :func:`~MonitorApi.stream_scheduler_job_status`, printing each status
    update as it arrives. Press **Ctrl+C** to stop.
 
 Command-line options
@@ -628,7 +628,7 @@ Stream service logs
 
 This example shows how to stream log messages from HPS backend services such as
 the Job Management Service, autoscaling, or housekeeper using
-:func:`MonitorClient.stream_service_logs`. Logs are delivered over a WebSocket
+:func:`MonitorApi.stream_service_logs`. Logs are delivered over a WebSocket
 connection in real time, making this useful for debugging service behavior and
 monitoring backend operations.
 
@@ -643,7 +643,7 @@ These services include:
 - **Housekeeper**: Cleanup and maintenance tasks
 - **Evaluator**: Evaluator process metrics and state transitions
 
-:func:`MonitorClient.stream_service_logs` subscribes to messages from a specific
+:func:`MonitorApi.stream_service_logs` subscribes to messages from a specific
 service using the ``client_type`` tag. Use :class:`ClientType` constants for
 well-known services, or pass a custom service identifier.
 

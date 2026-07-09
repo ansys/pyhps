@@ -21,4 +21,4 @@
 # SOFTWARE.
 """PyHPS monitor API submodule."""
 
-from .monitor_api import MonitorClient, build_filter_templates
+from .monitor_api import MonitorApi, build_filter_templates

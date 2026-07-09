@@ -20,7 +20,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-"""Annotated example: stream scheduler job status with MonitorClient.stream_scheduler_job_status.
+"""Annotated example: stream scheduler job status with MonitorApi.stream_scheduler_job_status.
 
 ``stream_scheduler_job_status`` subscribes to ``scaler_instances`` metric messages
 emitted by the HPS autoscaling service (``ansys.rep.scaling``) for a specific task
@@ -47,7 +47,7 @@ import ssl
 from typing import Any
 
 from ansys.hps.client import Client
-from ansys.hps.client.monitor.api.monitor_api import MonitorClient
+from ansys.hps.client.monitor.api.monitor_api import MonitorApi
 
 
 def _build_parser() -> argparse.ArgumentParser:
@@ -138,8 +138,8 @@ def main() -> None:
     if args.insecure:
         ws_options = {"sslopt": {"cert_reqs": ssl.CERT_NONE}}
 
-    # 3) Build a MonitorClient that reuses the authenticated client.
-    monitor = MonitorClient(
+    # 3) Build a MonitorApi that reuses the authenticated client.
+    monitor = MonitorApi(
         hps,
         ws_connection_options=ws_options,
         timeout_seconds=30.0,

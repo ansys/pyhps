@@ -20,12 +20,12 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-"""Annotated example: stream host CPU/memory metrics with MonitorClient.stream_task_host_resources.
+"""Annotated example: stream host CPU/memory metrics with MonitorApi.stream_task_host_resources.
 
 ``stream_task_host_resources`` resolves the evaluator assigned to a task (via
 JMS and RMS) and subscribes to ``host_resources`` metric messages for that
 evaluator. A pre-authenticated HPS client must be passed to
-``MonitorClient(...)`` so these JMS/RMS lookups can run. If
+``MonitorApi(...)`` so these JMS/RMS lookups can run. If
 ``--project-id`` is omitted, this example infers it from ``stream_task_logs``.
 
 Usage (local dev with self-signed cert):
@@ -52,7 +52,7 @@ from datetime import datetime, timezone
 from typing import Any
 
 from ansys.hps.client import Client, ClientError
-from ansys.hps.client.monitor.api.monitor_api import MonitorClient
+from ansys.hps.client.monitor.api.monitor_api import MonitorApi
 
 
 def _build_parser() -> argparse.ArgumentParser:
@@ -175,9 +175,9 @@ def main() -> None:
     if args.insecure:
         ws_options = {"sslopt": {"cert_reqs": ssl.CERT_NONE}}
 
-    # 3) Build a MonitorClient that reuses the authenticated client.
+    # 3) Build a MonitorApi that reuses the authenticated client.
     #    stream_task_host_resources uses JMS/RMS APIs to resolve the evaluator.
-    monitor = MonitorClient(
+    monitor = MonitorApi(
         hps,
         ws_connection_options=ws_options,
         timeout_seconds=30.0,

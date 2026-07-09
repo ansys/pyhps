@@ -20,7 +20,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-"""Stream HPS service logs with ``MonitorClient.stream_service_logs``.
+"""Stream HPS service logs with ``MonitorApi.stream_service_logs``.
 
 This example shows how to stream log messages from HPS backend services such as
 the Job Management Service (JMS), autoscaling service, or housekeeper tasks using
@@ -53,7 +53,7 @@ import ssl
 from typing import Any
 
 from ansys.hps.client import Client
-from ansys.hps.client.monitor.api.monitor_api import ClientType, MonitorClient
+from ansys.hps.client.monitor.api.monitor_api import ClientType, MonitorApi
 
 
 def _build_parser() -> argparse.ArgumentParser:
@@ -142,8 +142,8 @@ def main() -> None:
     if args.insecure:
         ws_options = {"sslopt": {"cert_reqs": ssl.CERT_NONE}}
 
-    # 3) Reuse the same authenticated client in MonitorClient.
-    monitor = MonitorClient(
+    # 3) Reuse the same authenticated client in MonitorApi.
+    monitor = MonitorApi(
         hps,
         ws_connection_options=ws_options,
         timeout_seconds=30.0,

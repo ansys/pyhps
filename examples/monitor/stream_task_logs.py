@@ -20,12 +20,12 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-"""Stream evaluator file-tail logs for a task with ``MonitorClient.stream_task_logs``.
+"""Stream evaluator file-tail logs for a task with ``MonitorApi.stream_task_logs``.
 
 This example shows the standard monitoring pattern for task output:
 
 1. Authenticate once with ``Client``.
-2. Reuse the same token/session in ``MonitorClient``.
+2. Reuse the same token/session in ``MonitorApi``.
 3. Subscribe to task log messages by ``task_id``.
 4. Optionally narrow output to a specific ``file_path``.
 
@@ -60,7 +60,7 @@ import ssl
 from typing import Any
 
 from ansys.hps.client import Client
-from ansys.hps.client.monitor.api.monitor_api import MonitorClient
+from ansys.hps.client.monitor.api.monitor_api import MonitorApi
 
 
 def _build_parser() -> argparse.ArgumentParser:
@@ -109,8 +109,8 @@ def main() -> None:
     if args.insecure:
         ws_options = {"sslopt": {"cert_reqs": ssl.CERT_NONE}}
 
-    # 3) Reuse the same authenticated client in MonitorClient.
-    monitor = MonitorClient(
+    # 3) Reuse the same authenticated client in MonitorApi.
+    monitor = MonitorApi(
         hps,
         ws_connection_options=ws_options,
         timeout_seconds=30.0,

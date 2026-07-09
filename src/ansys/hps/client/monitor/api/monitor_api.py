@@ -27,7 +27,6 @@ from __future__ import annotations
 import json
 import urllib.parse
 from collections.abc import Generator, Mapping
-from dataclasses import dataclass
 from typing import Any
 
 from ansys.hps.client.client import Client
@@ -48,7 +47,7 @@ class ClientType:
     """Known ``client_type`` tag values used by the HPS monitor.
 
     Pass one of these as the ``client_type`` argument to
-    :meth:`MonitorClient.stream_service_logs` or use directly when building
+    :meth:`MonitorApi.stream_service_logs` or use directly when building
     custom filter topics.
 
     Attributes:
@@ -68,11 +67,10 @@ class ClientType:
     HOUSEKEEPER = "ansys.rep.housekeeper"
 
 
-@dataclass
-class MonitorClient:
+class MonitorApi:
     """Client for the HPS monitor REST and WebSocket interfaces.
 
-    Attributes:
+    Args:
         client: Pre-authenticated HPS client. REST requests are routed through
             ``client.session`` and monitor URLs are derived from ``client.url``.
         ws_connection_options: Optional keyword arguments forwarded to
@@ -80,6 +78,9 @@ class MonitorClient:
             for local/self-signed environments (for example,
             ``{"sslopt": {"cert_reqs": ssl.CERT_NONE}}``).
         timeout_seconds: Timeout in seconds used for all network operations.
+        ws_url: Optional full WebSocket URL override, e.g.
+            ``wss://localhost:8443/hps/monitor/ws/topics``.
+            If omitted, the URL is derived from ``client.url``.
 
     REST methods:
         get_build_info: Fetch build metadata from the monitor REST API.
@@ -116,9 +117,17 @@ class MonitorClient:
 
     """
 
-    client: Client
-    ws_connection_options: dict[str, Any] | None = None
-    timeout_seconds: float = 10.0
+    def __init__(
+        self,
+        client: Client,
+        ws_connection_options: dict[str, Any] | None = None,
+        timeout_seconds: float = 10.0,
+        ws_url: str | None = None,
+    ) -> None:
+        self.client = client
+        self.ws_connection_options = ws_connection_options
+        self.timeout_seconds = timeout_seconds
+        self.ws_url = ws_url
 
     @property
     def base_url(self) -> str:
@@ -221,7 +230,6 @@ class MonitorClient:
 
     def list_topics(
         self,
-        ws_url: str | None = None,
         limit: int = 1000,
         exclude_noisy: bool = True,
     ) -> dict[str, list[str]]:
@@ -235,9 +243,6 @@ class MonitorClient:
         subscription discovery.  Pass ``exclude_noisy=False`` to include them.
 
         Args:
-            ws_url: Optional full WebSocket URL override, e.g.
-                ``wss://localhost:8443/hps/monitor/ws/topics``.
-                If omitted, this method uses the URL derived from ``base_url``.
             limit: Maximum number of tag values to request per key.
             exclude_noisy: When ``True`` (default), remove tag keys listed in
                 :attr:`_NOISY_TAG_KEYS` and any key whose value count exceeds
@@ -249,8 +254,7 @@ class MonitorClient:
 
         """
         command = ListTagsCommand(limit=limit).to_payload()
-        url = ws_url or self._ws_url()
-        responses = self.send_ws_command(url, command, max_messages=1)
+        responses = self.send_ws_command(command, max_messages=1)
         if not responses:
             return {}
         tags = ListTagsResponse.from_payload(responses[0].payload).tag_list
@@ -263,15 +267,16 @@ class MonitorClient:
         return tags
 
     def send_ws_command(
-        self, ws_url: str, command: dict[str, Any], max_messages: int | None = 1
+        self, command: dict[str, Any], max_messages: int | None = 1
     ) -> list[MonitorMessage]:
         """Send a command to the monitor WebSocket endpoint and collect messages."""
-        return list(self._stream_ws(ws_url, command, max_messages))
+        return list(self._stream_ws(command, max_messages))
 
     def _ws_url(self) -> str:
-        """Derive the WebSocket topics URL from ``base_url``."""
+        """Return the WebSocket topics URL, using ``self.ws_url`` if set."""
+        if self.ws_url:
+            return self.ws_url
         base = self.base_url.rstrip("/")
-        # Replace http(s) scheme with ws(s)
         if base.startswith("https://"):
             base = "wss://" + base[len("https://") :]
         elif base.startswith("http://"):
@@ -290,7 +295,6 @@ class MonitorClient:
         self,
         client_type: str,
         *,
-        ws_url: str | None = None,
         backlog: int = 100,
         max_messages: int | None = None,
     ) -> Generator[MonitorMessage, None, None]:
@@ -307,8 +311,6 @@ class MonitorClient:
             client_type: The ``client_type`` tag value to filter on.  Use a
                 :class:`ClientType` constant, e.g. ``ClientType.JMS``,
                 ``ClientType.HOUSEKEEPER``, ``ClientType.SCALING``.
-            ws_url: WebSocket URL override.  Defaults to the URL derived from
-                ``base_url``.
             backlog: Number of historical messages to request on connect.
             max_messages: Maximum total messages to yield before closing the
                 connection. Defaults to ``None`` — stream indefinitely until
@@ -318,19 +320,17 @@ class MonitorClient:
             Parsed JSON message dicts from the server.
 
         """
-        url = ws_url or self._ws_url()
         command = self._subscribe_command(
             topics=[{"client_type": client_type}],
             backlog=backlog,
         )
-        yield from self._stream_ws(url, command, max_messages)
+        yield from self._stream_ws(command, max_messages)
 
     def stream_task_logs(
         self,
         task_id: str,
         *,
         file_path: str | None = None,
-        ws_url: str | None = None,
         backlog: int = 100,
         max_messages: int | None = None,
     ) -> Generator[MonitorMessage, None, None]:
@@ -344,8 +344,6 @@ class MonitorClient:
             task_id: The task identifier to filter on.
             file_path: Optional filename to restrict to a single tailed file,
                 e.g. ``"console_output.txt"``.
-            ws_url: WebSocket URL override.  Defaults to the URL derived from
-                ``base_url``.
             backlog: Number of historical messages to request on connect.
             max_messages: Maximum total messages to yield before closing the
                 connection. Defaults to ``None`` — stream indefinitely until
@@ -355,7 +353,6 @@ class MonitorClient:
             Parsed JSON message dicts from the server.
 
         """
-        url = ws_url or self._ws_url()
         topic: dict[str, str] = {
             "task_id": task_id,
             "client_type": ClientType.FILE_TAIL,
@@ -363,13 +360,12 @@ class MonitorClient:
         if file_path is not None:
             topic["file_path"] = file_path
         command = self._subscribe_command(topics=[topic], backlog=backlog)
-        yield from self._stream_ws(url, command, max_messages)
+        yield from self._stream_ws(command, max_messages)
 
     def resolve_project_id_for_task(
         self,
         task_id: str,
         *,
-        ws_url: str | None = None,
         backlog: int = 1,
         max_messages: int = 5,
     ) -> str:
@@ -381,8 +377,6 @@ class MonitorClient:
 
         Args:
             task_id: Task identifier to inspect.
-            ws_url: WebSocket URL override. Defaults to the URL derived from
-                ``base_url``.
             backlog: Number of historical log messages to request.
             max_messages: Maximum messages to inspect before failing.
 
@@ -395,7 +389,6 @@ class MonitorClient:
         """
         for msg in self.stream_task_logs(
             task_id=task_id,
-            ws_url=ws_url,
             backlog=backlog,
             max_messages=max_messages,
         ):
@@ -421,7 +414,6 @@ class MonitorClient:
         self,
         task_id: str,
         *,
-        ws_url: str | None = None,
         backlog: int = 100,
         max_messages: int | None = 200,
     ) -> list[MonitorMessage]:
@@ -433,8 +425,6 @@ class MonitorClient:
 
         Args:
             task_id: The task identifier to query.
-            ws_url: WebSocket URL override.  Defaults to the URL derived from
-                ``base_url``.
             backlog: Number of historical messages to request on connect.
             max_messages: Upper bound on messages to collect. If ``None``,
                 collect until interrupted or the server closes the connection.
@@ -444,16 +434,13 @@ class MonitorClient:
 
         """
         return list(
-            self.stream_task_process_tree(
-                task_id, ws_url=ws_url, backlog=backlog, max_messages=max_messages
-            )
+            self.stream_task_process_tree(task_id, backlog=backlog, max_messages=max_messages)
         )
 
     def stream_task_process_tree(
         self,
         task_id: str,
         *,
-        ws_url: str | None = None,
         backlog: int = 100,
         max_messages: int | None = None,
     ) -> Generator[MonitorMessage, None, None]:
@@ -470,8 +457,6 @@ class MonitorClient:
 
         Args:
             task_id: The task identifier to monitor.
-            ws_url: WebSocket URL override.  Defaults to the URL derived from
-                ``base_url``.
             backlog: Number of historical snapshots to request on connect.
             max_messages: Maximum total snapshots to yield before closing the
                 connection. Defaults to ``None`` — stream indefinitely until
@@ -481,7 +466,6 @@ class MonitorClient:
             Parsed JSON process-tree snapshot dicts from the server.
 
         """
-        url = ws_url or self._ws_url()
         command = self._subscribe_command(
             topics=[
                 {
@@ -493,14 +477,13 @@ class MonitorClient:
             ],
             backlog=backlog,
         )
-        yield from self._stream_ws(url, command, max_messages)
+        yield from self._stream_ws(command, max_messages)
 
     def stream_task_host_resources(
         self,
         task_id: str,
         project_id: str,
         *,
-        ws_url: str | None = None,
         backlog: int = 100,
         max_messages: int | None = None,
     ) -> Generator[MonitorMessage, None, None]:
@@ -518,8 +501,6 @@ class MonitorClient:
         Args:
             task_id: The task identifier to monitor.
             project_id: The JMS project identifier that owns ``task_id``.
-            ws_url: WebSocket URL override.  Defaults to the URL derived from
-                ``base_url``.
             backlog: Number of historical metric messages to request on connect.
             max_messages: Maximum total messages to yield before closing the
                 connection. Defaults to ``None`` — stream indefinitely until
@@ -530,7 +511,6 @@ class MonitorClient:
             Parsed JSON host-resource metric dicts from the server.
 
         """
-        url = ws_url or self._ws_url()
         evaluator_name = self._resolve_evaluator_name_for_task(task_id, project_id)
         command = self._subscribe_command(
             topics=[
@@ -543,13 +523,12 @@ class MonitorClient:
             ],
             backlog=backlog,
         )
-        yield from self._stream_ws(url, command, max_messages)
+        yield from self._stream_ws(command, max_messages)
 
     def stream_scheduler_job_status(
         self,
         task_definition_id: str,
         *,
-        ws_url: str | None = None,
         backlog: int = 100,
         max_messages: int | None = None,
     ) -> Generator[MonitorMessage, None, None]:
@@ -566,8 +545,6 @@ class MonitorClient:
 
         Args:
             task_definition_id: The task definition identifier to monitor.
-            ws_url: WebSocket URL override.  Defaults to the URL derived from
-                ``base_url``.
             backlog: Number of historical metric messages to request on connect.
             max_messages: Maximum total messages to yield before closing the
                 connection. Defaults to ``None`` — stream indefinitely until
@@ -577,7 +554,6 @@ class MonitorClient:
             Parsed JSON scheduler job status metric dicts from the server.
 
         """
-        url = ws_url or self._ws_url()
         command = self._subscribe_command(
             topics=[
                 {
@@ -589,11 +565,10 @@ class MonitorClient:
             ],
             backlog=backlog,
         )
-        yield from self._stream_ws(url, command, max_messages)
+        yield from self._stream_ws(command, max_messages)
 
     def _stream_ws(
         self,
-        ws_url: str,
         command: dict[str, Any],
         max_messages: int | None,
     ) -> Generator[MonitorMessage, None, None]:
@@ -623,7 +598,7 @@ class MonitorClient:
             else:
                 connection_options["header"] = {"Authorization": "Bearer " + self.token}
 
-        ws = create_connection(ws_url, **connection_options)
+        ws = create_connection(self._ws_url(), **connection_options)
         try:
             ws.send(json.dumps(command))
             yielded = 0
