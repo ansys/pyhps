@@ -19,14 +19,37 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
-"""PyHPS monitor helpers subpackage."""
 
-from .api import MonitorApi
-from .models import (
-    BuildInfoResponse,
-    ListTagsCommand,
-    ListTagsResponse,
-    MessageEnvelope,
-    MonitorMessage,
-    SubscribeCommand,
-)
+import logging
+
+import pytest
+
+from ansys.hps.client.monitor import MonitorApi
+from ansys.hps.client.monitor.api.monitor_api import ClientType
+
+log = logging.getLogger(__name__)
+
+
+@pytest.fixture
+def monitor_api(client):
+    return MonitorApi(client, timeout_seconds=10.0)
+
+
+def test_get_build_info(monitor_api):
+    info = monitor_api.get_build_info()
+    assert info.build is not None
+    assert "version" in info.build or len(info.build) > 0
+
+
+def test_list_topics(monitor_api):
+    topics = monitor_api.list_topics()
+    assert isinstance(topics, dict)
+    # The monitor should always know about at least one client_type
+    assert len(topics) > 0
+
+
+def test_stream_service_logs_jms(monitor_api):
+    messages = list(monitor_api.stream_service_logs(ClientType.JMS, backlog=10, max_messages=10))
+    assert isinstance(messages, list)
+    for msg in messages:
+        assert isinstance(msg, dict)

@@ -24,7 +24,7 @@
 
 from __future__ import annotations
 
-from collections.abc import Iterable, Iterator, Mapping
+from collections.abc import Iterator, Mapping
 from dataclasses import dataclass
 from typing import Any
 
@@ -176,39 +176,3 @@ class BuildInfoResponse(_PayloadMappingMixin, Mapping[str, Any]):
         return data if isinstance(data, Mapping) else None
 
 
-@dataclass(frozen=True, unsafe_hash=True, eq=False)
-class LogQueryResponse(_PayloadMappingMixin, Mapping[str, Any]):
-    """Typed wrapper for monitor log-query responses."""
-
-    payload: dict[str, Any]
-    messages: list[MonitorMessage]
-
-    def __getitem__(self, key: str) -> Any:
-        """Get a value from the log-query response or unwrapped messages."""
-        if key == "messages":
-            return [m.payload for m in self.messages]
-        return self.payload[key]
-
-    def __iter__(self) -> Iterator[str]:
-        """Iterate over response payload keys."""
-        return iter(self.payload)
-
-    def __len__(self) -> int:
-        """Return the number of payload keys."""
-        return len(self.payload)
-
-    @classmethod
-    def from_payload(cls, payload: Mapping[str, Any]) -> LogQueryResponse:
-        """Build a typed response from raw query payload."""
-        raw_messages_obj = payload.get("messages", [])
-        raw_messages = raw_messages_obj if isinstance(raw_messages_obj, list) else []
-        messages = [MonitorMessage(payload=m) for m in raw_messages if isinstance(m, dict)]
-        return cls(payload=dict(payload), messages=messages)
-
-    def with_messages(self, messages: Iterable[MonitorMessage]) -> LogQueryResponse:
-        """Return a copy with replacement messages list."""
-        materialized = list(messages)
-        return LogQueryResponse(
-            payload={**self.payload, "messages": [m.payload for m in materialized]},
-            messages=materialized,
-        )
