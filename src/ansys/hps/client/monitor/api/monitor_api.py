@@ -259,11 +259,7 @@ class MonitorApi:
         """WebSocket topics URL for the monitor endpoint."""
         if self._ws_url_override:
             return self._ws_url_override
-        base = self.base_url.rstrip("/")
-        if base.startswith("https://"):
-            base = "wss://" + base[len("https://") :]
-        elif base.startswith("http://"):
-            base = "ws://" + base[len("http://") :]
+        base = self.base_url.rstrip("/").replace("http", "ws", 1)
         return f"{base}/monitor/ws/topics"
 
     def _subscribe_command(
