@@ -21,7 +21,7 @@
 # SOFTWARE.
 """PyHPS monitor helpers subpackage."""
 
-from .api import MonitorApi, build_filter_templates
+from .api import MonitorApi
 from .models import (
     BuildInfoResponse,
     ListTagsCommand,

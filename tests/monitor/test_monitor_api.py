@@ -25,13 +25,12 @@ import json
 import sys
 from types import SimpleNamespace
 from typing import Any
-from urllib.parse import parse_qs, urlsplit
 
 import pytest
 
 import ansys.hps.client.monitor.api.monitor_api as monitor_api_module
 from ansys.hps.client import ClientError
-from ansys.hps.client.monitor import MonitorApi, build_filter_templates
+from ansys.hps.client.monitor import MonitorApi
 
 BASE_URL = "http://localhost:1089"
 BASE_URL_HTTPS = "https://localhost:8443/hps"
@@ -101,51 +100,6 @@ def test_get_build_info_uses_expected_endpoint_and_auth_header(monkeypatch):
     assert response["build"]["version"] == "1.2.3"
     assert captured["url"] == f"{BASE_URL}/dcs/monitor/api/"
     assert captured["timeout"] == 3.5
-
-
-def test_query_logs_serializes_filters(monkeypatch):
-    captured = {}
-
-    class _RequestsResponseMock:
-        def __init__(self, payload):
-            self._payload = payload
-
-        def raise_for_status(self):
-            return None
-
-        def json(self):
-            return self._payload
-
-    class _SessionMock:
-        def get(self, url, timeout):
-            captured["url"] = url
-            captured["timeout"] = timeout
-            return _RequestsResponseMock({"messages": []})
-
-    hps_client = _make_hps_client(
-        url=BASE_URL,
-        access_token="abc",
-        session=_SessionMock(),
-    )
-
-    client = MonitorApi(hps_client, timeout_seconds=5.0)
-    response = client.query_logs(
-        {
-            "tag:host": ["h1", "h2"],
-            "severity": "info",
-            "limit": 5,
-        }
-    )
-
-    parsed = urlsplit(captured["url"])
-    query_params = parse_qs(parsed.query)
-
-    assert response == {"messages": []}
-    assert parsed.path == "/dcs/monitor/api/log"
-    assert query_params["tag:host"] == ["h1,h2"]
-    assert query_params["severity"] == ["info"]
-    assert query_params["limit"] == ["5"]
-    assert captured["timeout"] == 5.0
 
 
 def test_send_ws_command_adds_token_and_collects_messages(monkeypatch):
@@ -250,11 +204,6 @@ def test_integration_client_uses_provided_client_without_token():
 
     assert resolved is provided
 
-
-def test_auth_headers_without_token_returns_empty_dict():
-    client = MonitorApi(_make_hps_client(url=BASE_URL))
-
-    assert client._auth_headers() == {}
 
 
 def test_resolve_evaluator_name_for_task_success(monkeypatch):
@@ -418,18 +367,6 @@ def test_send_ws_command_forwards_ws_connection_options_and_merges_auth_header(m
     assert captured["header"]["Authorization"] == "Bearer jwt"
 
 
-def test_build_filter_templates_returns_expected_structure():
-    templates = build_filter_templates(["host", "service"])
-
-    assert templates["rest"]["path"] == "/dcs/monitor/api/log"
-    assert templates["rest"]["query_params"] == {
-        "tag:host": ["value"],
-        "tag:service": ["value"],
-    }
-    assert templates["websocket"]["path"] == "/monitor/ws/topics"
-    assert templates["websocket"]["command"]["action"] == "subscribe"
-    assert templates["websocket"]["command"]["topics"] == [{"host": "value", "service": "value"}]
-    assert templates["websocket"]["command"]["backlog"] == {"limit": 100}
 
 
 # ---------------------------------------------------------------------------

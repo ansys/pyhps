@@ -36,7 +36,6 @@ from ..models import (
     BuildInfoResponse,
     ListTagsCommand,
     ListTagsResponse,
-    LogQueryResponse,
     MessageEnvelope,
     MonitorMessage,
     SubscribeCommand,
@@ -84,7 +83,6 @@ class MonitorApi:
 
     REST methods:
         get_build_info: Fetch build metadata from the monitor REST API.
-        query_logs: Query log messages with optional filter parameters.
 
     WebSocket methods:
         list_topics: List all known tag keys and their values via the
@@ -176,11 +174,6 @@ class MonitorApi:
 
         return evaluator_name
 
-    def _auth_headers(self) -> dict[str, str]:
-        if not self.token:
-            return {}
-        return {"Authorization": "Bearer " + self.token}
-
     def _validated_http_url(self, url: str) -> str:
         parsed = urllib.parse.urlsplit(url)
         if parsed.scheme not in {"http", "https"}:
@@ -196,29 +189,6 @@ class MonitorApi:
         if not isinstance(payload, dict):
             raise ClientError("Monitor build-info response must be a JSON object.")
         return BuildInfoResponse(payload=payload)
-
-    def query_logs(self, filters: dict[str, Any] | None = None) -> LogQueryResponse:
-        """Query monitor log messages using optional filter parameters."""
-        filters = filters or {}
-        params: dict[str, str] = {}
-        for key, value in filters.items():
-            if isinstance(value, list):
-                params[key] = ",".join(str(v) for v in value)
-            else:
-                params[key] = str(value)
-
-        query = urllib.parse.urlencode(params)
-        url = f"{self.base_url.rstrip('/')}/dcs/monitor/api/log"
-        if query:
-            url = f"{url}?{query}"
-
-        safe_url = self._validated_http_url(url)
-        response = self.client.session.get(safe_url, timeout=self.timeout_seconds)
-        response.raise_for_status()
-        payload = response.json()
-        if not isinstance(payload, dict):
-            raise ClientError("Monitor log query response must be a JSON object.")
-        return LogQueryResponse.from_payload(payload)
 
     #: Tag keys that carry a unique value per message and are excluded from
     #: :meth:`list_topics` results by default (``exclude_noisy=True``).
@@ -622,35 +592,3 @@ class MonitorApi:
                         break
         finally:
             ws.close()
-
-
-def build_filter_templates(fields: list[str]) -> dict[str, dict[str, Any]]:
-    """Create copy/paste REST and WebSocket filter templates.
-
-    Args:
-        fields: Tag field names to include in the generated filter objects.
-
-    Returns:
-        Dictionary with:
-          - ``rest``: query path and query-parameter template using ``tag:<field>`` keys.
-          - ``websocket``: topics command payload template for ``subscribe`` requests.
-
-    """
-    rest_filters = {f"tag:{field}": ["value"] for field in fields}
-    ws_topic = dict.fromkeys(fields, "value")
-
-    return {
-        "rest": {
-            "path": "/dcs/monitor/api/log",
-            "query_params": rest_filters,
-        },
-        "websocket": {
-            "path": "/monitor/ws/topics",
-            "command": {
-                "type": "command",
-                "action": "subscribe",
-                "topics": [ws_topic],
-                "backlog": {"limit": 100},
-            },
-        },
-    }

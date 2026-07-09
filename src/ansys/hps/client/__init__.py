@@ -27,7 +27,7 @@ from .authenticate import authenticate, determine_auth_url
 from .client import Client
 from .exceptions import APIError, ClientError, HPSError, VersionCompatibilityError
 from .jms import JmsApi, ProjectApi
-from .monitor import MonitorApi, build_filter_templates
+from .monitor import MonitorApi
 from .rcs import RcsApi
 from .rms import RmsApi
 from .warnings import UnverifiedHTTPSRequestsWarning
