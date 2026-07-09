@@ -110,6 +110,7 @@ class MonitorApi:
         timeout_seconds: float = 10.0,
         ws_url: str | None = None,
     ) -> None:
+        """Initialize the MonitorApi client."""
         self.client = client
         self.ws_connection_options = ws_connection_options
         self.timeout_seconds = timeout_seconds
@@ -650,7 +651,11 @@ class MonitorApi:
                 try:
                     raw = ws.recv()
                 except Exception as exc:
-                    if exc.__class__.__name__ == "WebSocketTimeoutException":
+                    if exc.__class__.__name__ in {
+                        "TimeoutError",
+                        "WebSocketTimeoutError",
+                        "WebSocketTimeoutException",
+                    }:
                         break
                     raise
                 if not raw:
