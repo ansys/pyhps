@@ -125,7 +125,7 @@ class MonitorApi:
         self.client = client
         self.ws_connection_options = ws_connection_options
         self.timeout_seconds = timeout_seconds
-        self.ws_url = ws_url
+        self._ws_url_override = ws_url
 
     @property
     def base_url(self) -> str:
@@ -242,10 +242,11 @@ class MonitorApi:
         """Send a command to the monitor WebSocket endpoint and collect messages."""
         return list(self._stream_ws(command, max_messages))
 
-    def _ws_url(self) -> str:
-        """Return the WebSocket topics URL, using ``self.ws_url`` if set."""
-        if self.ws_url:
-            return self.ws_url
+    @property
+    def ws_url(self) -> str:
+        """WebSocket topics URL for the monitor endpoint."""
+        if self._ws_url_override:
+            return self._ws_url_override
         base = self.base_url.rstrip("/")
         if base.startswith("https://"):
             base = "wss://" + base[len("https://") :]
@@ -568,7 +569,7 @@ class MonitorApi:
             else:
                 connection_options["header"] = {"Authorization": "Bearer " + self.token}
 
-        ws = create_connection(self._ws_url(), **connection_options)
+        ws = create_connection(self.ws_url, **connection_options)
         try:
             ws.send(json.dumps(command))
             yielded = 0

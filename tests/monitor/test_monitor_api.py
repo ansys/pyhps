@@ -116,17 +116,17 @@ def test_monitor_api_module_reload_executes_definitions():
 
 def test_ws_url_derived_from_http_base_url():
     client = MonitorApi(_make_hps_client(url=BASE_URL))
-    assert client._ws_url() == WS_TOPICS_URL
+    assert client.ws_url == WS_TOPICS_URL
 
 
 def test_ws_url_derived_from_https_base_url():
     client = MonitorApi(_make_hps_client(url=BASE_URL_HTTPS))
-    assert client._ws_url() == WSS_TOPICS_URL
+    assert client.ws_url == WSS_TOPICS_URL
 
 
 def test_ws_url_attribute_overrides_derived_url():
     client = MonitorApi(_make_hps_client(url=BASE_URL), ws_url="wss://custom/monitor/ws/topics")
-    assert client._ws_url() == "wss://custom/monitor/ws/topics"
+    assert client.ws_url == "wss://custom/monitor/ws/topics"
 
 
 # ---------------------------------------------------------------------------
