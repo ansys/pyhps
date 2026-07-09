@@ -49,13 +49,19 @@ class ClientType:
     :meth:`MonitorApi.stream_service_logs` or use directly when building
     custom filter topics.
 
-    Attributes:
-        FILE_TAIL: Live output lines from a file being tailed on the evaluator.
-        EVALUATOR: Evaluator state-machine transitions and metrics stream
-            (CPU, memory, process tree, etc.).
-        JMS: Job Management Service internal logs.
-        SCALING: RMS autoscaling decisions.
-        HOUSEKEEPER: Cleanup and housekeeping task logs.
+    Attributes
+    ----------
+    FILE_TAIL : str
+        Live output lines from a file being tailed on the evaluator.
+    EVALUATOR : str
+        Evaluator state-machine transitions and metrics stream
+        (CPU, memory, process tree, etc.).
+    JMS : str
+        Job Management Service internal logs.
+    SCALING : str
+        RMS autoscaling decisions.
+    HOUSEKEEPER : str
+        Cleanup and housekeeping task logs.
 
     """
 
@@ -69,49 +75,31 @@ class ClientType:
 class MonitorApi:
     """Client for the HPS monitor REST and WebSocket interfaces.
 
-    Args:
-        client: Pre-authenticated HPS client. REST requests are routed through
-            ``client.session`` and monitor URLs are derived from ``client.url``.
-        ws_connection_options: Optional keyword arguments forwarded to
-            ``websocket.create_connection`` for WebSocket calls. This is useful
-            for local/self-signed environments (for example,
-            ``{"sslopt": {"cert_reqs": ssl.CERT_NONE}}``).
-        timeout_seconds: Timeout in seconds used for all network operations.
-        ws_url: Optional full WebSocket URL override, e.g.
-            ``wss://localhost:8443/hps/monitor/ws/topics``.
-            If omitted, the URL is derived from ``client.url``.
+    Parameters
+    ----------
+    client : Client
+        Pre-authenticated HPS client. REST requests are routed through
+        ``client.session`` and monitor URLs are derived from ``client.url``.
+    ws_connection_options : dict[str, Any], optional
+        Keyword arguments forwarded to ``websocket.create_connection`` for
+        WebSocket calls. Useful for local or self-signed environments, for
+        example ``{"sslopt": {"cert_reqs": ssl.CERT_NONE}}``. The default
+        is ``None``.
+    timeout_seconds : float, optional
+        Timeout in seconds used for all network operations. The default is
+        ``10.0``.
+    ws_url : str, optional
+        Full WebSocket URL override, for example
+        ``wss://localhost:8443/hps/monitor/ws/topics``. If omitted, the URL
+        is derived from ``client.url``. The default is ``None``.
 
-    REST methods:
-        get_build_info: Fetch build metadata from the monitor REST API.
-
-    WebSocket methods:
-        list_topics: List all known tag keys and their values via the
-            ``list_tags`` WebSocket action.
-        stream_service_logs: Subscribe to and stream log messages filtered by
-            ``client_type`` tag.  Use :class:`ClientType` constants for
-            well-known services (e.g. ``ClientType.JMS``, ``ClientType.HOUSEKEEPER``).
-        stream_task_logs: Subscribe to and stream log messages (stdout, stderr,
-            tailed log files) for a specific task, filtered by ``task_id`` and
-            optionally ``client_type``.
-        resolve_project_id_for_task: Infer ``project_id`` for a task by reading
-            one or more task-log messages and extracting ``tags.project_id``.
-        get_task_process_tree: Collect process-tree metric snapshots for a specific
-            task and return them as a list.
-        stream_task_process_tree: Subscribe to and stream process-tree metric
-            snapshots for a specific task as they are pushed by the server.
-        stream_task_host_resources: Subscribe to and stream CPU and memory metric
-            updates for the host running a specific task.
-        stream_scheduler_job_status: Subscribe to and stream scheduler job status
-            metrics (e.g. Slurm or LSF instance counts) for a task definition.
-        send_ws_command: Low-level helper — send any command payload to the
-            WebSocket topics endpoint and collect responses.
-
-    Common filter tags:
-        ``client_type``, ``task_id``, ``project_id``, ``job_id``,
-        ``evaluator_name``, ``host``, ``file_path``, ``level``.
-        For metric messages: ``type=metric``, ``statistic`` (e.g. ``process_tree``).
-
-        See :class:`ClientType` for known ``client_type`` values.
+    Notes
+    -----
+    **Common filter tags:** ``client_type``, ``task_id``, ``project_id``,
+    ``job_id``, ``evaluator_name``, ``host``, ``file_path``, ``level``.
+    For metric messages: ``type=metric``, ``statistic`` (e.g.
+    ``process_tree``). See :class:`ClientType` for known ``client_type``
+    values.
 
     """
 
@@ -205,22 +193,30 @@ class MonitorApi:
     ) -> dict[str, list[str]]:
         """List all known tag keys and their values via the WebSocket ``list_tags`` action.
 
-        Sends a ``list_tags`` command to the monitor WebSocket endpoint and returns
-        the authoritative tag catalogue reported by the server.
+        Sends a ``list_tags`` command to the monitor WebSocket endpoint and
+        returns the authoritative tag catalogue reported by the server.
 
-        High-cardinality tag keys (such as ``timestamp``) that carry a unique value
-        per message are suppressed by default because they are rarely useful for
-        subscription discovery.  Pass ``exclude_noisy=False`` to include them.
+        High-cardinality tag keys (such as ``timestamp``) that carry a unique
+        value per message are suppressed by default because they are rarely
+        useful for subscription discovery. Pass ``exclude_noisy=False`` to
+        include them.
 
-        Args:
-            limit: Maximum number of tag values to request per key.
-            exclude_noisy: When ``True`` (default), remove tag keys listed in
-                :attr:`_NOISY_TAG_KEYS` and any key whose value count exceeds
-                :attr:`_NOISY_MAX_VALUES`.
+        Parameters
+        ----------
+        limit : int, optional
+            Maximum number of tag values to request per key. The default is
+            ``1000``.
+        exclude_noisy : bool, optional
+            When ``True``, remove tag keys listed in :attr:`_NOISY_TAG_KEYS`
+            and any key whose value count exceeds :attr:`_NOISY_MAX_VALUES`.
+            The default is ``True``.
 
-        Returns:
-            Dictionary mapping each tag key to a list of known values as returned
-            by the server (noisy keys removed unless ``exclude_noisy=False``).
+        Returns
+        -------
+        dict[str, list[str]]
+            Dictionary mapping each tag key to a list of known values as
+            returned by the server (noisy keys removed unless
+            ``exclude_noisy=False``).
 
         """
         command = ListTagsCommand(limit=limit).to_payload()
@@ -239,7 +235,22 @@ class MonitorApi:
     def send_ws_command(
         self, command: dict[str, Any], max_messages: int | None = 1
     ) -> list[MonitorMessage]:
-        """Send a command to the monitor WebSocket endpoint and collect messages."""
+        """Send a command to the monitor WebSocket endpoint and collect messages.
+
+        Parameters
+        ----------
+        command : dict[str, Any]
+            Command payload to send over the WebSocket connection.
+        max_messages : int or None, optional
+            Maximum number of response messages to collect. The default is
+            ``1``.
+
+        Returns
+        -------
+        list[MonitorMessage]
+            List of messages received in response to the command.
+
+        """
         return list(self._stream_ws(command, max_messages))
 
     @property
@@ -272,23 +283,32 @@ class MonitorApi:
         """Stream log messages for a named HPS service.
 
         Subscribes to messages filtered by the ``client_type`` tag and yields
-        each message as it arrives.  Use :class:`ClientType` constants for
-        well-known services::
+        each message as it arrives. Use :class:`ClientType` constants for
+        well-known services.
 
-            for msg in client.stream_service_logs(ClientType.JMS):
-                print(msg)
+        Parameters
+        ----------
+        client_type : str
+            The ``client_type`` tag value to filter on. Use a
+            :class:`ClientType` constant, e.g. ``ClientType.JMS``,
+            ``ClientType.HOUSEKEEPER``, or ``ClientType.SCALING``.
+        backlog : int, optional
+            Number of historical messages to request on connect. The default
+            is ``100``.
+        max_messages : int or None, optional
+            Maximum total messages to yield before closing the connection.
+            The default is ``None``, which streams indefinitely until
+            interrupted or the server closes the connection.
 
-        Args:
-            client_type: The ``client_type`` tag value to filter on.  Use a
-                :class:`ClientType` constant, e.g. ``ClientType.JMS``,
-                ``ClientType.HOUSEKEEPER``, ``ClientType.SCALING``.
-            backlog: Number of historical messages to request on connect.
-            max_messages: Maximum total messages to yield before closing the
-                connection. Defaults to ``None`` — stream indefinitely until
-                interrupted or the server closes the connection.
-
-        Yields:
+        Yields
+        ------
+        MonitorMessage
             Parsed JSON message dicts from the server.
+
+        Examples
+        --------
+        >>> for msg in api.stream_service_logs(ClientType.JMS):
+        ...     print(msg)
 
         """
         command = self._subscribe_command(
@@ -308,19 +328,28 @@ class MonitorApi:
         """Stream log file messages for a specific task.
 
         Subscribes to messages tagged with ``task_id=<task_id>`` and
-        ``client_type=ansys.rep.evaluator.file_tail``, and yields each message
-        as it arrives.  Optionally narrows to a single file via ``file_path``.
+        ``client_type=ansys.rep.evaluator.file_tail``, and yields each
+        message as it arrives. Optionally narrows to a single file via
+        ``file_path``.
 
-        Args:
-            task_id: The task identifier to filter on.
-            file_path: Optional filename to restrict to a single tailed file,
-                e.g. ``"console_output.txt"``.
-            backlog: Number of historical messages to request on connect.
-            max_messages: Maximum total messages to yield before closing the
-                connection. Defaults to ``None`` — stream indefinitely until
-                interrupted or the server closes the connection.
+        Parameters
+        ----------
+        task_id : str
+            The task identifier to filter on.
+        file_path : str, optional
+            Filename to restrict to a single tailed file, e.g.
+            ``"console_output.txt"``. The default is ``None``.
+        backlog : int, optional
+            Number of historical messages to request on connect. The default
+            is ``100``.
+        max_messages : int or None, optional
+            Maximum total messages to yield before closing the connection.
+            The default is ``None``, which streams indefinitely until
+            interrupted or the server closes the connection.
 
-        Yields:
+        Yields
+        ------
+        MonitorMessage
             Parsed JSON message dicts from the server.
 
         """
@@ -342,20 +371,29 @@ class MonitorApi:
     ) -> str:
         """Infer project ID for a task from task-log message tags.
 
-        This helper reads a small number of task-log messages and extracts
-        ``project_id`` from either ``message["tags"]["project_id"]`` (preferred)
-        or the top-level ``message["project_id"]`` field when present.
+        Reads a small number of task-log messages and extracts ``project_id``
+        from either ``message["tags"]["project_id"]`` (preferred) or the
+        top-level ``message["project_id"]`` field when present.
 
-        Args:
-            task_id: Task identifier to inspect.
-            backlog: Number of historical log messages to request.
-            max_messages: Maximum messages to inspect before failing.
+        Parameters
+        ----------
+        task_id : str
+            Task identifier to inspect.
+        backlog : int, optional
+            Number of historical log messages to request. The default is
+            ``1``.
+        max_messages : int, optional
+            Maximum messages to inspect before failing. The default is ``5``.
 
-        Returns:
+        Returns
+        -------
+        str
             Project identifier associated with ``task_id``.
 
-        Raises:
-            ClientError: If no inspected message provides a project ID.
+        Raises
+        ------
+        ClientError
+            If no inspected message provides a project ID.
 
         """
         for msg in self.stream_task_logs(
@@ -390,17 +428,25 @@ class MonitorApi:
     ) -> list[MonitorMessage]:
         """Return process tree metric messages for a specific task.
 
-        Collects up to ``max_messages`` process-tree snapshots and returns them
-        all at once.  Use :meth:`stream_task_process_tree` if you want to react
-        to each snapshot as it arrives.
+        Collects up to ``max_messages`` process-tree snapshots and returns
+        them all at once. Use :meth:`stream_task_process_tree` if you want
+        to react to each snapshot as it arrives.
 
-        Args:
-            task_id: The task identifier to query.
-            backlog: Number of historical messages to request on connect.
-            max_messages: Upper bound on messages to collect. If ``None``,
-                collect until interrupted or the server closes the connection.
+        Parameters
+        ----------
+        task_id : str
+            The task identifier to query.
+        backlog : int, optional
+            Number of historical messages to request on connect. The default
+            is ``100``.
+        max_messages : int or None, optional
+            Upper bound on messages to collect. The default is ``200``. If
+            ``None``, collect until interrupted or the server closes the
+            connection.
 
-        Returns:
+        Returns
+        -------
+        list[MonitorMessage]
             List of process-tree message dicts as returned by the server.
 
         """
@@ -417,24 +463,33 @@ class MonitorApi:
     ) -> Generator[MonitorMessage, None, None]:
         """Stream process tree metric updates for a specific task.
 
-        Subscribes to process-tree metric messages and yields each snapshot as
-        the server pushes it.  The server typically pushes a new snapshot on a
-        fixed interval while the task is running, allowing you to observe process
-        lifecycle in real time::
+        Subscribes to process-tree metric messages and yields each snapshot
+        as the server pushes it. The server typically pushes a new snapshot
+        on a fixed interval while the task is running, allowing you to
+        observe process lifecycle in real time.
 
-            for snapshot in client.stream_task_process_tree("task-123"):
-                pids = [p["pid"] for p in snapshot.get("processes", [])]
-                print(f"Running PIDs: {pids}")
+        Parameters
+        ----------
+        task_id : str
+            The task identifier to monitor.
+        backlog : int, optional
+            Number of historical snapshots to request on connect. The
+            default is ``100``.
+        max_messages : int or None, optional
+            Maximum total snapshots to yield before closing the connection.
+            The default is ``None``, which streams indefinitely until
+            interrupted or the server closes the connection.
 
-        Args:
-            task_id: The task identifier to monitor.
-            backlog: Number of historical snapshots to request on connect.
-            max_messages: Maximum total snapshots to yield before closing the
-                connection. Defaults to ``None`` — stream indefinitely until
-                interrupted or the server closes the connection.
-
-        Yields:
+        Yields
+        ------
+        MonitorMessage
             Parsed JSON process-tree snapshot dicts from the server.
+
+        Examples
+        --------
+        >>> for snapshot in api.stream_task_process_tree("task-123"):
+        ...     pids = [p["pid"] for p in snapshot.get("processes", [])]
+        ...     print(f"Running PIDs: {pids}")
 
         """
         command = self._subscribe_command(
@@ -460,26 +515,35 @@ class MonitorApi:
     ) -> Generator[MonitorMessage, None, None]:
         """Stream CPU and memory metric updates for the host running a specific task.
 
-        Resolves the task's assigned evaluator (via JMS and RMS) and subscribes
-        to ``host_resources`` metric messages for that evaluator.
-        Yields each update as it arrives::
+        Resolves the task's assigned evaluator (via JMS and RMS) and
+        subscribes to ``host_resources`` metric messages for that evaluator.
+        Yields each update as it arrives.
 
-            for update in client.stream_task_host_resources("task-123", "project-abc"):
-                cpu = update.get("cpu_percent")
-                mem = update.get("memory_percent")
-                print(f"CPU: {cpu}%  Memory: {mem}%")
+        Parameters
+        ----------
+        task_id : str
+            The task identifier to monitor.
+        project_id : str
+            The JMS project identifier that owns ``task_id``.
+        backlog : int, optional
+            Number of historical metric messages to request on connect. The
+            default is ``100``.
+        max_messages : int or None, optional
+            Maximum total messages to yield before closing the connection.
+            The default is ``None``, which streams indefinitely until
+            interrupted or the server closes the connection.
 
-        Args:
-            task_id: The task identifier to monitor.
-            project_id: The JMS project identifier that owns ``task_id``.
-            backlog: Number of historical metric messages to request on connect.
-            max_messages: Maximum total messages to yield before closing the
-                connection. Defaults to ``None`` — stream indefinitely until
-                interrupted or the server closes the connection, which is
-                the typical usage pattern for host resource monitoring.
-
-        Yields:
+        Yields
+        ------
+        MonitorMessage
             Parsed JSON host-resource metric dicts from the server.
+
+        Examples
+        --------
+        >>> for update in api.stream_task_host_resources("task-123", "project-abc"):
+        ...     cpu = update.get("cpu_percent")
+        ...     mem = update.get("memory_percent")
+        ...     print(f"CPU: {cpu}%  Memory: {mem}%")
 
         """
         evaluator_name = self._resolve_evaluator_name_for_task(task_id, project_id)
@@ -506,23 +570,32 @@ class MonitorApi:
         """Stream scheduler job status metrics for a task definition.
 
         Subscribes to ``scaler_instances`` metric messages emitted by the HPS
-        autoscaling service (``ansys.rep.scaling``) for a specific task definition.
-        Each message represents a status update from the underlying job scheduler
-        (e.g. Slurm or LSF) and contains instance-count information for the
-        registered scaler::
+        autoscaling service (``ansys.rep.scaling``) for a specific task
+        definition. Each message represents a status update from the
+        underlying job scheduler (e.g. Slurm or LSF) and contains
+        instance-count information for the registered scaler.
 
-            for status in client.stream_scheduler_job_status("taskdef-abc"):
-                print(status)
+        Parameters
+        ----------
+        task_definition_id : str
+            The task definition identifier to monitor.
+        backlog : int, optional
+            Number of historical metric messages to request on connect. The
+            default is ``100``.
+        max_messages : int or None, optional
+            Maximum total messages to yield before closing the connection.
+            The default is ``None``, which streams indefinitely until
+            interrupted or the server closes the connection.
 
-        Args:
-            task_definition_id: The task definition identifier to monitor.
-            backlog: Number of historical metric messages to request on connect.
-            max_messages: Maximum total messages to yield before closing the
-                connection. Defaults to ``None`` — stream indefinitely until
-                interrupted or the server closes the connection.
-
-        Yields:
+        Yields
+        ------
+        MonitorMessage
             Parsed JSON scheduler job status metric dicts from the server.
+
+        Examples
+        --------
+        >>> for status in api.stream_scheduler_job_status("taskdef-abc"):
+        ...     print(status)
 
         """
         command = self._subscribe_command(
