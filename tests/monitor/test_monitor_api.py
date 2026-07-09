@@ -205,7 +205,6 @@ def test_integration_client_uses_provided_client_without_token():
     assert resolved is provided
 
 
-
 def test_resolve_evaluator_name_for_task_success(monkeypatch):
     provided = SimpleNamespace(name="provided-client")
     captured = {"project_id": None, "task_id": None, "host_id": None}
@@ -365,8 +364,6 @@ def test_send_ws_command_forwards_ws_connection_options_and_merges_auth_header(m
     assert captured["sslopt"] == {"cert_reqs": 0}
     assert captured["header"]["X-Test"] == "ok"
     assert captured["header"]["Authorization"] == "Bearer jwt"
-
-
 
 
 # ---------------------------------------------------------------------------
