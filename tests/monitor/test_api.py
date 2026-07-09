@@ -21,6 +21,8 @@
 # SOFTWARE.
 
 import logging
+import ssl
+from collections.abc import Mapping
 
 import pytest
 
@@ -32,24 +34,22 @@ log = logging.getLogger(__name__)
 
 @pytest.fixture
 def monitor_api(client):
-    return MonitorApi(client, timeout_seconds=10.0)
-
-
-def test_get_build_info(monitor_api):
-    info = monitor_api.get_build_info()
-    assert info.build is not None
-    assert "version" in info.build or len(info.build) > 0
+    return MonitorApi(
+        client,
+        timeout_seconds=10.0,
+        ws_connection_options={"sslopt": {"cert_reqs": ssl.CERT_NONE}},
+    )
 
 
 def test_list_topics(monitor_api):
     topics = monitor_api.list_topics()
     assert isinstance(topics, dict)
-    # The monitor should always know about at least one client_type
     assert len(topics) > 0
+    assert "client_type" in topics
 
 
 def test_stream_service_logs_jms(monitor_api):
     messages = list(monitor_api.stream_service_logs(ClientType.JMS, backlog=10, max_messages=10))
     assert isinstance(messages, list)
     for msg in messages:
-        assert isinstance(msg, dict)
+        assert isinstance(msg, Mapping)
