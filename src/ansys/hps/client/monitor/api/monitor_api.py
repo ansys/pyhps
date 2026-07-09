@@ -578,7 +578,11 @@ class MonitorApi:
                 try:
                     raw = ws.recv()
                 except Exception as exc:
-                    if exc.__class__.__name__ == "WebSocketTimeoutException":
+                    if exc.__class__.__name__ in {
+                        "TimeoutError",
+                        "WebSocketTimeoutError",
+                        "WebSocketTimeoutException",
+                    }:
                         break
                     raise
                 if not raw:
