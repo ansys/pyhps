@@ -174,5 +174,3 @@ class BuildInfoResponse(_PayloadMappingMixin, Mapping[str, Any]):
         """Return the nested ``build`` object if present."""
         data = self.payload.get("build")
         return data if isinstance(data, Mapping) else None
-
-
