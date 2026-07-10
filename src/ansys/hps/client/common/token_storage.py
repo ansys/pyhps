@@ -15,7 +15,6 @@ Disk token path (refresh-token persistence):
 import base64
 import ctypes
 import ctypes.wintypes as wintypes
-from enum import Enum
 import json
 import logging
 import os
@@ -23,6 +22,7 @@ import platform
 import secrets
 import time
 import uuid
+from enum import Enum
 from pathlib import Path
 
 from pydantic import BaseModel, ConfigDict, Field, ValidationError
@@ -46,6 +46,7 @@ class TokenStorage(str, Enum):
     MEMORY = "memory"
     DISK = "disk"
     KEYRING = "keyring"
+
 
 log = logging.getLogger(__name__)
 
@@ -498,11 +499,11 @@ def _save_tokens_memory(*_: object) -> Path | None:
     return None
 
 
-def _save_tokens_keyring(
-    tokens: dict, hps_url: str, service_name: str | None
-) -> Path | None:
+def _save_tokens_keyring(tokens: dict, hps_url: str, service_name: str | None) -> Path | None:
     resolved_service_name = _resolve_keyring_service_name(service_name)
-    saved = _save_to_keyring(tokens, hps_url, service_name=resolved_service_name, error_on_failure=True)
+    saved = _save_to_keyring(
+        tokens, hps_url, service_name=resolved_service_name, error_on_failure=True
+    )
     if not saved:
         raise RuntimeError("Failed to save tokens to keyring.")
     return None
@@ -550,6 +551,7 @@ def save_tokens(
     For ``storage=TokenStorage.DISK``, refresh-token payloads are written to:
     - Windows: ``%USERPROFILE%\\.ansys\hps\hps_tokens.json`` (DPAPI encrypted)
     - Unix/Linux: ``~/.ansys/hps/hps_tokens.json`` (permissions set to 0o600)
+
     """
     try:
         backend = TokenStorage(storage)
