@@ -301,10 +301,10 @@ class TestKeyringBackend:
             storage="keyring",
         )
 
-        # If keyring returns tokens, verify them
+        # Keyring only persists refresh_token (access tokens are memory-only)
         if loaded is not None:
-            assert loaded.get("access_token") == tokens["access_token"]
             assert loaded.get("refresh_token") == tokens["refresh_token"]
+            assert loaded.get("access_token") is None
 
     def test_keyring_with_custom_service_name(self, mock_keyring):
         """Test using custom service name for keyring."""
@@ -332,9 +332,10 @@ class TestKeyringBackend:
             service_name=custom_service,
         )
 
-        # Verify if returned
+        # Keyring only persists refresh_token (access tokens are memory-only)
         if loaded is not None:
-            assert loaded.get("access_token") == "custom_token"
+            assert loaded.get("refresh_token") == tokens["refresh_token"]
+            assert loaded.get("access_token") is None
 
     def test_keyring_save_password_failure(self, monkeypatch):
         """Test handling of keyring set_password failures."""

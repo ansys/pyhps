@@ -15,6 +15,7 @@ Disk token path (refresh-token persistence):
 import base64
 import ctypes
 import ctypes.wintypes as wintypes
+from enum import Enum
 import json
 import logging
 import os
@@ -32,6 +33,19 @@ TOKEN_FILE = Path.home() / ".ansys" / "hps" / "hps_tokens.json"
 DEFAULT_KEYRING_SERVICE_NAME = "ansys-hps"
 KEYRING_SERVICE_ENV_VAR = "HPS_OIDC_KEYRING_SERVICE_NAME"
 WINDOWS_KEYRING_MAX_SECRET_BYTES = 2560
+
+
+class TokenStorage(str, Enum):
+    """Token persistence backends.
+
+    Because this inherits from ``str``, plain string literals (``"disk"``,
+    ``"keyring"``, ``"memory"``) still compare equal to the enum members and
+    are accepted anywhere a ``TokenStorage`` is expected.
+    """
+
+    MEMORY = "memory"
+    DISK = "disk"
+    KEYRING = "keyring"
 
 log = logging.getLogger(__name__)
 
@@ -328,16 +342,40 @@ def _load_from_disk() -> dict | None:
         return None
 
 
-def load_tokens(storage: str = "keyring", service_name: str | None = None) -> dict | None:
+def _load_tokens_memory(_: str | None) -> dict | None:
+    return None
+
+
+def _load_tokens_disk(_: str | None) -> dict | None:
+    return _load_from_disk()
+
+
+def _load_tokens_keyring(service_name: str | None) -> dict | None:
+    resolved_service_name = _resolve_keyring_service_name(service_name)
+    return _load_from_keyring(service_name=resolved_service_name)
+
+
+_LOAD_HANDLERS: dict[TokenStorage, object] = {
+    TokenStorage.MEMORY: _load_tokens_memory,
+    TokenStorage.DISK: _load_tokens_disk,
+    TokenStorage.KEYRING: _load_tokens_keyring,
+}
+
+
+def load_tokens(
+    storage: str | TokenStorage = TokenStorage.KEYRING,
+    service_name: str | None = None,
+) -> dict | None:
     """Load saved refresh-token payload from the explicitly selected backend.
 
     Parameters
     ----------
     storage:
-        Backend to load from. Supported values are ``"memory"``, ``"disk"``,
-        and ``"keyring"``.
+        Backend to load from. Supported values are :attr:`TokenStorage.MEMORY`,
+        :attr:`TokenStorage.DISK`, and :attr:`TokenStorage.KEYRING` (or the
+        equivalent plain strings).
     service_name:
-        Keyring service name override. Used only when ``storage="keyring"``.
+        Keyring service name override. Used only when ``storage=TokenStorage.KEYRING``.
 
     Returns
     -------
@@ -345,19 +383,13 @@ def load_tokens(storage: str = "keyring", service_name: str | None = None) -> di
         Loaded token payload when present, otherwise ``None``.
 
     """
-    if storage not in ("memory", "disk", "keyring"):
-        raise ValueError(
-            f"Invalid storage method: {storage}. Must be 'memory', 'disk', or 'keyring'"
-        )
+    try:
+        backend = TokenStorage(storage)
+    except ValueError:
+        valid = [m.value for m in TokenStorage]
+        raise ValueError(f"Invalid storage method: {storage!r}. Must be one of: {valid}")
 
-    if storage == "memory":
-        return None
-
-    if storage == "disk":
-        return _load_from_disk()
-
-    resolved_service_name = _resolve_keyring_service_name(service_name)
-    return _load_from_keyring(service_name=resolved_service_name)
+    return _LOAD_HANDLERS[backend](service_name)
 
 
 def _check_keyring_backend() -> str | None:
@@ -390,15 +422,21 @@ def _check_disk_storage_backend() -> str | None:
     return None
 
 
-def _check_storage_backend(storage: str) -> str | None:
+_CHECK_HANDLERS: dict[TokenStorage, object] = {
+    TokenStorage.MEMORY: lambda: None,
+    TokenStorage.DISK: lambda: _check_disk_storage_backend(),
+    TokenStorage.KEYRING: lambda: _check_keyring_backend(),
+}
+
+
+def _check_storage_backend(storage: str | TokenStorage) -> str | None:
     """Return error details if storage backend is unavailable, else None."""
-    if storage == "memory":
-        return None
-    if storage == "disk":
-        return _check_disk_storage_backend()
-    if storage == "keyring":
-        return _check_keyring_backend()
-    raise ValueError(f"Invalid storage method: {storage}. Must be 'memory', 'disk', or 'keyring'")
+    try:
+        backend = TokenStorage(storage)
+    except ValueError:
+        valid = [m.value for m in TokenStorage]
+        raise ValueError(f"Invalid storage method: {storage!r}. Must be one of: {valid}")
+    return _CHECK_HANDLERS[backend]()
 
 
 def _is_token_expired(tokens: dict, buffer_seconds: int = 60) -> bool:
@@ -456,49 +494,21 @@ def _atomic_write_bytes(path: Path, data: bytes, mode: int | None = None) -> Non
                 pass
 
 
-def save_tokens(
-    tokens: dict,
-    hps_url: str,
-    storage: str = "memory",
-    service_name: str | None = None,
+def _save_tokens_memory(*_: object) -> Path | None:
+    return None
+
+
+def _save_tokens_keyring(
+    tokens: dict, hps_url: str, service_name: str | None
 ) -> Path | None:
-    r"""Persist tokens to specified storage location.
+    resolved_service_name = _resolve_keyring_service_name(service_name)
+    saved = _save_to_keyring(tokens, hps_url, service_name=resolved_service_name, error_on_failure=True)
+    if not saved:
+        raise RuntimeError("Failed to save tokens to keyring.")
+    return None
 
-    For `storage="disk"`, refresh-token payloads are written to:
-    - Windows: `%USERPROFILE%\\.ansys\hps\hps_tokens.json` (DPAPI encrypted)
-    - Unix/Linux: `~/.ansys/hps/hps_tokens.json` (permissions set to 0o600)
-    """
-    if storage not in ("memory", "disk", "keyring"):
-        raise ValueError(
-            f"Invalid storage method: {storage}. Must be 'memory', 'disk', or 'keyring'"
-        )
 
-    if not isinstance(hps_url, str) or not hps_url.strip():
-        raise ValueError("'hps_url' must be a non-empty string.")
-
-    tokens = _normalize_tokens_for_save(tokens)
-
-    if storage in ("disk", "keyring") and not tokens.get("refresh_token"):
-        raise ValueError(
-            f"storage='{storage}' requires a refresh_token because access tokens are memory-only."
-        )
-
-    if storage == "memory":
-        return None
-    elif storage == "keyring":
-        resolved_service_name = _resolve_keyring_service_name(service_name)
-        saved = _save_to_keyring(
-            tokens,
-            hps_url,
-            service_name=resolved_service_name,
-            error_on_failure=True,
-        )
-        if not saved:
-            raise RuntimeError("Failed to save tokens to keyring.")
-        return None
-
-    # storage == "disk"
-    # Persist tokens to disk only when explicit disk mode is requested.
+def _save_tokens_disk(tokens: dict, hps_url: str, _: str | None) -> Path | None:
     TOKEN_FILE.parent.mkdir(parents=True, exist_ok=True)
     payload = {
         "hps_url": hps_url,
@@ -507,12 +517,54 @@ def save_tokens(
         "saved_at": time.time(),
     }
     json_bytes = json.dumps(payload, indent=2).encode("utf-8")
-
-    # Platform-specific security
     if platform.system() == "Windows":
         encrypted = _encrypt_with_dpapi(json_bytes)
         _atomic_write_bytes(TOKEN_FILE, b"DPAPI:" + base64.b64encode(encrypted))
     else:
         _atomic_write_bytes(TOKEN_FILE, json_bytes, mode=0o600)
-
     return TOKEN_FILE
+
+
+_SAVE_HANDLERS: dict[TokenStorage, object] = {
+    TokenStorage.MEMORY: _save_tokens_memory,
+    TokenStorage.DISK: _save_tokens_disk,
+    TokenStorage.KEYRING: _save_tokens_keyring,
+}
+
+
+def save_tokens(
+    tokens: dict,
+    hps_url: str,
+    storage: str | TokenStorage = TokenStorage.MEMORY,
+    service_name: str | None = None,
+) -> Path | None:
+    r"""Persist tokens to specified storage location.
+
+    Parameters
+    ----------
+    storage:
+        Backend to persist to. Supported values are :attr:`TokenStorage.MEMORY`,
+        :attr:`TokenStorage.DISK`, and :attr:`TokenStorage.KEYRING` (or the
+        equivalent plain strings).
+
+    For ``storage=TokenStorage.DISK``, refresh-token payloads are written to:
+    - Windows: ``%USERPROFILE%\\.ansys\hps\hps_tokens.json`` (DPAPI encrypted)
+    - Unix/Linux: ``~/.ansys/hps/hps_tokens.json`` (permissions set to 0o600)
+    """
+    try:
+        backend = TokenStorage(storage)
+    except ValueError:
+        valid = [m.value for m in TokenStorage]
+        raise ValueError(f"Invalid storage method: {storage!r}. Must be one of: {valid}")
+
+    if not isinstance(hps_url, str) or not hps_url.strip():
+        raise ValueError("'hps_url' must be a non-empty string.")
+
+    tokens = _normalize_tokens_for_save(tokens)
+
+    if backend in (TokenStorage.DISK, TokenStorage.KEYRING) and not tokens.get("refresh_token"):
+        raise ValueError(
+            f"storage={backend.value!r} requires a refresh_token because access tokens are memory-only."
+        )
+
+    return _SAVE_HANDLERS[backend](tokens, hps_url, service_name)
