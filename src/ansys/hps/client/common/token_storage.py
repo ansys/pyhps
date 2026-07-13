@@ -425,8 +425,8 @@ def _check_disk_storage_backend() -> str | None:
 
 _CHECK_HANDLERS: dict[TokenStorage, object] = {
     TokenStorage.MEMORY: lambda: None,
-    TokenStorage.DISK: _check_disk_storage_backend,
-    TokenStorage.KEYRING: _check_keyring_backend,
+    TokenStorage.DISK: lambda: _check_disk_storage_backend(),
+    TokenStorage.KEYRING: lambda: _check_keyring_backend(),
 }
 
 

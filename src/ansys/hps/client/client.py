@@ -413,6 +413,7 @@ class Client:
             )
             if strict:
                 raise RuntimeError(msg)
+            warnings.warn(msg, RuntimeWarning, stacklevel=2)
             log.warning(msg)
             return
 
@@ -428,6 +429,7 @@ class Client:
             )
             if strict:
                 raise RuntimeError(msg)
+            warnings.warn(msg, RuntimeWarning, stacklevel=2)
             log.warning(msg)
 
     @property
