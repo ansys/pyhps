@@ -15,7 +15,6 @@ Disk token path (refresh-token persistence):
 import base64
 import ctypes
 import ctypes.wintypes as wintypes
-from enum import Enum
 import json
 import logging
 import os
@@ -23,6 +22,7 @@ import platform
 import secrets
 import time
 import uuid
+from enum import Enum
 from pathlib import Path
 
 from pydantic import BaseModel, ConfigDict, Field, ValidationError
@@ -46,6 +46,7 @@ class TokenStorage(str, Enum):
     MEMORY = "memory"
     DISK = "disk"
     KEYRING = "keyring"
+
 
 log = logging.getLogger(__name__)
 
@@ -385,9 +386,9 @@ def load_tokens(
     """
     try:
         backend = TokenStorage(storage)
-    except ValueError:
+    except ValueError as err:
         valid = [m.value for m in TokenStorage]
-        raise ValueError(f"Invalid storage method: {storage!r}. Must be one of: {valid}")
+        raise ValueError(f"Invalid storage method: {storage!r}. Must be one of: {valid}") from err
 
     return _LOAD_HANDLERS[backend](service_name)
 
@@ -424,8 +425,8 @@ def _check_disk_storage_backend() -> str | None:
 
 _CHECK_HANDLERS: dict[TokenStorage, object] = {
     TokenStorage.MEMORY: lambda: None,
-    TokenStorage.DISK: lambda: _check_disk_storage_backend(),
-    TokenStorage.KEYRING: lambda: _check_keyring_backend(),
+    TokenStorage.DISK: _check_disk_storage_backend,
+    TokenStorage.KEYRING: _check_keyring_backend,
 }
 
 
@@ -433,9 +434,9 @@ def _check_storage_backend(storage: str | TokenStorage) -> str | None:
     """Return error details if storage backend is unavailable, else None."""
     try:
         backend = TokenStorage(storage)
-    except ValueError:
+    except ValueError as err:
         valid = [m.value for m in TokenStorage]
-        raise ValueError(f"Invalid storage method: {storage!r}. Must be one of: {valid}")
+        raise ValueError(f"Invalid storage method: {storage!r}. Must be one of: {valid}") from err
     return _CHECK_HANDLERS[backend]()
 
 
@@ -498,11 +499,11 @@ def _save_tokens_memory(*_: object) -> Path | None:
     return None
 
 
-def _save_tokens_keyring(
-    tokens: dict, hps_url: str, service_name: str | None
-) -> Path | None:
+def _save_tokens_keyring(tokens: dict, hps_url: str, service_name: str | None) -> Path | None:
     resolved_service_name = _resolve_keyring_service_name(service_name)
-    saved = _save_to_keyring(tokens, hps_url, service_name=resolved_service_name, error_on_failure=True)
+    saved = _save_to_keyring(
+        tokens, hps_url, service_name=resolved_service_name, error_on_failure=True
+    )
     if not saved:
         raise RuntimeError("Failed to save tokens to keyring.")
     return None
@@ -542,20 +543,29 @@ def save_tokens(
 
     Parameters
     ----------
+    tokens:
+        Token payload dict containing at least ``access_token`` and optionally
+        ``refresh_token``.
+    hps_url:
+        Base URL of the HPS instance the tokens belong to.
     storage:
         Backend to persist to. Supported values are :attr:`TokenStorage.MEMORY`,
         :attr:`TokenStorage.DISK`, and :attr:`TokenStorage.KEYRING` (or the
         equivalent plain strings).
+    service_name:
+        Optional service name override used as the keyring service identifier.
+        When ``None``, a name is derived from ``hps_url``.
 
     For ``storage=TokenStorage.DISK``, refresh-token payloads are written to:
     - Windows: ``%USERPROFILE%\\.ansys\hps\hps_tokens.json`` (DPAPI encrypted)
     - Unix/Linux: ``~/.ansys/hps/hps_tokens.json`` (permissions set to 0o600)
+
     """
     try:
         backend = TokenStorage(storage)
-    except ValueError:
+    except ValueError as err:
         valid = [m.value for m in TokenStorage]
-        raise ValueError(f"Invalid storage method: {storage!r}. Must be one of: {valid}")
+        raise ValueError(f"Invalid storage method: {storage!r}. Must be one of: {valid}") from err
 
     if not isinstance(hps_url, str) or not hps_url.strip():
         raise ValueError("'hps_url' must be a non-empty string.")
@@ -564,7 +574,8 @@ def save_tokens(
 
     if backend in (TokenStorage.DISK, TokenStorage.KEYRING) and not tokens.get("refresh_token"):
         raise ValueError(
-            f"storage={backend.value!r} requires a refresh_token because access tokens are memory-only."
+            f"storage={backend.value!r} requires a refresh_token because"
+            " access tokens are memory-only."
         )
 
     return _SAVE_HANDLERS[backend](tokens, hps_url, service_name)
