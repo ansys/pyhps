@@ -271,7 +271,7 @@ class TestCheckStorageBackend:
         """Storage backend check for keyring delegates to _check_keyring_backend."""
         from unittest.mock import Mock
 
-        from ansys.hps.client.common.token_storage import TokenStorage, _CHECK_HANDLERS
+        from ansys.hps.client.common.token_storage import _CHECK_HANDLERS, TokenStorage
 
         mock_check = Mock(return_value=None)
         with patch.dict(_CHECK_HANDLERS, {TokenStorage.KEYRING: mock_check}):
@@ -283,7 +283,7 @@ class TestCheckStorageBackend:
         """Storage backend check propagates keyring backend errors."""
         from unittest.mock import Mock
 
-        from ansys.hps.client.common.token_storage import TokenStorage, _CHECK_HANDLERS
+        from ansys.hps.client.common.token_storage import _CHECK_HANDLERS, TokenStorage
 
         error_msg = "Keyring unavailable"
         mock_check = Mock(return_value=error_msg)
