@@ -329,14 +329,15 @@ def test_refresh_access_token_persistence_logs_are_redacted(url, username, passw
     assert "***REDACTED***" in err
 
 
-def test_token_storage_keyring_warns_when_backend_unavailable():
-    """Keyring storage should warn when backend is unavailable in non-strict mode."""
+def test_token_storage_keyring_warns_when_backend_unavailable(caplog):
+    """Keyring storage should log a warning when backend is unavailable in non-strict mode."""
     with patch(
         "ansys.hps.client.common.token_storage._check_storage_backend",
         side_effect=lambda storage: "backend unavailable" if storage == "keyring" else None,
     ):
-        with pytest.warns(RuntimeWarning, match="Keyring token storage requested but unavailable"):
+        with caplog.at_level(logging.WARNING, logger="ansys.hps.client.client"):
             client = _build_client_with_mocked_auth(token_storage="keyring")
+    assert "Keyring token storage requested but unavailable" in caplog.text
     assert client.token_storage == "keyring"
 
 
@@ -353,14 +354,15 @@ def test_token_storage_keyring_strict_raises_when_backend_unavailable():
             )
 
 
-def test_token_storage_disk_warns_when_backend_unavailable():
-    """Disk storage should warn when backend is unavailable in non-strict mode."""
+def test_token_storage_disk_warns_when_backend_unavailable(caplog):
+    """Disk storage should log a warning when backend is unavailable in non-strict mode."""
     with patch(
         "ansys.hps.client.common.token_storage._check_storage_backend",
         side_effect=lambda storage: "disk unavailable" if storage == "disk" else None,
     ):
-        with pytest.warns(RuntimeWarning, match="Disk token storage requested but unavailable"):
+        with caplog.at_level(logging.WARNING, logger="ansys.hps.client.client"):
             client = _build_client_with_mocked_auth(token_storage="disk")
+    assert "Disk token storage requested but unavailable" in caplog.text
     assert client.token_storage == "disk"
 
 

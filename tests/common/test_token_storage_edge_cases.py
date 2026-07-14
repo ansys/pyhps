@@ -269,17 +269,25 @@ class TestCheckStorageBackend:
 
     def test_check_backend_keyring_delegates_to_keyring_check(self):
         """Storage backend check for keyring delegates to _check_keyring_backend."""
-        with patch("ansys.hps.client.common.token_storage._check_keyring_backend") as mock_check:
-            mock_check.return_value = None
+        from unittest.mock import Mock
+
+        from ansys.hps.client.common.token_storage import TokenStorage, _CHECK_HANDLERS
+
+        mock_check = Mock(return_value=None)
+        with patch.dict(_CHECK_HANDLERS, {TokenStorage.KEYRING: mock_check}):
             result = _check_storage_backend("keyring")
             assert result is None
             mock_check.assert_called_once()
 
     def test_check_backend_keyring_error_propagates(self):
         """Storage backend check propagates keyring backend errors."""
+        from unittest.mock import Mock
+
+        from ansys.hps.client.common.token_storage import TokenStorage, _CHECK_HANDLERS
+
         error_msg = "Keyring unavailable"
-        with patch("ansys.hps.client.common.token_storage._check_keyring_backend") as mock_check:
-            mock_check.return_value = error_msg
+        mock_check = Mock(return_value=error_msg)
+        with patch.dict(_CHECK_HANDLERS, {TokenStorage.KEYRING: mock_check}):
             result = _check_storage_backend("keyring")
             assert result == error_msg
 
