@@ -1,0 +1,252 @@
+# Copyright (C) 2022 - 2026 ANSYS, Inc. and/or its affiliates.
+# SPDX-License-Identifier: MIT
+#
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
+
+"""Annotated example: stream host CPU/memory metrics with MonitorApi.stream_task_host_resources.
+
+``stream_task_host_resources`` resolves the evaluator assigned to a task (via
+JMS and RMS) and subscribes to ``host_resources`` metric messages for that
+evaluator. A pre-authenticated HPS client must be passed to
+``MonitorApi(...)`` so these JMS/RMS lookups can run. If
+``--project-id`` is omitted, this example infers it from ``stream_task_logs``.
+
+Usage (local dev with self-signed cert):
+
+    python examples/monitor/stream_task_host_resources.py \\
+        --base-url https://localhost:8443/hps \\
+        --username repadmin \\
+        --password repadmin \\
+        --task-id <TASK_ID> \\
+        --insecure
+
+Pass ``--interval 20`` to print a rolling 20-second summary instead of every
+raw message.  Press Ctrl+C to stop.
+"""
+
+from __future__ import annotations
+
+import argparse
+import json
+import ssl
+import statistics
+import time
+from datetime import datetime, timezone
+from typing import Any
+
+from ansys.hps.client import Client, ClientError
+from ansys.hps.client.monitor.api.monitor_api import MonitorApi
+
+
+def _build_parser() -> argparse.ArgumentParser:
+    parser = argparse.ArgumentParser(
+        description="Stream host CPU/memory metrics for a running task."
+    )
+    parser.add_argument("--base-url", default="https://localhost:8443/hps")
+    parser.add_argument("--username", required=True)
+    parser.add_argument("--password", required=True)
+    parser.add_argument(
+        "--project-id",
+        default=None,
+        help="Optional project ID. If omitted, inferred from task logs.",
+    )
+    parser.add_argument("--task-id", required=True)
+    parser.add_argument(
+        "--backlog",
+        type=int,
+        default=20,
+        help="Historical metric snapshots to request on connect (default: 20).",
+    )
+    parser.add_argument(
+        "--interval",
+        type=int,
+        default=0,
+        metavar="SECONDS",
+        help=(
+            "If >0, accumulate samples and print a rolling summary every N seconds "
+            "instead of printing each raw message. Default: 0 (print every message)."
+        ),
+    )
+    parser.add_argument(
+        "--max-messages",
+        type=int,
+        default=None,
+        help="Maximum metric messages to receive. Omit for unlimited streaming.",
+    )
+    parser.add_argument(
+        "--insecure",
+        action="store_true",
+        help="Disable TLS certificate verification for local/self-signed endpoints.",
+    )
+    return parser
+
+
+def _extract_metrics(msg: dict[str, Any]) -> tuple[float | None, float | None]:
+    """Pull CPU usage and memory percent out of a host_resources message.
+
+    The server embeds the metric payload as a JSON string in the ``message``
+    field with the shape::
+
+        {
+            "cpu": {"usage": 42.4, "per_core": [...]},
+            "virtual_memory": {"percent": 88.9, ...},
+            ...
+        }
+    """
+    raw = msg.get("message", "")
+    if isinstance(raw, str):
+        try:
+            payload = json.loads(raw)
+        except (ValueError, TypeError):
+            payload = {}
+    elif isinstance(raw, dict):
+        payload = raw
+    else:
+        payload = {}
+
+    try:
+        cpu = float(payload["cpu"]["usage"])
+    except (KeyError, TypeError, ValueError):
+        cpu = None
+
+    try:
+        mem = float(payload["virtual_memory"]["percent"])
+    except (KeyError, TypeError, ValueError):
+        mem = None
+
+    return cpu, mem
+
+
+def _print_raw(msg: dict[str, Any]) -> None:
+    """Print a single host-resources message in a compact tabular form."""
+    ts = (msg.get("time") or msg.get("timestamp") or "")[:19]
+    cpu, mem = _extract_metrics(msg)
+    cpu_s = f"{cpu:6.1f}%" if cpu is not None else "   n/a"
+    mem_s = f"{mem:6.1f}%" if mem is not None else "   n/a"
+    print(f"{ts}   cpu {cpu_s}   mem {mem_s}")
+
+
+def _print_summary(
+    window_end: str,
+    cpu_vals: list[float],
+    mem_vals: list[float],
+) -> None:
+    """Print a one-line rolling window summary."""
+
+    def _fmt(vals: list[float]) -> str:
+        if not vals:
+            return "  n/a    n/a    n/a    n/a"
+        return f"{vals[-1]:6.1f}  {min(vals):6.1f}  {max(vals):6.1f}  {statistics.mean(vals):6.1f}"
+
+    n = max(len(cpu_vals), len(mem_vals))
+    print(f"{window_end}   {n:>5}   cpu {_fmt(cpu_vals)}   mem {_fmt(mem_vals)}")
+
+
+def main() -> None:
+    args = _build_parser().parse_args()
+
+    # 1) Authenticate once with the top-level HPS client.
+    hps = Client(
+        args.base_url,
+        args.username,
+        args.password,
+        verify=not args.insecure,
+    )
+
+    # 2) Configure WebSocket options only when running in insecure local mode.
+    ws_options: dict[str, Any] | None = None
+    if args.insecure:
+        ws_options = {"sslopt": {"cert_reqs": ssl.CERT_NONE}}
+
+    # 3) Build a MonitorApi that reuses the authenticated client.
+    #    stream_task_host_resources uses JMS/RMS APIs to resolve the evaluator.
+    monitor = MonitorApi(
+        hps,
+        ws_connection_options=ws_options,
+        timeout_seconds=30.0,
+    )
+
+    use_summary = args.interval > 0
+    cpu_vals: list[float] = []
+    mem_vals: list[float] = []
+
+    try:
+        project_id = args.project_id
+        if not project_id:
+            project_id = monitor.resolve_project_id_for_task(task_id=args.task_id)
+            print(f"Resolved project_id={project_id} from task logs")
+
+        print(f"Streaming host resources for project {project_id}, task {args.task_id}")
+        print("(resolving evaluator via JMS/RMS...)")
+
+        if use_summary:
+            print(f"Reporting every {args.interval}s")
+            print(
+                f"{'time_utc':<19}   {'n':>5}   "
+                f"{'cpu_last':>8}  {'cpu_min':>7}  {'cpu_max':>7}  {'cpu_avg':>7}   "
+                f"{'mem_last':>8}  {'mem_min':>7}  {'mem_max':>7}  {'mem_avg':>7}"
+            )
+        else:
+            print("Press Ctrl+C to stop")
+            print(f"{'time':<19}   {'cpu':>9}   {'mem':>9}")
+
+        print("-" * 88)
+
+        window_start = time.monotonic()
+
+        # 4) stream_task_host_resources resolves the evaluator and subscribes to
+        #    the host_resources metric statistic for it.  Each yielded dict is one
+        #    metric snapshot pushed by the server.
+        for msg in monitor.stream_task_host_resources(
+            task_id=args.task_id,
+            project_id=project_id,
+            backlog=args.backlog,
+            max_messages=args.max_messages,
+        ):
+            cpu, mem = _extract_metrics(msg)
+
+            if use_summary:
+                # Accumulate into rolling window.
+                if cpu is not None:
+                    cpu_vals.append(cpu)
+                if mem is not None:
+                    mem_vals.append(mem)
+
+                now = time.monotonic()
+                if now - window_start >= args.interval:
+                    ts = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%S")
+                    _print_summary(ts, cpu_vals, mem_vals)
+                    cpu_vals = []
+                    mem_vals = []
+                    window_start = now
+            else:
+                _print_raw(msg)
+
+    except ClientError as exc:
+        raise SystemExit(f"Monitor request failed: {exc}") from exc
+    except KeyboardInterrupt:
+        print("\nInterrupted by user.")
+        if use_summary and (cpu_vals or mem_vals):
+            ts = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%S")
+            _print_summary(ts, cpu_vals, mem_vals)
+
+
+if __name__ == "__main__":
+    main()
