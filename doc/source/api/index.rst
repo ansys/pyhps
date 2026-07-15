@@ -13,5 +13,6 @@ so that you can understand how to interact with them programmatically.
   auth
   jms
   rms
+  monitor
   exceptions
   rcs

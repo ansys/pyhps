@@ -26,7 +26,7 @@ Prerequisites
 
 Several packages need to be installed for the example. 
 The paths and versions in the following setup instructions are 
-for an Ansys 2025 R2 installation on a Linux 
+for an Ansys 2026 R1 installation on a Linux 
 system. Be sure to adjust them to your installation.
 
 uv
@@ -50,11 +50,11 @@ Once installed, the package must be registered in the scaler/evaluator as follow
    * - **Property**
      - **Value**
    * - Name
-     - Ansys Geometry Service
+     - Ansys GeometryService
    * - Version
-     - 2025 R2
+     - 2026 R1
    * - Installation Path
-     - /ansys_inc/v252/GeometryService
+     - /ansys_inc/v261/GeometryService
 
 You must also ensure that these environment variables are defined:
 
@@ -66,7 +66,7 @@ You must also ensure that these environment variables are defined:
    * - ANSRV_GEO_LICENSE_SERVER
      - <LICENSE@SERVER>
    * - ANSYS_GEOMETRY_SERVICE_ROOT
-     - /ansys_inc/v252/GeometryService
+     - /ansys_inc/v261/GeometryService
 
 Ansys Prime Server
 ------------------
@@ -82,9 +82,9 @@ The PyPrimeMesh package requires Ansys Prime Server, which is automatically inst
    * - Name
      - Ansys Prime Server
    * - Version
-     - 2025 R2
+     - 2026 R1
    * - Installation Path
-     - /ansys_inc/v252/meshing/Prime
+     - /ansys_inc/v261/meshing/Prime
 
 You must also ensure that these environment variables are defined:
 
@@ -93,10 +93,10 @@ You must also ensure that these environment variables are defined:
 
    * - **Environment variable**
      - **Value**
-   * - AWP_ROOT252   
-     - /ansys_inc/v252
+   * - AWP_ROOT261 
+     - /ansys_inc/v261
    * - ANSYS_PRIME_ROOT 
-     - /ansys_inc/v252/meshing/Prime
+     - /ansys_inc/v261/meshing/Prime
 
 Ansys Mechanical APDL
 ---------------------
@@ -110,10 +110,10 @@ two environment variables are added to its registration for PyMAPDL:
 
    * - **Environment variable**
      - **Value**
-   * - AWP_ROOT252   
-     - /ansys_inc/v252
+   * - AWP_ROOT261   
+     - /ansys_inc/v261
    * - PYMAPDL_MAPDL_EXEC
-     - /ansys_inc/v252/ansys/bin/ansys252
+     - /ansys_inc/v261/ansys/bin/ansys261
 
 HPS Python Client
 -----------------

@@ -1,4 +1,4 @@
-# Copyright (C) 2022 - 2026 ANSYS, Inc. and/or its affiliates.
+# Copyright (C) 2022 - 2026 Synopsys, Inc. and ANSYS, Inc. All rights reserved.
 # SPDX-License-Identifier: MIT
 #
 #
@@ -19,16 +19,6 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
-
-# /// script
-# requires-python = "==3.10"
-# dependencies = [
-#     "ansys-geometry-core[all]",
-#     "ansys-meshing-prime[all]==0.7",
-#     "ansys.mapdl.core",
-#     "matplotlib"
-# ]
-# ///
 
 import json
 import os
@@ -92,7 +82,10 @@ def geometry(params):
 
     # Create a modeler, extrude sketches, union bodies
     try:
-        modeler = launch_modeler(port=port)
+        transport_mode = "wnua" if sys.platform == "win32" else "uds"
+        modeler = launch_modeler(
+            mode="core_service", port=port, uds_id=port, transport_mode=transport_mode
+        )
         print(modeler)
 
         design = modeler.create_design("cantilever")
@@ -326,7 +319,8 @@ def mapdl(params):
         # Set keyopt properties
         mapdl.allsel()
         mapdl.etlist()
-        element_type_id = int(mapdl.get("ETYPE", "ELEM", "1", "ATTR", "TYPE"))
+        first_elem = int(mapdl.get("ENUM", "ELEM", "0", "NUM", "MIN"))
+        element_type_id = int(mapdl.get("ETYPE", "ELEM", str(first_elem), "ATTR", "TYPE"))
         mapdl.keyopt(f"{element_type_id}", "2", "3", verbose=True)
 
         # Solve modal
@@ -352,7 +346,7 @@ def mapdl(params):
     except Exception as e:
         print(f"Exception in mapdl: {e}")
     finally:
-        mapdl.exit()
+        mapdl.exit(force=True)
 
 
 if __name__ == "__main__":
