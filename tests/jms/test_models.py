@@ -20,6 +20,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+
 def test_object_functionality():
     from ansys.hps.client.jms.resource.task_definition import HpcResources, ResourceRequirements
 
