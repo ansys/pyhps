@@ -59,13 +59,13 @@ def remove_permissions(project_api: ProjectApi, user):
     log.info(f"=== Removing permissions to {user.username}")
     permissions = project_api.get_permissions()
     log.info(f"Permissions before: {permissions}")
-    permissions = [p for p in permissions if p.value_name != user.username]
+    permissions = [p for p in permissions if p.value_id != user.id]
     permissions = project_api.update_permissions(permissions)
     log.info(f"Permissions after: {permissions}")
 
 
-@pytest.mark.skip("not available in mk2 at the moment")
-def test_get_project_permissions(client):
+#@pytest.mark.skip("not available in mk2 at the moment")
+def test_get_project_permissions(client, keycloak_client):
     jms_api = JmsApi(client)
     proj_name = "test_jms_get_permissions_test"
 
@@ -75,7 +75,8 @@ def test_get_project_permissions(client):
 
     perms = [p for p in project_api.get_permissions() if p.permission_type == "user"]
     assert len(perms) == 1
-    assert perms[0].value_name == client.username
+    kc_user = keycloak_client.get_user(user_id=perms[0].value_id)
+    assert kc_user["username"] == client.username
     assert perms[0].role == "admin"
     assert perms[0].permission_type == "user"
 
@@ -83,7 +84,7 @@ def test_get_project_permissions(client):
     jms_api.delete_project(proj)
 
 
-@pytest.mark.skip("not available in mk2 at the moment")
+#@pytest.mark.skip("not available in mk2 at the moment")
 def test_modify_project_permissions(client, keycloak_client):
     user_credentials = {
         "user1": {"username": f"testuser-{uuid.uuid4().hex[:8]}", "password": "test"},
@@ -145,8 +146,9 @@ def test_modify_project_permissions(client, keycloak_client):
     grant_permissions(project_api, user2)
     permissions = [p for p in project_api.get_permissions() if p.permission_type == "user"]
     assert len(permissions) == 2
-    assert user1.username in [x.value_name for x in permissions]
-    assert user2.username in [x.value_name for x in permissions]
+    kc_usernames = [keycloak_client.get_user(user_id=x.value_id)["username"] for x in permissions]
+    assert user1.username in kc_usernames
+    assert user2.username in kc_usernames
 
     # user1 appends a job definition to the project
     client2 = Client(
@@ -167,8 +169,9 @@ def test_modify_project_permissions(client, keycloak_client):
     remove_permissions(project_api, user2)
     permissions = [p for p in project_api.get_permissions() if p.permission_type == "user"]
     assert len(permissions) == 1
-    assert user1.username in [x.value_name for x in permissions]
-    assert user2.username not in [x.value_name for x in permissions]
+    kc_usernames = [keycloak_client.get_user(user_id=x.value_id)["username"] for x in permissions]
+    assert user1.username in kc_usernames
+    assert user2.username not in kc_usernames
 
     # user2 reconnects and tries to get the project
     client2 = Client(
