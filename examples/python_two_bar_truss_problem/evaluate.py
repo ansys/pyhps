@@ -1,4 +1,4 @@
-# Copyright (C) 2022 - 2026 ANSYS, Inc. and/or its affiliates.
+# Copyright (C) 2022 - 2026 Synopsys, Inc. and ANSYS, Inc. All rights reserved.
 # SPDX-License-Identifier: MIT
 #
 #
@@ -20,30 +20,28 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-# ruff: noqa
-
 import json
 import math
 import os
 import sys
 
 
-def weight(P, d, t, B, H, rho, E):
+def weight(P, d, t, B, H, rho, E):  # noqa: N803
     w = 2 * math.pi * rho * d * t * math.sqrt((0.5 * B) ** 2 + H**2)
     return w
 
 
-def stress(P, d, t, B, H, rho, E):
+def stress(P, d, t, B, H, rho, E):  # noqa: N803
     s = P * math.sqrt((0.5 * B) ** 2 + H**2) / (2 * t * math.pi * d * H)
     return s / 1000  # psi to ksi
 
 
-def buckling_stress(P, d, t, B, H, rho, E):
+def buckling_stress(P, d, t, B, H, rho, E):  # noqa: N803
     b = math.pi**2 * E * (d**2 + t**2) / (8 * ((0.5 * B) ** 2 + H**2))
     return b / 1000  # psi to ksi
 
 
-def deflection(P, d, t, B, H, rho, E):
+def deflection(P, d, t, B, H, rho, E):  # noqa: N803
     f = P * math.pow((0.5 * B) ** 2 + H**2, 3 / 2) / (2 * t * math.pi * d * H**2 * E)
     return f
 

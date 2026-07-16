@@ -5,15 +5,21 @@ on:
 env:
   MAIN_PYTHON_VERSION: '3.12'
 
+permissions: {}
+
 jobs:
 
   style:
     name: Code style
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          persist-credentials: false
       - name: Set up Python
-        uses: actions/setup-python@v6
+        uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6.3.0
         with:
           python-version: ${{ env.MAIN_PYTHON_VERSION }}
       - name: Install dependencies
@@ -25,8 +31,10 @@ jobs:
   doc-style:
     name: Documentation Style Check
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     steps:
       - name: PyAnsys documentation style checks
-        uses: ansys/actions/doc-style@v10.2.12
+        uses: ansys/actions/doc-style@v10.3.3
         with:
           token: ${{ secrets.GITHUB_TOKEN }}

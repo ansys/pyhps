@@ -1,4 +1,4 @@
-# Copyright (C) 2022 - 2026 ANSYS, Inc. and/or its affiliates.
+# Copyright (C) 2022 - 2026 Synopsys, Inc. and ANSYS, Inc. All rights reserved.
 # SPDX-License-Identifier: MIT
 #
 #
@@ -19,15 +19,6 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
-
-# /// script
-# requires-python = "==3.10"
-# dependencies = [
-#     "ansys-hps-client>=0.11",
-#     "packaging",
-#     "typer",
-# ]
-# ///
 
 import logging
 import os
@@ -231,7 +222,10 @@ def main(client, num_jobs, num_modes, target_frequency, split_tasks):
     if split_tasks:
         task_def_geometry = TaskDefinition(
             name="geometry",
-            software_requirements=[Software(name="uv"), Software(name="Ansys GeometryService")],
+            software_requirements=[
+                Software(name="uv"),
+                Software(name="Ansys GeometryService", version="2026 R1"),
+            ],
             resource_requirements=ResourceRequirements(
                 num_cores=1.0,
                 memory=2 * 1024 * 1024 * 1024,  # 2 GB
@@ -239,7 +233,7 @@ def main(client, num_jobs, num_modes, target_frequency, split_tasks):
             ),
             execution_level=0,
             max_execution_time=500.0,
-            num_trials=3,
+            num_trials=1,
             use_execution_script=True,
             execution_script_id=file_ids["exec_script"],
             input_file_ids=[file_ids["eval_geometry"]],
@@ -251,7 +245,10 @@ def main(client, num_jobs, num_modes, target_frequency, split_tasks):
         )
         task_def_mesh = TaskDefinition(
             name="mesh",
-            software_requirements=[Software(name="uv"), Software(name="Ansys Prime Server")],
+            software_requirements=[
+                Software(name="uv"),
+                Software(name="Ansys Prime Server", version="2026 R1"),
+            ],
             resource_requirements=ResourceRequirements(
                 num_cores=1.0,
                 memory=8 * 1024 * 1024 * 1024,  # 8 GB
@@ -259,7 +256,7 @@ def main(client, num_jobs, num_modes, target_frequency, split_tasks):
             ),
             execution_level=1,
             max_execution_time=500.0,
-            num_trials=3,
+            num_trials=1,
             use_execution_script=True,
             execution_script_id=file_ids["exec_script"],
             input_file_ids=[file_ids["eval_mesh"], file_ids["cantilever_geometry"]],
@@ -274,7 +271,7 @@ def main(client, num_jobs, num_modes, target_frequency, split_tasks):
             name="mapdl",
             software_requirements=[
                 Software(name="uv"),
-                Software(name="Ansys Mechanical APDL", version="2025 R2"),
+                Software(name="Ansys Mechanical APDL", version="2026 R1"),
             ],
             resource_requirements=ResourceRequirements(
                 num_cores=2.0,
@@ -284,7 +281,7 @@ def main(client, num_jobs, num_modes, target_frequency, split_tasks):
             ),
             execution_level=2,
             max_execution_time=500.0,
-            num_trials=3,
+            num_trials=1,
             use_execution_script=True,
             execution_script_id=file_ids["exec_script"],
             input_file_ids=[file_ids["eval_mapdl"], file_ids["cantilever_mesh"]],
@@ -301,9 +298,9 @@ def main(client, num_jobs, num_modes, target_frequency, split_tasks):
             name="combined",
             software_requirements=[
                 Software(name="uv"),
-                Software(name="Ansys GeometryService"),
-                Software(name="Ansys Prime Server"),
-                Software(name="Ansys Mechanical APDL", version="2025 R2"),
+                Software(name="Ansys GeometryService", version="2026 R1"),
+                Software(name="Ansys Prime Server", version="2026 R1"),
+                Software(name="Ansys Mechanical APDL", version="2026 R1"),
             ],
             resource_requirements=ResourceRequirements(
                 num_cores=2.0,
@@ -313,7 +310,7 @@ def main(client, num_jobs, num_modes, target_frequency, split_tasks):
             ),
             execution_level=0,
             max_execution_time=1200.0,
-            num_trials=3,
+            num_trials=1,
             use_execution_script=True,
             execution_script_id=file_ids["exec_script"],
             input_file_ids=[file_ids["eval_combined"]],

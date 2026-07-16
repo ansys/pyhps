@@ -7,22 +7,33 @@ on:
 env:
   MAIN_PYTHON_VERSION: '3.12'
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions: {}
+
 jobs:
 
   update-models:
     name: Update models
     runs-on: ubuntu-latest
+    permissions:
+      contents: write       # Required to push the auto-update branch
+      pull-requests: write  # Required to open the auto-update pull request
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          persist-credentials: false
 
       - name: Set up Python
-        uses: actions/setup-python@v6
+        uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6.3.0
         with:
           python-version: ${{ env.MAIN_PYTHON_VERSION }}
 
       - name: Start HPS services
         id: hps-services
-        uses: ansys/pyhps/.github/actions/hps_services@main
+        uses: ./.github/actions/hps_services
         with:
           token: ${{ secrets.PYANSYS_CI_BOT_TOKEN }}
           ghcr-username: ${{ secrets.PYANSYS_CI_BOT_USERNAME }}
@@ -41,7 +52,7 @@ jobs:
 
       - name: "Create PR if changes detected"
         if: startsWith(github.ref, 'refs/heads/main')
-        uses: peter-evans/create-pull-request@v8
+        uses: peter-evans/create-pull-request@5f6978faf089d4d20b00c7766989d076bb2fc7f1 # v8
         with:
           title: "[Auto] Update RMS models"
           body: An update of auto-generated RMS models has been triggered either manually or by a scheduled workflow.
