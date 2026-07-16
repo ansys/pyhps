@@ -75,6 +75,7 @@ def test_get_project_permissions(client, keycloak_client):
 
     perms = [p for p in project_api.get_permissions() if p.permission_type == "user"]
     assert len(perms) == 1
+    # Note: JMS Mk2 doesn't cache user names anymore to avoid double bookkeeping
     kc_user = keycloak_client.get_user(user_id=perms[0].value_id)
     assert kc_user["username"] == client.username
     assert perms[0].role == "admin"
@@ -146,6 +147,7 @@ def test_modify_project_permissions(client, keycloak_client):
     grant_permissions(project_api, user2)
     permissions = [p for p in project_api.get_permissions() if p.permission_type == "user"]
     assert len(permissions) == 2
+    # Note: JMS Mk2 doesn't cache user names anymore to avoid double bookkeeping
     kc_usernames = [keycloak_client.get_user(user_id=x.value_id)["username"] for x in permissions]
     assert user1.username in kc_usernames
     assert user2.username in kc_usernames
@@ -169,6 +171,7 @@ def test_modify_project_permissions(client, keycloak_client):
     remove_permissions(project_api, user2)
     permissions = [p for p in project_api.get_permissions() if p.permission_type == "user"]
     assert len(permissions) == 1
+    # Note: JMS Mk2 doesn't cache user names anymore to avoid double bookkeeping
     kc_usernames = [keycloak_client.get_user(user_id=x.value_id)["username"] for x in permissions]
     assert user1.username in kc_usernames
     assert user2.username not in kc_usernames
