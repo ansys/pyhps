@@ -24,8 +24,6 @@ import logging
 import time
 import uuid
 
-import pytest
-
 from ansys.hps.client import Client
 from ansys.hps.client.auth import AuthApi, User
 from ansys.hps.client.exceptions import ClientError
@@ -64,7 +62,7 @@ def remove_permissions(project_api: ProjectApi, user):
     log.info(f"Permissions after: {permissions}")
 
 
-#@pytest.mark.skip("not available in mk2 at the moment")
+# @pytest.mark.skip("not available in mk2 at the moment")
 def test_get_project_permissions(client, keycloak_client):
     jms_api = JmsApi(client)
     proj_name = "test_jms_get_permissions_test"
@@ -85,7 +83,7 @@ def test_get_project_permissions(client, keycloak_client):
     jms_api.delete_project(proj)
 
 
-#@pytest.mark.skip("not available in mk2 at the moment")
+# @pytest.mark.skip("not available in mk2 at the moment")
 def test_modify_project_permissions(client, keycloak_client):
     user_credentials = {
         "user1": {"username": f"testuser-{uuid.uuid4().hex[:8]}", "password": "test"},
