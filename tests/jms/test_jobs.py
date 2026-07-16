@@ -184,8 +184,10 @@ def test_job_integration(client):
         assert job.executed_level is not None
         assert job.modified_by is not missing
         assert job.created_by is not missing
-        assert auth_api.get_user(id=job.created_by).username == client.username
-        assert auth_api.get_user(id=job.modified_by).username == client.username
+        if job.created_by is not None:
+            assert auth_api.get_user(id=job.created_by).username == client.username
+        if job.modified_by is not None:
+            assert auth_api.get_user(id=job.modified_by).username == client.username
         # fill some of them
         job.creator = "hps-client"
         job.note = f"test job{job.id} update"

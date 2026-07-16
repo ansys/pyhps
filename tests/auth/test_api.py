@@ -102,6 +102,7 @@ def test_get_user_permissions(client):
     assert api.user_is_admin is not None
 
 
+# @pytest.mark.skip(reason="no auth in mk2 yet")
 def test_impersonate_user(url, keycloak_client):
     """Test token exchange for impersonation, see https://www.rfc-editor.org/rfc/rfc8693.html.
 
