@@ -28,7 +28,7 @@ No password is ever entered in the terminal.
 
 Usage
 -----
-    uv run python oidc_login.py --url https://localhost:8443/hps
+    Import and call ``browser_login`` / ``refresh_tokens`` from your script.
 
 Token Storage Security:
   - keyring (preferred): System credential manager
@@ -68,15 +68,12 @@ refresh_tokens(hps_url=None, issuer=None)
     Returns updated token dict or None if refresh fails.
 """
 
-import argparse
 import base64
 import hashlib
 import http.server
 import logging
 import os
-import platform
 import secrets
-import sys
 import threading
 import urllib.parse
 import webbrowser
@@ -475,132 +472,8 @@ def save_tokens(
 
 
 def main():
-    """CLI entry point."""
-    parser = argparse.ArgumentParser(description="OIDC browser login (Authorization Code + PKCE)")
-    parser.add_argument(
-        "--url",
-        default="https://localhost:8443/hps",
-        help="Server URL (default: https://localhost:8443/hps)",
-    )
-    parser.add_argument(
-        "--issuer",
-        help="OIDC issuer URL. If not provided, defaults to HPS Keycloak issuer path",
-    )
-    parser.add_argument(
-        "--client-id",
-        help="OIDC client ID (default: rep-cli for HPS)",
-    )
-    parser.add_argument(
-        "--refresh-only",
-        action="store_true",
-        help="Refresh saved tokens without performing login. "
-        "Loads tokens from the selected storage backend and refreshes them.",
-    )
-    parser.add_argument(
-        "--no-browser",
-        action="store_true",
-        help="Print the URL instead of opening the browser automatically",
-    )
-    parser.add_argument(
-        "--save-to-disk",
-        action="store_true",
-        help="Persist tokens to disk (default: keep in memory only)",
-    )
-    parser.add_argument(
-        "--use-keyring",
-        action="store_true",
-        help="Save tokens to system keyring (Credential Manager/Keychain/Secret Service). "
-        "Requires 'keyring' package.",
-    )
-    parser.add_argument(
-        "--print-token",
-        action="store_true",
-        help="Print the access token to stdout after login (useful for scripting)",
-    )
-    parser.add_argument(
-        "--insecure",
-        action="store_true",
-        help="Disable TLS certificate verification (insecure; for local testing only)",
-    )
-    parser.add_argument(
-        "--ca-bundle",
-        help="Path to a CA bundle file to use for TLS certificate verification",
-    )
-    args = parser.parse_args()
-
-    if args.insecure and args.ca_bundle:
-        parser.error("--insecure and --ca-bundle are mutually exclusive")
-
-    verify_ssl: bool | str = False if args.insecure else args.ca_bundle or True
-
-    # Handle token refresh
-    if args.refresh_only:
-        log.info("Refreshing saved tokens...")
-        storage = "keyring" if args.use_keyring else "disk" if args.save_to_disk else "keyring"
-        new_tokens = refresh_tokens(
-            args.url if args.url != "https://localhost:8443/hps" else None,
-            issuer=args.issuer,
-            storage=storage,
-            verify_ssl=verify_ssl,
-        )
-        if new_tokens:
-            # Save refreshed tokens back
-            try:
-                save_tokens(new_tokens, new_tokens.get("hps_url", args.url), storage=storage)
-            except (ValueError, RuntimeError) as e:
-                log.error("Failed to save refreshed tokens: %s", e)
-                sys.exit(1)
-            log.info("Tokens refreshed successfully")
-            log.info(
-                "Access token expires in %ss, refresh token expires in %ss",
-                new_tokens.get("expires_in", "?"),
-                new_tokens.get("refresh_expires_in", "?"),
-            )
-            if args.print_token:
-                print(new_tokens["access_token"])
-        else:
-            log.error("Token refresh failed")
-            sys.exit(1)
-        return
-
-    # Normal login flow
-    log.info("Connecting to: %s", args.url)
-    try:
-        tokens = browser_login(
-            args.url,
-            open_browser=not args.no_browser,
-            issuer=args.issuer,
-            verify_ssl=verify_ssl,
-        )
-    except (RuntimeError, requests.exceptions.RequestException) as e:
-        log.error("Error: %s", e)
-        sys.exit(1)
-
-    # Determine storage method
-    storage = "keyring" if args.use_keyring else "disk" if args.save_to_disk else "memory"
-    try:
-        path = save_tokens(tokens, args.url, storage=storage)
-    except (ValueError, RuntimeError) as e:
-        log.error("Failed to save tokens: %s", e)
-        sys.exit(1)
-
-    if path:
-        if platform.system() == "Windows":
-            log.info("Tokens encrypted and saved to %s (DPAPI)", path)
-        else:
-            log.info("Tokens saved to %s (mode 0o600)", path)
-    elif storage == "keyring":
-        log.info("Tokens saved to system keyring")
-    else:
-        log.info("Tokens kept in memory (not persisted to disk)")
-    log.info(
-        "Access token expires in %ss, refresh token expires in %ss",
-        tokens.get("expires_in", "?"),
-        tokens.get("refresh_expires_in", "?"),
-    )
-
-    if args.print_token:
-        print(tokens["access_token"])
+    """Legacy source-module CLI entry point."""
+    raise SystemExit(1)
 
 
 if __name__ == "__main__":

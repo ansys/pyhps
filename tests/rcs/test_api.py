@@ -23,6 +23,7 @@
 import re
 import socket
 import threading
+import time
 from http.server import BaseHTTPRequestHandler, HTTPServer
 
 import portend
@@ -132,20 +133,40 @@ def test_register_instance_and_response(client, http_server, has_hps_version_le_
     )
     assert response.resource_name == f"test_service-{uid}"
 
-    url = f"https://{response.instance_url}"
-    res = requests.get(url, verify=False)
-    # Assert the instance is accessible at the registered URL
-    assert res.status_code == 200
-    assert res.text == "Hello, World!"
+    unregister_instance = UnRegisterInstance(resource_name=response.resource_name)
+    try:
+        url = f"https://{response.instance_url}"
+        res = None
+        # RCS routing can be eventually consistent; retry briefly before deciding
+        # the instance URL is not reachable in this environment.
+        for _ in range(5):
+            try:
+                res = requests.get(url, verify=False, timeout=5)
+            except requests.RequestException:
+                res = None
+            else:
+                if res.status_code == 200:
+                    break
+            time.sleep(1)
+
+        if res is None or res.status_code != 200:
+            status = "no-response" if res is None else str(res.status_code)
+            body_preview = "" if res is None else res.text[:300]
+            pytest.fail(
+                "Registered instance URL was not reachable after retries "
+                f"(status={status}, url={url}, body_preview={body_preview!r})."
+            )
+
+        # Assert the instance is accessible at the registered URL
+        assert res.text == "Hello, World!"
+    finally:
+        response = rcs_api.unregister_instance(unregister_instance)
 
     expected_response_data = {
         "message": f"Successfully unregistered {response.resource_name} "
         "from Redis. Deleted 4 keys.",
         "resource_name": response.resource_name,
     }
-    # Act
-    unregister_instance = UnRegisterInstance(resource_name=response.resource_name)
-    response = rcs_api.unregister_instance(unregister_instance)
 
     # Assert UnRegisterInstanceResponse
     assert isinstance(response, UnRegisterInstanceResponse)

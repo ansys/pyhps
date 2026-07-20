@@ -18,7 +18,6 @@ from ansys.hps.client.auth.api.oidc_login import (
     _oidc_endpoints,
     browser_login,
     load_tokens,
-    main,
     refresh_tokens,
     save_tokens,
 )
@@ -298,47 +297,3 @@ def test_browser_login_port_in_use_raises_runtime_error():
                 browser_login("https://example.com/hps")
 
 
-def test_main_browser_login_request_exception_exits(monkeypatch):
-    """main() handles RequestException from browser_login and exits with code 1."""
-    monkeypatch.setattr(
-        sys,
-        "argv",
-        ["oidc_login", "--url", "https://example.com/hps", "--insecure"],
-    )
-    with patch("ansys.hps.client.auth.api.oidc_login.browser_login") as mock_login:
-        mock_login.side_effect = requests.exceptions.ConnectionError("unreachable")
-        with pytest.raises(SystemExit) as exc_info:
-            main()
-        assert exc_info.value.code == 1
-
-
-def test_main_save_tokens_value_error_exits(monkeypatch, sample_tokens, sample_hps_url):
-    """main() handles ValueError from save_tokens and exits with code 1."""
-    monkeypatch.setattr(
-        sys,
-        "argv",
-        ["oidc_login", "--url", sample_hps_url, "--insecure"],
-    )
-    with patch("ansys.hps.client.auth.api.oidc_login.browser_login") as mock_login:
-        mock_login.return_value = sample_tokens
-        with patch("ansys.hps.client.auth.api.oidc_login.save_tokens") as mock_save:
-            mock_save.side_effect = ValueError("invalid storage")
-            with pytest.raises(SystemExit) as exc_info:
-                main()
-            assert exc_info.value.code == 1
-
-
-def test_main_refresh_only_save_tokens_error_exits(monkeypatch, sample_tokens, sample_hps_url):
-    """main() --refresh-only handles RuntimeError from save_tokens and exits with code 1."""
-    monkeypatch.setattr(
-        sys,
-        "argv",
-        ["oidc_login", "--url", sample_hps_url, "--refresh-only", "--insecure"],
-    )
-    with patch("ansys.hps.client.auth.api.oidc_login.refresh_tokens") as mock_refresh:
-        mock_refresh.return_value = sample_tokens
-        with patch("ansys.hps.client.auth.api.oidc_login.save_tokens") as mock_save:
-            mock_save.side_effect = RuntimeError("keyring unavailable")
-            with pytest.raises(SystemExit) as exc_info:
-                main()
-            assert exc_info.value.code == 1

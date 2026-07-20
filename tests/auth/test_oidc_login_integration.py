@@ -13,7 +13,6 @@
 import base64
 import hashlib
 import time
-from unittest.mock import patch
 
 import pytest
 
@@ -28,7 +27,6 @@ from ansys.hps.client.auth.api.oidc_login import (
     _oidc_endpoints,
     _pkce_pair,
     load_tokens,
-    main,
     refresh_tokens,
     save_tokens,
 )
@@ -423,58 +421,3 @@ class TestOidcHelperFunctions:
         assert result is True
 
 
-class TestMainEntryPoint:
-    """Test main() CLI entry point with the real backend (no browser)."""
-
-    def test_main_refresh_only_with_disk_storage(self, url, initial_tokens, temp_token_file):
-        """Test main() --refresh-only successfully refreshes tokens from disk."""
-        save_tokens(initial_tokens, url, storage="disk")
-
-        with patch(
-            "sys.argv",
-            ["oidc_login", "--url", url, "--refresh-only", "--save-to-disk", "--insecure"],
-        ):
-            main()  # Should not raise
-
-    def test_main_refresh_only_print_token(self, url, initial_tokens, temp_token_file, capsys):
-        """Test main() --refresh-only with --print-token writes access token to stdout."""
-        save_tokens(initial_tokens, url, storage="disk")
-
-        with patch(
-            "sys.argv",
-            [
-                "oidc_login",
-                "--url",
-                url,
-                "--refresh-only",
-                "--save-to-disk",
-                "--insecure",
-                "--print-token",
-            ],
-        ):
-            main()
-
-        captured = capsys.readouterr()
-        # JWT access tokens start with eyJ (base64-encoded '{'
-        assert "eyJ" in captured.out
-
-    def test_main_refresh_only_exits_when_no_tokens(self, url, temp_token_file):
-        """Test main() --refresh-only exits with code 1 when no tokens are saved."""
-        # No tokens saved — refresh should fail
-        with patch(
-            "sys.argv",
-            ["oidc_login", "--url", url, "--refresh-only", "--save-to-disk", "--insecure"],
-        ):
-            with pytest.raises(SystemExit) as exc_info:
-                main()
-            assert exc_info.value.code == 1
-
-    def test_main_refresh_only_with_custom_url(self, url, initial_tokens, temp_token_file):
-        """Test main() --refresh-only with explicit --url argument."""
-        save_tokens(initial_tokens, url, storage="disk")
-
-        with patch(
-            "sys.argv",
-            ["oidc_login", "--url", url, "--refresh-only", "--save-to-disk", "--insecure"],
-        ):
-            main()  # Should complete without error
