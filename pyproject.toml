@@ -41,14 +41,14 @@ dependencies = [
 [project.optional-dependencies]
 tests = [
     "pytest==9.1.1",
-    "coverage==7.14.2",
+    "coverage==7.15.0",
     "python-keycloak>=3.9.1,<4.0.0",
     "pytest-playwright>=0.4.0",
     "pytest-asyncio>=0.23.0"
 ]
 
 doc = [
-    "ansys-sphinx-theme==1.7.2",
+    "ansys-sphinx-theme==1.9.0",
     "autodoc_pydantic==2.2.0",
     "jupyter_sphinx==0.5.3",
     "nbsphinx==0.9.8",
@@ -69,7 +69,7 @@ build = [
     "build==1.5.0",
     "twine==6.2.0",
     "wheel",
-    "datamodel-code-generator==0.59.0"
+    "datamodel-code-generator==0.67.0"
 ]
 
 [project.urls]
