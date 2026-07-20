@@ -361,7 +361,8 @@ def browser_login(
         server = http.server.HTTPServer(("localhost", REDIRECT_PORT), _CallbackHandler)
     except OSError as e:
         raise RuntimeError(
-            f"Could not bind to localhost:{REDIRECT_PORT} for OIDC callback - port may be in use: {e}"
+            f"Could not bind to localhost:{REDIRECT_PORT} for OIDC callback"
+            f" - port may be in use: {e}"
         ) from e
     thread = threading.Thread(target=server.serve_forever, daemon=True)
     thread.start()
