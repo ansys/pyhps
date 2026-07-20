@@ -72,6 +72,7 @@ import argparse
 import base64
 import hashlib
 import http.server
+import logging
 import os
 import platform
 import secrets
@@ -94,6 +95,8 @@ REDIRECT_PORT = 19876
 REDIRECT_URI = f"http://localhost:{REDIRECT_PORT}/callback"
 DEFAULT_KEYRING_SERVICE_NAME = _token_storage.DEFAULT_KEYRING_SERVICE_NAME
 KEYRING_SERVICE_ENV_VAR = _token_storage.KEYRING_SERVICE_ENV_VAR
+
+log = logging.getLogger(__name__)
 
 
 def _maybe_disable_insecure_request_warning(verify_ssl: bool | str) -> None:
@@ -201,18 +204,18 @@ def refresh_tokens(
     # Load saved tokens from the selected backend only.
     tokens = load_tokens(storage=storage, service_name=service_name)
     if not tokens:
-        print("No saved tokens found. Run login first.", file=sys.stderr)
+        log.warning("No saved tokens found. Run login first.")
         return None
 
     if not hps_url:
         hps_url = tokens.get("hps_url")
     if not hps_url:
-        print("HPS URL not found in saved tokens. Please provide --url.", file=sys.stderr)
+        log.warning("HPS URL not found in saved tokens. Please provide --url.")
         return None
 
     refresh_token = tokens.get("refresh_token")
     if not refresh_token:
-        print("No refresh_token available. Re-login required.", file=sys.stderr)
+        log.warning("No refresh_token available. Re-login required.")
         return None
 
     try:
@@ -236,7 +239,7 @@ def refresh_tokens(
         )
         return new_tokens
     except Exception as e:
-        print(f"Token refresh failed: {e}", file=sys.stderr)
+        log.error("Token refresh failed: %s", e)
         return None
 
 
@@ -265,9 +268,12 @@ def _oidc_endpoints(hps_url: str, issuer: str | None = None, verify_ssl: bool | 
 
     discovery_url = f"{issuer.rstrip('/')}/.well-known/openid-configuration"
     _maybe_disable_insecure_request_warning(verify_ssl)
-    r = requests.get(discovery_url, verify=verify_ssl, timeout=10)
-    r.raise_for_status()
-    cfg = r.json()
+    try:
+        r = requests.get(discovery_url, verify=verify_ssl, timeout=10)
+        r.raise_for_status()
+        cfg = r.json()
+    except requests.exceptions.RequestException as e:
+        raise RuntimeError(f"Failed to fetch OIDC discovery document from {discovery_url}: {e}") from e
     return {
         "authorization_endpoint": cfg["authorization_endpoint"],
         "token_endpoint": cfg["token_endpoint"],
@@ -353,7 +359,12 @@ def browser_login(
         def log_message(self, *args):
             pass  # suppress server log noise
 
-    server = http.server.HTTPServer(("localhost", REDIRECT_PORT), _CallbackHandler)
+    try:
+        server = http.server.HTTPServer(("localhost", REDIRECT_PORT), _CallbackHandler)
+    except OSError as e:
+        raise RuntimeError(
+            f"Could not bind to localhost:{REDIRECT_PORT} for OIDC callback - port may be in use: {e}"
+        ) from e
     thread = threading.Thread(target=server.serve_forever, daemon=True)
     thread.start()
 
@@ -369,20 +380,15 @@ def browser_login(
     }
     auth_url = endpoints["authorization_endpoint"] + "?" + urllib.parse.urlencode(auth_params)
 
-    print()
-    print("=" * 60)
-    print("  Opening browser for HPS login...")
-    print()
-    print(f"  URL: {auth_url}")
-    print("=" * 60)
-    print()
+    log.info("Opening browser for HPS login...")
+    log.info("URL: %s", auth_url)
 
     if open_browser:
         try:
             webbrowser.open(auth_url)
         except Exception:
-            print("  (Could not open browser automatically - copy the URL above)")
-    print("Waiting for browser login", end="", flush=True)
+            log.warning("Could not open browser automatically - copy the URL above: %s", auth_url)
+    log.info("Waiting for browser login...")
 
     # ── Wait for callback (up to 5 minutes) ──────────────────────────────────
     signalled = event.wait(timeout=300)
@@ -399,22 +405,25 @@ def browser_login(
     if result.get("state") != state:
         raise RuntimeError("State mismatch - possible CSRF. Aborting.")
 
-    print(" done")
+    log.info("Browser login complete")
 
     # ── Exchange code for tokens ──────────────────────────────────────────────
-    token_resp = requests.post(
-        endpoints["token_endpoint"],
-        data={
-            "client_id": CLIENT_ID,
-            "grant_type": "authorization_code",
-            "code": result["code"],
-            "redirect_uri": REDIRECT_URI,
-            "code_verifier": verifier,
-        },
-        verify=verify_ssl,
-        timeout=15,
-    )
-    token_resp.raise_for_status()
+    try:
+        token_resp = requests.post(
+            endpoints["token_endpoint"],
+            data={
+                "client_id": CLIENT_ID,
+                "grant_type": "authorization_code",
+                "code": result["code"],
+                "redirect_uri": REDIRECT_URI,
+                "code_verifier": verifier,
+            },
+            verify=verify_ssl,
+            timeout=15,
+        )
+        token_resp.raise_for_status()
+    except requests.exceptions.RequestException as e:
+        raise RuntimeError(f"Token exchange failed: {e}") from e
     return token_resp.json()
 
 
@@ -526,7 +535,7 @@ def main():
 
     # Handle token refresh
     if args.refresh_only:
-        print("Refreshing saved tokens...")
+        log.info("Refreshing saved tokens...")
         storage = "keyring" if args.use_keyring else "disk" if args.save_to_disk else "keyring"
         new_tokens = refresh_tokens(
             args.url if args.url != "https://localhost:8443/hps" else None,
@@ -536,21 +545,26 @@ def main():
         )
         if new_tokens:
             # Save refreshed tokens back
-            save_tokens(new_tokens, new_tokens.get("hps_url", args.url), storage=storage)
-            print("Tokens refreshed successfully")
-            print(
-                f"Access token expires in {new_tokens.get('expires_in', '?')}s, "
-                f"refresh token expires in {new_tokens.get('refresh_expires_in', '?')}s"
+            try:
+                save_tokens(new_tokens, new_tokens.get("hps_url", args.url), storage=storage)
+            except (ValueError, RuntimeError) as e:
+                log.error("Failed to save refreshed tokens: %s", e)
+                sys.exit(1)
+            log.info("Tokens refreshed successfully")
+            log.info(
+                "Access token expires in %ss, refresh token expires in %ss",
+                new_tokens.get("expires_in", "?"),
+                new_tokens.get("refresh_expires_in", "?"),
             )
             if args.print_token:
                 print(new_tokens["access_token"])
         else:
-            print("Token refresh failed", file=sys.stderr)
+            log.error("Token refresh failed")
             sys.exit(1)
         return
 
     # Normal login flow
-    print(f"Connecting to: {args.url}")
+    log.info("Connecting to: %s", args.url)
     try:
         tokens = browser_login(
             args.url,
@@ -558,26 +572,31 @@ def main():
             issuer=args.issuer,
             verify_ssl=verify_ssl,
         )
-    except RuntimeError as e:
-        print(f"\nError: {e}", file=sys.stderr)
+    except (RuntimeError, requests.exceptions.RequestException) as e:
+        log.error("Error: %s", e)
         sys.exit(1)
 
     # Determine storage method
     storage = "keyring" if args.use_keyring else "disk" if args.save_to_disk else "memory"
-    path = save_tokens(tokens, args.url, storage=storage)
+    try:
+        path = save_tokens(tokens, args.url, storage=storage)
+    except (ValueError, RuntimeError) as e:
+        log.error("Failed to save tokens: %s", e)
+        sys.exit(1)
 
     if path:
         if platform.system() == "Windows":
-            print(f"Tokens encrypted and saved to {path} (DPAPI)")
+            log.info("Tokens encrypted and saved to %s (DPAPI)", path)
         else:
-            print(f"Tokens saved to {path} (mode 0o600)")
+            log.info("Tokens saved to %s (mode 0o600)", path)
     elif storage == "keyring":
-        print("Tokens saved to system keyring")
+        log.info("Tokens saved to system keyring")
     else:
-        print("Tokens kept in memory (not persisted to disk)")
-    print(
-        f"Access token expires in {tokens.get('expires_in', '?')}s, "
-        f"refresh token expires in {tokens.get('refresh_expires_in', '?')}s"
+        log.info("Tokens kept in memory (not persisted to disk)")
+    log.info(
+        "Access token expires in %ss, refresh token expires in %ss",
+        tokens.get("expires_in", "?"),
+        tokens.get("refresh_expires_in", "?"),
     )
 
     if args.print_token:
