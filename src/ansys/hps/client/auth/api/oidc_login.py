@@ -90,7 +90,6 @@ CLIENT_ID = "rep-cli"
 REALM = "rep"
 REDIRECT_PORT = 19876
 REDIRECT_URI = f"http://localhost:{REDIRECT_PORT}/callback"
-DEFAULT_KEYRING_SERVICE_NAME = _token_storage.DEFAULT_KEYRING_SERVICE_NAME
 KEYRING_SERVICE_ENV_VAR = _token_storage.KEYRING_SERVICE_ENV_VAR
 
 log = logging.getLogger(__name__)
