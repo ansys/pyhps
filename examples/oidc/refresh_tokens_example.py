@@ -26,7 +26,12 @@ Demonstrates how to refresh tokens using the refresh_token grant for an
 explicitly selected storage backend.
 """
 
+import logging
+
 from ansys.hps.client.auth.api.oidc_login import load_tokens, refresh_tokens, save_tokens
+
+
+log = logging.getLogger(__name__)
 
 
 def main():
@@ -38,10 +43,10 @@ def main():
     current_tokens = load_tokens(storage=storage_mode)
 
     if not current_tokens:
-        print(f"No saved tokens found in {storage_mode} storage. Please run login first.")
+        log.info("No saved tokens found in %s storage. Please run login first.", storage_mode)
         return
 
-    print("Refreshing tokens...")
+    log.info("Refreshing tokens...")
 
     # Refresh the tokens from the same selected backend
     new_tokens = refresh_tokens(
@@ -50,20 +55,26 @@ def main():
     )
 
     if not new_tokens:
-        print("Token refresh failed. You may need to login again.")
+        log.info("Token refresh failed. You may need to login again.")
         return
 
     # Save refreshed tokens back to the same storage backend
     result = save_tokens(new_tokens, new_tokens.get("hps_url"), storage=storage_mode)
 
     if storage_mode == "keyring":
-        print("New tokens saved to system keyring")
+        log.info("New tokens saved to system keyring")
     else:
-        print(f"New tokens saved to disk at: {result}")
+        log.info("New tokens saved to disk at: %s", result)
 
-    print(f"New token expires in: {new_tokens.get('expires_in')} seconds")
-    print(f"New refresh token expires in: {new_tokens.get('refresh_expires_in')} seconds")
+    log.info("New token expires in: %s seconds", new_tokens.get("expires_in"))
+    log.info("New refresh token expires in: %s seconds", new_tokens.get("refresh_expires_in"))
 
 
 if __name__ == "__main__":
+    logging.basicConfig(level=logging.INFO, format="%(message)s")
     main()
+
+
+
+
+

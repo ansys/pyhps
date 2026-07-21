@@ -31,8 +31,13 @@ This example also demonstrates creating ``Client`` with
 to disk across runs. Access tokens remain memory-only.
 """
 
+import logging
+
 from ansys.hps.client import Client
 from ansys.hps.client.auth.api.oidc_login import browser_login, save_tokens
+
+
+log = logging.getLogger(__name__)
 
 
 def main():
@@ -54,12 +59,13 @@ def main():
         token_storage=storage_mode,
     )
 
-    print(f"Tokens saved to: {token_file}")
-    print("Client token_storage is set to 'disk' for persistent refresh updates")
-    print(f"Token Expires In: {tokens.get('expires_in')} seconds")
+    log.info("Tokens saved to: %s", token_file)
+    log.info("Client token_storage is set to 'disk' for persistent refresh updates")
+    log.info("Token Expires In: %s seconds", tokens.get("expires_in"))
 
     return tokens
 
 
 if __name__ == "__main__":
+    logging.basicConfig(level=logging.INFO, format="%(message)s")
     main()

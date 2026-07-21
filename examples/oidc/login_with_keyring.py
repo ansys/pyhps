@@ -34,8 +34,13 @@ This example also demonstrates creating ``Client`` with
 to keyring across runs. Access tokens remain memory-only.
 """
 
+import logging
+
 from ansys.hps.client import Client
 from ansys.hps.client.auth.api.oidc_login import browser_login, save_tokens
+
+
+log = logging.getLogger(__name__)
 
 
 def main():
@@ -50,7 +55,7 @@ def main():
     try:
         result = save_tokens(tokens, hps_url=hps_url, storage=storage_mode)
     except RuntimeError as ex:
-        print(str(ex))
+        log.error("%s", ex)
         return None
 
     # Configure Client to persist automatic token refresh updates to keyring.
@@ -62,13 +67,14 @@ def main():
     )
 
     if result is None:
-        print("Tokens saved to system keyring")
-        print("Client token_storage is set to 'keyring' for persistent refresh updates")
+        log.info("Tokens saved to system keyring")
+        log.info("Client token_storage is set to 'keyring' for persistent refresh updates")
 
-    print(f"Token Expires In: {tokens.get('expires_in')} seconds")
+    log.info("Token Expires In: %s seconds", tokens.get("expires_in"))
 
     return tokens
 
 
 if __name__ == "__main__":
+    logging.basicConfig(level=logging.INFO, format="%(message)s")
     main()

@@ -29,12 +29,17 @@ If these tokens are passed to ``Client`` without ``token_storage``, refreshed
 tokens also remain in memory only and are not persisted across runs.
 """
 
+import logging
+
 from ansys.hps.client import Client
 from ansys.hps.client.auth.api.oidc_login import browser_login
 
 
+log = logging.getLogger(__name__)
+
+
 def main():
-    """Perform OIDC login and print the access token."""
+    """Perform OIDC login and log the access token."""
     hps_url = "https://localhost:8443/hps"
     storage_mode = "memory"
 
@@ -50,9 +55,9 @@ def main():
     )
 
     # Access token is now available
-    print(f"\nAccess Token: {tokens['access_token'][:50]}...")
-    print(f"Token Expires In: {tokens.get('expires_in')} seconds")
-    print("Client token_storage is set to 'memory' (refresh updates are in-process only)")
+    log.info("Access Token: %s...", tokens["access_token"][:50])
+    log.info("Token Expires In: %s seconds", tokens.get("expires_in"))
+    log.info("Client token_storage is set to 'memory' (refresh updates are in-process only)")
 
     # Use the access token in your API calls
     # Example: requests.get(url, headers={"Authorization": f"Bearer {tokens['access_token']}"})
@@ -61,4 +66,5 @@ def main():
 
 
 if __name__ == "__main__":
+    logging.basicConfig(level=logging.INFO, format="%(message)s")
     main()
