@@ -455,7 +455,6 @@ def _is_token_expired(tokens: dict, buffer_seconds: int = 60) -> bool:
 def _atomic_write_bytes(path: Path, data: bytes, mode: int | None = None) -> None:
     """Write bytes to disk atomically using a same-directory temporary file."""
     temp_path = path.with_name(f".{path.name}.{uuid.uuid4().hex}.tmp")
-    temp_written = False
 
     try:
         flags = os.O_WRONLY | os.O_CREAT | os.O_EXCL
@@ -468,8 +467,6 @@ def _atomic_write_bytes(path: Path, data: bytes, mode: int | None = None) -> Non
             handle.write(data)
             handle.flush()
             os.fsync(handle.fileno())
-
-        temp_written = True
         if mode is not None and platform.system() != "Windows":
             temp_path.chmod(mode)
 
@@ -488,7 +485,7 @@ def _atomic_write_bytes(path: Path, data: bytes, mode: int | None = None) -> Non
         if mode is not None and platform.system() != "Windows":
             path.chmod(mode)
     finally:
-        if temp_written and temp_path.exists():
+        if temp_path.exists():
             try:
                 temp_path.unlink()
             except OSError:
@@ -579,3 +576,4 @@ def save_tokens(
         )
 
     return _SAVE_HANDLERS[backend](tokens, hps_url, service_name)
+
