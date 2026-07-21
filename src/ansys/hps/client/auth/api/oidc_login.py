@@ -1,4 +1,4 @@
-# Copyright (C) 2022 - 2026 ANSYS, Inc. and/or its affiliates.
+# Copyright (C) 2022 - 2026 Synopsys, Inc. and ANSYS, Inc. All rights reserved.
 # SPDX-License-Identifier: MIT
 #
 #
@@ -268,7 +268,9 @@ def _oidc_endpoints(hps_url: str, issuer: str | None = None, verify_ssl: bool | 
         r.raise_for_status()
         cfg = r.json()
     except requests.exceptions.RequestException as e:
-        raise RuntimeError(f"Failed to fetch OIDC discovery document from {discovery_url}: {e}") from e
+        raise RuntimeError(
+            f"Failed to fetch OIDC discovery document from {discovery_url}: {e}"
+        ) from e
     return {
         "authorization_endpoint": cfg["authorization_endpoint"],
         "token_endpoint": cfg["token_endpoint"],
@@ -358,7 +360,8 @@ def browser_login(
         server = http.server.HTTPServer(("localhost", REDIRECT_PORT), _CallbackHandler)
     except OSError as e:
         raise RuntimeError(
-            f"Could not bind to localhost:{REDIRECT_PORT} for OIDC callback - port may be in use: {e}"
+            f"Could not bind to localhost:{REDIRECT_PORT} for OIDC callback"
+            f" - port may be in use: {e}"
         ) from e
     thread = threading.Thread(target=server.serve_forever, daemon=True)
     thread.start()
