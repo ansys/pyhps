@@ -30,7 +30,6 @@ import logging
 
 from ansys.hps.client.auth.api.oidc_login import _is_token_expired, load_tokens
 
-
 log = logging.getLogger(__name__)
 
 
@@ -70,9 +69,3 @@ def main():
 if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO, format="%(message)s")
     main()
-
-
-
-
-
-
