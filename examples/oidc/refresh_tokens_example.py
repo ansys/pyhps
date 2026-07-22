@@ -38,6 +38,7 @@ def main():
     """Refresh saved tokens."""
     # Select which backend to use: "keyring" or "disk"
     storage_mode = "keyring"
+    verify_ssl = False
 
     # Load current tokens from selected storage
     current_tokens = load_tokens(storage=storage_mode)
@@ -52,6 +53,7 @@ def main():
     new_tokens = refresh_tokens(
         hps_url=current_tokens.get("hps_url"),
         storage=storage_mode,
+        verify_ssl=verify_ssl,
     )
 
     if not new_tokens:
@@ -68,13 +70,10 @@ def main():
 
     log.info("New token expires in: %s seconds", new_tokens.get("expires_in"))
     log.info("New refresh token expires in: %s seconds", new_tokens.get("refresh_expires_in"))
+    log.info("TLS certificate verification enabled: %s", verify_ssl)
 
 
 if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO, format="%(message)s")
     main()
-
-
-
-
 

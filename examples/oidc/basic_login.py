@@ -42,9 +42,10 @@ def main():
     """Perform OIDC login and log the access token."""
     hps_url = "https://localhost:8443/hps"
     storage_mode = "memory"
+    verify_ssl = False
 
     # Perform login - opens browser for authentication
-    tokens = browser_login(hps_url=hps_url)
+    tokens = browser_login(hps_url=hps_url, verify_ssl=verify_ssl)
 
     # Configure Client with explicit in-memory refresh persistence mode.
     _ = Client(
@@ -52,11 +53,13 @@ def main():
         access_token=tokens["access_token"],
         refresh_token=tokens.get("refresh_token"),
         token_storage=storage_mode,
+        verify=verify_ssl,
     )
 
     # Access token is now available
     log.info("Access Token: %s...", tokens["access_token"][:50])
     log.info("Token Expires In: %s seconds", tokens.get("expires_in"))
+    log.info("TLS certificate verification enabled: %s", verify_ssl)
     log.info("Client token_storage is set to 'memory' (refresh updates are in-process only)")
 
     # Use the access token in your API calls

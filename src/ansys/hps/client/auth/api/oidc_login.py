@@ -94,7 +94,7 @@ REDIRECT_URI = f"http://localhost:{REDIRECT_PORT}/callback"
 log = logging.getLogger(__name__)
 
 
-def _maybe_disable_insecure_request_warning(verify_ssl: bool | str) -> None:
+def _disable_insecure_request_warning_if_verify_disabled(verify_ssl: bool | str) -> None:
     """Disable insecure request warnings only when TLS verification is disabled."""
     if verify_ssl is False:
         urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
@@ -214,7 +214,7 @@ def refresh_tokens(
         return None
 
     try:
-        _maybe_disable_insecure_request_warning(verify_ssl)
+        _disable_insecure_request_warning_if_verify_disabled(verify_ssl)
 
         # Determine auth URL from HPS server or use provided issuer
         if issuer:
@@ -262,7 +262,7 @@ def _oidc_endpoints(hps_url: str, issuer: str | None = None, verify_ssl: bool | 
         issuer = f"{hps_url.rstrip('/')}/auth/realms/{REALM}"
 
     discovery_url = f"{issuer.rstrip('/')}/.well-known/openid-configuration"
-    _maybe_disable_insecure_request_warning(verify_ssl)
+    _disable_insecure_request_warning_if_verify_disabled(verify_ssl)
     try:
         r = requests.get(discovery_url, verify=verify_ssl, timeout=10)
         r.raise_for_status()

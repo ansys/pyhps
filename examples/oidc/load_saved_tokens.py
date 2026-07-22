@@ -38,6 +38,7 @@ def main():
     """Load saved tokens and use them."""
     # Select which backend to load from: "keyring" or "disk"
     storage_mode = "keyring"
+    verify_ssl = False
 
     tokens = load_tokens(storage=storage_mode)
 
@@ -58,21 +59,17 @@ def main():
 
     log.info("Token is valid")
     log.info("Access Token: %s...", tokens["access_token"][:50])
+    log.info("TLS certificate verification enabled: %s", verify_ssl)
 
     # Example: Use the token in API calls
     # response = requests.get(
     #     "https://localhost:8443/hps/api/v1/projects",
     #     headers={"Authorization": f"Bearer {tokens['access_token']}"},
-    #     verify=False,
+    #     verify=verify_ssl,
     # )
 
 
 if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO, format="%(message)s")
     main()
-
-
-
-
-
 

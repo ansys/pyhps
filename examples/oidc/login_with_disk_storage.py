@@ -44,9 +44,10 @@ def main():
     """Perform OIDC login and save tokens to disk."""
     hps_url = "https://localhost:8443/hps"
     storage_mode = "disk"
+    verify_ssl = False
 
     # Perform login
-    tokens = browser_login(hps_url=hps_url)
+    tokens = browser_login(hps_url=hps_url, verify_ssl=verify_ssl)
 
     # Save tokens to disk
     token_file = save_tokens(tokens, hps_url=hps_url, storage=storage_mode)
@@ -57,9 +58,11 @@ def main():
         access_token=tokens["access_token"],
         refresh_token=tokens.get("refresh_token"),
         token_storage=storage_mode,
+        verify=verify_ssl,
     )
 
     log.info("Tokens saved to: %s", token_file)
+    log.info("TLS certificate verification enabled: %s", verify_ssl)
     log.info("Client token_storage is set to 'disk' for persistent refresh updates")
     log.info("Token Expires In: %s seconds", tokens.get("expires_in"))
 
