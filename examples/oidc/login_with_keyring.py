@@ -1,0 +1,82 @@
+# Copyright (C) 2022 - 2026 Synopsys, Inc. and ANSYS, Inc. All rights reserved.
+# SPDX-License-Identifier: MIT
+#
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
+
+"""OIDC login with system keyring storage.
+
+Demonstrates how to save refresh-token data to the system credential manager:
+- Windows: Credential Manager
+- macOS: Keychain
+- Linux: Secret Service (via python-keyring)
+
+Requires: pip install keyring
+
+This example also demonstrates creating ``Client`` with
+``token_storage=\"keyring\"`` so automatic refresh updates are persisted
+to keyring across runs. Access tokens remain memory-only.
+"""
+
+import logging
+
+from ansys.hps.client import Client
+from ansys.hps.client.auth.api.oidc_login import browser_login, save_tokens
+
+log = logging.getLogger(__name__)
+
+
+def main():
+    """Perform OIDC login and save tokens to system keyring."""
+    hps_url = "https://localhost:8443/hps"
+    storage_mode = "keyring"
+    verify_ssl = False
+
+    # Perform login
+    tokens = browser_login(hps_url=hps_url, verify_ssl=verify_ssl)
+
+    # Save tokens to system keyring (preferred storage method)
+    try:
+        result = save_tokens(tokens, hps_url=hps_url, storage=storage_mode)
+    except RuntimeError as ex:
+        log.error("%s", ex)
+        return None
+
+    # Configure Client to persist automatic token refresh updates to keyring.
+    _ = Client(
+        url=hps_url,
+        access_token=tokens["access_token"],
+        refresh_token=tokens.get("refresh_token"),
+        token_storage=storage_mode,
+        verify=verify_ssl,
+    )
+
+    if result is None:
+        log.info("Tokens saved to system keyring")
+        log.info("Client token_storage is set to 'keyring' for persistent refresh updates")
+
+    log.info("TLS certificate verification enabled: %s", verify_ssl)
+    log.info("Token Expires In: %s seconds", tokens.get("expires_in"))
+
+    return tokens
+
+
+if __name__ == "__main__":
+    logging.basicConfig(level=logging.INFO, format="%(message)s")
+    main()
