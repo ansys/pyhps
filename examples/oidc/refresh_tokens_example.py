@@ -30,7 +30,6 @@ import logging
 
 from ansys.hps.client.auth.api.oidc_login import load_tokens, refresh_tokens, save_tokens
 
-
 log = logging.getLogger(__name__)
 
 

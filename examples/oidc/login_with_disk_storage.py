@@ -36,7 +36,6 @@ import logging
 from ansys.hps.client import Client
 from ansys.hps.client.auth.api.oidc_login import browser_login, save_tokens
 
-
 log = logging.getLogger(__name__)
 
 
