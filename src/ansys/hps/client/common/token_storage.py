@@ -317,7 +317,9 @@ def _load_from_keyring(service_name: str | None = None) -> dict | None:
     try:
         import keyring  # noqa: PLC0415
     except ImportError:
-        log.warning("Could not load keyring package. Install 'keyring' to use keyring token storage.")
+        log.warning(
+            "Could not load keyring package. Install 'keyring' to use keyring token storage."
+        )
         return None
 
     service_name = _resolve_keyring_service_name(service_name)
@@ -595,6 +597,3 @@ def save_tokens(
         )
 
     return _SAVE_HANDLERS[backend](tokens, hps_url, service_name)
-
-
-
