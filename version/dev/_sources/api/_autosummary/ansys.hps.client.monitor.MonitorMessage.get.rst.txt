@@ -1,0 +1,6 @@
+get
+===
+
+.. currentmodule:: ansys.hps.client.monitor
+
+.. automethod:: MonitorMessage.get

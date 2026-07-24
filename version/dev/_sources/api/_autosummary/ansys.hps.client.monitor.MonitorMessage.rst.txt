@@ -1,0 +1,44 @@
+﻿MonitorMessage
+==============
+
+.. currentmodule:: ansys.hps.client.monitor
+
+.. autoclass:: MonitorMessage
+
+   
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+      :toctree:
+   
+      
+      
+      MonitorMessage.get
+      
+      
+      MonitorMessage.items
+      
+      
+      MonitorMessage.keys
+      
+      
+      MonitorMessage.to_dict
+      
+      
+      MonitorMessage.values
+      
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+      :toctree:
+   
+      MonitorMessage.payload
+   
+   

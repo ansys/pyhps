@@ -1,0 +1,6 @@
+list\_topics
+============
+
+.. currentmodule:: ansys.hps.client.monitor.api
+
+.. automethod:: MonitorApi.list_topics

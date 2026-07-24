@@ -1,0 +1,25 @@
+﻿ResourceRequirements
+====================
+
+.. currentmodule:: ansys.hps.client.jms
+
+.. autoclass:: ResourceRequirements
+
+   
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+      :toctree:
+   
+      
+      
+      ResourceRequirements.declared_fields
+      
+   
+   
+
+   
+   
+   

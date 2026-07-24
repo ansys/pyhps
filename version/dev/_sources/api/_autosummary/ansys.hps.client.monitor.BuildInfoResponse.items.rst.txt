@@ -1,0 +1,6 @@
+items
+=====
+
+.. currentmodule:: ansys.hps.client.monitor
+
+.. automethod:: BuildInfoResponse.items

@@ -1,0 +1,6 @@
+delete\_parameter\_definitions
+==============================
+
+.. currentmodule:: ansys.hps.client.jms.api
+
+.. automethod:: ProjectApi.delete_parameter_definitions

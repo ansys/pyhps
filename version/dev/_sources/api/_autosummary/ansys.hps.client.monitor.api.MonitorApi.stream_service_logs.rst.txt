@@ -1,0 +1,6 @@
+stream\_service\_logs
+=====================
+
+.. currentmodule:: ansys.hps.client.monitor.api
+
+.. automethod:: MonitorApi.stream_service_logs

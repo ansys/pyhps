@@ -1,0 +1,6 @@
+get\_files
+==========
+
+.. currentmodule:: ansys.hps.client.jms.api
+
+.. automethod:: ProjectApi.get_files
