@@ -26,6 +26,7 @@ one :download:`ZIP file <../../../build/pyhps_examples.zip>`.
   :hidden:
   :maxdepth: 3
 
+  ex_oidc_login
   ex_motorbike_frame
   ex_motorbike_frame_query
   ex_mapdl_tire_performance
@@ -45,6 +46,8 @@ one :download:`ZIP file <../../../build/pyhps_examples.zip>`.
 
    * - Name
      - Description
+   * - :ref:`example_oidc_login`
+     - OIDC authentication with Authorization Code + PKCE flow. Includes examples for in-memory, keyring, and disk storage with token refresh.
    * - :ref:`example_mapdl_motorbike_frame`
      - Create from scratch an HPS project consisting of an Ansys APDL beam model of a tubular steel trellis motorbike frame. This example shows how to create a parameter study and submit design points.
    * - :ref:`example_mapdl_motorbike_frame_query`
