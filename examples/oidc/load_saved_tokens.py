@@ -85,5 +85,3 @@ if __name__ == "__main__":
 
     logging.basicConfig(level=logging.INFO, format="%(message)s")
     main(storage_mode=args.storage, verify_ssl=not args.insecure)
-
-
