@@ -26,6 +26,7 @@ Demonstrates how to refresh tokens using the refresh_token grant for an
 explicitly selected storage backend.
 """
 
+import argparse
 import logging
 
 from ansys.hps.client.auth.api.oidc_login import load_tokens, refresh_tokens, save_tokens
@@ -33,12 +34,8 @@ from ansys.hps.client.auth.api.oidc_login import load_tokens, refresh_tokens, sa
 log = logging.getLogger(__name__)
 
 
-def main():
+def main(storage_mode: str, verify_ssl: bool):
     """Refresh saved tokens."""
-    # Select which backend to use: "keyring" or "disk"
-    storage_mode = "keyring"
-    verify_ssl = False
-
     # Load current tokens from selected storage
     current_tokens = load_tokens(storage=storage_mode)
 
@@ -73,5 +70,24 @@ def main():
 
 
 if __name__ == "__main__":
+    parser = argparse.ArgumentParser(
+        description="Refresh saved OIDC tokens from a selected storage backend."
+    )
+    parser.add_argument(
+        "-s",
+        "--storage",
+        default="keyring",
+        choices=["keyring", "disk"],
+        help="Token storage backend to use (default: keyring).",
+    )
+    parser.add_argument(
+        "--insecure",
+        action="store_true",
+        help="Disable TLS certificate verification for local/self-signed endpoints.",
+    )
+    args = parser.parse_args()
+
     logging.basicConfig(level=logging.INFO, format="%(message)s")
-    main()
+    main(storage_mode=args.storage, verify_ssl=not args.insecure)
+
+

@@ -29,6 +29,7 @@ If these tokens are passed to ``Client`` without ``token_storage``, refreshed
 tokens also remain in memory only and are not persisted across runs.
 """
 
+import argparse
 import logging
 
 from ansys.hps.client import Client
@@ -37,11 +38,9 @@ from ansys.hps.client.auth.api.oidc_login import browser_login
 log = logging.getLogger(__name__)
 
 
-def main():
+def main(hps_url: str, verify_ssl: bool):
     """Perform OIDC login and log the access token."""
-    hps_url = "https://localhost:8443/hps"
     storage_mode = "memory"
-    verify_ssl = False
 
     # Perform login - opens browser for authentication
     tokens = browser_login(hps_url=hps_url, verify_ssl=verify_ssl)
@@ -68,5 +67,14 @@ def main():
 
 
 if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description="Perform basic OIDC login using browser flow.")
+    parser.add_argument("-U", "--hps-url", default="https://localhost:8443/hps")
+    parser.add_argument(
+        "--insecure",
+        action="store_true",
+        help="Disable TLS certificate verification for local/self-signed endpoints.",
+    )
+    args = parser.parse_args()
+
     logging.basicConfig(level=logging.INFO, format="%(message)s")
-    main()
+    main(hps_url=args.hps_url, verify_ssl=not args.insecure)

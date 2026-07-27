@@ -26,6 +26,7 @@ Demonstrates how to load tokens from an explicitly selected storage backend
 and use them in API calls.
 """
 
+import argparse
 import logging
 
 from ansys.hps.client.auth.api.oidc_login import _is_token_expired, load_tokens
@@ -33,12 +34,8 @@ from ansys.hps.client.auth.api.oidc_login import _is_token_expired, load_tokens
 log = logging.getLogger(__name__)
 
 
-def main():
+def main(storage_mode: str, verify_ssl: bool):
     """Load saved tokens and use them."""
-    # Select which backend to load from: "keyring" or "disk"
-    storage_mode = "keyring"
-    verify_ssl = False
-
     tokens = load_tokens(storage=storage_mode)
 
     if not tokens:
@@ -69,5 +66,24 @@ def main():
 
 
 if __name__ == "__main__":
+    parser = argparse.ArgumentParser(
+        description="Load and inspect previously saved OIDC tokens from a selected backend."
+    )
+    parser.add_argument(
+        "-s",
+        "--storage",
+        default="keyring",
+        choices=["keyring", "disk"],
+        help="Token storage backend to load from (default: keyring).",
+    )
+    parser.add_argument(
+        "--insecure",
+        action="store_true",
+        help="Disable TLS certificate verification for local/self-signed endpoints.",
+    )
+    args = parser.parse_args()
+
     logging.basicConfig(level=logging.INFO, format="%(message)s")
-    main()
+    main(storage_mode=args.storage, verify_ssl=not args.insecure)
+
+
