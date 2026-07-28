@@ -175,8 +175,8 @@ def test_impersonate_user(url, keycloak_client):
     keycloak_public_key = "-----BEGIN PUBLIC KEY-----\n"
     keycloak_public_key += keycloak_openid.public_key()
     keycloak_public_key += "\n-----END PUBLIC KEY-----"
-
     options = {"verify_signature": True, "verify_aud": True, "verify_exp": True}
+
     token_info = keycloak_openid.decode_token(
         client_impersonated.access_token,
         key=keycloak_public_key,
