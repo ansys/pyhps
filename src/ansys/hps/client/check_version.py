@@ -42,6 +42,7 @@ class HpsRelease(Enum):
     v1_2_0 = "1.2.0"
     v1_3_45 = "1.3.45"
     v1_4_10 = "1.4.10"
+    v1_5_12 = "1.5.12"
 
 
 """HPS to JMS version mapping."""
@@ -51,6 +52,7 @@ JMS_VERSIONS: dict[HpsRelease, str] = {
     HpsRelease.v1_2_0: "1.1.4",
     HpsRelease.v1_3_45: "1.1.60",
     HpsRelease.v1_4_10: "1.1.180",
+    HpsRelease.v1_5_12: "1.1.225",
 }
 
 
@@ -61,11 +63,13 @@ RMS_VERSIONS: dict[HpsRelease, str] = {
     HpsRelease.v1_2_0: "1.1.10",
     HpsRelease.v1_3_45: "1.1.71",
     HpsRelease.v1_4_10: "1.2.88",
+    HpsRelease.v1_5_12: "1.2.177",
 }
 
 """HPS to RCS version mapping."""
 RCS_VERSIONS: dict[HpsRelease, str] = {
     HpsRelease.v1_4_10: "0.1.149",
+    HpsRelease.v1_5_12: "0.1.265",
 }
 
 
