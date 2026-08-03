@@ -36,3 +36,14 @@ def test_connection(url, username, password):
         jms_api_url = f"{url}/jms/api/v1"
         log.info(f"Ping {jms_api_url}")
         assert ping(session, jms_api_url)
+
+
+def test_create_session_custom_api_key_header():
+    """API-key header should support forwarding raw token values."""
+    with create_session(
+        access_token="my_api_token",
+        verify=False,
+        auth_header_name="X-API-Key",
+        auth_prefix="",
+    ) as session:
+        assert session.headers["X-API-Key"] == "my_api_token"
