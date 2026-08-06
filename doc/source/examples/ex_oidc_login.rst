@@ -47,7 +47,7 @@ Notes
 ~~~~~
 
 - Tokens are kept in memory only and are not persisted to disk
-- The token will be lost when the script exits
+- The token is lost when the script exits
 - If you pass these tokens to :class:`ansys.hps.client.Client` with default
     ``token_storage=\"memory\"``, refreshed tokens are also in-memory only
     and are not persisted across runs
@@ -153,8 +153,8 @@ it on the same computer.
 Unix/Linux
 ^^^^^^^^^^
 
-On Unix/Linux systems, the token file is created with restrictive permissions (0o600),
-readable and writable only by the owner.
+On Unix/Linux systems, the token file is created with restrictive permissions (0o600).
+Only the owner can read and write it.
 
 Notes
 ~~~~~
@@ -185,7 +185,7 @@ Code
 Usage
 ~~~~~
 
-First, save tokens using one of the login examples above. Then run this example::
+First, save tokens using one of the preceding login examples. Then run this example::
 
     cd examples/oidc
     python load_saved_tokens.py
@@ -242,7 +242,7 @@ Code
 Prerequisites
 ~~~~~~~~~~~~~
 
-You must have previously saved tokens using one of the login examples above.
+You must have previously saved tokens using one of the preceding login examples.
 
 Usage
 ~~~~~
@@ -266,7 +266,7 @@ Workflow
 2. Uses the refresh_token to obtain new tokens without user interaction
 3. Saves the new tokens back to the same selected backend
 
-This allows your application to:
+This allows your app to:
 
 - Automatically refresh tokens when they expire
 - Keep the refresh token synchronized across invocations
