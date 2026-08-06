@@ -293,6 +293,12 @@ if __name__ == "__main__":
     parser.add_argument("-U", "--url", default="https://127.0.0.1:8443/hps")
     parser.add_argument("-u", "--username", default="repuser")
     parser.add_argument("-p", "--password", default="repuser")
+    parser.add_argument(
+        "--access-token", default=None, help="Access token (alternative to username/password)."
+    )
+    parser.add_argument(
+        "--api-key", default=None, help="API key (alternative to username/password)."
+    )
     parser.add_argument("-n", "--num-jobs", type=int, default=10)
     parser.add_argument("-t", "--num-task-definitions", type=int, default=3)
     parser.add_argument("-d", "--duration", type=int, default=10)
@@ -324,7 +330,12 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     log.debug("=== HPS connection")
-    client = Client(url=args.url, username=args.username, password=args.password)
+    if args.api_key:
+        client = Client(url=args.url, api_token=args.api_key)
+    elif args.access_token:
+        client = Client(url=args.url, access_token=args.access_token)
+    else:
+        client = Client(url=args.url, username=args.username, password=args.password)
 
     try:
         main(

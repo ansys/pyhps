@@ -45,6 +45,9 @@ from .warnings import UnverifiedHTTPSRequestsWarning
 
 log = logging.getLogger(__name__)
 
+API_TOKEN_HEADER_NAME = "X-API-Key"
+API_TOKEN_AUTH_PREFIX = "ApiKey"
+
 
 class Client:
     """Provides the Python client to the HPS APIs.
@@ -56,6 +59,7 @@ class Client:
     and evaluated in the order listed:
 
     - Access token: No authentication is needed.
+    - API token: No authentication is needed.
     - Username and password: The client connects to the OAuth server and
       requests access and refresh tokens.
     - Refresh token: The client connects to the OAuth server and
@@ -83,6 +87,10 @@ class Client:
         Client secret. The default is ``None``.
     access_token : str, optional
         Access token.
+    api_token : str, optional
+        API token value used for ``X-API-Key`` header authentication.
+        For JMS APIs, the raw key is sent as ``X-API-Key: <token>``.
+        For DT APIs, the token is forwarded as ``ApiKey <token>``.
     refresh_token : str, optional
         Refresh token.
     auth_url : str, optional
@@ -172,6 +180,7 @@ class Client:
         client_id: str = "rep-cli",
         client_secret: str = None,
         access_token: str = None,
+        api_token: str = None,
         refresh_token: str = None,
         all_fields=True,
         verify: bool | str = None,
@@ -203,6 +212,7 @@ class Client:
 
         self.url = url
         self.access_token = None
+        self.api_token = None
         self.refresh_token = None
         self.username = username
         self.realm = realm
@@ -259,10 +269,13 @@ class Client:
 
         self.auth_url = auth_url
 
-        if not auth_url:
+        if not auth_url and not api_token:
             self.auth_url = determine_auth_url(url, self.verify, realm)
 
-        if access_token:
+        if api_token:
+            log.debug("Authenticate with API token")
+            self.api_token = api_token
+        elif access_token:
             log.debug("Authenticate with access token")
             self.access_token = access_token
             self.refresh_token = refresh_token
@@ -293,33 +306,43 @@ class Client:
 
             self._update_token_expiry(tokens)
 
-        parsed_username = None
-        token = {}
-        try:
-            token = jwt.decode(self.access_token, options={"verify_signature": False})
-        except Exception:
-            raise HPSError("Authentication token was invalid.") from None
+        if self.api_token is None:
+            parsed_username = None
+            token = {}
+            try:
+                token = jwt.decode(self.access_token, options={"verify_signature": False})
+            except Exception:
+                raise HPSError("Authentication token was invalid.") from None
 
-        # Try to get the standard keycloak name, then other possible valid names
-        parsed_username = self._get_username(token)
+            # Try to get the standard keycloak name, then other possible valid names
+            parsed_username = self._get_username(token)
 
-        if parsed_username is not None:
-            if self.username is not None and self.username != parsed_username:
-                raise HPSError(
-                    f"Username: '{self.username}' and "
-                    f"preferred_username: '{parsed_username}' "
-                    "from access token do not match."
-                )
-            self.username = parsed_username
+            if parsed_username is not None:
+                if self.username is not None and self.username != parsed_username:
+                    raise HPSError(
+                        f"Username: '{self.username}' and "
+                        f"preferred_username: '{parsed_username}' "
+                        "from access token do not match."
+                    )
+                self.username = parsed_username
 
-        # For externally supplied access tokens, seed expiry metadata from JWT
-        # claims so preemptive refresh can be scheduled consistently.
-        if access_token:
-            self._initialize_external_token_expiry(token)
+            # For externally supplied access tokens, seed expiry metadata from JWT
+            # claims so preemptive refresh can be scheduled consistently.
+            if access_token:
+                self._initialize_external_token_expiry(token)
+
+        auth_token = self.api_token if self.api_token is not None else self.access_token
+        auth_header_name = "Authorization"
+        auth_prefix = "Bearer"
+        if self.api_token is not None:
+            auth_header_name = API_TOKEN_HEADER_NAME
+            auth_prefix = ""
 
         self.session = create_session(
-            self.access_token,
+            auth_token,
             verify=self.verify,
+            auth_header_name=auth_header_name,
+            auth_prefix=auth_prefix,
         )
         if all_fields:
             self.session.params = {"fields": "all"}
@@ -450,7 +473,7 @@ class Client:
                     verbosity=3,
                     debug=False,
                     insecure=True,
-                    token=self.access_token,
+                    token=self._get_dt_auth_token(),
                     data_transfer_url=self.data_transfer_url,
                 )
                 self._dt_client.start()
@@ -608,6 +631,10 @@ class Client:
         Automatically refreshes the access token and
         re-sends the request in case of an unauthorized error.
         """
+        if self.api_token is not None:
+            self._unauthorized_num_retry = 0
+            return response
+
         if (
             response.status_code == 401
             and self._unauthorized_num_retry < self._unauthorized_max_retry
@@ -616,10 +643,14 @@ class Client:
             self._unauthorized_num_retry += 1
             self.refresh_access_token()
             response.request.headers.update(
-                {"Authorization": self.session.headers["Authorization"]}
+                {
+                    self._session_auth_header_name: self.session.headers[
+                        self._session_auth_header_name
+                    ]
+                }
             )
             if self._dt_client is not None:
-                self._dt_client.binary_config.update(token=self.access_token)
+                self._dt_client.binary_config.update(token=self._get_dt_auth_token())
             log.debug("Retrying request with updated access token.")
             return self.session.send(response.request)
 
@@ -628,6 +659,9 @@ class Client:
 
     def refresh_access_token(self):
         """Request a new access token."""
+        if self.api_token is not None:
+            raise HPSError("API token authentication does not support token refresh.")
+
         if self.grant_type == "client_credentials":
             # Its not recommended to give refresh tokens to client_credentials grant types
             # as per OAuth 2.0 RFC6749 Section 4.4.3, so handle these specially...
@@ -655,9 +689,35 @@ class Client:
             )
         self.access_token = tokens["access_token"]
         self.refresh_token = tokens.get("refresh_token", None)
-        self.session.headers.update({"Authorization": f"Bearer {tokens['access_token']}"})
+        self.session.headers.update(
+            {
+                self._session_auth_header_name: (
+                    f"{self._session_auth_prefix} {tokens['access_token']}"
+                )
+            }
+        )
         self._update_token_expiry(tokens)
         self.last_token_persistence_result = self._persist_refreshed_tokens(tokens)
+
+    @property
+    def _session_auth_header_name(self) -> str:
+        if self.api_token is not None:
+            return API_TOKEN_HEADER_NAME
+        return "Authorization"
+
+    @property
+    def _session_auth_prefix(self) -> str:
+        if self.api_token is not None:
+            return ""
+        return "Bearer"
+
+    def _get_dt_auth_token(self) -> str:
+        if self.api_token is not None:
+            # DT client runtime parses api-key mode from the embedded token string,
+            # so this path intentionally uses "ApiKey <token>" while JMS uses raw
+            # "X-API-Key: <token>" on the HTTP session.
+            return f"{API_TOKEN_AUTH_PREFIX} {self.api_token}"
+        return self.access_token
 
     def _persist_refreshed_tokens(self, tokens):
         """Persist refreshed tokens and return structured persistence telemetry."""
