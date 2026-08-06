@@ -44,28 +44,6 @@ When ``storage`` is ``"disk"`` or ``"keyring"``, persisted payloads contain
 refresh-token data only. Access tokens remain memory-only.
 
 Tokens can be consumed by any script that reads them.
-
-Public Functions
-----------------
-browser_login(hps_url, open_browser=True, issuer=None)
-    Run OIDC Authorization Code + PKCE flow and return token dict.
-    Opens browser for login unless open_browser=False.
-
-load_tokens(storage="keyring", service_name=None)
-    Load saved tokens from the explicitly selected storage backend.
-    For keyring loads, uses ``service_name`` or
-    ``HPS_OIDC_KEYRING_SERVICE_NAME`` to select the keyring namespace.
-    Returns None if no tokens found.
-
-save_tokens(tokens, hps_url, storage="memory", service_name=None)
-    Persist tokens to specified location (memory, disk, or keyring).
-    For disk/keyring storage, only refresh-token data is persisted.
-    Validates token schema before persistence.
-    Returns path if saved to disk, otherwise None.
-
-refresh_tokens(hps_url=None, issuer=None)
-    Refresh saved tokens using refresh_token grant.
-    Returns updated token dict or None if refresh fails.
 """
 
 import base64
@@ -88,10 +66,14 @@ from ...common import token_storage as _token_storage
 TOKEN_FILE = _token_storage.TOKEN_FILE
 CLIENT_ID = "rep-cli"
 REALM = "rep"
-REDIRECT_PORT = 19876
-REDIRECT_URI = f"http://localhost:{REDIRECT_PORT}/callback"
+REDIRECT_CALLBACK_PATH = "/callback"
 
 log = logging.getLogger(__name__)
+
+
+def _build_redirect_uri(port: int) -> str:
+    """Build localhost callback redirect URI for the given port."""
+    return f"http://localhost:{port}{REDIRECT_CALLBACK_PATH}"
 
 
 def _disable_insecure_request_warning_if_verify_disabled(verify_ssl: bool | str) -> None:
@@ -293,7 +275,7 @@ def browser_login(
 ) -> dict:
     """Run the OIDC Authorization Code + PKCE flow.
 
-    Starts a temporary localhost HTTP server on port ``REDIRECT_PORT``,
+    Starts a temporary localhost HTTP server on an OS-assigned free port,
     opens the login page in the default browser, and exchanges
     the returned authorization code for tokens.
 
@@ -357,19 +339,21 @@ def browser_login(
             pass  # suppress server log noise
 
     try:
-        server = http.server.HTTPServer(("localhost", REDIRECT_PORT), _CallbackHandler)
+        # Bind to port 0 so the OS assigns a free port for this login attempt.
+        server = http.server.HTTPServer(("localhost", 0), _CallbackHandler)
     except OSError as e:
-        raise RuntimeError(
-            f"Could not bind to localhost:{REDIRECT_PORT} for OIDC callback"
-            f" - port may be in use: {e}"
-        ) from e
+        raise RuntimeError(f"Could not bind a localhost port for OIDC callback: {e}") from e
+
+    redirect_port = int(server.server_port)
+    redirect_uri = _build_redirect_uri(redirect_port)
+
     thread = threading.Thread(target=server.serve_forever, daemon=True)
     thread.start()
 
     # ── Build authorization URL ───────────────────────────────────────────────
     auth_params = {
         "client_id": CLIENT_ID,
-        "redirect_uri": REDIRECT_URI,
+        "redirect_uri": redirect_uri,
         "response_type": "code",
         "scope": "openid",
         "state": state,
@@ -413,7 +397,7 @@ def browser_login(
                 "client_id": CLIENT_ID,
                 "grant_type": "authorization_code",
                 "code": result["code"],
-                "redirect_uri": REDIRECT_URI,
+                "redirect_uri": redirect_uri,
                 "code_verifier": verifier,
             },
             verify=verify_ssl,

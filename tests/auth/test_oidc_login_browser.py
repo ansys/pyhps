@@ -36,11 +36,13 @@ except ImportError:
 from ansys.hps.client.auth.api.oidc_login import (
     CLIENT_ID,
     REALM,
-    REDIRECT_URI,
+    _build_redirect_uri,
     browser_login,
     load_tokens,
     save_tokens,
 )
+
+TEST_REDIRECT_URI = _build_redirect_uri(19876)
 
 pytestmark = [
     pytest.mark.browser,
@@ -96,7 +98,7 @@ class TestBrowserLoginFlow:
     async def test_keycloak_login_page_has_username_field(self, url, page):
         """Test that Keycloak login page contains username input field."""
         login_url = f"{url.rstrip('/')}/auth/realms/{REALM}/protocol/openid-connect/auth"
-        login_url += f"?client_id={CLIENT_ID}&redirect_uri={REDIRECT_URI}"
+        login_url += f"?client_id={CLIENT_ID}&redirect_uri={TEST_REDIRECT_URI}"
         login_url += "&response_type=code&scope=openid"
 
         try:
@@ -116,7 +118,7 @@ class TestBrowserLoginFlow:
     async def test_keycloak_login_page_has_password_field(self, url, page):
         """Test that Keycloak login page contains password input field."""
         login_url = f"{url.rstrip('/')}/auth/realms/{REALM}/protocol/openid-connect/auth"
-        login_url += f"?client_id={CLIENT_ID}&redirect_uri={REDIRECT_URI}"
+        login_url += f"?client_id={CLIENT_ID}&redirect_uri={TEST_REDIRECT_URI}"
         login_url += "&response_type=code&scope=openid"
 
         try:
@@ -136,7 +138,7 @@ class TestBrowserLoginFlow:
     async def test_login_with_valid_credentials(self, url, username, password, page):
         """Test complete login flow with valid credentials."""
         login_url = f"{url.rstrip('/')}/auth/realms/{REALM}/protocol/openid-connect/auth"
-        login_url += f"?client_id={CLIENT_ID}&redirect_uri={REDIRECT_URI}"
+        login_url += f"?client_id={CLIENT_ID}&redirect_uri={TEST_REDIRECT_URI}"
         login_url += "&response_type=code&scope=openid"
 
         try:
@@ -182,7 +184,7 @@ class TestBrowserLoginFlow:
     async def test_login_with_invalid_credentials(self, url, page):
         """Test login with invalid credentials fails gracefully."""
         login_url = f"{url.rstrip('/')}/auth/realms/{REALM}/protocol/openid-connect/auth"
-        login_url += f"?client_id={CLIENT_ID}&redirect_uri={REDIRECT_URI}"
+        login_url += f"?client_id={CLIENT_ID}&redirect_uri={TEST_REDIRECT_URI}"
         login_url += "&response_type=code&scope=openid"
 
         try:

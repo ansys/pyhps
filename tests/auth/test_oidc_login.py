@@ -309,5 +309,5 @@ def test_browser_login_port_in_use_raises_runtime_error():
             "ansys.hps.client.auth.api.oidc_login.http.server.HTTPServer"
         ) as mock_server_cls:
             mock_server_cls.side_effect = OSError("Address already in use")
-            with pytest.raises(RuntimeError, match="Could not bind to localhost"):
+            with pytest.raises(RuntimeError, match="Could not bind a localhost port"):
                 browser_login("https://example.com/hps")
