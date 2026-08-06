@@ -189,8 +189,6 @@ def refresh_tokens(
             auth_url = f"{issuer.rstrip('/')}/protocol/openid-connect/token"
         else:
             auth_url = determine_auth_url(hps_url, verify_ssl=verify_ssl, fallback_realm=REALM)
-            if not auth_url:
-                auth_url = f"{hps_url.rstrip('/')}/auth/realms/{REALM}"
 
         # Use authenticate with refresh_token grant
         new_tokens = authenticate(
@@ -435,12 +433,3 @@ def save_tokens(
         storage=storage,
         service_name=service_name,
     )
-
-
-def main():
-    """Legacy source-module CLI entry point."""
-    raise SystemExit(1)
-
-
-if __name__ == "__main__":
-    main()
