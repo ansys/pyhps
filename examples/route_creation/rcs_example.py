@@ -36,6 +36,12 @@ if __name__ == "__main__":
     parser.add_argument("-i", "--instance_url", default="https://localhost:8000")
     parser.add_argument("-u", "--username", default="repuser")
     parser.add_argument("-p", "--password", default="repuser")
+    parser.add_argument(
+        "--access-token", default=None, help="Access token (alternative to username/password)."
+    )
+    parser.add_argument(
+        "--api-key", default=None, help="API key (alternative to username/password)."
+    )
     args = parser.parse_args()
 
     logger = logging.getLogger()
@@ -43,7 +49,12 @@ if __name__ == "__main__":
 
     try:
         log.info("Connect to HPC Platform Services")
-        client = Client(url=args.url, username=args.username, password=args.password)
+        if args.api_key:
+            client = Client(url=args.url, api_token=args.api_key)
+        elif args.access_token:
+            client = Client(url=args.url, access_token=args.access_token)
+        else:
+            client = Client(url=args.url, username=args.username, password=args.password)
         log.info(f"HPS URL: {client.url}")
     except HPSError as e:
         log.error(str(e))
