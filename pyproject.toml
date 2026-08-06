@@ -69,7 +69,7 @@ build = [
     "build==1.5.0",
     "twine==6.2.0",
     "wheel",
-    "datamodel-code-generator==0.68.1"
+    "datamodel-code-generator==0.71.0"
 ]
 
 [project.urls]
