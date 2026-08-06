@@ -60,7 +60,7 @@ from pathlib import Path
 import requests
 import urllib3
 
-from ...authenticate import authenticate, determine_auth_url
+from ...authenticate import authenticate, determine_auth_url, get_discovery_data
 from ...common import token_storage as _token_storage
 
 TOKEN_FILE = _token_storage.TOKEN_FILE
@@ -229,16 +229,11 @@ def _oidc_endpoints(hps_url: str, issuer: str | None = None, verify_ssl: bool | 
         # Default to HPS Keycloak issuer
         issuer = f"{hps_url.rstrip('/')}/auth/realms/{REALM}"
 
-    discovery_url = f"{issuer.rstrip('/')}/.well-known/openid-configuration"
     _disable_insecure_request_warning_if_verify_disabled(verify_ssl)
     try:
-        r = requests.get(discovery_url, verify=verify_ssl, timeout=10)
-        r.raise_for_status()
-        cfg = r.json()
-    except requests.exceptions.RequestException as e:
-        raise RuntimeError(
-            f"Failed to fetch OIDC discovery document from {discovery_url}: {e}"
-        ) from e
+        cfg = get_discovery_data(issuer, verify=verify_ssl)
+    except RuntimeError as e:
+        raise RuntimeError(f"Failed to fetch OIDC discovery document from {issuer}: {e}") from e
     return {
         "authorization_endpoint": cfg["authorization_endpoint"],
         "token_endpoint": cfg["token_endpoint"],

@@ -28,7 +28,6 @@ import types
 from unittest.mock import MagicMock, patch
 
 import pytest
-import requests
 
 from ansys.hps.client.auth.api.oidc_login import (
     _oidc_endpoints,
@@ -283,16 +282,16 @@ def test_save_and_load_tokens_real_keyring(sample_tokens, sample_hps_url):
 
 def test_oidc_endpoints_network_error_raises_runtime_error():
     """_oidc_endpoints wraps RequestException as RuntimeError with a descriptive message."""
-    with patch("ansys.hps.client.auth.api.oidc_login.requests.get") as mock_get:
-        mock_get.side_effect = requests.exceptions.ConnectionError("Connection refused")
+    with patch("ansys.hps.client.auth.api.oidc_login.get_discovery_data") as mock_disco:
+        mock_disco.side_effect = RuntimeError("Connection refused")
         with pytest.raises(RuntimeError, match="Failed to fetch OIDC discovery document"):
             _oidc_endpoints("https://example.com/hps")
 
 
 def test_oidc_endpoints_timeout_raises_runtime_error():
     """_oidc_endpoints wraps Timeout as RuntimeError."""
-    with patch("ansys.hps.client.auth.api.oidc_login.requests.get") as mock_get:
-        mock_get.side_effect = requests.exceptions.Timeout("timed out")
+    with patch("ansys.hps.client.auth.api.oidc_login.get_discovery_data") as mock_disco:
+        mock_disco.side_effect = RuntimeError("timed out")
         with pytest.raises(RuntimeError, match="Failed to fetch OIDC discovery document"):
             _oidc_endpoints("https://example.com/hps")
 
