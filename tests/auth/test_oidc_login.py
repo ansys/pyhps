@@ -31,7 +31,6 @@ import pytest
 import requests
 
 from ansys.hps.client.auth.api.oidc_login import (
-    _load_from_disk,
     _oidc_endpoints,
     browser_login,
     load_tokens,
@@ -225,7 +224,7 @@ def test_save_and_load_tokens_real_dpapi_roundtrip(
     raw = token_file.read_bytes()
     assert raw.startswith(b"DPAPI:")
 
-    loaded = _load_from_disk()
+    loaded = load_tokens(storage="disk")
     assert loaded is not None
     assert loaded["hps_url"] == sample_hps_url
     assert loaded.get("access_token") is None

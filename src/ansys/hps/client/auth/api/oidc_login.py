@@ -82,13 +82,15 @@ def _disable_insecure_request_warning_if_verify_disabled(verify_ssl: bool | str)
         urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 
-def _load_from_disk() -> dict | None:
-    """Load tokens from disk file.
-
-    Returns token dict if available, None if file doesn't exist or can't be read.
-    """
+def _sync_token_file() -> None:
+    """Propagate module TOKEN_FILE overrides into the shared token storage module."""
     _token_storage.TOKEN_FILE = TOKEN_FILE
-    return _token_storage._load_from_disk()
+
+
+def _call_with_synced_token_file(func, *args, **kwargs):
+    """Call a token_storage function after applying this module's TOKEN_FILE override."""
+    _sync_token_file()
+    return func(*args, **kwargs)
 
 
 def load_tokens(storage: str = "keyring", service_name: str | None = None) -> dict | None:
@@ -107,8 +109,9 @@ def load_tokens(storage: str = "keyring", service_name: str | None = None) -> di
     Returns token dict if available, None if no tokens found or errors occur.
 
     """
-    _token_storage.TOKEN_FILE = TOKEN_FILE
-    return _token_storage.load_tokens(storage=storage, service_name=service_name)
+    return _call_with_synced_token_file(
+        _token_storage.load_tokens, storage=storage, service_name=service_name
+    )
 
 
 def _check_keyring_backend() -> str | None:
@@ -118,14 +121,12 @@ def _check_keyring_backend() -> str | None:
 
 def _check_disk_storage_backend() -> str | None:
     """Return error details if disk storage backend is unavailable, else None."""
-    _token_storage.TOKEN_FILE = TOKEN_FILE
-    return _token_storage._check_disk_storage_backend()
+    return _call_with_synced_token_file(_token_storage._check_disk_storage_backend)
 
 
 def _check_storage_backend(storage: str) -> str | None:
     """Return error details if storage backend is unavailable, else None."""
-    _token_storage.TOKEN_FILE = TOKEN_FILE
-    return _token_storage._check_storage_backend(storage)
+    return _call_with_synced_token_file(_token_storage._check_storage_backend, storage)
 
 
 def _is_token_expired(tokens: dict, buffer_seconds: int = 60) -> bool:
@@ -447,8 +448,8 @@ def save_tokens(
         If ``storage="keyring"`` is requested and keyring persistence fails.
 
     """
-    _token_storage.TOKEN_FILE = TOKEN_FILE
-    return _token_storage.save_tokens(
+    return _call_with_synced_token_file(
+        _token_storage.save_tokens,
         tokens=tokens,
         hps_url=hps_url,
         storage=storage,
