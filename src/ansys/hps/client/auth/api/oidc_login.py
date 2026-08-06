@@ -114,21 +114,6 @@ def load_tokens(storage: str = "keyring", service_name: str | None = None) -> di
     )
 
 
-def _check_keyring_backend() -> str | None:
-    """Return error details if keyring backend is unavailable, else None."""
-    return _token_storage._check_keyring_backend()
-
-
-def _check_disk_storage_backend() -> str | None:
-    """Return error details if disk storage backend is unavailable, else None."""
-    return _call_with_synced_token_file(_token_storage._check_disk_storage_backend)
-
-
-def _check_storage_backend(storage: str) -> str | None:
-    """Return error details if storage backend is unavailable, else None."""
-    return _call_with_synced_token_file(_token_storage._check_storage_backend, storage)
-
-
 def _is_token_expired(tokens: dict, buffer_seconds: int = 60) -> bool:
     """Check if access token is expired or close to expiry.
 

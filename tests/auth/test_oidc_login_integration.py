@@ -29,9 +29,6 @@ import pytest
 from ansys.hps.client.auth.api.oidc_login import (
     CLIENT_ID,
     REALM,
-    _check_disk_storage_backend,
-    _check_keyring_backend,
-    _check_storage_backend,
     _is_token_expired,
     _oidc_endpoints,
     _pkce_pair,
@@ -40,6 +37,11 @@ from ansys.hps.client.auth.api.oidc_login import (
     save_tokens,
 )
 from ansys.hps.client.authenticate import authenticate, determine_auth_url
+from ansys.hps.client.common.token_storage import (
+    _check_disk_storage_backend,
+    _check_keyring_backend,
+    _check_storage_backend,
+)
 
 # Mark all tests in this module as integration tests
 # These tests require a live HPS/Keycloak backend and exercise
