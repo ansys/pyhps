@@ -22,4 +22,5 @@
 * [Roberto Pastor Muela](https://github.com/RobPasMue)
 * [Ryan Wehrle](https://github.com/wehrler)
 * [Sashanka Krishna Somisetti](https://github.com/sashankh01)
+* [Simon Cross](https://github.com/sa-cross)
 * [Sudarshan Ghonge](https://github.com/sudughonge)
