@@ -79,8 +79,8 @@ def main() -> int:
     parser = argparse.ArgumentParser(
         description="Use an API token with pyhps and create a simple JMS project."
     )
-    parser.add_argument("--hps-url", default="https://localhost:8443/hps", help="Base HPS URL")
-    parser.add_argument("--api-token", required=True, help="API token value")
+    parser.add_argument("--url", default="https://localhost:8443/hps", help="Base HPS URL")
+    parser.add_argument("--api-key", required=True, help="API token value")
     parser.add_argument(
         "--insecure",
         action="store_true",
@@ -92,8 +92,8 @@ def main() -> int:
 
     try:
         _ = create_simple_project(
-            hps_url=args.hps_url,
-            api_token=args.api_token,
+            hps_url=args.url,
+            api_token=args.api_key,
             verify_ssl=not args.insecure,
         )
     except HPSError as ex:
