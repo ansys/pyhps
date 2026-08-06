@@ -305,10 +305,13 @@ def test_register_external_job(client):
 
     job = Job(
         name="Fluent Session",
-        eval_status="running",
+        eval_status="pending",
         job_definition_id=job_def.id,
     )
     job = project_api.create_jobs([job])[0]
+
+    job.eval_status = "running"
+    job = project_api.update_jobs([job])[0]
 
     # add custom data to the task
     tasks = project_api.get_tasks(job_id=job.id)
