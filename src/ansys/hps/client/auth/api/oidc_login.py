@@ -251,6 +251,7 @@ def browser_login(
     open_browser: bool = True,
     issuer: str | None = None,
     verify_ssl: bool | str = True,
+    client_id: str = CLIENT_ID,
 ) -> dict:
     """Run the OIDC Authorization Code + PKCE flow.
 
@@ -270,6 +271,8 @@ def browser_login(
         TLS certificate verification mode. Use ``True`` (default) for normal
         certificate validation, ``False`` for insecure local development only,
         or a CA bundle path.
+    client_id:
+        OIDC client ID. Defaults to ``CLIENT_ID`` (``"rep-cli"``).
 
     Returns
     -------
@@ -331,7 +334,7 @@ def browser_login(
 
     # ── Build authorization URL ───────────────────────────────────────────────
     auth_params = {
-        "client_id": CLIENT_ID,
+        "client_id": client_id,
         "redirect_uri": redirect_uri,
         "response_type": "code",
         "scope": "openid",
@@ -373,7 +376,7 @@ def browser_login(
         token_resp = requests.post(
             endpoints["token_endpoint"],
             data={
-                "client_id": CLIENT_ID,
+                "client_id": client_id,
                 "grant_type": "authorization_code",
                 "code": result["code"],
                 "redirect_uri": redirect_uri,

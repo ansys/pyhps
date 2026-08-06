@@ -99,10 +99,13 @@ def test_save_to_keyring_success(sample_tokens, sample_hps_url):
         result = _save_to_keyring(sample_tokens, sample_hps_url)
 
         assert result is True
-        assert mock_keyring.set_password.call_count >= 4
-        calls = [call[0] for call in mock_keyring.set_password.call_args_list]
-        service_names = [call[0] for call in calls]
-        assert all(s == "ansys-hps" for s in service_names)
+        assert mock_keyring.set_password.call_count == 1
+        call_args = mock_keyring.set_password.call_args[0]
+        assert call_args[0] == "ansys-hps"
+        assert call_args[1] == "tokens"
+        payload = json.loads(call_args[2])
+        assert "refresh_token" in payload
+        assert "hps_url" in payload
 
 
 def test_save_to_keyring_with_custom_service_name(sample_tokens, sample_hps_url):
@@ -152,14 +155,15 @@ def test_save_to_keyring_logs_redacted_error(sample_tokens, sample_hps_url, capl
 def test_load_from_keyring_success(sample_tokens, sample_hps_url):
     """Loading tokens from keyring succeeds."""
     mock_keyring = MagicMock()
-    mock_keyring.get_password.side_effect = lambda service, key: {
-        "hps_url": sample_hps_url,
-        "access_token": sample_tokens["access_token"],
-        "refresh_token": sample_tokens["refresh_token"],
-        "expires_in": str(sample_tokens["expires_in"]),
-        "refresh_expires_in": str(sample_tokens["refresh_expires_in"]),
-        "saved_at": str(sample_tokens["saved_at"]),
-    }.get(key)
+    stored = json.dumps(
+        {
+            "hps_url": sample_hps_url,
+            "refresh_token": sample_tokens["refresh_token"],
+            "refresh_expires_in": sample_tokens["refresh_expires_in"],
+            "saved_at": sample_tokens["saved_at"],
+        }
+    )
+    mock_keyring.get_password.return_value = stored
 
     with patch.dict(sys.modules, {"keyring": mock_keyring}):
         result = _load_from_keyring()
@@ -173,14 +177,15 @@ def test_load_from_keyring_with_custom_service_name(sample_tokens, sample_hps_ur
     """Loading from keyring uses explicitly provided service name."""
     custom_service_name = "ansys-hps-stage"
     mock_keyring = MagicMock()
-    mock_keyring.get_password.side_effect = lambda service, key: {
-        "hps_url": sample_hps_url,
-        "access_token": sample_tokens["access_token"],
-        "refresh_token": sample_tokens["refresh_token"],
-        "expires_in": str(sample_tokens["expires_in"]),
-        "refresh_expires_in": str(sample_tokens["refresh_expires_in"]),
-        "saved_at": str(sample_tokens["saved_at"]),
-    }.get(key)
+    stored = json.dumps(
+        {
+            "hps_url": sample_hps_url,
+            "refresh_token": sample_tokens["refresh_token"],
+            "refresh_expires_in": sample_tokens["refresh_expires_in"],
+            "saved_at": sample_tokens["saved_at"],
+        }
+    )
+    mock_keyring.get_password.return_value = stored
 
     with patch.dict(sys.modules, {"keyring": mock_keyring}):
         result = _load_from_keyring(service_name=custom_service_name)

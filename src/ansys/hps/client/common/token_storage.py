@@ -230,26 +230,28 @@ def _format_keyring_save_error(ex: Exception, tokens: dict | None = None) -> str
     return f"Failed to save tokens to keyring: {safe_error}"
 
 
-def _get_windows_keyring_preflight_error(tokens: dict) -> str | None:
-    """Return actionable preflight error when Windows keyring payload is too large."""
+def _get_windows_keyring_preflight_error(tokens: dict, hps_url: str = "") -> str | None:
+    """Return actionable preflight error when the combined keyring payload is too large."""
     if platform.system() != "Windows":
         return None
 
-    for field_name in ("access_token", "refresh_token"):
-        token_value = tokens.get(field_name)
-        if not token_value:
-            continue
-
-        token_size_bytes = len(str(token_value).encode("utf-8"))
-        if token_size_bytes > WINDOWS_KEYRING_MAX_SECRET_BYTES:
-            return (
-                "Windows Credential Manager rejected the token payload "
-                f"(preflight: {field_name} is {token_size_bytes} bytes; "
-                "practical CredWrite secret limit is about "
-                f"{WINDOWS_KEYRING_MAX_SECRET_BYTES} bytes). "
-                "Login succeeded but keyring persistence failed. "
-                "Use storage='disk' on Windows for DPAPI-protected persistence."
-            )
+    payload = {
+        "hps_url": hps_url,
+        "refresh_token": tokens.get("refresh_token", ""),
+        "refresh_expires_in": tokens.get("refresh_expires_in"),
+        "saved_at": 0.0,
+    }
+    payload_size_bytes = len(json.dumps(payload).encode("utf-8"))
+    if payload_size_bytes > WINDOWS_KEYRING_MAX_SECRET_BYTES:
+        return (
+            "Windows Credential Manager rejected the token payload "
+            "(preflight: refresh_token is "
+            f"{len(str(tokens.get('refresh_token', '')).encode())} bytes; "
+            "practical CredWrite secret limit is about "
+            f"{WINDOWS_KEYRING_MAX_SECRET_BYTES} bytes). "
+            "Login succeeded but keyring persistence failed. "
+            "Use storage='disk' on Windows for DPAPI-protected persistence."
+        )
 
     return None
 
@@ -279,7 +281,7 @@ def _save_to_keyring(
 
     service_name = _resolve_keyring_service_name(service_name)
 
-    preflight_error = _get_windows_keyring_preflight_error(tokens)
+    preflight_error = _get_windows_keyring_preflight_error(tokens, hps_url)
     if preflight_error:
         if error_on_failure:
             raise RuntimeError(preflight_error)
@@ -290,13 +292,13 @@ def _save_to_keyring(
         return False
 
     try:
-        keyring.set_password(service_name, "hps_url", hps_url)
-        keyring.set_password(service_name, "refresh_token", tokens["refresh_token"])
-        if tokens.get("refresh_expires_in") is not None:
-            keyring.set_password(
-                service_name, "refresh_expires_in", str(tokens["refresh_expires_in"])
-            )
-        keyring.set_password(service_name, "saved_at", str(time.time()))
+        payload = {
+            "hps_url": hps_url,
+            "refresh_token": tokens["refresh_token"],
+            "refresh_expires_in": tokens.get("refresh_expires_in"),
+            "saved_at": time.time(),
+        }
+        keyring.set_password(service_name, "tokens", json.dumps(payload))
         return True
     except Exception as ex:
         message = _format_keyring_save_error(ex, tokens)
@@ -324,17 +326,10 @@ def _load_from_keyring(service_name: str | None = None) -> dict | None:
 
     service_name = _resolve_keyring_service_name(service_name)
     try:
-        refresh_token = keyring.get_password(service_name, "refresh_token")
-        if not refresh_token:
+        json_str = keyring.get_password(service_name, "tokens")
+        if not json_str:
             return None
-
-        raw_tokens = {
-            "hps_url": keyring.get_password(service_name, "hps_url"),
-            "refresh_token": refresh_token,
-            "refresh_expires_in": keyring.get_password(service_name, "refresh_expires_in"),
-            "saved_at": keyring.get_password(service_name, "saved_at"),
-        }
-        return _normalize_loaded_tokens(raw_tokens)
+        return _normalize_loaded_tokens(json.loads(json_str))
     except Exception:
         return None
 
