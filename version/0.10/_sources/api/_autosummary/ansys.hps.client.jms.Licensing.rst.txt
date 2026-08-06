@@ -1,0 +1,28 @@
+﻿Licensing
+=========
+
+.. currentmodule:: ansys.hps.client.jms
+
+.. autoclass:: Licensing
+
+   
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+      :toctree:
+   
+      
+      
+      Licensing.declared_fields
+      
+      
+      Licensing.get
+      
+   
+   
+
+   
+   
+   

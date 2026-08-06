@@ -1,0 +1,6 @@
+﻿authenticate
+============
+
+.. currentmodule:: ansys.hps.client.authenticate
+
+.. autofunction:: authenticate

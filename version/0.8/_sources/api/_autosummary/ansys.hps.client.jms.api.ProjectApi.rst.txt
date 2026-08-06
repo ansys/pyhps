@@ -1,0 +1,176 @@
+﻿ProjectApi
+==========
+
+.. currentmodule:: ansys.hps.client.jms.api
+
+.. autoclass:: ProjectApi
+
+   
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+      :toctree:
+   
+      
+      
+      ProjectApi.archive_project
+      
+      
+      ProjectApi.copy_default_execution_script
+      
+      
+      ProjectApi.copy_job_definitions
+      
+      
+      ProjectApi.copy_jobs
+      
+      
+      ProjectApi.copy_project
+      
+      
+      ProjectApi.copy_task_definitions
+      
+      
+      ProjectApi.create_algorithms
+      
+      
+      ProjectApi.create_files
+      
+      
+      ProjectApi.create_job_definitions
+      
+      
+      ProjectApi.create_job_selections
+      
+      
+      ProjectApi.create_jobs
+      
+      
+      ProjectApi.create_license_contexts
+      
+      
+      ProjectApi.create_parameter_definitions
+      
+      
+      ProjectApi.create_parameter_mappings
+      
+      
+      ProjectApi.create_task_definitions
+      
+      
+      ProjectApi.delete_algorithms
+      
+      
+      ProjectApi.delete_files
+      
+      
+      ProjectApi.delete_job_definitions
+      
+      
+      ProjectApi.delete_job_selections
+      
+      
+      ProjectApi.delete_jobs
+      
+      
+      ProjectApi.delete_license_contexts
+      
+      
+      ProjectApi.delete_parameter_definitions
+      
+      
+      ProjectApi.delete_parameter_mappings
+      
+      
+      ProjectApi.delete_task_definitions
+      
+      
+      ProjectApi.download_file
+      
+      
+      ProjectApi.get_algorithms
+      
+      
+      ProjectApi.get_files
+      
+      
+      ProjectApi.get_job_definitions
+      
+      
+      ProjectApi.get_job_selections
+      
+      
+      ProjectApi.get_jobs
+      
+      
+      ProjectApi.get_license_contexts
+      
+      
+      ProjectApi.get_parameter_definitions
+      
+      
+      ProjectApi.get_parameter_mappings
+      
+      
+      ProjectApi.get_permissions
+      
+      
+      ProjectApi.get_task_definitions
+      
+      
+      ProjectApi.get_tasks
+      
+      
+      ProjectApi.sync_jobs
+      
+      
+      ProjectApi.update_algorithms
+      
+      
+      ProjectApi.update_files
+      
+      
+      ProjectApi.update_job_definitions
+      
+      
+      ProjectApi.update_job_selections
+      
+      
+      ProjectApi.update_jobs
+      
+      
+      ProjectApi.update_license_contexts
+      
+      
+      ProjectApi.update_parameter_definitions
+      
+      
+      ProjectApi.update_parameter_mappings
+      
+      
+      ProjectApi.update_permissions
+      
+      
+      ProjectApi.update_task_definitions
+      
+      
+      ProjectApi.update_tasks
+      
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+      :toctree:
+   
+      ProjectApi.fs_bucket_url
+      ProjectApi.fs_url
+      ProjectApi.jms_api_url
+      ProjectApi.url
+   
+   

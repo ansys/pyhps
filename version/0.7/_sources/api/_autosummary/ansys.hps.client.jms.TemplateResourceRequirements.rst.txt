@@ -1,0 +1,25 @@
+﻿TemplateResourceRequirements
+============================
+
+.. currentmodule:: ansys.hps.client.jms
+
+.. autoclass:: TemplateResourceRequirements
+
+   
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+      :toctree:
+   
+      
+      
+      TemplateResourceRequirements.declared_fields
+      
+   
+   
+
+   
+   
+   

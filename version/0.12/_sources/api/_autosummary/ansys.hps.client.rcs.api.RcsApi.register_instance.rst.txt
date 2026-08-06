@@ -1,0 +1,6 @@
+register\_instance
+==================
+
+.. currentmodule:: ansys.hps.client.rcs.api
+
+.. automethod:: RcsApi.register_instance
