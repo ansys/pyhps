@@ -206,8 +206,8 @@ def test_save_tokens_keyring_windows_preflight_rejects_oversized_token(
 
 
 @pytest.mark.skipif(
-    platform.system() != "Windows" or os.environ.get("HPS_TEST_DPAPI_INTEGRATION") != "1",
-    reason="Run on Windows with HPS_TEST_DPAPI_INTEGRATION=1 to enable DPAPI integration test.",
+    platform.system() != "Windows",
+    reason="Windows only.",
 )
 def test_save_and_load_tokens_real_dpapi_roundtrip(
     sample_tokens, sample_hps_url, tmp_path, monkeypatch
