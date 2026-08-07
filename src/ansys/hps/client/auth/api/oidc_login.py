@@ -344,14 +344,14 @@ def browser_login(
     }
     auth_url = endpoints["authorization_endpoint"] + "?" + urllib.parse.urlencode(auth_params)
 
-    log.info("Opening browser for HPS login...")
     log.info("URL: %s", auth_url)
 
     if open_browser:
+        log.info("Opening browser for HPS login...")
         try:
             webbrowser.open(auth_url)
         except Exception:
-            log.warning("Could not open browser automatically - copy the URL above: %s", auth_url)
+            log.warning("Could not open browser automatically - copy the URL above")
     log.info("Waiting for browser login...")
 
     # ── Wait for callback (up to 5 minutes) ──────────────────────────────────
