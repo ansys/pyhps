@@ -29,11 +29,7 @@ import pytest
 from ansys.hps.client.auth.api.oidc_login import (
     CLIENT_ID,
     REALM,
-    _check_disk_storage_backend,
-    _check_keyring_backend,
-    _check_storage_backend,
     _is_token_expired,
-    _load_from_disk,
     _oidc_endpoints,
     _pkce_pair,
     load_tokens,
@@ -41,11 +37,11 @@ from ansys.hps.client.auth.api.oidc_login import (
     save_tokens,
 )
 from ansys.hps.client.authenticate import authenticate, determine_auth_url
-
-# Mark all tests in this module as integration tests
-# These tests require a live HPS/Keycloak backend and exercise
-# real OIDC token refresh flows
-pytestmark = pytest.mark.integration
+from ansys.hps.client.common.token_storage import (
+    _check_disk_storage_backend,
+    _check_keyring_backend,
+    _check_storage_backend,
+)
 
 
 @pytest.fixture
@@ -383,15 +379,15 @@ class TestOidcHelperFunctions:
         assert c1 != c2
 
     def test_load_from_disk_returns_none_when_no_file(self, temp_token_file):
-        """Test _load_from_disk() returns None when token file does not exist."""
+        """Test load_tokens(storage='disk') returns None when token file does not exist."""
         # temp_token_file patched but no file written yet
-        result = _load_from_disk()
+        result = load_tokens(storage="disk")
         assert result is None
 
     def test_load_from_disk_returns_tokens_after_save(self, url, initial_tokens, temp_token_file):
-        """Test _load_from_disk() returns token data after saving to disk."""
+        """Test load_tokens(storage='disk') returns token data after saving to disk."""
         save_tokens(initial_tokens, url, storage="disk")
-        result = _load_from_disk()
+        result = load_tokens(storage="disk")
         assert result is not None
         assert "refresh_token" in result
 

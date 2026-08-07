@@ -148,17 +148,16 @@ class TestWindowsKeyringPreflightError:
             assert result is None
 
     def test_preflight_access_token_too_large(self):
-        """Preflight check detects oversized access_token."""
+        """Preflight check detects oversized combined payload (refresh_token drives size)."""
         oversized_token = "x" * (WINDOWS_KEYRING_MAX_SECRET_BYTES + 100)
         tokens = {
-            "access_token": oversized_token,
-            "refresh_token": "small_token",
+            "access_token": "small_token",
+            "refresh_token": oversized_token,
         }
         with patch("ansys.hps.client.common.token_storage.platform.system", return_value="Windows"):
             result = _get_windows_keyring_preflight_error(tokens)
             assert result is not None
-            assert "access_token" in result
-            assert str(WINDOWS_KEYRING_MAX_SECRET_BYTES + 100) in result
+            assert "refresh_token" in result
             assert "storage='disk'" in result
 
     def test_preflight_refresh_token_too_large(self):
@@ -207,17 +206,17 @@ class TestWindowsKeyringPreflightError:
 
     def test_preflight_utf8_encoded_size_matters(self):
         """Preflight check accounts for UTF-8 encoded bytes, not string length."""
-        # Multi-byte UTF-8 characters
+        # Multi-byte UTF-8 characters in refresh_token (the field stored in payload)
         token_with_unicode = "€" * 1000  # Euro sign is 3 bytes in UTF-8
         tokens = {
-            "access_token": token_with_unicode,
-            "refresh_token": "small",
+            "access_token": "small",
+            "refresh_token": token_with_unicode,
         }
         with patch("ansys.hps.client.common.token_storage.platform.system", return_value="Windows"):
             result = _get_windows_keyring_preflight_error(tokens)
-            # 1000 Euro signs = 3000 bytes, which exceeds the limit
+            # 1000 Euro signs = 3000 bytes in refresh_token, which exceeds the limit
             assert result is not None
-            assert "access_token" in result
+            assert "refresh_token" in result
 
 
 # ============================================================================

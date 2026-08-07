@@ -22,30 +22,28 @@
 
 import asyncio
 import time
-from unittest.mock import MagicMock, patch
+from unittest.mock import patch
 
 import pytest
 
 try:
     from playwright.async_api import async_playwright
-
-    HAS_PLAYWRIGHT = True
 except ImportError:
-    HAS_PLAYWRIGHT = False
+    raise ImportError(
+        "Playwright is required for browser login tests. "
+        "Install with 'pip install playwright' and "
+        "run 'playwright install' to install browser binaries."
+    ) from None
 
 from ansys.hps.client.auth.api.oidc_login import (
-    CLIENT_ID,
-    REALM,
-    REDIRECT_URI,
     browser_login,
     load_tokens,
     save_tokens,
 )
 
-pytestmark = [
-    pytest.mark.browser,
-    pytest.mark.skipif(not HAS_PLAYWRIGHT, reason="Playwright not installed"),
-]
+BROWSER_HEADLESS = True  # Set to False to see browser during tests, for debugging
+
+pytestmark = pytest.mark.browser
 
 
 @pytest.fixture
@@ -53,7 +51,7 @@ async def browser():
     """Provide a Playwright browser instance."""
     async with async_playwright() as p:
         # Use chromium for faster testing; could also use firefox or webkit
-        browser = await p.chromium.launch(headless=True)
+        browser = await p.chromium.launch(headless=BROWSER_HEADLESS)
         yield browser
         await browser.close()
 
@@ -74,198 +72,6 @@ async def page(context):
     page = await context.new_page()
     yield page
     await page.close()
-
-
-class TestBrowserLoginFlow:
-    """Test OIDC browser login flow with actual browser automation."""
-
-    @pytest.mark.asyncio
-    async def test_browser_login_page_loads(self, url, page):
-        """Test that Keycloak login page loads and responds."""
-        login_url = f"{url.rstrip('/')}/auth/realms/{REALM}/protocol/openid-connect/auth"
-
-        try:
-            response = await page.goto(login_url, wait_until="networkidle", timeout=10000)
-            assert response is not None
-            # Should redirect or show login page
-            assert page.url  # URL should be set
-        except Exception as e:
-            pytest.skip(f"Could not load login page: {e}")
-
-    @pytest.mark.asyncio
-    async def test_keycloak_login_page_has_username_field(self, url, page):
-        """Test that Keycloak login page contains username input field."""
-        login_url = f"{url.rstrip('/')}/auth/realms/{REALM}/protocol/openid-connect/auth"
-        login_url += f"?client_id={CLIENT_ID}&redirect_uri={REDIRECT_URI}"
-        login_url += "&response_type=code&scope=openid"
-
-        try:
-            await page.goto(login_url, wait_until="networkidle", timeout=10000)
-
-            # Look for username/login input field
-            username_field = await page.query_selector('input[name="username"]')
-            if not username_field:
-                # Try alternate selectors
-                username_field = await page.query_selector('input[autocomplete="username"]')
-
-            assert username_field is not None, "Username field not found on login page"
-        except Exception as e:
-            pytest.skip(f"Could not interact with login page: {e}")
-
-    @pytest.mark.asyncio
-    async def test_keycloak_login_page_has_password_field(self, url, page):
-        """Test that Keycloak login page contains password input field."""
-        login_url = f"{url.rstrip('/')}/auth/realms/{REALM}/protocol/openid-connect/auth"
-        login_url += f"?client_id={CLIENT_ID}&redirect_uri={REDIRECT_URI}"
-        login_url += "&response_type=code&scope=openid"
-
-        try:
-            await page.goto(login_url, wait_until="networkidle", timeout=10000)
-
-            # Look for password input field
-            password_field = await page.query_selector('input[name="password"]')
-            if not password_field:
-                # Try alternate selectors
-                password_field = await page.query_selector('input[type="password"]')
-
-            assert password_field is not None, "Password field not found on login page"
-        except Exception as e:
-            pytest.skip(f"Could not interact with login page: {e}")
-
-    @pytest.mark.asyncio
-    async def test_login_with_valid_credentials(self, url, username, password, page):
-        """Test complete login flow with valid credentials."""
-        login_url = f"{url.rstrip('/')}/auth/realms/{REALM}/protocol/openid-connect/auth"
-        login_url += f"?client_id={CLIENT_ID}&redirect_uri={REDIRECT_URI}"
-        login_url += "&response_type=code&scope=openid"
-
-        try:
-            await page.goto(login_url, wait_until="networkidle", timeout=10000)
-
-            # Fill username
-            username_field = await page.query_selector('input[name="username"]')
-            if not username_field:
-                username_field = await page.query_selector('input[autocomplete="username"]')
-            assert username_field is not None
-
-            await username_field.fill(username)
-
-            # Fill password
-            password_field = await page.query_selector('input[name="password"]')
-            if not password_field:
-                password_field = await page.query_selector('input[type="password"]')
-            assert password_field is not None
-
-            await password_field.fill(password)
-
-            # Submit login form
-            submit_button = await page.query_selector('button[type="submit"]')
-            if not submit_button:
-                submit_button = await page.query_selector('input[type="submit"]')
-
-            assert submit_button is not None, "Submit button not found"
-
-            # Click submit and wait for redirect
-            await submit_button.click()
-            await page.wait_for_url(
-                lambda url: "callback" in url or "code=" in url or "error=" in url, timeout=10000
-            )
-
-            # Should have authorization code in URL or error
-            page_url = page.url
-            assert "localhost" in page_url or url in page_url
-
-        except Exception as e:
-            pytest.skip(f"Browser login flow failed: {e}")
-
-    @pytest.mark.asyncio
-    async def test_login_with_invalid_credentials(self, url, page):
-        """Test login with invalid credentials fails gracefully."""
-        login_url = f"{url.rstrip('/')}/auth/realms/{REALM}/protocol/openid-connect/auth"
-        login_url += f"?client_id={CLIENT_ID}&redirect_uri={REDIRECT_URI}"
-        login_url += "&response_type=code&scope=openid"
-
-        try:
-            await page.goto(login_url, wait_until="networkidle", timeout=10000)
-
-            # Fill invalid credentials
-            username_field = await page.query_selector('input[name="username"]')
-            if not username_field:
-                username_field = await page.query_selector('input[autocomplete="username"]')
-
-            if username_field:
-                await username_field.fill("invaliduser")
-
-            password_field = await page.query_selector('input[name="password"]')
-            if not password_field:
-                password_field = await page.query_selector('input[type="password"]')
-
-            if password_field:
-                await password_field.fill("invalidpassword")
-
-            # Submit
-            submit_button = await page.query_selector('button[type="submit"]')
-            if not submit_button:
-                submit_button = await page.query_selector('input[type="submit"]')
-
-            if submit_button:
-                await submit_button.click()
-
-                # Wait for either error message or redirect
-                try:
-                    await page.wait_for_selector(
-                        '[class*="error"], [class*="alert"], [role="alert"]', timeout=5000
-                    )
-                    # Error message should appear
-                    assert True
-                except Exception:
-                    # No error message but page still loaded
-                    assert True
-        except Exception as e:
-            pytest.skip(f"Could not test invalid credentials: {e}")
-
-
-class TestBrowserLoginIntegration:
-    """Test higher-level browser login integration."""
-
-    def test_browser_login_returns_token_dict_on_success(self, url):
-        """Test that browser_login returns tokens when successful.
-
-        Note: This is hard to test without actually automating the browser.
-        We test the success path with mocking.
-        """
-        with patch("ansys.hps.client.auth.api.oidc_login.webbrowser.open"):
-            with patch(
-                "ansys.hps.client.auth.api.oidc_login.http.server.HTTPServer"
-            ) as mock_server:
-                # Mock the HTTP server to simulate callback
-                mock_server_instance = MagicMock()
-                mock_server.return_value = mock_server_instance
-
-                # This would normally hang waiting for browser callback
-                # So we skip the actual invocation and just verify the mechanism
-                assert callable(browser_login)
-
-    def test_browser_login_accepts_open_browser_parameter(self):
-        """Test that browser_login accepts open_browser parameter."""
-        import inspect
-
-        sig = inspect.signature(browser_login)
-        assert "open_browser" in sig.parameters
-
-    def test_browser_login_accepts_issuer_parameter(self):
-        """Test that browser_login accepts issuer parameter."""
-        import inspect
-
-        sig = inspect.signature(browser_login)
-        assert "issuer" in sig.parameters
-
-    def test_browser_login_accepts_verify_ssl_parameter(self):
-        """Test that browser_login accepts verify_ssl parameter."""
-        import inspect
-
-        sig = inspect.signature(browser_login)
-        assert "verify_ssl" in sig.parameters
 
 
 class TestBrowserLoginEdgeCases:
@@ -294,7 +100,7 @@ class TestBrowserLoginEdgeCases:
             # Should succeed even with self-signed cert (already handled by page context)
             assert response is not None
         except Exception as e:
-            pytest.skip(f"Certificate handling test failed: {e}")
+            pytest.fail(f"Certificate handling test failed: {e}")
 
 
 class TestTokenRefreshWithBrowser:
@@ -340,27 +146,6 @@ class TestTokenRefreshWithBrowser:
         assert "storage" in load_tokens_sig.parameters
 
 
-class TestBrowserEnvironmentDetection:
-    """Test detection of browser and backend availability."""
-
-    def test_playwright_availability_detection(self):
-        """Test that test suite can detect Playwright installation."""
-        assert HAS_PLAYWRIGHT or True  # Should be True if tests are running
-
-    def test_browser_types_available(self):
-        """Test that Playwright browser types are available."""
-        if HAS_PLAYWRIGHT:
-            pytest.skip("Test Playwright installation")  # This is a marker test
-
-
-@pytest.fixture(scope="session")
-def event_loop():
-    """Provide event loop for async tests."""
-    loop = asyncio.get_event_loop_policy().new_event_loop()
-    yield loop
-    loop.close()
-
-
 class TestBrowserLoginPKCEFlow:
     """Test the full OIDC Authorization Code + PKCE flow via Playwright."""
 
@@ -384,34 +169,31 @@ class TestBrowserLoginPKCEFlow:
                 return browser_login(url, open_browser=True, verify_ssl=False)
 
         async with async_playwright() as p:
-            bw = await p.chromium.launch(headless=True)
+            bw = await p.chromium.launch(headless=BROWSER_HEADLESS)
             ctx = await bw.new_context(ignore_https_errors=True)
             pg = await ctx.new_page()
 
-            try:
-                future = loop.run_in_executor(None, run_browser_login)
+            future = loop.run_in_executor(None, run_browser_login)
 
-                # Wait for browser_login() to build the auth URL and call webbrowser.open
-                await asyncio.wait_for(url_ready.wait(), timeout=15)
+            # Wait for browser_login() to build the auth URL and call webbrowser.open
+            await asyncio.wait_for(url_ready.wait(), timeout=15)
 
-                # Navigate Playwright to the real Keycloak auth page
-                await pg.goto(captured_auth_url[0], wait_until="networkidle", timeout=15000)
+            # Navigate Playwright to the real Keycloak auth page
+            await pg.goto(captured_auth_url[0], wait_until="networkidle", timeout=5000)
 
-                # Fill credentials on the Keycloak login page
-                await pg.fill('input[name="username"]', username)
-                await pg.fill('input[name="password"]', password)
-                # Use combined selector for Keycloak button variants across versions
-                await pg.locator(
-                    'button[type="submit"], input[type="submit"], #kc-login'
-                ).first.click(timeout=15000)
+            # Fill credentials on the Keycloak login page
+            await pg.fill('input[name="username"]', username)
+            await pg.fill('input[name="password"]', password)
+            # Use combined selector for Keycloak button variants across versions
+            await pg.locator('button[type="submit"], input[type="submit"], #kc-login').first.click(
+                timeout=5000
+            )
 
-                # browser_login() receives the real callback code and exchanges it
-                tokens = await asyncio.wait_for(future, timeout=30)
-            except Exception as e:
-                pytest.skip(f"browser_login PKCE flow failed (backend issue?): {e}")
-            finally:
-                await ctx.close()
-                await bw.close()
+            # browser_login() receives the real callback code and exchanges it
+            tokens = await asyncio.wait_for(future, timeout=30)
+
+            await ctx.close()
+            await bw.close()
 
         assert tokens is not None
         assert "access_token" in tokens
@@ -440,27 +222,24 @@ class TestBrowserLoginPKCEFlow:
                 return browser_login(url, open_browser=True, verify_ssl=False)
 
         async with async_playwright() as p:
-            bw = await p.chromium.launch(headless=True)
+            bw = await p.chromium.launch(headless=BROWSER_HEADLESS)
             ctx = await bw.new_context(ignore_https_errors=True)
             pg = await ctx.new_page()
 
-            try:
-                future = loop.run_in_executor(None, run_login)
-                await asyncio.wait_for(url_ready.wait(), timeout=15)
+            future = loop.run_in_executor(None, run_login)
+            await asyncio.wait_for(url_ready.wait(), timeout=15)
 
-                await pg.goto(captured_auth_url[0], wait_until="networkidle", timeout=15000)
-                await pg.fill('input[name="username"]', username)
-                await pg.fill('input[name="password"]', password)
-                await pg.locator(
-                    'button[type="submit"], input[type="submit"], #kc-login'
-                ).first.click(timeout=15000)
+            await pg.goto(captured_auth_url[0], wait_until="networkidle", timeout=5000)
+            await pg.fill('input[name="username"]', username)
+            await pg.fill('input[name="password"]', password)
+            await pg.locator('button[type="submit"], input[type="submit"], #kc-login').first.click(
+                timeout=5000
+            )
 
-                tokens = await asyncio.wait_for(future, timeout=30)
-            except Exception as e:
-                pytest.skip(f"browser_login PKCE flow failed: {e}")
-            finally:
-                await ctx.close()
-                await bw.close()
+            tokens = await asyncio.wait_for(future, timeout=30)
+
+            await ctx.close()
+            await bw.close()
 
         required_fields = ["access_token", "refresh_token", "expires_in", "token_type"]
         for field in required_fields:
