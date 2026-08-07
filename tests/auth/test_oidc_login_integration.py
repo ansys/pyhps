@@ -43,11 +43,6 @@ from ansys.hps.client.common.token_storage import (
     _check_storage_backend,
 )
 
-# Mark all tests in this module as integration tests
-# These tests require a live HPS/Keycloak backend and exercise
-# real OIDC token refresh flows
-pytestmark = pytest.mark.integration
-
 
 @pytest.fixture
 def temp_token_file(tmp_path, monkeypatch):

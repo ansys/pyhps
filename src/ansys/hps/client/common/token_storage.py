@@ -163,7 +163,7 @@ def _encrypt_with_dpapi(data: bytes) -> bytes:
         )
         if not result:
             raise RuntimeError("Failed to encrypt data with DPAPI")
-        ciphertext = bytes(ciphertext_blob.pbData[: ciphertext_blob.cbData])
+        ciphertext = ctypes.string_at(ciphertext_blob.pbData, ciphertext_blob.cbData)
         local_free(ciphertext_blob.pbData)
         return ciphertext
 
@@ -203,7 +203,7 @@ def _decrypt_with_dpapi(ciphertext: bytes) -> bytes:
         )
         if not result:
             raise RuntimeError("Failed to decrypt data with DPAPI")
-        plaintext = bytes(plaintext_blob.pbData[: plaintext_blob.cbData])
+        plaintext = ctypes.string_at(plaintext_blob.pbData, plaintext_blob.cbData)
         local_free(plaintext_blob.pbData)
         return plaintext
 
