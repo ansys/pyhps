@@ -28,10 +28,8 @@ import types
 from unittest.mock import MagicMock, patch
 
 import pytest
-import requests
 
 from ansys.hps.client.auth.api.oidc_login import (
-    _load_from_disk,
     _oidc_endpoints,
     browser_login,
     load_tokens,
@@ -208,8 +206,8 @@ def test_save_tokens_keyring_windows_preflight_rejects_oversized_token(
 
 
 @pytest.mark.skipif(
-    platform.system() != "Windows" or os.environ.get("HPS_TEST_DPAPI_INTEGRATION") != "1",
-    reason="Run on Windows with HPS_TEST_DPAPI_INTEGRATION=1 to enable DPAPI integration test.",
+    platform.system() != "Windows",
+    reason="Windows only.",
 )
 def test_save_and_load_tokens_real_dpapi_roundtrip(
     sample_tokens, sample_hps_url, tmp_path, monkeypatch
@@ -225,7 +223,7 @@ def test_save_and_load_tokens_real_dpapi_roundtrip(
     raw = token_file.read_bytes()
     assert raw.startswith(b"DPAPI:")
 
-    loaded = _load_from_disk()
+    loaded = load_tokens(storage="disk")
     assert loaded is not None
     assert loaded["hps_url"] == sample_hps_url
     assert loaded.get("access_token") is None
@@ -284,16 +282,16 @@ def test_save_and_load_tokens_real_keyring(sample_tokens, sample_hps_url):
 
 def test_oidc_endpoints_network_error_raises_runtime_error():
     """_oidc_endpoints wraps RequestException as RuntimeError with a descriptive message."""
-    with patch("ansys.hps.client.auth.api.oidc_login.requests.get") as mock_get:
-        mock_get.side_effect = requests.exceptions.ConnectionError("Connection refused")
+    with patch("ansys.hps.client.auth.api.oidc_login.get_discovery_data") as mock_disco:
+        mock_disco.side_effect = RuntimeError("Connection refused")
         with pytest.raises(RuntimeError, match="Failed to fetch OIDC discovery document"):
             _oidc_endpoints("https://example.com/hps")
 
 
 def test_oidc_endpoints_timeout_raises_runtime_error():
     """_oidc_endpoints wraps Timeout as RuntimeError."""
-    with patch("ansys.hps.client.auth.api.oidc_login.requests.get") as mock_get:
-        mock_get.side_effect = requests.exceptions.Timeout("timed out")
+    with patch("ansys.hps.client.auth.api.oidc_login.get_discovery_data") as mock_disco:
+        mock_disco.side_effect = RuntimeError("timed out")
         with pytest.raises(RuntimeError, match="Failed to fetch OIDC discovery document"):
             _oidc_endpoints("https://example.com/hps")
 
@@ -309,5 +307,5 @@ def test_browser_login_port_in_use_raises_runtime_error():
             "ansys.hps.client.auth.api.oidc_login.http.server.HTTPServer"
         ) as mock_server_cls:
             mock_server_cls.side_effect = OSError("Address already in use")
-            with pytest.raises(RuntimeError, match="Could not bind to localhost"):
+            with pytest.raises(RuntimeError, match="Could not bind a localhost port"):
                 browser_login("https://example.com/hps")

@@ -67,7 +67,7 @@ doc = [
 
 build = [
     "build==1.5.0",
-    "twine==6.2.0",
+    "twine==7.0.0",
     "wheel",
     "datamodel-code-generator==0.71.0"
 ]
@@ -141,7 +141,6 @@ log_cli_date_format = "%Y-%m-%d %H:%M:%S"
 addopts = "-ra -vv"
 asyncio_mode = "auto"
 markers = [
-    "integration: marks tests as integration tests (require live HPS/Keycloak backend)",
     "browser: marks tests as browser automation tests (require Playwright and live backend)",
 ]
 filterwarnings = [
