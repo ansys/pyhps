@@ -45,8 +45,8 @@ from .warnings import UnverifiedHTTPSRequestsWarning
 
 log = logging.getLogger(__name__)
 
-API_TOKEN_HEADER_NAME = "X-API-Key"
-API_TOKEN_AUTH_PREFIX = "ApiKey"
+API_TOKEN_HEADER_NAME = "X-API-Key"  # nosec B105
+API_TOKEN_AUTH_PREFIX = "ApiKey"  # nosec B105
 
 
 class Client:
