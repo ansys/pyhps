@@ -44,28 +44,6 @@ When ``storage`` is ``"disk"`` or ``"keyring"``, persisted payloads contain
 refresh-token data only. Access tokens remain memory-only.
 
 Tokens can be consumed by any script that reads them.
-
-Public Functions
-----------------
-browser_login(hps_url, open_browser=True, issuer=None)
-    Run OIDC Authorization Code + PKCE flow and return token dict.
-    Opens browser for login unless open_browser=False.
-
-load_tokens(storage="keyring", service_name=None)
-    Load saved tokens from the explicitly selected storage backend.
-    For keyring loads, uses ``service_name`` or
-    ``HPS_OIDC_KEYRING_SERVICE_NAME`` to select the keyring namespace.
-    Returns None if no tokens found.
-
-save_tokens(tokens, hps_url, storage="memory", service_name=None)
-    Persist tokens to specified location (memory, disk, or keyring).
-    For disk/keyring storage, only refresh-token data is persisted.
-    Validates token schema before persistence.
-    Returns path if saved to disk, otherwise None.
-
-refresh_tokens(hps_url=None, issuer=None)
-    Refresh saved tokens using refresh_token grant.
-    Returns updated token dict or None if refresh fails.
 """
 
 import base64
@@ -82,16 +60,20 @@ from pathlib import Path
 import requests
 import urllib3
 
-from ...authenticate import authenticate, determine_auth_url
+from ...authenticate import authenticate, determine_auth_url, get_discovery_data
 from ...common import token_storage as _token_storage
 
 TOKEN_FILE = _token_storage.TOKEN_FILE
 CLIENT_ID = "rep-cli"
 REALM = "rep"
-REDIRECT_PORT = 19876
-REDIRECT_URI = f"http://localhost:{REDIRECT_PORT}/callback"
+REDIRECT_CALLBACK_PATH = "/callback"
 
 log = logging.getLogger(__name__)
+
+
+def _build_redirect_uri(port: int) -> str:
+    """Build localhost callback redirect URI for the given port."""
+    return f"http://localhost:{port}{REDIRECT_CALLBACK_PATH}"
 
 
 def _disable_insecure_request_warning_if_verify_disabled(verify_ssl: bool | str) -> None:
@@ -100,13 +82,15 @@ def _disable_insecure_request_warning_if_verify_disabled(verify_ssl: bool | str)
         urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 
-def _load_from_disk() -> dict | None:
-    """Load tokens from disk file.
-
-    Returns token dict if available, None if file doesn't exist or can't be read.
-    """
+def _sync_token_file() -> None:
+    """Propagate module TOKEN_FILE overrides into the shared token storage module."""
     _token_storage.TOKEN_FILE = TOKEN_FILE
-    return _token_storage._load_from_disk()
+
+
+def _call_with_synced_token_file(func, *args, **kwargs):
+    """Call a token_storage function after applying this module's TOKEN_FILE override."""
+    _sync_token_file()
+    return func(*args, **kwargs)
 
 
 def load_tokens(storage: str = "keyring", service_name: str | None = None) -> dict | None:
@@ -125,25 +109,9 @@ def load_tokens(storage: str = "keyring", service_name: str | None = None) -> di
     Returns token dict if available, None if no tokens found or errors occur.
 
     """
-    _token_storage.TOKEN_FILE = TOKEN_FILE
-    return _token_storage.load_tokens(storage=storage, service_name=service_name)
-
-
-def _check_keyring_backend() -> str | None:
-    """Return error details if keyring backend is unavailable, else None."""
-    return _token_storage._check_keyring_backend()
-
-
-def _check_disk_storage_backend() -> str | None:
-    """Return error details if disk storage backend is unavailable, else None."""
-    _token_storage.TOKEN_FILE = TOKEN_FILE
-    return _token_storage._check_disk_storage_backend()
-
-
-def _check_storage_backend(storage: str) -> str | None:
-    """Return error details if storage backend is unavailable, else None."""
-    _token_storage.TOKEN_FILE = TOKEN_FILE
-    return _token_storage._check_storage_backend(storage)
+    return _call_with_synced_token_file(
+        _token_storage.load_tokens, storage=storage, service_name=service_name
+    )
 
 
 def _is_token_expired(tokens: dict, buffer_seconds: int = 60) -> bool:
@@ -221,8 +189,6 @@ def refresh_tokens(
             auth_url = f"{issuer.rstrip('/')}/protocol/openid-connect/token"
         else:
             auth_url = determine_auth_url(hps_url, verify_ssl=verify_ssl, fallback_realm=REALM)
-            if not auth_url:
-                auth_url = f"{hps_url.rstrip('/')}/auth/realms/{REALM}"
 
         # Use authenticate with refresh_token grant
         new_tokens = authenticate(
@@ -261,16 +227,11 @@ def _oidc_endpoints(hps_url: str, issuer: str | None = None, verify_ssl: bool | 
         # Default to HPS Keycloak issuer
         issuer = f"{hps_url.rstrip('/')}/auth/realms/{REALM}"
 
-    discovery_url = f"{issuer.rstrip('/')}/.well-known/openid-configuration"
     _disable_insecure_request_warning_if_verify_disabled(verify_ssl)
     try:
-        r = requests.get(discovery_url, verify=verify_ssl, timeout=10)
-        r.raise_for_status()
-        cfg = r.json()
-    except requests.exceptions.RequestException as e:
-        raise RuntimeError(
-            f"Failed to fetch OIDC discovery document from {discovery_url}: {e}"
-        ) from e
+        cfg = get_discovery_data(issuer, verify=verify_ssl)
+    except RuntimeError as e:
+        raise RuntimeError(f"Failed to fetch OIDC discovery document from {issuer}: {e}") from e
     return {
         "authorization_endpoint": cfg["authorization_endpoint"],
         "token_endpoint": cfg["token_endpoint"],
@@ -290,10 +251,11 @@ def browser_login(
     open_browser: bool = True,
     issuer: str | None = None,
     verify_ssl: bool | str = True,
+    client_id: str = CLIENT_ID,
 ) -> dict:
     """Run the OIDC Authorization Code + PKCE flow.
 
-    Starts a temporary localhost HTTP server on port ``REDIRECT_PORT``,
+    Starts a temporary localhost HTTP server on an OS-assigned free port,
     opens the login page in the default browser, and exchanges
     the returned authorization code for tokens.
 
@@ -309,6 +271,8 @@ def browser_login(
         TLS certificate verification mode. Use ``True`` (default) for normal
         certificate validation, ``False`` for insecure local development only,
         or a CA bundle path.
+    client_id:
+        OIDC client ID. Defaults to ``CLIENT_ID`` (``"rep-cli"``).
 
     Returns
     -------
@@ -357,19 +321,21 @@ def browser_login(
             pass  # suppress server log noise
 
     try:
-        server = http.server.HTTPServer(("localhost", REDIRECT_PORT), _CallbackHandler)
+        # Bind to port 0 so the OS assigns a free port for this login attempt.
+        server = http.server.HTTPServer(("localhost", 0), _CallbackHandler)
     except OSError as e:
-        raise RuntimeError(
-            f"Could not bind to localhost:{REDIRECT_PORT} for OIDC callback"
-            f" - port may be in use: {e}"
-        ) from e
+        raise RuntimeError(f"Could not bind a localhost port for OIDC callback: {e}") from e
+
+    redirect_port = int(server.server_port)
+    redirect_uri = _build_redirect_uri(redirect_port)
+
     thread = threading.Thread(target=server.serve_forever, daemon=True)
     thread.start()
 
     # ── Build authorization URL ───────────────────────────────────────────────
     auth_params = {
-        "client_id": CLIENT_ID,
-        "redirect_uri": REDIRECT_URI,
+        "client_id": client_id,
+        "redirect_uri": redirect_uri,
         "response_type": "code",
         "scope": "openid",
         "state": state,
@@ -378,14 +344,14 @@ def browser_login(
     }
     auth_url = endpoints["authorization_endpoint"] + "?" + urllib.parse.urlencode(auth_params)
 
-    log.info("Opening browser for HPS login...")
     log.info("URL: %s", auth_url)
 
     if open_browser:
+        log.info("Opening browser for HPS login...")
         try:
             webbrowser.open(auth_url)
         except Exception:
-            log.warning("Could not open browser automatically - copy the URL above: %s", auth_url)
+            log.warning("Could not open browser automatically - copy the URL above")
     log.info("Waiting for browser login...")
 
     # ── Wait for callback (up to 5 minutes) ──────────────────────────────────
@@ -410,10 +376,10 @@ def browser_login(
         token_resp = requests.post(
             endpoints["token_endpoint"],
             data={
-                "client_id": CLIENT_ID,
+                "client_id": client_id,
                 "grant_type": "authorization_code",
                 "code": result["code"],
-                "redirect_uri": REDIRECT_URI,
+                "redirect_uri": redirect_uri,
                 "code_verifier": verifier,
             },
             verify=verify_ssl,
@@ -463,19 +429,10 @@ def save_tokens(
         If ``storage="keyring"`` is requested and keyring persistence fails.
 
     """
-    _token_storage.TOKEN_FILE = TOKEN_FILE
-    return _token_storage.save_tokens(
+    return _call_with_synced_token_file(
+        _token_storage.save_tokens,
         tokens=tokens,
         hps_url=hps_url,
         storage=storage,
         service_name=service_name,
     )
-
-
-def main():
-    """Legacy source-module CLI entry point."""
-    raise SystemExit(1)
-
-
-if __name__ == "__main__":
-    main()
