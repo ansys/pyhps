@@ -28,10 +28,22 @@ and use them in API calls.
 
 import argparse
 import logging
+import time
 
-from ansys.hps.client.auth.api.oidc_login import _is_token_expired, load_tokens
+from ansys.hps.client.auth.api.oidc_login import load_tokens
 
 log = logging.getLogger(__name__)
+
+
+def is_token_expired(tokens: dict, buffer_seconds: int = 60) -> bool:
+    """Return True when token is expired or near expiry."""
+    expires_in = tokens.get("expires_in")
+    saved_at = tokens.get("saved_at")
+
+    if expires_in is None or saved_at is None:
+        return True
+
+    return (saved_at + expires_in - buffer_seconds) <= time.time()
 
 
 def main(storage_mode: str, verify_ssl: bool):
@@ -49,7 +61,7 @@ def main(storage_mode: str, verify_ssl: bool):
         return
 
     # Check if token is expired (with 60 second buffer)
-    if _is_token_expired(tokens, buffer_seconds=60):
+    if is_token_expired(tokens, buffer_seconds=60):
         log.info("Token is expired or expiring soon. Please refresh.")
         return
 
