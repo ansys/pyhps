@@ -432,17 +432,17 @@ def test_periodically_refresh_token_refreshes_preemptively(url, username, passwo
     assert client.token_refresh_date > datetime.now(timezone.utc)
 
 
-def test_api_token_401_does_not_trigger_refresh():
-    """API token authentication should not attempt 401 refresh/retry."""
+def test_api_key_401_does_not_trigger_refresh():
+    """API Key authentication should not attempt 401 refresh/retry."""
     mock_session = Mock()
-    mock_session.headers = {"X-API-Key": "ApiKey test_api_token"}
+    mock_session.headers = {"X-API-Key": "ApiKey test_api_key"}
     mock_session.hooks = {}
     mock_session.params = {}
 
     with patch("ansys.hps.client.client.create_session", return_value=mock_session):
         client = Client(
             url="https://example.test/hps",
-            api_token="test_api_token",
+            api_key="test_api_key",
             verify=False,
             disable_security_warnings=True,
             auto_refresh_token=False,
@@ -460,17 +460,17 @@ def test_api_token_401_does_not_trigger_refresh():
     mock_refresh.assert_not_called()
 
 
-def test_api_token_is_forwarded_to_dt_with_apikey_prefix():
-    """DT binary should receive ApiKey-prefixed token when api_token is used."""
+def test_api_key_is_forwarded_to_dt_with_apikey_prefix():
+    """DT binary should receive ApiKey-prefixed token when api_key is used."""
     mock_session = Mock()
-    mock_session.headers = {"X-API-Key": "ApiKey test_api_token"}
+    mock_session.headers = {"X-API-Key": "ApiKey test_api_key"}
     mock_session.hooks = {}
     mock_session.params = {}
 
     with patch("ansys.hps.client.client.create_session", return_value=mock_session):
         client = Client(
             url="https://example.test/hps",
-            api_token="test_api_token",
+            api_key="test_api_key",
             verify=False,
             disable_security_warnings=True,
             auto_refresh_token=False,
@@ -489,6 +489,6 @@ def test_api_token_is_forwarded_to_dt_with_apikey_prefix():
         verbosity=3,
         debug=False,
         insecure=True,
-        token="ApiKey test_api_token",
+        token="ApiKey test_api_key",
         data_transfer_url="https://example.test/hps/dt/api/v1",
     )

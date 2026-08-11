@@ -182,7 +182,7 @@ if __name__ == "__main__":
     logging.basicConfig(format="[%(asctime)s | %(levelname)s] %(message)s", level=logging.DEBUG)
 
     if args.api_key:
-        client = Client(url=args.url, api_token=args.api_key)
+        client = Client(url=args.url, api_key=args.api_key)
     elif args.access_token:
         client = Client(url=args.url, access_token=args.access_token)
     else:

@@ -45,8 +45,8 @@ from .warnings import UnverifiedHTTPSRequestsWarning
 
 log = logging.getLogger(__name__)
 
-API_TOKEN_HEADER_NAME = "X-API-Key"  # nosec B105
-API_TOKEN_AUTH_PREFIX = "ApiKey"  # nosec B105
+API_KEY_HEADER_NAME = "X-API-Key"  # nosec B105
+API_KEY_AUTH_PREFIX = "ApiKey"  # nosec B105
 
 
 class Client:
@@ -59,7 +59,7 @@ class Client:
     and evaluated in the order listed:
 
     - Access token: No authentication is needed.
-    - API token: No authentication is needed.
+    - API Key: No authentication is needed.
     - Username and password: The client connects to the OAuth server and
       requests access and refresh tokens.
     - Refresh token: The client connects to the OAuth server and
@@ -87,8 +87,8 @@ class Client:
         Client secret. The default is ``None``.
     access_token : str, optional
         Access token.
-    api_token : str, optional
-        API token value used for ``X-API-Key`` header authentication.
+    api_key : str, optional
+        API Key value used for ``X-API-Key`` header authentication.
         For JMS APIs, the raw key is sent as ``X-API-Key: <token>``.
         For DT APIs, the token is forwarded as ``ApiKey <token>``.
     refresh_token : str, optional
@@ -180,7 +180,7 @@ class Client:
         client_id: str = "rep-cli",
         client_secret: str = None,
         access_token: str = None,
-        api_token: str = None,
+        api_key: str = None,
         refresh_token: str = None,
         all_fields=True,
         verify: bool | str = None,
@@ -212,7 +212,7 @@ class Client:
 
         self.url = url
         self.access_token = None
-        self.api_token = None
+        self.api_key = None
         self.refresh_token = None
         self.username = username
         self.realm = realm
@@ -269,12 +269,12 @@ class Client:
 
         self.auth_url = auth_url
 
-        if not auth_url and not api_token:
+        if not auth_url and not api_key:
             self.auth_url = determine_auth_url(url, self.verify, realm)
 
-        if api_token:
-            log.debug("Authenticate with API token")
-            self.api_token = api_token
+        if api_key:
+            log.debug("Authenticate with API Key")
+            self.api_key = api_key
         elif access_token:
             log.debug("Authenticate with access token")
             self.access_token = access_token
@@ -306,7 +306,7 @@ class Client:
 
             self._update_token_expiry(tokens)
 
-        if self.api_token is None:
+        if self.api_key is None:
             parsed_username = None
             token = {}
             try:
@@ -331,11 +331,11 @@ class Client:
             if access_token:
                 self._initialize_external_token_expiry(token)
 
-        auth_token = self.api_token if self.api_token is not None else self.access_token
+        auth_token = self.api_key if self.api_key is not None else self.access_token
         auth_header_name = "Authorization"
         auth_prefix = "Bearer"
-        if self.api_token is not None:
-            auth_header_name = API_TOKEN_HEADER_NAME
+        if self.api_key is not None:
+            auth_header_name = API_KEY_HEADER_NAME
             auth_prefix = ""
 
         self.session = create_session(
@@ -631,7 +631,7 @@ class Client:
         Automatically refreshes the access token and
         re-sends the request in case of an unauthorized error.
         """
-        if self.api_token is not None:
+        if self.api_key is not None:
             self._unauthorized_num_retry = 0
             return response
 
@@ -659,8 +659,8 @@ class Client:
 
     def refresh_access_token(self):
         """Request a new access token."""
-        if self.api_token is not None:
-            raise HPSError("API token authentication does not support token refresh.")
+        if self.api_key is not None:
+            raise HPSError("API Key authentication does not support token refresh.")
 
         if self.grant_type == "client_credentials":
             # Its not recommended to give refresh tokens to client_credentials grant types
@@ -701,22 +701,22 @@ class Client:
 
     @property
     def _session_auth_header_name(self) -> str:
-        if self.api_token is not None:
-            return API_TOKEN_HEADER_NAME
+        if self.api_key is not None:
+            return API_KEY_HEADER_NAME
         return "Authorization"
 
     @property
     def _session_auth_prefix(self) -> str:
-        if self.api_token is not None:
+        if self.api_key is not None:
             return ""
         return "Bearer"
 
     def _get_dt_auth_token(self) -> str:
-        if self.api_token is not None:
+        if self.api_key is not None:
             # DT client runtime parses api-key mode from the embedded token string,
             # so this path intentionally uses "ApiKey <token>" while JMS uses raw
             # "X-API-Key: <token>" on the HTTP session.
-            return f"{API_TOKEN_AUTH_PREFIX} {self.api_token}"
+            return f"{API_KEY_AUTH_PREFIX} {self.api_key}"
         return self.access_token
 
     def _persist_refreshed_tokens(self, tokens):

@@ -387,7 +387,7 @@ def entrypoint(
     logging.basicConfig(format="[%(asctime)s | %(levelname)s] %(message)s", level=logging.DEBUG)
 
     if api_key:
-        client = Client(url=url, api_token=api_key)
+        client = Client(url=url, api_key=api_key)
     elif access_token:
         client = Client(url=url, access_token=access_token)
     else:

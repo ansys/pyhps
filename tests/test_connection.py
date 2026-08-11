@@ -41,9 +41,9 @@ def test_connection(url, username, password):
 def test_create_session_custom_api_key_header():
     """API-key header should support forwarding raw token values."""
     with create_session(
-        access_token="my_api_token",
+        access_token="my_api_key",
         verify=False,
         auth_header_name="X-API-Key",
         auth_prefix="",
     ) as session:
-        assert session.headers["X-API-Key"] == "my_api_token"
+        assert session.headers["X-API-Key"] == "my_api_key"
