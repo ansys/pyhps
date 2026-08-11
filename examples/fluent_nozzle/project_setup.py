@@ -26,7 +26,7 @@ import argparse
 import logging
 import os
 
-from ansys.hps.client import Client, HPSError, __ansys_apps_version__
+from ansys.hps.client import HPSError, __ansys_apps_version__
 from ansys.hps.client.jms import (
     File,
     JmsApi,
@@ -185,18 +185,14 @@ def create_project(client, name, num_jobs=20, version=__ansys_apps_version__):
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser()
+    import sys
+
+    sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), ".."))
+    from common import base_parser, client_from_args
+
+    parser = argparse.ArgumentParser(parents=[base_parser])
     parser.add_argument("-n", "--name", type=str, default="Fluent nozzle")
     parser.add_argument("-j", "--num-jobs", type=int, default=1)
-    parser.add_argument("-U", "--url", default="https://127.0.0.1:8443/hps")
-    parser.add_argument("-u", "--username", default="repuser")
-    parser.add_argument("-p", "--password", default="repuser")
-    parser.add_argument(
-        "--access-token", default=None, help="Access token (alternative to username/password)."
-    )
-    parser.add_argument(
-        "--api-key", default=None, help="API key (alternative to username/password)."
-    )
     parser.add_argument("-v", "--ansys-version", default=__ansys_apps_version__)
     args = parser.parse_args()
 
@@ -205,12 +201,7 @@ if __name__ == "__main__":
 
     try:
         log.info("Connect to HPC Platform Services")
-        if args.api_key:
-            client = Client(url=args.url, api_key=args.api_key)
-        elif args.access_token:
-            client = Client(url=args.url, access_token=args.access_token)
-        else:
-            client = Client(url=args.url, username=args.username, password=args.password)
+        client = client_from_args(args)
         log.info(f"HPS URL: {client.url}")
         proj = create_project(
             client=client, name=args.name, num_jobs=args.num_jobs, version=args.ansys_version

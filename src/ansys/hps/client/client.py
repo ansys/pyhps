@@ -89,8 +89,8 @@ class Client:
         Access token.
     api_key : str, optional
         API Key value used for ``X-API-Key`` header authentication.
-        For JMS APIs, the raw key is sent as ``X-API-Key: <token>``.
-        For DT APIs, the token is forwarded as ``ApiKey <token>``.
+        For JMS APIs, the raw key is sent as ``X-API-Key: <key>``.
+        For DT APIs, the key is forwarded as ``ApiKey <key>``.
     refresh_token : str, optional
         Refresh token.
     auth_url : str, optional

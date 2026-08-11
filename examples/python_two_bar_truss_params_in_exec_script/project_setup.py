@@ -27,7 +27,7 @@ import logging
 import os
 import random
 
-from ansys.hps.client import Client, HPSError
+from ansys.hps.client import HPSError
 from ansys.hps.client.jms import (
     File,
     FitnessDefinition,
@@ -205,16 +205,12 @@ def main(client, num_jobs, python_version=None) -> Project:
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser()
-    parser.add_argument("-U", "--url", default="https://127.0.0.1:8443/hps")
-    parser.add_argument("-u", "--username", default="repuser")
-    parser.add_argument("-p", "--password", default="repuser")
-    parser.add_argument(
-        "--access-token", default=None, help="Access token (alternative to username/password)."
-    )
-    parser.add_argument(
-        "--api-key", default=None, help="API key (alternative to username/password)."
-    )
+    import sys
+
+    sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), ".."))
+    from common import base_parser, client_from_args
+
+    parser = argparse.ArgumentParser(parents=[base_parser])
     parser.add_argument("-n", "--num-jobs", type=int, default=50)
     parser.add_argument("-v", "--python-version", default="3.10")
 
@@ -223,12 +219,7 @@ if __name__ == "__main__":
     logger = logging.getLogger()
     logging.basicConfig(format="[%(asctime)s | %(levelname)s] %(message)s", level=logging.DEBUG)
 
-    if args.api_key:
-        client = Client(url=args.url, api_key=args.api_key)
-    elif args.access_token:
-        client = Client(url=args.url, access_token=args.access_token)
-    else:
-        client = Client(url=args.url, username=args.username, password=args.password)
+    client = client_from_args(args)
 
     try:
         main(
