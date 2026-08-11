@@ -46,6 +46,7 @@ import logging
 import os
 
 from ansys.hps.client import Client, HPSError, __ansys_apps_version__
+from ansys.hps.client.examples import base_parser, client_from_args
 from ansys.hps.client.jms import (
     File,
     JmsApi,
@@ -370,11 +371,6 @@ def create_project(
 
 
 if __name__ == "__main__":
-    import sys
-
-    sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), ".."))
-    from common import base_parser, client_from_args
-
     parser = argparse.ArgumentParser(parents=[base_parser])
     parser.add_argument("-n", "--name", type=str, default="MAPDL Prestress-Modal-Harmonic")
     parser.add_argument("-es", "--use-exec-script", default=False, type=bool)

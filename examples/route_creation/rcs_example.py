@@ -26,17 +26,12 @@ import argparse
 import logging
 
 from ansys.hps.client import HPSError
+from ansys.hps.client.examples import base_parser, client_from_args
 from ansys.hps.client.rcs import RcsApi, RegisterInstance, UnRegisterInstance
 
 log = logging.getLogger(__name__)
 
 if __name__ == "__main__":
-    import os
-    import sys
-
-    sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), ".."))
-    from common import base_parser, client_from_args
-
     parser = argparse.ArgumentParser(parents=[base_parser])
     parser.add_argument("-i", "--instance_url", default="https://localhost:8000")
     args = parser.parse_args()

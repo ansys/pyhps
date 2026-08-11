@@ -27,6 +27,7 @@ import logging
 import os
 
 from ansys.hps.client import HPSError
+from ansys.hps.client.examples import base_parser, client_from_args
 from ansys.hps.client.jms import (
     File,
     JmsApi,
@@ -120,11 +121,6 @@ def create_project(client, num_jobs):
 
 
 if __name__ == "__main__":
-    import sys
-
-    sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), ".."))
-    from common import base_parser, client_from_args
-
     parser = argparse.ArgumentParser(parents=[base_parser])
     parser.add_argument("-j", "--num-jobs", type=int, default=10)
     args = parser.parse_args()

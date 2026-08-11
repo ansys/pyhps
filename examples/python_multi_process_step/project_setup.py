@@ -47,6 +47,7 @@ import os
 import random
 
 from ansys.hps.client import HPSError
+from ansys.hps.client.examples import base_parser, client_from_args
 from ansys.hps.client.jms import (
     File,
     IntParameterDefinition,
@@ -288,11 +289,6 @@ def main(
 if __name__ == "__main__":
     logger = logging.getLogger()
     logging.basicConfig(format="[%(asctime)s | %(levelname)s] %(message)s", level=logging.DEBUG)
-
-    import sys
-
-    sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), ".."))
-    from common import base_parser, client_from_args
 
     parser = argparse.ArgumentParser(parents=[base_parser])
     parser.add_argument("-n", "--num-jobs", type=int, default=10)
