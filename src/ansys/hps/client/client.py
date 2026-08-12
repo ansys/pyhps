@@ -58,8 +58,11 @@ class Client:
     The following alternative authentication workflows are supported
     and evaluated in the order listed:
 
-    - Access token: No authentication is needed.
-    - API Key: No authentication is needed.
+    - No authentication: If no credentials are provided, the client makes
+      unauthenticated requests to the HPS server. This is useful for accessing
+      public endpoints or when authentication is handled externally.
+    - Access token: No additional authentication is needed.
+    - API Key: No additional authentication is needed.
     - Username and password: The client connects to the OAuth server and
       requests access and refresh tokens.
     - Refresh token: The client connects to the OAuth server and
@@ -140,6 +143,12 @@ class Client:
 
     Examples
     --------
+    Create a client object and connect to HPS with no authentication
+    (for accessing public endpoints).
+
+    >>> from ansys.hps.client import Client
+    >>> cl = Client(url="https://localhost:8443/hps")
+
     Create a client object and connect to HPS with a username and password.
 
     >>> from ansys.hps.client import Client
@@ -269,44 +278,57 @@ class Client:
 
         self.auth_url = auth_url
 
-        if not auth_url and not api_key:
-            self.auth_url = determine_auth_url(url, self.verify, realm)
+        # Check if any credentials were provided
+        has_credentials = (
+            api_key is not None
+            or access_token is not None
+            or (username is not None and password is not None)
+            or refresh_token is not None
+            or client_secret is not None
+        )
 
-        if api_key:
-            log.debug("Authenticate with API Key")
-            self.api_key = api_key
-        elif access_token:
-            log.debug("Authenticate with access token")
-            self.access_token = access_token
-            self.refresh_token = refresh_token
+        if not has_credentials:
+            # No credentials provided - skip authentication
+            log.debug("No credentials provided - skipping authentication")
         else:
-            if username and password:
-                self.grant_type = "password"
-            elif refresh_token:
-                self.grant_type = "refresh_token"
-            elif client_secret:
-                self.grant_type = "client_credentials"
+            if not auth_url and not api_key:
+                self.auth_url = determine_auth_url(url, self.verify, realm)
 
-            log.debug(f"Authenticating with '{self.grant_type}' grant type.")
+            if api_key:
+                log.debug("Authenticate with API Key")
+                self.api_key = api_key
+            elif access_token:
+                log.debug("Authenticate with access token")
+                self.access_token = access_token
+                self.refresh_token = refresh_token
+            else:
+                if username and password:
+                    self.grant_type = "password"
+                elif refresh_token:
+                    self.grant_type = "refresh_token"
+                elif client_secret:
+                    self.grant_type = "client_credentials"
 
-            tokens = authenticate(
-                auth_url=self.auth_url,
-                grant_type=self.grant_type,
-                scope=scope,
-                client_id=client_id,
-                client_secret=client_secret,
-                username=username,
-                password=password,
-                refresh_token=refresh_token,
-                verify=self.verify,
-            )
-            self.access_token = tokens["access_token"]
-            # client credentials flow does not return a refresh token
-            self.refresh_token = tokens.get("refresh_token", None)
+                log.debug(f"Authenticating with '{self.grant_type}' grant type.")
 
-            self._update_token_expiry(tokens)
+                tokens = authenticate(
+                    auth_url=self.auth_url,
+                    grant_type=self.grant_type,
+                    scope=scope,
+                    client_id=client_id,
+                    client_secret=client_secret,
+                    username=username,
+                    password=password,
+                    refresh_token=refresh_token,
+                    verify=self.verify,
+                )
+                self.access_token = tokens["access_token"]
+                # client credentials flow does not return a refresh token
+                self.refresh_token = tokens.get("refresh_token", None)
 
-        if self.api_key is None:
+                self._update_token_expiry(tokens)
+
+        if self.api_key is None and self.access_token is not None:
             parsed_username = None
             token = {}
             try:
@@ -331,12 +353,18 @@ class Client:
             if access_token:
                 self._initialize_external_token_expiry(token)
 
-        auth_token = self.api_key if self.api_key is not None else self.access_token
+        auth_token = None
         auth_header_name = "Authorization"
         auth_prefix = "Bearer"
+
         if self.api_key is not None:
+            auth_token = self.api_key
             auth_header_name = API_KEY_HEADER_NAME
             auth_prefix = ""
+        elif self.access_token is not None:
+            auth_token = self.access_token
+            auth_header_name = "Authorization"
+            auth_prefix = "Bearer"
 
         self.session = create_session(
             auth_token,
@@ -631,7 +659,8 @@ class Client:
         Automatically refreshes the access token and
         re-sends the request in case of an unauthorized error.
         """
-        if self.api_key is not None:
+        # Skip auto-refresh in no-auth mode or when using API keys
+        if self.api_key is not None or self.access_token is None:
             self._unauthorized_num_retry = 0
             return response
 
