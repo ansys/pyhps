@@ -26,7 +26,8 @@ import argparse
 import logging
 import os
 
-from ansys.hps.client import Client, HPSError
+from ansys.hps.client import HPSError
+from ansys.hps.client.examples import base_parser, client_from_args
 from ansys.hps.client.jms import (
     File,
     IntParameterDefinition,
@@ -164,10 +165,7 @@ def main(client, use_exec_script, python_version=None) -> Project:
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser()
-    parser.add_argument("-U", "--url", default="https://127.0.0.1:8443/hps")
-    parser.add_argument("-u", "--username", default="repuser")
-    parser.add_argument("-p", "--password", default="repuser")
+    parser = argparse.ArgumentParser(parents=[base_parser])
     parser.add_argument("-es", "--use-exec-script", default=False, action="store_true")
     parser.add_argument("-v", "--python-version", default="3.10")
     args = parser.parse_args()
@@ -175,7 +173,7 @@ if __name__ == "__main__":
     logger = logging.getLogger()
     logging.basicConfig(format="[%(asctime)s | %(levelname)s] %(message)s", level=logging.DEBUG)
 
-    client = Client(url=args.url, username=args.username, password=args.password)
+    client = client_from_args(args)
 
     try:
         main(client, use_exec_script=args.use_exec_script, python_version=args.python_version)

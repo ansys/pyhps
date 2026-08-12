@@ -32,7 +32,8 @@ import logging
 import os
 from statistics import mean, stdev
 
-from ansys.hps.client import Client, HPSError
+from ansys.hps.client import HPSError
+from ansys.hps.client.examples import base_parser, client_from_args
 from ansys.hps.client.jms import JmsApi, ProjectApi
 
 log = logging.getLogger(__name__)
@@ -133,12 +134,9 @@ def download_files(client, project_name):
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser()
+    parser = argparse.ArgumentParser(parents=[base_parser])
     parser.add_argument("-n", "--name", type=str, default="Mapdl Motorbike Frame")
     parser.add_argument("-j", "--num-jobs", type=int, default=500)
-    parser.add_argument("-U", "--url", default="https://127.0.0.1:8443/hps")
-    parser.add_argument("-u", "--username", default="repuser")
-    parser.add_argument("-p", "--password", default="repuser")
     args = parser.parse_args()
 
     logger = logging.getLogger()
@@ -146,7 +144,7 @@ if __name__ == "__main__":
 
     try:
         log.info("Connect to HPC Platform Services")
-        client = Client(url=args.url, username=args.username, password=args.password)
+        client = client_from_args(args)
         log.info(f"HPS URL: {client.url}")
 
         query_stats(client=client, project_name=args.name)

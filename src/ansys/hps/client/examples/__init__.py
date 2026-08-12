@@ -20,30 +20,30 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-import logging
+"""Shared argparse utilities for HPS client examples."""
 
-from ansys.hps.client import authenticate
-from ansys.hps.client.connection import create_session, ping
+import argparse
 
-log = logging.getLogger(__name__)
+from ansys.hps.client import Client
+
+# Parent parser with connection arguments shared by all examples.
+# Must use add_help=False so child parsers can provide their own -h/--help.
+base_parser = argparse.ArgumentParser(add_help=False)
+base_parser.add_argument("-U", "--url", default="https://localhost:8443/hps")
+base_parser.add_argument("-u", "--username", default="repuser")
+base_parser.add_argument("-p", "--password", default="repuser")
+base_parser.add_argument(
+    "--access-token", default=None, help="Access token (alternative to username/password)."
+)
+base_parser.add_argument(
+    "--api-key", default=None, help="API key (alternative to username/password)."
+)
 
 
-def test_connection(url, username, password):
-    resp = authenticate(url=url, username=username, password=password, verify=False)
-    access_token = resp["access_token"]
-
-    with create_session(access_token, verify=False, disable_security_warnings=True) as session:
-        jms_api_url = f"{url}/jms/api/v1"
-        log.info(f"Ping {jms_api_url}")
-        assert ping(session, jms_api_url)
-
-
-def test_create_session_custom_api_key_header():
-    """API-key header should support forwarding raw token values."""
-    with create_session(
-        access_token="my_api_key",
-        verify=False,
-        auth_header_name="X-API-Key",
-        auth_prefix="",
-    ) as session:
-        assert session.headers["X-API-Key"] == "my_api_key"
+def client_from_args(args) -> Client:
+    """Create a :class:`Client` from parsed command-line arguments."""
+    if args.api_key:
+        return Client(url=args.url, api_key=args.api_key)
+    if args.access_token:
+        return Client(url=args.url, access_token=args.access_token)
+    return Client(url=args.url, username=args.username, password=args.password)

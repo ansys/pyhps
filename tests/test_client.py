@@ -430,3 +430,65 @@ def test_periodically_refresh_token_refreshes_preemptively(url, username, passwo
 
     assert client.access_token != initial_access_token
     assert client.token_refresh_date > datetime.now(timezone.utc)
+
+
+def test_api_key_401_does_not_trigger_refresh():
+    """API Key authentication should not attempt 401 refresh/retry."""
+    mock_session = Mock()
+    mock_session.headers = {"X-API-Key": "ApiKey test_api_key"}
+    mock_session.hooks = {}
+    mock_session.params = {}
+
+    with patch("ansys.hps.client.client.create_session", return_value=mock_session):
+        client = Client(
+            url="https://example.test/hps",
+            api_key="test_api_key",
+            verify=False,
+            disable_security_warnings=True,
+            auto_refresh_token=False,
+        )
+
+    response = Mock()
+    response.status_code = 401
+    response.request = Mock()
+    response.request.headers = {}
+
+    with patch.object(client, "refresh_access_token") as mock_refresh:
+        returned = client._auto_refresh_token(response)
+
+    assert returned is response
+    mock_refresh.assert_not_called()
+
+
+def test_api_key_is_forwarded_to_dt_with_apikey_prefix():
+    """DT binary should receive ApiKey-prefixed token when api_key is used."""
+    mock_session = Mock()
+    mock_session.headers = {"X-API-Key": "ApiKey test_api_key"}
+    mock_session.hooks = {}
+    mock_session.params = {}
+
+    with patch("ansys.hps.client.client.create_session", return_value=mock_session):
+        client = Client(
+            url="https://example.test/hps",
+            api_key="test_api_key",
+            verify=False,
+            disable_security_warnings=True,
+            auto_refresh_token=False,
+        )
+
+    mock_dt_client = Mock()
+    mock_dt_client.binary_config = Mock()
+    mock_dt_api = Mock()
+    mock_dt_api.status = Mock()
+
+    with patch("ansys.hps.client.client.DataTransferClient", return_value=mock_dt_client):
+        with patch("ansys.hps.client.client.DataTransferApi", return_value=mock_dt_api):
+            client.initialize_data_transfer_client()
+
+    mock_dt_client.binary_config.update.assert_called_once_with(
+        verbosity=3,
+        debug=False,
+        insecure=True,
+        token="ApiKey test_api_key",
+        data_transfer_url="https://example.test/hps/dt/api/v1",
+    )

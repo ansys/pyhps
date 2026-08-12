@@ -25,17 +25,15 @@
 import argparse
 import logging
 
-from ansys.hps.client import Client, HPSError
+from ansys.hps.client import HPSError
+from ansys.hps.client.examples import base_parser, client_from_args
 from ansys.hps.client.rcs import RcsApi, RegisterInstance, UnRegisterInstance
 
 log = logging.getLogger(__name__)
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser()
-    parser.add_argument("-U", "--url", default="https://localhost:8443/hps")
+    parser = argparse.ArgumentParser(parents=[base_parser])
     parser.add_argument("-i", "--instance_url", default="https://localhost:8000")
-    parser.add_argument("-u", "--username", default="repuser")
-    parser.add_argument("-p", "--password", default="repuser")
     args = parser.parse_args()
 
     logger = logging.getLogger()
@@ -43,7 +41,7 @@ if __name__ == "__main__":
 
     try:
         log.info("Connect to HPC Platform Services")
-        client = Client(url=args.url, username=args.username, password=args.password)
+        client = client_from_args(args)
         log.info(f"HPS URL: {client.url}")
     except HPSError as e:
         log.error(str(e))

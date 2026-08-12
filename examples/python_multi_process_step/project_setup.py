@@ -46,7 +46,8 @@ import logging
 import os
 import random
 
-from ansys.hps.client import Client, HPSError
+from ansys.hps.client import HPSError
+from ansys.hps.client.examples import base_parser, client_from_args
 from ansys.hps.client.jms import (
     File,
     IntParameterDefinition,
@@ -289,10 +290,7 @@ if __name__ == "__main__":
     logger = logging.getLogger()
     logging.basicConfig(format="[%(asctime)s | %(levelname)s] %(message)s", level=logging.DEBUG)
 
-    parser = argparse.ArgumentParser()
-    parser.add_argument("-U", "--url", default="https://127.0.0.1:8443/hps")
-    parser.add_argument("-u", "--username", default="repuser")
-    parser.add_argument("-p", "--password", default="repuser")
+    parser = argparse.ArgumentParser(parents=[base_parser])
     parser.add_argument("-n", "--num-jobs", type=int, default=10)
     parser.add_argument("-t", "--num-task-definitions", type=int, default=3)
     parser.add_argument("-d", "--duration", type=int, default=10)
@@ -324,7 +322,7 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     log.debug("=== HPS connection")
-    client = Client(url=args.url, username=args.username, password=args.password)
+    client = client_from_args(args)
 
     try:
         main(
