@@ -143,12 +143,6 @@ class Client:
 
     Examples
     --------
-    Create a client object and connect to HPS with no authentication
-    (for accessing public endpoints).
-
-    >>> from ansys.hps.client import Client
-    >>> cl = Client(url="https://localhost:8443/hps")
-
     Create a client object and connect to HPS with a username and password.
 
     >>> from ansys.hps.client import Client
@@ -174,6 +168,12 @@ class Client:
     ...     refresh_token="eyJhbGciOiJIUzI1NiIsInR5cC...",
     ...     token_storage="keyring",
     ... )
+
+    Create a client object and connect to HPS with no authentication
+        (for accessing public endpoints).
+
+        >>> from ansys.hps.client import Client
+        >>> cl = Client(url="https://localhost:8443/hps")
 
     """
 
