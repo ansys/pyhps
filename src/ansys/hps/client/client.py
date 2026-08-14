@@ -497,13 +497,21 @@ class Client:
                 # start Data transfer client
                 self._dt_client = DataTransferClient(download_dir=self._get_download_dir())
 
-                self._dt_client.binary_config.update(
-                    verbosity=3,
-                    debug=False,
-                    insecure=True,
-                    token=self._get_dt_auth_token(),
-                    data_transfer_url=self.data_transfer_url,
-                )
+                dt_token = self._get_dt_auth_token()
+                config = {
+                    "verbosity": 3,
+                    "debug": False,
+                    "insecure": True,
+                    "data_transfer_url": self.data_transfer_url,
+                }
+                if dt_token is None:
+                    # Without credentials the worker must not negotiate a random API key,
+                    # which the HPS server would reject.
+                    config["no_auth"] = True
+                else:
+                    config["token"] = dt_token
+
+                self._dt_client.binary_config.update(**config)
                 self._dt_client.start()
 
                 self._dt_api = DataTransferApi(self._dt_client)
