@@ -36,12 +36,24 @@ def test_server_error(client):
     try:
         jms_api.get_projects(wrong_query_param="value")
     except APIError as e:
+        # JMS mk1
+        except_obj = e
+        log.error(str(e))
+    except ClientError as e:
+        # JMS mk2
         except_obj = e
         log.error(str(e))
 
-    assert except_obj.reason == "500 Internal Server Error"
-    assert except_obj.description == "type object 'Project' has no attribute 'wrong_query_param'"
-    assert except_obj.response.status_code == 500
+    if except_obj.response.status_code == 500:
+        assert except_obj.reason == "500 Internal Server Error"
+        assert (
+            except_obj.description == "type object 'Project' has no attribute 'wrong_query_param'"
+        )
+    elif except_obj.response.status_code == 400:
+        assert "Bad Request" in except_obj.reason
+        assert "invalid field filter" in except_obj.description
+    else:
+        raise AssertionError(f"Unexpected status code: {except_obj.response.status_code}")
 
 
 @pytest.mark.xfail

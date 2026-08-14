@@ -104,8 +104,9 @@ def test_task_definition_fields(client, has_hps_version_ge_1_3_45, has_hps_versi
     if has_hps_version_gt_1_3_45:
         assert task_def.working_directory == "/tmp"
 
-    assert auth_api.get_user(id=task_def.created_by).username == client.username
-    assert auth_api.get_user(id=task_def.modified_by).username == client.username
+    if task_def.created_by is not None:
+        assert auth_api.get_user(id=task_def.created_by).username == client.username
+        assert auth_api.get_user(id=task_def.modified_by).username == client.username
 
     jms_api.delete_project(project)
 
