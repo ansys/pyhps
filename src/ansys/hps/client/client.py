@@ -507,7 +507,7 @@ class Client:
                 if dt_token is None:
                     # Without credentials the worker must not negotiate a random API key,
                     # which the HPS server would reject.
-                    config["no_auth"] = True
+                    config["auth_type"] = True
                 else:
                     config["token"] = dt_token
 
