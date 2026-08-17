@@ -30,8 +30,8 @@ from ansys.hps.client import Client
 # Must use add_help=False so child parsers can provide their own -h/--help.
 base_parser = argparse.ArgumentParser(add_help=False)
 base_parser.add_argument("-U", "--url", default="https://localhost:8443/hps")
-base_parser.add_argument("-u", "--username", default="repuser")
-base_parser.add_argument("-p", "--password", default="repuser")
+base_parser.add_argument("-u", "--username", default=None)
+base_parser.add_argument("-p", "--password", default=None)
 base_parser.add_argument(
     "--access-token", default=None, help="Access token (alternative to username/password)."
 )
@@ -41,9 +41,14 @@ base_parser.add_argument(
 
 
 def client_from_args(args) -> Client:
-    """Create a :class:`Client` from parsed command-line arguments."""
+    """Create a :class:`Client` from parsed command-line arguments.
+
+    Falls back to no authentication if no credentials are provided.
+    """
     if args.api_key:
         return Client(url=args.url, api_key=args.api_key)
     if args.access_token:
         return Client(url=args.url, access_token=args.access_token)
-    return Client(url=args.url, username=args.username, password=args.password)
+    if args.username and args.password:
+        return Client(url=args.url, username=args.username, password=args.password)
+    return Client(url=args.url)

@@ -492,3 +492,60 @@ def test_api_key_is_forwarded_to_dt_with_apikey_prefix():
         token="ApiKey test_api_key",
         data_transfer_url="https://example.test/hps/dt/api/v1",
     )
+
+
+def test_no_auth_mode_skips_authentication():
+    """When no credentials are provided, Client should skip authentication."""
+    mock_session = Mock()
+    mock_session.headers = {}
+    mock_session.hooks = {}
+    mock_session.params = {}
+
+    with patch("ansys.hps.client.client.create_session", return_value=mock_session) as mock_create:
+        with patch("ansys.hps.client.client.determine_auth_url") as mock_determine_auth:
+            client = Client(
+                url="https://example.test/hps",
+                verify=False,
+                disable_security_warnings=True,
+                auto_refresh_token=False,
+            )
+
+    # Verify authentication was skipped
+    assert client.access_token is None
+    assert client.api_key is None
+    assert client.refresh_token is None
+
+    # Verify determine_auth_url was NOT called (auth skipped)
+    mock_determine_auth.assert_not_called()
+
+    # Verify create_session was called with None token
+    mock_create.assert_called_once()
+    call_args = mock_create.call_args
+    assert call_args[0][0] is None  # First positional arg (access_token) should be None
+
+
+def test_no_auth_mode_skips_401_refresh():
+    """In no-auth mode, 401 responses should not trigger token refresh."""
+    mock_session = Mock()
+    mock_session.headers = {}
+    mock_session.hooks = {}
+    mock_session.params = {}
+
+    with patch("ansys.hps.client.client.create_session", return_value=mock_session):
+        client = Client(
+            url="https://example.test/hps",
+            verify=False,
+            disable_security_warnings=True,
+            auto_refresh_token=False,
+        )
+
+    response = Mock()
+    response.status_code = 401
+    response.request = Mock()
+    response.request.headers = {}
+
+    with patch.object(client, "refresh_access_token") as mock_refresh:
+        returned = client._auto_refresh_token(response)
+
+    assert returned is response
+    mock_refresh.assert_not_called()
