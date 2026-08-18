@@ -49,7 +49,7 @@ def create_project(client, name, num_jobs=20, version=__ansys_apps_version__):
     jms_api = JmsApi(client)
     log.debug("=== Project")
     proj = Project(name=name, priority=1, active=True)
-    proj = jms_api.create_project(proj, replace=True)
+    proj = jms_api.create_project(proj)
 
     project_api = ProjectApi(client, proj.id)
 
