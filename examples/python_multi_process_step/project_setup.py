@@ -91,7 +91,7 @@ def main(
         active=not inactive,
     )
     jms_api = JmsApi(client)
-    proj = jms_api.create_project(proj, replace=True)
+    proj = jms_api.create_project(proj)
     project_api = ProjectApi(client, proj.id)
 
     log.debug("=== Files")

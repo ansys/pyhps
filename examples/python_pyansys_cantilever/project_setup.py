@@ -60,8 +60,7 @@ def main(client, num_jobs, num_modes, target_frequency, split_tasks):
             name=f"Cantilever - {num_jobs} Designs - {tasks_config}",
             priority=1,
             active=True,
-        ),
-        replace=True,
+        )
     )
     project_api = ProjectApi(client, proj.id)
 

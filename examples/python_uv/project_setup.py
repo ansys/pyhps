@@ -52,8 +52,7 @@ def create_project(client, num_jobs):
             name=f"Python UV example - {num_jobs} jobs",
             priority=1,
             active=True,
-        ),
-        replace=True,
+        )
     )
     project_api = ProjectApi(client, proj.id)
 
