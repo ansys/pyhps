@@ -90,7 +90,7 @@ def test_project_integration(client):
     proj_name = "test_jms_ProjectTest"
 
     proj = Project(name=proj_name, active=True, priority=10)
-    proj = jms_api.create_project(proj, replace=True)
+    proj = jms_api.create_project(proj)
 
     proj = jms_api.get_project(id=proj.id)
     assert proj.creation_time is not None
@@ -117,26 +117,12 @@ def test_project_integration(client):
     jms_api.delete_project(proj)
 
 
-@pytest.mark.xfail
-def test_project_replace(client):
-    jms_api = JmsApi(client)
-
-    p = Project(name="Original Project")
-    p = jms_api.create_project(p)
-    project_id = p.id
-    p.name = "Replaced Project"
-    p = jms_api.create_project(p, replace=True)
-
-    assert p.id == project_id
-    assert p.name == "Replaced Project"
-
-
 def test_project_copy(client):
     jms_api = JmsApi(client)
     proj_name = "test_jms_ProjectCopyTest"
 
     proj = Project(name=proj_name, active=True, priority=10)
-    proj = jms_api.create_project(proj, replace=True)
+    proj = jms_api.create_project(proj)
 
     project_api = ProjectApi(client, proj.id)
     proj1_id = project_api.copy_project()
@@ -161,7 +147,7 @@ def test_project_license_context(client):
     proj_name = "test_jms_ProjectTest_license_context"
 
     proj = Project(id=proj_name, active=True, priority=10)
-    proj = jms_api.create_project(proj, replace=True)
+    proj = jms_api.create_project(proj)
     project_api = ProjectApi(client, proj.id)
 
     # Create new license context in JMS
@@ -215,7 +201,7 @@ def test_project_delete_job_definition(client):
     proj_name = "test_jms_ProjectTest_delete_config"
 
     proj = Project(name=proj_name, active=True, priority=10)
-    proj = jms_api.create_project(proj, replace=True)
+    proj = jms_api.create_project(proj)
 
     project_api = ProjectApi(client, proj.id)
 
