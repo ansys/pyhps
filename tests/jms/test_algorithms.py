@@ -36,7 +36,7 @@ def test_algorithms(client):
     proj_name = "rep_client_test_jms_AlgorithmsTest"
 
     proj = Project(name=proj_name, active=True)
-    proj = jms_api.create_project(proj, replace=True)
+    proj = jms_api.create_project(proj)
     project_api = ProjectApi(client, proj.id)
 
     job_def = JobDefinition(name="New Config", active=True)

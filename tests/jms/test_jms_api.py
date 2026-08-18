@@ -74,7 +74,7 @@ def test_jms_api(client):
         project = create_project(client, proj_name, num_jobs=5, use_exec_script=False)
 
     new_proj = Project(name="New project", active=True)
-    new_proj = jms_api.create_project(new_proj, replace=True)
+    new_proj = jms_api.create_project(new_proj)
     # Delete project again
     jms_api.delete_project(new_proj)
 
@@ -183,7 +183,7 @@ def test_objects_type_check(client, has_hps_version_ge_1_3_45):
         assert "Wrong object type" in str(ex_info.value)
         assert "got <class 'ansys.hps.client.jms.resource.job.Job'>" in str(ex_info.value)
 
-    proj = jms_api.create_project(proj, replace=True)
+    proj = jms_api.create_project(proj)
     project_api = ProjectApi(client, proj.id)
 
     job_def = JobDefinition(name="New Config", active=True)

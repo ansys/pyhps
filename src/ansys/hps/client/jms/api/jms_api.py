@@ -113,9 +113,9 @@ class JmsApi:
         """
         return get_project_by_name(self.client, self.url, name, last_created)
 
-    def create_project(self, project: Project, replace=False, as_objects=True) -> Project:
+    def create_project(self, project: Project, as_objects=True) -> Project:
         """Create a project."""
-        return create_project(self.client, self.url, project, replace, as_objects)
+        return create_project(self.client, self.url, project, as_objects)
 
     def update_project(self, project: Project, as_objects=True) -> Project:
         """Update a project."""
@@ -304,13 +304,13 @@ def get_project_by_name(client, api_url, name, last_created=True) -> Project | l
     return projects
 
 
-def create_project(client, api_url, project, replace=False, as_objects=True) -> Project:
+def create_project(client, api_url, project, as_objects=True) -> Project:
     """Create a project."""
     url = f"{api_url}/projects/"
 
     schema = ProjectSchema()
     serialized_data = schema.dump(project)
-    json_data = json.dumps({"projects": [serialized_data], "replace": replace})
+    json_data = json.dumps({"projects": [serialized_data]})
     r = client.session.post(f"{url}", data=json_data)
 
     if not r.json()["projects"]:

@@ -267,7 +267,7 @@ Create an empty project and a job definition
             priority=1,
             active=True
         )
-        proj = client.create_project(proj, replace=True)
+        proj = client.create_project(proj)
 
         cfg = Configuration(name="Configuration.1", active=True)
 

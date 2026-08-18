@@ -180,7 +180,7 @@ def test_parameter_definition_integration(client):
 
     proj = Project(name=proj_name, active=True)
     jms_api = JmsApi(client)
-    proj = jms_api.create_project(proj, replace=True)
+    proj = jms_api.create_project(proj)
     project_api = ProjectApi(client, proj.id)
 
     ip = IntParameterDefinition(name="int_param", upper_limit=27)
@@ -219,7 +219,7 @@ def test_mixed_parameter_definition(client):
 
     proj = Project(name=proj_name, active=True)
     jms_api = JmsApi(client)
-    proj = jms_api.create_project(proj, replace=True)
+    proj = jms_api.create_project(proj)
     project_api = ProjectApi(client, proj.id)
 
     ip = IntParameterDefinition(name="int_param", upper_limit=27)

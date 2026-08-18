@@ -67,7 +67,7 @@ def test_get_project_permissions(client):
     proj_name = "test_jms_get_permissions_test"
 
     proj = Project(name=proj_name, active=True, priority=10)
-    proj = jms_api.create_project(proj, replace=True)
+    proj = jms_api.create_project(proj)
     project_api = ProjectApi(client, proj.id)
 
     perms = [p for p in project_api.get_permissions() if p.permission_type == "user"]
@@ -130,7 +130,7 @@ def test_modify_project_permissions(client, keycloak_client):
 
     root_api1 = JmsApi(client1)
     proj = Project(name=proj_name, priority=1, active=True)
-    proj = root_api1.create_project(proj, replace=True)
+    proj = root_api1.create_project(proj)
     project_api = ProjectApi(client1, proj.id)
     log.info(f"Created new project with id={proj.id}")
 
