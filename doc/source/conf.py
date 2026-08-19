@@ -69,6 +69,7 @@ EXAMPLES = {
         "eval_scripts/eval_mesh.py",
         "eval_scripts/eval_mapdl.py",
     ],
+    "sse": ["sse.py"],
 }
 
 sys.path.append(os.path.abspath(os.path.dirname(__file__)))

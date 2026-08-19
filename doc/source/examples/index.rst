@@ -39,6 +39,7 @@ one :download:`ZIP file <../../../build/pyhps_examples.zip>`.
   ex_python_uv
   ex_python_pyansys_cantilever
   ex_monitor_topics
+  ex_sse
   ex_rcs_route_creation
 
 .. list-table::
@@ -72,6 +73,8 @@ one :download:`ZIP file <../../../build/pyhps_examples.zip>`.
      - Run PyAnsys scripts on HPS. This example parametrizes a cantilever and submits a number of design points.
    * - :ref:`example_monitor_topics`
      - Discover monitor topics and stream task logs, host resources, process trees, scheduler job status, and service logs from one consolidated example page.
+   * - :ref:`example_sse`
+     - Create a long-running operation and monitor its progress in real-time using HTTP Server-Sent Events (SSE).
    * - :ref:`example_rcs_route_creation`
      - Register and unregister an external service instance with the HPS reverse proxy using the Route Creation Service API.
 
