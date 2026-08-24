@@ -7,6 +7,7 @@ import subprocess
 import sys
 import tempfile
 
+import backoff
 import requests
 
 parser = argparse.ArgumentParser()
@@ -19,7 +20,16 @@ hps_url = args.url
 file_name = "rms_openapi.json"
 api_spec_url = f"{hps_url}/rms/openapi.json"
 
-r = requests.get(api_spec_url, verify=False)
+
+@backoff.on_predicate(
+    backoff.expo, lambda r: r.status_code == 404, max_time=60, jitter=backoff.full_jitter
+)
+def _get_spec():
+    # The RMS service can take a bit longer to come up than the rest of the gateway.
+    return requests.get(api_spec_url, verify=False)
+
+
+r = _get_spec()
 r.raise_for_status()
 
 try:
