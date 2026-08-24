@@ -8,14 +8,20 @@ import sys
 import tempfile
 
 import backoff
-import requests
+
+from ansys.hps.client import Client
 
 parser = argparse.ArgumentParser()
 parser.add_argument("-U", "--url", default="https://localhost:8443/hps")
+parser.add_argument("-u", "--username", default=os.environ.get("HPS_TEST_USERNAME", "repadmin"))
+parser.add_argument("-p", "--password", default=os.environ.get("HPS_TEST_PASSWORD", "repadmin"))
 
 args = parser.parse_args()
 
 hps_url = args.url
+
+# Authenticate, as the OpenAPI spec endpoint is not publicly accessible on all deployments.
+client = Client(url=hps_url, username=args.username, password=args.password, verify=False)
 
 file_name = "rms_openapi.json"
 # Depending on the deployment, the RMS OpenAPI spec can be served either directly
@@ -28,7 +34,7 @@ candidate_urls = [f"{hps_url}/rms/openapi.json", f"{hps_url}/rms/api/v1/openapi.
 )
 def _get(url):
     # The RMS service can take a bit longer to come up than the rest of the gateway.
-    return requests.get(url, verify=False)
+    return client.session.get(url)
 
 
 spec = None
