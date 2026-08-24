@@ -18,30 +18,39 @@ args = parser.parse_args()
 hps_url = args.url
 
 file_name = "rms_openapi.json"
-api_spec_url = f"{hps_url}/rms/openapi.json"
+# Depending on the deployment, the RMS OpenAPI spec can be served either directly
+# under /rms or under the versioned /rms/api/v1 prefix.
+candidate_urls = [f"{hps_url}/rms/openapi.json", f"{hps_url}/rms/api/v1/openapi.json"]
 
 
 @backoff.on_predicate(
     backoff.expo, lambda r: r.status_code == 404, max_time=60, jitter=backoff.full_jitter
 )
-def _get_spec():
+def _get(url):
     # The RMS service can take a bit longer to come up than the rest of the gateway.
-    return requests.get(api_spec_url, verify=False)
+    return requests.get(url, verify=False)
 
 
-r = _get_spec()
-r.raise_for_status()
+spec = None
+errors = []
+for api_spec_url in candidate_urls:
+    r = _get(api_spec_url)
+    if r.status_code != 200:
+        errors.append(f"{api_spec_url} -> HTTP {r.status_code}")
+        continue
+    try:
+        data = r.json()
+    except ValueError as e:
+        errors.append(f"{api_spec_url} -> invalid JSON: {e}")
+        continue
+    if not isinstance(data, dict):
+        errors.append(f"{api_spec_url} -> expected a JSON object, got {type(data).__name__}")
+        continue
+    spec = data
+    break
 
-try:
-    spec = r.json()
-except ValueError as e:
-    sys.exit(f"Response from {api_spec_url} is not valid JSON: {e}\n{r.text}")
-
-if not isinstance(spec, dict):
-    sys.exit(
-        f"Unexpected OpenAPI spec format from {api_spec_url}: "
-        f"expected a JSON object, got {type(spec).__name__}."
-    )
+if spec is None:
+    sys.exit("Failed to fetch a valid OpenAPI spec:\n" + "\n".join(errors))
 
 with tempfile.TemporaryDirectory() as tmpdirname:
     file_name = os.path.join(tmpdirname, file_name)
