@@ -1,13 +1,13 @@
 """Script to generate the RMS models from the OpenAPI spec."""
 
 import argparse
-import json
 import os
 import subprocess
 import sys
 import tempfile
 
 import backoff
+import yaml
 
 from ansys.hps.client import Client
 
@@ -23,10 +23,13 @@ hps_url = args.url
 # Authenticate, as the OpenAPI spec endpoint is not publicly accessible on all deployments.
 client = Client(url=hps_url, username=args.username, password=args.password, verify=False)
 
-file_name = "rms_openapi.json"
-# Depending on the deployment, the RMS OpenAPI spec can be served either directly
-# under /rms or under the versioned /rms/api/v1 prefix.
-candidate_urls = [f"{hps_url}/rms/openapi.json", f"{hps_url}/rms/api/v1/openapi.json"]
+# The spec is served in different formats/paths depending on the deployment. The RMS Go
+# service serves it as YAML at "openapi.json.yaml" despite the ".json" in the name.
+candidate_urls = [
+    f"{hps_url}/rms/openapi.json.yaml",
+    f"{hps_url}/rms/openapi.json",
+    f"{hps_url}/rms/api/v1/openapi.json",
+]
 
 
 @backoff.on_predicate(
@@ -37,7 +40,7 @@ def _get(url):
     return client.session.get(url)
 
 
-spec = None
+spec_text = None
 errors = []
 for api_spec_url in candidate_urls:
     r = _get(api_spec_url)
@@ -45,23 +48,24 @@ for api_spec_url in candidate_urls:
         errors.append(f"{api_spec_url} -> HTTP {r.status_code}")
         continue
     try:
-        data = r.json()
-    except ValueError as e:
-        errors.append(f"{api_spec_url} -> invalid JSON: {e}")
+        # YAML is a superset of JSON, so this parses both formats.
+        data = yaml.safe_load(r.text)
+    except yaml.YAMLError as e:
+        errors.append(f"{api_spec_url} -> invalid YAML/JSON: {e}")
         continue
     if not isinstance(data, dict):
-        errors.append(f"{api_spec_url} -> expected a JSON object, got {type(data).__name__}")
+        errors.append(f"{api_spec_url} -> expected a mapping, got {type(data).__name__}")
         continue
-    spec = data
+    spec_text = r.text
     break
 
-if spec is None:
+if spec_text is None:
     sys.exit("Failed to fetch a valid OpenAPI spec:\n" + "\n".join(errors))
 
 with tempfile.TemporaryDirectory() as tmpdirname:
-    file_name = os.path.join(tmpdirname, file_name)
+    file_name = os.path.join(tmpdirname, "rms_openapi.yaml")
     with open(file_name, "w") as f:
-        json.dump(spec, f)
+        f.write(spec_text)
 
     cmd = (
         f"datamodel-codegen --input {file_name} --input-file-type openapi "
