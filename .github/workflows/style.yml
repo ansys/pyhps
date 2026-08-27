@@ -35,6 +35,6 @@ jobs:
       contents: read
     steps:
       - name: PyAnsys documentation style checks
-        uses: ansys/actions/doc-style@v11.0.0
+        uses: ansys/actions/doc-style@v11.0.2
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
