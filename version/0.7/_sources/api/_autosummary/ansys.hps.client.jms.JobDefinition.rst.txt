@@ -1,0 +1,25 @@
+﻿JobDefinition
+=============
+
+.. currentmodule:: ansys.hps.client.jms
+
+.. autoclass:: JobDefinition
+
+   
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+      :toctree:
+   
+      
+      
+      JobDefinition.declared_fields
+      
+   
+   
+
+   
+   
+   

@@ -1,0 +1,6 @@
+auth\_api\_url
+==============
+
+.. currentmodule:: ansys.hps.client.client
+
+.. autoproperty:: Client.auth_api_url

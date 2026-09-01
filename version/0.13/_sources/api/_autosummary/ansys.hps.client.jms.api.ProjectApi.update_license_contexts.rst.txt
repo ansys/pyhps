@@ -1,0 +1,6 @@
+update\_license\_contexts
+=========================
+
+.. currentmodule:: ansys.hps.client.jms.api
+
+.. automethod:: ProjectApi.update_license_contexts

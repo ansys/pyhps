@@ -1,0 +1,1572 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>OIDC Authentication Examples &#8212; PyHPS</title>
+  
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=0790524f97105ba85085" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=0790524f97105ba85085" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/ansys-sphinx-theme.css?v=5ffe81b6" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../_static/autodoc_pydantic.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/ansys-sphinx-theme.css?v=5ffe81b6" />
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.23/css/jquery.dataTables.min.css" />
+    <link rel="stylesheet" type="text/css" href="https://www.nerdfonts.com/assets/css/webfont.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+  
+  <!-- So that users can add custom icons -->
+  <script defer src="../_static/scripts/fontawesome.js?digest=0790524f97105ba85085"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=0790524f97105ba85085" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=0790524f97105ba85085" />
+
+
+  <!-- Include desired assets -->
+  <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+  
+
+  
+    <link href="../_static/css/breadcrumbs.css" rel="stylesheet" />
+  
+    <script src="../_static/documentation_options.js?v=769e5e19"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../_static/copybutton.js?v=f281be69"></script>
+    <script src="https://cdn.datatables.net/1.10.23/js/jquery.dataTables.min.js"></script>
+    <script src="../_static/design-tabs.js?v=f930bc37"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'examples/ex_oidc_login';</script>
+    <script>
+        DOCUMENTATION_OPTIONS.theme_version = '0.18.0';
+        DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://hps.docs.pyansys.com/versions.json';
+        DOCUMENTATION_OPTIONS.theme_switcher_version_match = 'dev';
+        DOCUMENTATION_OPTIONS.show_version_warning_banner =
+            false;
+        </script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
+    <link rel="icon" href="../_static/ansys-favicon.png"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="MAPDL motorbike frame: Project creation" href="ex_motorbike_frame.html" />
+    <link rel="prev" title="Examples" href="index.html" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="0.14.dev0" />
+  
+    
+    <script src="../_static/searchtools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <script src="../searchindex.js"></script>
+  
+  <meta property="og:site_name" content="PyAnsys" />
+  <meta name="physics" content="Platform" />
+  <link rel="canonical" href="https://hps.docs.pyansys.com/version/stable/examples/ex_oidc_login.html" />
+  </head>
+  <body data-default-mode="">
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
+  
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+  
+  
+  
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+  
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+
+<a class="navbar-brand logo" href="https://www.ansys.com/">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../_static/ansys_logo_transparent_black.png" class="logo__image only-light" alt="PyHPS - Home"/>
+    <img src="../_static/ansys_logo_transparent_white.png" class="logo__image only-dark pst-js-only" alt="PyHPS - Home"/>
+  
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../index.html" title="PyHPS home">Home</a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../getting_started/index.html">
+    Getting started
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../user_guide/index.html">
+    User guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../api/index.html">
+    API reference
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="index.html">
+    Examples
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../contribute.html">
+    Contribute
+  </a>
+</li>
+
+  </ul>
+</nav>
+</div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+      
+        <div class="navbar-item">
+<div class="search-bar pst-js-only" id="search-bar">
+  <form class="bd-search d-flex align-items-center" action="../search.html" method="get">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <input type="search" class="form-control" name="q" placeholder="Search the docs ..."
+      aria-label="Search the docs ..." autocomplete="off" autocorrect="off"
+      autocapitalize="off" spellcheck="false" />
+    <span class="search-button__kbd-shortcut">
+      <kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd>
+    </span>
+  </form>
+  
+  <div id="static-search-results" class="static-search-results" style="display:none;" tabindex="0"></div>
+  
+</div></div>
+      
+        <div class="navbar-item">
+<div class="version-switcher__container dropdown pst-js-only">
+  <button id="pst-version-switcher-button-2"
+    type="button"
+    class="version-switcher__button btn btn-sm dropdown-toggle"
+    data-bs-toggle="dropdown"
+    aria-haspopup="listbox"
+    aria-controls="pst-version-switcher-list-2"
+    aria-label="Version switcher list"
+  >
+    Choose version  <!-- this text may get changed later by javascript -->
+    <span class="caret"></span>
+  </button>
+  <div id="pst-version-switcher-list-2"
+    class="version-switcher__menu dropdown-menu list-group-flush py-0"
+    role="listbox" aria-labelledby="pst-version-switcher-button-2">
+    <!-- dropdown will be populated by javascript on page load -->
+  </div>
+</div></div>
+      
+        <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/ansys/pyhps" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+
+  
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+  
+    
+<!--
+  Announcement Version Loader
+  Dynamically loads the announcement.html content into the announcement_msg div.
+-->
+<div id="announcement_msg" aria-live="polite"></div>
+<script>
+  // Fetch and inject the announcement HTML content
+  fetch("announcement.html")
+    .then((response) => {
+      if (!response.ok) {
+        throw new Error(`HTTP error: ${response.status} Announcement.html file not found, Please ignore this, if you are in dev/stable documentation`);
+      }
+      return response.text();
+    })
+    .then((text) => {
+      var msgDiv = document.getElementById("announcement_msg");
+      if (msgDiv) {
+        msgDiv.innerHTML = text;
+      }
+    })
+    .catch((error) => {
+      // Log only unexpected fetch errors
+      if (!(error.message && error.message.startsWith("HTTP error: 404"))) {
+        console.error(`Fetch problem: ${error.message} Announcement.html could not be loaded.`);
+      }
+    });
+</script>
+  
+
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../index.html" title="PyHPS home">Home</a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../getting_started/index.html">
+    Getting started
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../user_guide/index.html">
+    User guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../api/index.html">
+    API reference
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="index.html">
+    Examples
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../contribute.html">
+    Contribute
+  </a>
+</li>
+
+  </ul>
+</nav>
+</div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+<div class="search-bar pst-js-only" id="search-bar">
+  <form class="bd-search d-flex align-items-center" action="../search.html" method="get">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <input type="search" class="form-control" name="q" placeholder="Search the docs ..."
+      aria-label="Search the docs ..." autocomplete="off" autocorrect="off"
+      autocapitalize="off" spellcheck="false" />
+    <span class="search-button__kbd-shortcut">
+      <kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd>
+    </span>
+  </form>
+  
+  <div id="static-search-results" class="static-search-results" style="display:none;" tabindex="0"></div>
+  
+</div></div>
+        
+          <div class="navbar-item">
+<div class="version-switcher__container dropdown pst-js-only">
+  <button id="pst-version-switcher-button-3"
+    type="button"
+    class="version-switcher__button btn btn-sm dropdown-toggle"
+    data-bs-toggle="dropdown"
+    aria-haspopup="listbox"
+    aria-controls="pst-version-switcher-list-3"
+    aria-label="Version switcher list"
+  >
+    Choose version  <!-- this text may get changed later by javascript -->
+    <span class="caret"></span>
+  </button>
+  <div id="pst-version-switcher-list-3"
+    class="version-switcher__menu dropdown-menu list-group-flush py-0"
+    role="listbox" aria-labelledby="pst-version-switcher-button-3">
+    <!-- dropdown will be populated by javascript on page load -->
+  </div>
+</div></div>
+        
+          <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/ansys/pyhps" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item pst-sidebar-collapse"><button id="pst-collapse-sidebar-button" aria-expanded="true" aria-controls="pst-primary-sidebar"><svg class="pst-icon svg-inline--fa" role="img" aria-hidden="true" focusable="false" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+    <path fill="currentColor" d="M3 15.5C2.36232 15.5 1.74874 15.2564 1.28478 14.8189C0.820828 14.3815 0.541576 13.7832 0.504167 13.1467L0.5 13L0.5 3C0.499965 2.36232 0.743605 1.74874 1.18107 1.28478C1.61854 0.820828 2.21676 0.541576 2.85333 0.504167L3 0.5L13 0.5C13.6377 0.499965 14.2513 0.743605 14.7152 1.18107C15.1792 1.61854 15.4584 2.21676 15.4958 2.85333L15.5 3L15.5 13C15.5 13.6377 15.2564 14.2513 14.8189 14.7152C14.3815 15.1792 13.7832 15.4584 13.1467 15.4958L13 15.5L3 15.5ZM3 13.8333L10.5 13.8333L10.5 2.16667L3 2.16667C2.79589 2.16669 2.59889 2.24163 2.44636 2.37726C2.29383 2.5129 2.19638 2.69979 2.1725 2.9025L2.16667 3L2.16667 13C2.16669 13.2041 2.24163 13.4011 2.37726 13.5536C2.5129 13.7062 2.69979 13.8036 2.9025 13.8275L3 13.8333ZM6.65583 10.325L6.5775 10.2558L4.91083 8.58917C4.76735 8.44567 4.68116 8.25476 4.66843 8.05223C4.65569 7.84971 4.71729 7.6495 4.84167 7.48917L4.91083 7.41083L6.5775 5.74417C6.72747 5.59471 6.9287 5.50794 7.14032 5.50148C7.35194 5.49502 7.55809 5.56935 7.7169 5.70937C7.8757 5.8494 7.97525 6.04463 7.99533 6.25539C8.01541 6.46616 7.95451 6.67667 7.825 6.84417L7.75583 6.9225L6.67917 8L7.75583 9.0775C7.89931 9.22099 7.98551 9.41191 7.99824 9.61443C8.01097 9.81695 7.94938 10.0172 7.825 10.1775L7.75583 10.2558C7.61234 10.3993 7.42142 10.4855 7.2189 10.4982C7.01638 10.511 6.81617 10.4494 6.65583 10.325Z"/>
+  </svg>
+  <span class="pst-collapse-sidebar-label">Collapse Sidebar</span>
+  <span class="pst-expand-sidebar-label">Expand Sidebar</span>
+</button></div>
+        <div class="sidebar-primary-item">
+
+
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">OIDC Authentication Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ex_motorbike_frame.html">MAPDL motorbike frame: Project creation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ex_motorbike_frame_query.html">MAPDL motorbike frame: Project query</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ex_mapdl_tire_performance.html">MAPDL tire performance</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ex_mapdl_linked_analyses.html">MAPDL linked analyses</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ex_lsdyna_job.html">LS-DYNA job submission</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ex_fluent_2d_heat_exchanger.html">Fluent 2D heat exchanger</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ex_fluent_nozzle.html">Fluent nozzle</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ex_cfx_static_mixer.html">CFX static mixer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ex_python_two_bar.html">Two-bar truss</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ex_python_uv.html">Run arbitrary Python scripts on HPS</a></li>
+
+
+<li class="toctree-l1"><a class="reference internal" href="ex_python_pyansys_cantilever.html">PyAnsys workflow: Cantilever</a></li>
+
+
+
+
+<li class="toctree-l1"><a class="reference internal" href="ex_monitor_topics.html">Monitor topics and streams</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ex_rcs_route_creation.html">Route creation service: register and unregister an instance</a></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+<nav aria-label="Breadcrumb">
+  <ul class="bd-breadcrumbs">
+         
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="https://docs.pyansys.com/" class="nav-link">PyAnsys</a>
+    </li>
+     
+    <li class="breadcrumb-item">
+      <a
+        href="../index.html"
+        class="nav-link"
+        aria-label="Home"
+      >
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+     
+    <li class="breadcrumb-item">
+      <a href="index.html" class="nav-link">Examples</a>
+    </li>
+      
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">OIDC Authentication Examples</span></li>
+    
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="oidc-authentication-examples">
+<span id="example-oidc-login"></span><h1>OIDC Authentication Examples<a class="headerlink" href="#oidc-authentication-examples" title="Link to this heading">#</a></h1>
+<p>This section demonstrates various approaches to OIDC (OpenID Connect) authentication
+using the Authorization Code + PKCE flow with different token storage strategies.</p>
+<nav class="contents local" id="contents">
+<ul class="simple">
+<li><p><a class="reference internal" href="#basic-oidc-login" id="id15">Basic OIDC Login</a></p>
+<ul>
+<li><p><a class="reference internal" href="#code" id="id16">Code</a></p></li>
+<li><p><a class="reference internal" href="#usage" id="id17">Usage</a></p></li>
+<li><p><a class="reference internal" href="#notes" id="id18">Notes</a></p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="#oidc-login-with-system-keyring-storage" id="id19">OIDC Login with System Keyring Storage</a></p>
+<ul>
+<li><p><a class="reference internal" href="#id1" id="id20">Code</a></p></li>
+<li><p><a class="reference internal" href="#prerequisites" id="id21">Prerequisites</a></p></li>
+<li><p><a class="reference internal" href="#id2" id="id22">Usage</a></p></li>
+<li><p><a class="reference internal" href="#security-benefits" id="id23">Security Benefits</a></p></li>
+<li><p><a class="reference internal" href="#id3" id="id24">Notes</a></p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="#oidc-login-with-disk-storage" id="id25">OIDC Login with Disk Storage</a></p>
+<ul>
+<li><p><a class="reference internal" href="#id4" id="id26">Code</a></p></li>
+<li><p><a class="reference internal" href="#id5" id="id27">Usage</a></p></li>
+<li><p><a class="reference internal" href="#security" id="id28">Security</a></p></li>
+<li><p><a class="reference internal" href="#id6" id="id29">Notes</a></p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="#load-and-use-saved-tokens" id="id30">Load and Use Saved Tokens</a></p>
+<ul>
+<li><p><a class="reference internal" href="#id7" id="id31">Code</a></p></li>
+<li><p><a class="reference internal" href="#id8" id="id32">Usage</a></p></li>
+<li><p><a class="reference internal" href="#features" id="id33">Features</a></p></li>
+<li><p><a class="reference internal" href="#error-handling" id="id34">Error Handling</a></p></li>
+<li><p><a class="reference internal" href="#id9" id="id35">Notes</a></p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="#refresh-oidc-tokens" id="id36">Refresh OIDC Tokens</a></p>
+<ul>
+<li><p><a class="reference internal" href="#id10" id="id37">Code</a></p></li>
+<li><p><a class="reference internal" href="#id11" id="id38">Prerequisites</a></p></li>
+<li><p><a class="reference internal" href="#id12" id="id39">Usage</a></p></li>
+<li><p><a class="reference internal" href="#workflow" id="id40">Workflow</a></p></li>
+<li><p><a class="reference internal" href="#id13" id="id41">Error Handling</a></p></li>
+<li><p><a class="reference internal" href="#automation" id="id42">Automation</a></p></li>
+<li><p><a class="reference internal" href="#id14" id="id43">Notes</a></p></li>
+</ul>
+</li>
+</ul>
+</nav>
+<section id="basic-oidc-login">
+<h2><a class="toc-backref" href="#id15" role="doc-backlink">Basic OIDC Login</a><a class="headerlink" href="#basic-oidc-login" title="Link to this heading">#</a></h2>
+<p>Demonstrates how to perform a basic OIDC login. Tokens are kept in memory only and
+are not persisted.</p>
+<p>The login process:</p>
+<ol class="arabic simple">
+<li><p>Opens your default browser to the OIDC provider’s login page</p></li>
+<li><p>You authenticate with your credentials</p></li>
+<li><p>Redirects back with an authorization code</p></li>
+<li><p>Exchanges the code for tokens</p></li>
+<li><p>Tokens are kept in memory only (not persisted)</p></li>
+</ol>
+<section id="code">
+<h3><a class="toc-backref" href="#id16" role="doc-backlink">Code</a><a class="headerlink" href="#code" title="Link to this heading">#</a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Copyright (C) 2022 - 2026 Synopsys, Inc. and ANSYS, Inc. All rights reserved.</span>
+<span class="c1"># SPDX-License-Identifier: MIT</span>
+<span class="c1">#</span>
+<span class="c1">#</span>
+<span class="c1"># Permission is hereby granted, free of charge, to any person obtaining a copy</span>
+<span class="c1"># of this software and associated documentation files (the "Software"), to deal</span>
+<span class="c1"># in the Software without restriction, including without limitation the rights</span>
+<span class="c1"># to use, copy, modify, merge, publish, distribute, sublicense, and/or sell</span>
+<span class="c1"># copies of the Software, and to permit persons to whom the Software is</span>
+<span class="c1"># furnished to do so, subject to the following conditions:</span>
+<span class="c1">#</span>
+<span class="c1"># The above copyright notice and this permission notice shall be included in all</span>
+<span class="c1"># copies or substantial portions of the Software.</span>
+<span class="c1">#</span>
+<span class="c1"># THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR</span>
+<span class="c1"># IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,</span>
+<span class="c1"># FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE</span>
+<span class="c1"># AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER</span>
+<span class="c1"># LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,</span>
+<span class="c1"># OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE</span>
+<span class="c1"># SOFTWARE.</span>
+
+<span class="sd">"""Basic OIDC login example.</span>
+
+<span class="sd">Demonstrates how to perform an OIDC login and use the access token.</span>
+<span class="sd">Tokens are kept in memory only (not persisted).</span>
+
+<span class="sd">If these tokens are passed to ``Client`` without ``token_storage``, refreshed</span>
+<span class="sd">tokens also remain in memory only and are not persisted across runs.</span>
+<span class="sd">"""</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">argparse</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">ansys.hps.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">Client</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">ansys.hps.client.auth.api.oidc_login</span><span class="w"> </span><span class="kn">import</span> <span class="n">browser_login</span>
+
+<span class="n">log</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">main</span><span class="p">(</span><span class="n">hps_url</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">verify_ssl</span><span class="p">:</span> <span class="nb">bool</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""Perform OIDC login and log the access token."""</span>
+    <span class="n">storage_mode</span> <span class="o">=</span> <span class="s2">"memory"</span>
+
+    <span class="c1"># Perform login - opens browser for authentication</span>
+    <span class="n">tokens</span> <span class="o">=</span> <span class="n">browser_login</span><span class="p">(</span><span class="n">hps_url</span><span class="o">=</span><span class="n">hps_url</span><span class="p">,</span> <span class="n">verify_ssl</span><span class="o">=</span><span class="n">verify_ssl</span><span class="p">)</span>
+
+    <span class="c1"># Configure Client with explicit in-memory refresh persistence mode.</span>
+    <span class="n">_</span> <span class="o">=</span> <span class="n">Client</span><span class="p">(</span>
+        <span class="n">url</span><span class="o">=</span><span class="n">hps_url</span><span class="p">,</span>
+        <span class="n">access_token</span><span class="o">=</span><span class="n">tokens</span><span class="p">[</span><span class="s2">"access_token"</span><span class="p">],</span>
+        <span class="n">refresh_token</span><span class="o">=</span><span class="n">tokens</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"refresh_token"</span><span class="p">),</span>
+        <span class="n">token_storage</span><span class="o">=</span><span class="n">storage_mode</span><span class="p">,</span>
+        <span class="n">verify</span><span class="o">=</span><span class="n">verify_ssl</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="c1"># Access token is now available</span>
+    <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"Access Token: </span><span class="si">%s</span><span class="s2">..."</span><span class="p">,</span> <span class="n">tokens</span><span class="p">[</span><span class="s2">"access_token"</span><span class="p">][:</span><span class="mi">50</span><span class="p">])</span>
+    <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"Token Expires In: </span><span class="si">%s</span><span class="s2"> seconds"</span><span class="p">,</span> <span class="n">tokens</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"expires_in"</span><span class="p">))</span>
+    <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"TLS certificate verification enabled: </span><span class="si">%s</span><span class="s2">"</span><span class="p">,</span> <span class="n">verify_ssl</span><span class="p">)</span>
+    <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"Client token_storage is set to 'memory' (refresh updates are in-process only)"</span><span class="p">)</span>
+
+    <span class="c1"># Use the access token in your API calls</span>
+    <span class="c1"># Example: requests.get(url, headers={"Authorization": f"Bearer {tokens['access_token']}"})</span>
+
+    <span class="k">return</span> <span class="n">tokens</span>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">"__main__"</span><span class="p">:</span>
+    <span class="n">parser</span> <span class="o">=</span> <span class="n">argparse</span><span class="o">.</span><span class="n">ArgumentParser</span><span class="p">(</span><span class="n">description</span><span class="o">=</span><span class="s2">"Perform basic OIDC login using browser flow."</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">"-U"</span><span class="p">,</span> <span class="s2">"--hps-url"</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s2">"https://localhost:8443/hps"</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">"--insecure"</span><span class="p">,</span>
+        <span class="n">action</span><span class="o">=</span><span class="s2">"store_true"</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">"Disable TLS certificate verification for local/self-signed endpoints."</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">args</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">parse_args</span><span class="p">()</span>
+
+    <span class="n">logging</span><span class="o">.</span><span class="n">basicConfig</span><span class="p">(</span><span class="n">level</span><span class="o">=</span><span class="n">logging</span><span class="o">.</span><span class="n">INFO</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">"</span><span class="si">%(message)s</span><span class="s2">"</span><span class="p">)</span>
+    <span class="n">main</span><span class="p">(</span><span class="n">hps_url</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">hps_url</span><span class="p">,</span> <span class="n">verify_ssl</span><span class="o">=</span><span class="ow">not</span> <span class="n">args</span><span class="o">.</span><span class="n">insecure</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="usage">
+<h3><a class="toc-backref" href="#id17" role="doc-backlink">Usage</a><a class="headerlink" href="#usage" title="Link to this heading">#</a></h3>
+<p>Run the example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">cd</span> <span class="n">examples</span><span class="o">/</span><span class="n">oidc</span>
+<span class="n">python</span> <span class="n">basic_login</span><span class="o">.</span><span class="n">py</span>
+</pre></div>
+</div>
+<p>Output:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Access</span> <span class="n">Token</span><span class="p">:</span> <span class="n">eyJhbGciOiJSUzI1NiIsInR5cCI</span><span class="o">...</span>
+<span class="n">Token</span> <span class="n">Expires</span> <span class="n">In</span><span class="p">:</span> <span class="mi">3600</span> <span class="n">seconds</span>
+</pre></div>
+</div>
+</section>
+<section id="notes">
+<h3><a class="toc-backref" href="#id18" role="doc-backlink">Notes</a><a class="headerlink" href="#notes" title="Link to this heading">#</a></h3>
+<ul class="simple">
+<li><p>Tokens are kept in memory only and are not persisted to disk</p></li>
+<li><p>The token is lost when the script exits</p></li>
+<li><dl class="simple">
+<dt>If you pass these tokens to <code class="xref py py-class docutils literal notranslate"><span class="pre">ansys.hps.client.Client</span></code> with default</dt><dd><p><code class="docutils literal notranslate"><span class="pre">token_storage=\&quot;memory\&quot;</span></code>, refreshed tokens are also in-memory only
+and are not persisted across runs</p>
+</dd>
+</dl>
+</li>
+<li><p>For persistent storage, see the examples below</p></li>
+</ul>
+</section>
+</section>
+<section id="oidc-login-with-system-keyring-storage">
+<h2><a class="toc-backref" href="#id19" role="doc-backlink">OIDC Login with System Keyring Storage</a><a class="headerlink" href="#oidc-login-with-system-keyring-storage" title="Link to this heading">#</a></h2>
+<p>Demonstrates how to save OIDC tokens to the system credential manager for secure,
+persistent storage. This is the <strong>recommended storage method</strong> for security.</p>
+<p>The system credential manager varies by platform:</p>
+<ul class="simple">
+<li><p><strong>Windows</strong>: Credential Manager</p></li>
+<li><p><strong>macOS</strong>: Keychain</p></li>
+<li><p><strong>Linux</strong>: Secret Service (via python-keyring)</p></li>
+</ul>
+<section id="id1">
+<h3><a class="toc-backref" href="#id20" role="doc-backlink">Code</a><a class="headerlink" href="#id1" title="Link to this heading">#</a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Copyright (C) 2022 - 2026 Synopsys, Inc. and ANSYS, Inc. All rights reserved.</span>
+<span class="c1"># SPDX-License-Identifier: MIT</span>
+<span class="c1">#</span>
+<span class="c1">#</span>
+<span class="c1"># Permission is hereby granted, free of charge, to any person obtaining a copy</span>
+<span class="c1"># of this software and associated documentation files (the "Software"), to deal</span>
+<span class="c1"># in the Software without restriction, including without limitation the rights</span>
+<span class="c1"># to use, copy, modify, merge, publish, distribute, sublicense, and/or sell</span>
+<span class="c1"># copies of the Software, and to permit persons to whom the Software is</span>
+<span class="c1"># furnished to do so, subject to the following conditions:</span>
+<span class="c1">#</span>
+<span class="c1"># The above copyright notice and this permission notice shall be included in all</span>
+<span class="c1"># copies or substantial portions of the Software.</span>
+<span class="c1">#</span>
+<span class="c1"># THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR</span>
+<span class="c1"># IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,</span>
+<span class="c1"># FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE</span>
+<span class="c1"># AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER</span>
+<span class="c1"># LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,</span>
+<span class="c1"># OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE</span>
+<span class="c1"># SOFTWARE.</span>
+
+<span class="sd">"""OIDC login with system keyring storage.</span>
+
+<span class="sd">Demonstrates how to save refresh-token data to the system credential manager:</span>
+<span class="sd">- Windows: Credential Manager</span>
+<span class="sd">- macOS: Keychain</span>
+<span class="sd">- Linux: Secret Service (via python-keyring)</span>
+
+<span class="sd">Requires: pip install keyring</span>
+
+<span class="sd">This example also demonstrates creating ``Client`` with</span>
+<span class="sd">``token_storage=\"keyring\"`` so automatic refresh updates are persisted</span>
+<span class="sd">to keyring across runs. Access tokens remain memory-only.</span>
+<span class="sd">"""</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">argparse</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">ansys.hps.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">Client</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">ansys.hps.client.auth.api.oidc_login</span><span class="w"> </span><span class="kn">import</span> <span class="n">browser_login</span><span class="p">,</span> <span class="n">save_tokens</span>
+
+<span class="n">log</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">main</span><span class="p">(</span><span class="n">hps_url</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">verify_ssl</span><span class="p">:</span> <span class="nb">bool</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""Perform OIDC login and save tokens to system keyring."""</span>
+    <span class="n">storage_mode</span> <span class="o">=</span> <span class="s2">"keyring"</span>
+
+    <span class="c1"># Perform login</span>
+    <span class="n">tokens</span> <span class="o">=</span> <span class="n">browser_login</span><span class="p">(</span><span class="n">hps_url</span><span class="o">=</span><span class="n">hps_url</span><span class="p">,</span> <span class="n">verify_ssl</span><span class="o">=</span><span class="n">verify_ssl</span><span class="p">)</span>
+
+    <span class="c1"># Save tokens to system keyring (preferred storage method)</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">save_tokens</span><span class="p">(</span><span class="n">tokens</span><span class="p">,</span> <span class="n">hps_url</span><span class="o">=</span><span class="n">hps_url</span><span class="p">,</span> <span class="n">storage</span><span class="o">=</span><span class="n">storage_mode</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">RuntimeError</span> <span class="k">as</span> <span class="n">ex</span><span class="p">:</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">"</span><span class="si">%s</span><span class="s2">"</span><span class="p">,</span> <span class="n">ex</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">None</span>
+
+    <span class="c1"># Configure Client to persist automatic token refresh updates to keyring.</span>
+    <span class="n">_</span> <span class="o">=</span> <span class="n">Client</span><span class="p">(</span>
+        <span class="n">url</span><span class="o">=</span><span class="n">hps_url</span><span class="p">,</span>
+        <span class="n">access_token</span><span class="o">=</span><span class="n">tokens</span><span class="p">[</span><span class="s2">"access_token"</span><span class="p">],</span>
+        <span class="n">refresh_token</span><span class="o">=</span><span class="n">tokens</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"refresh_token"</span><span class="p">),</span>
+        <span class="n">token_storage</span><span class="o">=</span><span class="n">storage_mode</span><span class="p">,</span>
+        <span class="n">verify</span><span class="o">=</span><span class="n">verify_ssl</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">result</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"Tokens saved to system keyring"</span><span class="p">)</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"Client token_storage is set to 'keyring' for persistent refresh updates"</span><span class="p">)</span>
+
+    <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"TLS certificate verification enabled: </span><span class="si">%s</span><span class="s2">"</span><span class="p">,</span> <span class="n">verify_ssl</span><span class="p">)</span>
+    <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"Token Expires In: </span><span class="si">%s</span><span class="s2"> seconds"</span><span class="p">,</span> <span class="n">tokens</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"expires_in"</span><span class="p">))</span>
+
+    <span class="k">return</span> <span class="n">tokens</span>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">"__main__"</span><span class="p">:</span>
+    <span class="n">parser</span> <span class="o">=</span> <span class="n">argparse</span><span class="o">.</span><span class="n">ArgumentParser</span><span class="p">(</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">"Perform OIDC login and persist tokens using system keyring storage."</span>
+    <span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">"-U"</span><span class="p">,</span> <span class="s2">"--hps-url"</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s2">"https://localhost:8443/hps"</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">"--insecure"</span><span class="p">,</span>
+        <span class="n">action</span><span class="o">=</span><span class="s2">"store_true"</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">"Disable TLS certificate verification for local/self-signed endpoints."</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">args</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">parse_args</span><span class="p">()</span>
+
+    <span class="n">logging</span><span class="o">.</span><span class="n">basicConfig</span><span class="p">(</span><span class="n">level</span><span class="o">=</span><span class="n">logging</span><span class="o">.</span><span class="n">INFO</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">"</span><span class="si">%(message)s</span><span class="s2">"</span><span class="p">)</span>
+    <span class="n">main</span><span class="p">(</span><span class="n">hps_url</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">hps_url</span><span class="p">,</span> <span class="n">verify_ssl</span><span class="o">=</span><span class="ow">not</span> <span class="n">args</span><span class="o">.</span><span class="n">insecure</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="prerequisites">
+<h3><a class="toc-backref" href="#id21" role="doc-backlink">Prerequisites</a><a class="headerlink" href="#prerequisites" title="Link to this heading">#</a></h3>
+<p>Install the keyring package:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="n">keyring</span>
+</pre></div>
+</div>
+</section>
+<section id="id2">
+<h3><a class="toc-backref" href="#id22" role="doc-backlink">Usage</a><a class="headerlink" href="#id2" title="Link to this heading">#</a></h3>
+<p>Run the example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">cd</span> <span class="n">examples</span><span class="o">/</span><span class="n">oidc</span>
+<span class="n">python</span> <span class="n">login_with_keyring</span><span class="o">.</span><span class="n">py</span>
+</pre></div>
+</div>
+<p>Output:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Tokens</span> <span class="n">saved</span> <span class="n">to</span> <span class="n">system</span> <span class="n">keyring</span>
+<span class="n">Token</span> <span class="n">Expires</span> <span class="n">In</span><span class="p">:</span> <span class="mi">3600</span> <span class="n">seconds</span>
+</pre></div>
+</div>
+</section>
+<section id="security-benefits">
+<h3><a class="toc-backref" href="#id23" role="doc-backlink">Security Benefits</a><a class="headerlink" href="#security-benefits" title="Link to this heading">#</a></h3>
+<ul class="simple">
+<li><p>Tokens are encrypted at rest in the system credential manager</p></li>
+<li><p>Credentials are managed by the operating system</p></li>
+<li><p>No plain-text files on disk</p></li>
+<li><p>Automatic cleanup when user logs out (on some systems)</p></li>
+</ul>
+</section>
+<section id="id3">
+<h3><a class="toc-backref" href="#id24" role="doc-backlink">Notes</a><a class="headerlink" href="#id3" title="Link to this heading">#</a></h3>
+<ul class="simple">
+<li><p>Requires the <code class="docutils literal notranslate"><span class="pre">keyring</span></code> package</p></li>
+<li><dl class="simple">
+<dt>Tokens can be loaded from keyring with</dt><dd><p><code class="xref py py-func docutils literal notranslate"><span class="pre">ansys.hps.client.auth.api.oidc_login.load_tokens()</span></code> using
+<code class="docutils literal notranslate"><span class="pre">storage=&quot;keyring&quot;</span></code></p>
+</dd>
+</dl>
+</li>
+<li><p>For automatic refresh persistence across runs in <code class="xref py py-class docutils literal notranslate"><span class="pre">ansys.hps.client.Client</span></code>,
+initialize the client with <code class="docutils literal notranslate"><span class="pre">token_storage=\&quot;keyring\&quot;</span></code></p></li>
+</ul>
+</section>
+</section>
+<section id="oidc-login-with-disk-storage">
+<h2><a class="toc-backref" href="#id25" role="doc-backlink">OIDC Login with Disk Storage</a><a class="headerlink" href="#oidc-login-with-disk-storage" title="Link to this heading">#</a></h2>
+<p>Demonstrates how to save OIDC tokens to disk with platform-specific security.</p>
+<p>Storage locations:</p>
+<ul class="simple">
+<li><p><strong>Windows</strong>: <code class="docutils literal notranslate"><span class="pre">%USERPROFILE%\.ansys\hps_tokens.json</span></code> (encrypted with DPAPI)</p></li>
+<li><p><strong>Unix/Linux</strong>: <code class="docutils literal notranslate"><span class="pre">~/.ansys/hps/hps_tokens.json</span></code> (file permissions 0o600)</p></li>
+</ul>
+<section id="id4">
+<h3><a class="toc-backref" href="#id26" role="doc-backlink">Code</a><a class="headerlink" href="#id4" title="Link to this heading">#</a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Copyright (C) 2022 - 2026 Synopsys, Inc. and ANSYS, Inc. All rights reserved.</span>
+<span class="c1"># SPDX-License-Identifier: MIT</span>
+<span class="c1">#</span>
+<span class="c1">#</span>
+<span class="c1"># Permission is hereby granted, free of charge, to any person obtaining a copy</span>
+<span class="c1"># of this software and associated documentation files (the "Software"), to deal</span>
+<span class="c1"># in the Software without restriction, including without limitation the rights</span>
+<span class="c1"># to use, copy, modify, merge, publish, distribute, sublicense, and/or sell</span>
+<span class="c1"># copies of the Software, and to permit persons to whom the Software is</span>
+<span class="c1"># furnished to do so, subject to the following conditions:</span>
+<span class="c1">#</span>
+<span class="c1"># The above copyright notice and this permission notice shall be included in all</span>
+<span class="c1"># copies or substantial portions of the Software.</span>
+<span class="c1">#</span>
+<span class="c1"># THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR</span>
+<span class="c1"># IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,</span>
+<span class="c1"># FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE</span>
+<span class="c1"># AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER</span>
+<span class="c1"># LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,</span>
+<span class="c1"># OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE</span>
+<span class="c1"># SOFTWARE.</span>
+
+<span class="sd">"""OIDC login with disk storage.</span>
+
+<span class="sd">Demonstrates how to save tokens to disk with platform-specific security:</span>
+<span class="sd">- Windows: Encrypted with DPAPI (user-scoped) at %USERPROFILE%\\.ansys\\hps_tokens.json</span>
+<span class="sd">- Unix/Linux: Plaintext with restrictive permissions (0o600) at ~/.ansys/hps/hps_tokens.json</span>
+
+<span class="sd">This example also demonstrates creating ``Client`` with</span>
+<span class="sd">``token_storage=\"disk\"`` so automatic refresh updates are persisted</span>
+<span class="sd">to disk across runs. Access tokens remain memory-only.</span>
+<span class="sd">"""</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">argparse</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">ansys.hps.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">Client</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">ansys.hps.client.auth.api.oidc_login</span><span class="w"> </span><span class="kn">import</span> <span class="n">browser_login</span><span class="p">,</span> <span class="n">save_tokens</span>
+
+<span class="n">log</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">main</span><span class="p">(</span><span class="n">hps_url</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">verify_ssl</span><span class="p">:</span> <span class="nb">bool</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""Perform OIDC login and save tokens to disk."""</span>
+    <span class="n">storage_mode</span> <span class="o">=</span> <span class="s2">"disk"</span>
+
+    <span class="c1"># Perform login</span>
+    <span class="n">tokens</span> <span class="o">=</span> <span class="n">browser_login</span><span class="p">(</span><span class="n">hps_url</span><span class="o">=</span><span class="n">hps_url</span><span class="p">,</span> <span class="n">verify_ssl</span><span class="o">=</span><span class="n">verify_ssl</span><span class="p">)</span>
+
+    <span class="c1"># Save tokens to disk</span>
+    <span class="n">token_file</span> <span class="o">=</span> <span class="n">save_tokens</span><span class="p">(</span><span class="n">tokens</span><span class="p">,</span> <span class="n">hps_url</span><span class="o">=</span><span class="n">hps_url</span><span class="p">,</span> <span class="n">storage</span><span class="o">=</span><span class="n">storage_mode</span><span class="p">)</span>
+
+    <span class="c1"># Configure Client to persist automatic token refresh updates to disk.</span>
+    <span class="n">_</span> <span class="o">=</span> <span class="n">Client</span><span class="p">(</span>
+        <span class="n">url</span><span class="o">=</span><span class="n">hps_url</span><span class="p">,</span>
+        <span class="n">access_token</span><span class="o">=</span><span class="n">tokens</span><span class="p">[</span><span class="s2">"access_token"</span><span class="p">],</span>
+        <span class="n">refresh_token</span><span class="o">=</span><span class="n">tokens</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"refresh_token"</span><span class="p">),</span>
+        <span class="n">token_storage</span><span class="o">=</span><span class="n">storage_mode</span><span class="p">,</span>
+        <span class="n">verify</span><span class="o">=</span><span class="n">verify_ssl</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"Tokens saved to: </span><span class="si">%s</span><span class="s2">"</span><span class="p">,</span> <span class="n">token_file</span><span class="p">)</span>
+    <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"TLS certificate verification enabled: </span><span class="si">%s</span><span class="s2">"</span><span class="p">,</span> <span class="n">verify_ssl</span><span class="p">)</span>
+    <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"Client token_storage is set to 'disk' for persistent refresh updates"</span><span class="p">)</span>
+    <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"Token Expires In: </span><span class="si">%s</span><span class="s2"> seconds"</span><span class="p">,</span> <span class="n">tokens</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"expires_in"</span><span class="p">))</span>
+
+    <span class="k">return</span> <span class="n">tokens</span>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">"__main__"</span><span class="p">:</span>
+    <span class="n">parser</span> <span class="o">=</span> <span class="n">argparse</span><span class="o">.</span><span class="n">ArgumentParser</span><span class="p">(</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">"Perform OIDC login and persist tokens using disk storage."</span>
+    <span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">"-U"</span><span class="p">,</span> <span class="s2">"--hps-url"</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s2">"https://localhost:8443/hps"</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">"--insecure"</span><span class="p">,</span>
+        <span class="n">action</span><span class="o">=</span><span class="s2">"store_true"</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">"Disable TLS certificate verification for local/self-signed endpoints."</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">args</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">parse_args</span><span class="p">()</span>
+
+    <span class="n">logging</span><span class="o">.</span><span class="n">basicConfig</span><span class="p">(</span><span class="n">level</span><span class="o">=</span><span class="n">logging</span><span class="o">.</span><span class="n">INFO</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">"</span><span class="si">%(message)s</span><span class="s2">"</span><span class="p">)</span>
+    <span class="n">main</span><span class="p">(</span><span class="n">hps_url</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">hps_url</span><span class="p">,</span> <span class="n">verify_ssl</span><span class="o">=</span><span class="ow">not</span> <span class="n">args</span><span class="o">.</span><span class="n">insecure</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="id5">
+<h3><a class="toc-backref" href="#id27" role="doc-backlink">Usage</a><a class="headerlink" href="#id5" title="Link to this heading">#</a></h3>
+<p>Run the example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">cd</span> <span class="n">examples</span><span class="o">/</span><span class="n">oidc</span>
+<span class="n">python</span> <span class="n">login_with_disk_storage</span><span class="o">.</span><span class="n">py</span>
+</pre></div>
+</div>
+<p>Output:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Tokens</span> <span class="n">saved</span> <span class="n">to</span><span class="p">:</span> <span class="n">C</span><span class="p">:</span>\<span class="n">Users</span>\<span class="n">username</span>\<span class="o">.</span><span class="n">ansys</span>\<span class="n">hps_tokens</span><span class="o">.</span><span class="n">json</span>
+<span class="n">Token</span> <span class="n">Expires</span> <span class="n">In</span><span class="p">:</span> <span class="mi">3600</span> <span class="n">seconds</span>
+</pre></div>
+</div>
+</section>
+<section id="security">
+<h3><a class="toc-backref" href="#id28" role="doc-backlink">Security</a><a class="headerlink" href="#security" title="Link to this heading">#</a></h3>
+<section id="windows">
+<h4>Windows<a class="headerlink" href="#windows" title="Link to this heading">#</a></h4>
+<p>On Windows, tokens are encrypted using DPAPI (Data Protection API), which provides
+user-scoped encryption. The encrypted file is only readable by the user who encrypted
+it on the same computer.</p>
+</section>
+<section id="unix-linux">
+<h4>Unix/Linux<a class="headerlink" href="#unix-linux" title="Link to this heading">#</a></h4>
+<p>On Unix/Linux systems, the token file is created with restrictive permissions (0o600).
+Only the owner can read and write it.</p>
+</section>
+</section>
+<section id="id6">
+<h3><a class="toc-backref" href="#id29" role="doc-backlink">Notes</a><a class="headerlink" href="#id6" title="Link to this heading">#</a></h3>
+<ul class="simple">
+<li><p>Tokens persist across script invocations</p></li>
+<li><dl class="simple">
+<dt>Tokens can be loaded from disk with</dt><dd><p><code class="xref py py-func docutils literal notranslate"><span class="pre">ansys.hps.client.auth.api.oidc_login.load_tokens()</span></code> using
+<code class="docutils literal notranslate"><span class="pre">storage=&quot;disk&quot;</span></code></p>
+</dd>
+</dl>
+</li>
+<li><p>For automatic refresh persistence across runs in <code class="xref py py-class docutils literal notranslate"><span class="pre">ansys.hps.client.Client</span></code>,
+initialize the client with <code class="docutils literal notranslate"><span class="pre">token_storage=\&quot;disk\&quot;</span></code></p></li>
+<li><p>For higher security, use keyring storage instead</p></li>
+</ul>
+</section>
+</section>
+<section id="load-and-use-saved-tokens">
+<h2><a class="toc-backref" href="#id30" role="doc-backlink">Load and Use Saved Tokens</a><a class="headerlink" href="#load-and-use-saved-tokens" title="Link to this heading">#</a></h2>
+<p>Demonstrates how to load previously saved tokens and use them in API calls.</p>
+<p>Tokens are loaded from an explicitly selected backend (for example,
+<code class="docutils literal notranslate"><span class="pre">storage=&quot;keyring&quot;</span></code> or <code class="docutils literal notranslate"><span class="pre">storage=&quot;disk&quot;</span></code>).</p>
+<section id="id7">
+<h3><a class="toc-backref" href="#id31" role="doc-backlink">Code</a><a class="headerlink" href="#id7" title="Link to this heading">#</a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Copyright (C) 2022 - 2026 Synopsys, Inc. and ANSYS, Inc. All rights reserved.</span>
+<span class="c1"># SPDX-License-Identifier: MIT</span>
+<span class="c1">#</span>
+<span class="c1">#</span>
+<span class="c1"># Permission is hereby granted, free of charge, to any person obtaining a copy</span>
+<span class="c1"># of this software and associated documentation files (the "Software"), to deal</span>
+<span class="c1"># in the Software without restriction, including without limitation the rights</span>
+<span class="c1"># to use, copy, modify, merge, publish, distribute, sublicense, and/or sell</span>
+<span class="c1"># copies of the Software, and to permit persons to whom the Software is</span>
+<span class="c1"># furnished to do so, subject to the following conditions:</span>
+<span class="c1">#</span>
+<span class="c1"># The above copyright notice and this permission notice shall be included in all</span>
+<span class="c1"># copies or substantial portions of the Software.</span>
+<span class="c1">#</span>
+<span class="c1"># THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR</span>
+<span class="c1"># IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,</span>
+<span class="c1"># FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE</span>
+<span class="c1"># AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER</span>
+<span class="c1"># LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,</span>
+<span class="c1"># OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE</span>
+<span class="c1"># SOFTWARE.</span>
+
+<span class="sd">"""Load and use previously saved tokens.</span>
+
+<span class="sd">Demonstrates how to load tokens from an explicitly selected storage backend</span>
+<span class="sd">and use them in API calls.</span>
+<span class="sd">"""</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">argparse</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">time</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">ansys.hps.client.auth.api.oidc_login</span><span class="w"> </span><span class="kn">import</span> <span class="n">load_tokens</span>
+
+<span class="n">log</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">is_token_expired</span><span class="p">(</span><span class="n">tokens</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">buffer_seconds</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">60</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Return True when token is expired or near expiry."""</span>
+    <span class="n">expires_in</span> <span class="o">=</span> <span class="n">tokens</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"expires_in"</span><span class="p">)</span>
+    <span class="n">saved_at</span> <span class="o">=</span> <span class="n">tokens</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"saved_at"</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">expires_in</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">saved_at</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">True</span>
+
+    <span class="k">return</span> <span class="p">(</span><span class="n">saved_at</span> <span class="o">+</span> <span class="n">expires_in</span> <span class="o">-</span> <span class="n">buffer_seconds</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">main</span><span class="p">(</span><span class="n">storage_mode</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">verify_ssl</span><span class="p">:</span> <span class="nb">bool</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""Load saved tokens and use them."""</span>
+    <span class="n">tokens</span> <span class="o">=</span> <span class="n">load_tokens</span><span class="p">(</span><span class="n">storage</span><span class="o">=</span><span class="n">storage_mode</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">tokens</span><span class="p">:</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"No saved tokens found in </span><span class="si">%s</span><span class="s2"> storage. Please run login first."</span><span class="p">,</span> <span class="n">storage_mode</span><span class="p">)</span>
+        <span class="k">return</span>
+
+    <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"Loaded tokens for: </span><span class="si">%s</span><span class="s2">"</span><span class="p">,</span> <span class="n">tokens</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"hps_url"</span><span class="p">))</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">tokens</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"access_token"</span><span class="p">):</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"No access token is persisted by design. Refresh to obtain a new access token."</span><span class="p">)</span>
+        <span class="k">return</span>
+
+    <span class="c1"># Check if token is expired (with 60 second buffer)</span>
+    <span class="k">if</span> <span class="n">is_token_expired</span><span class="p">(</span><span class="n">tokens</span><span class="p">,</span> <span class="n">buffer_seconds</span><span class="o">=</span><span class="mi">60</span><span class="p">):</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"Token is expired or expiring soon. Please refresh."</span><span class="p">)</span>
+        <span class="k">return</span>
+
+    <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"Token is valid"</span><span class="p">)</span>
+    <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"Access Token: </span><span class="si">%s</span><span class="s2">..."</span><span class="p">,</span> <span class="n">tokens</span><span class="p">[</span><span class="s2">"access_token"</span><span class="p">][:</span><span class="mi">50</span><span class="p">])</span>
+    <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"TLS certificate verification enabled: </span><span class="si">%s</span><span class="s2">"</span><span class="p">,</span> <span class="n">verify_ssl</span><span class="p">)</span>
+
+    <span class="c1"># Example: Use the token in API calls</span>
+    <span class="c1"># response = requests.get(</span>
+    <span class="c1">#     "https://localhost:8443/hps/api/v1/projects",</span>
+    <span class="c1">#     headers={"Authorization": f"Bearer {tokens['access_token']}"},</span>
+    <span class="c1">#     verify=verify_ssl,</span>
+    <span class="c1"># )</span>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">"__main__"</span><span class="p">:</span>
+    <span class="n">parser</span> <span class="o">=</span> <span class="n">argparse</span><span class="o">.</span><span class="n">ArgumentParser</span><span class="p">(</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">"Load and inspect previously saved OIDC tokens from a selected backend."</span>
+    <span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">"-s"</span><span class="p">,</span>
+        <span class="s2">"--storage"</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="s2">"keyring"</span><span class="p">,</span>
+        <span class="n">choices</span><span class="o">=</span><span class="p">[</span><span class="s2">"keyring"</span><span class="p">,</span> <span class="s2">"disk"</span><span class="p">],</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">"Token storage backend to load from (default: keyring)."</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">"--insecure"</span><span class="p">,</span>
+        <span class="n">action</span><span class="o">=</span><span class="s2">"store_true"</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">"Disable TLS certificate verification for local/self-signed endpoints."</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">args</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">parse_args</span><span class="p">()</span>
+
+    <span class="n">logging</span><span class="o">.</span><span class="n">basicConfig</span><span class="p">(</span><span class="n">level</span><span class="o">=</span><span class="n">logging</span><span class="o">.</span><span class="n">INFO</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">"</span><span class="si">%(message)s</span><span class="s2">"</span><span class="p">)</span>
+    <span class="n">main</span><span class="p">(</span><span class="n">storage_mode</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">storage</span><span class="p">,</span> <span class="n">verify_ssl</span><span class="o">=</span><span class="ow">not</span> <span class="n">args</span><span class="o">.</span><span class="n">insecure</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="id8">
+<h3><a class="toc-backref" href="#id32" role="doc-backlink">Usage</a><a class="headerlink" href="#id8" title="Link to this heading">#</a></h3>
+<p>First, save tokens using one of the preceding login examples. Then run this example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">cd</span> <span class="n">examples</span><span class="o">/</span><span class="n">oidc</span>
+<span class="n">python</span> <span class="n">load_saved_tokens</span><span class="o">.</span><span class="n">py</span>
+</pre></div>
+</div>
+<p>Output:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Loaded</span> <span class="n">tokens</span> <span class="k">for</span><span class="p">:</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">localhost</span><span class="p">:</span><span class="mi">8443</span><span class="o">/</span><span class="n">hps</span>
+<span class="n">Token</span> <span class="ow">is</span> <span class="n">valid</span>
+<span class="n">Access</span> <span class="n">Token</span><span class="p">:</span> <span class="n">eyJhbGciOiJSUzI1NiIsInR5cCI</span><span class="o">...</span>
+</pre></div>
+</div>
+</section>
+<section id="features">
+<h3><a class="toc-backref" href="#id33" role="doc-backlink">Features</a><a class="headerlink" href="#features" title="Link to this heading">#</a></h3>
+<ul class="simple">
+<li><p>Uses an explicit storage selection (keyring or disk)</p></li>
+<li><p>Checks token expiration with configurable buffer (default 60 seconds)</p></li>
+<li><p>Provides access token for use in API calls</p></li>
+</ul>
+</section>
+<section id="error-handling">
+<h3><a class="toc-backref" href="#id34" role="doc-backlink">Error Handling</a><a class="headerlink" href="#error-handling" title="Link to this heading">#</a></h3>
+<p>If no saved tokens are found, you’ll see:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">No</span> <span class="n">saved</span> <span class="n">tokens</span> <span class="n">found</span><span class="o">.</span> <span class="n">Please</span> <span class="n">run</span> <span class="n">login</span> <span class="n">first</span><span class="o">.</span>
+</pre></div>
+</div>
+<p>If tokens are expired or expiring soon:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Token</span> <span class="ow">is</span> <span class="n">expired</span> <span class="ow">or</span> <span class="n">expiring</span> <span class="n">soon</span><span class="o">.</span> <span class="n">Please</span> <span class="n">refresh</span><span class="o">.</span>
+</pre></div>
+</div>
+<p>In this case, see the token refresh example below.</p>
+</section>
+<section id="id9">
+<h3><a class="toc-backref" href="#id35" role="doc-backlink">Notes</a><a class="headerlink" href="#id9" title="Link to this heading">#</a></h3>
+<ul class="simple">
+<li><p>Choose the backend explicitly via <code class="docutils literal notranslate"><span class="pre">load_tokens(storage=...)</span></code></p></li>
+<li><p>The buffer parameter (default 60 seconds) provides a safety margin before expiration</p></li>
+<li><p>Use the <code class="docutils literal notranslate"><span class="pre">Authorization</span></code> header with the access token in API requests</p></li>
+</ul>
+</section>
+</section>
+<section id="refresh-oidc-tokens">
+<h2><a class="toc-backref" href="#id36" role="doc-backlink">Refresh OIDC Tokens</a><a class="headerlink" href="#refresh-oidc-tokens" title="Link to this heading">#</a></h2>
+<p>Demonstrates how to refresh tokens using the refresh_token grant. This allows you to
+obtain a new access token without requiring user re-authentication.</p>
+<p>The refresh token flow is useful when the access token expires but the refresh token
+is still valid.</p>
+<section id="id10">
+<h3><a class="toc-backref" href="#id37" role="doc-backlink">Code</a><a class="headerlink" href="#id10" title="Link to this heading">#</a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Copyright (C) 2022 - 2026 Synopsys, Inc. and ANSYS, Inc. All rights reserved.</span>
+<span class="c1"># SPDX-License-Identifier: MIT</span>
+<span class="c1">#</span>
+<span class="c1">#</span>
+<span class="c1"># Permission is hereby granted, free of charge, to any person obtaining a copy</span>
+<span class="c1"># of this software and associated documentation files (the "Software"), to deal</span>
+<span class="c1"># in the Software without restriction, including without limitation the rights</span>
+<span class="c1"># to use, copy, modify, merge, publish, distribute, sublicense, and/or sell</span>
+<span class="c1"># copies of the Software, and to permit persons to whom the Software is</span>
+<span class="c1"># furnished to do so, subject to the following conditions:</span>
+<span class="c1">#</span>
+<span class="c1"># The above copyright notice and this permission notice shall be included in all</span>
+<span class="c1"># copies or substantial portions of the Software.</span>
+<span class="c1">#</span>
+<span class="c1"># THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR</span>
+<span class="c1"># IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,</span>
+<span class="c1"># FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE</span>
+<span class="c1"># AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER</span>
+<span class="c1"># LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,</span>
+<span class="c1"># OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE</span>
+<span class="c1"># SOFTWARE.</span>
+
+<span class="sd">"""Refresh saved tokens.</span>
+
+<span class="sd">Demonstrates how to refresh tokens using the refresh_token grant for an</span>
+<span class="sd">explicitly selected storage backend.</span>
+<span class="sd">"""</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">argparse</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">ansys.hps.client.auth.api.oidc_login</span><span class="w"> </span><span class="kn">import</span> <span class="n">load_tokens</span><span class="p">,</span> <span class="n">refresh_tokens</span><span class="p">,</span> <span class="n">save_tokens</span>
+
+<span class="n">log</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">main</span><span class="p">(</span><span class="n">storage_mode</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">verify_ssl</span><span class="p">:</span> <span class="nb">bool</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""Refresh saved tokens."""</span>
+    <span class="c1"># Load current tokens from selected storage</span>
+    <span class="n">current_tokens</span> <span class="o">=</span> <span class="n">load_tokens</span><span class="p">(</span><span class="n">storage</span><span class="o">=</span><span class="n">storage_mode</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">current_tokens</span><span class="p">:</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"No saved tokens found in </span><span class="si">%s</span><span class="s2"> storage. Please run login first."</span><span class="p">,</span> <span class="n">storage_mode</span><span class="p">)</span>
+        <span class="k">return</span>
+
+    <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"Refreshing tokens..."</span><span class="p">)</span>
+
+    <span class="c1"># Refresh the tokens from the same selected backend</span>
+    <span class="n">new_tokens</span> <span class="o">=</span> <span class="n">refresh_tokens</span><span class="p">(</span>
+        <span class="n">hps_url</span><span class="o">=</span><span class="n">current_tokens</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"hps_url"</span><span class="p">),</span>
+        <span class="n">storage</span><span class="o">=</span><span class="n">storage_mode</span><span class="p">,</span>
+        <span class="n">verify_ssl</span><span class="o">=</span><span class="n">verify_ssl</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">new_tokens</span><span class="p">:</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"Token refresh failed. You may need to login again."</span><span class="p">)</span>
+        <span class="k">return</span>
+
+    <span class="c1"># Save refreshed tokens back to the same storage backend</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">save_tokens</span><span class="p">(</span><span class="n">new_tokens</span><span class="p">,</span> <span class="n">new_tokens</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"hps_url"</span><span class="p">),</span> <span class="n">storage</span><span class="o">=</span><span class="n">storage_mode</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">storage_mode</span> <span class="o">==</span> <span class="s2">"keyring"</span><span class="p">:</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"New tokens saved to system keyring"</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"New tokens saved to disk at: </span><span class="si">%s</span><span class="s2">"</span><span class="p">,</span> <span class="n">result</span><span class="p">)</span>
+
+    <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"New token expires in: </span><span class="si">%s</span><span class="s2"> seconds"</span><span class="p">,</span> <span class="n">new_tokens</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"expires_in"</span><span class="p">))</span>
+    <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"New refresh token expires in: </span><span class="si">%s</span><span class="s2"> seconds"</span><span class="p">,</span> <span class="n">new_tokens</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"refresh_expires_in"</span><span class="p">))</span>
+    <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"TLS certificate verification enabled: </span><span class="si">%s</span><span class="s2">"</span><span class="p">,</span> <span class="n">verify_ssl</span><span class="p">)</span>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">"__main__"</span><span class="p">:</span>
+    <span class="n">parser</span> <span class="o">=</span> <span class="n">argparse</span><span class="o">.</span><span class="n">ArgumentParser</span><span class="p">(</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">"Refresh saved OIDC tokens from a selected storage backend."</span>
+    <span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">"-s"</span><span class="p">,</span>
+        <span class="s2">"--storage"</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="s2">"keyring"</span><span class="p">,</span>
+        <span class="n">choices</span><span class="o">=</span><span class="p">[</span><span class="s2">"keyring"</span><span class="p">,</span> <span class="s2">"disk"</span><span class="p">],</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">"Token storage backend to use (default: keyring)."</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">"--insecure"</span><span class="p">,</span>
+        <span class="n">action</span><span class="o">=</span><span class="s2">"store_true"</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">"Disable TLS certificate verification for local/self-signed endpoints."</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">args</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">parse_args</span><span class="p">()</span>
+
+    <span class="n">logging</span><span class="o">.</span><span class="n">basicConfig</span><span class="p">(</span><span class="n">level</span><span class="o">=</span><span class="n">logging</span><span class="o">.</span><span class="n">INFO</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">"</span><span class="si">%(message)s</span><span class="s2">"</span><span class="p">)</span>
+    <span class="n">main</span><span class="p">(</span><span class="n">storage_mode</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">storage</span><span class="p">,</span> <span class="n">verify_ssl</span><span class="o">=</span><span class="ow">not</span> <span class="n">args</span><span class="o">.</span><span class="n">insecure</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="id11">
+<h3><a class="toc-backref" href="#id38" role="doc-backlink">Prerequisites</a><a class="headerlink" href="#id11" title="Link to this heading">#</a></h3>
+<p>You must have previously saved tokens using one of the preceding login examples.</p>
+</section>
+<section id="id12">
+<h3><a class="toc-backref" href="#id39" role="doc-backlink">Usage</a><a class="headerlink" href="#id12" title="Link to this heading">#</a></h3>
+<p>Run the example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">cd</span> <span class="n">examples</span><span class="o">/</span><span class="n">oidc</span>
+<span class="n">python</span> <span class="n">refresh_tokens_example</span><span class="o">.</span><span class="n">py</span>
+</pre></div>
+</div>
+<p>Output:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Refreshing</span> <span class="n">tokens</span><span class="o">...</span>
+<span class="n">New</span> <span class="n">tokens</span> <span class="n">saved</span> <span class="n">to</span> <span class="n">system</span> <span class="n">keyring</span>
+<span class="n">New</span> <span class="n">token</span> <span class="n">expires</span> <span class="ow">in</span><span class="p">:</span> <span class="mi">3600</span> <span class="n">seconds</span>
+<span class="n">New</span> <span class="n">refresh</span> <span class="n">token</span> <span class="n">expires</span> <span class="ow">in</span><span class="p">:</span> <span class="mi">86400</span> <span class="n">seconds</span>
+</pre></div>
+</div>
+</section>
+<section id="workflow">
+<h3><a class="toc-backref" href="#id40" role="doc-backlink">Workflow</a><a class="headerlink" href="#workflow" title="Link to this heading">#</a></h3>
+<ol class="arabic simple">
+<li><p>Loads current tokens from the selected storage backend</p></li>
+<li><p>Uses the refresh_token to obtain new tokens without user interaction</p></li>
+<li><p>Saves the new tokens back to the same selected backend</p></li>
+</ol>
+<p>This allows your app to:</p>
+<ul class="simple">
+<li><p>Automatically refresh tokens when they expire</p></li>
+<li><p>Keep the refresh token synchronized across invocations</p></li>
+<li><p>Maintain a valid access token for API calls</p></li>
+</ul>
+</section>
+<section id="id13">
+<h3><a class="toc-backref" href="#id41" role="doc-backlink">Error Handling</a><a class="headerlink" href="#id13" title="Link to this heading">#</a></h3>
+<p>If no saved tokens are found:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">No</span> <span class="n">saved</span> <span class="n">tokens</span> <span class="n">found</span><span class="o">.</span> <span class="n">Please</span> <span class="n">run</span> <span class="n">login</span> <span class="n">first</span><span class="o">.</span>
+</pre></div>
+</div>
+<p>If refresh fails (for example, refresh token expired):</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Token</span> <span class="n">refresh</span> <span class="n">failed</span><span class="o">.</span> <span class="n">You</span> <span class="n">may</span> <span class="n">need</span> <span class="n">to</span> <span class="n">login</span> <span class="n">again</span><span class="o">.</span>
+</pre></div>
+</div>
+</section>
+<section id="automation">
+<h3><a class="toc-backref" href="#id42" role="doc-backlink">Automation</a><a class="headerlink" href="#automation" title="Link to this heading">#</a></h3>
+<p>To automatically refresh tokens when needed, combine token expiration checking with
+refresh:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">ansys.hps.client.auth.api.oidc_login</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">load_tokens</span><span class="p">,</span>
+    <span class="n">_is_token_expired</span><span class="p">,</span>
+    <span class="n">refresh_tokens</span><span class="p">,</span>
+    <span class="n">save_tokens</span>
+<span class="p">)</span>
+
+<span class="n">tokens</span> <span class="o">=</span> <span class="n">load_tokens</span><span class="p">(</span><span class="n">storage</span><span class="o">=</span><span class="s2">"keyring"</span><span class="p">)</span>
+<span class="k">if</span> <span class="n">tokens</span> <span class="ow">and</span> <span class="n">_is_token_expired</span><span class="p">(</span><span class="n">tokens</span><span class="p">,</span> <span class="n">buffer_seconds</span><span class="o">=</span><span class="mi">300</span><span class="p">):</span>
+    <span class="c1"># Refresh if expiring in next 5 minutes</span>
+    <span class="n">new_tokens</span> <span class="o">=</span> <span class="n">refresh_tokens</span><span class="p">(</span><span class="n">storage</span><span class="o">=</span><span class="s2">"keyring"</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">new_tokens</span><span class="p">:</span>
+        <span class="n">save_tokens</span><span class="p">(</span><span class="n">new_tokens</span><span class="p">,</span> <span class="n">new_tokens</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"hps_url"</span><span class="p">),</span> <span class="n">storage</span><span class="o">=</span><span class="s2">"keyring"</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="id14">
+<h3><a class="toc-backref" href="#id43" role="doc-backlink">Notes</a><a class="headerlink" href="#id14" title="Link to this heading">#</a></h3>
+<ul class="simple">
+<li><p>Refresh tokens typically have a longer expiration time than access tokens</p></li>
+<li><p>If both access and refresh tokens expire, you must login again</p></li>
+<li><p>Always save refreshed tokens back to storage for consistency</p></li>
+</ul>
+</section>
+</section>
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#basic-oidc-login">Basic OIDC Login</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#code">Code</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#usage">Usage</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#notes">Notes</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#oidc-login-with-system-keyring-storage">OIDC Login with System Keyring Storage</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id1">Code</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#prerequisites">Prerequisites</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id2">Usage</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#security-benefits">Security Benefits</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id3">Notes</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#oidc-login-with-disk-storage">OIDC Login with Disk Storage</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id4">Code</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id5">Usage</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#security">Security</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#windows">Windows</a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#unix-linux">Unix/Linux</a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id6">Notes</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#load-and-use-saved-tokens">Load and Use Saved Tokens</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id7">Code</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id8">Usage</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#features">Features</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#error-handling">Error Handling</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id9">Notes</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#refresh-oidc-tokens">Refresh OIDC Tokens</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id10">Code</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id11">Prerequisites</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id12">Usage</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#workflow">Workflow</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id13">Error Handling</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#automation">Automation</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id14">Notes</a></li>
+</ul>
+</li>
+</ul>
+  </nav></div>
+
+  <div class="sidebar-secondary-item">
+
+
+  
+  <nav class="tocsection editthispage" aria-label="Edit this page">
+    <a href="https://github.com/ansys/pyhps/edit/main/doc/source/examples/ex_oidc_login.rst" rel="noopener noreferrer">
+      <i class="fa-solid fa-pencil" aria-hidden="true"></i>
+      
+      
+        
+          Edit on GitHub
+        
+      
+    </a>
+  </nav>
+</div>
+
+  <div class="sidebar-secondary-item">
+  <div role="note" aria-label="source link">
+    <ul class="this-page-menu">
+      <li><a href="../_sources/examples/ex_oidc_login.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../_static/scripts/bootstrap.js?digest=0790524f97105ba85085"></script>
+<script defer src="../_static/scripts/pydata-sphinx-theme.js?digest=0790524f97105ba85085"></script>
+
+
+  <!-- Include desired assets -->
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.7/require.min.js"></script>
+
+<script>
+// Passing the search options to the search.js file
+const SEARCH_OPTIONS = JSON.parse('{"keys": ["title", "text", "objectID"], "limit": 10, "threshold": 0.2}');
+const SEARCH_FILE = "../_static/search.json";
+const ADVANCE_SEARCH_PATH = "../search.html";
+const EXTRA_SOURCES = JSON.parse('""');
+</script>
+
+
+<script src="../_static/js/search.js"></script>
+
+  
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2026 Synopsys, Inc. and ANSYS, Inc. All rights reserved.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.1.3.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<!--
+  Theme Version Footer
+  Displays the Sphinx theme version and the last updated date.
+  Accessibility and semantic improvements included.
+-->
+<footer class="theme-version" aria-label="Theme version and last update">
+  <span>
+    
+      Built with the
+      <a href="https://sphinxdocs.ansys.com/version/stable/index.html" target="_blank" rel="noopener noreferrer">
+        Ansys Sphinx Theme
+      </a>
+      1.9.0.
+    
+  </span>
+  <br />
+  <span>Last updated on <time id="ast_build_date"></time></span>
+</footer>
+<script>
+  // Set the last updated date in a readable format
+  (function() {
+    var options = { day: "numeric", month: "long", year: "numeric" };
+    var ast_lastModifiedDate = new Date(document.lastModified);
+    var ast_build_date = ast_lastModifiedDate.toLocaleDateString("en-US", options);
+    var dateElem = document.getElementById("ast_build_date");
+    if (dateElem) {
+      dateElem.textContent = ast_build_date;
+    }
+  })();
+</script></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

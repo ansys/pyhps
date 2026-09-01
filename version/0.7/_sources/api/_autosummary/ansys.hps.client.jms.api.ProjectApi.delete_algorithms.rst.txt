@@ -1,0 +1,6 @@
+delete\_algorithms
+==================
+
+.. currentmodule:: ansys.hps.client.jms.api
+
+.. automethod:: ProjectApi.delete_algorithms

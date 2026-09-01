@@ -1,0 +1,6 @@
+get\_api\_info
+==============
+
+.. currentmodule:: ansys.hps.client.rcs.api
+
+.. automethod:: RcsApi.get_api_info

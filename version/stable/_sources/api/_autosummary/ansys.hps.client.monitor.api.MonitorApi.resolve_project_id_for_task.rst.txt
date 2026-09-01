@@ -1,0 +1,6 @@
+resolve\_project\_id\_for\_task
+===============================
+
+.. currentmodule:: ansys.hps.client.monitor.api
+
+.. automethod:: MonitorApi.resolve_project_id_for_task

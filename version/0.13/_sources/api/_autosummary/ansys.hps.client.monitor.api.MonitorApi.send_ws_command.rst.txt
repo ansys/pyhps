@@ -1,0 +1,6 @@
+send\_ws\_command
+=================
+
+.. currentmodule:: ansys.hps.client.monitor.api
+
+.. automethod:: MonitorApi.send_ws_command
