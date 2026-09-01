@@ -27,1123 +27,334 @@
 from __future__ import annotations
 
 from datetime import datetime
-from enum import Enum
-from typing import Any, Literal
+from typing import Any
 
-from pydantic import Field
+from pydantic import AnyUrl, ConfigDict, Field
 
 from ansys.hps.client.common import DictModel
 
 
-class Analytics(DictModel):
-    number_matching: int = Field(
-        ...,
-        description="Number of workers matching hardware, platform, application, and custom requirements",
-        title="Number Matching",
+class AnalyticsData(DictModel):
+    model_config = ConfigDict(
+        extra="forbid",
     )
-    number_assignable: int = Field(
-        ...,
-        description="Number of workers that are able to pick up tasks based on resource assignment mode",
-        title="Number Assignable",
-    )
-    number_accessible_assignable_and_matching: int = Field(
-        ...,
-        description="Number of workers matching hardware, platform, application, custom requirements, assignment and permissions",
-        title="Number Accessible Assignable And Matching",
-    )
-    number_accessible: int = Field(
-        ...,
-        description="Number of workers that have permissions",
-        title="Number Accessible",
-    )
+    number_accessible: int
+    number_accessible_assignable_and_matching: int
+    number_assignable: int
+    number_matching: int
 
 
 class AnalyzeHpcResources(DictModel):
-    num_cores_per_node: int | None = Field(None, title="Num Cores Per Node")
-    num_gpus_per_node: int | None = Field(None, title="Num Gpus Per Node")
-    exclusive: bool | None = Field(None, title="Exclusive")
-    queue: str | None = Field(None, title="Queue")
-    use_local_scratch: bool | None = Field(None, title="Use Local Scratch")
-    local_scratch_dir: str | None = Field(None, title="Local Scratch Dir")
-    native_submit_options: str | None = Field(None, title="Native Submit Options")
+    model_config = ConfigDict(
+        extra="forbid",
+    )
+    exclusive: bool | None = None
+    local_scratch_dir: str | None = None
+    native_submit_options: str | None = None
+    num_cores_per_node: int | None = None
+    num_gpus_per_node: int | None = None
+    queue: str | None = None
+    use_local_scratch: bool | None = None
 
 
 class AnalyzePermission(DictModel):
-    permission_type: str = Field(..., title="Permission Type")
-    role: str = Field(..., title="Role")
-    value_id: str = Field(..., title="Value Id")
-    value_name: str = Field(..., title="Value Name")
+    model_config = ConfigDict(
+        extra="forbid",
+    )
+    permission_type: str
+    role: str
+    value_id: str
+    value_name: str
 
 
 class AnalyzeRequiredSoftware(DictModel):
-    name: str = Field(..., title="Name")
-    version: str | None = Field(None, title="Version")
+    model_config = ConfigDict(
+        extra="forbid",
+    )
+    name: str
+    version: str | None = None
 
 
 class AnalyzeResourceRequirements(DictModel):
-    memory: int | None = Field(None, title="Memory")
-    num_cores: float | None = Field(None, title="Num Cores")
-    disk_space: int | None = Field(None, title="Disk Space")
-    compute_resource_set_id: str | None = Field(None, title="Compute Resource Set Id")
-    evaluator_id: str | None = Field(None, title="Evaluator Id")
-    platform: str | None = Field(None, title="Platform")
-    custom: dict[str, Any] | None = Field(None, title="Custom")
+    model_config = ConfigDict(
+        extra="forbid",
+    )
+    compute_resource_set_id: str | None = None
+    custom: dict[str, Any] | None = None
+    disk_space: int | None = None
+    distributed: bool | None = None
+    evaluator_id: str | None = None
     hpc_resources: AnalyzeHpcResources | None = None
+    memory: int | None = None
+    num_cores: float | None = None
+    platform: str | None = None
 
 
 class AnalyzeResponseRequirements(DictModel):
-    has_platform: bool | None = Field(None, title="Has Platform")
-    has_hardware: bool | None = Field(None, title="Has Hardware")
-    has_applications: bool | None = Field(None, title="Has Applications")
-    has_custom: bool | None = Field(None, title="Has Custom")
-    accessible: bool | None = Field(None, title="Accessible")
-    assignable: bool | None = Field(None, title="Assignable")
+    model_config = ConfigDict(
+        extra="forbid",
+    )
+    accessible: bool | None = None
+    assignable: bool | None = None
+    has_applications: bool | None = None
+    has_custom: bool | None = None
+    has_hardware: bool | None = None
+    has_platform: bool | None = None
 
 
 class AnalyzeResponseScaler(DictModel):
+    model_config = ConfigDict(
+        extra="forbid",
+    )
+    compute_resource_set_id: str
+    requirements: AnalyzeResponseRequirements | None = None
     resource_requirements: AnalyzeResourceRequirements
-    software_requirements: list[AnalyzeRequiredSoftware] = Field(..., title="Software Requirements")
-    requirements: AnalyzeResponseRequirements
-    scaler_id: str = Field(..., title="Scaler Id")
-    compute_resource_set_id: str = Field(..., title="Compute Resource Set Id")
+    scaler_id: str
+    software_requirements: list[AnalyzeRequiredSoftware] | None
 
 
-class ApplicationInfo(DictModel):
-    name: str = Field(..., description="Application name.", title="Name")
-    version: str = Field(..., description="Application version.", title="Version")
-    install_path: str = Field(
-        ..., description="Installation path of the application.", title="Install Path"
+class ComputeResourceSetsBodyInputBody(DictModel):
+    model_config = ConfigDict(
+        extra="forbid",
     )
-    executable: str = Field(
-        ..., description="Executable path to run the application.", title="Executable"
+    compute_resource_sets: list[dict[str, Any]] | None
+
+
+class ConfigUpdatesBodyInputBody(DictModel):
+    model_config = ConfigDict(
+        extra="forbid",
     )
-    environment: dict[str, Any] | None = Field(
-        None, description="Environment setup for the process.", title="Environment"
+    configuration_updates: list[dict[str, Any]] | None
+
+
+class ErrorDetail(DictModel):
+    model_config = ConfigDict(
+        extra="forbid",
     )
-    capabilities: list[str] | None = Field(
-        None, description="Capabilities of the application.", title="Capabilities"
-    )
-    customization_hook: dict[str, Any] | None = Field(
+    location: str | None = Field(
         None,
-        description="Custom hook dictionary for modifying the configuration before performing runs.",
-        title="Customization Hook",
+        description="Where the error occurred, e.g. 'body.items[3].tags' or 'path.thing-id'",
     )
+    message: str | None = Field(None, description="Error message text")
+    value: Any | None = Field(None, description="The value at the given location")
 
 
-class EvaluatorTaskDirectoryCleanup(Enum):
-    always = "always"
-    on_success = "on_success"
-    never = "never"
-
-
-class ContextUpdate(DictModel):
-    custom: dict[str, int | bool | str | float | None] | None = Field(
-        {}, description="Custom runtime properties.", title="Custom"
+class ErrorModel(DictModel):
+    model_config = ConfigDict(
+        extra="forbid",
     )
-
-
-class CrsCountResponse(DictModel):
-    num_compute_resource_sets: int | None = Field(0, title="Num Compute Resource Sets")
-
-
-class TaskDirectoryCleanup(Enum):
-    always = "always"
-    on_success = "on_success"
-    never = "never"
-
-
-class ShutdownStatus(Enum):
-    unset = "unset"
-    normal = "normal"
-    aborted = "aborted"
-    crash = "crash"
-    failed = "failed"
+    detail: str | None = Field(
+        None,
+        description="A human-readable explanation specific to this occurrence of the problem.",
+        examples=["Property foo is required but is missing."],
+    )
+    errors: list[ErrorDetail] | None = Field(
+        None, description="Optional list of individual error details"
+    )
+    instance: AnyUrl | None = Field(
+        None,
+        description="A URI reference that identifies the specific occurrence of the problem.",
+        examples=["https://example.com/error-log/abc123"],
+    )
+    status: int | None = Field(None, description="HTTP status code", examples=[400])
+    title: str | None = Field(
+        None,
+        description="A short, human-readable summary of the problem type. This value should not change between occurrences of the error.",
+        examples=["Bad Request"],
+    )
+    type: AnyUrl | None = Field(
+        "about:blank",
+        description="A URI reference to human-readable documentation for the error.",
+        examples=["https://example.com/errors/example"],
+    )
 
 
 class EvaluatorRegistration(DictModel):
-    id: str | None = Field(None, description="Unique ID for the worker.", title="Id")
-    name: str | None = Field(None, description="User-defined name for the worker.", title="Name")
-    last_modified: datetime | None = Field(
-        None,
-        description="Date and time when the registration was last modified.",
-        title="Last Modified",
+    model_config = ConfigDict(
+        extra="forbid",
     )
-    host_id: str | None = Field(
-        None,
-        description="Static hardware and configuration-based UUID.",
-        title="Host Id",
-    )
-    host_name: str | None = Field(
-        None,
-        description="Name of the host that the worker is running on.",
-        title="Host Name",
-    )
-    username: str | None = Field(
-        None,
-        description="Username that the worker authenticated with.",
-        title="Username",
-    )
-    user_id: str | None = Field(
-        None, description="User ID that the worker authenticated with.", title="User Id"
-    )
-    platform: str | None = Field(
-        None, description="OS that the worker is running on.", title="Platform"
-    )
-    build_info: dict[str, Any] | None = Field(
-        {}, description="Dictionary with build information.", title="Build Info"
-    )
-    organization_id: str | None = Field(
-        None,
-        description="Organization (e.g. customer, account) identifier.",
-        title="Organization Id",
-    )
-    is_admin: bool | None = Field(
-        False, description="Worker has admin privileges", title="Is Admin"
-    )
-    compute_resource_set_id: str | None = Field(
-        None,
-        description="ID of the compute resource set that the evaluator belongs to.",
-        title="Compute Resource Set Id",
-    )
+    account_id: str | None = Field(None, description="Account ID for multi-tenancy")
+    build_info: dict[str, Any] | None = Field(None, description="Build version information")
     change_requested: datetime | None = Field(
         None,
-        description="Date and time of the configuration's last modification request.",
-        title="Change Requested",
+        description="When a configuration change was requested (ISO 8601 timestamp)",
     )
-    shutdown_status: ShutdownStatus | None = Field(
-        "unset",
-        description="Status of Evaluator shutdown (default='unset').  Only Evaluator should set 'normal' status. Other statuses inferred by monitoring service.",
-        title="Shutdown Status",
+    compute_resource_set_id: str | None = Field(
+        None, description="Associated compute resource set ID"
     )
+    created_by: str | None = Field(None, description="User who created this evaluator")
+    host_id: str | None = Field(None, description="Host identifier where evaluator is running")
+    host_name: str | None = Field(None, description="Host name where evaluator is running")
     house_cleaned: bool | None = Field(
-        False,
-        description="Flag indicating housekeeper has processed abnormal shutdown_status.",
-        title="House Cleaned",
-    )
-
-
-class EvaluatorsCountResponse(DictModel):
-    num_evaluators: int | None = Field(0, title="Num Evaluators")
-
-
-class EvaluatorsRequest(DictModel):
-    evaluators: list[EvaluatorRegistration] = Field(
-        ..., description="Evaluator details", title="Evaluators"
-    )
-
-
-class EvaluatorsResponse(DictModel):
-    evaluators: list[EvaluatorRegistration] = Field(
-        ..., description="Evaluator details", title="Evaluators"
-    )
-
-
-class HpcResources(DictModel):
-    num_cores_per_node: int | None = Field(
-        None, description="Number of cores per node.", title="Num Cores Per Node"
-    )
-    num_gpus_per_node: int | None = Field(
-        None, description="Number of GPUs per node.", title="Num Gpus Per Node"
-    )
-    exclusive: bool | None = Field(
         None,
-        description="Whether nodes are exclusive to a job. If ``False``, nodes are shared with other running jobs.",
-        title="Exclusive",
+        description="Flag indicating housekeeper has processed abnormal shutdown_status. Default: false",
     )
-    queue: str | None = Field(None, description="Scheduler's queue.", title="Queue")
-
-
-class KubernetesKedaBackend(DictModel):
-    plugin_name: Literal["kubernetes"] = Field(..., title="Plugin Name")
-    debug: bool | None = Field(
-        False,
-        description="Whether to enable additional debugging of the backend.",
-        title="Debug",
-    )
-    env: dict[str, Any] | None = Field(
+    id: str | None = Field(None, description="Unique identifier for the evaluator")
+    is_admin: bool | None = Field(None, description="Whether this evaluator has admin privileges")
+    last_modified: datetime | None = Field(None, description="Last modified timestamp")
+    last_modified_by: str | None = Field(None, description="User who last modified this evaluator")
+    name: str | None = Field(None, description="User-defined name for the evaluator")
+    organization_id: str | None = Field(None, description="Organization identifier")
+    platform: str | None = Field(None, description="Platform type (e.g., Windows, Linux)")
+    shutdown_status: str | None = Field(
         None,
-        description="Static environment variables needed for job execution.",
-        title="Env",
+        description="Status of evaluator shutdown (unset, normal, aborted, crash, failed). Default: unset",
     )
-    shared_dir: str | None = Field(
-        None, description="Working directory to use.", title="Shared Dir"
-    )
-    working_dir: str | None = Field(
-        None, description="Working directory to use. (Deprecated)", title="Working Dir"
-    )
-    queue_info_path: str | None = Field(
-        None,
-        description="Path of Queue JSON file with addtl. info",
-        title="Queue Info Path",
-    )
-    job_script_template_path: str | None = Field(
-        None,
-        description="Path to the job script template to use in the backend.",
-        title="Job Script Template Path",
-    )
-    cpu_limit: str | None = Field(
-        "1.0",
-        description="CPU limit applied to each evaluator instance.",
-        title="Cpu Limit",
-    )
-    memory_limit: str | None = Field(
-        "250M",
-        description="Memory limit applied to each evaluator instance.",
-        title="Memory Limit",
-    )
-    namespace: str | None = Field(
-        "default",
-        description="Kubernetes namespace to use to scale evaluators.",
-        title="Namespace",
-    )
-    target_resource_kind: str | None = Field(
-        "job",
-        description="Kubernetes resource kind that the scaler should target. Options are ``deployment``, ``job``, and ``statefulset``.",
-        title="Target Resource Kind",
-    )
-    use_keda_scaling: bool | None = Field(
-        True,
-        description="Whether to use Keda ScaledJobs and ScaledObjects, otherwise will use plain K8s Jobs and Deployments.",
-        title="Use Keda Scaling",
-    )
-    service_name: str | None = Field(
-        "ansys/rep/scaling",
-        description="Service name to be used in prometheus query when fetching metric data.",
-        title="Service Name",
-    )
+    user_id: str | None = Field(None, description="User ID authenticated with")
+    username: str | None = Field(None, description="Username authenticated with")
 
 
-class KubernetesResourceScaling(DictModel):
-    plugin_name: Literal["kubernetes_resource_scaling"] = Field(..., title="Plugin Name")
-    scaling_factor: int | None = Field(
-        1,
-        description="Number of tasks needed to launch each additional evaluator.",
-        title="Scaling Factor",
+class EvaluatorsBodyInputBody(DictModel):
+    model_config = ConfigDict(
+        extra="forbid",
     )
-    target_resource_kind: str | None = Field(
-        "job",
-        description="Kubernetes resource kind that the scaler should target. Options are ``deployment``, ``job``, and ``statefulset``.",
-        title="Target Resource Kind",
-    )
+    evaluators: list[dict[str, Any]] | None
 
 
-class LocalBackend(DictModel):
-    plugin_name: Literal["local"] = Field(..., title="Plugin Name")
-    debug: bool | None = Field(
-        False,
-        description="Whether to enable additional debugging of the backend.",
-        title="Debug",
+class EvaluatorsOutputBody(DictModel):
+    model_config = ConfigDict(
+        extra="forbid",
     )
-    env: dict[str, Any] | None = Field(
-        None,
-        description="Static environment variables needed for job execution.",
-        title="Env",
-    )
-    shared_dir: str | None = Field(
-        None, description="Working directory to use.", title="Shared Dir"
-    )
-    working_dir: str | None = Field(
-        None, description="Working directory to use. (Deprecated)", title="Working Dir"
-    )
-    queue_info_path: str | None = Field(
-        None,
-        description="Path of Queue JSON file with addtl. info",
-        title="Queue Info Path",
-    )
-    evaluator_exe: str | None = Field(
-        None, description="Path to evaluator executable.", title="Evaluator Exe"
-    )
-
-
-class Machine(DictModel):
-    name: str = Field(..., description="Name of the machine", title="Name")
-    num_cores: int = Field(..., description="Number of cores available", title="Num Cores")
-
-
-class MaxAvailableResourceScaling(DictModel):
-    plugin_name: Literal["max_available_resource_scaling"] = Field(..., title="Plugin Name")
-    scaling_factor: int | None = Field(
-        1,
-        description="Number of tasks needed to launch each additional evaluator.",
-        title="Scaling Factor",
-    )
-    match_all_requirements: bool | None = Field(
-        False,
-        description="Whether scaling should work with available resource properties specified in the compute resource set (default) or require a match of all requirements of the task definition.",
-        title="Match All Requirements",
-    )
-
-
-class MockupBackend(DictModel):
-    plugin_name: Literal["mockup"] = Field(..., title="Plugin Name")
-    debug: bool | None = Field(
-        False,
-        description="Whether to enable additional debugging of the backend.",
-        title="Debug",
-    )
-    env: dict[str, Any] | None = Field(
-        None,
-        description="Static environment variables needed for job execution.",
-        title="Env",
-    )
-    shared_dir: str | None = Field(
-        None, description="Working directory to use.", title="Shared Dir"
-    )
-    working_dir: str | None = Field(
-        None, description="Working directory to use. (Deprecated)", title="Working Dir"
-    )
-    queue_info_path: str | None = Field(
-        None,
-        description="Path of Queue JSON file with addtl. info",
-        title="Queue Info Path",
-    )
-
-
-class Node(DictModel):
-    name: str | None = Field(None, description="Node name.", title="Name")
-    total_memory_mb: int | None = Field(None, description="Total memory.", title="Total Memory Mb")
-    used_memory_mb: int | None = Field(None, description="Used memory.", title="Used Memory Mb")
-    total_cores: int | None = Field(None, description="Number of cores.", title="Total Cores")
-    reserved_cores: int | None = Field(
-        None,
-        description="Cores currently allocated by scheduler.",
-        title="Reserved Cores",
-    )
-    additional_props: dict[str, Any] | None = Field({}, title="Additional Props")
-
-
-class NodeGroup(DictModel):
-    node_names: list[str] = Field(..., title="Node Names")
-    memory_per_node_mb: int | None = Field(
-        ..., description="Memory per node.", title="Memory Per Node Mb"
-    )
-    cores_per_node: int | None = Field(..., description="Cores per node.", title="Cores Per Node")
-
-
-class OCMBackend(DictModel):
-    plugin_name: Literal["ocm"] = Field(..., title="Plugin Name")
-    debug: bool | None = Field(
-        False,
-        description="Whether to enable additional debugging of the backend.",
-        title="Debug",
-    )
-    env: dict[str, Any] | None = Field(
-        None,
-        description="Static environment variables needed for job execution.",
-        title="Env",
-    )
-    shared_dir: str | None = Field(
-        None, description="Working directory to use.", title="Shared Dir"
-    )
-    working_dir: str | None = Field(
-        None, description="Working directory to use. (Deprecated)", title="Working Dir"
-    )
-    queue_info_path: str | None = Field(
-        None,
-        description="Path of Queue JSON file with addtl. info",
-        title="Queue Info Path",
-    )
-    ocm_url: str | None = Field(
-        None, description="URL to use for OCM API authentication.", title="Ocm Url"
-    )
-    aws_key_arn: str | None = Field(
-        None, description="AWS key ARN for JWT signing.", title="Aws Key Arn"
-    )
-    configuration_getter_uid: str | None = Field(
-        None,
-        description="The userId to use when requesting the cluster configuration from OCM",
-        title="Configuration Getter Uid",
-    )
-
-
-class PlatformEnum(Enum):
-    windows = "windows"
-    linux = "linux"
-    darwin = "darwin"
-
-
-class ProblemDetail(DictModel):
-    type: str | None = Field(None, title="Type")
-    title: str | None = Field(None, title="Title")
-    status: int = Field(..., title="Status")
-    detail: str = Field(..., title="Detail")
-    instance: str | None = Field(None, title="Instance")
-
-
-class ProcessLauncherProcessRunner(DictModel):
-    plugin_name: Literal["process_launcher_module"] = Field(..., title="Plugin Name")
-    default_user: str | None = Field(
-        None,
-        description="User to default to when no user is specified.",
-        title="Default User",
-    )
-    timeout: int | None = Field(
-        30,
-        description="Timeout in seconds before the request is stopped.",
-        title="Timeout",
-    )
-    allowed_users: list[str] | None = Field(
-        None, description="Users allowed to launch processes.", title="Allowed Users"
-    )
-    disallowed_users: list[str] | None = Field(
-        ["root"],
-        description="Users not allowed to launch processes.",
-        title="Disallowed Users",
-    )
-    user_mapping: dict[str, str] | None = Field(
-        {},
-        description="Map of the calling user to the system user.",
-        title="User Mapping",
-    )
-    minimum_uid: int | None = Field(
-        1000,
-        description="Minimum UID of users allowed to launch processes.",
-        title="Minimum Uid",
-    )
-    minimum_gid: int | None = Field(
-        1000,
-        description="Minimum GID of users allowed to launch processes.",
-        title="Minimum Gid",
-    )
-
-
-class Queue(DictModel):
-    name: str | None = Field(None, description="Queue name.", title="Name")
-    node_groups: list[NodeGroup] | None = Field(
-        None,
-        description="List of node groups associated with the queue (if available).",
-        title="Node Groups",
-    )
-    additional_props: dict[str, Any] | None = Field({}, title="Additional Props")
-
-
-class QueueLoad(DictModel):
-    name: str | None = Field(None, description="Queue name.", title="Name")
-    total_cores: int | None = Field(None, description="Total number of cores.", title="Total Cores")
-    reserved_cores: int | None = Field(
-        None,
-        description="Cores currently allocated by scheduler.",
-        title="Reserved Cores",
-    )
-    total_memory_mb: int | None = Field(None, description="Total memory.", title="Total Memory Mb")
-    used_memory_mb: int | None = Field(
-        None, description="Memory currently in use.", title="Used Memory Mb"
-    )
+    evaluators: list[EvaluatorRegistration] | None = Field(..., description="List of evaluators")
 
 
 class Resources(DictModel):
-    num_cores: int | None = Field(None, description="Number of cores.", title="Num Cores")
-    platform: PlatformEnum | None = Field(
-        None,
-        description="Basic platform information. Options are ``'linux'`` and ``'windows'``.",
+    model_config = ConfigDict(
+        extra="forbid",
     )
-    memory: int | None = Field(None, description="Amount of RAM in bytes.", title="Memory")
-    disk_space: int | None = Field(
-        None, description="Amount of disk space in bytes.", title="Disk Space"
-    )
-    custom: dict[str, bool | int | str | float | None] | None = Field(
-        {}, description="Custom resource properties.", title="Custom"
-    )
-    num_instances: int | None = Field(
-        None,
-        description="Number of instances/jobs that can be created on the compute resource set.",
-        title="Num Instances",
-    )
-
-
-class RestLauncherProcessRunner(DictModel):
-    plugin_name: Literal["process_launcher_service"] = Field(..., title="Plugin Name")
-    launcher_url: str | None = Field(
-        "http://localhost:4911",
-        description="URL to use when no URL is specified.",
-        title="Launcher Url",
-    )
-    verify_ssl: bool | None = Field(
-        True,
-        description="Whether to verify the SSL certificate for HTTPS launchers.",
-        title="Verify Ssl",
-    )
-    timeout: int | None = Field(
-        30,
-        description="Timeout in seconds before the request is stopped.",
-        title="Timeout",
-    )
-    shell: bool | None = Field(
-        True,
-        description="Whether to enable the shell interpretation on a subprocess run.",
-        title="Shell",
-    )
+    custom: dict[str, Any] | None = Field(None, description="Custom resource attributes")
+    disk_space: int | None = Field(None, description="Disk space in GB")
+    memory: int | None = Field(None, description="Memory in GB")
+    num_cores: int | None = Field(None, description="Number of CPU cores")
+    num_instances: int | None = Field(None, description="Number of instances")
+    platform: str | None = Field(None, description="Platform type")
 
 
 class ScalerApplicationInfo(DictModel):
-    name: str = Field(..., description="Application name.", title="Name")
-    version: str = Field(..., description="Application version.", title="Version")
-    install_path: str = Field(
-        ..., description="Installation path of the application.", title="Install Path"
+    model_config = ConfigDict(
+        extra="forbid",
     )
-    executable: str = Field(
-        ..., description="Executable path to run the application.", title="Executable"
-    )
-    environment: dict[str, Any] | None = Field(
-        None, description="Environment setup for the process.", title="Environment"
-    )
-    capabilities: list[str] | None = Field(
-        None, description="Capabilities of the application.", title="Capabilities"
-    )
-    customization_hook: dict[str, Any] | None = Field(
-        None,
-        description="Custom hook dictionary for modifying the configuration before performing runs.",
-        title="Customization Hook",
-    )
-    resource_name: str | None = Field(
-        None,
-        description="Kubernetes object (deployment/statefulset) name or solver image that KEDA (Kubernetes Event-driven Autoscaling) is to use as the target resource.",
-        title="Resource Name",
-    )
-    use_local_scratch: bool | None = Field(
-        None,
-        description="Whether to use local storage as the working directory for jobs.",
-        title="Use Local Scratch",
-    )
-    local_scratch_dir: str | None = Field(
-        None,
-        description="Path to the local scratch directory to use as the jobs' working directory.",
-        title="Local Scratch Dir",
-    )
-    exclusive: bool | None = Field(
-        None,
-        description="Whether the scheduler is to hold the nodes exclusively for one request.",
-        title="Exclusive",
-    )
-    distributed: bool | None = Field(
-        None,
-        description="Whether the scheduler is to provide multiple machines to fulfill the request.",
-        title="Distributed",
-    )
-    evaluator_image: str | None = Field(
-        None, description="Evaluator image to use.", title="Evaluator Image"
-    )
-    queue: str | None = Field(
-        None,
-        description="A default queue to request when starting this application on a scheduler.",
-        title="Queue",
-    )
-    scaling_max_eval_instances: int | None = Field(
-        1,
-        description="Maximum number of instances that can be created when scaling up.",
-        title="Scaling Max Eval Instances",
-    )
-    scaling_min_eval_instances: int | None = Field(
-        0,
-        description="Minimum number of instances than can be terminated when scaling down.",
-        title="Scaling Min Eval Instances",
-    )
-    scaling_threshold: int | None = Field(
-        1,
-        description="Threshold value to determine when Kubernetes deployments should be scaled up or down.",
-        title="Scaling Threshold",
-    )
-    cool_down_period: int | None = Field(
-        60,
-        description="Period to wait before scaling down the resource to 0 instances.",
-        title="Cool Down Period",
-    )
-    scaling_factor: int | None = Field(
-        None,
-        description="Number of tasks needed to launch each additional evaluator.",
-        title="Scaling Factor",
-    )
-    debug: bool | None = Field(
-        None,
-        description="Whether to enable additional debug logging and keep job working directories.",
-        title="Debug",
-    )
+    capabilities: list[str] | None = Field(None, description="Capabilities of the scaler")
+    customization_hook: dict[str, Any] | None = Field(None, description="Customization hook")
+    environment: dict[str, str] | None = Field(None, description="Environment variables")
+    executable: str | None = Field(None, description="Executable name")
+    install_path: str | None = Field(None, description="Installation path")
+    local_scratch_dir: str | None = Field(None, description="Local scratch directory path")
+    name: str | None = Field(None, description="Name of the scaler application")
+    resource_name: str | None = Field(None, description="Resource name")
+    use_local_scratch: bool | None = Field(None, description="Whether to use local scratch space")
+    version: str | None = Field(None, description="Version of the scaler application")
 
 
 class ScalerRegistration(DictModel):
-    id: str | None = Field(None, description="Unique ID for the worker.", title="Id")
-    name: str | None = Field(None, description="User-defined name for the worker.", title="Name")
-    last_modified: datetime | None = Field(
-        None,
-        description="Date and time when the registration was last modified.",
-        title="Last Modified",
+    model_config = ConfigDict(
+        extra="forbid",
     )
-    host_id: str | None = Field(
-        None,
-        description="Static hardware and configuration-based UUID.",
-        title="Host Id",
-    )
-    host_name: str | None = Field(
-        None,
-        description="Name of the host that the worker is running on.",
-        title="Host Name",
-    )
-    username: str | None = Field(
-        None,
-        description="Username that the worker authenticated with.",
-        title="Username",
-    )
-    user_id: str | None = Field(
-        None, description="User ID that the worker authenticated with.", title="User Id"
-    )
-    platform: str | None = Field(
-        None, description="OS that the worker is running on.", title="Platform"
-    )
-    build_info: dict[str, Any] | None = Field(
-        {}, description="Dictionary with build information.", title="Build Info"
-    )
-    organization_id: str | None = Field(
-        None,
-        description="Organization (e.g. customer, account) identifier.",
-        title="Organization Id",
-    )
-    is_admin: bool | None = Field(
-        False, description="Worker has admin privileges", title="Is Admin"
-    )
+    account_id: str | None = Field(None, description="Account ID for multi-tenancy")
+    build_info: dict[str, Any] | None = Field(None, description="Build version information")
     config_modified: datetime | None = Field(
         None,
-        description="Date and time of the configuration's last modification.",
-        title="Config Modified",
+        description="When the configuration was last modified (ISO 8601 timestamp)",
     )
+    created_by: str | None = Field(None, description="User who created this scaler")
+    host_id: str | None = Field(None, description="Host identifier where scaler is running")
+    host_name: str | None = Field(None, description="Host name where scaler is running")
+    id: str | None = Field(None, description="Unique identifier for the scaler")
+    is_admin: bool | None = Field(None, description="Whether this scaler has admin privileges")
+    last_modified: datetime | None = Field(None, description="Last modified timestamp")
+    last_modified_by: str | None = Field(None, description="User who last modified this scaler")
+    name: str | None = Field(None, description="User-defined name for the scaler")
+    organization_id: str | None = Field(None, description="Organization identifier")
+    platform: str | None = Field(None, description="Platform type (e.g., Windows, Linux)")
+    user_id: str | None = Field(None, description="User ID authenticated with")
+    username: str | None = Field(None, description="Username authenticated with")
 
 
-class ScalersCountResponse(DictModel):
-    num_scalers: int | None = Field(0, title="Num Scalers")
+class ScalersBodyInputBody(DictModel):
+    model_config = ConfigDict(
+        extra="forbid",
+    )
+    scalers: list[dict[str, Any]] | None
 
 
-class ScalersRequest(DictModel):
-    scalers: list[ScalerRegistration] = Field(..., description="Scaler details", title="Scalers")
-
-
-class ScalersResponse(DictModel):
-    scalers: list[ScalerRegistration] = Field(..., description="Scaler details", title="Scalers")
-
-
-class ServiceUserProcessRunner(DictModel):
-    plugin_name: Literal["service_user_module"] = Field(..., title="Plugin Name")
-
-
-class Status(DictModel):
-    time: str = Field(..., title="Time")
-    build: dict[str, Any] = Field(..., title="Build")
+class ScalersOutputBody(DictModel):
+    model_config = ConfigDict(
+        extra="forbid",
+    )
+    scalers: list[ScalerRegistration] | None = Field(..., description="List of scalers")
 
 
 class AnalyzeRequirements(DictModel):
-    project_id: str | None = Field(None, title="Project Id")
-    project_permissions: list[AnalyzePermission] | None = Field(None, title="Project Permissions")
-    software_requirements: list[AnalyzeRequiredSoftware] | None = Field(
-        None, title="Software Requirements"
+    model_config = ConfigDict(
+        extra="forbid",
     )
+    evaluator_ids: list[str] | None = None
+    project_id: str | None = None
+    project_permissions: list[AnalyzePermission] | None = None
     resource_requirements: AnalyzeResourceRequirements | None = None
-    evaluator_ids: list[str] | None = Field(None, title="Evaluator Ids")
-    scaler_ids: list[str] | None = Field(None, title="Scaler Ids")
+    scaler_ids: list[str] | None = None
+    software_requirements: list[AnalyzeRequiredSoftware] | None = None
 
 
 class AnalyzeResponseEvaluator(DictModel):
+    model_config = ConfigDict(
+        extra="forbid",
+    )
+    evaluator_id: str
+    requirements: AnalyzeResponseRequirements | None = None
     resource_requirements: AnalyzeResourceRequirements
-    software_requirements: list[AnalyzeRequiredSoftware] = Field(..., title="Software Requirements")
-    requirements: AnalyzeResponseRequirements
-    evaluator_id: str = Field(..., title="Evaluator Id")
-
-
-class ClusterInfo(DictModel):
-    id: str | None = Field(None, description="Unique ID for the database.", title="Id")
-    crs_id: str | None = Field(None, description="Compute resource set ID.", title="Crs Id")
-    name: str | None = Field(None, description="Cluster name.", title="Name")
-    queues: list[Queue] | None = Field([], title="Queues", validate_default=True)
-    nodes: list[Node] | None = Field([], title="Nodes", validate_default=True)
-    additional_props: dict[str, dict[str, Any]] | None = Field({}, title="Additional Props")
-
-
-class ClusterLoadSnapshot(DictModel):
-    id: str | None = Field(None, description="Unique ID for the database", title="Id")
-    crs_id: str | None = Field(None, description="Compute resource set ID", title="Crs Id")
-    timestamp: datetime | None = Field(
-        None, description="Timestamp of this load data", title="Timestamp"
-    )
-    queue_loads: list[QueueLoad] | None = Field([], title="Queue Loads", validate_default=True)
-
-
-class Context(DictModel):
-    custom: dict[str, int | bool | str | float | None] | None = Field(
-        {}, description="Custom runtime properties.", title="Custom"
-    )
-    machines_list: list[Machine] | None = Field(
-        None,
-        description="List of machines for distributed parallel processing.",
-        title="Machines List",
-    )
-    use_local_scratch: bool | None = Field(
-        False,
-        description="Whether to use local storage as the working directory for jobs.",
-        title="Use Local Scratch",
-    )
-
-
-class EvaluatorResources(DictModel):
-    num_cores: int | None = Field(None, description="Number of cores.", title="Num Cores")
-    platform: PlatformEnum | None = Field(
-        None,
-        description="Basic platform information. Options are ``'linux'`` and ``'windows'``.",
-    )
-    memory: int | None = Field(None, description="Amount of RAM in bytes.", title="Memory")
-    disk_space: int | None = Field(
-        None, description="Amount of disk space in bytes.", title="Disk Space"
-    )
-    custom: dict[str, bool | int | str | float | None] | None = Field(
-        {}, description="Custom resource properties.", title="Custom"
-    )
-    hpc_resources: HpcResources | None = None
-
-
-class OrchestrationInterfacesBackend(DictModel):
-    plugin_name: Literal["orchestration_interfaces"] = Field(..., title="Plugin Name")
-    debug: bool | None = Field(
-        False,
-        description="Whether to enable additional debugging of the backend.",
-        title="Debug",
-    )
-    env: dict[str, Any] | None = Field(
-        None,
-        description="Static environment variables needed for job execution.",
-        title="Env",
-    )
-    shared_dir: str | None = Field(
-        None, description="Working directory to use.", title="Shared Dir"
-    )
-    working_dir: str | None = Field(
-        None, description="Working directory to use. (Deprecated)", title="Working Dir"
-    )
-    queue_info_path: str | None = Field(
-        None,
-        description="Path of Queue JSON file with addtl. info",
-        title="Queue Info Path",
-    )
-    scheduler_type: str | None = Field(
-        "slurm",
-        description="Job scheduler type, such as ``slurm``, ``pbs``, ``uge``, or ``lsf``, to use in the backend.",
-        title="Scheduler Type",
-    )
-    enable_api: bool | None = Field(
-        False,
-        description="Whether to use the scheduler REST API feature.",
-        title="Enable Api",
-    )
-    base_url: str | None = Field(
-        "http://localhost:5050", description="REST API URL.", title="Base Url"
-    )
-    api_ver: str | None = Field("v0.0.39", description="REST API version.", title="Api Ver")
-    scheduler_queue_default: str | None = Field(
-        None,
-        description="Job scheduler queue to use for submission.",
-        title="Scheduler Queue Default",
-    )
-    scheduler_command_override: str | None = Field(
-        None,
-        description="Path to the JSON file with custom scheduler command definitions.",
-        title="Scheduler Command Override",
-    )
-    scheduler_script_override: str | None = Field(
-        None,
-        description="Path to the shell script to template for the scheduler.",
-        title="Scheduler Script Override",
-    )
-    scheduler_parsing_override: str | None = Field(
-        None,
-        description="Path to the python script that handles the scheduler command output parsing.",
-        title="Scheduler Parsing Override",
-    )
-    evaluator_exe: str | None = Field(
-        None, description="Path to evaluator executable.", title="Evaluator Exe"
-    )
-    evaluator_script_override: str | None = Field(
-        None,
-        description="Path to the shell script to template that runs evaluator.",
-        title="Evaluator Script Override",
-    )
-    exclusive_default: bool | None = Field(
-        False,
-        description="Whether the scheduler is to hold the nodes exclusively for one request.",
-        title="Exclusive Default",
-    )
-    distributed_default: bool | None = Field(
-        True,
-        description="Whether the scheduler is to provide multiple machines to fulfill the request.",
-        title="Distributed Default",
-    )
-    num_cores_default: int | None = Field(
-        1,
-        description="Number of cores to request from the scheduler for a task.",
-        title="Num Cores Default",
-    )
-    process_runner: (
-        ServiceUserProcessRunner | ProcessLauncherProcessRunner | RestLauncherProcessRunner | None
-    ) = Field(
-        {"plugin_name": "service_user_module"},
-        description="Process runner to execute commands.",
-        discriminator="plugin_name",
-        title="Process Runner",
-        validate_default=True,
-    )
-    create_workdir: bool | None = Field(
-        True,
-        description="Whether to create base and/or user-specific working directories at runtime.",
-        title="Create Workdir",
-    )
-    use_local_scratch: bool | None = Field(
-        False,
-        description="Whether to use local storage as the working directory for jobs.",
-        title="Use Local Scratch",
-    )
-    local_scratch_dir: str | None = Field(
-        None,
-        description="Path to the local scratch directory to use as the jobs' working directory.",
-        title="Local Scratch Dir",
-    )
-
-
-class AnalyzeResponse(DictModel):
-    analytics: Analytics | None = None
-    evaluators: list[AnalyzeResponseEvaluator] = Field(..., title="Evaluators")
-    scalers: list[AnalyzeResponseScaler] = Field(..., title="Scalers")
-
-
-class ClusterLoadHistoryResponse(DictModel):
-    cluster_load_history: list[ClusterLoadSnapshot] = Field(
-        ..., description="Cluster load history", title="Cluster Load History"
-    )
+    software_requirements: list[AnalyzeRequiredSoftware] | None
 
 
 class ComputeResourceSet(DictModel):
-    name: str | None = Field(
-        "default", description="Name of the compute resource set.", title="Name"
+    model_config = ConfigDict(
+        extra="forbid",
     )
-    id: str | None = Field(None, description="ID for the resource set.", title="Id")
-    scaler_id: str | None = Field(
-        None,
-        description="Temporary. To be removed after transitioning to client_id.",
-        title="Scaler Id",
-    )
-    last_modified: datetime | None = Field(
-        None, description="Last modified time.", title="Last Modified"
-    )
-    backend: (
-        KubernetesKedaBackend
-        | OrchestrationInterfacesBackend
-        | OCMBackend
-        | LocalBackend
-        | MockupBackend
-        | None
-    ) = Field(
-        {"plugin_name": "local", "debug": False},
-        description="Backend to use in the compute resource set.",
-        discriminator="plugin_name",
-        title="Backend",
-        validate_default=True,
-    )
-    scaling_strategy: MaxAvailableResourceScaling | KubernetesResourceScaling | None = Field(
-        {
-            "plugin_name": "max_available_resource_scaling",
-            "scaling_factor": 1,
-            "match_all_requirements": False,
-        },
-        description="Scaling strategy to use in the compute resource set.",
-        discriminator="plugin_name",
-        title="Scaling Strategy",
-        validate_default=True,
-    )
-    available_resources: Resources | None = Field(
-        {"custom": {}},
-        description="Available resources in the compute resource set.",
-        validate_default=True,
-    )
+    account_id: str | None = Field(None, description="Account ID for multi-tenancy")
     available_applications: list[ScalerApplicationInfo] | None = Field(
-        [],
-        description="List of available applications.",
-        title="Available Applications",
-        validate_default=True,
+        None, description="List of scaler applications"
     )
-    evaluator_requirements_matching: bool | None = Field(
-        False,
-        description="Whether the evaluators should do matching of resource and software requirements.",
-        title="Evaluator Requirements Matching",
-    )
-    evaluator_task_directory_cleanup: EvaluatorTaskDirectoryCleanup | None = Field(
-        "always",
-        description="Cleanup policy for task directories that are passed to evaluators.",
-        title="Evaluator Task Directory Cleanup",
-    )
+    available_resources: Resources | None = Field(None, description="Hardware resources available")
+    backend: dict[str, Any] | None = Field(None, description="Backend configuration")
+    created_by: str | None = Field(None, description="User who created this compute resource set")
     evaluator_auto_shutdown_time: int | None = Field(
-        20,
-        description="Time after which to shut down the evaluator if it is not running any jobs.",
-        title="Evaluator Auto Shutdown Time",
+        None, description="Auto shutdown time for evaluators (seconds)"
     )
     evaluator_loop_interval: int | None = Field(
-        5,
-        description="Number of seconds between each iteration of the evaluator's main loop.",
-        title="Evaluator Loop Interval",
+        None, description="Loop interval for evaluator checks (seconds)"
     )
-    evaluator_optimized_move: bool | None = Field(
-        False,
-        description="Whether to use optimized move operations when moving files within the same filesystem.",
-        title="Evaluator Optimized Move",
+    evaluator_requirements_matching: bool | None = Field(
+        None, description="Whether evaluator requirements matching is enabled"
     )
-
-
-class ComputeResourceSetsRequest(DictModel):
-    compute_resource_sets: list[ComputeResourceSet] = Field(
-        ..., description="Compute resource set details", title="Compute Resource Sets"
-    )
-
-
-class ComputeResourceSetsResponse(DictModel):
-    compute_resource_sets: list[ComputeResourceSet] = Field(
-        ..., description="Compute resource set details", title="Compute Resource Sets"
-    )
-
-
-class EvaluatorConfiguration(DictModel):
-    id: str | None = Field(None, description="Unique database ID (read-only).", title="Id")
-    evaluator_id: str | None = Field(
+    evaluator_task_directory_cleanup: str | None = Field(
         None,
-        description="ID of the parent evaluator (read-only).",
-        title="Evaluator Id",
+        description="When to cleanup evaluator task directories: 'always', 'on_success', or 'never'",
     )
-    last_modified: datetime | None = Field(
-        None, description="Last modified time.", title="Last Modified"
+    id: str | None = Field(None, description="Unique identifier for the compute resource set")
+    last_modified: datetime | None = Field(None, description="Last modified timestamp")
+    last_modified_by: str | None = Field(
+        None, description="User who last modified this compute resource set"
     )
-    working_directory: str | None = Field(None, title="Working Directory")
-    local_file_cache_max_size: int | None = Field(
-        None,
-        description="Maximum allowed cache size in bytes.",
-        title="Local File Cache Max Size",
-    )
-    max_num_parallel_tasks: int | None = Field(None, title="Max Num Parallel Tasks")
-    task_directory_cleanup: TaskDirectoryCleanup | None = Field(
-        None, title="Task Directory Cleanup"
-    )
-    resources: EvaluatorResources | None = Field({"custom": {}}, validate_default=True)
-    task_manager_type: str | None = Field(None, title="Task Manager Type")
-    loop_interval: float | None = Field(
-        5.0,
-        description="Number of seconds between each iteration of the evaluator's main loop.",
-        title="Loop Interval",
-    )
-    local_file_cache: bool | None = Field(
-        True,
-        description="Whether to configure a local file cache in the file tool.",
-        title="Local File Cache",
-    )
-    applications: list[ApplicationInfo] | None = Field(
-        [],
-        description="List of available applications.",
-        title="Applications",
-        validate_default=True,
-    )
-    project_server_select: bool | None = Field(
-        True,
-        description="Whether to get project assignments from the server instead of using the locally set values.",
-        title="Project Server Select",
-    )
-    project_list: list[str] | None = Field(
-        [],
-        description="IDs of projects that the evaluator should work on, in order.",
-        title="Project List",
-    )
-    project_assignment_mode: str | None = Field(
-        "all_active",
-        description="How the evaluator selects projects to work on. Options are: disabled, all_active, list.",
-        title="Project Assignment Mode",
-    )
-    context: Context | None = Field(
-        {"custom": {}, "use_local_scratch": False},
-        description="Runtime properties to pass to executed tasks.",
-        validate_default=True,
+    name: str | None = Field(None, description="User-defined name for the compute resource set")
+    scaler_id: str | None = Field(None, description="Associated scaler identifier")
+    scaling_strategy: dict[str, Any] | None = Field(
+        None, description="Scaling strategy configuration"
     )
 
 
-class EvaluatorConfigurationUpdate(DictModel):
-    id: str | None = Field(None, description="Unique database ID (read-only).", title="Id")
-    evaluator_id: str | None = Field(
-        None,
-        description="ID of the parent evaluator (read-only).",
-        title="Evaluator Id",
+class ComputeResourceSetsOutputBody(DictModel):
+    model_config = ConfigDict(
+        extra="forbid",
     )
-    last_modified: datetime | None = Field(
-        None, description="Last modified time.", title="Last Modified"
-    )
-    working_directory: str | None = Field(None, title="Working Directory")
-    local_file_cache_max_size: int | None = Field(
-        None,
-        description="Maximum allowed cache size in bytes.",
-        title="Local File Cache Max Size",
-    )
-    max_num_parallel_tasks: int | None = Field(None, title="Max Num Parallel Tasks")
-    task_directory_cleanup: TaskDirectoryCleanup | None = Field(
-        None, title="Task Directory Cleanup"
-    )
-    resources: EvaluatorResources | None = Field({"custom": {}}, validate_default=True)
-    name: str | None = Field(
-        None,
-        description="Update the name of the evaluator, which updates the registration.",
-        title="Name",
-    )
-    loop_interval: float | None = Field(
-        None,
-        description="Number of seconds between each iteration of the evaluator's main loop.",
-        title="Loop Interval",
-    )
-    local_file_cache: bool | None = Field(
-        None,
-        description="Whether to configure a local file cache in the file tool.",
-        title="Local File Cache",
-    )
-    applications: list[ApplicationInfo] | None = Field(
-        [],
-        description="List of available applications.",
-        title="Applications",
-        validate_default=True,
-    )
-    project_list: list[str] | None = Field(
-        None,
-        description="IDs of projects that the evaluator should work on, in order.",
-        title="Project List",
-    )
-    project_assignment_mode: str | None = Field(
-        None,
-        description="How the evaluator selects projects to work on. Options are: disabled, all_active, list.",
-        title="Project Assignment Mode",
-    )
-    context: ContextUpdate | None = Field(
-        {"custom": {}},
-        description="Runtime properties to pass to executed tasks.",
-        validate_default=True,
+    compute_resource_sets: list[ComputeResourceSet] | None = Field(
+        ..., description="List of compute resource sets"
     )
 
 
-class EvaluatorConfigurationUpdatesRequest(DictModel):
-    configuration_updates: list[EvaluatorConfigurationUpdate] = Field(
-        ..., description="Configuration update details", title="Configuration Updates"
+class AnalyzeResponseBody(DictModel):
+    model_config = ConfigDict(
+        extra="forbid",
     )
-
-
-class EvaluatorConfigurationUpdatesResponse(DictModel):
-    configuration_updates: list[EvaluatorConfigurationUpdate] = Field(
-        ..., description="Configuration update details", title="Configuration Updates"
-    )
-
-
-class EvaluatorConfigurationsResponse(DictModel):
-    configurations: list[EvaluatorConfiguration] = Field(
-        ..., description="Evaluator configurations", title="Configurations"
-    )
-
-
-class ScalersInfoResponse(DictModel):
-    scalers: list[ScalerRegistration] = Field(..., description="Scaler details", title="Scalers")
-    compute_resources: list[ComputeResourceSet] | None = Field(
-        None, description="Compute resource details", title="Compute Resources"
-    )
-    queue_info: list[ClusterInfo] | None = Field(
-        None, description="Queue information details", title="Queue Info"
-    )
+    analytics: AnalyticsData | None = None
+    evaluators: list[AnalyzeResponseEvaluator] | None
+    scalers: list[AnalyzeResponseScaler] | None
