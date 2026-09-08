@@ -1,0 +1,6 @@
+get\_evaluators\_count
+======================
+
+.. currentmodule:: ansys.hps.client.rms.api
+
+.. automethod:: RmsApi.get_evaluators_count

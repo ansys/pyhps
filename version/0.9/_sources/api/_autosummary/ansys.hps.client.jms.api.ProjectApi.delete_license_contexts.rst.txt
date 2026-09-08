@@ -1,0 +1,6 @@
+delete\_license\_contexts
+=========================
+
+.. currentmodule:: ansys.hps.client.jms.api
+
+.. automethod:: ProjectApi.delete_license_contexts

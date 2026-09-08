@@ -1,0 +1,6 @@
+from\_payload
+=============
+
+.. currentmodule:: ansys.hps.client.monitor
+
+.. automethod:: MessageEnvelope.from_payload

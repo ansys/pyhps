@@ -1,0 +1,65 @@
+﻿RmsApi
+======
+
+.. currentmodule:: ansys.hps.client.rms.api
+
+.. autoclass:: RmsApi
+
+   
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+      :toctree:
+   
+      
+      
+      RmsApi.analyze
+      
+      
+      RmsApi.get_api_info
+      
+      
+      RmsApi.get_cluster_info
+      
+      
+      RmsApi.get_compute_resource_set
+      
+      
+      RmsApi.get_compute_resource_sets
+      
+      
+      RmsApi.get_compute_resource_sets_count
+      
+      
+      RmsApi.get_evaluator_configuration
+      
+      
+      RmsApi.get_evaluators
+      
+      
+      RmsApi.get_evaluators_count
+      
+      
+      RmsApi.get_scalers
+      
+      
+      RmsApi.get_scalers_count
+      
+      
+      RmsApi.update_evaluator_configuration
+      
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+      :toctree:
+   
+      RmsApi.url
+   
+   

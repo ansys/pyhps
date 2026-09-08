@@ -1,0 +1,6 @@
+health\_check
+=============
+
+.. currentmodule:: ansys.hps.client.rcs.api
+
+.. automethod:: RcsApi.health_check

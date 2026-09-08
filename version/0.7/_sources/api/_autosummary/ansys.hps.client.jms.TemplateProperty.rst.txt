@@ -1,0 +1,25 @@
+﻿TemplateProperty
+================
+
+.. currentmodule:: ansys.hps.client.jms
+
+.. autoclass:: TemplateProperty
+
+   
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+      :toctree:
+   
+      
+      
+      TemplateProperty.declared_fields
+      
+   
+   
+
+   
+   
+   

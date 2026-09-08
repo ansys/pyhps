@@ -1,0 +1,6 @@
+get\_compute\_resource\_sets\_count
+===================================
+
+.. currentmodule:: ansys.hps.client.rms.api
+
+.. automethod:: RmsApi.get_compute_resource_sets_count

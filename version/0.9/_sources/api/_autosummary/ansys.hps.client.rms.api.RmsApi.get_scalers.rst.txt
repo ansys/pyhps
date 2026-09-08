@@ -1,0 +1,6 @@
+get\_scalers
+============
+
+.. currentmodule:: ansys.hps.client.rms.api
+
+.. automethod:: RmsApi.get_scalers

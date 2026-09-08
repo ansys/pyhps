@@ -1,0 +1,6 @@
+update\_job\_definitions
+========================
+
+.. currentmodule:: ansys.hps.client.jms.api
+
+.. automethod:: ProjectApi.update_job_definitions

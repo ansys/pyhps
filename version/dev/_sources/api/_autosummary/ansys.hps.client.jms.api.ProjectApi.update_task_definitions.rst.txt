@@ -1,0 +1,6 @@
+update\_task\_definitions
+=========================
+
+.. currentmodule:: ansys.hps.client.jms.api
+
+.. automethod:: ProjectApi.update_task_definitions

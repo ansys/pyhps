@@ -1,0 +1,28 @@
+﻿Job
+===
+
+.. currentmodule:: ansys.hps.client.jms
+
+.. autoclass:: Job
+
+   
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+      :toctree:
+   
+      
+      
+      Job.declared_fields
+      
+      
+      Job.get
+      
+   
+   
+
+   
+   
+   

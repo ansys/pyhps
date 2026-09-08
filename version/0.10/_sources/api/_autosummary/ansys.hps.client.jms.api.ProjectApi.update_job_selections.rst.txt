@@ -1,0 +1,6 @@
+update\_job\_selections
+=======================
+
+.. currentmodule:: ansys.hps.client.jms.api
+
+.. automethod:: ProjectApi.update_job_selections

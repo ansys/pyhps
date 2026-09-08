@@ -1,0 +1,6 @@
+get\_parameter\_mappings
+========================
+
+.. currentmodule:: ansys.hps.client.jms.api
+
+.. automethod:: ProjectApi.get_parameter_mappings

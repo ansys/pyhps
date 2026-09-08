@@ -1,0 +1,25 @@
+﻿Software
+========
+
+.. currentmodule:: ansys.hps.client.jms
+
+.. autoclass:: Software
+
+   
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+      :toctree:
+   
+      
+      
+      Software.declared_fields
+      
+   
+   
+
+   
+   
+   

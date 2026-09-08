@@ -1,0 +1,6 @@
+analyze
+=======
+
+.. currentmodule:: ansys.hps.client.rms.api
+
+.. automethod:: RmsApi.analyze

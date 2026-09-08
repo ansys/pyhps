@@ -1,0 +1,6 @@
+﻿EvaluatorConfigurationUpdate
+============================
+
+.. currentmodule:: ansys.hps.client.rms
+
+.. autopydantic_model:: EvaluatorConfigurationUpdate

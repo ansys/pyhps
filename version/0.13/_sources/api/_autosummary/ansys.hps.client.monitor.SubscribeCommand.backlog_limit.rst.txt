@@ -1,0 +1,6 @@
+backlog\_limit
+==============
+
+.. currentmodule:: ansys.hps.client.monitor
+
+.. autoattribute:: SubscribeCommand.backlog_limit

@@ -1,0 +1,6 @@
+refresh\_access\_token
+======================
+
+.. currentmodule:: ansys.hps.client.client
+
+.. automethod:: Client.refresh_access_token

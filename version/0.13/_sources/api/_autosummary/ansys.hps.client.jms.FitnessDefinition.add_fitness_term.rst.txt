@@ -1,0 +1,6 @@
+add\_fitness\_term
+==================
+
+.. currentmodule:: ansys.hps.client.jms
+
+.. automethod:: FitnessDefinition.add_fitness_term

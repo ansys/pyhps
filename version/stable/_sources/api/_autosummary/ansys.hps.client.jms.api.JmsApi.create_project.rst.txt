@@ -1,0 +1,6 @@
+create\_project
+===============
+
+.. currentmodule:: ansys.hps.client.jms.api
+
+.. automethod:: JmsApi.create_project

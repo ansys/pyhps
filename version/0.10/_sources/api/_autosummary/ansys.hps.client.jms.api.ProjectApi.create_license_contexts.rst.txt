@@ -1,0 +1,6 @@
+create\_license\_contexts
+=========================
+
+.. currentmodule:: ansys.hps.client.jms.api
+
+.. automethod:: ProjectApi.create_license_contexts

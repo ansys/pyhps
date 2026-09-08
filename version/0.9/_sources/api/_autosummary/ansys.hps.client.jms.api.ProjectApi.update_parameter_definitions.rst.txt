@@ -1,0 +1,6 @@
+update\_parameter\_definitions
+==============================
+
+.. currentmodule:: ansys.hps.client.jms.api
+
+.. automethod:: ProjectApi.update_parameter_definitions

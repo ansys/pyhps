@@ -1,0 +1,6 @@
+get\_task\_process\_tree
+========================
+
+.. currentmodule:: ansys.hps.client.monitor.api
+
+.. automethod:: MonitorApi.get_task_process_tree

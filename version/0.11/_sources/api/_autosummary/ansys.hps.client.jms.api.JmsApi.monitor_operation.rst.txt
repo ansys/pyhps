@@ -1,0 +1,6 @@
+monitor\_operation
+==================
+
+.. currentmodule:: ansys.hps.client.jms.api
+
+.. automethod:: JmsApi.monitor_operation

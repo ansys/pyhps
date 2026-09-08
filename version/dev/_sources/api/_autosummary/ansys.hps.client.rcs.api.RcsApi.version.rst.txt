@@ -1,0 +1,6 @@
+version
+=======
+
+.. currentmodule:: ansys.hps.client.rcs.api
+
+.. autoproperty:: RcsApi.version

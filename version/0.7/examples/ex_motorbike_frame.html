@@ -1,0 +1,984 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>MAPDL motorbike frame: Project creation &#8212; PyHPS</title>
+
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=5b4479735964841361fd" rel="stylesheet" />
+<link href="../_static/styles/bootstrap.css?digest=5b4479735964841361fd" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=5b4479735964841361fd" rel="stylesheet" />
+
+  
+  <link href="../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=5b4479735964841361fd" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../_static/autodoc_pydantic.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/tabs.css?v=a5c4661c" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/ansys_sphinx_theme.css?v=f64ca0e9" />
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.23/css/jquery.dataTables.min.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=5b4479735964841361fd" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=5b4479735964841361fd" />
+  <script src="../_static/vendor/fontawesome/6.1.2/js/all.min.js?digest=5b4479735964841361fd"></script>
+ 
+<link href="../_static/css/breadcrumbs.css" rel="stylesheet" />
+
+    <script src="../_static/documentation_options.js?v=1027fec7"></script>
+    <script src="../_static/doctools.js?v=888ff710"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../_static/copybutton.js?v=f281be69"></script>
+    <script src="../_static/js/table.js?v=b64f5182"></script>
+    <script src="https://cdn.datatables.net/1.10.23/js/jquery.dataTables.min.js"></script>
+    <script src="../_static/design-tabs.js?v=36754332"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'examples/ex_motorbike_frame';</script>
+    <script>
+        DOCUMENTATION_OPTIONS.theme_version = '0.14.4';
+        DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://hps.docs.pyansys.com/versions.json';
+        DOCUMENTATION_OPTIONS.theme_switcher_version_match = '0.7';
+        DOCUMENTATION_OPTIONS.show_version_warning_banner = false;
+        </script>
+    <link rel="icon" href="../_static/ansys-favicon.png"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="MAPDL motorbike frame: Project query" href="ex_motorbike_frame_query.html" />
+    <link rel="prev" title="Examples" href="index.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <link rel="canonical" href="https://hps.docs.pyansys.com/version/stable/examples/ex_motorbike_frame.html" />
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>
+    Back to top
+  </button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__primary"
+          id="__primary"/>
+  <label class="overlay overlay-primary" for="__primary"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__secondary"
+          id="__secondary"/>
+  <label class="overlay overlay-secondary" for="__secondary"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container"><!-- Debugging: html_theme_options =  -->
+
+<!-- If there is no MiliSearch enabled, use the PyData search -->
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+   
+    <nav class="bd-header navbar navbar-expand-lg bd-navbar">
+<div class="bd-header__inner bd-page-width">
+  <label class="sidebar-toggle primary-toggle" for="__primary">
+    <span class="fa-solid fa-bars"></span>
+  </label>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../_static/pyansys-logo-black-cropped.png" class="logo__image only-light" alt="PyHPS - Home"/>
+    <script>document.write(`<img src="../_static/pyansys-logo-black-cropped.png" class="logo__image only-dark" alt="PyHPS - Home"/>`);</script>
+  
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav class="navbar-nav">
+  <p class="sidebar-header-items__title"
+     role="heading"
+     aria-level="1"
+     aria-label="Site Navigation">
+    Site Navigation
+  </p>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../getting_started/index.html">
+                        Getting started
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../user_guide/index.html">
+                        User guide
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item current active">
+                      <a class="nav-link nav-internal" href="index.html">
+                        Examples
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../api/index.html">
+                        API reference
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../contribute.html">
+                        Contribute
+                      </a>
+                    </li>
+                
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+ <script>
+ document.write(`
+   <button class="btn navbar-btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script>
+        </div>
+      
+      
+        <div class="navbar-item">
+<script>
+document.write(`
+  <div class="version-switcher__container dropdown">
+    <button id="pst-version-switcher-button-2"
+      type="button"
+      class="version-switcher__button btn btn-sm navbar-btn dropdown-toggle"
+      data-bs-toggle="dropdown"
+      aria-haspopup="listbox"
+      aria-controls="pst-version-switcher-list-2"
+      aria-label="Version switcher list"
+    >
+      Choose version  <!-- this text may get changed later by javascript -->
+      <span class="caret"></span>
+    </button>
+    <div id="pst-version-switcher-list-2"
+      class="version-switcher__menu dropdown-menu list-group-flush py-0"
+      role="listbox" aria-labelledby="pst-version-switcher-button-2">
+      <!-- dropdown will be populated by javascript on page load -->
+    </div>
+  </div>
+`);
+</script></div>
+      
+        <div class="navbar-item">
+
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="theme-switch nav-link" data-mode="light"><i class="fa-solid fa-sun fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="dark"><i class="fa-solid fa-moon fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg"></i></span>
+  </button>
+`);
+</script></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links navbar-nav"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/ansys/pyhps" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i></span>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+ <script>
+ document.write(`
+   <button class="btn navbar-btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script>
+    </div>
+  
+
+  
+    <label class="sidebar-toggle secondary-toggle" for="__secondary" tabindex="0">
+      <span class="fa-solid fa-outdent"></span>
+    </label>
+  
+</div>
+
+    </nav>
+    <div id="announcement_msg"></div>
+<script>
+  fetch("announcement.html")
+    .then((response) => {
+      if (!response.ok) {
+        throw new Error(`HTTP error: ${response.status}`);
+      }
+      return response.text();
+    })
+    .then(
+      (text) => (document.getElementById("announcement_msg").innerHTML = text),
+    )
+    .catch((error) => console.error(`Fetch problem: ${error.message}`));
+</script>  
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          <div class="navbar-item">
+<nav class="navbar-nav">
+  <p class="sidebar-header-items__title"
+     role="heading"
+     aria-level="1"
+     aria-label="Site Navigation">
+    Site Navigation
+  </p>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../getting_started/index.html">
+                        Getting started
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../user_guide/index.html">
+                        User guide
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item current active">
+                      <a class="nav-link nav-internal" href="index.html">
+                        Examples
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../api/index.html">
+                        API reference
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../contribute.html">
+                        Contribute
+                      </a>
+                    </li>
+                
+  </ul>
+</nav></div>
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+<script>
+document.write(`
+  <div class="version-switcher__container dropdown">
+    <button id="pst-version-switcher-button-3"
+      type="button"
+      class="version-switcher__button btn btn-sm navbar-btn dropdown-toggle"
+      data-bs-toggle="dropdown"
+      aria-haspopup="listbox"
+      aria-controls="pst-version-switcher-list-3"
+      aria-label="Version switcher list"
+    >
+      Choose version  <!-- this text may get changed later by javascript -->
+      <span class="caret"></span>
+    </button>
+    <div id="pst-version-switcher-list-3"
+      class="version-switcher__menu dropdown-menu list-group-flush py-0"
+      role="listbox" aria-labelledby="pst-version-switcher-button-3">
+      <!-- dropdown will be populated by javascript on page load -->
+    </div>
+  </div>
+`);
+</script></div>
+        
+          <div class="navbar-item">
+
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="theme-switch nav-link" data-mode="light"><i class="fa-solid fa-sun fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="dark"><i class="fa-solid fa-moon fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg"></i></span>
+  </button>
+`);
+</script></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links navbar-nav"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/ansys/pyhps" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i></span>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">MAPDL motorbike frame: Project creation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ex_motorbike_frame_query.html">MAPDL motorbike frame: Project query</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ex_mapdl_tire_performance.html">MAPDL tire performance</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ex_mapdl_linked_analyses.html">MAPDL linked analyses</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ex_lsdyna_job.html">LS-DYNA job submission</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ex_fluent_2d_heat_exchanger.html">Fluent 2D heat exchanger</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ex_fluent_nozzle.html">Fluent nozzle</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ex_cfx_static_mixer.html">CFX static mixer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ex_python_two_bar.html">Two-bar truss</a></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+<nav aria-label="Breadcrumb">
+  <ul class="bd-breadcrumbs">
+         
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="https://docs.pyansys.com/" class="nav-link">PyAnsys</a>
+    </li>
+     
+    <li class="breadcrumb-item">
+      <a
+        href="../index.html"
+        class="nav-link"
+        aria-label="Home"
+      >
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+     
+    <li class="breadcrumb-item">
+      <a href="index.html" class="nav-link">Examples</a>
+    </li>
+      
+    <li class="breadcrumb-item active" aria-current="page">MAPDL motorbike frame: Project creation</li>
+    
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article" role="main">
+                  
+  <section id="mapdl-motorbike-frame-project-creation">
+<span id="example-mapdl-motorbike-frame"></span><h1>MAPDL motorbike frame: Project creation<a class="headerlink" href="#mapdl-motorbike-frame-project-creation" title="Link to this heading">#</a></h1>
+<p>This example shows how to create from scratch an HPS project consisting of an Ansys APDL beam model
+of a tubular steel trellis motorbike frame. After creating the project’s job definition, 10 design
+points with randomly chosen parameter values are created and set to pending.</p>
+<a class="reference internal image-reference" href="../_images/motorbike_frame.jpg"><img alt="motorbike frame picture" class="align-center" src="../_images/motorbike_frame.jpg" style="width: 426.5px; height: 295.0px;" /></a>
+<p>The model is parametrized as follows:</p>
+<ul class="simple">
+<li><p>Three custom tube types are defined whose radius and thickness can vary in a certain range.</p></li>
+<li><p>For each tube in the frame, there is a string parameter specifying which custom type it should be made of.</p></li>
+<li><p>Output parameters of interest are the weight, torsion stiffness, and maximum von Mises stress for a breaking load case.</p></li>
+</ul>
+<p>For more information about this finite element model and its parametrization, see
+“Using Evolutionary Methods with a Heterogeneous Genotype Representation
+for Design Optimization of a Tubular Steel Trellis Motorbike-Frame”, 2003
+by U. M. Fasel, O. Koenig, M. Wintermantel and P. Ermanni.</p>
+<p>You can download the <a class="reference download internal" download="" href="../_downloads/8ed38b7d3730aadc96dfe01d14ab6278/mapdl_motorbike_frame.zip"><code class="xref download docutils literal notranslate"><span class="pre">ZIP</span> <span class="pre">file</span></code></a> for the MAPDL motorbike frame example
+and use a tool such as 7-Zip to extract the files.</p>
+<p>Here is the <code class="docutils literal notranslate"><span class="pre">project_setup.py</span></code> script for this example:</p>
+<div class="literal-block-wrapper docutils container" id="id1">
+<div class="code-block-caption"><span class="caption-text">project_setup.py</span><a class="headerlink" href="#id1" title="Link to this code">#</a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Example script to set up a simple MAPDL project with parameters in PyHPS.</span>
+
+<span class="sd">Author(s): O.Koenig</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">argparse</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">random</span>
+
+<span class="kn">from</span> <span class="nn">ansys.hps.client</span> <span class="kn">import</span> <span class="n">Client</span><span class="p">,</span> <span class="n">HPSError</span><span class="p">,</span> <span class="n">__ansys_apps_version__</span>
+<span class="kn">from</span> <span class="nn">ansys.hps.client.jms</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">File</span><span class="p">,</span>
+    <span class="n">FitnessDefinition</span><span class="p">,</span>
+    <span class="n">FloatParameterDefinition</span><span class="p">,</span>
+    <span class="n">JmsApi</span><span class="p">,</span>
+    <span class="n">Job</span><span class="p">,</span>
+    <span class="n">JobDefinition</span><span class="p">,</span>
+    <span class="n">Licensing</span><span class="p">,</span>
+    <span class="n">ParameterMapping</span><span class="p">,</span>
+    <span class="n">Project</span><span class="p">,</span>
+    <span class="n">ProjectApi</span><span class="p">,</span>
+    <span class="n">ResourceRequirements</span><span class="p">,</span>
+    <span class="n">Software</span><span class="p">,</span>
+    <span class="n">StringParameterDefinition</span><span class="p">,</span>
+    <span class="n">SuccessCriteria</span><span class="p">,</span>
+    <span class="n">TaskDefinition</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="n">log</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">create_project</span><span class="p">(</span>
+    <span class="n">client</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">version</span><span class="o">=</span><span class="n">__ansys_apps_version__</span><span class="p">,</span> <span class="n">num_jobs</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">use_exec_script</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">active</span><span class="o">=</span><span class="kc">True</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Project</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Create an HPS project consisting of an ANSYS APDL beam model of a motorbike frame.</span>
+
+<span class="sd">    After creating the project job definition, 10 design points with randomly</span>
+<span class="sd">    chosen parameter values are created and set to pending.</span>
+
+<span class="sd">    For more information on the model and its parametrization, see</span>
+<span class="sd">    &quot;Using Evolutionary Methods with a Heterogeneous Genotype Representation</span>
+<span class="sd">    for Design Optimization of a Tubular Steel Trellis Motorbike-Frame&quot;, 2003</span>
+<span class="sd">    by U. M. Fasel, O. Koenig, M. Wintermantel and P. Ermanni.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">jms_api</span> <span class="o">=</span> <span class="n">JmsApi</span><span class="p">(</span><span class="n">client</span><span class="p">)</span>
+    <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;=== Project&quot;</span><span class="p">)</span>
+    <span class="n">proj</span> <span class="o">=</span> <span class="n">Project</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">priority</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">active</span><span class="o">=</span><span class="n">active</span><span class="p">)</span>
+    <span class="n">proj</span> <span class="o">=</span> <span class="n">jms_api</span><span class="o">.</span><span class="n">create_project</span><span class="p">(</span><span class="n">proj</span><span class="p">,</span> <span class="n">replace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="n">project_api</span> <span class="o">=</span> <span class="n">ProjectApi</span><span class="p">(</span><span class="n">client</span><span class="p">,</span> <span class="n">proj</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+
+    <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;=== Files&quot;</span><span class="p">)</span>
+    <span class="n">cwd</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)</span>
+    <span class="n">files</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">files</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+        <span class="n">File</span><span class="p">(</span>
+            <span class="n">name</span><span class="o">=</span><span class="s2">&quot;inp&quot;</span><span class="p">,</span>
+            <span class="n">evaluation_path</span><span class="o">=</span><span class="s2">&quot;motorbike_frame.mac&quot;</span><span class="p">,</span>
+            <span class="nb">type</span><span class="o">=</span><span class="s2">&quot;text/plain&quot;</span><span class="p">,</span>
+            <span class="n">src</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">cwd</span><span class="p">,</span> <span class="s2">&quot;motorbike_frame.mac&quot;</span><span class="p">),</span>
+        <span class="p">)</span>
+    <span class="p">)</span>
+    <span class="n">files</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+        <span class="n">File</span><span class="p">(</span>
+            <span class="n">name</span><span class="o">=</span><span class="s2">&quot;results&quot;</span><span class="p">,</span>
+            <span class="n">evaluation_path</span><span class="o">=</span><span class="s2">&quot;motorbike_frame_results.txt&quot;</span><span class="p">,</span>
+            <span class="nb">type</span><span class="o">=</span><span class="s2">&quot;text/plain&quot;</span><span class="p">,</span>
+            <span class="n">src</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">cwd</span><span class="p">,</span> <span class="s2">&quot;motorbike_frame_results.txt&quot;</span><span class="p">),</span>
+        <span class="p">)</span>
+    <span class="p">)</span>
+    <span class="n">files</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+        <span class="n">File</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;out&quot;</span><span class="p">,</span> <span class="n">evaluation_path</span><span class="o">=</span><span class="s2">&quot;file.out&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="s2">&quot;text/plain&quot;</span><span class="p">,</span> <span class="n">collect</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">monitor</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="p">)</span>
+    <span class="n">files</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">File</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;img&quot;</span><span class="p">,</span> <span class="n">evaluation_path</span><span class="o">=</span><span class="s2">&quot;**.jpg&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="s2">&quot;image/jpeg&quot;</span><span class="p">,</span> <span class="n">collect</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
+    <span class="n">files</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+        <span class="n">File</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;err&quot;</span><span class="p">,</span> <span class="n">evaluation_path</span><span class="o">=</span><span class="s2">&quot;file*.err&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="s2">&quot;text/plain&quot;</span><span class="p">,</span> <span class="n">collect</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">monitor</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="p">)</span>
+
+    <span class="c1"># Alternative, not recommended way, will collect ALL files matching file.*</span>
+    <span class="c1"># files.append( File( name=&quot;all_files&quot;, evaluation_path=&quot;file.*&quot;, type=&quot;text/plain&quot;) )</span>
+
+    <span class="k">if</span> <span class="n">use_exec_script</span><span class="p">:</span>
+        <span class="c1"># Define and upload an exemplary exec script to run MAPDL</span>
+        <span class="n">files</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+            <span class="n">File</span><span class="p">(</span>
+                <span class="n">name</span><span class="o">=</span><span class="s2">&quot;exec_mapdl&quot;</span><span class="p">,</span>
+                <span class="n">evaluation_path</span><span class="o">=</span><span class="s2">&quot;exec_mapdl.py&quot;</span><span class="p">,</span>
+                <span class="nb">type</span><span class="o">=</span><span class="s2">&quot;application/x-python-code&quot;</span><span class="p">,</span>
+                <span class="n">src</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">cwd</span><span class="p">,</span> <span class="s2">&quot;exec_mapdl.py&quot;</span><span class="p">),</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
+
+    <span class="n">files</span> <span class="o">=</span> <span class="n">project_api</span><span class="o">.</span><span class="n">create_files</span><span class="p">(</span><span class="n">files</span><span class="p">)</span>
+    <span class="n">file_ids</span> <span class="o">=</span> <span class="p">{</span><span class="n">f</span><span class="o">.</span><span class="n">name</span><span class="p">:</span> <span class="n">f</span><span class="o">.</span><span class="n">id</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">files</span><span class="p">}</span>
+
+    <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;=== JobDefinition with simulation workflow and parameters&quot;</span><span class="p">)</span>
+    <span class="n">job_def</span> <span class="o">=</span> <span class="n">JobDefinition</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;JobDefinition.1&quot;</span><span class="p">,</span> <span class="n">active</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="c1"># Input params: Dimensions of three custom tubes</span>
+    <span class="n">float_input_params</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">4</span><span class="p">):</span>
+        <span class="n">float_input_params</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span>
+            <span class="p">[</span>
+                <span class="n">FloatParameterDefinition</span><span class="p">(</span>
+                    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;tube</span><span class="si">%i</span><span class="s2">_radius&quot;</span> <span class="o">%</span> <span class="n">i</span><span class="p">,</span> <span class="n">lower_limit</span><span class="o">=</span><span class="mf">4.0</span><span class="p">,</span> <span class="n">upper_limit</span><span class="o">=</span><span class="mf">20.0</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mf">12.0</span>
+                <span class="p">),</span>
+                <span class="n">FloatParameterDefinition</span><span class="p">(</span>
+                    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;tube</span><span class="si">%i</span><span class="s2">_thickness&quot;</span> <span class="o">%</span> <span class="n">i</span><span class="p">,</span> <span class="n">lower_limit</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">upper_limit</span><span class="o">=</span><span class="mf">2.5</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mf">1.0</span>
+                <span class="p">),</span>
+            <span class="p">]</span>
+        <span class="p">)</span>
+
+    <span class="n">float_input_params</span> <span class="o">=</span> <span class="n">project_api</span><span class="o">.</span><span class="n">create_parameter_definitions</span><span class="p">(</span><span class="n">float_input_params</span><span class="p">)</span>
+    <span class="n">param_mappings</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">pi</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">4</span><span class="p">):</span>
+        <span class="n">param_mappings</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+            <span class="n">ParameterMapping</span><span class="p">(</span>
+                <span class="n">key_string</span><span class="o">=</span><span class="s2">&quot;radius(</span><span class="si">%i</span><span class="s2">)&quot;</span> <span class="o">%</span> <span class="n">i</span><span class="p">,</span>
+                <span class="n">tokenizer</span><span class="o">=</span><span class="s2">&quot;=&quot;</span><span class="p">,</span>
+                <span class="n">parameter_definition_id</span><span class="o">=</span><span class="n">float_input_params</span><span class="p">[</span><span class="n">pi</span><span class="p">]</span><span class="o">.</span><span class="n">id</span><span class="p">,</span>
+                <span class="n">file_id</span><span class="o">=</span><span class="n">file_ids</span><span class="p">[</span><span class="s2">&quot;inp&quot;</span><span class="p">],</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
+        <span class="n">pi</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="n">param_mappings</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+            <span class="n">ParameterMapping</span><span class="p">(</span>
+                <span class="n">key_string</span><span class="o">=</span><span class="s2">&quot;thickness(</span><span class="si">%i</span><span class="s2">)&quot;</span> <span class="o">%</span> <span class="n">i</span><span class="p">,</span>
+                <span class="n">tokenizer</span><span class="o">=</span><span class="s2">&quot;=&quot;</span><span class="p">,</span>
+                <span class="n">parameter_definition_id</span><span class="o">=</span><span class="n">float_input_params</span><span class="p">[</span><span class="n">pi</span><span class="p">]</span><span class="o">.</span><span class="n">id</span><span class="p">,</span>
+                <span class="n">file_id</span><span class="o">=</span><span class="n">file_ids</span><span class="p">[</span><span class="s2">&quot;inp&quot;</span><span class="p">],</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
+        <span class="n">pi</span> <span class="o">+=</span> <span class="mi">1</span>
+
+    <span class="c1"># Input params: Custom types used for all the different tubes of the frame</span>
+    <span class="n">str_input_params</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">22</span><span class="p">):</span>
+        <span class="n">str_input_params</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+            <span class="n">StringParameterDefinition</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;tube</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">i</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s2">&quot;1&quot;</span><span class="p">,</span> <span class="n">value_list</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;1&quot;</span><span class="p">,</span> <span class="s2">&quot;2&quot;</span><span class="p">,</span> <span class="s2">&quot;3&quot;</span><span class="p">])</span>
+        <span class="p">)</span>
+    <span class="n">str_input_params</span> <span class="o">=</span> <span class="n">project_api</span><span class="o">.</span><span class="n">create_parameter_definitions</span><span class="p">(</span><span class="n">str_input_params</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">22</span><span class="p">):</span>
+        <span class="n">param_mappings</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+            <span class="n">ParameterMapping</span><span class="p">(</span>
+                <span class="n">key_string</span><span class="o">=</span><span class="s2">&quot;tubes(</span><span class="si">%i</span><span class="s2">)&quot;</span> <span class="o">%</span> <span class="n">i</span><span class="p">,</span>
+                <span class="n">tokenizer</span><span class="o">=</span><span class="s2">&quot;=&quot;</span><span class="p">,</span>
+                <span class="n">parameter_definition_id</span><span class="o">=</span><span class="n">str_input_params</span><span class="p">[</span><span class="n">i</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">id</span><span class="p">,</span>
+                <span class="n">file_id</span><span class="o">=</span><span class="n">file_ids</span><span class="p">[</span><span class="s2">&quot;inp&quot;</span><span class="p">],</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
+
+    <span class="c1"># Output Params</span>
+    <span class="n">output_params</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">pname</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;weight&quot;</span><span class="p">,</span> <span class="s2">&quot;torsion_stiffness&quot;</span><span class="p">,</span> <span class="s2">&quot;max_stress&quot;</span><span class="p">]:</span>
+        <span class="n">output_params</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">FloatParameterDefinition</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">pname</span><span class="p">))</span>
+    <span class="n">output_params</span> <span class="o">=</span> <span class="n">project_api</span><span class="o">.</span><span class="n">create_parameter_definitions</span><span class="p">(</span><span class="n">output_params</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">pd</span> <span class="ow">in</span> <span class="n">output_params</span><span class="p">:</span>
+        <span class="n">param_mappings</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+            <span class="n">ParameterMapping</span><span class="p">(</span>
+                <span class="n">key_string</span><span class="o">=</span><span class="n">pd</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+                <span class="n">tokenizer</span><span class="o">=</span><span class="s2">&quot;=&quot;</span><span class="p">,</span>
+                <span class="n">parameter_definition_id</span><span class="o">=</span><span class="n">pd</span><span class="o">.</span><span class="n">id</span><span class="p">,</span>
+                <span class="n">file_id</span><span class="o">=</span><span class="n">file_ids</span><span class="p">[</span><span class="s2">&quot;results&quot;</span><span class="p">],</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
+
+    <span class="n">stat_params</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="c1"># # Collect some runtime stats from MAPDL out file</span>
+    <span class="n">stat_params</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">FloatParameterDefinition</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;mapdl_elapsed_time_obtain_license&quot;</span><span class="p">))</span>
+    <span class="n">stat_params</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">FloatParameterDefinition</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;mapdl_cp_time&quot;</span><span class="p">))</span>
+    <span class="n">stat_params</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">FloatParameterDefinition</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;mapdl_elapsed_time&quot;</span><span class="p">))</span>
+    <span class="n">stat_params</span> <span class="o">=</span> <span class="n">project_api</span><span class="o">.</span><span class="n">create_parameter_definitions</span><span class="p">(</span><span class="n">stat_params</span><span class="p">)</span>
+
+    <span class="n">param_mappings</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+        <span class="n">ParameterMapping</span><span class="p">(</span>
+            <span class="n">key_string</span><span class="o">=</span><span class="s2">&quot;Elapsed time spent obtaining a license&quot;</span><span class="p">,</span>
+            <span class="n">tokenizer</span><span class="o">=</span><span class="s2">&quot;:&quot;</span><span class="p">,</span>
+            <span class="n">parameter_definition_id</span><span class="o">=</span><span class="n">stat_params</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">id</span><span class="p">,</span>
+            <span class="n">file_id</span><span class="o">=</span><span class="n">file_ids</span><span class="p">[</span><span class="s2">&quot;out&quot;</span><span class="p">],</span>
+        <span class="p">)</span>
+    <span class="p">)</span>
+    <span class="n">param_mappings</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+        <span class="n">ParameterMapping</span><span class="p">(</span>
+            <span class="n">key_string</span><span class="o">=</span><span class="s2">&quot;CP Time      (sec)&quot;</span><span class="p">,</span>
+            <span class="n">tokenizer</span><span class="o">=</span><span class="s2">&quot;=&quot;</span><span class="p">,</span>
+            <span class="n">parameter_definition_id</span><span class="o">=</span><span class="n">stat_params</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">id</span><span class="p">,</span>
+            <span class="n">file_id</span><span class="o">=</span><span class="n">file_ids</span><span class="p">[</span><span class="s2">&quot;out&quot;</span><span class="p">],</span>
+        <span class="p">)</span>
+    <span class="p">)</span>
+    <span class="n">param_mappings</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+        <span class="n">ParameterMapping</span><span class="p">(</span>
+            <span class="n">key_string</span><span class="o">=</span><span class="s2">&quot;Elapsed Time (sec)&quot;</span><span class="p">,</span>
+            <span class="n">tokenizer</span><span class="o">=</span><span class="s2">&quot;=&quot;</span><span class="p">,</span>
+            <span class="n">parameter_definition_id</span><span class="o">=</span><span class="n">stat_params</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">id</span><span class="p">,</span>
+            <span class="n">file_id</span><span class="o">=</span><span class="n">file_ids</span><span class="p">[</span><span class="s2">&quot;out&quot;</span><span class="p">],</span>
+        <span class="p">)</span>
+    <span class="p">)</span>
+
+    <span class="c1"># For demonstration purpose we also define some parameter replacements</span>
+    <span class="c1"># that refer to task definition properties</span>
+    <span class="n">param_mappings</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+        <span class="n">ParameterMapping</span><span class="p">(</span>
+            <span class="n">key_string</span><span class="o">=</span><span class="s2">&quot;name&quot;</span><span class="p">,</span>
+            <span class="n">tokenizer</span><span class="o">=</span><span class="s2">&quot;=&quot;</span><span class="p">,</span>
+            <span class="n">string_quote</span><span class="o">=</span><span class="s2">&quot;&#39;&quot;</span><span class="p">,</span>
+            <span class="n">task_definition_property</span><span class="o">=</span><span class="s2">&quot;name&quot;</span><span class="p">,</span>
+            <span class="n">file_id</span><span class="o">=</span><span class="n">file_ids</span><span class="p">[</span><span class="s2">&quot;inp&quot;</span><span class="p">],</span>
+        <span class="p">)</span>
+    <span class="p">)</span>
+    <span class="n">param_mappings</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+        <span class="n">ParameterMapping</span><span class="p">(</span>
+            <span class="n">key_string</span><span class="o">=</span><span class="s2">&quot;application_name&quot;</span><span class="p">,</span>
+            <span class="n">tokenizer</span><span class="o">=</span><span class="s2">&quot;=&quot;</span><span class="p">,</span>
+            <span class="n">string_quote</span><span class="o">=</span><span class="s2">&quot;&#39;&quot;</span><span class="p">,</span>
+            <span class="n">task_definition_property</span><span class="o">=</span><span class="s2">&quot;software_requirements[0].name&quot;</span><span class="p">,</span>
+            <span class="n">file_id</span><span class="o">=</span><span class="n">file_ids</span><span class="p">[</span><span class="s2">&quot;inp&quot;</span><span class="p">],</span>
+        <span class="p">)</span>
+    <span class="p">)</span>
+    <span class="n">param_mappings</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+        <span class="n">ParameterMapping</span><span class="p">(</span>
+            <span class="n">key_string</span><span class="o">=</span><span class="s2">&quot;num_cores&quot;</span><span class="p">,</span>
+            <span class="n">tokenizer</span><span class="o">=</span><span class="s2">&quot;=&quot;</span><span class="p">,</span>
+            <span class="n">task_definition_property</span><span class="o">=</span><span class="s2">&quot;num_cores&quot;</span><span class="p">,</span>
+            <span class="n">file_id</span><span class="o">=</span><span class="n">file_ids</span><span class="p">[</span><span class="s2">&quot;inp&quot;</span><span class="p">],</span>
+        <span class="p">)</span>
+    <span class="p">)</span>
+    <span class="n">param_mappings</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+        <span class="n">ParameterMapping</span><span class="p">(</span>
+            <span class="n">key_string</span><span class="o">=</span><span class="s2">&quot;cpu_core_usage&quot;</span><span class="p">,</span>
+            <span class="n">tokenizer</span><span class="o">=</span><span class="s2">&quot;=&quot;</span><span class="p">,</span>
+            <span class="n">task_definition_property</span><span class="o">=</span><span class="s2">&quot;resource_requirements.num_cores&quot;</span><span class="p">,</span>
+            <span class="n">file_id</span><span class="o">=</span><span class="n">file_ids</span><span class="p">[</span><span class="s2">&quot;inp&quot;</span><span class="p">],</span>
+        <span class="p">)</span>
+    <span class="p">)</span>
+
+    <span class="c1"># Task definition</span>
+    <span class="n">task_def</span> <span class="o">=</span> <span class="n">TaskDefinition</span><span class="p">(</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;MAPDL_run&quot;</span><span class="p">,</span>
+        <span class="n">software_requirements</span><span class="o">=</span><span class="p">[</span>
+            <span class="n">Software</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;Ansys Mechanical APDL&quot;</span><span class="p">,</span> <span class="n">version</span><span class="o">=</span><span class="n">version</span><span class="p">),</span>
+        <span class="p">],</span>
+        <span class="n">execution_command</span><span class="o">=</span><span class="s2">&quot;</span><span class="si">%e</span><span class="s2">xecutable% -b -i </span><span class="si">%f</span><span class="s2">ile:inp</span><span class="si">% -o</span><span class="s2"> file.out -np </span><span class="si">%r</span><span class="s2">esource:num_cores%&quot;</span><span class="p">,</span>
+        <span class="n">resource_requirements</span><span class="o">=</span><span class="n">ResourceRequirements</span><span class="p">(</span>
+            <span class="n">num_cores</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span>
+            <span class="n">memory</span><span class="o">=</span><span class="mi">250</span> <span class="o">*</span> <span class="mi">1024</span> <span class="o">*</span> <span class="mi">1024</span><span class="p">,</span>  <span class="c1"># 250 MB</span>
+            <span class="n">disk_space</span><span class="o">=</span><span class="mi">5</span> <span class="o">*</span> <span class="mi">1024</span> <span class="o">*</span> <span class="mi">1024</span><span class="p">,</span>  <span class="c1"># 5 MB</span>
+        <span class="p">),</span>
+        <span class="n">execution_level</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+        <span class="n">max_execution_time</span><span class="o">=</span><span class="mf">50.0</span><span class="p">,</span>
+        <span class="n">num_trials</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+        <span class="n">input_file_ids</span><span class="o">=</span><span class="p">[</span><span class="n">f</span><span class="o">.</span><span class="n">id</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">files</span><span class="p">[:</span><span class="mi">1</span><span class="p">]],</span>
+        <span class="n">output_file_ids</span><span class="o">=</span><span class="p">[</span><span class="n">f</span><span class="o">.</span><span class="n">id</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">files</span><span class="p">[</span><span class="mi">1</span><span class="p">:]],</span>
+        <span class="n">success_criteria</span><span class="o">=</span><span class="n">SuccessCriteria</span><span class="p">(</span>
+            <span class="n">return_code</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+            <span class="n">expressions</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;values[&#39;tube1_radius&#39;]&gt;=4.0&quot;</span><span class="p">,</span> <span class="s2">&quot;values[&#39;tube1_thickness&#39;]&gt;=0.5&quot;</span><span class="p">],</span>
+            <span class="n">required_output_file_ids</span><span class="o">=</span><span class="p">[</span><span class="n">file_ids</span><span class="p">[</span><span class="s2">&quot;results&quot;</span><span class="p">]],</span>
+            <span class="n">require_all_output_files</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+            <span class="n">require_all_output_parameters</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="p">),</span>
+        <span class="n">licensing</span><span class="o">=</span><span class="n">Licensing</span><span class="p">(</span><span class="n">enable_shared_licensing</span><span class="o">=</span><span class="kc">False</span><span class="p">),</span>  <span class="c1"># Shared licensing disabled by default</span>
+    <span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">use_exec_script</span><span class="p">:</span>
+        <span class="n">task_def</span><span class="o">.</span><span class="n">use_execution_script</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="n">task_def</span><span class="o">.</span><span class="n">execution_script_id</span> <span class="o">=</span> <span class="n">file_ids</span><span class="p">[</span><span class="s2">&quot;exec_mapdl&quot;</span><span class="p">]</span>
+
+    <span class="n">task_defs</span> <span class="o">=</span> <span class="p">[</span><span class="n">task_def</span><span class="p">]</span>
+
+    <span class="c1"># # Fitness definition</span>
+    <span class="n">fd</span> <span class="o">=</span> <span class="n">FitnessDefinition</span><span class="p">(</span><span class="n">error_fitness</span><span class="o">=</span><span class="mf">10.0</span><span class="p">)</span>
+    <span class="n">fd</span><span class="o">.</span><span class="n">add_fitness_term</span><span class="p">(</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;weight&quot;</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="s2">&quot;design_objective&quot;</span><span class="p">,</span>
+        <span class="n">weighting_factor</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span>
+        <span class="n">expression</span><span class="o">=</span><span class="s2">&quot;map_design_objective( values[&#39;weight&#39;], 7.5, 5.5)&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">fd</span><span class="o">.</span><span class="n">add_fitness_term</span><span class="p">(</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;torsional_stiffness&quot;</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="s2">&quot;target_constraint&quot;</span><span class="p">,</span>
+        <span class="n">weighting_factor</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span>
+        <span class="n">expression</span><span class="o">=</span><span class="s2">&quot;map_target_constraint( values[&#39;torsion_stiffness&#39;], 1313.0, 5.0, 30.0 )&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">fd</span><span class="o">.</span><span class="n">add_fitness_term</span><span class="p">(</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;max_stress&quot;</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="s2">&quot;limit_constraint&quot;</span><span class="p">,</span>
+        <span class="n">weighting_factor</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span>
+        <span class="n">expression</span><span class="o">=</span><span class="s2">&quot;map_limit_constraint( values[&#39;max_stress&#39;], 451.0, 50.0 )&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">job_def</span><span class="o">.</span><span class="n">fitness_definition</span> <span class="o">=</span> <span class="n">fd</span>
+
+    <span class="n">task_defs</span> <span class="o">=</span> <span class="n">project_api</span><span class="o">.</span><span class="n">create_task_definitions</span><span class="p">(</span><span class="n">task_defs</span><span class="p">)</span>
+    <span class="n">param_mappings</span> <span class="o">=</span> <span class="n">project_api</span><span class="o">.</span><span class="n">create_parameter_mappings</span><span class="p">(</span><span class="n">param_mappings</span><span class="p">)</span>
+
+    <span class="n">job_def</span><span class="o">.</span><span class="n">parameter_definition_ids</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">pd</span><span class="o">.</span><span class="n">id</span> <span class="k">for</span> <span class="n">pd</span> <span class="ow">in</span> <span class="n">float_input_params</span> <span class="o">+</span> <span class="n">str_input_params</span> <span class="o">+</span> <span class="n">output_params</span> <span class="o">+</span> <span class="n">stat_params</span>
+    <span class="p">]</span>
+    <span class="n">job_def</span><span class="o">.</span><span class="n">parameter_mapping_ids</span> <span class="o">=</span> <span class="p">[</span><span class="n">pm</span><span class="o">.</span><span class="n">id</span> <span class="k">for</span> <span class="n">pm</span> <span class="ow">in</span> <span class="n">param_mappings</span><span class="p">]</span>
+    <span class="n">job_def</span><span class="o">.</span><span class="n">task_definition_ids</span> <span class="o">=</span> <span class="p">[</span><span class="n">td</span><span class="o">.</span><span class="n">id</span> <span class="k">for</span> <span class="n">td</span> <span class="ow">in</span> <span class="n">task_defs</span><span class="p">]</span>
+
+    <span class="c1"># Create job_definition in project</span>
+    <span class="n">job_def</span> <span class="o">=</span> <span class="n">project_api</span><span class="o">.</span><span class="n">create_job_definitions</span><span class="p">([</span><span class="n">job_def</span><span class="p">])[</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="n">job_def</span> <span class="o">=</span> <span class="n">project_api</span><span class="o">.</span><span class="n">get_job_definitions</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;=== Create </span><span class="si">{</span><span class="n">num_jobs</span><span class="si">}</span><span class="s2"> jobs&quot;</span><span class="p">)</span>
+    <span class="n">jobs</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_jobs</span><span class="p">):</span>
+        <span class="n">values</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="n">p</span><span class="o">.</span><span class="n">name</span><span class="p">:</span> <span class="n">p</span><span class="o">.</span><span class="n">lower_limit</span> <span class="o">+</span> <span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">()</span> <span class="o">*</span> <span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">upper_limit</span> <span class="o">-</span> <span class="n">p</span><span class="o">.</span><span class="n">lower_limit</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">float_input_params</span>
+        <span class="p">}</span>
+        <span class="n">values</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="n">p</span><span class="o">.</span><span class="n">name</span><span class="p">:</span> <span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">value_list</span><span class="p">)</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">str_input_params</span><span class="p">})</span>
+        <span class="n">jobs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+            <span class="n">Job</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;Job.</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">values</span><span class="o">=</span><span class="n">values</span><span class="p">,</span> <span class="n">eval_status</span><span class="o">=</span><span class="s2">&quot;pending&quot;</span><span class="p">,</span> <span class="n">job_definition_id</span><span class="o">=</span><span class="n">job_def</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+        <span class="p">)</span>
+    <span class="n">jobs</span> <span class="o">=</span> <span class="n">project_api</span><span class="o">.</span><span class="n">create_jobs</span><span class="p">(</span><span class="n">jobs</span><span class="p">)</span>
+
+    <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Created project &#39;</span><span class="si">{</span><span class="n">proj</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&#39;, ID=&#39;</span><span class="si">{</span><span class="n">proj</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">&#39;&quot;</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">proj</span>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="n">parser</span> <span class="o">=</span> <span class="n">argparse</span><span class="o">.</span><span class="n">ArgumentParser</span><span class="p">()</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;-n&quot;</span><span class="p">,</span> <span class="s2">&quot;--name&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s2">&quot;Mapdl Motorbike Frame&quot;</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;-j&quot;</span><span class="p">,</span> <span class="s2">&quot;--num-jobs&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mi">50</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;-es&quot;</span><span class="p">,</span> <span class="s2">&quot;--use-exec-script&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s2">&quot;store_true&quot;</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;-U&quot;</span><span class="p">,</span> <span class="s2">&quot;--url&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s2">&quot;https://127.0.0.1:8443/hps&quot;</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;-u&quot;</span><span class="p">,</span> <span class="s2">&quot;--username&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s2">&quot;repuser&quot;</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;-p&quot;</span><span class="p">,</span> <span class="s2">&quot;--password&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s2">&quot;repuser&quot;</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;-v&quot;</span><span class="p">,</span> <span class="s2">&quot;--ansys-version&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="n">__ansys_apps_version__</span><span class="p">)</span>
+    <span class="n">args</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">parse_args</span><span class="p">()</span>
+
+    <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">()</span>
+    <span class="n">logging</span><span class="o">.</span><span class="n">basicConfig</span><span class="p">(</span><span class="nb">format</span><span class="o">=</span><span class="s2">&quot;</span><span class="si">%(message)s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">level</span><span class="o">=</span><span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">)</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Connect to HPC Platform Services&quot;</span><span class="p">)</span>
+        <span class="n">client</span> <span class="o">=</span> <span class="n">Client</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">url</span><span class="p">,</span> <span class="n">username</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">username</span><span class="p">,</span> <span class="n">password</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">password</span><span class="p">)</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;HPS URL: </span><span class="si">{</span><span class="n">client</span><span class="o">.</span><span class="n">url</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">proj</span> <span class="o">=</span> <span class="n">create_project</span><span class="p">(</span>
+            <span class="n">client</span><span class="o">=</span><span class="n">client</span><span class="p">,</span>
+            <span class="n">name</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+            <span class="n">version</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">ansys_version</span><span class="p">,</span>
+            <span class="n">num_jobs</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">num_jobs</span><span class="p">,</span>
+            <span class="n">use_exec_script</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">use_exec_script</span><span class="p">,</span>
+        <span class="p">)</span>
+
+    <span class="k">except</span> <span class="n">HPSError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+  <div class="sidebar-secondary-item">
+<!-- If there is no fix edit button function, use the PyData edit-this-button-->
+</div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../_static/scripts/bootstrap.js?digest=5b4479735964841361fd"></script>
+<script src="../_static/scripts/pydata-sphinx-theme.js?digest=5b4479735964841361fd"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright (c) 2024 ANSYS, Inc. All rights reserved.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.2.6.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item"><p class="theme-version">
+  Built with the
+  <a href="https://sphinxdocs.ansys.com/version/stable/index.html"
+    >Ansys Sphinx Theme</a
+  >
+  0.14.0. <br />Last updated on
+  <span id="date"></span>
+</p>
+<script>
+  var options = { day: "numeric", month: "long", year: "numeric" };
+  var lastModifiedDate = new Date(document.lastModified);
+  var date = lastModifiedDate.toLocaleDateString("en-US", options);
+  document.getElementById("date").innerHTML = date;
+</script></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

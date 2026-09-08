@@ -1,0 +1,32 @@
+﻿MessageEnvelope
+===============
+
+.. currentmodule:: ansys.hps.client.monitor
+
+.. autoclass:: MessageEnvelope
+
+   
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+      :toctree:
+   
+      
+      
+      MessageEnvelope.from_payload
+      
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+      :toctree:
+   
+      MessageEnvelope.messages
+   
+   
