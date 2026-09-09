@@ -28,7 +28,7 @@ import json
 import os
 import platform
 import shutil
-import subprocess
+import subprocess  # nosec B404
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -106,7 +106,8 @@ class HpsMini:
         command.extend(["run", "--json"])
 
         try:
-            result = subprocess.run(
+            # The executable and arguments are passed directly without a shell.
+            result = subprocess.run(  # nosec B603
                 command,
                 check=False,
                 capture_output=True,
