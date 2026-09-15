@@ -112,6 +112,13 @@ runs:
         ls -la
         tar -xvzf docker-compose-internal.tar.gz
         cd docker-compose
+
+        if [ -f config/minio/minio-compose.yaml ]; then
+          # Workaround: use quay.io images for minio
+          echo "Applying quay.io image replacement for minio"
+          sed -i 's|image: minio/|image: quay.io/|g' config/minio/minio-compose.yaml
+        fi
+        
         docker-compose pull
         if [ -z "$PROFILE" ]; then
           docker-compose up -d
