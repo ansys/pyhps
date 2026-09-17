@@ -35,6 +35,7 @@ from ansys.hps.client import (
     find_hps_mini,
     get_hps_mini_status,
 )
+from ansys.hps.client.mini import mini_executable_names
 
 
 def test_hps_mini_run_uses_json_output():
@@ -111,6 +112,14 @@ def test_find_hps_mini_uses_binaries_directory():
             patch("ansys.hps.client.mini.shutil.which", return_value=None),
         ):
             assert find_hps_mini() == mini
+
+
+def test_mini_executable_names_returns_single_platform_name():
+    with patch("ansys.hps.client.mini.platform.system", return_value="Windows"):
+        assert mini_executable_names() == "hps-mini.exe"
+
+    with patch("ansys.hps.client.mini.platform.system", return_value="Linux"):
+        assert mini_executable_names() == "hps-mini"
 
 
 def test_create_mini_client_uses_discovered_connection():

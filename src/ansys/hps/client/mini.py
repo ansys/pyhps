@@ -79,14 +79,13 @@ class HpsMini:
                 return path
             raise HpsMiniError(f"hps-mini executable not found at {path}")
 
-        names = mini_executable_names()
-        for path in mini_default_paths(names):
+        executable_name = mini_executable_names()
+        for path in mini_default_paths(executable_name):
             if path.is_file():
                 return path
-        for name in names:
-            resolved = shutil.which(name)
-            if resolved:
-                return Path(resolved)
+        resolved = shutil.which(executable_name)
+        if resolved:
+            return Path(resolved)
         raise HpsMiniError(
             "hps-mini executable was not found; set HPS_MINI_PATH, place it in the current "
             "directory or ./binaries, or add hps-mini to PATH"
@@ -153,19 +152,17 @@ def find_hps_mini(executable: str | os.PathLike[str] | None = None) -> Path:
     return HpsMini(executable=executable).find()
 
 
-def mini_executable_names() -> tuple[str, ...]:
-    """Return hps-mini executable names supported by the current platform."""
+def mini_executable_names() -> str:
+    """Return the hps-mini executable name for the current platform."""
     if platform.system() == "Windows":
-        return "hps-mini.exe", "hps-mini"
-    return ("hps-mini",)
+        return "hps-mini.exe"
+    return "hps-mini"
 
 
-def mini_default_paths(names: tuple[str, ...]) -> tuple[Path, ...]:
+def mini_default_paths(executable_name: str) -> tuple[Path, ...]:
     """Return common hps-mini locations relative to the current directory."""
     working_dir = Path.cwd()
-    return tuple(
-        path for name in names for path in (working_dir / name, working_dir / "binaries" / name)
-    )
+    return (working_dir / executable_name, working_dir / "binaries" / executable_name)
 
 
 def get_hps_mini_status(
