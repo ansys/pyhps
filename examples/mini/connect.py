@@ -20,23 +20,28 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-"""PyHPS is a Python client for Ansys HPC Platform Services (HPS)."""
+"""Connect PyHPS to a running local hps-mini instance."""
 
-from .__version__ import __ansys_apps_version__, __version__
-from .auth import AuthApi
-from .authenticate import authenticate, determine_auth_url
-from .client import Client
-from .exceptions import APIError, ClientError, HPSError, VersionCompatibilityError
-from .jms import JmsApi, ProjectApi
-from .mini import (
-    HpsMini,
-    HpsMiniError,
-    HpsMiniStatus,
-    create_mini_client,
-    find_hps_mini,
-    get_hps_mini_status,
-)
-from .monitor import MonitorApi
-from .rcs import RcsApi
-from .rms import RmsApi
-from .warnings import UnverifiedHTTPSRequestsWarning
+import logging
+
+from ansys.hps.client import HPSError, HpsMini
+from ansys.hps.client.jms import JmsApi
+
+log = logging.getLogger(__name__)
+
+
+if __name__ == "__main__":
+    logger = logging.getLogger()
+    logging.basicConfig(format="%(message)s", level=logging.INFO)
+
+    try:
+        log.info("Connect to hps-mini")
+        client = HpsMini().client()
+        log.info("HPS URL: %s", client.url)
+
+        projects = JmsApi(client).get_projects()
+        log.info("Found %d projects", len(projects))
+        for project in projects:
+            log.info("Project: %s (%s)", project.name, project.id)
+    except HPSError as error:
+        logger.error(str(error))
