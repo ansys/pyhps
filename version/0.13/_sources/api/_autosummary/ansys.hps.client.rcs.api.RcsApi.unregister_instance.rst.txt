@@ -1,0 +1,6 @@
+unregister\_instance
+====================
+
+.. currentmodule:: ansys.hps.client.rcs.api
+
+.. automethod:: RcsApi.unregister_instance

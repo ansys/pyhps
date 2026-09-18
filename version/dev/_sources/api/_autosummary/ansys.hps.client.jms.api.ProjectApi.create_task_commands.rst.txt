@@ -1,0 +1,6 @@
+create\_task\_commands
+======================
+
+.. currentmodule:: ansys.hps.client.jms.api
+
+.. automethod:: ProjectApi.create_task_commands

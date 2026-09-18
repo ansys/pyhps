@@ -1,0 +1,51 @@
+﻿AuthApi
+=======
+
+.. currentmodule:: ansys.hps.client.auth.api
+
+.. autoclass:: AuthApi
+
+   
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+      :toctree:
+   
+      
+      
+      AuthApi.get_user
+      
+      
+      AuthApi.get_user_groups
+      
+      
+      AuthApi.get_user_groups_names
+      
+      
+      AuthApi.get_user_realm_roles
+      
+      
+      AuthApi.get_user_realm_roles_names
+      
+      
+      AuthApi.get_users
+      
+      
+      AuthApi.user_is_admin
+      
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+      :toctree:
+   
+      AuthApi.realm_url
+      AuthApi.url
+   
+   

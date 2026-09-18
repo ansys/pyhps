@@ -1,0 +1,6 @@
+initialize\_data\_transfer\_client
+==================================
+
+.. currentmodule:: ansys.hps.client.client
+
+.. automethod:: Client.initialize_data_transfer_client

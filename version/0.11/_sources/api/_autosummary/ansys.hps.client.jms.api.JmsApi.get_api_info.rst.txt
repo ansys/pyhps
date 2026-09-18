@@ -1,0 +1,6 @@
+get\_api\_info
+==============
+
+.. currentmodule:: ansys.hps.client.jms.api
+
+.. automethod:: JmsApi.get_api_info

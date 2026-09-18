@@ -1,0 +1,33 @@
+﻿SubscribeCommand
+================
+
+.. currentmodule:: ansys.hps.client.monitor
+
+.. autoclass:: SubscribeCommand
+
+   
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+      :toctree:
+   
+      
+      
+      SubscribeCommand.to_payload
+      
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+      :toctree:
+   
+      SubscribeCommand.backlog_limit
+      SubscribeCommand.topics
+   
+   

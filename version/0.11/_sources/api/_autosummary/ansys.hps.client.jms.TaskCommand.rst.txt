@@ -1,0 +1,28 @@
+﻿TaskCommand
+===========
+
+.. currentmodule:: ansys.hps.client.jms
+
+.. autoclass:: TaskCommand
+
+   
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+      :toctree:
+   
+      
+      
+      TaskCommand.declared_fields
+      
+      
+      TaskCommand.get
+      
+   
+   
+
+   
+   
+   

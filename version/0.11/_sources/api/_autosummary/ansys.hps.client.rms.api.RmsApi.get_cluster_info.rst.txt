@@ -1,0 +1,6 @@
+get\_cluster\_info
+==================
+
+.. currentmodule:: ansys.hps.client.rms.api
+
+.. automethod:: RmsApi.get_cluster_info

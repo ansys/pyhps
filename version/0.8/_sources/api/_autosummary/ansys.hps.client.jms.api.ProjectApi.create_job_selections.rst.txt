@@ -1,0 +1,6 @@
+create\_job\_selections
+=======================
+
+.. currentmodule:: ansys.hps.client.jms.api
+
+.. automethod:: ProjectApi.create_job_selections

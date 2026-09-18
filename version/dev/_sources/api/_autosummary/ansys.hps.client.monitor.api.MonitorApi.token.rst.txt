@@ -1,0 +1,6 @@
+token
+=====
+
+.. currentmodule:: ansys.hps.client.monitor.api
+
+.. autoproperty:: MonitorApi.token

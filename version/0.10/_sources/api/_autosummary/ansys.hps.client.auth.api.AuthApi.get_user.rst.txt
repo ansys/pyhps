@@ -1,0 +1,6 @@
+get\_user
+=========
+
+.. currentmodule:: ansys.hps.client.auth.api
+
+.. automethod:: AuthApi.get_user
