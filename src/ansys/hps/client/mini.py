@@ -59,7 +59,7 @@ class HpsMini:
         self,
         executable: str | os.PathLike[str] | None = None,
         data_dir: str | os.PathLike[str] | None = None,
-        timeout: float = 5.0,
+        timeout: float = 30.0,
         debug: bool = False,
         verbosity: int | None = None,
     ):
@@ -79,7 +79,7 @@ class HpsMini:
                 return path
             raise HpsMiniError(f"hps-mini executable not found at {path}")
 
-        executable_name = mini_executable_names()
+        executable_name = mini_executable_name()
         for path in mini_default_paths(executable_name):
             if path.is_file():
                 return path
@@ -152,7 +152,7 @@ def find_hps_mini(executable: str | os.PathLike[str] | None = None) -> Path:
     return HpsMini(executable=executable).find()
 
 
-def mini_executable_names() -> str:
+def mini_executable_name() -> str:
     """Return the hps-mini executable name for the current platform."""
     if platform.system() == "Windows":
         return "hps-mini.exe"
