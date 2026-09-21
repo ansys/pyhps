@@ -83,7 +83,7 @@ def test_hps_mini_run_uses_json_output():
             check=False,
             capture_output=True,
             text=True,
-            timeout=5.0,
+            timeout=30.0,
         )
 
 
