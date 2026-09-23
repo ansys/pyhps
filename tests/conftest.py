@@ -43,6 +43,11 @@ from ansys.hps.client.jms.resource import Project
 
 @pytest.fixture(scope="session")
 def url():
+    if os.environ.get("HPS_MINI_TESTS") == "1":
+        mini_url = os.environ.get("HPS_MINI_URL")
+        if mini_url:
+            return mini_url.rstrip("/") + "/hps"
+
     return os.environ.get("HPS_TEST_URL") or "https://127.0.0.1:8443/hps"
 
 
@@ -72,9 +77,11 @@ def client(url, username, password):
         executable = os.environ.get("HPS_MINI_PATH")
         if not executable:
             pytest.fail("HPS_MINI_PATH is required when HPS_MINI_TESTS=1")
-        status = get_hps_mini_status(executable=executable, timeout=30.0)
-        mini_url = status.url.rstrip("/") + "/hps"
-        return Client(mini_url, api_key=status.api_key or None, verify=False)
+        api_key = os.environ.get("HPS_MINI_API_KEY")
+        if api_key is None:
+            status = get_hps_mini_status(executable=executable, timeout=30.0)
+            api_key = status.api_key or None
+        return Client(url, api_key=api_key, verify=False)
 
     return Client(url, username, password, verify=False)
 

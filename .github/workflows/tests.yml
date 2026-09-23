@@ -104,7 +104,9 @@ jobs:
           HPS_TEST_URL: ${{ steps.hps-services.outputs.url }}
           HPS_TEST_USERNAME: repadmin
           HPS_TEST_PASSWORD: repadmin
-          HPS_MINI_PATH: ${{ steps.hps-mini.outputs.path }}
+          HPS_MINI_PATH: ${{ steps['hps-mini'].outputs.path }}
+          HPS_MINI_URL: ${{ steps['hps-mini'].outputs.url }}
+          HPS_MINI_API_KEY: ${{ steps['hps-mini'].outputs['api-key'] }}
           HPS_MINI_TESTS: ${{ inputs['run-mini-tests'] && '1' || '0' }}
 
       - name: Upload coverage results

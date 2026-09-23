@@ -13,7 +13,13 @@ inputs:
 outputs:
   path:
     description: 'Path to the extracted hps-mini executable'
-    value: ${{ steps.set-output-linux.outputs.path || steps.set-output-windows.outputs.path }}
+    value: ${{ steps['set-output-linux'].outputs.path || steps['set-output-windows'].outputs.path }}
+  url:
+    description: 'Base URL reported by hps-mini'
+    value: ${{ steps['status-linux'].outputs.url || steps['status-windows'].outputs.url }}
+  api-key:
+    description: 'API key reported by hps-mini'
+    value: ${{ steps['status-linux'].outputs['api-key'] || steps['status-windows'].outputs['api-key'] }}
 
 runs:
   using: composite
@@ -104,3 +110,46 @@ runs:
       id: set-output-windows
       shell: pwsh
       run: Add-Content -Path $env:GITHUB_OUTPUT -Value "path=$env:HPS_MINI_PATH"
+
+    - name: Query Linux hps-mini status
+      if: runner.os == 'Linux'
+      id: status-linux
+      shell: bash
+      run: |
+        set -e
+        cd "$HPS_MINI_WORKING_DIRECTORY"
+        status_json=$("$HPS_MINI_PATH" run --json)
+        readarray -t status_values < <(STATUS_JSON="$status_json" python -c '
+        import json
+        import os
+
+        payload = json.loads(os.environ["STATUS_JSON"])
+        if payload.get("status") != "running":
+            raise SystemExit("hps-mini is not running")
+        print(payload["url"])
+        print(payload.get("api_key", ""))
+        ')
+        mini_url="${status_values[0]}"
+        mini_api_key="${status_values[1]}"
+        echo "::add-mask::$mini_api_key"
+        echo "url=$mini_url" >> "$GITHUB_OUTPUT"
+        echo "api-key=$mini_api_key" >> "$GITHUB_OUTPUT"
+        echo "HPS_MINI_URL=$mini_url" >> "$GITHUB_ENV"
+        echo "HPS_MINI_API_KEY=$mini_api_key" >> "$GITHUB_ENV"
+
+    - name: Query Windows hps-mini status
+      if: runner.os == 'Windows'
+      id: status-windows
+      shell: pwsh
+      run: |
+        $ErrorActionPreference = 'Stop'
+        $status = & $env:HPS_MINI_PATH run --json | ConvertFrom-Json
+        if ($status.status -ne 'running') {
+          throw 'hps-mini is not running'
+        }
+        $apiKey = [string]$status.api_key
+        Write-Output "::add-mask::$apiKey"
+        Add-Content -Path $env:GITHUB_OUTPUT -Value "url=$($status.url)"
+        Add-Content -Path $env:GITHUB_OUTPUT -Value "api-key=$apiKey"
+        Add-Content -Path $env:GITHUB_ENV -Value "HPS_MINI_URL=$($status.url)"
+        Add-Content -Path $env:GITHUB_ENV -Value "HPS_MINI_API_KEY=$apiKey"
