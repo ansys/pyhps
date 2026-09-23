@@ -13,7 +13,7 @@ inputs:
 outputs:
   path:
     description: 'Path to the extracted hps-mini executable'
-    value: ${{ steps['set-output-linux'].outputs.path || steps['set-output-windows'].outputs.path }}
+    value: ${{ steps['extract-linux'].outputs.path || steps['extract-windows'].outputs.path }}
   url:
     description: 'Base URL reported by hps-mini'
     value: ${{ steps['status-linux'].outputs.url || steps['status-windows'].outputs.url }}
@@ -46,79 +46,77 @@ runs:
 
     - name: Extract Linux hps-mini
       if: runner.os == 'Linux'
+      id: extract-linux
       shell: bash
       run: |
         set -e
         tar -xzf hps-mini.tar.gz -C .
-        mini_path=$(find . -type f -name hps-mini -print -quit)
-        if [ -z "$mini_path" ]; then
+        mini_path="$GITHUB_WORKSPACE/hps-mini-lin-x64/hps-mini"
+        if [ ! -f "$mini_path" ]; then
           echo "hps-mini executable was not found in the release archive"
           find . -maxdepth 4 -type f -print
           exit 1
         fi
         chmod +x "$mini_path"
         mini_dir=$(dirname "$mini_path")
-        echo "HPS_MINI_PATH=$PWD/$mini_path" >> "$GITHUB_ENV"
-        echo "HPS_MINI_WORKING_DIRECTORY=$PWD/$mini_dir" >> "$GITHUB_ENV"
+        echo "path=$mini_path" >> "$GITHUB_OUTPUT"
+        echo "working-directory=$mini_dir" >> "$GITHUB_OUTPUT"
 
     - name: Extract Windows hps-mini
       if: runner.os == 'Windows'
+      id: extract-windows
       shell: pwsh
       run: |
         $ErrorActionPreference = 'Stop'
         tar -xzf hps-mini.tar.gz -C .
-        $mini = Get-ChildItem . -Recurse -File |
-          Where-Object { $_.Name -eq 'hps-mini.exe' } |
-          Select-Object -First 1
-        if ($null -eq $mini) {
+        $miniPath = Join-Path $env:GITHUB_WORKSPACE 'hps-mini-win-x64/hps-mini.exe'
+        if (-not (Test-Path -PathType Leaf $miniPath)) {
           Write-Error 'hps-mini executable was not found in the release archive'
         }
-        "HPS_MINI_PATH=$($mini.FullName)" | Add-Content $env:GITHUB_ENV
-        "HPS_MINI_WORKING_DIRECTORY=$($mini.DirectoryName)" | Add-Content $env:GITHUB_ENV
+        $mini = Get-Item $miniPath
+        Add-Content -Path $env:GITHUB_OUTPUT -Value "path=$($mini.FullName)"
+        Add-Content -Path $env:GITHUB_OUTPUT -Value "working-directory=$($mini.DirectoryName)"
 
     - name: Start Linux hps-mini
       if: runner.os == 'Linux'
       shell: bash
+      env:
+        MINI_PATH: ${{ steps['extract-linux'].outputs.path }}
+        MINI_WORKING_DIRECTORY: ${{ steps['extract-linux'].outputs['working-directory'] }}
       run: |
         set -e
-        cd "$HPS_MINI_WORKING_DIRECTORY"
-        nohup "$HPS_MINI_PATH" run --json > "$GITHUB_WORKSPACE/hps-mini.log" 2>&1 &
+        cd "$MINI_WORKING_DIRECTORY"
+        nohup "$MINI_PATH" run --json > "$GITHUB_WORKSPACE/hps-mini.log" 2>&1 &
         echo $! > hps-mini.pid
 
     - name: Start Windows hps-mini
       if: runner.os == 'Windows'
       shell: pwsh
+      env:
+        MINI_PATH: ${{ steps['extract-windows'].outputs.path }}
+        MINI_WORKING_DIRECTORY: ${{ steps['extract-windows'].outputs['working-directory'] }}
       run: |
         $ErrorActionPreference = 'Stop'
         $process = Start-Process `
-          -FilePath $env:HPS_MINI_PATH `
+          -FilePath $env:MINI_PATH `
           -ArgumentList @('run', '--json') `
-          -WorkingDirectory $env:HPS_MINI_WORKING_DIRECTORY `
+          -WorkingDirectory $env:MINI_WORKING_DIRECTORY `
           -RedirectStandardOutput "$PWD/hps-mini.log" `
           -RedirectStandardError "$PWD/hps-mini-error.log" `
           -PassThru
         $process.Id | Set-Content "$PWD/hps-mini.pid"
 
-    - name: Set Linux hps-mini output
-      if: runner.os == 'Linux'
-      id: set-output-linux
-      shell: bash
-      run: echo "path=$HPS_MINI_PATH" >> "$GITHUB_OUTPUT"
-
-    - name: Set Windows hps-mini output
-      if: runner.os == 'Windows'
-      id: set-output-windows
-      shell: pwsh
-      run: Add-Content -Path $env:GITHUB_OUTPUT -Value "path=$env:HPS_MINI_PATH"
-
     - name: Query Linux hps-mini status
       if: runner.os == 'Linux'
       id: status-linux
       shell: bash
+      env:
+        MINI_PATH: ${{ steps['extract-linux'].outputs.path }}
+        MINI_WORKING_DIRECTORY: ${{ steps['extract-linux'].outputs['working-directory'] }}
       run: |
         set -e
-        cd "$HPS_MINI_WORKING_DIRECTORY"
-        status_json=$("$HPS_MINI_PATH" run --json)
+        cd "$MINI_WORKING_DIRECTORY"
+        status_json=$("$MINI_PATH" run --json)
         readarray -t status_values < <(STATUS_JSON="$status_json" python -c '
         import json
         import os
@@ -134,16 +132,18 @@ runs:
         echo "::add-mask::$mini_api_key"
         echo "url=$mini_url" >> "$GITHUB_OUTPUT"
         echo "api-key=$mini_api_key" >> "$GITHUB_OUTPUT"
-        echo "HPS_MINI_URL=$mini_url" >> "$GITHUB_ENV"
-        echo "HPS_MINI_API_KEY=$mini_api_key" >> "$GITHUB_ENV"
 
     - name: Query Windows hps-mini status
       if: runner.os == 'Windows'
       id: status-windows
       shell: pwsh
+      env:
+        MINI_PATH: ${{ steps['extract-windows'].outputs.path }}
+        MINI_WORKING_DIRECTORY: ${{ steps['extract-windows'].outputs['working-directory'] }}
       run: |
         $ErrorActionPreference = 'Stop'
-        $status = & $env:HPS_MINI_PATH run --json | ConvertFrom-Json
+        Set-Location $env:MINI_WORKING_DIRECTORY
+        $status = & $env:MINI_PATH run --json | ConvertFrom-Json
         if ($status.status -ne 'running') {
           throw 'hps-mini is not running'
         }
@@ -151,5 +151,3 @@ runs:
         Write-Output "::add-mask::$apiKey"
         Add-Content -Path $env:GITHUB_OUTPUT -Value "url=$($status.url)"
         Add-Content -Path $env:GITHUB_OUTPUT -Value "api-key=$apiKey"
-        Add-Content -Path $env:GITHUB_ENV -Value "HPS_MINI_URL=$($status.url)"
-        Add-Content -Path $env:GITHUB_ENV -Value "HPS_MINI_API_KEY=$apiKey"
