@@ -1,0 +1,86 @@
+name: 'Download hps-mini'
+
+description: 'Download and extract the hps-mini release asset for the current runner'
+
+inputs:
+  version:
+    description: 'hps-mini release version, for example v0.0.14'
+    required: true
+  token:
+    description: 'GitHub token with access to ansys-internal/hps-mini'
+    required: true
+
+outputs:
+  path:
+    description: 'Path to the extracted hps-mini executable'
+    value: ${{ steps.set-output-linux.outputs.path || steps.set-output-windows.outputs.path }}
+
+runs:
+  using: composite
+  steps:
+    - name: Download Linux hps-mini asset
+      if: runner.os == 'Linux'
+      uses: dsaltares/fetch-gh-release-asset@aa2ab1243d6e0d5b405b973c89fa4d06a2d0fff7 # master
+      with:
+        file: hps-mini-lin-x64.tar.gz
+        target: hps-mini.tar.gz
+        repo: ansys-internal/hps-mini
+        version: tags/${{ inputs.version }}
+        token: ${{ inputs.token }}
+
+    - name: Download Windows hps-mini asset
+      if: runner.os == 'Windows'
+      uses: dsaltares/fetch-gh-release-asset@aa2ab1243d6e0d5b405b973c89fa4d06a2d0fff7 # master
+      with:
+        file: hps-mini-win-x64.tar.gz
+        target: hps-mini.tar.gz
+        repo: ansys-internal/hps-mini
+        version: tags/${{ inputs.version }}
+        token: ${{ inputs.token }}
+
+    - name: Extract Linux hps-mini
+      if: runner.os == 'Linux'
+      shell: bash
+      run: |
+        tar -xzf hps-mini.tar.gz -C .
+        chmod +x hps-mini
+
+    - name: Extract Windows hps-mini
+      if: runner.os == 'Windows'
+      shell: pwsh
+      run: |
+        tar -xzf hps-mini.tar.gz -C .
+
+    - name: Start Linux hps-mini
+      if: runner.os == 'Linux'
+      shell: bash
+      run: |
+        set -e
+        nohup ./hps-mini run --json > hps-mini.log 2>&1 &
+        echo $! > hps-mini.pid
+
+    - name: Start Windows hps-mini
+      if: runner.os == 'Windows'
+      shell: pwsh
+      run: |
+        $ErrorActionPreference = 'Stop'
+        $process = Start-Process `
+          -FilePath "$PWD/mini.exe" `
+          -ArgumentList @('run', '--json') `
+          -WorkingDirectory $PWD `
+          -RedirectStandardOutput "$PWD/hps-mini.log" `
+          -RedirectStandardError "$PWD/hps-mini-error.log" `
+          -PassThru
+        $process.Id | Set-Content "$PWD/hps-mini.pid"
+
+    - name: Set Linux hps-mini output
+      if: runner.os == 'Linux'
+      id: set-output-linux
+      shell: bash
+      run: echo "path=$PWD/hps-mini" >> "$GITHUB_OUTPUT"
+
+    - name: Set Windows hps-mini output
+      if: runner.os == 'Windows'
+      id: set-output-windows
+      shell: pwsh
+      run: Add-Content -Path $env:GITHUB_OUTPUT -Value "path=$PWD/mini.exe"
