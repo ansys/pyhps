@@ -134,15 +134,16 @@ directory = ".cov/html"
 output = ".cov/coverage.xml"
 
 [tool.pytest.ini_options]
+markers = [
+    "mini_supported: test exercises a real capability exposed by hps-mini",
+    "browser: marks tests as browser automation tests (require Playwright and live backend)",
+]
 log_cli = true
 log_cli_level = "INFO"
 log_cli_format = "%(asctime)s [%(levelname)8s] %(message)s (%(filename)s:%(lineno)s)"
 log_cli_date_format = "%Y-%m-%d %H:%M:%S"
 addopts = "-ra -vv"
 asyncio_mode = "auto"
-markers = [
-    "browser: marks tests as browser automation tests (require Playwright and live backend)",
-]
 filterwarnings = [
     "ignore::urllib3.exceptions.InsecureRequestWarning",
     "ignore::DeprecationWarning:pkg_resources.*",

@@ -87,6 +87,7 @@ def test_evaluator_integration(client):
         assert config.applications is not None
 
 
+@pytest.mark.mini_supported
 def test_evaluator_configuration_update(client):
     rms_api = RmsApi(client)
     query_params = {"last_modified.gt": datetime.datetime.utcnow() - datetime.timedelta(seconds=20)}

@@ -22,11 +22,14 @@
 
 import logging
 
+import pytest
+
 from ansys.hps.client.rms import RmsApi
 
 log = logging.getLogger(__name__)
 
 
+@pytest.mark.mini_supported
 def test_rms_api_info(client):
     rms_api = RmsApi(client)
 

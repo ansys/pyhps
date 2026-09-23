@@ -22,9 +22,13 @@
 
 import logging
 
+import pytest
+
 from ansys.hps.client.rms import RmsApi
 
 log = logging.getLogger(__name__)
+
+pytestmark = pytest.mark.mini_supported
 
 
 def test_scaler_integration(client):

@@ -23,6 +23,8 @@
 import logging
 from collections import OrderedDict
 
+import pytest
+
 from ansys.hps.client import ProjectApi
 from ansys.hps.client.jms.resource import TaskDefinition
 from ansys.hps.client.jms.resource.task_definition import (
@@ -293,6 +295,7 @@ def test_task_definition_serialization():
     )
 
 
+@pytest.mark.mini_supported
 def test_analyze_task_definition(client):
     # Because compute resources can't be assumed to be available,
     # so we just hit the endpoint

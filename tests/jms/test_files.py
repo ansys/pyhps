@@ -25,12 +25,15 @@ import logging
 import os
 import tempfile
 
+import pytest
 from marshmallow.utils import missing
 
 from ansys.hps.client.jms import JmsApi, ProjectApi
 from ansys.hps.client.jms.resource import File, Project
 
 log = logging.getLogger(__name__)
+
+pytestmark = pytest.mark.mini_supported
 
 
 def test_files(client):
