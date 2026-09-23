@@ -42,21 +42,41 @@ runs:
       if: runner.os == 'Linux'
       shell: bash
       run: |
+        set -e
         tar -xzf hps-mini.tar.gz -C .
-        chmod +x hps-mini
+        mini_path=$(find . -type f -name hps-mini -print -quit)
+        if [ -z "$mini_path" ]; then
+          echo "hps-mini executable was not found in the release archive"
+          find . -maxdepth 4 -type f -print
+          exit 1
+        fi
+        chmod +x "$mini_path"
+        mini_dir=$(dirname "$mini_path")
+        echo "HPS_MINI_PATH=$PWD/$mini_path" >> "$GITHUB_ENV"
+        echo "HPS_MINI_WORKING_DIRECTORY=$PWD/$mini_dir" >> "$GITHUB_ENV"
 
     - name: Extract Windows hps-mini
       if: runner.os == 'Windows'
       shell: pwsh
       run: |
+        $ErrorActionPreference = 'Stop'
         tar -xzf hps-mini.tar.gz -C .
+        $mini = Get-ChildItem . -Recurse -File |
+          Where-Object { $_.Name -eq 'hps-mini.exe' } |
+          Select-Object -First 1
+        if ($null -eq $mini) {
+          Write-Error 'hps-mini executable was not found in the release archive'
+        }
+        "HPS_MINI_PATH=$($mini.FullName)" | Add-Content $env:GITHUB_ENV
+        "HPS_MINI_WORKING_DIRECTORY=$($mini.DirectoryName)" | Add-Content $env:GITHUB_ENV
 
     - name: Start Linux hps-mini
       if: runner.os == 'Linux'
       shell: bash
       run: |
         set -e
-        nohup ./hps-mini run --json > hps-mini.log 2>&1 &
+        cd "$HPS_MINI_WORKING_DIRECTORY"
+        nohup "$HPS_MINI_PATH" run --json > "$GITHUB_WORKSPACE/hps-mini.log" 2>&1 &
         echo $! > hps-mini.pid
 
     - name: Start Windows hps-mini
@@ -65,9 +85,9 @@ runs:
       run: |
         $ErrorActionPreference = 'Stop'
         $process = Start-Process `
-          -FilePath "$PWD/mini.exe" `
+          -FilePath $env:HPS_MINI_PATH `
           -ArgumentList @('run', '--json') `
-          -WorkingDirectory $PWD `
+          -WorkingDirectory $env:HPS_MINI_WORKING_DIRECTORY `
           -RedirectStandardOutput "$PWD/hps-mini.log" `
           -RedirectStandardError "$PWD/hps-mini-error.log" `
           -PassThru
@@ -77,10 +97,10 @@ runs:
       if: runner.os == 'Linux'
       id: set-output-linux
       shell: bash
-      run: echo "path=$PWD/hps-mini" >> "$GITHUB_OUTPUT"
+      run: echo "path=$HPS_MINI_PATH" >> "$GITHUB_OUTPUT"
 
     - name: Set Windows hps-mini output
       if: runner.os == 'Windows'
       id: set-output-windows
       shell: pwsh
-      run: Add-Content -Path $env:GITHUB_OUTPUT -Value "path=$PWD/mini.exe"
+      run: Add-Content -Path $env:GITHUB_OUTPUT -Value "path=$env:HPS_MINI_PATH"

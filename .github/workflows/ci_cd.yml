@@ -19,7 +19,7 @@ on:
         type: 'string'
         default: 'main'
       run-mini-tests:
-        description: Run the full test suite against hps-mini in addition to HPS
+        description: Run the full test suite against hps-mini instead of HPS
         type: boolean
         default: false
 
