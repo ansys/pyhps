@@ -25,7 +25,13 @@ import os
 import pytest
 from keycloak import KeycloakAdmin
 
-from ansys.hps.client import AuthApi, Client, JmsApi, VersionCompatibilityError
+from ansys.hps.client import (
+    AuthApi,
+    Client,
+    JmsApi,
+    VersionCompatibilityError,
+    get_hps_mini_status,
+)
 from ansys.hps.client.check_version import (
     JMS_VERSIONS,
     HpsRelease,
@@ -62,6 +68,14 @@ def keycloak_password():
 
 @pytest.fixture(scope="session")
 def client(url, username, password):
+    if os.environ.get("HPS_MINI_TESTS") == "1":
+        executable = os.environ.get("HPS_MINI_PATH")
+        if not executable:
+            pytest.fail("HPS_MINI_PATH is required when HPS_MINI_TESTS=1")
+        status = get_hps_mini_status(executable=executable, timeout=30.0)
+        mini_url = status.url.rstrip("/") + "/hps"
+        return Client(mini_url, api_key=status.api_key or None, verify=False)
+
     return Client(url, username, password, verify=False)
 
 

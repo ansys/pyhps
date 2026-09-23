@@ -18,6 +18,10 @@ on:
         description: HPS feature to test against
         type: 'string'
         default: 'main'
+      run-mini-tests:
+        description: Run the full test suite against hps-mini in addition to HPS
+        type: boolean
+        default: false
 
   pull_request:
   push:
@@ -73,6 +77,7 @@ jobs:
       runner: ${{ matrix.os }}
       hps-version: ${{ inputs.hps-version || 'latest-dev' }}
       hps-feature: ${{ inputs.hps-feature || 'main' }}
+      run-mini-tests: ${{ inputs['run-mini-tests'] || false }}
 
   backward-compatibility-tests:
     strategy:
