@@ -137,4 +137,9 @@ jobs:
 
       - name: Publish services info to summary
         if: success() || failure()
-        run: cat build_info.md >> $GITHUB_STEP_SUMMARY
+        run: |
+          if [ -f build_info.md ]; then
+            cat build_info.md >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "Service build information was not generated for this test selection." >> "$GITHUB_STEP_SUMMARY"
+          fi
