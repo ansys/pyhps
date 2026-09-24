@@ -49,7 +49,7 @@ def mini_status():
     executable = os.environ.get("HPS_MINI_PATH")
     if not executable:
         pytest.fail("HPS_MINI_PATH is required when HPS_MINI_TESTS=1")
-    return get_hps_mini_status(executable=executable)
+    return get_hps_mini_status(executable=executable, timeout=30.0)
 
 
 @pytest.fixture(scope="session")
