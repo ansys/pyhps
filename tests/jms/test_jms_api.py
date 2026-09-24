@@ -39,6 +39,7 @@ from examples.mapdl_motorbike_frame.project_setup import create_project
 log = logging.getLogger(__name__)
 
 
+@pytest.mark.mini_supported
 def test_jms_api_info(client):
     jms_api = JmsApi(client)
 
@@ -51,6 +52,7 @@ def test_jms_api_info(client):
     assert "time" in info
 
 
+@pytest.mark.mini_supported
 def test_jms_api(client):
     log.debug("=== Client ===")
     proj_name = "Mapdl Motorbike Frame"

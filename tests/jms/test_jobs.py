@@ -224,6 +224,7 @@ def test_job_integration(client):
     jms_api.delete_project(proj)
 
 
+@pytest.mark.mini_supported
 def test_job_update(client):
     jms_api = JmsApi(client)
     proj_name = f"test_job_update_{uuid.uuid4().hex[:8]}"

@@ -100,6 +100,7 @@ def test_task_deserialization():
     assert task.custom_data == {"key": "value"}
 
 
+@pytest.mark.mini_supported
 def test_task_integration(client):
     proj_name = "Mapdl Motorbike Frame"
 
@@ -117,6 +118,7 @@ def test_task_integration(client):
         assert tasks[0].modified_by is not missing
 
 
+@pytest.mark.mini_supported
 def test_job_sync(client):
     # create base project with 1 task and 3 jobs
     num_jobs = 3

@@ -23,6 +23,10 @@ on:
         description: HPS Feature to test against (only for latest-dev version)
         type: string
         default: 'main'
+      run-mini-tests:
+        description: Run the full test suite against hps-mini instead of HPS
+        type: boolean
+        default: false
       docker-compose-profiles:
         description: Docker compose profiles to use
         type: string
@@ -71,6 +75,7 @@ jobs:
       
       - name: Start HPS services
         id: hps-services
+        if: ${{ !inputs['run-mini-tests'] }}
         uses: ansys/pyhps/.github/actions/hps_services@main
         with:
           token: ${{ secrets.PYANSYS_CI_BOT_TOKEN }}
@@ -79,6 +84,14 @@ jobs:
           version: ${{ inputs.hps-version }}
           feature: ${{ inputs.hps-feature }}
           profile: ${{ inputs.docker-compose-profiles }}
+
+      - name: Download and start hps-mini
+        id: hps-mini
+        if: ${{ inputs['run-mini-tests'] }}
+        uses: ./.github/actions/hps_mini
+        with:
+          token: ${{ secrets.PYANSYS_CI_BOT_TOKEN }}
+          start: 'true'
    
       - name: Test with tox
         run: tox -e "${TOXENV_NAME}-coverage"
@@ -87,6 +100,9 @@ jobs:
           HPS_TEST_URL: ${{ steps.hps-services.outputs.url }}
           HPS_TEST_USERNAME: repadmin
           HPS_TEST_PASSWORD: repadmin
+          HPS_MINI_PATH: ${{ steps['hps-mini'].outputs.path }}
+          HPS_MINI_TESTS: ${{ inputs['run-mini-tests'] && '1' || '0' }}
+          HPS_MINI_PYTEST_ARGS: ${{ inputs['run-mini-tests'] && '-m mini_supported' || '' }}
 
       - name: Upload coverage results
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
@@ -115,4 +131,9 @@ jobs:
 
       - name: Publish services info to summary
         if: success() || failure()
-        run: cat build_info.md >> $GITHUB_STEP_SUMMARY
+        run: |
+          if [ -f build_info.md ]; then
+            cat build_info.md >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "Service build information was not generated for this test selection." >> "$GITHUB_STEP_SUMMARY"
+          fi

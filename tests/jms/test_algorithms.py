@@ -22,12 +22,15 @@
 
 import logging
 
+import pytest
 from marshmallow.utils import missing
 
 from ansys.hps.client.jms import JmsApi, ProjectApi
 from ansys.hps.client.jms.resource import Algorithm, Job, JobDefinition, JobSelection, Project
 
 log = logging.getLogger(__name__)
+
+pytestmark = pytest.mark.mini_supported
 
 
 def test_algorithms(client):
