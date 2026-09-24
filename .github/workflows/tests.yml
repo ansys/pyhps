@@ -85,12 +85,13 @@ jobs:
           feature: ${{ inputs.hps-feature }}
           profile: ${{ inputs.docker-compose-profiles }}
 
-      - name: Download hps-mini
+      - name: Download and start hps-mini
         id: hps-mini
         if: ${{ inputs['run-mini-tests'] }}
         uses: ./.github/actions/hps_mini
         with:
           token: ${{ secrets.PYANSYS_CI_BOT_TOKEN }}
+          start: 'true'
    
       - name: Test with tox
         run: tox -e "${TOXENV_NAME}-coverage"
