@@ -6,6 +6,10 @@ inputs:
   token:
     description: 'GitHub token with access to ansys-internal/hps-mini'
     required: true
+  start:
+    description: 'Whether to start hps-mini after extracting it'
+    required: false
+    default: 'false'
 
 outputs:
   path:
@@ -75,7 +79,7 @@ runs:
         Add-Content -Path $env:GITHUB_OUTPUT -Value "working-directory=$($mini.DirectoryName)"
 
     - name: Start Linux hps-mini
-      if: runner.os == 'Linux'
+      if: runner.os == 'Linux' && inputs.start == 'true'
       shell: bash
       env:
         MINI_PATH: ${{ steps['extract-linux'].outputs.path }}
@@ -87,7 +91,7 @@ runs:
         echo $! > hps-mini.pid
 
     - name: Start Windows hps-mini
-      if: runner.os == 'Windows'
+      if: runner.os == 'Windows' && inputs.start == 'true'
       shell: pwsh
       env:
         MINI_PATH: ${{ steps['extract-windows'].outputs.path }}
@@ -104,7 +108,7 @@ runs:
         $process.Id | Set-Content "$PWD/hps-mini.pid"
 
     - name: Query Linux hps-mini status
-      if: runner.os == 'Linux'
+      if: runner.os == 'Linux' && inputs.start == 'true'
       id: status-linux
       shell: bash
       env:
@@ -131,7 +135,7 @@ runs:
         echo "api-key=$mini_api_key" >> "$GITHUB_OUTPUT"
 
     - name: Query Windows hps-mini status
-      if: runner.os == 'Windows'
+      if: runner.os == 'Windows' && inputs.start == 'true'
       id: status-windows
       shell: pwsh
       env:

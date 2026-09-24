@@ -91,6 +91,7 @@ jobs:
         uses: ./.github/actions/hps_mini
         with:
           token: ${{ secrets.PYANSYS_CI_BOT_TOKEN }}
+          start: 'true'
    
       - name: Test with tox
         run: tox -e "${TOXENV_NAME}-coverage"
