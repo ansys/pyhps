@@ -10,6 +10,7 @@ so that you can understand how to interact with them programmatically.
   :maxdepth: 2
 
   client
+  mini
   auth
   jms
   rms
