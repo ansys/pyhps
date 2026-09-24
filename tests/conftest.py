@@ -46,7 +46,7 @@ def url():
     if os.environ.get("HPS_MINI_TESTS") == "1":
         mini_url = os.environ.get("HPS_MINI_URL")
         if mini_url:
-            return mini_url.rstrip("/") + "/hps"
+            return mini_url
 
     return os.environ.get("HPS_TEST_URL") or "https://127.0.0.1:8443/hps"
 

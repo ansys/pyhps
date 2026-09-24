@@ -3,9 +3,6 @@ name: 'Download hps-mini'
 description: 'Download and extract the hps-mini release asset for the current runner'
 
 inputs:
-  version:
-    description: 'hps-mini release version, for example v0.0.14'
-    required: true
   token:
     description: 'GitHub token with access to ansys-internal/hps-mini'
     required: true
@@ -31,7 +28,7 @@ runs:
         file: hps-mini-lin-x64.tar.gz
         target: hps-mini.tar.gz
         repo: ansys-internal/hps-mini
-        version: tags/${{ inputs.version }}
+        version: latest
         token: ${{ inputs.token }}
 
     - name: Download Windows hps-mini asset
@@ -41,7 +38,7 @@ runs:
         file: hps-mini-win-x64.tar.gz
         target: hps-mini.tar.gz
         repo: ansys-internal/hps-mini
-        version: tags/${{ inputs.version }}
+        version: latest
         token: ${{ inputs.token }}
 
     - name: Extract Linux hps-mini

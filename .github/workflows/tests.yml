@@ -23,10 +23,6 @@ on:
         description: HPS Feature to test against (only for latest-dev version)
         type: string
         default: 'main'
-      hps-mini-version:
-        description: hps-mini release version to test against
-        type: string
-        default: 'v0.0.14'
       run-mini-tests:
         description: Run the full test suite against hps-mini instead of HPS
         type: boolean
@@ -94,7 +90,6 @@ jobs:
         if: ${{ inputs['run-mini-tests'] }}
         uses: ./.github/actions/hps_mini
         with:
-          version: ${{ inputs.hps-mini-version }}
           token: ${{ secrets.PYANSYS_CI_BOT_TOKEN }}
    
       - name: Test with tox
