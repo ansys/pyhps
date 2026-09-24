@@ -26,6 +26,7 @@ one :download:`ZIP file <../../../build/pyhps_examples.zip>`.
   :hidden:
   :maxdepth: 3
 
+  ex_hps_mini
   ex_oidc_login
   ex_motorbike_frame
   ex_motorbike_frame_query
@@ -46,6 +47,8 @@ one :download:`ZIP file <../../../build/pyhps_examples.zip>`.
 
    * - Name
      - Description
+   * - :ref:`example_hps_mini`
+     - Discover a local hps-mini instance and create a configured PyHPS client.
    * - :ref:`example_oidc_login`
      - OIDC authentication with Authorization Code + PKCE flow. Includes examples for in-memory, keyring, and disk storage with token refresh.
    * - :ref:`example_mapdl_motorbike_frame`
