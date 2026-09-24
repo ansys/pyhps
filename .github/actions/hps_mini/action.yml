@@ -124,7 +124,7 @@ runs:
         print(payload["url"])
         print(payload.get("api_key", ""))
         ')
-        mini_url="${status_values[0]}"
+        mini_url="${status_values[0]%/}/hps"
         mini_api_key="${status_values[1]}"
         echo "::add-mask::$mini_api_key"
         echo "url=$mini_url" >> "$GITHUB_OUTPUT"
@@ -146,5 +146,6 @@ runs:
         }
         $apiKey = [string]$status.api_key
         Write-Output "::add-mask::$apiKey"
-        Add-Content -Path $env:GITHUB_OUTPUT -Value "url=$($status.url)"
+        $miniUrl = "$($status.url.TrimEnd('/'))/hps"
+        Add-Content -Path $env:GITHUB_OUTPUT -Value "url=$miniUrl"
         Add-Content -Path $env:GITHUB_OUTPUT -Value "api-key=$apiKey"
