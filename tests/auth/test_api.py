@@ -34,6 +34,7 @@ from tests.utils import create_user, delete_user
 log = logging.getLogger(__name__)
 
 
+@pytest.mark.skip_for_hps_mini
 def test_get_users(client, keycloak_client):
     api = AuthApi(client)
 
@@ -74,6 +75,7 @@ def test_get_users(client, keycloak_client):
     assert ex_info.value.response.status_code == 404
 
 
+@pytest.mark.skip_for_hps_mini
 def test_get_user_permissions(client):
     api = AuthApi(client)
 
@@ -102,6 +104,7 @@ def test_get_user_permissions(client):
     assert api.user_is_admin is not None
 
 
+@pytest.mark.skip_for_hps_mini
 def test_impersonate_user(url, keycloak_client):
     """Test token exchange for impersonation, see https://www.rfc-editor.org/rfc/rfc8693.html.
 
@@ -187,6 +190,7 @@ def test_impersonate_user(url, keycloak_client):
     delete_user(keycloak_client, new_user)
 
 
+@pytest.mark.skip_for_hps_mini
 def test_auth_api_url(client):
     """Test that the auth_api_url property returns the
     correct URL for the default instance of JMS."""

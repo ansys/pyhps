@@ -135,7 +135,7 @@ output = ".cov/coverage.xml"
 
 [tool.pytest.ini_options]
 markers = [
-    "mini_supported: test exercises a real capability exposed by hps-mini",
+    "skip_for_hps_mini: test requires a capability not provided by hps-mini",
     "browser: marks tests as browser automation tests (require Playwright and live backend)",
 ]
 log_cli = true

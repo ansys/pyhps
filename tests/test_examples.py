@@ -36,8 +36,6 @@ from ansys.hps.client.jms import (
 
 log = logging.getLogger(__name__)
 
-pytestmark = pytest.mark.mini_supported
-
 
 def test_hps_mini_service():
     executable = os.environ.get("HPS_MINI_PATH")

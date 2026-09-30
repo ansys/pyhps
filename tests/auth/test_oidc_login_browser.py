@@ -149,6 +149,7 @@ class TestTokenRefreshWithBrowser:
 class TestBrowserLoginPKCEFlow:
     """Test the full OIDC Authorization Code + PKCE flow via Playwright."""
 
+    @pytest.mark.skip_for_hps_mini
     async def test_browser_login_full_pkce_flow(self, url, username, password):
         """Test complete browser_login() against real Keycloak using Playwright.
 
@@ -201,6 +202,7 @@ class TestBrowserLoginPKCEFlow:
         assert tokens.get("token_type", "").lower() == "bearer"
         assert tokens.get("expires_in", 0) > 0
 
+    @pytest.mark.skip_for_hps_mini
     async def test_browser_login_no_browser_returns_same_structure(self, url, username, password):
         """Test browser_login() with open_browser=False still returns valid token dict.
 

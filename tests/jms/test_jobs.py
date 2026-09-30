@@ -136,6 +136,7 @@ def test_job_serialization():
     assert serialized_job["host_ids"][1] == "uuid-5"
 
 
+@pytest.mark.skip_for_hps_mini
 def test_job_integration(client):
     proj_name = "test_jobs_JobTest"
 
@@ -224,7 +225,6 @@ def test_job_integration(client):
     jms_api.delete_project(proj)
 
 
-@pytest.mark.mini_supported
 def test_job_update(client):
     jms_api = JmsApi(client)
     proj_name = f"test_job_update_{uuid.uuid4().hex[:8]}"

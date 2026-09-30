@@ -22,7 +22,6 @@
 
 import logging
 
-import pytest
 from marshmallow.utils import missing
 
 from ansys.hps.client.jms import JmsApi, ProjectApi
@@ -37,8 +36,6 @@ from ansys.hps.client.jms.schema.fitness_definition import (
 )
 
 log = logging.getLogger(__name__)
-
-pytestmark = pytest.mark.mini_supported
 
 
 def test_fitness_definition_deserialization():

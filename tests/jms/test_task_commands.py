@@ -40,7 +40,6 @@ from ansys.hps.client.jms.resource import (
 
 log = logging.getLogger(__name__)
 
-pytestmark = pytest.mark.mini_supported
 
 EXECUTION_SCRIPT = """
 import os

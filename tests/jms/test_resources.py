@@ -22,7 +22,6 @@
 
 import logging
 
-import pytest
 from marshmallow import missing
 
 from ansys.hps.client.jms import (
@@ -37,8 +36,6 @@ from ansys.hps.client.jms import (
 from examples.mapdl_motorbike_frame.project_setup import create_project
 
 log = logging.getLogger(__name__)
-
-pytestmark = pytest.mark.mini_supported
 
 
 def test_task_definition_equality():

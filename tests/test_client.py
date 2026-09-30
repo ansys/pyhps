@@ -70,18 +70,21 @@ def _build_client_with_mocked_auth(**kwargs):
                     )
 
 
+@pytest.mark.skip_for_hps_mini
 def test_client_ssl_warning(url, username, password):
     with pytest.warns(UnverifiedHTTPSRequestsWarning) as record:
         _ = Client(url, username, password)
     assert any("Unverified HTTPS requests" in str(w.message) for w in record)
 
 
+@pytest.mark.skip_for_hps_mini
 def test_client_with_ssl_verification(url, username, password):
     with pytest.raises(requests.exceptions.SSLError) as ex_info:
         _ = Client(url, username, password, verify=True)
     assert "CERTIFICATE_VERIFY_FAILED" in str(ex_info.value)
 
 
+@pytest.mark.skip_for_hps_mini
 def test_authentication_workflows(url, username, password):
     ## Auth with user and password
     client0 = Client(url, username, password)
@@ -115,6 +118,7 @@ def test_authentication_workflows(url, username, password):
     client2.refresh_access_token()
 
 
+@pytest.mark.skip_for_hps_mini
 def test_authentication_username(url, username, password, keycloak_client):
     # Password workflow
     client0 = Client(url, username, password)
@@ -134,6 +138,7 @@ def test_authentication_username(url, username, password, keycloak_client):
     assert client1.username == "service-account-rep-impersonation"
 
 
+@pytest.mark.skip_for_hps_mini
 def test_authentication_username_exception(url, username, keycloak_client):
     # Impersonation
     realm_clients = keycloak_client.get_clients()
@@ -150,6 +155,7 @@ def test_authentication_username_exception(url, username, keycloak_client):
         )
 
 
+@pytest.mark.skip_for_hps_mini
 def test_dt_client(url, username, password):
     client = Client(url, username, password)
     assert client._dt_client is None

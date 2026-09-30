@@ -41,6 +41,7 @@ def monitor_api(client):
     )
 
 
+@pytest.mark.skip_for_hps_mini
 def test_list_topics(monitor_api):
     topics = monitor_api.list_topics()
     assert isinstance(topics, dict)
@@ -48,6 +49,7 @@ def test_list_topics(monitor_api):
     assert "client_type" in topics
 
 
+@pytest.mark.skip_for_hps_mini
 def test_stream_service_logs_jms(monitor_api):
     messages = list(monitor_api.stream_service_logs(ClientType.JMS, backlog=10, max_messages=10))
     assert isinstance(messages, list)

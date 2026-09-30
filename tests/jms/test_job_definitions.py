@@ -22,6 +22,7 @@
 
 import logging
 
+import pytest
 from marshmallow.utils import missing
 
 from ansys.hps.client import AuthApi, JmsApi, ProjectApi
@@ -58,6 +59,7 @@ def test_job_definition_delete(client):
     jms_api.delete_project(proj)
 
 
+@pytest.mark.skip_for_hps_mini
 def test_task_definition_fields(client, has_hps_version_ge_1_3_45, has_hps_version_gt_1_3_45):
     # verify that:
     # - store_output is defaulted to True when undefined,
