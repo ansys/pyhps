@@ -39,6 +39,8 @@ from ansys.hps.client.rcs.models import (
     UnRegisterInstanceResponse,
 )
 
+pytestmark = pytest.mark.skip_for_hps_mini
+
 
 class HelloWorldHandler(BaseHTTPRequestHandler):
     def do_GET(self):
@@ -76,7 +78,6 @@ def test_hello_world(http_server):
     assert response.text == "Hello, World!"
 
 
-@pytest.mark.skip_for_hps_mini
 def test_health_check(client, has_hps_version_le_1_3_45):
     """Test the health_check method."""
     if has_hps_version_le_1_3_45:
@@ -87,7 +88,6 @@ def test_health_check(client, has_hps_version_le_1_3_45):
     assert response["status"] == "alive"
 
 
-@pytest.mark.skip_for_hps_mini
 def test_rcs_api_info(client, has_hps_version_gt_1_4_10):
     """Test the get_api_info method and the version property."""
     if not has_hps_version_gt_1_4_10:
@@ -104,7 +104,6 @@ def test_rcs_api_info(client, has_hps_version_gt_1_4_10):
     assert rcs_api.version is not None
 
 
-@pytest.mark.skip_for_hps_mini
 def test_register_instance_and_response(client, http_server, has_hps_version_le_1_3_45):
     """Test the register_instance and unregister_instance methods and their responses."""
 
@@ -177,7 +176,6 @@ def test_register_instance_and_response(client, http_server, has_hps_version_le_
     assert response.resource_name == expected_response_data["resource_name"]
 
 
-@pytest.mark.skip_for_hps_mini
 def test_create_objects_as_objects_false(client, url, http_server, has_hps_version_le_1_3_45):
     """Test the create_object function with as_object=False."""
     if has_hps_version_le_1_3_45:
