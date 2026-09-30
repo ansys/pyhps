@@ -105,7 +105,7 @@ runs:
           -RedirectStandardOutput "$PWD/hps-lite.log" `
           -RedirectStandardError "$PWD/hps-lite-error.log" `
           -PassThru
-        $process.Id | Set-Content "$PWD/hps-mini.pid"
+        $process.Id | Set-Content "$PWD/hps-lite.pid"
 
     - name: Query Linux hps-lite status
       if: runner.os == 'Linux' && inputs.start == 'true'
