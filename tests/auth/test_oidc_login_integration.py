@@ -232,6 +232,7 @@ class TestRefreshTokensWithRealKeycloak:
 class TestDeterminAuthUrl:
     """Test auth URL determination with real backend."""
 
+    @pytest.mark.skip_for_hps_mini
     def test_determine_auth_url_success(self, url):
         """Test successful OIDC discovery to determine auth URL."""
         auth_url = determine_auth_url(url, verify_ssl=False, fallback_realm=REALM)
@@ -240,6 +241,7 @@ class TestDeterminAuthUrl:
         # Auth URL should be related to the HPS server
         assert url.rstrip("/") in auth_url or "realms" in auth_url.lower()
 
+    @pytest.mark.skip_for_hps_mini
     def test_determine_auth_url_with_fallback(self, url):
         """Test that fallback realm is used if discovery fails."""
         # Fallback should produce valid auth URL format

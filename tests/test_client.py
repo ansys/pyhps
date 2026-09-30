@@ -170,6 +170,7 @@ def test_dt_client(url, username, password):
     assert client.data_transfer_api == client._dt_api
 
 
+@pytest.mark.skip_for_hps_mini
 def test_update_token_expiry_sets_refresh_date(url, username, password):
     """After authentication, expiry-related fields must be populated."""
     client = Client(url, username, password)
@@ -183,6 +184,7 @@ def test_update_token_expiry_sets_refresh_date(url, username, password):
     assert 0 < diff <= client.token_expires_in
 
 
+@pytest.mark.skip_for_hps_mini
 def test_update_token_expiry_updates_after_refresh(url, username, password):
     """Calling refresh_access_token must move token_refresh_date forward."""
     client = Client(url, username, password)
@@ -194,6 +196,7 @@ def test_update_token_expiry_updates_after_refresh(url, username, password):
     assert client.token_refresh_date > first_refresh_date
 
 
+@pytest.mark.skip_for_hps_mini
 def test_external_tokens_seed_refresh_schedule(url, username, password):
     """Externally supplied access+refresh tokens should schedule preemptive refresh."""
     source_client = Client(url, username, password)
@@ -210,6 +213,7 @@ def test_external_tokens_seed_refresh_schedule(url, username, password):
     assert client.token_refresh_date is not None
 
 
+@pytest.mark.skip_for_hps_mini
 def test_refresh_access_token_persists_to_disk(url, username, password):
     """Refreshed tokens should be persisted when token_storage is disk."""
     client = Client(url, username, password, token_storage="disk")
@@ -223,6 +227,7 @@ def test_refresh_access_token_persists_to_disk(url, username, password):
     assert mock_save_tokens.call_args.kwargs["storage"] == "disk"
 
 
+@pytest.mark.skip_for_hps_mini
 def test_refresh_access_token_persists_to_keyring(url, username, password):
     """Refreshed tokens should be persisted when token_storage is keyring."""
     client = Client(url, username, password, token_storage="keyring")
@@ -236,6 +241,7 @@ def test_refresh_access_token_persists_to_keyring(url, username, password):
     assert mock_save_tokens.call_args.kwargs["storage"] == "keyring"
 
 
+@pytest.mark.skip_for_hps_mini
 def test_refresh_access_token_rotation_is_persisted(url, username, password):
     """Rotated refresh tokens should be persisted after refresh."""
     client = Client(url, username, password, token_storage="keyring")
@@ -271,6 +277,7 @@ def test_refresh_access_token_raises_when_refresh_token_missing():
         client.refresh_access_token()
 
 
+@pytest.mark.skip_for_hps_mini
 def test_refresh_access_token_persistence_result_keyring_failure_uses_memory_only(
     url, username, password
 ):
@@ -291,6 +298,7 @@ def test_refresh_access_token_persistence_result_keyring_failure_uses_memory_onl
     assert client.last_token_persistence_result["error"] == "keyring unavailable"
 
 
+@pytest.mark.skip_for_hps_mini
 def test_refresh_access_token_persistence_result_failure_uses_memory_only(url, username, password):
     """Telemetry should report persistence failures with memory-only behavior."""
     client = Client(url, username, password, token_storage="disk")
@@ -308,6 +316,7 @@ def test_refresh_access_token_persistence_result_failure_uses_memory_only(url, u
     assert client.last_token_persistence_result["error"] == "persistence failed"
 
 
+@pytest.mark.skip_for_hps_mini
 def test_refresh_access_token_persistence_logs_are_redacted(url, username, password, caplog):
     """Persistence failures must not log raw token values."""
     client = Client(url, username, password, token_storage="disk")
@@ -385,6 +394,7 @@ def test_token_storage_disk_strict_raises_when_backend_unavailable():
             )
 
 
+@pytest.mark.skip_for_hps_mini
 def test_reschedule_after_failed_refresh(url, username, password):
     """Failed refreshes must escalate through retry factors, then give up."""
     client = Client(url, username, password)
@@ -413,6 +423,7 @@ def test_reschedule_after_failed_refresh(url, username, password):
     assert client.token_refresh_date is None
 
 
+@pytest.mark.skip_for_hps_mini
 def test_periodically_refresh_token_refreshes_preemptively(url, username, password):
     """The background thread must refresh the access token before it expires."""
     client = Client(url, username, password)
