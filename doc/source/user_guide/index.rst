@@ -60,6 +60,45 @@ Once connected, you can query project statistics to find out how many jobs are c
     projects = jms_api.get_projects(statistics=True)
     num_running_jobs = sum(p.statistics["eval_status"]["running"] for p in projects)
 
+Connect to a local hps-mini instance
+------------------------------------
+
+For local development, PyHPS can discover and connect to a running hps-mini
+instance. On Windows, the executable is ``hps-mini.exe``. On Linux and macOS,
+it is ``hps-mini``. Discovery checks the current directory, the ``binaries``
+directory, and the system ``PATH``.
+
+To use an executable in another location, set ``HPS_MINI_PATH``. You can also
+set ``HPS_MINI_DATA_DIR`` to select the directory where hps-mini stores its
+local state.
+
+On Windows PowerShell::
+
+    $env:HPS_MINI_PATH = "D:\AnsysDev\hps-local\hps-mini.exe"
+
+On Linux or macOS::
+
+    export HPS_MINI_PATH=/path/to/hps-mini
+
+Create a client with automatic discovery:
+
+.. code-block:: python
+
+    from ansys.hps.client import create_mini_client
+
+    client = create_mini_client()
+    print(client.url)
+
+You can also pass the executable directly:
+
+.. code-block:: python
+
+    from ansys.hps.client import create_mini_client
+
+    client = create_mini_client(executable=r"D:\AnsysDev\hps-local\hps-mini.exe")
+
+For more details, including status inspection, see the :ref:`example_hps_mini`.
+
 Create a project
 ----------------
 
