@@ -23,10 +23,6 @@ on:
         description: HPS Feature to test against (only for latest-dev version)
         type: string
         default: 'main'
-      run-mini-tests:
-        description: Run the full test suite against hps-mini instead of HPS
-        type: boolean
-        default: false
       docker-compose-profiles:
         description: Docker compose profiles to use
         type: string
@@ -75,7 +71,6 @@ jobs:
       
       - name: Start HPS services
         id: hps-services
-        if: ${{ !inputs['run-mini-tests'] }}
         uses: ansys/pyhps/.github/actions/hps_services@main
         with:
           token: ${{ secrets.PYANSYS_CI_BOT_TOKEN }}
@@ -85,14 +80,6 @@ jobs:
           feature: ${{ inputs.hps-feature }}
           profile: ${{ inputs.docker-compose-profiles }}
 
-      - name: Download and start hps-mini
-        id: hps-mini
-        if: ${{ inputs['run-mini-tests'] }}
-        uses: ./.github/actions/hps_mini
-        with:
-          token: ${{ secrets.PYANSYS_CI_BOT_TOKEN }}
-          start: 'true'
-   
       - name: Test with tox
         run: tox -e "${TOXENV_NAME}-coverage"
         env:
@@ -100,9 +87,6 @@ jobs:
           HPS_TEST_URL: ${{ steps.hps-services.outputs.url }}
           HPS_TEST_USERNAME: repadmin
           HPS_TEST_PASSWORD: repadmin
-          HPS_MINI_PATH: ${{ steps['hps-mini'].outputs.path }}
-          HPS_MINI_TESTS: ${{ inputs['run-mini-tests'] && '1' || '0' }}
-          HPS_MINI_PYTEST_ARGS: ${{ inputs['run-mini-tests'] && '-m "not skip_for_hps_mini"' || '' }}
 
       - name: Upload coverage results
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
@@ -137,3 +121,59 @@ jobs:
           else
             echo "Service build information was not generated for this test selection." >> "$GITHUB_STEP_SUMMARY"
           fi
+
+  mini-tests:
+    name: hps-mini tests
+    runs-on: ${{ inputs.runner }}
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Set up Python ${{ inputs.python-version }}
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: ${{ inputs.python-version }}
+
+      - uses: extractions/netrc@c3879108aae6b4ed5c4eb60854ae04f06d2f2f68 # v3
+        with:
+          machine: github.com
+          username: pyansys-ci-bot
+          password: ${{ secrets.PYANSYS_CI_BOT_PACKAGE_TOKEN }}
+
+      - name: Install dependencies
+        run: python -m pip install --upgrade pip setuptools tox tox-gh-actions
+
+      - name: Download and start hps-mini
+        id: hps-mini
+        uses: ./.github/actions/hps_mini
+        with:
+          token: ${{ secrets.PYANSYS_CI_BOT_TOKEN }}
+          start: 'true'
+
+      - name: Test with tox against hps-mini
+        run: tox -e "${TOXENV_NAME}-coverage"
+        env:
+          TOXENV_NAME: ${{ inputs.toxenv }}
+          HPS_MINI_PATH: ${{ steps['hps-mini'].outputs.path }}
+          HPS_MINI_TESTS: '1'
+          HPS_MINI_PYTEST_ARGS: '-m "not skip_for_hps_mini"'
+
+      - name: Upload mini coverage results
+        if: ${{ inputs.python-version == '3.10' && inputs.upload-coverage }}
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        with:
+          name: coverage-html-mini
+          path: .cov/html
+          retention-days: 7
+
+      - name: Publish Mini Test Report
+        uses: mikepenz/action-junit-report@a9170d5795813c01ab4901ffb045b52bab4ab09d # v6.5.0
+        if: always()
+        with:
+          report_paths: '**/test_results-*.xml'
+          check_name: Mini Test Report ${{ inputs.runner }}:${{ inputs.python-version }}
+          detailed_summary: true
+          include_passed: true
