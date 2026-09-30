@@ -25,13 +25,19 @@ prerequisites:
 
    query_parameters
    exceptions
+    authentication
    managing_users
    dcs_migration
 
 Connect to an HPS deployment
 ----------------------------
 
-You start by connecting to an HPS deployment running on the localhost with the default username and password:
+You start by connecting to an HPS deployment running on the localhost with the default username and password.
+Username and password are one authentication option. PyHPS also supports API
+keys, access tokens, and OIDC authentication. For an overview of the available
+methods and token storage options, see :doc:`authentication`.
+
+Connect with username and password:
 
 .. code-block:: python
 
