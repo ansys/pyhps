@@ -1,60 +1,60 @@
-name: 'Download hps-mini'
+name: 'Download hps-lite'
 
-description: 'Download and extract the hps-mini release asset for the current runner'
+description: 'Download and extract the hps-lite release asset for the current runner'
 
 inputs:
   token:
-    description: 'GitHub token with access to ansys-internal/hps-mini'
+    description: 'GitHub token with access to ansys-internal/hps-lite'
     required: true
   start:
-    description: 'Whether to start hps-mini after extracting it'
+    description: 'Whether to start hps-lite after extracting it'
     required: false
     default: 'false'
 
 outputs:
   path:
-    description: 'Path to the extracted hps-mini executable'
+    description: 'Path to the extracted hps-lite executable'
     value: ${{ steps['extract-linux'].outputs.path || steps['extract-windows'].outputs.path }}
   url:
-    description: 'Base URL reported by hps-mini'
+    description: 'Base URL reported by hps-lite'
     value: ${{ steps['status-linux'].outputs.url || steps['status-windows'].outputs.url }}
   api-key:
-    description: 'API key reported by hps-mini'
+    description: 'API key reported by hps-lite'
     value: ${{ steps['status-linux'].outputs['api-key'] || steps['status-windows'].outputs['api-key'] }}
 
 runs:
   using: composite
   steps:
-    - name: Download Linux hps-mini asset
+    - name: Download Linux hps-lite asset
       if: runner.os == 'Linux'
       uses: dsaltares/fetch-gh-release-asset@aa2ab1243d6e0d5b405b973c89fa4d06a2d0fff7 # master
       with:
-        file: hps-mini-lin-x64.tar.gz
-        target: hps-mini.tar.gz
-        repo: ansys-internal/hps-mini
+        file: hps-lite-lin-x64.tar.gz
+        target: hps-lite.tar.gz
+        repo: ansys-internal/hps-lite
         version: latest
         token: ${{ inputs.token }}
 
-    - name: Download Windows hps-mini asset
+    - name: Download Windows hps-lite asset
       if: runner.os == 'Windows'
       uses: dsaltares/fetch-gh-release-asset@aa2ab1243d6e0d5b405b973c89fa4d06a2d0fff7 # master
       with:
-        file: hps-mini-win-x64.tar.gz
-        target: hps-mini.tar.gz
-        repo: ansys-internal/hps-mini
+        file: hps-lite-win-x64.tar.gz
+        target: hps-lite.tar.gz
+        repo: ansys-internal/hps-lite
         version: latest
         token: ${{ inputs.token }}
 
-    - name: Extract Linux hps-mini
+    - name: Extract Linux hps-lite
       if: runner.os == 'Linux'
       id: extract-linux
       shell: bash
       run: |
         set -e
-        tar -xzf hps-mini.tar.gz -C .
-        mini_path="$GITHUB_WORKSPACE/hps-mini-lin-x64/hps-mini"
+        tar -xzf hps-lite.tar.gz -C .
+        mini_path="$GITHUB_WORKSPACE/hps-lite-lin-x64/hps-lite"
         if [ ! -f "$mini_path" ]; then
-          echo "hps-mini executable was not found in the release archive"
+          echo "hps-lite executable was not found in the release archive"
           find . -maxdepth 4 -type f -print
           exit 1
         fi
@@ -63,22 +63,22 @@ runs:
         echo "path=$mini_path" >> "$GITHUB_OUTPUT"
         echo "working-directory=$mini_dir" >> "$GITHUB_OUTPUT"
 
-    - name: Extract Windows hps-mini
+    - name: Extract Windows hps-lite
       if: runner.os == 'Windows'
       id: extract-windows
       shell: pwsh
       run: |
         $ErrorActionPreference = 'Stop'
-        tar -xzf hps-mini.tar.gz -C .
-        $miniPath = Join-Path $env:GITHUB_WORKSPACE 'hps-mini-win-x64/hps-mini.exe'
+        tar -xzf hps-lite.tar.gz -C .
+        $miniPath = Join-Path $env:GITHUB_WORKSPACE 'hps-lite-win-x64/hps-lite.exe'
         if (-not (Test-Path -PathType Leaf $miniPath)) {
-          Write-Error 'hps-mini executable was not found in the release archive'
+          Write-Error 'hps-lite executable was not found in the release archive'
         }
         $mini = Get-Item $miniPath
         Add-Content -Path $env:GITHUB_OUTPUT -Value "path=$($mini.FullName)"
         Add-Content -Path $env:GITHUB_OUTPUT -Value "working-directory=$($mini.DirectoryName)"
 
-    - name: Start Linux hps-mini
+    - name: Start Linux hps-lite
       if: runner.os == 'Linux' && inputs.start == 'true'
       shell: bash
       env:
@@ -87,10 +87,10 @@ runs:
       run: |
         set -e
         cd "$MINI_WORKING_DIRECTORY"
-        nohup "$MINI_PATH" run --json > "$GITHUB_WORKSPACE/hps-mini.log" 2>&1 &
-        echo $! > hps-mini.pid
+        nohup "$MINI_PATH" run --json > "$GITHUB_WORKSPACE/hps-lite.log" 2>&1 &
+        echo $! > hps-lite.pid
 
-    - name: Start Windows hps-mini
+    - name: Start Windows hps-lite
       if: runner.os == 'Windows' && inputs.start == 'true'
       shell: pwsh
       env:
@@ -102,12 +102,12 @@ runs:
           -FilePath $env:MINI_PATH `
           -ArgumentList @('run', '--json') `
           -WorkingDirectory $env:MINI_WORKING_DIRECTORY `
-          -RedirectStandardOutput "$PWD/hps-mini.log" `
-          -RedirectStandardError "$PWD/hps-mini-error.log" `
+          -RedirectStandardOutput "$PWD/hps-lite.log" `
+          -RedirectStandardError "$PWD/hps-lite-error.log" `
           -PassThru
         $process.Id | Set-Content "$PWD/hps-mini.pid"
 
-    - name: Query Linux hps-mini status
+    - name: Query Linux hps-lite status
       if: runner.os == 'Linux' && inputs.start == 'true'
       id: status-linux
       shell: bash
@@ -124,7 +124,7 @@ runs:
 
         payload = json.loads(os.environ["STATUS_JSON"])
         if payload.get("status") != "running":
-            raise SystemExit("hps-mini is not running")
+            raise SystemExit("hps-lite is not running")
         print(payload["url"])
         print(payload.get("api_key", ""))
         ')
@@ -134,7 +134,7 @@ runs:
         echo "url=$mini_url" >> "$GITHUB_OUTPUT"
         echo "api-key=$mini_api_key" >> "$GITHUB_OUTPUT"
 
-    - name: Query Windows hps-mini status
+    - name: Query Windows hps-lite status
       if: runner.os == 'Windows' && inputs.start == 'true'
       id: status-windows
       shell: pwsh
@@ -146,7 +146,7 @@ runs:
         Set-Location $env:MINI_WORKING_DIRECTORY
         $status = & $env:MINI_PATH run --json | ConvertFrom-Json
         if ($status.status -ne 'running') {
-          throw 'hps-mini is not running'
+          throw 'hps-lite is not running'
         }
         $apiKey = [string]$status.api_key
         Write-Output "::add-mask::$apiKey"

@@ -73,6 +73,7 @@ jobs:
       runner: ${{ matrix.os }}
       hps-version: ${{ inputs.hps-version || 'latest-dev' }}
       hps-feature: ${{ inputs.hps-feature || 'main' }}
+      include-mini-tests: true
 
   backward-compatibility-tests:
     strategy:
@@ -92,6 +93,7 @@ jobs:
       hps-version: ${{ matrix.hps-version }}
       hps-feature: 'main'
       upload-coverage: false
+      include-mini-tests: false
 
   docs:
     name: Documentation
