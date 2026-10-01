@@ -30,6 +30,10 @@ on:
         description: Whether to upload coverage results
         type: boolean
         default: true
+      include-mini-tests:
+        description: Include the separate hps-lite test job
+        type: boolean
+        default: true
     secrets:
       PYANSYS_CI_BOT_PACKAGE_TOKEN:
         required: true
@@ -79,7 +83,7 @@ jobs:
           version: ${{ inputs.hps-version }}
           feature: ${{ inputs.hps-feature }}
           profile: ${{ inputs.docker-compose-profiles }}
-   
+
       - name: Test with tox
         run: tox -e "${TOXENV_NAME}-coverage"
         env:
@@ -115,4 +119,66 @@ jobs:
 
       - name: Publish services info to summary
         if: success() || failure()
-        run: cat build_info.md >> $GITHUB_STEP_SUMMARY
+        run: |
+          if [ -f build_info.md ]; then
+            cat build_info.md >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "Service build information was not generated for this test selection." >> "$GITHUB_STEP_SUMMARY"
+          fi
+
+  mini-tests:
+    name: hps-lite tests
+    if: ${{ inputs['include-mini-tests'] }}
+    runs-on: ${{ inputs.runner }}
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Set up Python ${{ inputs.python-version }}
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: ${{ inputs.python-version }}
+
+      - uses: extractions/netrc@c3879108aae6b4ed5c4eb60854ae04f06d2f2f68 # v3
+        with:
+          machine: github.com
+          username: pyansys-ci-bot
+          password: ${{ secrets.PYANSYS_CI_BOT_PACKAGE_TOKEN }}
+
+      - name: Install dependencies
+        run: python -m pip install --upgrade pip setuptools tox tox-gh-actions
+
+      - name: Download and start hps-lite
+        id: hps-lite
+        uses: ./.github/actions/hps_lite
+        with:
+          token: ${{ secrets.PYANSYS_CI_BOT_TOKEN }}
+          start: 'true'
+
+      - name: Test with tox against hps-lite
+        run: tox -e "${TOXENV_NAME}-coverage"
+        env:
+          TOXENV_NAME: ${{ inputs.toxenv }}
+          HPS_MINI_PATH: ${{ steps['hps-lite'].outputs.path }}
+          HPS_MINI_TESTS: '1'
+          HPS_MINI_PYTEST_ARGS: '-m "not skip_for_hps_mini"'
+
+      - name: Upload mini coverage results
+        if: ${{ inputs.python-version == '3.10' && inputs.upload-coverage }}
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        with:
+          name: coverage-html-mini
+          path: .cov/html
+          retention-days: 7
+
+      - name: Publish hps-lite Test Report
+        uses: mikepenz/action-junit-report@a9170d5795813c01ab4901ffb045b52bab4ab09d # v6.5.0
+        if: always()
+        with:
+          report_paths: '**/test_results-*.xml'
+          check_name: hps-lite Test Report ${{ inputs.runner }}:${{ inputs.python-version }}
+          detailed_summary: true
+          include_passed: true

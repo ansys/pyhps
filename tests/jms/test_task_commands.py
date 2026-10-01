@@ -40,6 +40,7 @@ from ansys.hps.client.jms.resource import (
 
 log = logging.getLogger(__name__)
 
+
 EXECUTION_SCRIPT = """
 import os
 from ansys.rep.common.logging import log

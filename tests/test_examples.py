@@ -21,10 +21,12 @@
 # SOFTWARE.
 
 import logging
+import os
 
 import pytest
 
 from ansys.hps.client import __ansys_apps_version__ as ansys_version
+from ansys.hps.client import get_hps_mini_status
 from ansys.hps.client.jms import (
     IntParameterDefinition,
     JmsApi,
@@ -33,6 +35,18 @@ from ansys.hps.client.jms import (
 )
 
 log = logging.getLogger(__name__)
+
+
+def test_hps_mini_service():
+    executable = os.environ.get("HPS_MINI_PATH")
+    if not executable:
+        pytest.skip("HPS_MINI_PATH is not configured")
+
+    status = get_hps_mini_status(executable=executable, timeout=30.0)
+
+    assert status.url
+    assert status.api_key
+    assert status.pid > 0
 
 
 def test_mapdl_motorbike_frame(client):

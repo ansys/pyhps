@@ -30,6 +30,7 @@ from ansys.hps.client.jms import JmsApi
 log = logging.getLogger(__name__)
 
 
+@pytest.mark.skip_for_hps_mini
 def test_server_error(client):
     jms_api = JmsApi(client)
     except_obj = None

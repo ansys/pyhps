@@ -70,18 +70,21 @@ def _build_client_with_mocked_auth(**kwargs):
                     )
 
 
+@pytest.mark.skip_for_hps_mini
 def test_client_ssl_warning(url, username, password):
     with pytest.warns(UnverifiedHTTPSRequestsWarning) as record:
         _ = Client(url, username, password)
     assert any("Unverified HTTPS requests" in str(w.message) for w in record)
 
 
+@pytest.mark.skip_for_hps_mini
 def test_client_with_ssl_verification(url, username, password):
     with pytest.raises(requests.exceptions.SSLError) as ex_info:
         _ = Client(url, username, password, verify=True)
     assert "CERTIFICATE_VERIFY_FAILED" in str(ex_info.value)
 
 
+@pytest.mark.skip_for_hps_mini
 def test_authentication_workflows(url, username, password):
     ## Auth with user and password
     client0 = Client(url, username, password)
@@ -115,6 +118,7 @@ def test_authentication_workflows(url, username, password):
     client2.refresh_access_token()
 
 
+@pytest.mark.skip_for_hps_mini
 def test_authentication_username(url, username, password, keycloak_client):
     # Password workflow
     client0 = Client(url, username, password)
@@ -134,6 +138,7 @@ def test_authentication_username(url, username, password, keycloak_client):
     assert client1.username == "service-account-rep-impersonation"
 
 
+@pytest.mark.skip_for_hps_mini
 def test_authentication_username_exception(url, username, keycloak_client):
     # Impersonation
     realm_clients = keycloak_client.get_clients()
@@ -150,6 +155,7 @@ def test_authentication_username_exception(url, username, keycloak_client):
         )
 
 
+@pytest.mark.skip_for_hps_mini
 def test_dt_client(url, username, password):
     client = Client(url, username, password)
     assert client._dt_client is None
@@ -164,6 +170,7 @@ def test_dt_client(url, username, password):
     assert client.data_transfer_api == client._dt_api
 
 
+@pytest.mark.skip_for_hps_mini
 def test_update_token_expiry_sets_refresh_date(url, username, password):
     """After authentication, expiry-related fields must be populated."""
     client = Client(url, username, password)
@@ -177,6 +184,7 @@ def test_update_token_expiry_sets_refresh_date(url, username, password):
     assert 0 < diff <= client.token_expires_in
 
 
+@pytest.mark.skip_for_hps_mini
 def test_update_token_expiry_updates_after_refresh(url, username, password):
     """Calling refresh_access_token must move token_refresh_date forward."""
     client = Client(url, username, password)
@@ -188,6 +196,7 @@ def test_update_token_expiry_updates_after_refresh(url, username, password):
     assert client.token_refresh_date > first_refresh_date
 
 
+@pytest.mark.skip_for_hps_mini
 def test_external_tokens_seed_refresh_schedule(url, username, password):
     """Externally supplied access+refresh tokens should schedule preemptive refresh."""
     source_client = Client(url, username, password)
@@ -204,6 +213,7 @@ def test_external_tokens_seed_refresh_schedule(url, username, password):
     assert client.token_refresh_date is not None
 
 
+@pytest.mark.skip_for_hps_mini
 def test_refresh_access_token_persists_to_disk(url, username, password):
     """Refreshed tokens should be persisted when token_storage is disk."""
     client = Client(url, username, password, token_storage="disk")
@@ -217,6 +227,7 @@ def test_refresh_access_token_persists_to_disk(url, username, password):
     assert mock_save_tokens.call_args.kwargs["storage"] == "disk"
 
 
+@pytest.mark.skip_for_hps_mini
 def test_refresh_access_token_persists_to_keyring(url, username, password):
     """Refreshed tokens should be persisted when token_storage is keyring."""
     client = Client(url, username, password, token_storage="keyring")
@@ -230,6 +241,7 @@ def test_refresh_access_token_persists_to_keyring(url, username, password):
     assert mock_save_tokens.call_args.kwargs["storage"] == "keyring"
 
 
+@pytest.mark.skip_for_hps_mini
 def test_refresh_access_token_rotation_is_persisted(url, username, password):
     """Rotated refresh tokens should be persisted after refresh."""
     client = Client(url, username, password, token_storage="keyring")
@@ -265,6 +277,7 @@ def test_refresh_access_token_raises_when_refresh_token_missing():
         client.refresh_access_token()
 
 
+@pytest.mark.skip_for_hps_mini
 def test_refresh_access_token_persistence_result_keyring_failure_uses_memory_only(
     url, username, password
 ):
@@ -285,6 +298,7 @@ def test_refresh_access_token_persistence_result_keyring_failure_uses_memory_onl
     assert client.last_token_persistence_result["error"] == "keyring unavailable"
 
 
+@pytest.mark.skip_for_hps_mini
 def test_refresh_access_token_persistence_result_failure_uses_memory_only(url, username, password):
     """Telemetry should report persistence failures with memory-only behavior."""
     client = Client(url, username, password, token_storage="disk")
@@ -302,6 +316,7 @@ def test_refresh_access_token_persistence_result_failure_uses_memory_only(url, u
     assert client.last_token_persistence_result["error"] == "persistence failed"
 
 
+@pytest.mark.skip_for_hps_mini
 def test_refresh_access_token_persistence_logs_are_redacted(url, username, password, caplog):
     """Persistence failures must not log raw token values."""
     client = Client(url, username, password, token_storage="disk")
@@ -379,6 +394,7 @@ def test_token_storage_disk_strict_raises_when_backend_unavailable():
             )
 
 
+@pytest.mark.skip_for_hps_mini
 def test_reschedule_after_failed_refresh(url, username, password):
     """Failed refreshes must escalate through retry factors, then give up."""
     client = Client(url, username, password)
@@ -407,6 +423,7 @@ def test_reschedule_after_failed_refresh(url, username, password):
     assert client.token_refresh_date is None
 
 
+@pytest.mark.skip_for_hps_mini
 def test_periodically_refresh_token_refreshes_preemptively(url, username, password):
     """The background thread must refresh the access token before it expires."""
     client = Client(url, username, password)

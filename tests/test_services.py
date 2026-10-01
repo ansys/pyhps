@@ -34,6 +34,7 @@ log = logging.getLogger(__name__)
 
 
 @pytest.mark.order(1)
+@pytest.mark.skip_for_hps_mini
 def test_services(client: Client, build_info_path: str, has_hps_version_gt_1_4_10):
     # make sure services are up and running, print info
 
