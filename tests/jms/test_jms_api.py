@@ -116,6 +116,7 @@ def test_jms_api(client):
     project_api.delete_jobs(created_jobs)
 
 
+@pytest.mark.skip_for_hps_mini
 def test_fields_query_parameter(url, username, password):
     client1 = Client(url, username, password, all_fields=False)
 
@@ -159,6 +160,7 @@ def test_fields_query_parameter(url, username, password):
     JmsApi(client1).delete_project(project)
 
 
+@pytest.mark.skip_for_hps_mini
 def test_storage_configuration(client):
     jms_api = JmsApi(client)
     storages = jms_api.get_storage()

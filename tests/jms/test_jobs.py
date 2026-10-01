@@ -136,6 +136,7 @@ def test_job_serialization():
     assert serialized_job["host_ids"][1] == "uuid-5"
 
 
+@pytest.mark.skip_for_hps_mini
 def test_job_integration(client):
     proj_name = "test_jobs_JobTest"
 

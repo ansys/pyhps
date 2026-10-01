@@ -39,6 +39,8 @@ from ansys.hps.client.rcs.models import (
     UnRegisterInstanceResponse,
 )
 
+pytestmark = pytest.mark.skip_for_hps_mini
+
 
 class HelloWorldHandler(BaseHTTPRequestHandler):
     def do_GET(self):

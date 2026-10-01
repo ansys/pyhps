@@ -22,12 +22,15 @@
 
 import logging
 
+import pytest
+
 from ansys.hps.client import authenticate
 from ansys.hps.client.connection import create_session, ping
 
 log = logging.getLogger(__name__)
 
 
+@pytest.mark.skip_for_hps_mini
 def test_connection(url, username, password):
     resp = authenticate(url=url, username=username, password=password, verify=False)
     access_token = resp["access_token"]
