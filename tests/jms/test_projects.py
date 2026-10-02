@@ -117,7 +117,7 @@ def test_project_integration(client):
     jms_api.delete_project(proj)
 
 
-@pytest.mark.skip_for_hps_mini
+@pytest.mark.skip_for_hps_lite
 def test_project_copy(client):
     jms_api = JmsApi(client)
     proj_name = "test_jms_ProjectCopyTest"
@@ -215,7 +215,7 @@ def test_project_delete_job_definition(client):
     jms_api.delete_project(proj)
 
 
-@pytest.mark.skip_for_hps_mini
+@pytest.mark.skip_for_hps_lite
 def test_project_archive_restore(client):
     num_jobs = 2
     jms_api = JmsApi(client)
@@ -251,7 +251,7 @@ def test_project_archive_restore(client):
     jms_api.delete_project(restored_project)
 
 
-@pytest.mark.skip_for_hps_mini
+@pytest.mark.skip_for_hps_lite
 def test_copy_exec_script(client, has_hps_version_le_1_3_45):
     if has_hps_version_le_1_3_45:
         pytest.skip("Execution script name has changed after HPS v1.3.45.")
