@@ -10,7 +10,7 @@ so that you can understand how to interact with them programmatically.
   :maxdepth: 2
 
   client
-  mini
+  hps_lite
   auth
   jms
   rms

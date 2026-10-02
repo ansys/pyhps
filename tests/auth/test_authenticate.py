@@ -31,7 +31,7 @@ from ansys.hps.client import authenticate, determine_auth_url
 log = logging.getLogger(__name__)
 
 
-@pytest.mark.skip_for_hps_mini
+@pytest.mark.skip_for_hps_lite
 def test_authenticate(url, username, password):
     auth_url = determine_auth_url(hps_url=url, verify_ssl=False, fallback_realm="rep")
     resp = authenticate(auth_url=auth_url, username=username, password=password, verify=False)
@@ -40,14 +40,14 @@ def test_authenticate(url, username, password):
     assert "refresh_token" in resp
 
 
-@pytest.mark.skip_for_hps_mini
+@pytest.mark.skip_for_hps_lite
 def test_determine_auth_url_with_ssl_verification(url):
     with pytest.raises(requests.exceptions.SSLError) as ex_info:
         determine_auth_url(hps_url=url, verify_ssl=True, fallback_realm="rep")
     assert "CERTIFICATE_VERIFY_FAILED" in str(ex_info.value)
 
 
-@pytest.mark.skip_for_hps_mini
+@pytest.mark.skip_for_hps_lite
 def test_authenticate_with_ssl_verification(url, username, password):
     auth_url = determine_auth_url(hps_url=url, verify_ssl=False, fallback_realm="rep")
     with pytest.raises(requests.exceptions.SSLError) as ex_info:

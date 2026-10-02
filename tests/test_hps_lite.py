@@ -28,21 +28,21 @@ from unittest.mock import Mock, patch
 import pytest
 
 from ansys.hps.client import (
-    HpsMini,
-    HpsMiniError,
-    HpsMiniStatus,
-    create_mini_client,
-    find_hps_mini,
-    get_hps_mini_status,
+    HpsLite,
+    HpsLiteError,
+    HpsLiteStatus,
+    create_hps_lite_client,
+    find_hps_lite,
+    get_hps_lite_status,
 )
-from ansys.hps.client.mini import mini_executable_name
+from ansys.hps.client.hps_lite import hps_lite_executable_name
 
 
-def test_hps_mini_run_uses_json_output():
+def test_hps_lite_run_uses_json_output():
     with TemporaryDirectory() as directory:
-        mini = Path(directory) / "hps-mini.exe"
-        mini.touch()
-        data_dir = mini.parent / "state"
+        hps_lite = Path(directory) / "hps-lite.exe"
+        hps_lite.touch()
+        data_dir = hps_lite.parent / "state"
         result = Mock(
             returncode=0,
             stdout=json.dumps(
@@ -60,18 +60,18 @@ def test_hps_mini_run_uses_json_output():
             stdout=result.stdout,
             stderr="",
         )
-        with patch("ansys.hps.client.mini.subprocess.run", return_value=completed) as run:
-            status = HpsMini(
-                executable=mini,
+        with patch("ansys.hps.client.hps_lite.subprocess.run", return_value=completed) as run:
+            status = HpsLite(
+                executable=hps_lite,
                 data_dir=data_dir,
                 debug=True,
                 verbosity=3,
             ).run()
 
-        assert status == HpsMiniStatus("http://127.0.0.1:54321", "test-key", 1234)
+        assert status == HpsLiteStatus("http://127.0.0.1:54321", "test-key", 1234)
         run.assert_called_once_with(
             [
-                str(mini),
+                str(hps_lite),
                 "--data-dir",
                 str(data_dir),
                 "--debug",
@@ -87,55 +87,55 @@ def test_hps_mini_run_uses_json_output():
         )
 
 
-def test_hps_mini_run_rejects_stopped_instance():
+def test_hps_lite_run_rejects_stopped_instance():
     with TemporaryDirectory() as directory:
-        mini = Path(directory) / "hps-mini.exe"
-        mini.touch()
+        hps_lite = Path(directory) / "hps-lite.exe"
+        hps_lite.touch()
         with patch(
-            "ansys.hps.client.mini.subprocess.run",
+            "ansys.hps.client.hps_lite.subprocess.run",
             return_value=Mock(returncode=0, stdout='{"status":"stopped"}', stderr=""),
         ):
-            with pytest.raises(HpsMiniError, match="not running"):
-                HpsMini(executable=mini).run()
+            with pytest.raises(HpsLiteError, match="not running"):
+                HpsLite(executable=hps_lite).run()
 
 
-def test_find_hps_mini_uses_binaries_directory():
+def test_find_hps_lite_uses_binaries_directory():
     with TemporaryDirectory() as directory:
         working_dir = Path(directory)
-        mini = working_dir / "binaries" / "hps-mini.exe"
-        mini.parent.mkdir()
-        mini.touch()
+        hps_lite = working_dir / "binaries" / "hps-lite.exe"
+        hps_lite.parent.mkdir()
+        hps_lite.touch()
         with (
-            patch.dict("ansys.hps.client.mini.os.environ", {}, clear=True),
-            patch("ansys.hps.client.mini.Path.cwd", return_value=working_dir),
-            patch("ansys.hps.client.mini.platform.system", return_value="Windows"),
-            patch("ansys.hps.client.mini.shutil.which", return_value=None),
+            patch.dict("ansys.hps.client.hps_lite.os.environ", {}, clear=True),
+            patch("ansys.hps.client.hps_lite.Path.cwd", return_value=working_dir),
+            patch("ansys.hps.client.hps_lite.platform.system", return_value="Windows"),
+            patch("ansys.hps.client.hps_lite.shutil.which", return_value=None),
         ):
-            assert find_hps_mini() == mini
+            assert find_hps_lite() == hps_lite
 
 
-def test_mini_executable_name_returns_single_platform_name():
-    with patch("ansys.hps.client.mini.platform.system", return_value="Windows"):
-        assert mini_executable_name() == "hps-mini.exe"
+def test_hps_lite_executable_name_returns_single_platform_name():
+    with patch("ansys.hps.client.hps_lite.platform.system", return_value="Windows"):
+        assert hps_lite_executable_name() == "hps-lite.exe"
 
-    with patch("ansys.hps.client.mini.platform.system", return_value="Linux"):
-        assert mini_executable_name() == "hps-mini"
+    with patch("ansys.hps.client.hps_lite.platform.system", return_value="Linux"):
+        assert hps_lite_executable_name() == "hps-lite"
 
 
-def test_create_mini_client_uses_discovered_connection():
-    status = HpsMiniStatus("http://127.0.0.1:54321", "key", 1)
+def test_create_hps_lite_client_uses_discovered_connection():
+    status = HpsLiteStatus("http://127.0.0.1:54321", "key", 1)
     with (
-        patch("ansys.hps.client.mini.HpsMini.run", return_value=status),
-        patch("ansys.hps.client.mini.Client") as client_type,
+        patch("ansys.hps.client.hps_lite.HpsLite.run", return_value=status),
+        patch("ansys.hps.client.hps_lite.Client") as client_type,
     ):
-        create_mini_client(verify=False)
+        create_hps_lite_client(verify=False)
 
     client_type.assert_called_once_with(
         url="http://127.0.0.1:54321/hps", api_key="key", verify=False
     )
 
 
-def test_get_hps_mini_status_calls_run():
-    status = HpsMiniStatus("http://127.0.0.1:54321", "key", 1)
-    with patch("ansys.hps.client.mini.HpsMini.run", return_value=status):
-        assert get_hps_mini_status() == status
+def test_get_hps_lite_status_calls_run():
+    status = HpsLiteStatus("http://127.0.0.1:54321", "key", 1)
+    with patch("ansys.hps.client.hps_lite.HpsLite.run", return_value=status):
+        assert get_hps_lite_status() == status

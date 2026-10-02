@@ -20,11 +20,11 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-"""Connect PyHPS to a running local hps-mini instance."""
+"""Connect PyHPS to a running local hps-lite instance."""
 
 import logging
 
-from ansys.hps.client import HPSError, HpsMini
+from ansys.hps.client import HPSError, HpsLite
 from ansys.hps.client.jms import JmsApi
 
 log = logging.getLogger(__name__)
@@ -35,8 +35,8 @@ if __name__ == "__main__":
     logging.basicConfig(format="%(message)s", level=logging.INFO)
 
     try:
-        log.info("Connect to hps-mini")
-        client = HpsMini().client()
+        log.info("Connect to hps-lite")
+        client = HpsLite().client()
         log.info("HPS URL: %s", client.url)
 
         projects = JmsApi(client).get_projects()

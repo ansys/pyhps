@@ -201,7 +201,7 @@ def test_template_integration(jms_api, request):
     jms_api.delete_task_definition_templates([new_template])
 
 
-@pytest.mark.skip_for_hps_mini
+@pytest.mark.skip_for_hps_lite
 def test_template_permissions(client, keycloak_client, is_admin, request):
     jms_api = JmsApi(client)
 
@@ -299,7 +299,7 @@ def test_template_permissions(client, keycloak_client, is_admin, request):
     delete_user(keycloak_client, user1)
 
 
-@pytest.mark.skip_for_hps_mini
+@pytest.mark.skip_for_hps_lite
 def test_template_permissions_update(jms_api, request):
     xfail_for_hps_version_under(HpsRelease.v1_3_45, jms_api, request)
 
@@ -325,7 +325,7 @@ def test_template_permissions_update(jms_api, request):
     jms_api.delete_task_definition_templates([template])
 
 
-@pytest.mark.skip_for_hps_mini
+@pytest.mark.skip_for_hps_lite
 def test_template_anyone_permission(client, keycloak_client, request):
     jms_api = JmsApi(client)
     xfail_for_hps_version_under(HpsRelease.v1_3_45, jms_api, request)
@@ -390,7 +390,7 @@ def test_template_anyone_permission(client, keycloak_client, request):
     delete_user(keycloak_client, user1)
 
 
-@pytest.mark.skip_for_hps_mini
+@pytest.mark.skip_for_hps_lite
 def test_template_delete(client, keycloak_client, request):
     xfail_for_hps_version_under(HpsRelease.v1_3_45, JmsApi(client), request)
 

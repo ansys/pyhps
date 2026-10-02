@@ -20,7 +20,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-"""Helpers for connecting PyHPS to a local hps-mini instance."""
+"""Helpers for connecting PyHPS to a local hps-lite instance."""
 
 from __future__ import annotations
 
@@ -35,25 +35,25 @@ from pathlib import Path
 from .client import Client
 from .exceptions import ClientError
 
-MINI_PATH_ENV = "HPS_MINI_PATH"
-MINI_DATA_DIR_ENV = "HPS_MINI_DATA_DIR"
+HPS_LITE_PATH_ENV = "HPS_LITE_PATH"
+HPS_LITE_DATA_DIR_ENV = "HPS_LITE_DATA_DIR"
 
 
-class HpsMiniError(ClientError):
-    """Raised when a local hps-mini instance cannot be discovered."""
+class HpsLiteError(ClientError):
+    """Raised when a local hps-lite instance cannot be discovered."""
 
 
 @dataclass(frozen=True)
-class HpsMiniStatus:
-    """Connection details reported by hps-mini status."""
+class HpsLiteStatus:
+    """Connection details reported by hps-lite status."""
 
     url: str
     api_key: str
     pid: int
 
 
-class HpsMini:
-    """Discover and connect to a running hps-mini instance."""
+class HpsLite:
+    """Discover and connect to a running hps-lite instance."""
 
     def __init__(
         self,
@@ -63,7 +63,7 @@ class HpsMini:
         debug: bool = False,
         verbosity: int | None = None,
     ):
-        """Initialize a local hps-mini connection helper."""
+        """Initialize a local hps-lite connection helper."""
         self.executable = executable
         self.data_dir = data_dir
         self.timeout = timeout
@@ -71,31 +71,31 @@ class HpsMini:
         self.verbosity = verbosity
 
     def find(self) -> Path:
-        """Find the hps-mini executable."""
-        candidate = self.executable or os.environ.get(MINI_PATH_ENV)
+        """Find the hps-lite executable."""
+        candidate = self.executable or os.environ.get(HPS_LITE_PATH_ENV)
         if candidate:
             path = Path(candidate).expanduser()
             if path.is_file():
                 return path
-            raise HpsMiniError(f"hps-mini executable not found at {path}")
+            raise HpsLiteError(f"hps-lite executable not found at {path}")
 
-        executable_name = mini_executable_name()
-        for path in mini_default_paths(executable_name):
+        executable_name = hps_lite_executable_name()
+        for path in hps_lite_default_paths(executable_name):
             if path.is_file():
                 return path
         resolved = shutil.which(executable_name)
         if resolved:
             return Path(resolved)
-        raise HpsMiniError(
-            "hps-mini executable was not found; set HPS_MINI_PATH, place it in the current "
-            "directory or ./binaries, or add hps-mini to PATH"
+        raise HpsLiteError(
+            "hps-lite executable was not found; set HPS_LITE_PATH, place it in the current "
+            "directory or ./binaries, or add hps-lite to PATH"
         )
 
-    def run(self) -> HpsMiniStatus:
-        """Start hps-mini if needed and return its connection status."""
-        mini = self.find()
-        configured_data_dir = self.data_dir or os.environ.get(MINI_DATA_DIR_ENV)
-        command = [str(mini)]
+    def run(self) -> HpsLiteStatus:
+        """Start hps-lite if needed and return its connection status."""
+        hps_lite = self.find()
+        configured_data_dir = self.data_dir or os.environ.get(HPS_LITE_DATA_DIR_ENV)
+        command = [str(hps_lite)]
         if configured_data_dir:
             command.extend(["--data-dir", str(Path(configured_data_dir).expanduser())])
         if self.debug:
@@ -114,66 +114,66 @@ class HpsMini:
                 timeout=self.timeout,
             )
         except (OSError, subprocess.TimeoutExpired) as error:
-            raise HpsMiniError(f"could not query hps-mini: {error}") from error
+            raise HpsLiteError(f"could not query hps-lite: {error}") from error
 
         output = result.stdout.strip()
         try:
             payload = json.loads(output)
         except json.JSONDecodeError as error:
             detail = result.stderr.strip() or output or "no output"
-            raise HpsMiniError(f"invalid hps-mini status output: {detail}") from error
+            raise HpsLiteError(f"invalid hps-lite status output: {detail}") from error
 
         if payload.get("status") != "running":
-            raise HpsMiniError("hps-mini is not running")
+            raise HpsLiteError("hps-lite is not running")
 
         url = payload.get("url")
         api_key = payload.get("api_key", "")
         pid = payload.get("pid")
         if not isinstance(url, str) or not url:
-            raise HpsMiniError("hps-mini status did not include a URL")
+            raise HpsLiteError("hps-lite status did not include a URL")
         if not isinstance(api_key, str):
-            raise HpsMiniError("hps-mini status returned an invalid API key")
+            raise HpsLiteError("hps-lite status returned an invalid API key")
         if not isinstance(pid, int):
-            raise HpsMiniError("hps-mini status returned an invalid PID")
+            raise HpsLiteError("hps-lite status returned an invalid PID")
         if result.returncode != 0:
-            raise HpsMiniError(f"hps-mini status failed with exit code {result.returncode}")
+            raise HpsLiteError(f"hps-lite status failed with exit code {result.returncode}")
 
-        return HpsMiniStatus(url=url, api_key=api_key, pid=pid)
+        return HpsLiteStatus(url=url, api_key=api_key, pid=pid)
 
     def client(self, **kwargs) -> Client:
-        """Create a PyHPS client connected to the running hps-mini instance."""
+        """Create a PyHPS client connected to the running hps-lite instance."""
         status = self.run()
         url = status.url.rstrip("/") + "/hps"
         return Client(url=url, api_key=status.api_key or None, **kwargs)
 
 
-def find_hps_mini(executable: str | os.PathLike[str] | None = None) -> Path:
-    """Find the hps-mini executable."""
-    return HpsMini(executable=executable).find()
+def find_hps_lite(executable: str | os.PathLike[str] | None = None) -> Path:
+    """Find the hps-lite executable."""
+    return HpsLite(executable=executable).find()
 
 
-def mini_executable_name() -> str:
-    """Return the hps-mini executable name for the current platform."""
+def hps_lite_executable_name() -> str:
+    """Return the hps-lite executable name for the current platform."""
     if platform.system() == "Windows":
-        return "hps-mini.exe"
-    return "hps-mini"
+        return "hps-lite.exe"
+    return "hps-lite"
 
 
-def mini_default_paths(executable_name: str) -> tuple[Path, ...]:
-    """Return common hps-mini locations relative to the current directory."""
+def hps_lite_default_paths(executable_name: str) -> tuple[Path, ...]:
+    """Return common hps-lite locations relative to the current directory."""
     working_dir = Path.cwd()
     return (working_dir / executable_name, working_dir / "binaries" / executable_name)
 
 
-def get_hps_mini_status(
+def get_hps_lite_status(
     executable: str | os.PathLike[str] | None = None,
     data_dir: str | os.PathLike[str] | None = None,
     timeout: float = 5.0,
     debug: bool = False,
     verbosity: int | None = None,
-) -> HpsMiniStatus:
-    """Query a running hps-mini instance."""
-    return HpsMini(
+) -> HpsLiteStatus:
+    """Query a running hps-lite instance."""
+    return HpsLite(
         executable=executable,
         data_dir=data_dir,
         timeout=timeout,
@@ -182,7 +182,7 @@ def get_hps_mini_status(
     ).run()
 
 
-def create_mini_client(
+def create_hps_lite_client(
     executable: str | os.PathLike[str] | None = None,
     data_dir: str | os.PathLike[str] | None = None,
     timeout: float = 5.0,
@@ -190,8 +190,8 @@ def create_mini_client(
     verbosity: int | None = None,
     **kwargs,
 ) -> Client:
-    """Create a PyHPS client connected to the running hps-mini instance."""
-    return HpsMini(
+    """Create a PyHPS client connected to the running hps-lite instance."""
+    return HpsLite(
         executable=executable,
         data_dir=data_dir,
         timeout=timeout,
