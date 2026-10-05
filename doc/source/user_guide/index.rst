@@ -65,8 +65,10 @@ Close the client
 
 A client can run background resources: a token refresh thread and, once you use
 file transfers, a data transfer worker process. These resources are released
-automatically only when the Python process exits. If your program creates several
-clients or runs for a long time, close each client when you are done with it.
+automatically when the client is garbage collected or when the Python process
+exits. Garbage collection does not happen at a predictable time, so if your
+program creates several clients or runs for a long time, close each client
+explicitly when you are done with it.
 
 Use a ``with`` statement to close the client automatically:
 

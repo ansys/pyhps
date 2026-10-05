@@ -22,13 +22,13 @@
 
 """Module providing the Python client to the HPS APIs."""
 
-import atexit
 import logging
 import os
 import platform
 import tempfile
 import threading
 import warnings
+import weakref
 from datetime import datetime, timedelta, timezone
 
 import jwt
@@ -47,6 +47,46 @@ log = logging.getLogger(__name__)
 
 API_KEY_HEADER_NAME = "X-API-Key"  # nosec B105
 API_KEY_AUTH_PREFIX = "ApiKey"  # nosec B105
+
+
+class _ClientResources:
+    """Background resources that a client's finalizer can release without referencing the client."""
+
+    def __init__(self):
+        self.stop_event = threading.Event()
+        self.token_refresh_thread: threading.Thread | None = None
+        self.dt_client: DataTransferClient | None = None
+        self.dt_api: DataTransferApi | None = None
+
+    def release(self):
+        """Stop the token refresh thread and the data transfer client."""
+        self.stop_event.set()
+        thread = self.token_refresh_thread
+        # The finalizer can run on the refresh thread itself, which cannot join itself.
+        if thread is not None and thread is not threading.current_thread():
+            thread.join(timeout=5)
+        self.token_refresh_thread = None
+
+        dt_client = self.dt_client
+        self.dt_client = None
+        self.dt_api = None
+        if dt_client is not None:
+            log.info("Stopping the data transfer client gracefully.")
+            dt_client.stop()
+
+
+def _run_token_refresh_loop(client_ref, stop_event):
+    """Refresh tokens in the background for as long as the client exists."""
+    while not stop_event.is_set():
+        client = client_ref()
+        if client is None:
+            break
+        wait_time = client._refresh_token_if_due()
+        # Don't hold the client while sleeping, so it can be freed.
+        del client
+        if stop_event.wait(wait_time):
+            break
+    log.debug("Token refresh thread stopped")
 
 
 class Client:
@@ -237,8 +277,9 @@ class Client:
         self.client_secret = client_secret
         self.verify = verify
         self.data_transfer_url = url + "/dt/api/v1"
-        self._token_refresh_thread = None
-        self._stop_event = threading.Event()
+        self._resources = _ClientResources()
+        # Runs when the client is garbage collected or at interpreter exit.
+        self._finalizer = weakref.finalize(self, self._resources.release)
         if not 0 < token_refresh_factor < 1:
             raise ValueError("token_refresh_factor must be in the open interval (0, 1).")
         if token_refresh_loop_interval <= 0:
@@ -264,9 +305,6 @@ class Client:
             raise ValueError("token_storage must be one of: 'memory', 'disk', 'keyring'.")
         self.token_storage = token_storage
         self._validate_token_storage_backend(token_storage_strict)
-
-        self._dt_client: DataTransferClient | None = None
-        self._dt_api: DataTransferApi | None = None
 
         if self.verify is None:
             self.verify = False
@@ -388,29 +426,16 @@ class Client:
         if auto_refresh_token and self.token_refresh_date is not None:
             self._start_token_refresh_thread()
 
-        def exit_handler():
-            self._stop_event.set()
-            if self._token_refresh_thread is not None:
-                self._token_refresh_thread.join(timeout=5)
-            if self._dt_client is not None:
-                log.info("Stopping the data transfer client gracefully.")
-                self._dt_client.stop()
-
-        self._exit_handler = exit_handler
-        atexit.register(exit_handler)
-
     def close(self):
         """Stop the token refresh thread and data transfer client, and close the session.
 
-        Call this, or use the client in a ``with`` statement, to release its resources
-        before the process exits. Calling it more than once has no effect.
+        This also happens automatically when the client is garbage collected or the
+        process exits. Call this, or use the client in a ``with`` statement, to release
+        its resources at a predictable point. Calling it more than once has no effect.
         """
-        if self._exit_handler is None:
+        if not self._finalizer.alive:
             return
-        # Unregistering drops atexit's reference so the closed client can be collected.
-        atexit.unregister(self._exit_handler)
-        self._exit_handler()
-        self._exit_handler = None
+        self._finalizer()
         self.session.close()
 
     def __enter__(self):
@@ -420,6 +445,38 @@ class Client:
     def __exit__(self, exc_type, exc_value, traceback):
         """Close the client when leaving a ``with`` statement."""
         self.close()
+
+    @property
+    def _stop_event(self) -> threading.Event:
+        return self._resources.stop_event
+
+    @_stop_event.setter
+    def _stop_event(self, value: threading.Event):
+        self._resources.stop_event = value
+
+    @property
+    def _token_refresh_thread(self) -> threading.Thread | None:
+        return self._resources.token_refresh_thread
+
+    @_token_refresh_thread.setter
+    def _token_refresh_thread(self, value: threading.Thread | None):
+        self._resources.token_refresh_thread = value
+
+    @property
+    def _dt_client(self) -> DataTransferClient | None:
+        return self._resources.dt_client
+
+    @_dt_client.setter
+    def _dt_client(self, value: DataTransferClient | None):
+        self._resources.dt_client = value
+
+    @property
+    def _dt_api(self) -> DataTransferApi | None:
+        return self._resources.dt_api
+
+    @_dt_api.setter
+    def _dt_api(self, value: DataTransferApi | None):
+        self._resources.dt_api = value
 
     def _get_username(self, decoded_token):
         parsed_username = decoded_token.get("preferred_username", None)
@@ -598,8 +655,10 @@ class Client:
         if self._token_refresh_thread is not None and self._token_refresh_thread.is_alive():
             return
 
+        # A weak reference lets the client be freed while the thread is running.
         self._token_refresh_thread = threading.Thread(
-            target=self._periodically_refresh_token,
+            target=_run_token_refresh_loop,
+            args=(weakref.ref(self), self._stop_event),
             name="periodic_token_refresh",
         )
         self._token_refresh_thread.daemon = True
@@ -640,28 +699,22 @@ class Client:
         else:
             self.token_refresh_date = None
 
-    def _periodically_refresh_token(self):
-        """Periodically check if the token needs to be refreshed and refresh it."""
-        while not self._stop_event.is_set():
-            if self.token_refresh_date is None:
-                if self._stop_event.wait(self.loop_interval):
-                    break
-                continue
+    def _refresh_token_if_due(self) -> float:
+        """Refresh the token if it is due and return the seconds until the next check."""
+        if self.token_refresh_date is None:
+            return self.loop_interval
 
-            now = datetime.now(timezone.utc)
-            if now > self.token_refresh_date:
-                log.debug("Attempting preemptive authentication token refresh")
-                try:
-                    self.refresh_access_token()
-                except Exception as ex:
-                    self._reschedule_after_failed_refresh(ex)
-                continue
+        now = datetime.now(timezone.utc)
+        if now > self.token_refresh_date:
+            log.debug("Attempting preemptive authentication token refresh")
+            try:
+                self.refresh_access_token()
+            except Exception as ex:
+                self._reschedule_after_failed_refresh(ex)
+            return 0
 
-            diff = self.token_refresh_date - now
-            sleep_time = max(0.1, min(self.loop_interval, diff.total_seconds()))
-            if self._stop_event.wait(sleep_time):
-                break
-        log.debug("Token refresh thread stopped")
+        diff = self.token_refresh_date - now
+        return max(0.1, min(self.loop_interval, diff.total_seconds()))
 
     def _reschedule_after_failed_refresh(self, ex):
         """Schedule the next refresh attempt after a failure, if any retries remain."""

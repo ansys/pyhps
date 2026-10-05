@@ -578,6 +578,25 @@ def test_context_manager_closes_client():
     client.session.close.assert_called_once()
 
 
+def test_unclosed_client_is_released_when_unreferenced():
+    """A client that is never closed should release its resources once it is freed."""
+    client = _build_client_with_mocked_auth()
+    dt_client = Mock()
+    client._dt_client = dt_client
+    client.token_refresh_date = datetime.now(timezone.utc) + timedelta(hours=1)
+    client._start_token_refresh_thread()
+    refresh_thread = client._token_refresh_thread
+    client_ref = weakref.ref(client)
+
+    del client
+    gc.collect()
+
+    assert client_ref() is None
+    dt_client.stop.assert_called_once()
+    refresh_thread.join(timeout=5)
+    assert not refresh_thread.is_alive()
+
+
 def test_no_auth_mode_skips_401_refresh():
     """In no-auth mode, 401 responses should not trigger token refresh."""
     mock_session = Mock()
