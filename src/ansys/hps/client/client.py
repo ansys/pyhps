@@ -175,6 +175,12 @@ class Client:
         >>> from ansys.hps.client import Client
         >>> cl = Client(url="https://localhost:8443/hps")
 
+    Use the client as a context manager so it is closed on exit.
+
+    >>> with Client(url="https://localhost:8443/hps", username="repuser",
+    ...             password="repuser") as cl:
+    ...     cl.data_transfer_api.status(wait=True)
+
     """
 
     def __init__(
@@ -390,7 +396,30 @@ class Client:
                 log.info("Stopping the data transfer client gracefully.")
                 self._dt_client.stop()
 
+        self._exit_handler = exit_handler
         atexit.register(exit_handler)
+
+    def close(self):
+        """Stop the token refresh thread and data transfer client, and close the session.
+
+        Call this, or use the client in a ``with`` statement, to release its resources
+        before the process exits. Calling it more than once has no effect.
+        """
+        if self._exit_handler is None:
+            return
+        # Unregistering drops atexit's reference so the closed client can be collected.
+        atexit.unregister(self._exit_handler)
+        self._exit_handler()
+        self._exit_handler = None
+        self.session.close()
+
+    def __enter__(self):
+        """Return the client for use in a ``with`` statement."""
+        return self
+
+    def __exit__(self, exc_type, exc_value, traceback):
+        """Close the client when leaving a ``with`` statement."""
+        self.close()
 
     def _get_username(self, decoded_token):
         parsed_username = decoded_token.get("preferred_username", None)
