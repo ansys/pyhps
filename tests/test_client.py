@@ -20,9 +20,11 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+import gc
 import logging
 import threading
 import time
+import weakref
 from datetime import datetime, timedelta, timezone
 from unittest.mock import Mock, patch
 
@@ -615,6 +617,60 @@ def test_no_auth_mode_skips_authentication():
     mock_create.assert_called_once()
     call_args = mock_create.call_args
     assert call_args[0][0] is None  # First positional arg (access_token) should be None
+
+
+def test_close_releases_resources_and_client():
+    """close() should stop background resources and let the client be collected."""
+    client = _build_client_with_mocked_auth()
+    dt_client = Mock()
+    client._dt_client = dt_client
+    client.token_refresh_date = datetime.now(timezone.utc) + timedelta(hours=1)
+    client._start_token_refresh_thread()
+    refresh_thread = client._token_refresh_thread
+    session = client.session
+
+    client.close()
+    client.close()
+
+    dt_client.stop.assert_called_once()
+    session.close.assert_called_once()
+    assert not refresh_thread.is_alive()
+
+    client_ref = weakref.ref(client)
+    # The session's response hook references the client, so drop it too.
+    del client, session
+    gc.collect()
+    assert client_ref() is None
+
+
+def test_context_manager_closes_client():
+    """Leaving a with block should close the client."""
+    dt_client = Mock()
+    with _build_client_with_mocked_auth() as client:
+        client._dt_client = dt_client
+
+    dt_client.stop.assert_called_once()
+    assert client._stop_event.is_set()
+    client.session.close.assert_called_once()
+
+
+def test_unclosed_client_is_released_when_unreferenced():
+    """A client that is never closed should release its resources once it is freed."""
+    client = _build_client_with_mocked_auth()
+    dt_client = Mock()
+    client._dt_client = dt_client
+    client.token_refresh_date = datetime.now(timezone.utc) + timedelta(hours=1)
+    client._start_token_refresh_thread()
+    refresh_thread = client._token_refresh_thread
+    client_ref = weakref.ref(client)
+
+    del client
+    gc.collect()
+
+    assert client_ref() is None
+    dt_client.stop.assert_called_once()
+    refresh_thread.join(timeout=5)
+    assert not refresh_thread.is_alive()
 
 
 def test_no_auth_mode_skips_401_refresh():
