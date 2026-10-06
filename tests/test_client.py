@@ -215,6 +215,82 @@ def test_external_tokens_seed_refresh_schedule(url, username, password):
     assert client.token_refresh_date is not None
 
 
+@pytest.mark.parametrize(
+    ("refresh_expires_in", "expected_lifetime"),
+    [(1800, 1800), (7200, 3600), (0, 3600)],
+)
+def test_external_tokens_use_shorter_token_lifetime(refresh_expires_in, expected_lifetime):
+    """External tokens should refresh before the shorter refresh token expires."""
+    issued_at = datetime.now(timezone.utc).replace(microsecond=0)
+    decoded_token = {
+        "preferred_username": "repadmin",
+        "iat": int(issued_at.timestamp()),
+        "exp": int(issued_at.timestamp()) + 3600,
+    }
+    mock_session = Mock(headers={}, hooks={}, params={})
+
+    with (
+        patch("ansys.hps.client.client.jwt.decode", return_value=decoded_token),
+        patch(
+            "ansys.hps.client.client.determine_auth_url",
+            return_value="https://example.test/auth",
+        ),
+        patch("ansys.hps.client.client.create_session", return_value=mock_session),
+    ):
+        client = Client(
+            url="https://example.test/hps",
+            access_token="access-token",
+            refresh_token="refresh-token",
+            token_metadata={
+                "expires_in": 3600,
+                "refresh_expires_in": refresh_expires_in,
+            },
+            auto_refresh_token=False,
+            verify=False,
+        )
+
+    assert client.token_expires_in == expected_lifetime
+    assert client.token_acquired_date == issued_at
+    assert client.token_refresh_date == issued_at + timedelta(
+        seconds=int(expected_lifetime * client.token_refresh_factor)
+    )
+
+
+def test_external_tokens_use_saved_acquisition_time():
+    """Persisted token lifetime should include time elapsed since it was saved."""
+    saved_at = datetime.now(timezone.utc).replace(microsecond=0) - timedelta(minutes=10)
+    decoded_token = {
+        "preferred_username": "repadmin",
+        "iat": int(saved_at.timestamp()),
+        "exp": int(saved_at.timestamp()) + 3600,
+    }
+    mock_session = Mock(headers={}, hooks={}, params={})
+
+    with (
+        patch("ansys.hps.client.client.jwt.decode", return_value=decoded_token),
+        patch(
+            "ansys.hps.client.client.determine_auth_url",
+            return_value="https://example.test/auth",
+        ),
+        patch("ansys.hps.client.client.create_session", return_value=mock_session),
+    ):
+        client = Client(
+            url="https://example.test/hps",
+            access_token="access-token",
+            refresh_token="refresh-token",
+            token_metadata={
+                "expires_in": 3600,
+                "refresh_expires_in": 1800,
+                "saved_at": saved_at.timestamp(),
+            },
+            auto_refresh_token=False,
+            verify=False,
+        )
+
+    assert client.token_acquired_date == saved_at
+    assert client.token_refresh_date == saved_at + timedelta(seconds=1260)
+
+
 @pytest.mark.skip_for_hps_mini
 def test_refresh_access_token_persists_to_disk(url, username, password):
     """Refreshed tokens should be persisted when token_storage is disk."""
