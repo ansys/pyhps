@@ -60,6 +60,37 @@ Once connected, you can query project statistics to find out how many jobs are c
     projects = jms_api.get_projects(statistics=True)
     num_running_jobs = sum(p.statistics["eval_status"]["running"] for p in projects)
 
+Close the client
+----------------
+
+A client can run background resources: a token refresh thread and, once you use
+file transfers, a data transfer worker process. These resources are released
+automatically when the client is garbage collected or when the Python process
+exits. Garbage collection does not happen at a predictable time, so if your
+program creates several clients or runs for a long time, close each client
+explicitly when you are done with it.
+
+Use a ``with`` statement to close the client automatically:
+
+.. code-block:: python
+
+    from ansys.hps.client import Client
+
+    with Client(url="https://localhost:8443/hps", username="repuser", password="repuser") as client:
+        ...
+
+Or call :meth:`close() <ansys.hps.client.client.Client.close>` explicitly:
+
+.. code-block:: python
+
+    client = Client(url="https://localhost:8443/hps", username="repuser", password="repuser")
+    try:
+        ...
+    finally:
+        client.close()
+
+Calling ``close()`` more than once is safe. Do not use a client after closing it.
+
 Connect to a local hps-lite instance
 ------------------------------------
 

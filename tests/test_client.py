@@ -20,9 +20,11 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+import gc
 import logging
 import threading
 import time
+import weakref
 from datetime import datetime, timedelta, timezone
 from unittest.mock import Mock, patch
 
@@ -211,6 +213,83 @@ def test_external_tokens_seed_refresh_schedule(url, username, password):
     assert client.token_expires_in is not None
     assert client.token_acquired_date is not None
     assert client.token_refresh_date is not None
+
+
+@pytest.mark.skip_for_hps_lite
+@pytest.mark.parametrize(
+    ("refresh_expires_in", "expected_lifetime"),
+    [(1800, 1800), (7200, 3600), (0, 3600)],
+)
+def test_external_tokens_use_shorter_token_lifetime(refresh_expires_in, expected_lifetime):
+    """External tokens should refresh before the shorter refresh token expires."""
+    issued_at = datetime.now(timezone.utc).replace(microsecond=0)
+    decoded_token = {
+        "preferred_username": "repadmin",
+        "iat": int(issued_at.timestamp()),
+        "exp": int(issued_at.timestamp()) + 3600,
+    }
+    mock_session = Mock(headers={}, hooks={}, params={})
+
+    with (
+        patch("ansys.hps.client.client.jwt.decode", return_value=decoded_token),
+        patch(
+            "ansys.hps.client.client.determine_auth_url",
+            return_value="https://example.test/auth",
+        ),
+        patch("ansys.hps.client.client.create_session", return_value=mock_session),
+    ):
+        client = Client(
+            url="https://example.test/hps",
+            access_token="access-token",
+            refresh_token="refresh-token",
+            token_metadata={
+                "expires_in": 3600,
+                "refresh_expires_in": refresh_expires_in,
+            },
+            auto_refresh_token=False,
+            verify=False,
+        )
+
+    assert client.token_expires_in == expected_lifetime
+    assert client.token_acquired_date == issued_at
+    assert client.token_refresh_date == issued_at + timedelta(
+        seconds=int(expected_lifetime * client.token_refresh_factor)
+    )
+
+
+def test_external_tokens_use_saved_acquisition_time():
+    """Persisted token lifetime should include time elapsed since it was saved."""
+    saved_at = datetime.now(timezone.utc).replace(microsecond=0) - timedelta(minutes=10)
+    decoded_token = {
+        "preferred_username": "repadmin",
+        "iat": int(saved_at.timestamp()),
+        "exp": int(saved_at.timestamp()) + 3600,
+    }
+    mock_session = Mock(headers={}, hooks={}, params={})
+
+    with (
+        patch("ansys.hps.client.client.jwt.decode", return_value=decoded_token),
+        patch(
+            "ansys.hps.client.client.determine_auth_url",
+            return_value="https://example.test/auth",
+        ),
+        patch("ansys.hps.client.client.create_session", return_value=mock_session),
+    ):
+        client = Client(
+            url="https://example.test/hps",
+            access_token="access-token",
+            refresh_token="refresh-token",
+            token_metadata={
+                "expires_in": 3600,
+                "refresh_expires_in": 1800,
+                "saved_at": saved_at.timestamp(),
+            },
+            auto_refresh_token=False,
+            verify=False,
+        )
+
+    assert client.token_acquired_date == saved_at
+    assert client.token_refresh_date == saved_at + timedelta(seconds=1260)
 
 
 @pytest.mark.skip_for_hps_lite
@@ -539,6 +618,60 @@ def test_no_auth_mode_skips_authentication():
     mock_create.assert_called_once()
     call_args = mock_create.call_args
     assert call_args[0][0] is None  # First positional arg (access_token) should be None
+
+
+def test_close_releases_resources_and_client():
+    """close() should stop background resources and let the client be collected."""
+    client = _build_client_with_mocked_auth()
+    dt_client = Mock()
+    client._dt_client = dt_client
+    client.token_refresh_date = datetime.now(timezone.utc) + timedelta(hours=1)
+    client._start_token_refresh_thread()
+    refresh_thread = client._token_refresh_thread
+    session = client.session
+
+    client.close()
+    client.close()
+
+    dt_client.stop.assert_called_once()
+    session.close.assert_called_once()
+    assert not refresh_thread.is_alive()
+
+    client_ref = weakref.ref(client)
+    # The session's response hook references the client, so drop it too.
+    del client, session
+    gc.collect()
+    assert client_ref() is None
+
+
+def test_context_manager_closes_client():
+    """Leaving a with block should close the client."""
+    dt_client = Mock()
+    with _build_client_with_mocked_auth() as client:
+        client._dt_client = dt_client
+
+    dt_client.stop.assert_called_once()
+    assert client._stop_event.is_set()
+    client.session.close.assert_called_once()
+
+
+def test_unclosed_client_is_released_when_unreferenced():
+    """A client that is never closed should release its resources once it is freed."""
+    client = _build_client_with_mocked_auth()
+    dt_client = Mock()
+    client._dt_client = dt_client
+    client.token_refresh_date = datetime.now(timezone.utc) + timedelta(hours=1)
+    client._start_token_refresh_thread()
+    refresh_thread = client._token_refresh_thread
+    client_ref = weakref.ref(client)
+
+    del client
+    gc.collect()
+
+    assert client_ref() is None
+    dt_client.stop.assert_called_once()
+    refresh_thread.join(timeout=5)
+    assert not refresh_thread.is_alive()
 
 
 def test_no_auth_mode_skips_401_refresh():

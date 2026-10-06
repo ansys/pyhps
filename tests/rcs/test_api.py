@@ -26,7 +26,6 @@ import threading
 import time
 from http.server import BaseHTTPRequestHandler, HTTPServer
 
-import portend
 import pytest
 import requests
 
@@ -59,16 +58,17 @@ class HelloWorldHandler(BaseHTTPRequestHandler):
 
 @pytest.fixture(scope="module")
 def http_server():
-    port = portend.find_available_local_port()
-    server = HTTPServer(("0.0.0.0", port), HelloWorldHandler)
-    hostname = socket.gethostname()
-    url = f"http://{hostname}:{port}"
-    thread = threading.Thread(target=server.serve_forever)
-    thread.daemon = True
-    thread.start()
-    yield server, url
-    server.shutdown()
-    thread.join()
+    with HTTPServer(("0.0.0.0", 0), HelloWorldHandler) as server:
+        hostname = socket.gethostname()
+        url = f"http://{hostname}:{server.server_port}"
+        thread = threading.Thread(target=server.serve_forever)
+        thread.daemon = True
+        thread.start()
+        try:
+            yield server, url
+        finally:
+            server.shutdown()
+            thread.join()
 
 
 def test_hello_world(http_server):
