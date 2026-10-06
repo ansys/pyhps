@@ -18,7 +18,7 @@ It simulates a cantilever using a chain of PyAnsys packages:
    eigenfrequencies of the cantilever and then display them as output
    parameters.
 
-The example parametrizes the physical cantilever dimensions, as well as several mesh and simulation 
+The example parametrizes the physical cantilever dimensions, mesh, and simulation
 properties.
 
 Prerequisites

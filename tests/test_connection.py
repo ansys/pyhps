@@ -22,12 +22,15 @@
 
 import logging
 
+import pytest
+
 from ansys.hps.client import authenticate
 from ansys.hps.client.connection import create_session, ping
 
 log = logging.getLogger(__name__)
 
 
+@pytest.mark.skip_for_hps_mini
 def test_connection(url, username, password):
     resp = authenticate(url=url, username=username, password=password, verify=False)
     access_token = resp["access_token"]
@@ -36,3 +39,14 @@ def test_connection(url, username, password):
         jms_api_url = f"{url}/jms/api/v1"
         log.info(f"Ping {jms_api_url}")
         assert ping(session, jms_api_url)
+
+
+def test_create_session_custom_api_key_header():
+    """API-key header should support forwarding raw token values."""
+    with create_session(
+        access_token="my_api_key",
+        verify=False,
+        auth_header_name="X-API-Key",
+        auth_prefix="",
+    ) as session:
+        assert session.headers["X-API-Key"] == "my_api_key"

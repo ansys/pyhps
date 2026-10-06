@@ -24,6 +24,7 @@ import logging
 import threading
 import time
 from datetime import datetime, timedelta, timezone
+from unittest.mock import Mock, patch
 
 import pytest
 import requests
@@ -35,18 +36,55 @@ from ansys.hps.client.warnings import UnverifiedHTTPSRequestsWarning
 log = logging.getLogger(__name__)
 
 
+def _build_client_with_mocked_auth(**kwargs):
+    """Create a Client while mocking network/auth dependencies."""
+    token_response = {
+        "access_token": "mock_access_token",
+        "refresh_token": "mock_refresh_token",
+        "expires_in": 3600,
+        "refresh_expires_in": 86400,
+    }
+
+    mock_session = Mock()
+    mock_session.headers = {"Authorization": "Bearer mock_access_token"}
+    mock_session.hooks = {}
+    mock_session.params = {}
+
+    with patch(
+        "ansys.hps.client.client.determine_auth_url", return_value="https://auth.test/realm"
+    ):
+        with patch("ansys.hps.client.client.authenticate", return_value=token_response):
+            with patch(
+                "ansys.hps.client.client.jwt.decode",
+                return_value={"preferred_username": kwargs.get("username", "repadmin")},
+            ):
+                with patch("ansys.hps.client.client.create_session", return_value=mock_session):
+                    return Client(
+                        url="https://example.test/hps",
+                        username=kwargs.get("username", "repadmin"),
+                        password=kwargs.get("password", "repadmin"),
+                        verify=False,
+                        disable_security_warnings=True,
+                        auto_refresh_token=False,
+                        **{k: v for k, v in kwargs.items() if k not in {"username", "password"}},
+                    )
+
+
+@pytest.mark.skip_for_hps_mini
 def test_client_ssl_warning(url, username, password):
     with pytest.warns(UnverifiedHTTPSRequestsWarning) as record:
         _ = Client(url, username, password)
     assert any("Unverified HTTPS requests" in str(w.message) for w in record)
 
 
+@pytest.mark.skip_for_hps_mini
 def test_client_with_ssl_verification(url, username, password):
     with pytest.raises(requests.exceptions.SSLError) as ex_info:
         _ = Client(url, username, password, verify=True)
     assert "CERTIFICATE_VERIFY_FAILED" in str(ex_info.value)
 
 
+@pytest.mark.skip_for_hps_mini
 def test_authentication_workflows(url, username, password):
     ## Auth with user and password
     client0 = Client(url, username, password)
@@ -80,6 +118,7 @@ def test_authentication_workflows(url, username, password):
     client2.refresh_access_token()
 
 
+@pytest.mark.skip_for_hps_mini
 def test_authentication_username(url, username, password, keycloak_client):
     # Password workflow
     client0 = Client(url, username, password)
@@ -99,6 +138,7 @@ def test_authentication_username(url, username, password, keycloak_client):
     assert client1.username == "service-account-rep-impersonation"
 
 
+@pytest.mark.skip_for_hps_mini
 def test_authentication_username_exception(url, username, keycloak_client):
     # Impersonation
     realm_clients = keycloak_client.get_clients()
@@ -115,6 +155,7 @@ def test_authentication_username_exception(url, username, keycloak_client):
         )
 
 
+@pytest.mark.skip_for_hps_mini
 def test_dt_client(url, username, password):
     client = Client(url, username, password)
     assert client._dt_client is None
@@ -129,6 +170,7 @@ def test_dt_client(url, username, password):
     assert client.data_transfer_api == client._dt_api
 
 
+@pytest.mark.skip_for_hps_mini
 def test_update_token_expiry_sets_refresh_date(url, username, password):
     """After authentication, expiry-related fields must be populated."""
     client = Client(url, username, password)
@@ -142,6 +184,7 @@ def test_update_token_expiry_sets_refresh_date(url, username, password):
     assert 0 < diff <= client.token_expires_in
 
 
+@pytest.mark.skip_for_hps_mini
 def test_update_token_expiry_updates_after_refresh(url, username, password):
     """Calling refresh_access_token must move token_refresh_date forward."""
     client = Client(url, username, password)
@@ -153,6 +196,205 @@ def test_update_token_expiry_updates_after_refresh(url, username, password):
     assert client.token_refresh_date > first_refresh_date
 
 
+@pytest.mark.skip_for_hps_mini
+def test_external_tokens_seed_refresh_schedule(url, username, password):
+    """Externally supplied access+refresh tokens should schedule preemptive refresh."""
+    source_client = Client(url, username, password)
+
+    client = Client(
+        url,
+        access_token=source_client.access_token,
+        refresh_token=source_client.refresh_token,
+        auto_refresh_token=False,
+    )
+
+    assert client.token_expires_in is not None
+    assert client.token_acquired_date is not None
+    assert client.token_refresh_date is not None
+
+
+@pytest.mark.skip_for_hps_mini
+def test_refresh_access_token_persists_to_disk(url, username, password):
+    """Refreshed tokens should be persisted when token_storage is disk."""
+    client = Client(url, username, password, token_storage="disk")
+
+    with patch("ansys.hps.client.common.token_storage.save_tokens") as mock_save_tokens:
+        client.refresh_access_token()
+
+    mock_save_tokens.assert_called_once()
+    _, called_url = mock_save_tokens.call_args[0]
+    assert called_url == url
+    assert mock_save_tokens.call_args.kwargs["storage"] == "disk"
+
+
+@pytest.mark.skip_for_hps_mini
+def test_refresh_access_token_persists_to_keyring(url, username, password):
+    """Refreshed tokens should be persisted when token_storage is keyring."""
+    client = Client(url, username, password, token_storage="keyring")
+
+    with patch("ansys.hps.client.common.token_storage.save_tokens") as mock_save_tokens:
+        client.refresh_access_token()
+
+    mock_save_tokens.assert_called_once()
+    _, called_url = mock_save_tokens.call_args[0]
+    assert called_url == url
+    assert mock_save_tokens.call_args.kwargs["storage"] == "keyring"
+
+
+@pytest.mark.skip_for_hps_mini
+def test_refresh_access_token_rotation_is_persisted(url, username, password):
+    """Rotated refresh tokens should be persisted after refresh."""
+    client = Client(url, username, password, token_storage="keyring")
+    old_refresh_token = client.refresh_token
+    rotated_refresh_token = "rotated_refresh_token_value"
+
+    refreshed_tokens = {
+        "access_token": client.access_token,
+        "refresh_token": rotated_refresh_token,
+        "expires_in": 3600,
+        "refresh_expires_in": 86400,
+    }
+
+    with patch("ansys.hps.client.client.authenticate", return_value=refreshed_tokens):
+        with patch("ansys.hps.client.common.token_storage.save_tokens") as mock_save_tokens:
+            client.refresh_access_token()
+
+    assert client.refresh_token == rotated_refresh_token
+    assert client.refresh_token != old_refresh_token
+    saved_tokens, saved_url = mock_save_tokens.call_args[0]
+    assert saved_url == url
+    assert saved_tokens["refresh_token"] == rotated_refresh_token
+    assert mock_save_tokens.call_args.kwargs["storage"] == "keyring"
+
+
+def test_refresh_access_token_raises_when_refresh_token_missing():
+    """Refresh flow fails fast when no refresh token is available."""
+    client = _build_client_with_mocked_auth()
+    client.grant_type = "refresh_token"
+    client.refresh_token = None
+
+    with pytest.raises(HPSError, match="No refresh token available"):
+        client.refresh_access_token()
+
+
+@pytest.mark.skip_for_hps_mini
+def test_refresh_access_token_persistence_result_keyring_failure_uses_memory_only(
+    url, username, password
+):
+    """Telemetry should report memory-only behavior when keyring persistence fails."""
+    client = Client(url, username, password, token_storage="keyring")
+
+    with patch(
+        "ansys.hps.client.common.token_storage.save_tokens",
+        side_effect=RuntimeError("keyring unavailable"),
+    ):
+        client.refresh_access_token()
+
+    assert client.last_token_persistence_result is not None
+    assert client.last_token_persistence_result["requested_storage"] == "keyring"
+    assert client.last_token_persistence_result["storage_used"] == "memory"
+    assert client.last_token_persistence_result["fallback_used"] is False
+    assert client.last_token_persistence_result["persisted"] is False
+    assert client.last_token_persistence_result["error"] == "keyring unavailable"
+
+
+@pytest.mark.skip_for_hps_mini
+def test_refresh_access_token_persistence_result_failure_uses_memory_only(url, username, password):
+    """Telemetry should report persistence failures with memory-only behavior."""
+    client = Client(url, username, password, token_storage="disk")
+
+    with patch(
+        "ansys.hps.client.common.token_storage.save_tokens",
+        side_effect=RuntimeError("persistence failed"),
+    ):
+        client.refresh_access_token()
+
+    assert client.last_token_persistence_result is not None
+    assert client.last_token_persistence_result["requested_storage"] == "disk"
+    assert client.last_token_persistence_result["storage_used"] == "memory"
+    assert client.last_token_persistence_result["persisted"] is False
+    assert client.last_token_persistence_result["error"] == "persistence failed"
+
+
+@pytest.mark.skip_for_hps_mini
+def test_refresh_access_token_persistence_logs_are_redacted(url, username, password, caplog):
+    """Persistence failures must not log raw token values."""
+    client = Client(url, username, password, token_storage="disk")
+    leaked_error = (
+        f"persistence failed access={client.access_token} "
+        f"refresh={client.refresh_token} bearer=Bearer {client.access_token}"
+    )
+
+    caplog.set_level(logging.WARNING, logger="ansys.hps.client.client")
+    with patch(
+        "ansys.hps.client.common.token_storage.save_tokens",
+        side_effect=RuntimeError(leaked_error),
+    ):
+        client.refresh_access_token()
+
+    assert client.access_token not in caplog.text
+    assert client.refresh_token not in caplog.text
+    assert "Bearer " + client.access_token not in caplog.text
+    assert "***REDACTED***" in caplog.text
+
+    err = client.last_token_persistence_result["error"]
+    assert client.access_token not in err
+    assert client.refresh_token not in err
+    assert "Bearer " + client.access_token not in err
+    assert "***REDACTED***" in err
+
+
+def test_token_storage_keyring_warns_when_backend_unavailable(caplog):
+    """Keyring storage should log a warning when backend is unavailable in non-strict mode."""
+    with patch(
+        "ansys.hps.client.common.token_storage._check_storage_backend",
+        side_effect=lambda storage: "backend unavailable" if storage == "keyring" else None,
+    ):
+        with caplog.at_level(logging.WARNING, logger="ansys.hps.client.client"):
+            client = _build_client_with_mocked_auth(token_storage="keyring")
+    assert "Keyring token storage requested but unavailable" in caplog.text
+    assert client.token_storage == "keyring"
+
+
+def test_token_storage_keyring_strict_raises_when_backend_unavailable():
+    """Strict mode should fail fast when keyring backend is unavailable."""
+    with patch(
+        "ansys.hps.client.common.token_storage._check_storage_backend",
+        side_effect=lambda storage: "backend unavailable" if storage == "keyring" else None,
+    ):
+        with pytest.raises(RuntimeError, match="Keyring token storage requested but unavailable"):
+            _build_client_with_mocked_auth(
+                token_storage="keyring",
+                token_storage_strict=True,
+            )
+
+
+def test_token_storage_disk_warns_when_backend_unavailable(caplog):
+    """Disk storage should log a warning when backend is unavailable in non-strict mode."""
+    with patch(
+        "ansys.hps.client.common.token_storage._check_storage_backend",
+        side_effect=lambda storage: "disk unavailable" if storage == "disk" else None,
+    ):
+        with caplog.at_level(logging.WARNING, logger="ansys.hps.client.client"):
+            client = _build_client_with_mocked_auth(token_storage="disk")
+    assert "Disk token storage requested but unavailable" in caplog.text
+    assert client.token_storage == "disk"
+
+
+def test_token_storage_disk_strict_raises_when_backend_unavailable():
+    """Strict mode should fail fast when disk backend is unavailable."""
+    with patch(
+        "ansys.hps.client.common.token_storage._check_storage_backend",
+        side_effect=lambda storage: "disk unavailable" if storage == "disk" else None,
+    ):
+        with pytest.raises(RuntimeError, match="Disk token storage requested but unavailable"):
+            _build_client_with_mocked_auth(
+                token_storage="disk",
+                token_storage_strict=True,
+            )
+
+
+@pytest.mark.skip_for_hps_mini
 def test_reschedule_after_failed_refresh(url, username, password):
     """Failed refreshes must escalate through retry factors, then give up."""
     client = Client(url, username, password)
@@ -181,6 +423,7 @@ def test_reschedule_after_failed_refresh(url, username, password):
     assert client.token_refresh_date is None
 
 
+@pytest.mark.skip_for_hps_mini
 def test_periodically_refresh_token_refreshes_preemptively(url, username, password):
     """The background thread must refresh the access token before it expires."""
     client = Client(url, username, password)
@@ -204,3 +447,122 @@ def test_periodically_refresh_token_refreshes_preemptively(url, username, passwo
 
     assert client.access_token != initial_access_token
     assert client.token_refresh_date > datetime.now(timezone.utc)
+
+
+def test_api_key_401_does_not_trigger_refresh():
+    """API Key authentication should not attempt 401 refresh/retry."""
+    mock_session = Mock()
+    mock_session.headers = {"X-API-Key": "ApiKey test_api_key"}
+    mock_session.hooks = {}
+    mock_session.params = {}
+
+    with patch("ansys.hps.client.client.create_session", return_value=mock_session):
+        client = Client(
+            url="https://example.test/hps",
+            api_key="test_api_key",
+            verify=False,
+            disable_security_warnings=True,
+            auto_refresh_token=False,
+        )
+
+    response = Mock()
+    response.status_code = 401
+    response.request = Mock()
+    response.request.headers = {}
+
+    with patch.object(client, "refresh_access_token") as mock_refresh:
+        returned = client._auto_refresh_token(response)
+
+    assert returned is response
+    mock_refresh.assert_not_called()
+
+
+def test_api_key_is_forwarded_to_dt_with_apikey_prefix():
+    """DT binary should receive ApiKey-prefixed token when api_key is used."""
+    mock_session = Mock()
+    mock_session.headers = {"X-API-Key": "ApiKey test_api_key"}
+    mock_session.hooks = {}
+    mock_session.params = {}
+
+    with patch("ansys.hps.client.client.create_session", return_value=mock_session):
+        client = Client(
+            url="https://example.test/hps",
+            api_key="test_api_key",
+            verify=False,
+            disable_security_warnings=True,
+            auto_refresh_token=False,
+        )
+
+    mock_dt_client = Mock()
+    mock_dt_client.binary_config = Mock()
+    mock_dt_api = Mock()
+    mock_dt_api.status = Mock()
+
+    with patch("ansys.hps.client.client.DataTransferClient", return_value=mock_dt_client):
+        with patch("ansys.hps.client.client.DataTransferApi", return_value=mock_dt_api):
+            client.initialize_data_transfer_client()
+
+    mock_dt_client.binary_config.update.assert_called_once_with(
+        verbosity=3,
+        debug=False,
+        insecure=True,
+        token="ApiKey test_api_key",
+        data_transfer_url="https://example.test/hps/dt/api/v1",
+    )
+
+
+def test_no_auth_mode_skips_authentication():
+    """When no credentials are provided, Client should skip authentication."""
+    mock_session = Mock()
+    mock_session.headers = {}
+    mock_session.hooks = {}
+    mock_session.params = {}
+
+    with patch("ansys.hps.client.client.create_session", return_value=mock_session) as mock_create:
+        with patch("ansys.hps.client.client.determine_auth_url") as mock_determine_auth:
+            client = Client(
+                url="https://example.test/hps",
+                verify=False,
+                disable_security_warnings=True,
+                auto_refresh_token=False,
+            )
+
+    # Verify authentication was skipped
+    assert client.access_token is None
+    assert client.api_key is None
+    assert client.refresh_token is None
+
+    # Verify determine_auth_url was NOT called (auth skipped)
+    mock_determine_auth.assert_not_called()
+
+    # Verify create_session was called with None token
+    mock_create.assert_called_once()
+    call_args = mock_create.call_args
+    assert call_args[0][0] is None  # First positional arg (access_token) should be None
+
+
+def test_no_auth_mode_skips_401_refresh():
+    """In no-auth mode, 401 responses should not trigger token refresh."""
+    mock_session = Mock()
+    mock_session.headers = {}
+    mock_session.hooks = {}
+    mock_session.params = {}
+
+    with patch("ansys.hps.client.client.create_session", return_value=mock_session):
+        client = Client(
+            url="https://example.test/hps",
+            verify=False,
+            disable_security_warnings=True,
+            auto_refresh_token=False,
+        )
+
+    response = Mock()
+    response.status_code = 401
+    response.request = Mock()
+    response.request.headers = {}
+
+    with patch.object(client, "refresh_access_token") as mock_refresh:
+        returned = client._auto_refresh_token(response)
+
+    assert returned is response
+    mock_refresh.assert_not_called()

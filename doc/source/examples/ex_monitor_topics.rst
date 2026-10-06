@@ -74,7 +74,7 @@ The script follows the standard three-step setup shared by all monitor examples:
    monitor client can reuse the same HTTP session for monitor calls and for any
    JMS/RMS lookups required by methods such as
    :func:`MonitorApi.stream_task_host_resources`, and pass
-   ``ws_connection_options`` to disable TLS certificate verification when
+  ``ws_connection_options`` to turn off TLS certificate verification when
    connecting to a local server with a self-signed certificate.
 3. **Call** :func:`MonitorApi.list_topics`. The call is synchronous: it
    opens a short-lived WebSocket connection, sends the ``list_tags`` command,
@@ -111,7 +111,7 @@ Command-line options
      - Include high-cardinality keys such as ``timestamp`` that are suppressed
        by default.
    * - ``--insecure``
-     - Disable TLS certificate verification (required for local servers with
+     - Turn off TLS certificate verification (required for local servers with
        self-signed certificates).
 
 Expected output
@@ -150,7 +150,7 @@ to watch solver output in real time without polling the server.
 Background
 ^^^^^^^^^^
 
-While a task is running, the HPS evaluator tails one or more log files and
+While a task is running, the HPS evaluator tails one or more log files, and
 publishes each new line as a tagged message on the monitor WebSocket bus.
 :func:`MonitorApi.stream_task_logs` subscribes to the ``task_id`` and
 ``client_type=ansys.rep.evaluator.file_tail`` tags for the requested task and
@@ -210,7 +210,7 @@ Command-line options
    * - ``--max-messages``
      - Stop after receiving this many messages. Omit for continuous streaming.
    * - ``--insecure``
-     - Disable TLS certificate verification (required for local servers with
+     - Turn off TLS certificate verification (required for local servers with
        self-signed certificates).
 
 Expected output
@@ -333,7 +333,7 @@ Command-line options
    * - ``--max-messages``
      - Stop after receiving this many snapshots. Omit for continuous streaming.
    * - ``--insecure``
-     - Disable TLS certificate verification (required for local servers with
+     - Turn off TLS certificate verification (required for local servers with
        self-signed certificates).
 
 Expected output
@@ -474,7 +474,7 @@ Command-line options
    * - ``--max-messages``
      - Stop after receiving this many snapshots. Omit for continuous streaming.
    * - ``--insecure``
-     - Disable TLS certificate verification (required for local servers with
+     - Turn off TLS certificate verification (required for local servers with
        self-signed certificates).
 
 Expected output
@@ -599,7 +599,7 @@ Command-line options
    * - ``--max-messages``
      - Stop after receiving this many messages. Omit for continuous streaming.
    * - ``--insecure``
-     - Disable TLS certificate verification (required for local servers with
+     - Turn off TLS certificate verification (required for local servers with
        self-signed certificates).
 
 Expected output
@@ -710,7 +710,7 @@ Command-line options
    * - ``--list-services``
      - Print available services and exit.
    * - ``--insecure``
-     - Disable TLS certificate verification (required for local servers with
+     - Turn off TLS certificate verification (required for local servers with
        self-signed certificates).
 
 Example usage

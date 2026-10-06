@@ -90,7 +90,7 @@ def test_project_integration(client):
     proj_name = "test_jms_ProjectTest"
 
     proj = Project(name=proj_name, active=True, priority=10)
-    proj = jms_api.create_project(proj, replace=True)
+    proj = jms_api.create_project(proj)
 
     proj = jms_api.get_project(id=proj.id)
     assert proj.creation_time is not None
@@ -131,13 +131,13 @@ def test_project_replace(client):
     assert p.name == "Replaced Project"
 
 
-@pytest.mark.skip("not in mk2 at the moment")
+@pytest.mark.skip_for_hps_mini
 def test_project_copy(client):
     jms_api = JmsApi(client)
     proj_name = "test_jms_ProjectCopyTest"
 
     proj = Project(name=proj_name, active=True, priority=10)
-    proj = jms_api.create_project(proj, replace=True)
+    proj = jms_api.create_project(proj)
 
     project_api = ProjectApi(client, proj.id)
     proj1_id = project_api.copy_project()
@@ -162,7 +162,7 @@ def test_project_license_context(client):
     proj_name = "test_jms_ProjectTest_license_context"
 
     proj = Project(id=proj_name, active=True, priority=10)
-    proj = jms_api.create_project(proj, replace=True)
+    proj = jms_api.create_project(proj)
     project_api = ProjectApi(client, proj.id)
 
     # Create new license context in JMS
@@ -216,7 +216,7 @@ def test_project_delete_job_definition(client):
     proj_name = "test_jms_ProjectTest_delete_config"
 
     proj = Project(name=proj_name, active=True, priority=10)
-    proj = jms_api.create_project(proj, replace=True)
+    proj = jms_api.create_project(proj)
 
     project_api = ProjectApi(client, proj.id)
 
@@ -229,7 +229,7 @@ def test_project_delete_job_definition(client):
     jms_api.delete_project(proj)
 
 
-@pytest.mark.skip("not in mk2 at the moment")
+@pytest.mark.skip_for_hps_mini
 def test_project_archive_restore(client):
 
     num_jobs = 2
@@ -266,6 +266,7 @@ def test_project_archive_restore(client):
     jms_api.delete_project(restored_project)
 
 
+@pytest.mark.skip_for_hps_mini
 def test_copy_exec_script(client, has_hps_version_le_1_3_45):
     if has_hps_version_le_1_3_45:
         pytest.skip("Execution script name has changed after HPS v1.3.45.")

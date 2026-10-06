@@ -50,6 +50,7 @@ def test_evaluator_deserialization():
     assert evaluator.name == evaluator_dict["name"]
 
 
+@pytest.mark.skip_for_hps_mini
 def test_evaluator_integration(client):
     rms_api = RmsApi(client)
     evaluators = rms_api.get_evaluators(limit=1000)
@@ -87,6 +88,7 @@ def test_evaluator_integration(client):
         assert config.applications is not None
 
 
+@pytest.mark.skip_for_hps_mini
 def test_evaluator_configuration_update(client):
     rms_api = RmsApi(client)
     query_params = {"last_modified.gt": datetime.datetime.utcnow() - datetime.timedelta(seconds=20)}

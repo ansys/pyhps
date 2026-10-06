@@ -57,7 +57,7 @@ However, you can use third-party Python packages.
 The following examples show how to modify and create users using the
 `python-keycloak <https://pypi.org/project/python-keycloak/>`_ package.
 
-Connect to the Keycloak Admin API
+Connect to the Keycloak administrator API
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Connecting as a Keycloak administrator (using default credentials) gives you full control:

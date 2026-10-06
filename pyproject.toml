@@ -5,7 +5,7 @@ build-backend = "flit_core.buildapi"
 [project]
 # Check https://flit.readthedocs.io/en/latest/pyproject_toml.html for all available sections
 name = "ansys-hps-client"
-version = "0.13.dev0"
+version = "0.14.dev0"
 description = "A python client for Ansys HPC Platform Services"
 readme = "README.rst"
 requires-python = ">=3.10,<4.0"
@@ -41,8 +41,10 @@ dependencies = [
 [project.optional-dependencies]
 tests = [
     "pytest==9.1.1",
-    "coverage==7.15.0",
-    "python-keycloak>=3.9.1,<4.0.0"
+    "coverage==7.16.0",
+    "python-keycloak>=3.9.1,<4.0.0",
+    "pytest-playwright>=0.4.0",
+    "pytest-asyncio>=0.23.0"
 ]
 
 doc = [
@@ -64,10 +66,10 @@ doc = [
 ]
 
 build = [
-    "build==1.5.0",
-    "twine==6.2.0",
+    "build==1.6.0",
+    "twine==7.0.0",
     "wheel",
-    "datamodel-code-generator==0.67.0"
+    "datamodel-code-generator==0.77.0"
 ]
 
 [project.urls]
@@ -132,11 +134,16 @@ directory = ".cov/html"
 output = ".cov/coverage.xml"
 
 [tool.pytest.ini_options]
+markers = [
+    "skip_for_hps_mini: test requires a capability not provided by hps-mini",
+    "browser: marks tests as browser automation tests (require Playwright and live backend)",
+]
 log_cli = true
 log_cli_level = "INFO"
 log_cli_format = "%(asctime)s [%(levelname)8s] %(message)s (%(filename)s:%(lineno)s)"
 log_cli_date_format = "%Y-%m-%d %H:%M:%S"
 addopts = "-ra -vv"
+asyncio_mode = "auto"
 filterwarnings = [
     "ignore::urllib3.exceptions.InsecureRequestWarning",
     "ignore::DeprecationWarning:pkg_resources.*",

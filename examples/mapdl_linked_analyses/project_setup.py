@@ -46,6 +46,7 @@ import logging
 import os
 
 from ansys.hps.client import Client, HPSError, __ansys_apps_version__
+from ansys.hps.client.examples import base_parser, client_from_args
 from ansys.hps.client.jms import (
     File,
     JmsApi,
@@ -370,12 +371,9 @@ def create_project(
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser()
+    parser = argparse.ArgumentParser(parents=[base_parser])
     parser.add_argument("-n", "--name", type=str, default="MAPDL Prestress-Modal-Harmonic")
     parser.add_argument("-es", "--use-exec-script", default=False, type=bool)
-    parser.add_argument("-U", "--url", default="https://localhost:8443/hps")
-    parser.add_argument("-u", "--username", default="repuser")
-    parser.add_argument("-p", "--password", default="repuser")
     parser.add_argument("--incremental", action="store_true")
     parser.add_argument("-v", "--ansys-version", default=__ansys_apps_version__)
 
@@ -385,7 +383,7 @@ if __name__ == "__main__":
     logging.basicConfig(format="[%(asctime)s | %(levelname)s] %(message)s", level=logging.INFO)
 
     log.debug("=== HPS connection")
-    client = Client(url=args.url, username=args.username, password=args.password)
+    client = client_from_args(args)
 
     try:
         create_project(

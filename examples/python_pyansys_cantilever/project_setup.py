@@ -60,8 +60,7 @@ def main(client, num_jobs, num_modes, target_frequency, split_tasks):
             name=f"Cantilever - {num_jobs} Designs - {tasks_config}",
             priority=1,
             active=True,
-        ),
-        replace=True,
+        )
     )
     project_api = ProjectApi(client, proj.id)
 
@@ -368,6 +367,12 @@ def entrypoint(
     url: str = typer.Option("https://localhost:8443/hps", "-U", "--url"),
     username: str = typer.Option("repuser", "-u", "--username"),
     password: str = typer.Option("repuser", "-p", "--password"),
+    access_token: str = typer.Option(
+        None, "--access-token", help="Access token (alternative to username/password)."
+    ),
+    api_key: str = typer.Option(
+        None, "--api-key", help="API key (alternative to username/password)."
+    ),
     num_jobs: int = typer.Option(20, "-n", "--num-jobs"),
     num_modes: int = typer.Option(3, "-m", "--num-modes"),
     freq_tgt: float = typer.Option(100.0, "-f", "--target-frequency"),
@@ -380,7 +385,12 @@ def entrypoint(
 
     logging.basicConfig(format="[%(asctime)s | %(levelname)s] %(message)s", level=logging.DEBUG)
 
-    client = Client(url=url, username=username, password=password)
+    if api_key:
+        client = Client(url=url, api_key=api_key)
+    elif access_token:
+        client = Client(url=url, access_token=access_token)
+    else:
+        client = Client(url=url, username=username, password=password)
 
     try:
         main(client, num_jobs, num_modes, freq_tgt, split_tasks)

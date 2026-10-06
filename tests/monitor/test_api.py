@@ -29,6 +29,8 @@ import pytest
 from ansys.hps.client.monitor import MonitorApi
 from ansys.hps.client.monitor.api.monitor_api import ClientType
 
+pytestmark = pytest.mark.skip_for_hps_mini
+
 log = logging.getLogger(__name__)
 
 

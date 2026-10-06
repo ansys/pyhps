@@ -34,6 +34,8 @@ def create_session(
     access_token: str = None,
     verify: bool | str = True,
     disable_security_warnings=False,
+    auth_header_name: str = "Authorization",
+    auth_prefix: str = "Bearer",
 ) -> requests.Session:
     """Get the :class:`requests.Session` object configured for HPS with a given access token.
 
@@ -47,6 +49,11 @@ def create_session(
         :class:`requests.Session` documentation.
     disable_security_warnings: bool, optional
         Whether to disable warnings about insecure HTTPS requests. The default is ``False``.
+    auth_header_name : str, optional
+        Header name used for forwarding the token. The default is ``"Authorization"``.
+    auth_prefix : str, optional
+        Authentication prefix prepended to the token value. The default is ``"Bearer"``.
+        If empty, the token is forwarded without prefix.
 
     Returns
     -------
@@ -68,7 +75,8 @@ def create_session(
     session.headers.update({"content-type": "application/json"})
 
     if access_token:
-        session.headers.update({"Authorization": f"Bearer {access_token}"})
+        token_value = access_token if not auth_prefix else f"{auth_prefix} {access_token}"
+        session.headers.update({auth_header_name: token_value})
 
     retries = Retry(total=5, backoff_factor=0.5, status_forcelist=[502, 503, 504])
     session.mount("http://", HTTPAdapter(max_retries=retries))

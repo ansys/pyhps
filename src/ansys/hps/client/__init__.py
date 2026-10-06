@@ -28,6 +28,14 @@ from .authenticate import authenticate, determine_auth_url
 from .client import Client
 from .exceptions import APIError, ClientError, HPSError, VersionCompatibilityError
 from .jms import JmsApi, ProjectApi
+from .mini import (
+    HpsMini,
+    HpsMiniError,
+    HpsMiniStatus,
+    create_mini_client,
+    find_hps_mini,
+    get_hps_mini_status,
+)
 from .monitor import MonitorApi
 from .rcs import RcsApi
 from .rms import RmsApi

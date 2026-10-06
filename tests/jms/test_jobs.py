@@ -136,12 +136,13 @@ def test_job_serialization():
     assert serialized_job["host_ids"][1] == "uuid-5"
 
 
+@pytest.mark.skip_for_hps_mini
 def test_job_integration(client):
     proj_name = "test_jobs_JobTest"
 
     proj = Project(name=proj_name, active=True)
     jms_api = JmsApi(client)
-    proj = jms_api.create_project(proj, replace=True)
+    proj = jms_api.create_project(proj)
     project_api = ProjectApi(client, proj.id)
 
     job_def = JobDefinition(name="New Config", active=True)

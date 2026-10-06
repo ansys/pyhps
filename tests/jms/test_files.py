@@ -35,9 +35,7 @@ log = logging.getLogger(__name__)
 
 def test_files(client):
     jms_api = JmsApi(client)
-    proj = jms_api.create_project(
-        Project(name="rep_client_test_jms_FilesTest", active=False), replace=True
-    )
+    proj = jms_api.create_project(Project(name="rep_client_test_jms_FilesTest", active=False))
     project_api = ProjectApi(client, proj.id)
 
     cwd = os.path.dirname(__file__)
@@ -220,7 +218,7 @@ def test_file_download_progress(client, inactive_temporary_project):
 def test_files_access_mode(client):
     jms_api = JmsApi(client)
     proj = jms_api.create_project(
-        Project(name="rep_client_test_jms_FilesTest_access_mode", active=False), replace=True
+        Project(name="rep_client_test_jms_FilesTest_access_mode", active=False)
     )
     project_api = ProjectApi(client, proj.id)
 

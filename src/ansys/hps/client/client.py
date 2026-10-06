@@ -37,11 +37,16 @@ from ansys.hps.data_transfer.client import Client as DataTransferClient
 from ansys.hps.data_transfer.client import DataTransferApi
 
 from .authenticate import authenticate, determine_auth_url
+from .common import token_storage as _token_storage
+from .common.redaction import redact_sensitive_values
 from .connection import create_session
 from .exceptions import HPSError, raise_for_status
 from .warnings import UnverifiedHTTPSRequestsWarning
 
 log = logging.getLogger(__name__)
+
+API_KEY_HEADER_NAME = "X-API-Key"  # nosec B105
+API_KEY_AUTH_PREFIX = "ApiKey"  # nosec B105
 
 
 class Client:
@@ -53,7 +58,11 @@ class Client:
     The following alternative authentication workflows are supported
     and evaluated in the order listed:
 
-    - Access token: No authentication is needed.
+    - No authentication: If no credentials are provided, the client makes
+      unauthenticated requests to the HPS server. This is useful for accessing
+      public endpoints or when authentication is handled externally.
+    - Access token: No additional authentication is needed.
+    - API Key: No additional authentication is needed.
     - Username and password: The client connects to the OAuth server and
       requests access and refresh tokens.
     - Refresh token: The client connects to the OAuth server and
@@ -81,6 +90,10 @@ class Client:
         Client secret. The default is ``None``.
     access_token : str, optional
         Access token.
+    api_key : str, optional
+        API Key value used for ``X-API-Key`` header authentication.
+        For JMS APIs, the raw key is sent as ``X-API-Key: <key>``.
+        For DT APIs, the key is forwarded as ``ApiKey <key>``.
     refresh_token : str, optional
         Refresh token.
     auth_url : str, optional
@@ -108,6 +121,25 @@ class Client:
     token_refresh_loop_interval : float, optional
         Maximum interval, in seconds, between checks of the background token refresh
         loop. The default is ``300``.
+    token_storage : str, optional
+        Storage location for persisted refresh-token data. Supported values are ``"memory"``
+        (default), ``"disk"``, and ``"keyring"``.
+        Use ``"disk"`` or ``"keyring"`` if refresh-token data must persist across
+        process restarts. Access tokens remain in-memory. ``"memory"`` keeps
+        all token state in-process only.
+    token_storage_strict : bool, optional
+        Whether to fail fast during client initialization if the selected
+        ``token_storage`` backend is unavailable. The default is ``False``.
+        When ``False``, keyring backend issues are surfaced as warnings and
+        token persistence remains in-memory if persistence fails.
+
+    Attributes
+    ----------
+    last_token_persistence_result : dict | None
+        Diagnostic information for the most recent refresh-token persistence
+        attempt. The dict contains ``requested_storage``, ``storage_used``,
+        ``fallback_used``, ``persisted``, ``path``, and ``error`` fields.
+        The value is ``None`` before the first refresh attempt.
 
     Examples
     --------
@@ -128,6 +160,21 @@ class Client:
     ...     refresh_token="eyJhbGciOiJIUzI1NiIsInR5cC..."
     >>> )
 
+    Create a client object with OIDC tokens and persist refreshed tokens in keyring.
+
+    >>> cl = Client(
+    ...     url="https://localhost:8443/hps",
+    ...     access_token="eyJhbGciOiJIUzI1NiIsInR5cC...",
+    ...     refresh_token="eyJhbGciOiJIUzI1NiIsInR5cC...",
+    ...     token_storage="keyring",
+    ... )
+
+    Create a client object and connect to HPS with no authentication
+        (for accessing public endpoints).
+
+        >>> from ansys.hps.client import Client
+        >>> cl = Client(url="https://localhost:8443/hps")
+
     """
 
     def __init__(
@@ -142,6 +189,7 @@ class Client:
         client_id: str = "rep-cli",
         client_secret: str = None,
         access_token: str = None,
+        api_key: str = None,
         refresh_token: str = None,
         all_fields=True,
         verify: bool | str = None,
@@ -150,6 +198,8 @@ class Client:
         token_refresh_factor: float = 0.70,
         token_refresh_retry_factors: tuple[float, ...] = (0.80, 0.90, 0.95, 0.98),
         token_refresh_loop_interval: float = 300,
+        token_storage: str = "memory",
+        token_storage_strict: bool = False,
         **kwargs,
     ):
         """Initialize the Client object."""
@@ -171,6 +221,7 @@ class Client:
 
         self.url = url
         self.access_token = None
+        self.api_key = None
         self.refresh_token = None
         self.username = username
         self.realm = realm
@@ -202,6 +253,11 @@ class Client:
         self.token_expires_in = None
         self.token_acquired_date = None
         self.token_refresh_date = None
+        self.last_token_persistence_result: dict | None = None
+        if token_storage not in ("memory", "disk", "keyring"):
+            raise ValueError("token_storage must be one of: 'memory', 'disk', 'keyring'.")
+        self.token_storage = token_storage
+        self._validate_token_storage_backend(token_storage_strict)
 
         self._dt_client: DataTransferClient | None = None
         self._dt_api: DataTransferApi | None = None
@@ -222,62 +278,99 @@ class Client:
 
         self.auth_url = auth_url
 
-        if not auth_url:
-            self.auth_url = determine_auth_url(url, self.verify, realm)
+        # Check if any credentials were provided
+        has_credentials = (
+            api_key is not None
+            or access_token is not None
+            or (username is not None and password is not None)
+            or refresh_token is not None
+            or client_secret is not None
+        )
 
-        if access_token:
-            log.debug("Authenticate with access token")
-            self.access_token = access_token
-            self.refresh_token = refresh_token
+        if not has_credentials:
+            # No credentials provided - skip authentication
+            log.debug("No credentials provided - skipping authentication")
         else:
-            if username and password:
-                self.grant_type = "password"
-            elif refresh_token:
-                self.grant_type = "refresh_token"
-            elif client_secret:
-                self.grant_type = "client_credentials"
+            if not auth_url and not api_key:
+                self.auth_url = determine_auth_url(url, self.verify, realm)
 
-            log.debug(f"Authenticating with '{self.grant_type}' grant type.")
+            if api_key:
+                log.debug("Authenticate with API Key")
+                self.api_key = api_key
+            elif access_token:
+                log.debug("Authenticate with access token")
+                self.access_token = access_token
+                self.refresh_token = refresh_token
+            else:
+                if username and password:
+                    self.grant_type = "password"
+                elif refresh_token:
+                    self.grant_type = "refresh_token"
+                elif client_secret:
+                    self.grant_type = "client_credentials"
 
-            tokens = authenticate(
-                auth_url=self.auth_url,
-                grant_type=self.grant_type,
-                scope=scope,
-                client_id=client_id,
-                client_secret=client_secret,
-                username=username,
-                password=password,
-                refresh_token=refresh_token,
-                verify=self.verify,
-            )
-            self.access_token = tokens["access_token"]
-            # client credentials flow does not return a refresh token
-            self.refresh_token = tokens.get("refresh_token", None)
+                log.debug(f"Authenticating with '{self.grant_type}' grant type.")
 
-            self._update_token_expiry(tokens)
-
-        parsed_username = None
-        token = {}
-        try:
-            token = jwt.decode(self.access_token, options={"verify_signature": False})
-        except Exception:
-            raise HPSError("Authentication token was invalid.") from None
-
-        # Try to get the standard keycloak name, then other possible valid names
-        parsed_username = self._get_username(token)
-
-        if parsed_username is not None:
-            if self.username is not None and self.username != parsed_username:
-                raise HPSError(
-                    f"Username: '{self.username}' and "
-                    f"preferred_username: '{parsed_username}' "
-                    "from access token do not match."
+                tokens = authenticate(
+                    auth_url=self.auth_url,
+                    grant_type=self.grant_type,
+                    scope=scope,
+                    client_id=client_id,
+                    client_secret=client_secret,
+                    username=username,
+                    password=password,
+                    refresh_token=refresh_token,
+                    verify=self.verify,
                 )
-            self.username = parsed_username
+                self.access_token = tokens["access_token"]
+                # client credentials flow does not return a refresh token
+                self.refresh_token = tokens.get("refresh_token", None)
+
+                self._update_token_expiry(tokens)
+
+        if self.api_key is None and self.access_token is not None:
+            parsed_username = None
+            token = {}
+            try:
+                token = jwt.decode(self.access_token, options={"verify_signature": False})
+            except Exception:
+                raise HPSError("Authentication token was invalid.") from None
+
+            # Try to get the standard keycloak name, then other possible valid names
+            parsed_username = self._get_username(token)
+
+            if parsed_username is not None:
+                if self.username is not None and self.username != parsed_username:
+                    raise HPSError(
+                        f"Username: '{self.username}' and "
+                        f"preferred_username: '{parsed_username}' "
+                        "from access token do not match."
+                    )
+                self.username = parsed_username
+
+            # For externally supplied access tokens, seed expiry metadata from JWT
+            # claims so preemptive refresh can be scheduled consistently.
+            if access_token:
+                self._initialize_external_token_expiry(token)
+
+        auth_token = None
+        auth_header_name = "Authorization"
+        auth_prefix = "Bearer"
+
+        if self.api_key is not None:
+            auth_token = self.api_key
+            auth_header_name = API_KEY_HEADER_NAME
+            auth_prefix = ""
+        elif self.access_token is not None:
+            auth_token = self.access_token
+            auth_header_name = "Authorization"
+            auth_prefix = "Bearer"
 
         self.session = create_session(
-            self.access_token,
+            auth_token,
             verify=self.verify,
+            auth_header_name=auth_header_name,
+            auth_prefix=auth_prefix,
         )
         if all_fields:
             self.session.params = {"fields": "all"}
@@ -316,6 +409,78 @@ class Client:
                 raise HPSError("Authentication token had no username.")
         return parsed_username
 
+    def _initialize_external_token_expiry(self, decoded_token):
+        """Initialize refresh scheduling from externally provided token claims.
+
+        This allows preemptive refresh to behave consistently when a client is
+        created with existing access and refresh tokens (for example from OIDC login).
+        """
+        if self.refresh_token is None:
+            return
+
+        exp = decoded_token.get("exp", None)
+        if exp is None:
+            return
+
+        now = datetime.now(timezone.utc)
+        iat = decoded_token.get("iat", None)
+        if iat is not None and exp > iat:
+            token_lifetime = int(exp - iat)
+            token_acquired_date = datetime.fromtimestamp(iat, timezone.utc)
+        else:
+            # Fall back to remaining lifetime when iat is unavailable.
+            token_lifetime = int(exp - now.timestamp())
+            token_acquired_date = now
+
+        if token_lifetime <= 0:
+            return
+
+        self.token_expires_in = token_lifetime
+        self.token_acquired_date = token_acquired_date
+        self._refresh_attempt = 0
+
+        offset = max(1, int(self.token_expires_in * self.token_refresh_factor))
+        refresh_date = self.token_acquired_date + timedelta(seconds=offset)
+        self.token_refresh_date = max(now, refresh_date)
+
+        log.debug(
+            "Initialized refresh schedule from external token, next refresh at %s",
+            self.token_refresh_date,
+        )
+
+    def _validate_token_storage_backend(self, strict: bool):
+        """Validate requested token storage backend availability."""
+        if self.token_storage == "memory":  # nosec B105
+            return
+
+        if self.token_storage == "disk":  # nosec B105
+            error = _token_storage._check_storage_backend("disk")
+            if error is None:
+                return
+
+            msg = (
+                "Disk token storage requested but unavailable: "
+                f"{error}. Set token_storage_strict=True to fail fast."
+            )
+            if strict:
+                raise RuntimeError(msg)
+            log.warning(msg)
+            return
+
+        if self.token_storage == "keyring":  # nosec B105
+            error = _token_storage._check_storage_backend("keyring")
+            if error is None:
+                return
+
+            msg = (
+                "Keyring token storage requested but unavailable: "
+                f"{error}. "
+                "Set token_storage_strict=True to fail fast."
+            )
+            if strict:
+                raise RuntimeError(msg)
+            log.warning(msg)
+
     @property
     def rep_url(self) -> str:
         """Deprecated. Use 'url' instead."""
@@ -332,13 +497,21 @@ class Client:
                 # start Data transfer client
                 self._dt_client = DataTransferClient(download_dir=self._get_download_dir())
 
-                self._dt_client.binary_config.update(
-                    verbosity=3,
-                    debug=False,
-                    insecure=True,
-                    token=self.access_token,
-                    data_transfer_url=self.data_transfer_url,
-                )
+                dt_token = self._get_dt_auth_token()
+                config = {
+                    "verbosity": 3,
+                    "debug": False,
+                    "insecure": True,
+                    "data_transfer_url": self.data_transfer_url,
+                }
+                if dt_token is None:
+                    # Without credentials the worker must not negotiate a random API key,
+                    # which the HPS server would reject.
+                    config["auth_type"] = True
+                else:
+                    config["token"] = dt_token
+
+                self._dt_client.binary_config.update(**config)
                 self._dt_client.start()
 
                 self._dt_api = DataTransferApi(self._dt_client)
@@ -494,6 +667,11 @@ class Client:
         Automatically refreshes the access token and
         re-sends the request in case of an unauthorized error.
         """
+        # Skip auto-refresh in no-auth mode or when using API keys
+        if self.api_key is not None or self.access_token is None:
+            self._unauthorized_num_retry = 0
+            return response
+
         if (
             response.status_code == 401
             and self._unauthorized_num_retry < self._unauthorized_max_retry
@@ -502,10 +680,14 @@ class Client:
             self._unauthorized_num_retry += 1
             self.refresh_access_token()
             response.request.headers.update(
-                {"Authorization": self.session.headers["Authorization"]}
+                {
+                    self._session_auth_header_name: self.session.headers[
+                        self._session_auth_header_name
+                    ]
+                }
             )
             if self._dt_client is not None:
-                self._dt_client.binary_config.update(token=self.access_token)
+                self._dt_client.binary_config.update(token=self._get_dt_auth_token())
             log.debug("Retrying request with updated access token.")
             return self.session.send(response.request)
 
@@ -514,6 +696,9 @@ class Client:
 
     def refresh_access_token(self):
         """Request a new access token."""
+        if self.api_key is not None:
+            raise HPSError("API Key authentication does not support token refresh.")
+
         if self.grant_type == "client_credentials":
             # Its not recommended to give refresh tokens to client_credentials grant types
             # as per OAuth 2.0 RFC6749 Section 4.4.3, so handle these specially...
@@ -527,6 +712,8 @@ class Client:
             )
         else:
             # Other workflows for authentication generally support refresh_tokens
+            if not self.refresh_token:
+                raise HPSError("No refresh token available. Re-authentication is required.")
             tokens = authenticate(
                 auth_url=self.auth_url,
                 grant_type="refresh_token",
@@ -539,8 +726,64 @@ class Client:
             )
         self.access_token = tokens["access_token"]
         self.refresh_token = tokens.get("refresh_token", None)
-        self.session.headers.update({"Authorization": f"Bearer {tokens['access_token']}"})
+        self.session.headers.update(
+            {
+                self._session_auth_header_name: (
+                    f"{self._session_auth_prefix} {tokens['access_token']}"
+                )
+            }
+        )
         self._update_token_expiry(tokens)
+        self.last_token_persistence_result = self._persist_refreshed_tokens(tokens)
+
+    @property
+    def _session_auth_header_name(self) -> str:
+        if self.api_key is not None:
+            return API_KEY_HEADER_NAME
+        return "Authorization"
+
+    @property
+    def _session_auth_prefix(self) -> str:
+        if self.api_key is not None:
+            return ""
+        return "Bearer"
+
+    def _get_dt_auth_token(self) -> str:
+        if self.api_key is not None:
+            # DT client runtime parses api-key mode from the embedded token string,
+            # so this path intentionally uses "ApiKey <token>" while JMS uses raw
+            # "X-API-Key: <token>" on the HTTP session.
+            return f"{API_KEY_AUTH_PREFIX} {self.api_key}"
+        return self.access_token
+
+    def _persist_refreshed_tokens(self, tokens):
+        """Persist refreshed tokens and return structured persistence telemetry."""
+        result = {
+            "requested_storage": self.token_storage,
+            "storage_used": self.token_storage,
+            "fallback_used": False,
+            "persisted": True,
+            "path": None,
+            "error": None,
+        }
+
+        if self.token_storage == "memory":  # nosec B105
+            return result
+
+        try:
+            path = _token_storage.save_tokens(tokens, self.url, storage=self.token_storage)
+            if path is not None:
+                result["path"] = str(path)
+        except Exception as ex:
+            safe_error = redact_sensitive_values(str(ex), tokens)
+            log.warning(
+                "Unable to persist refreshed tokens to %s: %s", self.token_storage, safe_error
+            )
+            result["persisted"] = False
+            result["storage_used"] = "memory"
+            result["error"] = safe_error
+
+        return result
 
     @property
     def data_transfer_client(self) -> DataTransferClient:
