@@ -96,6 +96,11 @@ class Client:
         For DT APIs, the key is forwarded as ``ApiKey <key>``.
     refresh_token : str, optional
         Refresh token.
+    token_metadata : dict, optional
+        Complete token response metadata for externally supplied tokens. Pass
+        the dictionary returned by the OIDC provider, including ``expires_in``
+        and ``refresh_expires_in``. Include ``saved_at`` when loading persisted
+        tokens so automatic refresh accounts for elapsed time.
     auth_url : str, optional
     all_fields : bool, optional
         Whether to apply the ``fields="all"`` query parameter to all requests so
@@ -191,6 +196,7 @@ class Client:
         access_token: str = None,
         api_key: str = None,
         refresh_token: str = None,
+        token_metadata: dict | None = None,
         all_fields=True,
         verify: bool | str = None,
         disable_security_warnings: bool = True,
@@ -348,10 +354,13 @@ class Client:
                     )
                 self.username = parsed_username
 
-            # For externally supplied access tokens, seed expiry metadata from JWT
-            # claims so preemptive refresh can be scheduled consistently.
+            # Provider metadata includes the refresh-token lifetime, which cannot
+            # be derived reliably because refresh tokens may be opaque.
             if access_token:
-                self._initialize_external_token_expiry(token)
+                self._initialize_external_token_expiry(
+                    token,
+                    token_metadata,
+                )
 
         auth_token = None
         auth_header_name = "Authorization"
@@ -409,7 +418,7 @@ class Client:
                 raise HPSError("Authentication token had no username.")
         return parsed_username
 
-    def _initialize_external_token_expiry(self, decoded_token):
+    def _initialize_external_token_expiry(self, decoded_token, token_metadata=None):
         """Initialize refresh scheduling from externally provided token claims.
 
         This allows preemptive refresh to behave consistently when a client is
@@ -418,21 +427,50 @@ class Client:
         if self.refresh_token is None:
             return
 
-        exp = decoded_token.get("exp", None)
-        if exp is None:
-            return
-
+        # An externally supplied token does not have the full OAuth response
+        # available unless the caller passes it separately. Use the persisted
+        # acquisition time when present so a restart does not reset the clock.
+        token_metadata = token_metadata or {}
         now = datetime.now(timezone.utc)
-        iat = decoded_token.get("iat", None)
-        if iat is not None and exp > iat:
-            token_lifetime = int(exp - iat)
-            token_acquired_date = datetime.fromtimestamp(iat, timezone.utc)
-        else:
-            # Fall back to remaining lifetime when iat is unavailable.
-            token_lifetime = int(exp - now.timestamp())
-            token_acquired_date = now
+        saved_at = token_metadata.get("saved_at", None)
+        token_acquired_date = (
+            datetime.fromtimestamp(saved_at, timezone.utc) if saved_at is not None else None
+        )
 
-        if token_lifetime <= 0:
+        expires_in = token_metadata.get("expires_in", None)
+        exp = decoded_token.get("exp", None)
+        iat = decoded_token.get("iat", None)
+        if expires_in is None and exp is not None:
+            # Older callers may provide only the access JWT. Derive its lifetime
+            # from iat/exp while retaining compatibility with that usage.
+            if iat is not None and exp > iat:
+                expires_in = int(exp - iat)
+                token_acquired_date = datetime.fromtimestamp(iat, timezone.utc)
+            else:
+                # Fall back to remaining lifetime when iat is unavailable.
+                expires_in = int(exp - now.timestamp())
+                token_acquired_date = now
+
+        if token_acquired_date is None:
+            token_acquired_date = (
+                datetime.fromtimestamp(iat, timezone.utc) if iat is not None else now
+            )
+
+        lifetimes = []
+        if expires_in is not None and expires_in > 0:
+            lifetimes.append(expires_in)
+
+        # A zero refresh lifetime denotes an offline/non-expiring refresh token.
+        refresh_expires_in = token_metadata.get("refresh_expires_in", None)
+        if refresh_expires_in is not None and refresh_expires_in > 0:
+            lifetimes.append(refresh_expires_in)
+
+        # Refresh must happen while both tokens are valid, so the earlier
+        # expiration controls the schedule. The refresh factor is applied to
+        # this effective lifetime below.
+        token_lifetime = min(lifetimes) if lifetimes else None
+
+        if token_lifetime is None:
             return
 
         self.token_expires_in = token_lifetime
