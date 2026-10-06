@@ -117,6 +117,20 @@ def test_project_integration(client):
     jms_api.delete_project(proj)
 
 
+@pytest.mark.xfail
+def test_project_replace(client):
+    jms_api = JmsApi(client)
+
+    p = Project(name="Original Project")
+    p = jms_api.create_project(p)
+    project_id = p.id
+    p.name = "Replaced Project"
+    p = jms_api.create_project(p, replace=True)
+
+    assert p.id == project_id
+    assert p.name == "Replaced Project"
+
+
 @pytest.mark.skip_for_hps_mini
 def test_project_copy(client):
     jms_api = JmsApi(client)
@@ -217,6 +231,7 @@ def test_project_delete_job_definition(client):
 
 @pytest.mark.skip_for_hps_mini
 def test_project_archive_restore(client):
+
     num_jobs = 2
     jms_api = JmsApi(client)
     proj_name = "test_jms_project_archive_restore"
