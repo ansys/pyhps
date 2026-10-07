@@ -55,6 +55,7 @@ def main(hps_url: str, verify_ssl: bool):
         url=hps_url,
         access_token=tokens["access_token"],
         refresh_token=tokens.get("refresh_token"),
+        token_metadata=tokens,
         token_storage=storage_mode,
         verify=verify_ssl,
     )

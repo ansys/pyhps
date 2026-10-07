@@ -30,7 +30,7 @@ on:
         description: Whether to upload coverage results
         type: boolean
         default: true
-      include-mini-tests:
+      include-hps-lite-tests:
         description: Include the separate hps-lite test job
         type: boolean
         default: true
@@ -101,7 +101,7 @@ jobs:
           retention-days: 7
 
       - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@e79a6962e0d4c0c17b229090214935d2e33f8354 # v6.0.1
+        uses: codecov/codecov-action@303a32d7a59b442fa8d48b6a1cc6825c09c847a5 # v7.1.1
         if: ${{ inputs.python-version == '3.10' && inputs.upload-coverage }}
         env:
           CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
@@ -126,9 +126,9 @@ jobs:
             echo "Service build information was not generated for this test selection." >> "$GITHUB_STEP_SUMMARY"
           fi
 
-  mini-tests:
+  hps-lite-tests:
     name: hps-lite tests
-    if: ${{ inputs['include-mini-tests'] }}
+    if: ${{ inputs['include-hps-lite-tests'] }}
     runs-on: ${{ inputs.runner }}
     permissions:
       contents: read
@@ -162,15 +162,15 @@ jobs:
         run: tox -e "${TOXENV_NAME}-coverage"
         env:
           TOXENV_NAME: ${{ inputs.toxenv }}
-          HPS_MINI_PATH: ${{ steps['hps-lite'].outputs.path }}
-          HPS_MINI_TESTS: '1'
-          HPS_MINI_PYTEST_ARGS: '-m "not skip_for_hps_mini"'
+          HPS_LITE_PATH: ${{ steps['hps-lite'].outputs.path }}
+          HPS_LITE_TESTS: '1'
+          HPS_LITE_PYTEST_ARGS: '-m "not skip_for_hps_lite"'
 
-      - name: Upload mini coverage results
+      - name: Upload hps-lite coverage results
         if: ${{ inputs.python-version == '3.10' && inputs.upload-coverage }}
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
         with:
-          name: coverage-html-mini
+          name: coverage-html-hps-lite
           path: .cov/html
           retention-days: 7
 

@@ -280,7 +280,7 @@ def test_sync_task_definition_snapshot(client):
     JmsApi(client).delete_project(project)
 
 
-@pytest.mark.skip_for_hps_mini
+@pytest.mark.skip_for_hps_lite
 def test_register_external_job(client):
     jms_api = JmsApi(client)
     proj_name = "test_register_external_job"

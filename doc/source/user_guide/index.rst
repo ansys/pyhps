@@ -60,44 +60,75 @@ Once connected, you can query project statistics to find out how many jobs are c
     projects = jms_api.get_projects(statistics=True)
     num_running_jobs = sum(p.statistics["eval_status"]["running"] for p in projects)
 
-Connect to a local hps-mini instance
+Close the client
+----------------
+
+A client can run background resources: a token refresh thread and, once you use
+file transfers, a data transfer worker process. These resources are released
+automatically when the client is garbage collected or when the Python process
+exits. Garbage collection does not happen at a predictable time, so if your
+program creates several clients or runs for a long time, close each client
+explicitly when you are done with it.
+
+Use a ``with`` statement to close the client automatically:
+
+.. code-block:: python
+
+    from ansys.hps.client import Client
+
+    with Client(url="https://localhost:8443/hps", username="repuser", password="repuser") as client:
+        ...
+
+Or call :meth:`close() <ansys.hps.client.client.Client.close>` explicitly:
+
+.. code-block:: python
+
+    client = Client(url="https://localhost:8443/hps", username="repuser", password="repuser")
+    try:
+        ...
+    finally:
+        client.close()
+
+Calling ``close()`` more than once is safe. Do not use a client after closing it.
+
+Connect to a local hps-lite instance
 ------------------------------------
 
-For local development, PyHPS can discover and connect to a running hps-mini
-instance. On Windows, the executable is ``hps-mini.exe``. On Linux and macOS,
-it is ``hps-mini``. Discovery checks the current directory, the ``binaries``
+For local development, PyHPS can discover and connect to a running hps-lite
+instance. On Windows, the executable is ``hps-lite.exe``. On Linux and macOS,
+it is ``hps-lite``. Discovery checks the current directory, the ``binaries``
 directory, and the system ``PATH``.
 
-To use an executable in another location, set ``HPS_MINI_PATH``. You can also
-set ``HPS_MINI_DATA_DIR`` to select the directory where hps-mini stores its
+To use an executable in another location, set ``HPS_LITE_PATH``. You can also
+set ``HPS_LITE_DATA_DIR`` to select the directory where hps-lite stores its
 local state.
 
 On Windows PowerShell::
 
-    $env:HPS_MINI_PATH = "D:\AnsysDev\hps-local\hps-mini.exe"
+    $env:HPS_LITE_PATH = "D:\AnsysDev\hps-local\hps-lite.exe"
 
 On Linux or macOS::
 
-    export HPS_MINI_PATH=/path/to/hps-mini
+    export HPS_LITE_PATH=/path/to/hps-lite
 
 Create a client with automatic discovery:
 
 .. code-block:: python
 
-    from ansys.hps.client import create_mini_client
+    from ansys.hps.client import create_hps_lite_client
 
-    client = create_mini_client()
+    client = create_hps_lite_client()
     print(client.url)
 
 You can also pass the executable directly:
 
 .. code-block:: python
 
-    from ansys.hps.client import create_mini_client
+    from ansys.hps.client import create_hps_lite_client
 
-    client = create_mini_client(executable=r"D:\AnsysDev\hps-local\hps-mini.exe")
+    client = create_hps_lite_client(executable=r"D:\AnsysDev\hps-local\hps-lite.exe")
 
-For more details, including status inspection, see the :ref:`example_hps_mini`.
+For more details, including status inspection, see the :ref:`example_hps_lite`.
 
 Create a project
 ----------------

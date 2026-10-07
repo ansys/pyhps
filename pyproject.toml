@@ -1,5 +1,5 @@
 [build-system]
-requires = ["flit_core >=3.2,<4"]
+requires = ["flit_core >=3.2,<5"]
 build-backend = "flit_core.buildapi"
 
 [project]
@@ -41,7 +41,7 @@ dependencies = [
 [project.optional-dependencies]
 tests = [
     "pytest==9.1.1",
-    "coverage==7.16.0",
+    "coverage==7.16.1",
     "python-keycloak>=3.9.1,<4.0.0",
     "pytest-playwright>=0.4.0",
     "pytest-asyncio>=0.23.0"
@@ -52,7 +52,7 @@ doc = [
     "autodoc_pydantic==2.2.0",
     "jupyter_sphinx==0.5.3",
     "nbsphinx==0.9.8",
-    "numpydoc==1.10.0",
+    "numpydoc==1.11.0",
     "myst-parser==4.0.1",
     "Sphinx==8.1.3",
     "sphinx-autodoc-typehints==3.0.1",
@@ -66,10 +66,10 @@ doc = [
 ]
 
 build = [
-    "build==1.6.0",
+    "build==1.6.1",
     "twine==7.0.0",
     "wheel",
-    "datamodel-code-generator==0.77.0"
+    "datamodel-code-generator==0.83.0"
 ]
 
 [project.urls]
@@ -135,7 +135,7 @@ output = ".cov/coverage.xml"
 
 [tool.pytest.ini_options]
 markers = [
-    "skip_for_hps_mini: test requires a capability not provided by hps-mini",
+    "skip_for_hps_lite: test requires a capability not provided by hps-lite",
     "browser: marks tests as browser automation tests (require Playwright and live backend)",
 ]
 log_cli = true
