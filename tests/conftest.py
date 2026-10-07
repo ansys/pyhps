@@ -30,7 +30,7 @@ from ansys.hps.client import (
     Client,
     JmsApi,
     VersionCompatibilityError,
-    get_hps_mini_status,
+    get_hps_lite_status,
 )
 from ansys.hps.client.check_version import (
     JMS_VERSIONS,
@@ -42,20 +42,20 @@ from ansys.hps.client.jms.resource import Project
 
 
 @pytest.fixture(scope="session")
-def mini_status():
-    if os.environ.get("HPS_MINI_TESTS") != "1":
+def hps_lite_status():
+    if os.environ.get("HPS_LITE_TESTS") != "1":
         return None
 
-    executable = os.environ.get("HPS_MINI_PATH")
+    executable = os.environ.get("HPS_LITE_PATH")
     if not executable:
-        pytest.fail("HPS_MINI_PATH is required when HPS_MINI_TESTS=1")
-    return get_hps_mini_status(executable=executable, timeout=30.0)
+        pytest.fail("HPS_LITE_PATH is required when HPS_LITE_TESTS=1")
+    return get_hps_lite_status(executable=executable, timeout=30.0)
 
 
 @pytest.fixture(scope="session")
-def url(mini_status):
-    if mini_status:
-        return mini_status.url.rstrip("/") + "/hps"
+def url(hps_lite_status):
+    if hps_lite_status:
+        return hps_lite_status.url.rstrip("/") + "/hps"
 
     return os.environ.get("HPS_TEST_URL") or "https://127.0.0.1:8443/hps"
 
@@ -81,9 +81,9 @@ def keycloak_password():
 
 
 @pytest.fixture(scope="session")
-def client(url, username, password, mini_status):
-    if mini_status:
-        return Client(url, api_key=mini_status.api_key or None, verify=False)
+def client(url, username, password, hps_lite_status):
+    if hps_lite_status:
+        return Client(url, api_key=hps_lite_status.api_key or None, verify=False)
 
     return Client(url, username, password, verify=False)
 

@@ -64,7 +64,7 @@ def remove_permissions(project_api: ProjectApi, user):
     log.info(f"Permissions after: {permissions}")
 
 
-@pytest.mark.skip_for_hps_mini
+@pytest.mark.skip_for_hps_lite
 def test_get_project_permissions(client):
     jms_api = JmsApi(client)
     proj_name = "test_jms_get_permissions_test"
@@ -83,7 +83,7 @@ def test_get_project_permissions(client):
     jms_api.delete_project(proj)
 
 
-@pytest.mark.skip_for_hps_mini
+@pytest.mark.skip_for_hps_lite
 def test_modify_project_permissions(client, keycloak_client):
     user_credentials = {
         "user1": {"username": f"testuser-{uuid.uuid4().hex[:8]}", "password": "test"},

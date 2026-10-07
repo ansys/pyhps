@@ -52,16 +52,16 @@ runs:
       run: |
         set -e
         tar -xzf hps-lite.tar.gz -C .
-        mini_path="$GITHUB_WORKSPACE/hps-lite-lin-x64/hps-lite"
-        if [ ! -f "$mini_path" ]; then
+        hps_lite_path="$GITHUB_WORKSPACE/hps-lite-lin-x64/hps-lite"
+        if [ ! -f "$hps_lite_path" ]; then
           echo "hps-lite executable was not found in the release archive"
           find . -maxdepth 4 -type f -print
           exit 1
         fi
-        chmod +x "$mini_path"
-        mini_dir=$(dirname "$mini_path")
-        echo "path=$mini_path" >> "$GITHUB_OUTPUT"
-        echo "working-directory=$mini_dir" >> "$GITHUB_OUTPUT"
+        chmod +x "$hps_lite_path"
+        hps_lite_dir=$(dirname "$hps_lite_path")
+        echo "path=$hps_lite_path" >> "$GITHUB_OUTPUT"
+        echo "working-directory=$hps_lite_dir" >> "$GITHUB_OUTPUT"
 
     - name: Extract Windows hps-lite
       if: runner.os == 'Windows'
@@ -70,38 +70,38 @@ runs:
       run: |
         $ErrorActionPreference = 'Stop'
         tar -xzf hps-lite.tar.gz -C .
-        $miniPath = Join-Path $env:GITHUB_WORKSPACE 'hps-lite-win-x64/hps-lite.exe'
-        if (-not (Test-Path -PathType Leaf $miniPath)) {
+        $hpsLitePath = Join-Path $env:GITHUB_WORKSPACE 'hps-lite-win-x64/hps-lite.exe'
+        if (-not (Test-Path -PathType Leaf $hpsLitePath)) {
           Write-Error 'hps-lite executable was not found in the release archive'
         }
-        $mini = Get-Item $miniPath
-        Add-Content -Path $env:GITHUB_OUTPUT -Value "path=$($mini.FullName)"
-        Add-Content -Path $env:GITHUB_OUTPUT -Value "working-directory=$($mini.DirectoryName)"
+        $hpsLite = Get-Item $hpsLitePath
+        Add-Content -Path $env:GITHUB_OUTPUT -Value "path=$($hpsLite.FullName)"
+        Add-Content -Path $env:GITHUB_OUTPUT -Value "working-directory=$($hpsLite.DirectoryName)"
 
     - name: Start Linux hps-lite
       if: runner.os == 'Linux' && inputs.start == 'true'
       shell: bash
       env:
-        MINI_PATH: ${{ steps['extract-linux'].outputs.path }}
-        MINI_WORKING_DIRECTORY: ${{ steps['extract-linux'].outputs['working-directory'] }}
+        HPS_LITE_PATH: ${{ steps['extract-linux'].outputs.path }}
+        HPS_LITE_WORKING_DIRECTORY: ${{ steps['extract-linux'].outputs['working-directory'] }}
       run: |
         set -e
-        cd "$MINI_WORKING_DIRECTORY"
-        nohup "$MINI_PATH" run --json > "$GITHUB_WORKSPACE/hps-lite.log" 2>&1 &
+        cd "$HPS_LITE_WORKING_DIRECTORY"
+        nohup "$HPS_LITE_PATH" run --json > "$GITHUB_WORKSPACE/hps-lite.log" 2>&1 &
         echo $! > hps-lite.pid
 
     - name: Start Windows hps-lite
       if: runner.os == 'Windows' && inputs.start == 'true'
       shell: pwsh
       env:
-        MINI_PATH: ${{ steps['extract-windows'].outputs.path }}
-        MINI_WORKING_DIRECTORY: ${{ steps['extract-windows'].outputs['working-directory'] }}
+        HPS_LITE_PATH: ${{ steps['extract-windows'].outputs.path }}
+        HPS_LITE_WORKING_DIRECTORY: ${{ steps['extract-windows'].outputs['working-directory'] }}
       run: |
         $ErrorActionPreference = 'Stop'
         $process = Start-Process `
-          -FilePath $env:MINI_PATH `
+          -FilePath $env:HPS_LITE_PATH `
           -ArgumentList @('run', '--json') `
-          -WorkingDirectory $env:MINI_WORKING_DIRECTORY `
+          -WorkingDirectory $env:HPS_LITE_WORKING_DIRECTORY `
           -RedirectStandardOutput "$PWD/hps-lite.log" `
           -RedirectStandardError "$PWD/hps-lite-error.log" `
           -PassThru
@@ -112,12 +112,12 @@ runs:
       id: status-linux
       shell: bash
       env:
-        MINI_PATH: ${{ steps['extract-linux'].outputs.path }}
-        MINI_WORKING_DIRECTORY: ${{ steps['extract-linux'].outputs['working-directory'] }}
+        HPS_LITE_PATH: ${{ steps['extract-linux'].outputs.path }}
+        HPS_LITE_WORKING_DIRECTORY: ${{ steps['extract-linux'].outputs['working-directory'] }}
       run: |
         set -e
-        cd "$MINI_WORKING_DIRECTORY"
-        status_json=$("$MINI_PATH" run --json)
+        cd "$HPS_LITE_WORKING_DIRECTORY"
+        status_json=$("$HPS_LITE_PATH" run --json)
         readarray -t status_values < <(STATUS_JSON="$status_json" python -c '
         import json
         import os
@@ -128,28 +128,28 @@ runs:
         print(payload["url"])
         print(payload.get("api_key", ""))
         ')
-        mini_url="${status_values[0]%/}/hps"
-        mini_api_key="${status_values[1]}"
-        echo "::add-mask::$mini_api_key"
-        echo "url=$mini_url" >> "$GITHUB_OUTPUT"
-        echo "api-key=$mini_api_key" >> "$GITHUB_OUTPUT"
+        hps_lite_url="${status_values[0]%/}/hps"
+        hps_lite_api_key="${status_values[1]}"
+        echo "::add-mask::$hps_lite_api_key"
+        echo "url=$hps_lite_url" >> "$GITHUB_OUTPUT"
+        echo "api-key=$hps_lite_api_key" >> "$GITHUB_OUTPUT"
 
     - name: Query Windows hps-lite status
       if: runner.os == 'Windows' && inputs.start == 'true'
       id: status-windows
       shell: pwsh
       env:
-        MINI_PATH: ${{ steps['extract-windows'].outputs.path }}
-        MINI_WORKING_DIRECTORY: ${{ steps['extract-windows'].outputs['working-directory'] }}
+        HPS_LITE_PATH: ${{ steps['extract-windows'].outputs.path }}
+        HPS_LITE_WORKING_DIRECTORY: ${{ steps['extract-windows'].outputs['working-directory'] }}
       run: |
         $ErrorActionPreference = 'Stop'
-        Set-Location $env:MINI_WORKING_DIRECTORY
-        $status = & $env:MINI_PATH run --json | ConvertFrom-Json
+        Set-Location $env:HPS_LITE_WORKING_DIRECTORY
+        $status = & $env:HPS_LITE_PATH run --json | ConvertFrom-Json
         if ($status.status -ne 'running') {
           throw 'hps-lite is not running'
         }
         $apiKey = [string]$status.api_key
         Write-Output "::add-mask::$apiKey"
-        $miniUrl = "$($status.url.TrimEnd('/'))/hps"
-        Add-Content -Path $env:GITHUB_OUTPUT -Value "url=$miniUrl"
+        $hpsLiteUrl = "$($status.url.TrimEnd('/'))/hps"
+        Add-Content -Path $env:GITHUB_OUTPUT -Value "url=$hpsLiteUrl"
         Add-Content -Path $env:GITHUB_OUTPUT -Value "api-key=$apiKey"
