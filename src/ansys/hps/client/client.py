@@ -29,6 +29,7 @@ import tempfile
 import threading
 import warnings
 import weakref
+from collections.abc import Callable
 from datetime import datetime, timedelta, timezone
 
 import jwt
@@ -177,6 +178,12 @@ class Client:
         ``token_storage`` backend is unavailable. The default is ``False``.
         When ``False``, keyring backend issues are surfaced as warnings and
         token persistence remains in-memory if persistence fails.
+    on_token_refresh : callable, optional
+        Callback invoked after a successful token refresh and persistence attempt.
+        It receives a metadata dictionary with ``refreshed_at``, ``expires_in``,
+        ``refresh_expires_in``, ``next_refresh_at``, and ``persistence`` fields.
+        The callback runs synchronously in the thread performing the refresh;
+        callback exceptions are logged and ignored.
 
     Attributes
     ----------
@@ -252,6 +259,7 @@ class Client:
         token_refresh_loop_interval: float = 300,
         token_storage: str = "memory",
         token_storage_strict: bool = False,
+        on_token_refresh: Callable[[dict], None] | None = None,
         **kwargs,
     ):
         """Initialize the Client object."""
@@ -303,6 +311,10 @@ class Client:
         self.token_refresh_retry_factors = retry_factors
         self.loop_interval = token_refresh_loop_interval
         self._refresh_attempt = 0
+        self._token_refresh_lock = threading.RLock()
+        if on_token_refresh is not None and not callable(on_token_refresh):
+            raise TypeError("on_token_refresh must be callable or None.")
+        self._on_token_refresh = on_token_refresh
         self.token_expires_in = None
         self.token_acquired_date = None
         self.token_refresh_date = None
@@ -816,45 +828,59 @@ class Client:
 
     def refresh_access_token(self):
         """Request a new access token."""
-        if self.api_key is not None:
-            raise HPSError("API Key authentication does not support token refresh.")
+        with self._token_refresh_lock:
+            if self.api_key is not None:
+                raise HPSError("API Key authentication does not support token refresh.")
 
-        if self.grant_type == "client_credentials":
-            # Its not recommended to give refresh tokens to client_credentials grant types
-            # as per OAuth 2.0 RFC6749 Section 4.4.3, so handle these specially...
-            tokens = authenticate(
-                auth_url=self.auth_url,
-                grant_type="client_credentials",
-                scope=self.scope,
-                client_id=self.client_id,
-                client_secret=self.client_secret,
-                verify=self.verify,
-            )
-        else:
-            # Other workflows for authentication generally support refresh_tokens
-            if not self.refresh_token:
-                raise HPSError("No refresh token available. Re-authentication is required.")
-            tokens = authenticate(
-                auth_url=self.auth_url,
-                grant_type="refresh_token",
-                scope=self.scope,
-                client_id=self.client_id,
-                client_secret=self.client_secret,
-                username=self.username,
-                refresh_token=self.refresh_token,
-                verify=self.verify,
-            )
-        self.access_token = tokens["access_token"]
-        self.refresh_token = tokens.get("refresh_token", None)
-        self.session.headers.update(
-            {
-                self._session_auth_header_name: (
-                    f"{self._session_auth_prefix} {tokens['access_token']}"
+            if self.grant_type == "client_credentials":
+                # Its not recommended to give refresh tokens to client_credentials grant types
+                # as per OAuth 2.0 RFC6749 Section 4.4.3, so handle these specially...
+                tokens = authenticate(
+                    auth_url=self.auth_url,
+                    grant_type="client_credentials",
+                    scope=self.scope,
+                    client_id=self.client_id,
+                    client_secret=self.client_secret,
+                    verify=self.verify,
                 )
-            }
-        )
-        self._update_token_expiry(tokens)
-        self.last_token_persistence_result = self._persist_refreshed_tokens(tokens)
+            else:
+                # Other workflows for authentication generally support refresh_tokens
+                if not self.refresh_token:
+                    raise HPSError("No refresh token available. Re-authentication is required.")
+                tokens = authenticate(
+                    auth_url=self.auth_url,
+                    grant_type="refresh_token",
+                    scope=self.scope,
+                    client_id=self.client_id,
+                    client_secret=self.client_secret,
+                    username=self.username,
+                    refresh_token=self.refresh_token,
+                    verify=self.verify,
+                )
+            self.access_token = tokens["access_token"]
+            self.refresh_token = tokens.get("refresh_token", None)
+            self.session.headers.update(
+                {
+                    self._session_auth_header_name: (
+                        f"{self._session_auth_prefix} {tokens['access_token']}"
+                    )
+                }
+            )
+            self._update_token_expiry(tokens)
+            self.last_token_persistence_result = self._persist_refreshed_tokens(tokens)
+            if self._on_token_refresh is not None:
+                metadata = {
+                    "refreshed_at": self.token_acquired_date,
+                    "expires_in": tokens.get("expires_in"),
+                    "refresh_expires_in": tokens.get("refresh_expires_in"),
+                    "next_refresh_at": self.token_refresh_date,
+                    "persistence": dict(self.last_token_persistence_result),
+                }
+                try:
+                    self._on_token_refresh(metadata)
+                except Exception as ex:
+                    safe_error = redact_sensitive_values(str(ex))
+                    log.warning("Token refresh callback failed: %s", safe_error)
 
     @property
     def _session_auth_header_name(self) -> str:

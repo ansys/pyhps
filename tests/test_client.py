@@ -356,6 +356,52 @@ def test_refresh_access_token_raises_when_refresh_token_missing():
         client.refresh_access_token()
 
 
+def test_token_refresh_callback_receives_metadata():
+    """A successful refresh notifies the callback with non-secret metadata."""
+    received_metadata = {}
+
+    def on_token_refresh(metadata):
+        received_metadata.update(metadata)
+
+    refreshed_tokens = {
+        "access_token": "refreshed_access_token",
+        "refresh_token": "refreshed_refresh_token",
+        "expires_in": 3600,
+        "refresh_expires_in": 86400,
+    }
+
+    with patch("ansys.hps.client.client.authenticate", return_value=refreshed_tokens):
+        client = _build_client_with_mocked_auth(on_token_refresh=on_token_refresh)
+        client.refresh_access_token()
+
+    assert received_metadata["refreshed_at"] == client.token_acquired_date
+    assert received_metadata["expires_in"] == refreshed_tokens["expires_in"]
+    assert received_metadata["refresh_expires_in"] == refreshed_tokens["refresh_expires_in"]
+    assert received_metadata["next_refresh_at"] == client.token_refresh_date
+    assert received_metadata["persistence"] == client.last_token_persistence_result
+
+
+def test_token_refresh_callback_failure_does_not_fail_refresh(caplog):
+    """Callback failures are logged without undoing a successful refresh."""
+
+    def on_token_refresh(metadata):
+        raise RuntimeError("callback failed")
+
+    refreshed_tokens = {
+        "access_token": "refreshed_access_token",
+        "refresh_token": "refreshed_refresh_token",
+        "expires_in": 3600,
+        "refresh_expires_in": 86400,
+    }
+
+    with patch("ansys.hps.client.client.authenticate", return_value=refreshed_tokens):
+        client = _build_client_with_mocked_auth(on_token_refresh=on_token_refresh)
+        client.refresh_access_token()
+
+    assert client.access_token == refreshed_tokens["access_token"]
+    assert "Token refresh callback failed" in caplog.text
+
+
 @pytest.mark.skip_for_hps_lite
 def test_refresh_access_token_persistence_result_keyring_failure_uses_memory_only(
     url, username, password
