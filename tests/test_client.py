@@ -356,6 +356,89 @@ def test_refresh_access_token_raises_when_refresh_token_missing():
         client.refresh_access_token()
 
 
+def test_refresh_access_token_with_client_credentials():
+    """Client credentials refresh by reauthenticating and skip the callback when unset."""
+    client = _build_client_with_mocked_auth()
+    client.grant_type = "client_credentials"
+    client.client_secret = "client-secret"
+    refreshed_tokens = {
+        "access_token": "refreshed_access_token",
+        "expires_in": 3600,
+    }
+
+    with patch(
+        "ansys.hps.client.client.authenticate", return_value=refreshed_tokens
+    ) as mock_authenticate:
+        client.refresh_access_token()
+
+    mock_authenticate.assert_called_once_with(
+        auth_url=client.auth_url,
+        grant_type="client_credentials",
+        scope=client.scope,
+        client_id=client.client_id,
+        client_secret="client-secret",
+        verify=client.verify,
+    )
+    assert client.access_token == refreshed_tokens["access_token"]
+    assert client.refresh_token is None
+    assert client.token_refresh_date is not None
+
+
+def test_token_refresh_callback_rejects_non_callable():
+    """Reject a callback that cannot be called."""
+    client = _build_client_with_mocked_auth()
+    with pytest.raises(TypeError, match="on_token_refresh must be callable or None"):
+        client.on_token_refresh = "not-callable"
+
+
+def test_token_refresh_callback_receives_access_token():
+    """A successful refresh delivers the new access token to the callback."""
+    received_tokens = []
+
+    def on_token_refresh(access_token):
+        received_tokens.append(access_token)
+
+    refreshed_tokens = {
+        "access_token": "refreshed_access_token",
+        "refresh_token": "refreshed_refresh_token",
+        "expires_in": 3600,
+        "refresh_expires_in": 86400,
+    }
+
+    with patch("ansys.hps.client.client.authenticate", return_value=refreshed_tokens):
+        client = _build_client_with_mocked_auth()
+        client.on_token_refresh = on_token_refresh
+        client.refresh_access_token()
+
+    assert received_tokens == [refreshed_tokens["access_token"]]
+    assert client.access_token == received_tokens[0]
+    assert client.session.headers["Authorization"] == f"Bearer {received_tokens[0]}"
+
+
+def test_token_refresh_callback_failure_does_not_fail_refresh(caplog):
+    """Callback failures are logged without undoing a successful refresh."""
+
+    def on_token_refresh(access_token):
+        raise RuntimeError(f"callback failed for {access_token}")
+
+    refreshed_tokens = {
+        "access_token": "refreshed_access_token",
+        "refresh_token": "refreshed_refresh_token",
+        "expires_in": 3600,
+        "refresh_expires_in": 86400,
+    }
+
+    with patch("ansys.hps.client.client.authenticate", return_value=refreshed_tokens):
+        client = _build_client_with_mocked_auth()
+        client.on_token_refresh = on_token_refresh
+        client.refresh_access_token()
+
+    assert client.access_token == refreshed_tokens["access_token"]
+    assert "Token refresh callback failed" in caplog.text
+    assert refreshed_tokens["access_token"] not in caplog.text
+    assert "***REDACTED***" in caplog.text
+
+
 @pytest.mark.skip_for_hps_lite
 def test_refresh_access_token_persistence_result_keyring_failure_uses_memory_only(
     url, username, password
