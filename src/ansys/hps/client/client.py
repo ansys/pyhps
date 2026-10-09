@@ -178,12 +178,6 @@ class Client:
         ``token_storage`` backend is unavailable. The default is ``False``.
         When ``False``, keyring backend issues are surfaced as warnings and
         token persistence remains in-memory if persistence fails.
-    on_token_refresh : callable, optional
-        Callback invoked after a successful token refresh and persistence attempt.
-        It receives a metadata dictionary with ``refreshed_at``, ``expires_in``,
-        ``refresh_expires_in``, ``next_refresh_at``, and ``persistence`` fields.
-        The callback runs synchronously in the thread performing the refresh;
-        callback exceptions are logged and ignored.
 
     Attributes
     ----------
@@ -259,7 +253,6 @@ class Client:
         token_refresh_loop_interval: float = 300,
         token_storage: str = "memory",
         token_storage_strict: bool = False,
-        on_token_refresh: Callable[[dict], None] | None = None,
         **kwargs,
     ):
         """Initialize the Client object."""
@@ -312,9 +305,7 @@ class Client:
         self.loop_interval = token_refresh_loop_interval
         self._refresh_attempt = 0
         self._token_refresh_lock = threading.RLock()
-        if on_token_refresh is not None and not callable(on_token_refresh):
-            raise TypeError("on_token_refresh must be callable or None.")
-        self._on_token_refresh = on_token_refresh
+        self._on_token_refresh: Callable[[str], None] | None = None
         self.token_expires_in = None
         self.token_acquired_date = None
         self.token_refresh_date = None
@@ -446,6 +437,25 @@ class Client:
         self._unauthorized_max_retry = 1
         if auto_refresh_token and self.token_refresh_date is not None:
             self._start_token_refresh_thread()
+
+    @property
+    def on_token_refresh(self) -> Callable[[str], None] | None:
+        """Callback receiving the new access token after refresh and persistence.
+
+        Assign a callable accepting the access-token string, or ``None`` to disable
+        it. The token is a sensitive credential and must not be logged. The callback
+        runs synchronously under the refresh lock in the refreshing thread and
+        should return promptly; exceptions are logged and ignored.
+        """
+        with self._token_refresh_lock:
+            return self._on_token_refresh
+
+    @on_token_refresh.setter
+    def on_token_refresh(self, callback: Callable[[str], None] | None):
+        if callback is not None and not callable(callback):
+            raise TypeError("on_token_refresh must be callable or None.")
+        with self._token_refresh_lock:
+            self._on_token_refresh = callback
 
     def close(self):
         """Stop the token refresh thread and data transfer client, and close the session.
@@ -869,17 +879,10 @@ class Client:
             self._update_token_expiry(tokens)
             self.last_token_persistence_result = self._persist_refreshed_tokens(tokens)
             if self._on_token_refresh is not None:
-                metadata = {
-                    "refreshed_at": self.token_acquired_date,
-                    "expires_in": tokens.get("expires_in"),
-                    "refresh_expires_in": tokens.get("refresh_expires_in"),
-                    "next_refresh_at": self.token_refresh_date,
-                    "persistence": dict(self.last_token_persistence_result),
-                }
                 try:
-                    self._on_token_refresh(metadata)
+                    self._on_token_refresh(tokens["access_token"])
                 except Exception as ex:
-                    safe_error = redact_sensitive_values(str(ex))
+                    safe_error = redact_sensitive_values(str(ex), tokens)
                     log.warning("Token refresh callback failed: %s", safe_error)
 
     @property

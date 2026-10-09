@@ -356,12 +356,47 @@ def test_refresh_access_token_raises_when_refresh_token_missing():
         client.refresh_access_token()
 
 
-def test_token_refresh_callback_receives_metadata():
-    """A successful refresh notifies the callback with non-secret metadata."""
-    received_metadata = {}
+def test_refresh_access_token_with_client_credentials():
+    """Client credentials refresh by reauthenticating and skip the callback when unset."""
+    client = _build_client_with_mocked_auth()
+    client.grant_type = "client_credentials"
+    client.client_secret = "client-secret"
+    refreshed_tokens = {
+        "access_token": "refreshed_access_token",
+        "expires_in": 3600,
+    }
 
-    def on_token_refresh(metadata):
-        received_metadata.update(metadata)
+    with patch(
+        "ansys.hps.client.client.authenticate", return_value=refreshed_tokens
+    ) as mock_authenticate:
+        client.refresh_access_token()
+
+    mock_authenticate.assert_called_once_with(
+        auth_url=client.auth_url,
+        grant_type="client_credentials",
+        scope=client.scope,
+        client_id=client.client_id,
+        client_secret="client-secret",
+        verify=client.verify,
+    )
+    assert client.access_token == refreshed_tokens["access_token"]
+    assert client.refresh_token is None
+    assert client.token_refresh_date is not None
+
+
+def test_token_refresh_callback_rejects_non_callable():
+    """Reject a callback that cannot be called."""
+    client = _build_client_with_mocked_auth()
+    with pytest.raises(TypeError, match="on_token_refresh must be callable or None"):
+        client.on_token_refresh = "not-callable"
+
+
+def test_token_refresh_callback_receives_access_token():
+    """A successful refresh delivers the new access token to the callback."""
+    received_tokens = []
+
+    def on_token_refresh(access_token):
+        received_tokens.append(access_token)
 
     refreshed_tokens = {
         "access_token": "refreshed_access_token",
@@ -371,21 +406,20 @@ def test_token_refresh_callback_receives_metadata():
     }
 
     with patch("ansys.hps.client.client.authenticate", return_value=refreshed_tokens):
-        client = _build_client_with_mocked_auth(on_token_refresh=on_token_refresh)
+        client = _build_client_with_mocked_auth()
+        client.on_token_refresh = on_token_refresh
         client.refresh_access_token()
 
-    assert received_metadata["refreshed_at"] == client.token_acquired_date
-    assert received_metadata["expires_in"] == refreshed_tokens["expires_in"]
-    assert received_metadata["refresh_expires_in"] == refreshed_tokens["refresh_expires_in"]
-    assert received_metadata["next_refresh_at"] == client.token_refresh_date
-    assert received_metadata["persistence"] == client.last_token_persistence_result
+    assert received_tokens == [refreshed_tokens["access_token"]]
+    assert client.access_token == received_tokens[0]
+    assert client.session.headers["Authorization"] == f"Bearer {received_tokens[0]}"
 
 
 def test_token_refresh_callback_failure_does_not_fail_refresh(caplog):
     """Callback failures are logged without undoing a successful refresh."""
 
-    def on_token_refresh(metadata):
-        raise RuntimeError("callback failed")
+    def on_token_refresh(access_token):
+        raise RuntimeError(f"callback failed for {access_token}")
 
     refreshed_tokens = {
         "access_token": "refreshed_access_token",
@@ -395,11 +429,14 @@ def test_token_refresh_callback_failure_does_not_fail_refresh(caplog):
     }
 
     with patch("ansys.hps.client.client.authenticate", return_value=refreshed_tokens):
-        client = _build_client_with_mocked_auth(on_token_refresh=on_token_refresh)
+        client = _build_client_with_mocked_auth()
+        client.on_token_refresh = on_token_refresh
         client.refresh_access_token()
 
     assert client.access_token == refreshed_tokens["access_token"]
     assert "Token refresh callback failed" in caplog.text
+    assert refreshed_tokens["access_token"] not in caplog.text
+    assert "***REDACTED***" in caplog.text
 
 
 @pytest.mark.skip_for_hps_lite
