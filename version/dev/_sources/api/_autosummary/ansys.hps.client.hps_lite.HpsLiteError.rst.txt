@@ -1,0 +1,6 @@
+﻿HpsLiteError
+============
+
+.. currentmodule:: ansys.hps.client.hps_lite
+
+.. autoexception:: HpsLiteError

@@ -1,0 +1,6 @@
+﻿get\_hps\_lite\_status
+======================
+
+.. currentmodule:: ansys.hps.client.hps_lite
+
+.. autofunction:: get_hps_lite_status

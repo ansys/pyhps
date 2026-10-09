@@ -1,0 +1,6 @@
+build
+=====
+
+.. currentmodule:: ansys.hps.client.monitor
+
+.. autoproperty:: BuildInfoResponse.build

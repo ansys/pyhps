@@ -1,0 +1,39 @@
+﻿RcsApi
+======
+
+.. currentmodule:: ansys.hps.client.rcs.api
+
+.. autoclass:: RcsApi
+
+   
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+      :toctree:
+   
+      
+      
+      RcsApi.health_check
+      
+      
+      RcsApi.register_instance
+      
+      
+      RcsApi.unregister_instance
+      
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+      :toctree:
+   
+      RcsApi.health
+      RcsApi.url
+   
+   

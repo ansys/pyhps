@@ -1,0 +1,6 @@
+﻿RegisterInstanceResponse
+========================
+
+.. currentmodule:: ansys.hps.client.rcs
+
+.. autopydantic_model:: RegisterInstanceResponse

@@ -1,0 +1,6 @@
+get\_projects
+=============
+
+.. currentmodule:: ansys.hps.client.jms.api
+
+.. automethod:: JmsApi.get_projects

@@ -1,0 +1,28 @@
+﻿TemplateOutputFile
+==================
+
+.. currentmodule:: ansys.hps.client.jms
+
+.. autoclass:: TemplateOutputFile
+
+   
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+      :toctree:
+   
+      
+      
+      TemplateOutputFile.declared_fields
+      
+      
+      TemplateOutputFile.get
+      
+   
+   
+
+   
+   
+   

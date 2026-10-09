@@ -1,0 +1,6 @@
+on\_token\_refresh
+==================
+
+.. currentmodule:: ansys.hps.client.client
+
+.. autoproperty:: Client.on_token_refresh

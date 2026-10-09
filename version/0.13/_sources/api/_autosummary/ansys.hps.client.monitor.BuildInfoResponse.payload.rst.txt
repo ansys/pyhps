@@ -1,0 +1,6 @@
+payload
+=======
+
+.. currentmodule:: ansys.hps.client.monitor
+
+.. autoattribute:: BuildInfoResponse.payload

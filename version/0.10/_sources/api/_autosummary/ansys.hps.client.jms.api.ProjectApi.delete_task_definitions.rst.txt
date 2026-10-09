@@ -1,0 +1,6 @@
+delete\_task\_definitions
+=========================
+
+.. currentmodule:: ansys.hps.client.jms.api
+
+.. automethod:: ProjectApi.delete_task_definitions

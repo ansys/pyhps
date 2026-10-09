@@ -1,0 +1,6 @@
+queue\_task\_command
+====================
+
+.. currentmodule:: ansys.hps.client.jms.api
+
+.. automethod:: ProjectApi.queue_task_command

@@ -1,0 +1,6 @@
+﻿create\_hps\_lite\_client
+=========================
+
+.. currentmodule:: ansys.hps.client.hps_lite
+
+.. autofunction:: create_hps_lite_client

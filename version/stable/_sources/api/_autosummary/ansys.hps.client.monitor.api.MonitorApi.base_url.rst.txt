@@ -1,0 +1,6 @@
+base\_url
+=========
+
+.. currentmodule:: ansys.hps.client.monitor.api
+
+.. autoproperty:: MonitorApi.base_url

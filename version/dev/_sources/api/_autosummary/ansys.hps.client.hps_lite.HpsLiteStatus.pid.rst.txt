@@ -1,0 +1,6 @@
+pid
+===
+
+.. currentmodule:: ansys.hps.client.hps_lite
+
+.. autoattribute:: HpsLiteStatus.pid

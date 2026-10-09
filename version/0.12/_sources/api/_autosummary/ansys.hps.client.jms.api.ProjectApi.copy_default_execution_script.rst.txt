@@ -1,0 +1,6 @@
+copy\_default\_execution\_script
+================================
+
+.. currentmodule:: ansys.hps.client.jms.api
+
+.. automethod:: ProjectApi.copy_default_execution_script

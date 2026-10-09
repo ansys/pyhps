@@ -1,0 +1,6 @@
+keys
+====
+
+.. currentmodule:: ansys.hps.client.monitor
+
+.. automethod:: BuildInfoResponse.keys

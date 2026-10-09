@@ -1,0 +1,6 @@
+get\_job\_definitions
+=====================
+
+.. currentmodule:: ansys.hps.client.jms.api
+
+.. automethod:: ProjectApi.get_job_definitions

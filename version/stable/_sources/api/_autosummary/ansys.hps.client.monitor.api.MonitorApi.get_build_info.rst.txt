@@ -1,0 +1,6 @@
+get\_build\_info
+================
+
+.. currentmodule:: ansys.hps.client.monitor.api
+
+.. automethod:: MonitorApi.get_build_info
