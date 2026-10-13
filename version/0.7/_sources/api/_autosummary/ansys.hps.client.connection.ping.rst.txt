@@ -1,0 +1,6 @@
+﻿ping
+====
+
+.. currentmodule:: ansys.hps.client.connection
+
+.. autofunction:: ping

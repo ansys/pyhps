@@ -1,0 +1,6 @@
+run
+===
+
+.. currentmodule:: ansys.hps.client.hps_lite
+
+.. automethod:: HpsLite.run

@@ -1,0 +1,6 @@
+﻿HPSError
+========
+
+.. currentmodule:: ansys.hps.client.exceptions
+
+.. autoexception:: HPSError

@@ -1,0 +1,6 @@
+get
+===
+
+.. currentmodule:: ansys.hps.client.jms
+
+.. automethod:: TemplateResourceRequirements.get

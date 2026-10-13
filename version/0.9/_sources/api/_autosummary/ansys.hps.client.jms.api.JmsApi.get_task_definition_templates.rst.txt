@@ -1,0 +1,6 @@
+get\_task\_definition\_templates
+================================
+
+.. currentmodule:: ansys.hps.client.jms.api
+
+.. automethod:: JmsApi.get_task_definition_templates
