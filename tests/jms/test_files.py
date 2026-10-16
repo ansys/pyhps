@@ -24,13 +24,63 @@ import io
 import logging
 import os
 import tempfile
+from pathlib import Path
 
+import pytest
 from marshmallow.utils import missing
 
 from ansys.hps.client.jms import JmsApi, ProjectApi
+from ansys.hps.client.jms.api import project_api as project_api_module
 from ansys.hps.client.jms.resource import File, Project
 
 log = logging.getLogger(__name__)
+
+
+@pytest.fixture
+def batch_download_setup(client, inactive_temporary_project):
+    api = ProjectApi(client, inactive_temporary_project.id)
+    files = api.create_files(
+        [
+            File(name="one", evaluation_path="one.txt", src=io.BytesIO(b"ab")),
+            File(name="two", evaluation_path="two.txt", src=io.BytesIO(b"abcdef")),
+        ]
+    )
+    return api, files
+
+
+def test_download_file_batch_download_and_progress(batch_download_setup, tmp_path):
+    api, files = batch_download_setup
+    progress = []
+
+    result = api.download_file_batch(files, str(tmp_path), progress.append)
+
+    assert result == [str(tmp_path / "one.txt"), str(tmp_path / "two.txt")]
+    assert [Path(path).read_bytes() for path in result] == [b"ab", b"abcdef"]
+    total_size = sum(file.size for file in files)
+    assert len(progress) >= 2
+    assert progress[0] == 0
+    assert progress[-1] == total_size
+    assert all(0 <= downloaded <= total_size for downloaded in progress)
+
+
+def test_download_file_batch_skips_files_and_logs(batch_download_setup, tmp_path, caplog):
+    api, files = batch_download_setup
+    direct, empty = api.create_files(
+        [
+            File(name="direct", evaluation_path="external.txt", access_mode="direct_access"),
+            File(name="empty", evaluation_path="empty.txt", hash=None),
+        ]
+    )
+    caplog.set_level(logging.INFO, logger=project_api_module.__name__)
+
+    result = api.download_file_batch([files[0], direct, empty], str(tmp_path))
+
+    assert result == [str(tmp_path / "one.txt")]
+    assert (tmp_path / "one.txt").read_bytes() == b"ab"
+    assert not (tmp_path / "external.txt").exists()
+    assert not (tmp_path / "empty.txt").exists()
+    assert f"Skipping direct-access file {direct.id}" in caplog.text
+    assert f"Skipping file {empty.id}: no stored content hash" in caplog.text
 
 
 def test_files(client):
