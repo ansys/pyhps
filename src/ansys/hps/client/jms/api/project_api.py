@@ -28,7 +28,7 @@ import logging
 import os
 import tempfile
 import warnings
-from collections.abc import Callable, Sequence
+from collections.abc import Callable
 
 from ansys.hps.data_transfer.client.api.handler import WaitHandler
 from ansys.hps.data_transfer.client.models import Operation, OperationState, SrcDst, StoragePath
@@ -194,44 +194,41 @@ class ProjectApi:
     @version_required(min_version=JMS_VERSIONS[HpsRelease.v1_2_0])
     def download_file(
         self,
-        file: File | Sequence[File],
+        file: File,
         target_path: str,
-        progress_handler: Callable[[int], None] | None = None,
-        file_name: str | None = None,
+        progress_handler: Callable[[int], None] = None,
+        file_name: str = None,
         **kwargs,
-    ) -> str | list[str]:
-        """Download one or more files and save them to disk.
+    ) -> str:
+        """Download file content and save it to disk.
 
         Parameters
         ----------
-        file : File or Sequence[File]
-            File object or sequence of file objects to download.
+        file : File
+            File object to download.
         target_path : str
             Path to the directory where to save the file.
         progress_handler : Callable[[int], None], optional
-            Function to handle progress updates in bytes. For multiple files,
-            progress restarts at zero for each file.
+            Function to handle progress updates. The default is None.
+            The function should accept a single argument, which is the current
+            size of the downloaded file in bytes.
         file_name : str, optional
-            Name override for a single file. Multiple files use their evaluation paths.
+            Name of the file to save. If None, the original file name is used.
         kwargs : dict, optional
             Additional arguments to pass to the download function.
             The 'stream' argument is deprecated and should not be used.
 
         Returns
         -------
-        str or list[str]
-            Downloaded file path, or paths in input order when a sequence is supplied.
+        str
+            Path to the downloaded file.
 
         """
         if "stream" in kwargs:
             msg = "The 'stream' input argument in ProjectApi.download_file() is deprecated. "
             warnings.warn(msg, DeprecationWarning, stacklevel=2)
             log.warning(msg)
-        if isinstance(file, File):
-            return _download_file(self, file, target_path, progress_handler, file_name)
-        if file_name is not None:
-            raise ValueError("file_name can only be used when downloading a single file.")
-        return [_download_file(self, item, target_path, progress_handler) for item in file]
+        return _download_file(self, file, target_path, progress_handler, file_name)
 
     ################################################################
     # Parameter definitions

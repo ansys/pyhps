@@ -24,13 +24,10 @@ import io
 import logging
 import os
 import tempfile
-from types import SimpleNamespace
-from unittest.mock import MagicMock
 
 from marshmallow.utils import missing
 
 from ansys.hps.client.jms import JmsApi, ProjectApi
-from ansys.hps.client.jms.api import project_api as project_api_module
 from ansys.hps.client.jms.resource import File, Project
 
 log = logging.getLogger(__name__)
@@ -113,14 +110,6 @@ def test_files(client):
         with open(res_path, "rb") as f, open(fpath, "rb") as sf:
             assert f.read() == sf.read()
 
-        # Download multiple files through the same public method.
-        fpaths = project_api.download_file(files_queried[:2], tpath)
-        assert len(fpaths) == 2
-        with open(mac_path, "rb") as f, open(fpaths[0], "rb") as sf:
-            assert f.read() == sf.read()
-        with open(res_path, "rb") as f, open(fpaths[1], "rb") as sf:
-            assert f.read() == sf.read()
-
         # test download without streaming
         fpath = project_api.download_file(files_queried[0], tpath, stream=False)
         with open(mac_path, "rb") as f, open(fpath, "rb") as sf:
@@ -136,32 +125,6 @@ def test_files(client):
 
     # Delete project again
     jms_api.delete_project(proj)
-
-
-def test_download_file_sequence_reuses_single_file_download(monkeypatch, tmp_path):
-    project_api = object.__new__(ProjectApi)
-    project_api._jms_api = SimpleNamespace(version="1.1.4")
-    files = [
-        File(id="file-1", evaluation_path="one.txt"),
-        File(id="file-2", evaluation_path="two.txt"),
-    ]
-    progress_handler = MagicMock()
-    calls = []
-
-    def download_file(api, file, target_path, progress_handler, file_name=None):
-        calls.append((api, file, target_path, progress_handler, file_name))
-        return os.path.join(target_path, file.evaluation_path)
-
-    monkeypatch.setattr(project_api_module, "_download_file", download_file)
-
-    result = project_api.download_file(files, str(tmp_path), progress_handler)
-
-    assert result == [str(tmp_path / "one.txt"), str(tmp_path / "two.txt")]
-    assert [call[1] for call in calls] == files
-    assert all(call[0] is project_api for call in calls)
-    assert all(call[2] == str(tmp_path) for call in calls)
-    assert all(call[3] is progress_handler for call in calls)
-    assert all(call[4] is None for call in calls)
 
 
 def test_download_file_in_subdir(client, inactive_temporary_project):
