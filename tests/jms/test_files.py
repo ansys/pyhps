@@ -24,13 +24,75 @@ import io
 import logging
 import os
 import tempfile
+from pathlib import Path
+from types import SimpleNamespace
+from unittest.mock import MagicMock
 
+import pytest
+from ansys.hps.data_transfer.client.models import Operation, OperationState
 from marshmallow.utils import missing
 
 from ansys.hps.client.jms import JmsApi, ProjectApi
+from ansys.hps.client.jms.api import project_api as project_api_module
 from ansys.hps.client.jms.resource import File, Project
 
 log = logging.getLogger(__name__)
+
+
+@pytest.fixture
+def batch_download_setup():
+    api = object.__new__(ProjectApi)
+    api._jms_api = SimpleNamespace(version="1.1.4")
+    api.project_id = "project-1"
+    api.client = MagicMock()
+    files = [
+        File(id="one", hash="hash-one", storage_id="stored-one", evaluation_path="one.txt", size=2),
+        File(id="two", hash="hash-two", storage_id="stored-two", evaluation_path="two.txt", size=6),
+    ]
+    dt_api = api.client.data_transfer_api
+    dt_api.copy.return_value = SimpleNamespace(id="batch-1")
+
+    def wait_for(operation_ids, handler):
+        assert operation_ids == ["batch-1"]
+        handler([Operation(id="batch-1", state=OperationState.Running, progress=0.5)])
+        transfers = dt_api.copy.call_args.args[0]
+        for transfer, payload in zip(transfers, [b"ab", b"abcdef"][: len(transfers)], strict=True):
+            path = Path(transfer.dst.path)
+            path.parent.mkdir(parents=True, exist_ok=True)
+            path.write_bytes(payload)
+        return [Operation(id="batch-1", state=OperationState.Succeeded)]
+
+    dt_api.wait_for.side_effect = wait_for
+    return api, files
+
+
+def test_download_file_batch_download_and_progress(batch_download_setup, tmp_path):
+    api, files = batch_download_setup
+    progress = []
+
+    result = api.download_file_batch(files, str(tmp_path), progress.append)
+
+    assert result == [str(tmp_path / "one.txt"), str(tmp_path / "two.txt")]
+    assert [Path(path).read_bytes() for path in result] == [b"ab", b"abcdef"]
+    assert progress == [0, 4, 8]
+    api.client.data_transfer_api.copy.assert_called_once()
+    assert len(api.client.data_transfer_api.copy.call_args.args[0]) == 2
+
+
+def test_download_file_batch_skips_files_and_logs(batch_download_setup, tmp_path, caplog):
+    api, files = batch_download_setup
+    direct = File(id="direct", hash="hash", access_mode="direct_access")
+    empty = File(id="empty", hash=None)
+    caplog.set_level(logging.INFO, logger=project_api_module.__name__)
+
+    result = api.download_file_batch([files[0], direct, empty], str(tmp_path))
+
+    assert result == [str(tmp_path / "one.txt")]
+    assert "Skipping direct-access file direct" in caplog.text
+    assert "Skipping file empty: no stored content hash" in caplog.text
+    api.client.data_transfer_api.copy.assert_called_once()
+    transfers = api.client.data_transfer_api.copy.call_args.args[0]
+    assert [transfer.src.path for transfer in transfers] == ["project-1/stored-one"]
 
 
 def test_files(client):
