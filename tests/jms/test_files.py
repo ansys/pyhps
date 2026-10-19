@@ -71,6 +71,8 @@ def test_download_file_batch_skips_files_and_logs(batch_download_setup, tmp_path
             File(name="empty", evaluation_path="empty.txt", hash=None),
         ]
     )
+    # Older JMS versions may omit access_mode from the returned file record.
+    direct.access_mode = "direct_access"
     caplog.set_level(logging.INFO, logger=project_api_module.__name__)
 
     result = api.download_file_batch([files[0], direct, empty], str(tmp_path))
