@@ -259,15 +259,6 @@ class ProjectApi:
             Empty input or no eligible files returns an empty list. File contents
             are not loaded into memory.
 
-        Raises
-        ------
-        ValueError
-            Eligible files have duplicate destination paths or a path escapes
-            the destination directory.
-        HPSError
-            The batch transfer does not succeed. Files already downloaded are
-            not rolled back, and incomplete files may remain in the destination.
-
         Notes
         -----
         Direct-access files reference externally accessible data rather than

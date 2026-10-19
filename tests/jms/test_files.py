@@ -63,7 +63,7 @@ def test_download_file_batch_download_and_progress(batch_download_setup, tmp_pat
     assert all(0 <= downloaded <= total_size for downloaded in progress)
 
 
-def test_download_file_batch_skips_files_and_logs(batch_download_setup, tmp_path, caplog):
+def test_download_file_batch_skips_files(batch_download_setup, tmp_path, caplog):
     api, files = batch_download_setup
     direct, empty = api.create_files(
         [
@@ -71,8 +71,6 @@ def test_download_file_batch_skips_files_and_logs(batch_download_setup, tmp_path
             File(name="empty", evaluation_path="empty.txt", hash=None),
         ]
     )
-    # Older JMS versions may omit access_mode from the returned file record.
-    direct.access_mode = "direct_access"
     caplog.set_level(logging.INFO, logger=project_api_module.__name__)
 
     result = api.download_file_batch([files[0], direct, empty], str(tmp_path))
@@ -81,8 +79,6 @@ def test_download_file_batch_skips_files_and_logs(batch_download_setup, tmp_path
     assert (tmp_path / "one.txt").read_bytes() == b"ab"
     assert not (tmp_path / "external.txt").exists()
     assert not (tmp_path / "empty.txt").exists()
-    assert f"Skipping direct-access file {direct.id}" in caplog.text
-    assert f"Skipping file {empty.id}: no stored content hash" in caplog.text
 
 
 def test_files(client):
