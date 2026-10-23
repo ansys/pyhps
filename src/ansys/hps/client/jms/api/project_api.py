@@ -28,7 +28,7 @@ import logging
 import os
 import tempfile
 import warnings
-from collections.abc import Callable
+from collections.abc import Callable, Sequence
 
 from ansys.hps.data_transfer.client.api.handler import WaitHandler
 from ansys.hps.data_transfer.client.models import Operation, OperationState, SrcDst, StoragePath
@@ -229,6 +229,46 @@ class ProjectApi:
             warnings.warn(msg, DeprecationWarning, stacklevel=2)
             log.warning(msg)
         return _download_file(self, file, target_path, progress_handler, file_name)
+
+    @version_required(min_version=JMS_VERSIONS[HpsRelease.v1_2_0])
+    def download_files(
+        self,
+        files: Sequence[File],
+        target_path: str,
+        progress_handler: Callable[[int], None] | None = None,
+    ) -> dict[str, str]:
+        """Download multiple files to disk concurrently.
+
+        Parameters
+        ----------
+        files : Sequence[File]
+            File records to download. Direct-access files and files without stored
+            content (a hash) are skipped with a log message.
+        target_path : str
+            Destination directory. Each file's evaluation path is used relative
+            to this directory. Existing destination files may be overwritten.
+        progress_handler : Callable[[int], None], optional
+            Receive aggregate byte counts. Intermediate counts are estimated from
+            group progress and the sum of eligible file sizes. If any size is
+            unknown, only initial and final byte counts are reported.
+
+        Returns
+        -------
+        dict[str, str]
+            Mapping from file ID to downloaded path, excluding skipped records.
+            Empty input or no eligible files returns an empty dictionary. File
+            contents are not loaded into memory.
+
+        Notes
+        -----
+        Direct-access files reference externally accessible data rather than
+        content to copy from the project's transfer-storage bucket. They are
+        excluded from this download operation.
+        Failure is reported for the batch as a whole; individual file outcomes
+        are not returned.
+
+        """
+        return _download_files(self, files, target_path, progress_handler)
 
     ################################################################
     # Parameter definitions
@@ -761,43 +801,79 @@ class ProjectApi:
         delete_objects(self.client.session, self.url, objects, obj_type)
 
 
-def _download_files(project_api: ProjectApi, files: list[File]):
-    """Download files directly using data transfer worker."""
-    temp_dir = tempfile.TemporaryDirectory()
+def _download_files(
+    project_api: ProjectApi,
+    files: Sequence[File],
+    target_path: str | None = None,
+    progress_handler: Callable[[int], None] | None = None,
+):
+    """Share batch transfer between in-memory retrieval and disk downloads.
 
-    project_api.client.initialize_data_transfer_client()
-    out_path = os.path.join(temp_dir.name, "downloads")
+    Without a target path, use temporary file-ID directories and populate
+    ``File.content``, preserving ``get_files(content=True)`` behavior. With a
+    target path, return a file-ID-to-path mapping without reading content into memory.
+    Direct-access records and records without a hash are logged and skipped in
+    both modes. Progress reports aggregate bytes for eligible records only.
+    """
+    with tempfile.TemporaryDirectory() as temporary:
+        out_path = os.path.join(temporary, "downloads")
+        base_dir = project_api.project_id
+        srcs = []
+        dsts = []
+        eligible = []
+        for file in files:
+            if (
+                getattr(file, "hash", None) is not None
+                and getattr(file, "access_mode", FileAccessMode.transfer.value)
+                != FileAccessMode.direct_access.value
+            ):
+                directory = os.path.join(out_path, file.id) if target_path is None else target_path
+                download_path = os.path.join(directory, file.evaluation_path)
+                srcs.append(StoragePath(path=f"{base_dir}/{os.path.basename(file.storage_id)}"))
+                dsts.append(StoragePath(path=download_path, remote="local"))
+                eligible.append(file)
+            # Direct-access records must not be copied from project transfer storage.
+            elif file.access_mode == FileAccessMode.direct_access.value:
+                log.info("Skipping direct-access file %s: no project-storage download.", file.id)
+            else:
+                log.info("Skipping file %s: no stored content hash.", file.id)
 
-    base_dir = project_api.project_id
-    srcs = []
-    dsts = []
-    for f in files:
-        if (
-            getattr(f, "hash", None) is not None
-            and getattr(f, "access_mode", FileAccessMode.transfer.value)
-            != FileAccessMode.direct_access.value
-        ):
-            fpath = os.path.join(out_path, f"{f.id}")
-            download_path = os.path.join(fpath, f.evaluation_path)
-            srcs.append(StoragePath(path=f"{base_dir}/{os.path.basename(f.storage_id)}"))
-            dsts.append(StoragePath(path=download_path, remote="local"))
+        if not srcs:
+            return {} if target_path is not None else None
+        paths = [destination.path for destination in dsts]
+        if target_path is not None:
+            base_path = os.path.normcase(os.path.realpath(target_path))
+            resolved = [os.path.normcase(os.path.realpath(path)) for path in paths]
+            if any(os.path.commonpath((base_path, path)) != base_path for path in resolved):
+                raise ValueError("File path escapes the destination directory.")
+            if len(set(resolved)) != len(resolved):
+                raise ValueError("Multiple files resolve to the same destination path.")
 
-    if len(srcs) > 0:
+        known_sizes = all(isinstance(file.size, int) and file.size >= 0 for file in eligible)
+        total_size = sum(file.size for file in eligible) if known_sizes else 0
+        project_api.client.initialize_data_transfer_client()
         log.info("Downloading files")
-        op = project_api.client.data_transfer_api.copy(
-            [SrcDst(src=src, dst=dst) for src, dst in zip(srcs, dsts, strict=False)]
+        operation = project_api.client.data_transfer_api.copy(
+            [SrcDst(src=src, dst=dst) for src, dst in zip(srcs, dsts, strict=True)]
         )
-        op = project_api.client.data_transfer_api.wait_for([op.id])
-        if op[0].state == OperationState.Succeeded:
-            for f in files:
-                if getattr(f, "hash", None) is not None:
-                    fpath = os.path.join(out_path, f"{f.id}")
-                    download_path = os.path.join(fpath, f.evaluation_path)
-                    with open(download_path, "rb") as inp:
-                        f.content = inp.read()
-        else:
-            log.error("Download of files failed")
+        if progress_handler is not None:
+            progress_handler(0)
+        handler = _DownloadHandler(
+            operation.id, total_size, progress_handler if known_sizes else None
+        )
+        completed = project_api.client.data_transfer_api.wait_for([operation.id], handler=handler)[
+            0
+        ]
+        if completed.state != OperationState.Succeeded:
             raise HPSError("Download of files failed")
+        if progress_handler is not None:
+            progress_handler(sum(os.path.getsize(path) for path in paths))
+        if target_path is not None:
+            return {file.id: path for file, path in zip(eligible, paths, strict=True)}
+        # Use the same filtered records for reading, so skipped files stay untouched.
+        for file, path in zip(eligible, paths, strict=True):
+            with open(path, "rb") as stream:
+                file.content = stream.read()
 
 
 def get_files(project_api: ProjectApi, as_objects=True, content=False, **query_params):
