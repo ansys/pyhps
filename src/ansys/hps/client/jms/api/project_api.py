@@ -231,13 +231,13 @@ class ProjectApi:
         return _download_file(self, file, target_path, progress_handler, file_name)
 
     @version_required(min_version=JMS_VERSIONS[HpsRelease.v1_2_0])
-    def download_file_batch(
+    def download_files(
         self,
         files: Sequence[File],
         target_path: str,
         progress_handler: Callable[[int], None] | None = None,
-    ) -> list[str]:
-        """Download stored files to disk in one data-transfer operation group.
+    ) -> dict[str, str]:
+        """Download multiple files to disk concurrently.
 
         Parameters
         ----------
@@ -254,10 +254,10 @@ class ProjectApi:
 
         Returns
         -------
-        list[str]
-            Paths of downloaded files in input order, excluding skipped records.
-            Empty input or no eligible files returns an empty list. File contents
-            are not loaded into memory.
+        dict[str, str]
+            Mapping from file ID to downloaded path, excluding skipped records.
+            Empty input or no eligible files returns an empty dictionary. File
+            contents are not loaded into memory.
 
         Notes
         -----
@@ -811,7 +811,7 @@ def _download_files(
 
     Without a target path, use temporary file-ID directories and populate
     ``File.content``, preserving ``get_files(content=True)`` behavior. With a
-    target path, return downloaded paths without reading content into memory.
+    target path, return a file-ID-to-path mapping without reading content into memory.
     Direct-access records and records without a hash are logged and skipped in
     both modes. Progress reports aggregate bytes for eligible records only.
     """
@@ -839,7 +839,7 @@ def _download_files(
                 log.info("Skipping file %s: no stored content hash.", file.id)
 
         if not srcs:
-            return [] if target_path is not None else None
+            return {} if target_path is not None else None
         paths = [destination.path for destination in dsts]
         if target_path is not None:
             base_path = os.path.normcase(os.path.realpath(target_path))
@@ -869,7 +869,7 @@ def _download_files(
         if progress_handler is not None:
             progress_handler(sum(os.path.getsize(path) for path in paths))
         if target_path is not None:
-            return paths
+            return {file.id: path for file, path in zip(eligible, paths, strict=True)}
         # Use the same filtered records for reading, so skipped files stay untouched.
         for file, path in zip(eligible, paths, strict=True):
             with open(path, "rb") as stream:

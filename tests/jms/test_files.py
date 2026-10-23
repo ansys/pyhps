@@ -30,7 +30,6 @@ import pytest
 from marshmallow.utils import missing
 
 from ansys.hps.client.jms import JmsApi, ProjectApi
-from ansys.hps.client.jms.api import project_api as project_api_module
 from ansys.hps.client.jms.resource import File, Project
 
 log = logging.getLogger(__name__)
@@ -48,14 +47,18 @@ def batch_download_setup(client, inactive_temporary_project):
     return api, files
 
 
-def test_download_file_batch_download_and_progress(batch_download_setup, tmp_path):
+def test_download_files_download_and_progress(batch_download_setup, tmp_path):
     api, files = batch_download_setup
     progress = []
 
-    result = api.download_file_batch(files, str(tmp_path), progress.append)
+    result = api.download_files(files, str(tmp_path), progress.append)
 
-    assert result == [str(tmp_path / "one.txt"), str(tmp_path / "two.txt")]
-    assert [Path(path).read_bytes() for path in result] == [b"ab", b"abcdef"]
+    assert result == {
+        files[0].id: str(tmp_path / "one.txt"),
+        files[1].id: str(tmp_path / "two.txt"),
+    }
+    assert Path(result[files[0].id]).read_bytes() == b"ab"
+    assert Path(result[files[1].id]).read_bytes() == b"abcdef"
     total_size = sum(file.size for file in files)
     assert len(progress) >= 2
     assert progress[0] == 0
@@ -63,7 +66,7 @@ def test_download_file_batch_download_and_progress(batch_download_setup, tmp_pat
     assert all(0 <= downloaded <= total_size for downloaded in progress)
 
 
-def test_download_file_batch_skips_files(batch_download_setup, tmp_path, caplog):
+def test_download_files_skips_files(batch_download_setup, tmp_path, caplog):
     api, files = batch_download_setup
     direct, empty = api.create_files(
         [
@@ -71,14 +74,38 @@ def test_download_file_batch_skips_files(batch_download_setup, tmp_path, caplog)
             File(name="empty", evaluation_path="empty.txt", hash=None),
         ]
     )
-    caplog.set_level(logging.INFO, logger=project_api_module.__name__)
 
-    result = api.download_file_batch([files[0], direct, empty], str(tmp_path))
+    result = api.download_files([files[0], direct, empty], str(tmp_path))
 
-    assert result == [str(tmp_path / "one.txt")]
+    assert result == {files[0].id: str(tmp_path / "one.txt")}
     assert (tmp_path / "one.txt").read_bytes() == b"ab"
     assert not (tmp_path / "external.txt").exists()
     assert not (tmp_path / "empty.txt").exists()
+
+
+@pytest.mark.parametrize("file_count", [10, 100, 1000])
+def test_download_files_large_batch(client, inactive_temporary_project, tmp_path, file_count):
+    api = ProjectApi(client, inactive_temporary_project.id)
+    payload = b"batch download test"
+    files = api.create_files(
+        [
+            File(
+                name=f"file-{index}",
+                evaluation_path=f"file-{index}.txt",
+                src=io.BytesIO(payload),
+            )
+            for index in range(file_count)
+        ]
+    )
+    assert len(files) == file_count
+    progress = []
+
+    result = api.download_files(files, str(tmp_path), progress.append)
+
+    assert result == {file.id: str(tmp_path / file.evaluation_path) for file in files}
+    assert all(Path(path).read_bytes() == payload for path in result.values())
+    assert progress[0] == 0
+    assert progress[-1] == file_count * len(payload)
 
 
 def test_files(client):
