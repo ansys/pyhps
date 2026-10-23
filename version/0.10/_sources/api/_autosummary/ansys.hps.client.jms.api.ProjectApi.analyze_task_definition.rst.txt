@@ -1,0 +1,6 @@
+analyze\_task\_definition
+=========================
+
+.. currentmodule:: ansys.hps.client.jms.api
+
+.. automethod:: ProjectApi.analyze_task_definition

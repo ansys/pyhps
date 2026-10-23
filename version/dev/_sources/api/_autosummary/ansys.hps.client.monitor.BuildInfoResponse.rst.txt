@@ -1,0 +1,42 @@
+﻿BuildInfoResponse
+=================
+
+.. currentmodule:: ansys.hps.client.monitor
+
+.. autoclass:: BuildInfoResponse
+
+   
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+      :toctree:
+   
+      
+      
+      BuildInfoResponse.get
+      
+      
+      BuildInfoResponse.items
+      
+      
+      BuildInfoResponse.keys
+      
+      
+      BuildInfoResponse.values
+      
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+      :toctree:
+   
+      BuildInfoResponse.build
+      BuildInfoResponse.payload
+   
+   
