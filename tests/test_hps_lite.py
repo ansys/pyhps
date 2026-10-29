@@ -34,6 +34,7 @@ from ansys.hps.client import (
     create_hps_lite_client,
     find_hps_lite,
     get_hps_lite_status,
+    stop_hps_lite,
 )
 from ansys.hps.client.hps_lite import hps_lite_executable_name
 
@@ -97,6 +98,29 @@ def test_hps_lite_run_rejects_stopped_instance():
         ):
             with pytest.raises(HpsLiteError, match="not running"):
                 HpsLite(executable=hps_lite).run()
+
+
+def test_stop_hps_lite_invokes_stop_command():
+    with TemporaryDirectory() as directory:
+        hps_lite = Path(directory) / "hps-lite.exe"
+        hps_lite.touch()
+        data_dir = hps_lite.parent / "state"
+        completed = Mock(returncode=0, stdout="", stderr="")
+        with patch("ansys.hps.client.hps_lite.subprocess.run", return_value=completed) as run:
+            stop_hps_lite(executable=hps_lite, data_dir=data_dir)
+
+        run.assert_called_once_with(
+            [
+                str(hps_lite),
+                "--data-dir",
+                str(data_dir),
+                "stop",
+            ],
+            check=False,
+            capture_output=True,
+            text=True,
+            timeout=30.0,
+        )
 
 
 def test_find_hps_lite_uses_binaries_directory():
