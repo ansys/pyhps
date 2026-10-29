@@ -1,0 +1,6 @@
+url
+===
+
+.. currentmodule:: ansys.hps.client.rms.api
+
+.. autoproperty:: RmsApi.url

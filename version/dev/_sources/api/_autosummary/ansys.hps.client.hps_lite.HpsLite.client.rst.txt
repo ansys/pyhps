@@ -1,0 +1,6 @@
+client
+======
+
+.. currentmodule:: ansys.hps.client.hps_lite
+
+.. automethod:: HpsLite.client

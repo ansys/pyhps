@@ -1,0 +1,6 @@
+create\_user
+============
+
+.. currentmodule:: ansys.hps.client.auth.api
+
+.. automethod:: AuthApi.create_user

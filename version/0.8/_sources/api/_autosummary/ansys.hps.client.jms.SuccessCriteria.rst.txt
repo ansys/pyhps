@@ -1,0 +1,25 @@
+﻿SuccessCriteria
+===============
+
+.. currentmodule:: ansys.hps.client.jms
+
+.. autoclass:: SuccessCriteria
+
+   
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+      :toctree:
+   
+      
+      
+      SuccessCriteria.declared_fields
+      
+   
+   
+
+   
+   
+   
