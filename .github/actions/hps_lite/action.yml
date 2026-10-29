@@ -4,7 +4,7 @@ description: 'Download and extract the hps-lite release asset for the current ru
 
 inputs:
   token:
-    description: 'GitHub token with access to ansys-internal/hps-lite'
+    description: 'GitHub token with access to snps-ansys-internal/hps-lite'
     required: true
   start:
     description: 'Whether to start hps-lite after extracting it'
@@ -31,7 +31,7 @@ runs:
       with:
         file: hps-lite-lin-x64.tar.gz
         target: hps-lite.tar.gz
-        repo: ansys-internal/hps-lite
+        repo: snps-ansys-internal/hps-lite
         version: latest
         token: ${{ inputs.token }}
 
@@ -41,7 +41,7 @@ runs:
       with:
         file: hps-lite-win-x64.tar.gz
         target: hps-lite.tar.gz
-        repo: ansys-internal/hps-lite
+        repo: snps-ansys-internal/hps-lite
         version: latest
         token: ${{ inputs.token }}
 
