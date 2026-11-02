@@ -77,12 +77,25 @@ jobs:
       
       - name: Start HPS services
         id: hps-services
+        if: ${{ inputs.hps-version != 'mirror-test' }}
         uses: ansys/pyhps/.github/actions/hps_services@main
         with:
           token: ${{ secrets.PYANSYS_CI_BOT_TOKEN }}
           ghcr-username: ${{ secrets.PYANSYS_CI_BOT_USERNAME }}
           ghcr-token: ${{ secrets.PYANSYS_CI_BOT_PACKAGE_TOKEN }}
+          version: ${{ inputs.hps-version }}
+          feature: ${{ inputs.hps-feature }}
+          profile: ${{ inputs.docker-compose-profiles }}
+
+      - name: Start mirrored HPS services
+        id: hps-mirror-services
+        if: ${{ inputs.hps-version == 'mirror-test' }}
+        uses: ./.github/actions/hps_services
+        with:
+          token: ${{ secrets.PYANSYS_CI_BOT_TOKEN }}
           mirror-token: ${{ secrets.HPS_MIRROR_TOKEN }}
+          ghcr-username: ${{ secrets.PYANSYS_CI_BOT_USERNAME }}
+          ghcr-token: ${{ secrets.PYANSYS_CI_BOT_PACKAGE_TOKEN }}
           version: ${{ inputs.hps-version }}
           feature: ${{ inputs.hps-feature }}
           profile: ${{ inputs.docker-compose-profiles }}
@@ -91,7 +104,7 @@ jobs:
         run: tox -e "${TOXENV_NAME}-coverage"
         env:
           TOXENV_NAME: ${{ inputs.toxenv }}
-          HPS_TEST_URL: ${{ steps.hps-services.outputs.url }}
+          HPS_TEST_URL: ${{ steps.hps-services.outputs.url || steps.hps-mirror-services.outputs.url }}
           HPS_TEST_USERNAME: repadmin
           HPS_TEST_PASSWORD: repadmin
 
