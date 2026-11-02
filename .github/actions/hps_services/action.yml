@@ -16,6 +16,10 @@ inputs:
     description: 'Token'
     required: true
 
+  mirror-token:
+    description: 'Token to read releases from ansys/hps-release-mirror'
+    required: false
+
   ghcr-username:
     description: 'Username to access the GitHub container registry'
     required: true
@@ -59,7 +63,7 @@ runs:
         target: 'docker-compose-artifact/docker-compose-internal.tar.gz'
         repo: ansys/hps-release-mirror
         version: tags/mirror-test
-        token: ${{ inputs.token }}
+        token: ${{ inputs.mirror-token }}
 
     - if: ${{ inputs.version == 'latest-dev' }}
       uses: dawidd6/action-download-artifact@bf251b5aa9c2f7eeb574a96ee720e24f801b7c11 # v6
