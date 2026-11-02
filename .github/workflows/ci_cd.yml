@@ -13,6 +13,7 @@ on:
           - 'v1.3.45'
           - 'v1.4.10'
           - 'v1.5.12'
+          - 'mirror-test'
           - 'latest-dev'
       hps-feature:
         description: HPS feature to test against
