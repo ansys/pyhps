@@ -61,7 +61,13 @@ runs:
       env:
         GH_TOKEN: ${{ inputs.mirror-token }}
       run: |
-        gh release download \
+        release_tag="$(gh release view --repo ansys/hps-release-mirror --json tagName --jq '.tagName')"
+        if [ -z "$release_tag" ]; then
+          echo "Could not resolve the latest HPS mirror release tag" >&2
+          exit 1
+        fi
+        echo "Resolved latest HPS mirror release tag: $release_tag"
+        gh release download "$release_tag" \
           --repo ansys/hps-release-mirror \
           --pattern 'docker-compose-internal.tar.gz' \
           --dir docker-compose-artifact
