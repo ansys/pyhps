@@ -53,6 +53,7 @@ jobs:
     secrets:
       PYANSYS_CI_BOT_PACKAGE_TOKEN: ${{ secrets.PYANSYS_CI_BOT_PACKAGE_TOKEN }}
       PYANSYS_CI_BOT_TOKEN: ${{ secrets.PYANSYS_CI_BOT_TOKEN }}
+      HPS_LITE_MIRROR_TOKEN: ${{ secrets.HPS_LITE_MIRROR_TOKEN }}
       PYANSYS_CI_BOT_USERNAME: ${{ secrets.PYANSYS_CI_BOT_USERNAME }}
       CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
     with:

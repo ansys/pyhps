@@ -65,6 +65,7 @@ jobs:
     secrets:
       PYANSYS_CI_BOT_PACKAGE_TOKEN: ${{ secrets.PYANSYS_CI_BOT_PACKAGE_TOKEN }}
       PYANSYS_CI_BOT_TOKEN: ${{ secrets.PYANSYS_CI_BOT_TOKEN }}
+      HPS_LITE_MIRROR_TOKEN: ${{ secrets.HPS_LITE_MIRROR_TOKEN }}
       PYANSYS_CI_BOT_USERNAME: ${{ secrets.PYANSYS_CI_BOT_USERNAME }}
       CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
     with:
@@ -307,7 +308,7 @@ jobs:
           path: ${{ env.PACKAGE_NAME }}-artifacts
 
       - name: "Upload artifacts to PyPI using trusted publisher"
-        uses: pypa/gh-action-pypi-publish@dc37677b2e1c63e2034f94d8a5b11f265b73ba33 # v1.14.2
+        uses: pypa/gh-action-pypi-publish@7245906fb61fa33a13554f9d5fb856fe61758086 # v1.14.3
         with:
           repository-url: "https://upload.pypi.org/legacy/"
           print-hash: true
