@@ -1,0 +1,28 @@
+﻿TemplateInputFile
+=================
+
+.. currentmodule:: ansys.hps.client.jms
+
+.. autoclass:: TemplateInputFile
+
+   
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+      :toctree:
+   
+      
+      
+      TemplateInputFile.declared_fields
+      
+      
+      TemplateInputFile.get
+      
+   
+   
+
+   
+   
+   

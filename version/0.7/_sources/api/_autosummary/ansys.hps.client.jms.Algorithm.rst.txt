@@ -1,0 +1,25 @@
+﻿Algorithm
+=========
+
+.. currentmodule:: ansys.hps.client.jms
+
+.. autoclass:: Algorithm
+
+   
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+      :toctree:
+   
+      
+      
+      Algorithm.declared_fields
+      
+   
+   
+
+   
+   
+   

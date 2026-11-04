@@ -1,0 +1,31 @@
+﻿HpsLiteStatus
+=============
+
+.. currentmodule:: ansys.hps.client.hps_lite
+
+.. autoclass:: HpsLiteStatus
+
+   
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+      :toctree:
+   
+      
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+      :toctree:
+   
+      HpsLiteStatus.url
+      HpsLiteStatus.api_key
+      HpsLiteStatus.pid
+   
+   

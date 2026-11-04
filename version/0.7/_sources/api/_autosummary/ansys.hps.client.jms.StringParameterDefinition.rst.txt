@@ -1,0 +1,25 @@
+﻿StringParameterDefinition
+=========================
+
+.. currentmodule:: ansys.hps.client.jms
+
+.. autoclass:: StringParameterDefinition
+
+   
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+      :toctree:
+   
+      
+      
+      StringParameterDefinition.declared_fields
+      
+   
+   
+
+   
+   
+   

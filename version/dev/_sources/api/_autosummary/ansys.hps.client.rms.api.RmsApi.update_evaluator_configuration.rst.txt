@@ -1,0 +1,6 @@
+update\_evaluator\_configuration
+================================
+
+.. currentmodule:: ansys.hps.client.rms.api
+
+.. automethod:: RmsApi.update_evaluator_configuration

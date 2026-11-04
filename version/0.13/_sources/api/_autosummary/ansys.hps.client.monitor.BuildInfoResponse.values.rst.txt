@@ -1,0 +1,6 @@
+values
+======
+
+.. currentmodule:: ansys.hps.client.monitor
+
+.. automethod:: BuildInfoResponse.values

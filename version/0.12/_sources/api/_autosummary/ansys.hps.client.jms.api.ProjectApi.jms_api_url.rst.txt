@@ -1,0 +1,6 @@
+jms\_api\_url
+=============
+
+.. currentmodule:: ansys.hps.client.jms.api
+
+.. autoproperty:: ProjectApi.jms_api_url

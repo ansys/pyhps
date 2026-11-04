@@ -1,0 +1,6 @@
+get\_evaluators
+===============
+
+.. currentmodule:: ansys.hps.client.rms.api
+
+.. automethod:: RmsApi.get_evaluators

@@ -1,0 +1,6 @@
+topics
+======
+
+.. currentmodule:: ansys.hps.client.monitor
+
+.. autoattribute:: SubscribeCommand.topics
