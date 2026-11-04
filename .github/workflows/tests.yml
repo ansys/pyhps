@@ -43,6 +43,8 @@ on:
         required: true
       HPS_MIRROR_TOKEN:
         required: true
+      HPS_LITE_MIRROR_TOKEN:
+        required: false
       PYANSYS_CI_BOT_USERNAME:
         required: true
       CODECOV_TOKEN:
@@ -160,7 +162,7 @@ jobs:
         id: hps-lite
         uses: ./.github/actions/hps_lite
         with:
-          token: ${{ secrets.PYANSYS_CI_BOT_TOKEN }}
+          token: ${{ secrets.HPS_LITE_MIRROR_TOKEN }}
           start: 'true'
 
       - name: Test with tox against hps-lite
