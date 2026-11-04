@@ -34,9 +34,12 @@ if __name__ == "__main__":
     logger = logging.getLogger()
     logging.basicConfig(format="%(message)s", level=logging.INFO)
 
+    hps_lite = HpsLite()
+    connected = False
     try:
         log.info("Connect to hps-lite")
-        client = HpsLite().client()
+        client = hps_lite.client()
+        connected = True
         log.info("HPS URL: %s", client.url)
 
         projects = JmsApi(client).get_projects()
@@ -45,3 +48,10 @@ if __name__ == "__main__":
             log.info("Project: %s (%s)", project.name, project.id)
     except HPSError as error:
         logger.error(str(error))
+    finally:
+        if connected:
+            log.info("Stop hps-lite")
+            try:
+                hps_lite.stop()
+            except HPSError as error:
+                logger.error("Could not stop hps-lite: %s", error)
