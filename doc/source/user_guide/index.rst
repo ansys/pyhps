@@ -25,7 +25,7 @@ prerequisites:
 
    query_parameters
    exceptions
-    authentication
+   authentication
    managing_users
    dcs_migration
 
