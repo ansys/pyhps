@@ -16,12 +16,16 @@ inputs:
     description: 'Token'
     required: true
 
+  mirror-token:
+    description: 'Token to read releases and packages from ansys/hps-release-mirror'
+    required: true
+
   ghcr-username:
-    description: 'Username to access the ansys-internal github docker registry'
+    description: 'Username to access the GitHub container registry'
     required: true
   
   ghcr-token:
-    description: 'Token to access the ansys-internal github docker registry'
+    description: 'Token to access the GitHub container registry'
     required: true
 
   profile:
@@ -47,22 +51,26 @@ runs:
       with:
         file: 'docker-compose-customer.tar.gz'
         target: 'docker-compose-artifact/docker-compose-customer.tar.gz'
-        repo: ansys-internal/rep-deployments
+        repo: ansys/hps-release-mirror
         version: tags/${{ inputs.version }}
-        token: ${{ inputs.token }}
+        token: ${{ inputs.mirror-token }}
 
     - if: ${{ inputs.version == 'latest-dev' }}
-      uses: dawidd6/action-download-artifact@bf251b5aa9c2f7eeb574a96ee720e24f801b7c11 # v6
-      name: Download Internal Services Artifact
-      with:
-        workflow: main.yaml
-        name: docker-compose-internal
-        branch: ${{ inputs.feature || 'main'}}
-        repo: ansys-internal/rep-deployments
-        workflow_conclusion: success           
-        search_artifacts: false
-        path: ./docker-compose-artifact
-        github_token: ${{ inputs.token }}
+      name: Download Latest Mirrored Internal Services Artifact
+      shell: bash
+      env:
+        GH_TOKEN: ${{ inputs.mirror-token }}
+      run: |
+        release_tag="$(gh release view --repo ansys/hps-release-mirror --json tagName --jq '.tagName')"
+        if [ -z "$release_tag" ]; then
+          echo "Could not resolve the latest HPS mirror release tag" >&2
+          exit 1
+        fi
+        echo "Resolved latest HPS mirror release tag: $release_tag"
+        gh release download "$release_tag" \
+          --repo ansys/hps-release-mirror \
+          --pattern 'docker-compose-internal.tar.gz' \
+          --dir docker-compose-artifact
 
     - uses: KengoTODA/actions-setup-docker-compose@477353946803dd64eaa44008b865b6bfc88cab4e # v1.2.4
       env:
@@ -73,7 +81,7 @@ runs:
       with:
         registry: ghcr.io
         username: ${{ inputs.ghcr-username }}
-        password: ${{ inputs.ghcr-token }}
+        password: ${{ inputs.mirror-token }}
 
     - name: Start services (customer package)
       if: ${{ inputs.version != 'latest-dev' }}

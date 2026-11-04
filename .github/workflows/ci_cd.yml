@@ -7,8 +7,6 @@ on:
         default: 'latest-dev'
         type: choice
         options:
-          - 'v1.0.2'
-          - 'v1.1.1'
           - 'v1.2.0'
           - 'v1.3.45'
           - 'v1.4.10'
@@ -65,6 +63,8 @@ jobs:
     secrets:
       PYANSYS_CI_BOT_PACKAGE_TOKEN: ${{ secrets.PYANSYS_CI_BOT_PACKAGE_TOKEN }}
       PYANSYS_CI_BOT_TOKEN: ${{ secrets.PYANSYS_CI_BOT_TOKEN }}
+      HPS_MIRROR_USERNAME: ${{ secrets.HPS_MIRROR_USERNAME }}
+      HPS_MIRROR_TOKEN: ${{ secrets.HPS_MIRROR_TOKEN }}
       HPS_LITE_MIRROR_TOKEN: ${{ secrets.HPS_LITE_MIRROR_TOKEN }}
       PYANSYS_CI_BOT_USERNAME: ${{ secrets.PYANSYS_CI_BOT_USERNAME }}
       CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
@@ -85,6 +85,8 @@ jobs:
     secrets:
       PYANSYS_CI_BOT_PACKAGE_TOKEN: ${{ secrets.PYANSYS_CI_BOT_PACKAGE_TOKEN }}
       PYANSYS_CI_BOT_TOKEN: ${{ secrets.PYANSYS_CI_BOT_TOKEN }}
+      HPS_MIRROR_USERNAME: ${{ secrets.HPS_MIRROR_USERNAME }}
+      HPS_MIRROR_TOKEN: ${{ secrets.HPS_MIRROR_TOKEN }}
       PYANSYS_CI_BOT_USERNAME: ${{ secrets.PYANSYS_CI_BOT_USERNAME }}
       CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
     with:
