@@ -34,6 +34,7 @@ from .hps_lite import (
     create_hps_lite_client,
     find_hps_lite,
     get_hps_lite_status,
+    stop_hps_lite,
 )
 from .jms import JmsApi, ProjectApi
 from .monitor import MonitorApi

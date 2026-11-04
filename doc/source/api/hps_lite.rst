@@ -18,4 +18,5 @@ system ``PATH``. Set ``HPS_LITE_DATA_DIR`` to use a specific hps_lite data direc
    HpsLiteError
    find_hps_lite
    get_hps_lite_status
+   stop_hps_lite
    create_hps_lite_client

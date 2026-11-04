@@ -128,6 +128,14 @@ You can also pass the executable directly:
 
     client = create_hps_lite_client(executable=r"D:\AnsysDev\hps-local\hps-lite.exe")
 
+Stop the same local instance from PyHPS with:
+
+.. code-block:: python
+
+    from ansys.hps.client import stop_hps_lite
+
+    stop_hps_lite()
+
 For more details, including status inspection, see the :ref:`example_hps_lite`.
 
 Create a project

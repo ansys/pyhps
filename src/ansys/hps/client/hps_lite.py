@@ -91,18 +91,21 @@ class HpsLite:
             "directory or ./binaries, or add hps-lite to PATH"
         )
 
-    def run(self) -> HpsLiteStatus:
-        """Start hps-lite if needed and return its connection status."""
-        hps_lite = self.find()
+    def _command(self, *arguments: str) -> list[str]:
+        command = [str(self.find())]
         configured_data_dir = self.data_dir or os.environ.get(HPS_LITE_DATA_DIR_ENV)
-        command = [str(hps_lite)]
         if configured_data_dir:
             command.extend(["--data-dir", str(Path(configured_data_dir).expanduser())])
         if self.debug:
             command.append("--debug")
         if self.verbosity is not None:
             command.extend(["--verbosity", str(self.verbosity)])
-        command.extend(["run", "--json"])
+        command.extend(arguments)
+        return command
+
+    def run(self) -> HpsLiteStatus:
+        """Start hps-lite if needed and return its connection status."""
+        command = self._command("run", "--json")
 
         try:
             # The executable and arguments are passed directly without a shell.
@@ -139,6 +142,24 @@ class HpsLite:
             raise HpsLiteError(f"hps-lite status failed with exit code {result.returncode}")
 
         return HpsLiteStatus(url=url, api_key=api_key, pid=pid)
+
+    def stop(self) -> None:
+        """Stop the hps-lite instance selected by this helper's data directory."""
+        command = self._command("stop")
+        try:
+            result = subprocess.run(  # nosec B603
+                command,
+                check=False,
+                capture_output=True,
+                text=True,
+                timeout=self.timeout,
+            )
+        except (OSError, subprocess.TimeoutExpired) as error:
+            raise HpsLiteError(f"could not stop hps-lite: {error}") from error
+
+        if result.returncode != 0:
+            detail = result.stderr.strip() or result.stdout.strip() or "no output"
+            raise HpsLiteError(f"hps-lite stop failed with exit code {result.returncode}: {detail}")
 
     def client(self, **kwargs) -> Client:
         """Create a PyHPS client connected to the running hps-lite instance."""
@@ -180,6 +201,23 @@ def get_hps_lite_status(
         debug=debug,
         verbosity=verbosity,
     ).run()
+
+
+def stop_hps_lite(
+    executable: str | os.PathLike[str] | None = None,
+    data_dir: str | os.PathLike[str] | None = None,
+    timeout: float = 30.0,
+    debug: bool = False,
+    verbosity: int | None = None,
+) -> None:
+    """Stop a local hps-lite instance if it is running."""
+    HpsLite(
+        executable=executable,
+        data_dir=data_dir,
+        timeout=timeout,
+        debug=debug,
+        verbosity=verbosity,
+    ).stop()
 
 
 def create_hps_lite_client(
