@@ -78,7 +78,6 @@ jobs:
         uses: ansys/pyhps/.github/actions/hps_services@main
         with:
           token: ${{ secrets.PYANSYS_CI_BOT_TOKEN }}
-          mirror-token: ${{ secrets.PYANSYS_CI_BOT_TOKEN }}
           ghcr-username: ${{ secrets.PYANSYS_CI_BOT_USERNAME }}
           ghcr-token: ${{ secrets.PYANSYS_CI_BOT_TOKEN }}
           version: ${{ inputs.hps-version }}
