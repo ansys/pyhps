@@ -39,12 +39,6 @@ on:
         required: true
       PYANSYS_CI_BOT_TOKEN:
         required: true
-      HPS_MIRROR_USERNAME:
-        required: true
-      HPS_MIRROR_TOKEN:
-        required: true
-      HPS_LITE_MIRROR_TOKEN:
-        required: false
       PYANSYS_CI_BOT_USERNAME:
         required: true
       CODECOV_TOKEN:
@@ -84,9 +78,8 @@ jobs:
         uses: ansys/pyhps/.github/actions/hps_services@main
         with:
           token: ${{ secrets.PYANSYS_CI_BOT_TOKEN }}
-          mirror-token: ${{ secrets.HPS_MIRROR_TOKEN }}
-          ghcr-username: ${{ secrets.HPS_MIRROR_USERNAME }}
-          ghcr-token: ${{ secrets.HPS_MIRROR_TOKEN }}
+          ghcr-username: ${{ secrets.PYANSYS_CI_BOT_USERNAME }}
+          ghcr-token: ${{ secrets.PYANSYS_CI_BOT_TOKEN }}
           version: ${{ inputs.hps-version }}
           feature: ${{ inputs.hps-feature }}
           profile: ${{ inputs.docker-compose-profiles }}
@@ -162,7 +155,7 @@ jobs:
         id: hps-lite
         uses: ./.github/actions/hps_lite
         with:
-          token: ${{ secrets.HPS_LITE_MIRROR_TOKEN }}
+          token: ${{ secrets.PYANSYS_CI_BOT_TOKEN }}
           start: 'true'
 
       - name: Test with tox against hps-lite

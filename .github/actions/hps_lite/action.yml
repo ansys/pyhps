@@ -78,36 +78,7 @@ runs:
         Add-Content -Path $env:GITHUB_OUTPUT -Value "path=$($hpsLite.FullName)"
         Add-Content -Path $env:GITHUB_OUTPUT -Value "working-directory=$($hpsLite.DirectoryName)"
 
-    - name: Start Linux hps-lite
-      if: runner.os == 'Linux' && inputs.start == 'true'
-      shell: bash
-      env:
-        HPS_LITE_PATH: ${{ steps['extract-linux'].outputs.path }}
-        HPS_LITE_WORKING_DIRECTORY: ${{ steps['extract-linux'].outputs['working-directory'] }}
-      run: |
-        set -e
-        cd "$HPS_LITE_WORKING_DIRECTORY"
-        nohup "$HPS_LITE_PATH" run --json > "$GITHUB_WORKSPACE/hps-lite.log" 2>&1 &
-        echo $! > hps-lite.pid
-
-    - name: Start Windows hps-lite
-      if: runner.os == 'Windows' && inputs.start == 'true'
-      shell: pwsh
-      env:
-        HPS_LITE_PATH: ${{ steps['extract-windows'].outputs.path }}
-        HPS_LITE_WORKING_DIRECTORY: ${{ steps['extract-windows'].outputs['working-directory'] }}
-      run: |
-        $ErrorActionPreference = 'Stop'
-        $process = Start-Process `
-          -FilePath $env:HPS_LITE_PATH `
-          -ArgumentList @('run', '--json') `
-          -WorkingDirectory $env:HPS_LITE_WORKING_DIRECTORY `
-          -RedirectStandardOutput "$PWD/hps-lite.log" `
-          -RedirectStandardError "$PWD/hps-lite-error.log" `
-          -PassThru
-        $process.Id | Set-Content "$PWD/hps-lite.pid"
-
-    - name: Query Linux hps-lite status
+    - name: Start and query Linux hps-lite
       if: runner.os == 'Linux' && inputs.start == 'true'
       id: status-linux
       shell: bash
@@ -134,7 +105,7 @@ runs:
         echo "url=$hps_lite_url" >> "$GITHUB_OUTPUT"
         echo "api-key=$hps_lite_api_key" >> "$GITHUB_OUTPUT"
 
-    - name: Query Windows hps-lite status
+    - name: Start and query Windows hps-lite
       if: runner.os == 'Windows' && inputs.start == 'true'
       id: status-windows
       shell: pwsh

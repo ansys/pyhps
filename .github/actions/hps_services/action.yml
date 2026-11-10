@@ -13,11 +13,7 @@ inputs:
     required: false
 
   token:
-    description: 'Token'
-    required: true
-
-  mirror-token:
-    description: 'Token to read releases and packages from ansys/hps-release-mirror'
+    description: 'Token to access ansys/hps-release-mirror and configure Docker Compose'
     required: true
 
   ghcr-username:
@@ -53,13 +49,13 @@ runs:
         target: 'docker-compose-artifact/docker-compose-customer.tar.gz'
         repo: ansys/hps-release-mirror
         version: tags/${{ inputs.version }}
-        token: ${{ inputs.mirror-token }}
+        token: ${{ inputs.token }}
 
     - if: ${{ inputs.version == 'latest-dev' }}
       name: Download Latest Mirrored Internal Services Artifact
       shell: bash
       env:
-        GH_TOKEN: ${{ inputs.mirror-token }}
+        GH_TOKEN: ${{ inputs.token }}
       run: |
         release_tag="$(gh release view --repo ansys/hps-release-mirror --json tagName --jq '.tagName')"
         if [ -z "$release_tag" ]; then
@@ -81,7 +77,7 @@ runs:
       with:
         registry: ghcr.io
         username: ${{ inputs.ghcr-username }}
-        password: ${{ inputs.mirror-token }}
+        password: ${{ inputs.ghcr-token }}
 
     - name: Start services (customer package)
       if: ${{ inputs.version != 'latest-dev' }}
