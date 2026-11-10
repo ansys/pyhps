@@ -81,7 +81,7 @@ runs:
       with:
         registry: ghcr.io
         username: ${{ inputs.ghcr-username }}
-        password: ${{ inputs.mirror-token }}
+        password: ${{ inputs.ghcr-token }}
 
     - name: Start services (customer package)
       if: ${{ inputs.version != 'latest-dev' }}
