@@ -1,0 +1,33 @@
+﻿Client
+======
+
+.. currentmodule:: ansys.hps.client.client
+
+.. autoclass:: Client
+
+   
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+      :toctree:
+   
+      
+      
+      Client.refresh_access_token
+      
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+      :toctree:
+   
+      Client.auth_api_url
+      Client.rep_url
+   
+   

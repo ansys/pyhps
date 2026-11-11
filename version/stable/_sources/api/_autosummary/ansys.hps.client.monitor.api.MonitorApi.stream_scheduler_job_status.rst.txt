@@ -1,0 +1,6 @@
+stream\_scheduler\_job\_status
+==============================
+
+.. currentmodule:: ansys.hps.client.monitor.api
+
+.. automethod:: MonitorApi.stream_scheduler_job_status

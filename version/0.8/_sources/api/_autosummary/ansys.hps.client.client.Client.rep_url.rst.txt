@@ -1,0 +1,6 @@
+rep\_url
+========
+
+.. currentmodule:: ansys.hps.client.client
+
+.. autoproperty:: Client.rep_url

@@ -1,0 +1,61 @@
+﻿MonitorApi
+==========
+
+.. currentmodule:: ansys.hps.client.monitor.api
+
+.. autoclass:: MonitorApi
+
+   
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+      :toctree:
+   
+      
+      
+      MonitorApi.get_build_info
+      
+      
+      MonitorApi.get_task_process_tree
+      
+      
+      MonitorApi.list_topics
+      
+      
+      MonitorApi.resolve_project_id_for_task
+      
+      
+      MonitorApi.send_ws_command
+      
+      
+      MonitorApi.stream_scheduler_job_status
+      
+      
+      MonitorApi.stream_service_logs
+      
+      
+      MonitorApi.stream_task_host_resources
+      
+      
+      MonitorApi.stream_task_logs
+      
+      
+      MonitorApi.stream_task_process_tree
+      
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+      :toctree:
+   
+      MonitorApi.base_url
+      MonitorApi.token
+      MonitorApi.ws_url
+   
+   

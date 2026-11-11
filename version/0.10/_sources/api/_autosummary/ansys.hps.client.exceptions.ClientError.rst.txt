@@ -1,0 +1,6 @@
+﻿ClientError
+===========
+
+.. currentmodule:: ansys.hps.client.exceptions
+
+.. autoexception:: ClientError

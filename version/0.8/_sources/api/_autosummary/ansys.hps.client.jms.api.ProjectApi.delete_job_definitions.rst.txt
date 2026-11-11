@@ -1,0 +1,6 @@
+delete\_job\_definitions
+========================
+
+.. currentmodule:: ansys.hps.client.jms.api
+
+.. automethod:: ProjectApi.delete_job_definitions
