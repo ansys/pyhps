@@ -152,7 +152,7 @@ class MonitorApi:
         rms = RmsApi(client)
         evaluators = rms.get_evaluators(
             host_id=host_id,
-            fields=["id", "name", "host_id"],
+            fields="id,name,host_id",
         )
         if not evaluators:
             raise ClientError(f"Could not resolve evaluator for host_id '{host_id}' from RMS.")
