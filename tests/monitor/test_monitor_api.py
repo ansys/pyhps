@@ -323,17 +323,23 @@ def test_integration_client_returns_provided_client():
 
 def test_resolve_evaluator_name_for_task_success(monkeypatch):
     client = MonitorApi(_make_hps_client())
+    evaluator_query = {}
     monkeypatch.setattr(
         "ansys.hps.client.jms.ProjectApi",
         lambda c, pid: SimpleNamespace(get_tasks=lambda **kw: [SimpleNamespace(host_id="host-1")]),
     )
+
+    def get_evaluators(**query_params):
+        evaluator_query.update(query_params)
+        return [SimpleNamespace(name="eval-1", host_id="host-1")]
+
     monkeypatch.setattr(
         "ansys.hps.client.rms.RmsApi",
-        lambda c: SimpleNamespace(
-            get_evaluators=lambda **kw: [SimpleNamespace(name="eval-1", host_id="host-1")]
-        ),
+        lambda c: SimpleNamespace(get_evaluators=get_evaluators),
     )
+
     assert client._resolve_evaluator_name_for_task("task-1", "proj-1") == "eval-1"
+    assert evaluator_query == {"host_id": "host-1", "fields": "id,name,host_id"}
 
 
 def test_resolve_evaluator_name_for_task_raises_when_task_not_found(monkeypatch):
