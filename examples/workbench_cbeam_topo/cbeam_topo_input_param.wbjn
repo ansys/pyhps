@@ -1,0 +1,23 @@
+
+### Parameter units as defined in HPC Platform Services Job Definitions
+log.info('Set Parameter units')
+parameter_units = {}
+parameter_units['P4'] = 'mm'
+parameter_units['P5'] = ''
+parameter_units['P6'] = ''
+parameter_units['P9'] = 'mm'
+parameter_units['P10'] = 'mm'
+parameter_units['P11'] = 'mm'
+parameter_units['P12'] = ''
+parameter_units['P15'] = ''
+parameter_units['P14'] = 'kg'
+parameter_units['P13'] = 'kg'
+
+### Input Parameters
+log.info('Set input parameters')
+input_parameters = {}
+input_parameters['P4'] = -999.99
+input_parameters['P9'] = -999.99
+input_parameters['P10'] = -999.99
+input_parameters['P11'] = -999.99
+input_parameters['P12'] = -999.99
