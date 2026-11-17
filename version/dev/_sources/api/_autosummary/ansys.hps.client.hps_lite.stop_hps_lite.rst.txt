@@ -1,0 +1,6 @@
+﻿stop\_hps\_lite
+===============
+
+.. currentmodule:: ansys.hps.client.hps_lite
+
+.. autofunction:: stop_hps_lite

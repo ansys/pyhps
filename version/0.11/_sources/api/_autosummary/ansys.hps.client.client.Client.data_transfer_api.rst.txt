@@ -1,0 +1,6 @@
+data\_transfer\_api
+===================
+
+.. currentmodule:: ansys.hps.client.client
+
+.. autoproperty:: Client.data_transfer_api

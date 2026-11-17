@@ -1,0 +1,28 @@
+﻿FloatParameterDefinition
+========================
+
+.. currentmodule:: ansys.hps.client.jms
+
+.. autoclass:: FloatParameterDefinition
+
+   
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+      :toctree:
+   
+      
+      
+      FloatParameterDefinition.declared_fields
+      
+      
+      FloatParameterDefinition.get
+      
+   
+   
+
+   
+   
+   

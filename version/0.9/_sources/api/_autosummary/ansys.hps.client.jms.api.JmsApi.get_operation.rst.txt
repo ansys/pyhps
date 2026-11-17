@@ -1,0 +1,6 @@
+get\_operation
+==============
+
+.. currentmodule:: ansys.hps.client.jms.api
+
+.. automethod:: JmsApi.get_operation

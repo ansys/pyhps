@@ -1,0 +1,6 @@
+tag\_list
+=========
+
+.. currentmodule:: ansys.hps.client.monitor
+
+.. autoattribute:: ListTagsResponse.tag_list

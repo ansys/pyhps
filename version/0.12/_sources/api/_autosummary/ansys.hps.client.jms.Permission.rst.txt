@@ -1,0 +1,28 @@
+﻿Permission
+==========
+
+.. currentmodule:: ansys.hps.client.jms
+
+.. autoclass:: Permission
+
+   
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+      :toctree:
+   
+      
+      
+      Permission.declared_fields
+      
+      
+      Permission.get
+      
+   
+   
+
+   
+   
+   

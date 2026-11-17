@@ -1,0 +1,6 @@
+get\_user\_groups
+=================
+
+.. currentmodule:: ansys.hps.client.auth.api
+
+.. automethod:: AuthApi.get_user_groups

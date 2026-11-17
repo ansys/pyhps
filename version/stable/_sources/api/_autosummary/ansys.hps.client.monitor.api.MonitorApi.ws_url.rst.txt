@@ -1,0 +1,6 @@
+ws\_url
+=======
+
+.. currentmodule:: ansys.hps.client.monitor.api
+
+.. autoproperty:: MonitorApi.ws_url
