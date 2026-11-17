@@ -339,7 +339,7 @@ def test_resolve_evaluator_name_for_task_success(monkeypatch):
     )
 
     assert client._resolve_evaluator_name_for_task("task-1", "proj-1") == "eval-1"
-    assert evaluator_query == {"host_id": "host-1", "fields": "id,name,host_id"}
+    assert evaluator_query == {"host_id": "host-1", "fields": ["id", "name", "host_id"]}
 
 
 def test_resolve_evaluator_name_for_task_raises_when_task_not_found(monkeypatch):
