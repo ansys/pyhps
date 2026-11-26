@@ -1,0 +1,6 @@
+﻿create\_session
+===============
+
+.. currentmodule:: ansys.hps.client.connection
+
+.. autofunction:: create_session

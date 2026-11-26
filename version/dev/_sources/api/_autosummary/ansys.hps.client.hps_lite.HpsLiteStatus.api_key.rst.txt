@@ -1,0 +1,6 @@
+api\_key
+========
+
+.. currentmodule:: ansys.hps.client.hps_lite
+
+.. autoattribute:: HpsLiteStatus.api_key

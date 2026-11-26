@@ -1,0 +1,6 @@
+﻿find\_hps\_lite
+===============
+
+.. currentmodule:: ansys.hps.client.hps_lite
+
+.. autofunction:: find_hps_lite

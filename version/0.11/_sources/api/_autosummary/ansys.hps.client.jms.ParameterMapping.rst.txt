@@ -1,0 +1,28 @@
+﻿ParameterMapping
+================
+
+.. currentmodule:: ansys.hps.client.jms
+
+.. autoclass:: ParameterMapping
+
+   
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+      :toctree:
+   
+      
+      
+      ParameterMapping.declared_fields
+      
+      
+      ParameterMapping.get
+      
+   
+   
+
+   
+   
+   

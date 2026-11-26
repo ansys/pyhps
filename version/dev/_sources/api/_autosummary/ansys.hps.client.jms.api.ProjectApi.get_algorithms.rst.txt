@@ -1,0 +1,6 @@
+get\_algorithms
+===============
+
+.. currentmodule:: ansys.hps.client.jms.api
+
+.. automethod:: ProjectApi.get_algorithms

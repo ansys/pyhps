@@ -1,0 +1,6 @@
+﻿ClusterInfo
+===========
+
+.. currentmodule:: ansys.hps.client.rms
+
+.. autopydantic_model:: ClusterInfo

@@ -1,0 +1,34 @@
+﻿HpsLite
+=======
+
+.. currentmodule:: ansys.hps.client.hps_lite
+
+.. autoclass:: HpsLite
+
+   
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+      :toctree:
+   
+      
+      
+      HpsLite.client
+      
+      
+      HpsLite.find
+      
+      
+      HpsLite.run
+      
+      
+      HpsLite.stop
+      
+   
+   
+
+   
+   
+   
